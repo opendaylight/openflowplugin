@@ -2,4 +2,6 @@
 #
 2373512464abcee3eaf50f265c4a4e428dab634e	Administrators
 97e59037bddc03bf27ea1095000c7cb796b4012b	Non-interactive openflowplugin users
+global:Anonymous-Users                  	Anonymous Users
+global:Registered-Users                 	Registered Users
 ldap:cn=gerrit-openflowplugin-commiters,ou=Groups,dc=opendaylight,dc=org	ldap/gerrit-openflowplugin-commiters
