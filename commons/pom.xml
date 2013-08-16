@@ -36,5 +36,10 @@
       <name>central2</name>
       <url>http://nexus.opendaylight.org/content/repositories/central2/</url>
     </pluginRepository>
+    <pluginRepository>
+      <id>opendaylight-snapshot</id>
+      <name>central2</name>
+      <url>http://nexus.opendaylight.org/content/repositories/opendaylight.snapshot/</url>
+    </pluginRepository>
   </pluginRepositories>
 </project>
