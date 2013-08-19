@@ -4,14 +4,14 @@
     "http://www.puppycrawl.com/dtds/configuration_1_2.dtd">
 
 <module name="Checker">
-    <module name="FileTabCharacter">
-        <property name="eachLine" value="true"/>
-    </module>
+	<module name="FileTabCharacter">
+		<property name="eachLine" value="true" />
+	</module>
 
-    <module name="RegexpSingleline">
-        <!-- \s matches whitespace character, $ matches end of line. -->
-        <property name="format" value="\s+$"/>
-        <property name="message" value="Line has trailing spaces."/>
-    </module>
+	<module name="RegexpSingleline">
+		<!-- \s matches whitespace character, $ matches end of line. -->
+		<property name="format" value="\s+$" />
+		<property name="message" value="Line has trailing spaces." />
+	</module>
 
 </module>
