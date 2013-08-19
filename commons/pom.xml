@@ -1,45 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <modelVersion>4.0.0</modelVersion>
-  <prerequisites>
-    <maven>3.0</maven>
-  </prerequisites>
-  <parent>
-    <groupId>org.opendaylight.controller</groupId>
-    <artifactId>commons.opendaylight</artifactId>
-    <version>1.4.0-SNAPSHOT</version>
-  </parent>
-  <groupId>org.opendaylight.openflowplugin</groupId>
-  <artifactId>commons.openflowplugin</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  <packaging>pom</packaging>
+<project
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+    xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <modelVersion>4.0.0</modelVersion>
+    <prerequisites>
+        <maven>3.0</maven>
+    </prerequisites>
+    <parent>
+        <groupId>org.opendaylight.controller</groupId>
+        <artifactId>commons.opendaylight</artifactId>
+        <version>1.4.0-SNAPSHOT</version>
+    </parent>
+    <groupId>org.opendaylight.openflowplugin</groupId>
+    <artifactId>commons.openflowplugin</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
 
-  <repositories>
-    <!-- OpenDayLight Released artifact -->
-    <repository>
-      <id>opendaylight-release</id>
-      <name>opendaylight-release</name>
-      <url>http://nexus.opendaylight.org/content/repositories/opendaylight.release/</url>
-    </repository>
-    <!-- OpenDayLight Snapshot artifact -->
-    <repository>
-      <id>opendaylight-snapshot</id>
-      <name>opendaylight-snapshot</name>
-      <url>http://nexus.opendaylight.org/content/repositories/opendaylight.snapshot/</url>
-    </repository>
-  </repositories>
+    <repositories>
+        <!-- OpenDayLight Released artifact -->
+        <repository>
+            <id>opendaylight-release</id>
+            <name>opendaylight-release</name>
+            <url>http://nexus.opendaylight.org/content/repositories/opendaylight.release/</url>
+        </repository>
+        <!-- OpenDayLight Snapshot artifact -->
+        <repository>
+            <id>opendaylight-snapshot</id>
+            <name>opendaylight-snapshot</name>
+            <url>http://nexus.opendaylight.org/content/repositories/opendaylight.snapshot/</url>
+        </repository>
+    </repositories>
 
-  <pluginRepositories>
+    <pluginRepositories>
     <pluginRepository>
-      <id>central2</id>
-      <name>central2</name>
-      <url>http://nexus.opendaylight.org/content/repositories/central2/</url>
+        <id>central2</id>
+        <name>central2</name>
+        <url>http://nexus.opendaylight.org/content/repositories/central2/</url>
     </pluginRepository>
     <pluginRepository>
-      <id>opendaylight-snapshot</id>
-      <name>central2</name>
-      <url>http://nexus.opendaylight.org/content/repositories/opendaylight.snapshot/</url>
+        <id>opendaylight-snapshot</id>
+        <name>central2</name>
+        <url>http://nexus.opendaylight.org/content/repositories/opendaylight.snapshot/</url>
     </pluginRepository>
-  </pluginRepositories>
+    </pluginRepositories>
 </project>
