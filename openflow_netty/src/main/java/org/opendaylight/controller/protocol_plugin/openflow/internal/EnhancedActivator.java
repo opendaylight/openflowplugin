@@ -14,7 +14,8 @@ import java.util.ArrayList;
 
 import org.apache.felix.dm.Component;
 import org.opendaylight.controller.protocol_plugin.openflow.core.internal.EnhancedController;
-import org.opendaylight.controller.protocol_plugin.openflow.core.internal.Controller;
+import org.opendaylight.openflowplugin.openflow.core.internal.Controller;
+import org.opendaylight.openflowplugin.openflow.internal.Activator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
