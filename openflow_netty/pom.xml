@@ -79,7 +79,7 @@
          want to make sure that the openflowJ embedded is picking the
          netty one over the non-netty enabled-->
     <dependency>
-      <groupId>org.opendaylight.controller.thirdparty</groupId>
+      <groupId>org.opendaylight.openflowjava.thirdparty</groupId>
       <artifactId>org.openflow.openflowj_netty</artifactId>
       <version>1.0.2-SNAPSHOT</version>
     </dependency>

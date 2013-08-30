@@ -1,16 +1,27 @@
-OpenFlow Java - v1.0.0 
+openflowj_netty has been moved to the openflowjava project as
+of Aug 30, 2013:
 
-A Java implementation of low-level OpenFlow packet marshalling/unmarshalling
-and IO operations. Implements v1.0 of the OpenFlow specification at
-http://www.openflow.org.
+https://git.opendaylight.org/gerrit/#/c/1047/
 
-    - David Erickson (daviderickson@cs.stanford.edu)
-    - Rob Sherwood (rob.sherwood@stanford.edu)
+You can include it in your maven project with:
 
-Building requires Maven 2.x+ (http://maven.apache.org/).
+<repositories>
+        <!-- OpenDayLight Released artifact -->
+        <repository>
+            <id>opendaylight-release</id>
+            <name>opendaylight-release</name>
+            <url>${nexusproxy}/repositories/opendaylight.release/</url>
+        </repository>
+        <!-- OpenDayLight Snapshot artifact -->
+        <repository>
+            <id>opendaylight-snapshot</id>
+            <name>opendaylight-snapshot</name>
+            <url>${nexusproxy}/repositories/opendaylight.snapshot/</url>
+        </repository>
+</repositories>
 
-To build:
-    mvn package
-
-To build javadocs:
-    mvn javadoc:javadoc
+<dependency>
+  <groupId>org.opendaylight.openflowjava.thirdparty</groupId>
+  <artifactId>org.openflow.openflowj_netty</artifactId>
+  <version>1.0.2-SNAPSHOT</version>
+</dependency>
