@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.Future;
 
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
@@ -40,6 +41,11 @@ import org.opendaylight.openflowplugin.openflow.IInventoryShimExternalListener;
 import org.opendaylight.openflowplugin.openflow.core.IController;
 import org.opendaylight.openflowplugin.openflow.core.IMessageListener;
 import org.opendaylight.openflowplugin.openflow.core.ISwitch;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInput;
+import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.openflow.protocol.OFError;
 import org.openflow.protocol.OFFlowMod;
 import org.openflow.protocol.OFFlowRemoved;
@@ -56,7 +62,7 @@ import org.slf4j.LoggerFactory;
  * Represents the openflow plugin component in charge of programming the flows
  * the flow programming and relay them to functional modules above SAL.
  */
-public class FlowProgrammerService implements IPluginInFlowProgrammerService,
+public class FlowProgrammerService implements IPluginInFlowProgrammerService, SalFlowService,
         IMessageListener, IContainerListener, IInventoryShimExternalListener,
         CommandProvider {
     private static final Logger log = LoggerFactory
@@ -799,5 +805,23 @@ public class FlowProgrammerService implements IPluginInFlowProgrammerService,
     public void _px2rc(CommandInterpreter ci) {
         ci.println("Max num of async messages sent prior to the Barrier message is "
                 + barrierMessagePriorCount);
+    }
+
+
+
+    @Override
+    public Future<RpcResult<Void>> addFlow(AddFlowInput input) {
+        throw new UnsupportedOperationException("Not implemented yet.");
+    }
+
+
+    @Override
+    public Future<RpcResult<Void>> removeFlow(RemoveFlowInput input) {
+        throw new UnsupportedOperationException("Not implemented yet.");
+    }
+
+    @Override
+    public Future<RpcResult<Void>> updateFlow(UpdateFlowInput input) {
+        throw new UnsupportedOperationException("Not implemented yet.");
     }
 }
