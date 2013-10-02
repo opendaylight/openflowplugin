@@ -16,6 +16,25 @@
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
+    <properties>
+      <project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
+    </properties>
+
+    <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-compiler-plugin</artifactId>
+              <configuration>
+                <source>1.7</source>
+                <target>1.7</target>
+              </configuration>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+    </build>
+
     <repositories>
         <!-- OpenDayLight Released artifact -->
         <repository>

@@ -28,6 +28,7 @@ import org.opendaylight.controller.sal.reader.IPluginOutReadService;
 import org.opendaylight.controller.sal.topology.IPluginInTopologyService;
 import org.opendaylight.controller.sal.topology.IPluginOutTopologyService;
 import org.opendaylight.controller.sal.utils.GlobalConstants;
+import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.openflowplugin.openflow.IDataPacketListen;
 import org.opendaylight.openflowplugin.openflow.IDataPacketMux;
 import org.opendaylight.openflowplugin.openflow.IDiscoveryListener;
@@ -44,6 +45,7 @@ import org.opendaylight.openflowplugin.openflow.ITopologyServiceShimListener;
 import org.opendaylight.openflowplugin.openflow.core.IController;
 import org.opendaylight.openflowplugin.openflow.core.IMessageListener;
 import org.opendaylight.openflowplugin.openflow.core.internal.Controller;
+import org.opendaylight.openflowplugin.openflow.md.core.MDController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -233,7 +235,8 @@ public class Activator extends ComponentActivatorAbstractBase {
         Object[] res = { Controller.class, OFStatisticsManager.class,
                 FlowProgrammerService.class, ReadServiceFilter.class,
                 DiscoveryService.class, DataPacketMuxDemux.class, InventoryService.class,
-                InventoryServiceShim.class, TopologyServiceShim.class };
+                InventoryServiceShim.class, TopologyServiceShim.class,
+                MDController.class};
         return res;
     }
 
@@ -455,6 +458,19 @@ public class Activator extends ComponentActivatorAbstractBase {
                     .setService(IOFStatisticsManager.class)
                     .setCallbacks("setStatisticsManager",
                             "unsetStatisticsManager").setRequired(false));
+        }
+
+        if (imp.equals(MDController.class)) {
+//            c.setInterface(new String[] { IDiscoveryListener.class.getName(),
+//                    IContainerListener.class.getName(),
+//                    IRefreshInternalProvider.class.getName(),
+//                    IInventoryShimExternalListener.class.getName() }, null);
+            c.add(createServiceDependency()
+                    .setService(SwitchConnectionProvider.class)
+                    .setCallbacks("setSwitchConnectionProvider",
+                            "unsetSwitchConnectionProvider")
+                    .setRequired(true));
+            logger.debug("configuring MDController ..");
         }
     }
 }
