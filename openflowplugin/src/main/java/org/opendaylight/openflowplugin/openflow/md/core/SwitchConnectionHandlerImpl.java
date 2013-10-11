@@ -28,7 +28,6 @@ public class SwitchConnectionHandlerImpl implements SwitchConnectionHandler {
     @Override
     public void onSwitchConnected(ConnectionAdapter connectionAdapter) {
         ConnectionConductor conductor = ConnectionConductorFactory.createConductor(connectionAdapter);
-        //TODO:: store conductor
     }
 
 }

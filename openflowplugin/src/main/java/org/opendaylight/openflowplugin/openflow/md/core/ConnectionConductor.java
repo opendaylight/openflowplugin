@@ -8,7 +8,6 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core;
 
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 
 /**
  * @author mirehak
@@ -25,6 +24,8 @@ public interface ConnectionConductor {
         HANDSHAKING,
         /** standard phase - interacting with switch */
         WORKING,
+        /** connection is idle, waiting for echo reply from switch */
+        TIMEOUTING,
         /** talking to switch is over - resting in pieces */
         RIP
     }
@@ -48,9 +49,4 @@ public interface ConnectionConductor {
      * @param conductorState
      */
     public void setConductorState(CONDUCTOR_STATE conductorState);
-
-    /**
-     * @return the switch features
-     */
-    public GetFeaturesOutput getFeatures();
 }

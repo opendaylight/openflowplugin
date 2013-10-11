@@ -68,7 +68,7 @@ public class MDController {
     /**
      * @return wished connections configurations
      */
-    private Collection<ConnectionConfiguration> getConnectionConfiguration() {
+    private static Collection<ConnectionConfiguration> getConnectionConfiguration() {
         //TODO:: get config from state manager
         ConnectionConfiguration configuration = ConnectionConfigurationFactory.getDefault();
         return Lists.newArrayList(configuration);

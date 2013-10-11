@@ -14,6 +14,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
+import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoReplyInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoRequestMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessage;
@@ -52,8 +53,6 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     private ConnectionConductor.CONDUCTOR_STATE conductorState;
     private Short version;
 
-    private GetFeaturesOutput features;
-
     /**
      * @param connectionAdapter
      */
@@ -71,12 +70,12 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     }
 
     @Override
-    public void onEchoRequestMessage(EchoRequestMessage arg0) {
-        LOG.debug("echo request received: " + arg0.getXid());
+    public void onEchoRequestMessage(EchoRequestMessage echoRequestMessage) {
+        LOG.debug("echo request received: " + echoRequestMessage.getXid());
         EchoReplyInputBuilder builder = new EchoReplyInputBuilder();
-        builder.setVersion(arg0.getVersion());
-        builder.setXid(arg0.getXid());
-        builder.setData(arg0.getData());
+        builder.setVersion(echoRequestMessage.getVersion());
+        builder.setXid(echoRequestMessage.getXid());
+        builder.setData(echoRequestMessage.getData());
 
         connectionAdapter.echoReply(builder.build());
     }
@@ -136,11 +135,17 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
             try {
                 rpcFeatures = featuresFuture.get(getMaxTimeout(),
                         TimeUnit.MILLISECONDS);
-                LOG.debug("obtained features: datapathId="
-                        + rpcFeatures.getResult().getDatapathId());
-                conductorState = CONDUCTOR_STATE.WORKING;
-                this.features = rpcFeatures.getResult();
-                LOG.info("handshake SETTLED");
+                if (!rpcFeatures.isSuccessful()) {
+                    LOG.error("obtained features problem: "
+                            + rpcFeatures.getErrors());
+                } else {
+                    LOG.debug("obtained features: datapathId="
+                            + rpcFeatures.getResult().getDatapathId());
+                    conductorState = CONDUCTOR_STATE.WORKING;
+
+                    OFSessionUtil.registerSession(this, rpcFeatures.getResult(), version);
+                    LOG.info("handshake SETTLED");
+                }
             } catch (Exception e) {
                 handleException(e);
             }
@@ -233,10 +238,5 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     @Override
     public Short getVersion() {
         return version;
-    }
-
-    @Override
-    public GetFeaturesOutput getFeatures() {
-        return features;
     }
 }

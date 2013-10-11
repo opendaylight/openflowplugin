@@ -15,6 +15,8 @@
 
     <properties>
         <yang.prototype.version>1.0-SNAPSHOT</yang.prototype.version>
+        <yang.version>0.5.9-SNAPSHOT</yang.version>
+        <openflow-protocol.version>0.1-SNAPSHOT</openflow-protocol.version>
     </properties>
 
 
@@ -46,12 +48,12 @@
         <dependency>
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>sal</artifactId>
-            <version>0.5.0-SNAPSHOT</version>
+            <version>0.5.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>sal.connection</artifactId>
-            <version>0.1.0-SNAPSHOT</version>
+            <version>0.1.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.controller.thirdparty</groupId>
@@ -86,18 +88,34 @@
         <dependency>
             <groupId>org.opendaylight.openflowjava</groupId>
             <artifactId>openflow-protocol-api</artifactId>
-            <version>0.1-SNAPSHOT</version>
+            <version>${openflow-protocol.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.openflowjava</groupId>
             <artifactId>openflow-protocol-spi</artifactId>
-            <version>0.1-SNAPSHOT</version>
+            <version>${openflow-protocol.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>equinoxSDK381</groupId>
+            <artifactId>org.eclipse.osgi</artifactId>
+        </dependency>
+
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.8.1</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>${slf4j.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.controller</groupId>
