@@ -15,6 +15,10 @@ import java.util.concurrent.TimeUnit;
 
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
+import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
+import org.opendaylight.openflowplugin.openflow.md.core.session.SessionManager;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoReplyInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoRequestMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessage;
@@ -30,7 +34,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.DisconnectEvent;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SwitchIdleEvent;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SystemNotificationsListener;
+import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,6 +58,10 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     private final List<Short> versionOrder;
     private ConnectionConductor.CONDUCTOR_STATE conductorState;
     private Short version;
+
+    private SwitchConnectionDistinguisher auxiliaryKey;
+
+    private SessionContext sessionContext;
 
     /**
      * @param connectionAdapter
@@ -143,7 +153,8 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
                             + rpcFeatures.getResult().getDatapathId());
                     conductorState = CONDUCTOR_STATE.WORKING;
 
-                    OFSessionUtil.registerSession(this, rpcFeatures.getResult(), version);
+                    OFSessionUtil.registerSession(this,
+                            rpcFeatures.getResult(), version);
                     LOG.info("handshake SETTLED");
                 }
             } catch (Exception e) {
@@ -191,6 +202,44 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         // TODO Auto-generated method stub
     }
 
+    @Override
+    public void onSwitchIdleEvent(SwitchIdleEvent notification) {
+        if (!CONDUCTOR_STATE.WORKING.equals(conductorState)) {
+            // idle state in any other conductorState than WORKING means real
+            // problem and wont
+            // be handled by echoReply
+            // TODO: invalidate this connection + notify
+        } else {
+            LOG.debug("first idle state occured");
+            EchoInputBuilder builder = new EchoInputBuilder();
+            builder.setVersion(version);
+            // TODO: get xid from sessionContext
+            builder.setXid(42L);
+
+            Future<RpcResult<EchoOutput>> echoReplyFuture = connectionAdapter
+                    .echo(builder.build());
+
+            try {
+                // TODO: read timeout from config
+                RpcResult<EchoOutput> echoReplyValue = echoReplyFuture.get(5,
+                        TimeUnit.SECONDS);
+                if (echoReplyValue.isSuccessful()) {
+                    conductorState = CONDUCTOR_STATE.WORKING;
+                } else {
+                    for (RpcError replyError : echoReplyValue.getErrors()) {
+                        Throwable cause = replyError.getCause();
+                        LOG.error(
+                                "while receiving echoReply in TIMEOUTING state: "
+                                        + cause.getMessage(), cause);
+                    }
+                }
+            } catch (Exception e) {
+                LOG.error("while waiting for echoReply in TIMEOUTING state: "
+                        + e.getMessage(), e);
+            }
+        }
+    }
+
     /**
      * @param conductorState
      *            the connectionState to set
@@ -217,7 +266,8 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
 
     @Override
     public void onDisconnectEvent(DisconnectEvent arg0) {
-        // TODO Auto-generated method stub
+        SessionManager sessionManager = OFSessionUtil.getSessionManager();
+        sessionManager.invalidateOnDisconnect(this);
     }
 
     protected short proposeVersion(short remoteVersion) {
@@ -238,5 +288,30 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     @Override
     public Short getVersion() {
         return version;
+    }
+
+    @Override
+    public Future<Boolean> disconnect() {
+        return connectionAdapter.disconnect();
+    }
+
+    @Override
+    public void setConnectionCookie(SwitchConnectionDistinguisher auxiliaryKey) {
+        this.auxiliaryKey = auxiliaryKey;
+    }
+
+    @Override
+    public void setSessionContext(SessionContext sessionContext) {
+        this.sessionContext = sessionContext;
+    }
+
+    @Override
+    public SwitchConnectionDistinguisher getAuxiliaryKey() {
+        return auxiliaryKey;
+    }
+
+    @Override
+    public SessionContext getSessionContext() {
+        return sessionContext;
     }
 }

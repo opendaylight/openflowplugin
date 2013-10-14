@@ -8,11 +8,13 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.session;
 
-import java.util.Iterator;
+import java.util.Collections;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
-import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDestinguisher;
+import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 
 /**
@@ -22,7 +24,9 @@ public class SessionContextOFImpl implements SessionContext {
 
     private GetFeaturesOutput features;
     private ConnectionConductor primaryConductor;
-    private ConcurrentHashMap<Object, ConnectionConductor> auxiliaryConductors;
+    private ConcurrentHashMap<SwitchConnectionDistinguisher, ConnectionConductor> auxiliaryConductors;
+    private boolean valid;
+    private SwitchConnectionDistinguisher sessionKey;
 
     /**
      * default ctor
@@ -38,20 +42,20 @@ public class SessionContextOFImpl implements SessionContext {
 
     @Override
     public ConnectionConductor getAuxiliaryConductor(
-            SwitchConnectionDestinguisher auxiliaryKey) {
+            SwitchConnectionDistinguisher auxiliaryKey) {
         return auxiliaryConductors.get(auxiliaryKey);
     }
 
     @Override
     public void addAuxiliaryConductor(
-            SwitchConnectionDestinguisher auxiliaryKey,
+            SwitchConnectionDistinguisher auxiliaryKey,
             ConnectionConductor conductor) {
         auxiliaryConductors.put(auxiliaryKey, conductor);
     }
 
     @Override
-    public Iterator<ConnectionConductor> getAuxiliaryConductors() {
-        return auxiliaryConductors.values().iterator();
+    public Set<Entry<SwitchConnectionDistinguisher, ConnectionConductor>> getAuxiliaryConductors() {
+        return Collections.unmodifiableSet(auxiliaryConductors.entrySet());
     }
 
     @Override
@@ -77,7 +81,29 @@ public class SessionContextOFImpl implements SessionContext {
 
     @Override
     public ConnectionConductor removeAuxiliaryConductor(
-            SwitchConnectionDestinguisher connectionCookie) {
+            SwitchConnectionDistinguisher connectionCookie) {
         return auxiliaryConductors.remove(connectionCookie);
+    }
+
+    @Override
+    public boolean isValid() {
+        return valid;
+    }
+
+    @Override
+    public void setValid(boolean valid) {
+        this.valid = valid;
+    }
+
+    /**
+     * @param sessionKey the sessionKey to set
+     */
+    public void setSessionKey(SwitchConnectionDistinguisher sessionKey) {
+        this.sessionKey = sessionKey;
+    }
+
+    @Override
+    public SwitchConnectionDistinguisher getSessionKey() {
+        return sessionKey;
     }
 }

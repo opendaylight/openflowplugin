@@ -8,10 +8,11 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.session;
 
-import java.util.Iterator;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
-import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDestinguisher;
+import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 
 /**
@@ -35,12 +36,12 @@ public interface SessionContext {
      * @return list of auxiliary connection wrappers
      */
     public ConnectionConductor getAuxiliaryConductor(
-            SwitchConnectionDestinguisher auxiliaryKey);
+            SwitchConnectionDistinguisher auxiliaryKey);
 
     /**
-     * @return iterator through all auxiliary connections wrapped in conductors
+     * @return entries of all auxiliary connections wrapped in conductors in this session
      */
-    public Iterator<ConnectionConductor> getAuxiliaryConductors();
+    public Set<Entry<SwitchConnectionDistinguisher, ConnectionConductor>> getAuxiliaryConductors();
 
     /**
      * register new auxiliary connection wrapped in {@link ConnectionConductor}
@@ -48,7 +49,7 @@ public interface SessionContext {
      * @param auxiliaryKey
      * @param conductor
      */
-    public void addAuxiliaryConductor(SwitchConnectionDestinguisher auxiliaryKey,
+    public void addAuxiliaryConductor(SwitchConnectionDistinguisher auxiliaryKey,
             ConnectionConductor conductor);
 
     /**
@@ -56,7 +57,22 @@ public interface SessionContext {
      * @return removed connectionConductor
      */
     public ConnectionConductor removeAuxiliaryConductor(
-            SwitchConnectionDestinguisher connectionCookie);
+            SwitchConnectionDistinguisher connectionCookie);
+
+    /**
+     * @return true if this session is valid
+     */
+    public boolean isValid();
+
+    /**
+     * @param valid the valid to set
+     */
+    public void setValid(boolean valid);
+
+    /**
+     * @return the sessionKey
+     */
+    public SwitchConnectionDistinguisher getSessionKey();
 
     // TODO:: add listeners here, manager will set them and conductor use them
 

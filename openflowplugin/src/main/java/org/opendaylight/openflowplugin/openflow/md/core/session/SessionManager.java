@@ -9,7 +9,8 @@
 package org.opendaylight.openflowplugin.openflow.md.core.session;
 
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
-import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDestinguisher;
+import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
+import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
 
 /**
  * @author mirehak
@@ -22,14 +23,14 @@ public interface SessionManager {
      *         primary connection
      */
     public SessionContext getSessionContext(
-            SwitchConnectionDestinguisher sessionKey);
+            SwitchConnectionDistinguisher sessionKey);
 
     /**
      * disconnect all underlying {@link ConnectionAdapter}s and notify listeners
      *
-     * @param fullKey
+     * @param sessionKey
      */
-    public void invalidateSessionContext(SwitchConnectionDestinguisher fullKey);
+    public void invalidateSessionContext(SwitchConnectionDistinguisher sessionKey);
 
     /**
      * register session context
@@ -37,8 +38,8 @@ public interface SessionManager {
      * @param sessionKey
      * @param context
      */
-    public void addSessionContext(SwitchConnectionDestinguisher sessionKey,
-            SessionContextOFImpl context);
+    public void addSessionContext(SwitchConnectionDistinguisher sessionKey,
+            SessionContext context);
 
     /**
      * disconnect particular auxiliary {@link ConnectionAdapter}, identified by
@@ -47,6 +48,11 @@ public interface SessionManager {
      * @param sessionKey
      * @param connectionCookie
      */
-    public void invalidateAuxiliary(SwitchConnectionDestinguisher sessionKey,
-            SwitchConnectionDestinguisher connectionCookie);
+    public void invalidateAuxiliary(SwitchConnectionDistinguisher sessionKey,
+            SwitchConnectionDistinguisher connectionCookie);
+
+    /**
+     * @param connectionConductor
+     */
+    public void invalidateOnDisconnect(ConnectionConductor connectionConductor);
 }

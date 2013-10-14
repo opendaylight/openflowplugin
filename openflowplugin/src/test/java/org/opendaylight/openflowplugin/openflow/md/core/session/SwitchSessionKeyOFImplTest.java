@@ -16,7 +16,7 @@ import java.util.Map;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDestinguisher;
+import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,7 +98,7 @@ public class SwitchSessionKeyOFImplTest {
         SwitchSessionKeyOFImpl key3 = createSwitchSessionKey("123456789");
         key3.initId();
 
-        Map<SwitchConnectionDestinguisher, Integer> keyLot = new HashMap<>();
+        Map<SwitchConnectionDistinguisher, Integer> keyLot = new HashMap<>();
         keyLot.put(key1, System.identityHashCode(key1));
         Assert.assertEquals(1, keyLot.size());
         keyLot.put(key2, System.identityHashCode(key2));

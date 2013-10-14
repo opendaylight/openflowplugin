@@ -13,12 +13,12 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
-import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDestinguisher;
+import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
 
 /**
  * @author mirehak
  */
-public class SwitchSessionKeyOFImpl implements SwitchConnectionDestinguisher {
+public class SwitchSessionKeyOFImpl implements SwitchConnectionDistinguisher {
 
     protected byte[] encodedId;
     private BigInteger datapathId;

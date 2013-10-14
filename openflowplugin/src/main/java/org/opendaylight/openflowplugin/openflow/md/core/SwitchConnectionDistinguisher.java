@@ -11,7 +11,7 @@ package org.opendaylight.openflowplugin.openflow.md.core;
 /**
  * @author mirehak
  */
-public interface SwitchConnectionDestinguisher {
+public interface SwitchConnectionDistinguisher {
     /**
      * @return encoded switch session identifier
      */

@@ -45,6 +45,21 @@
         </pluginManagement>
     </build>
 
+    <profiles>
+      <profile>
+        <id>findbugsReport</id>
+        <reporting>
+          <plugins>
+            <plugin>
+              <groupId>org.codehaus.mojo</groupId>
+              <artifactId>findbugs-maven-plugin</artifactId>
+              <version>2.5.2</version>
+            </plugin>
+          </plugins>
+        </reporting>
+      </profile>
+    </profiles>
+
     <repositories>
         <!-- OpenDayLight Released artifact -->
         <repository>

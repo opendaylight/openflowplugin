@@ -11,7 +11,7 @@ package org.opendaylight.openflowplugin.openflow.md.core.session;
 import java.math.BigInteger;
 
 import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
-import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDestinguisher;
+import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +31,7 @@ public abstract class OFSessionUtil {
      */
     public static void registerSession(ConnectionConductor connectionConductor,
             GetFeaturesOutput features, short version) {
-        SwitchConnectionDestinguisher sessionKey = createSwitchSessionKey(features
+        SwitchConnectionDistinguisher sessionKey = createSwitchSessionKey(features
                 .getDatapathId());
         SessionContext sessionContext = getSessionManager().getSessionContext(
                 sessionKey);
@@ -47,6 +47,9 @@ public abstract class OFSessionUtil {
             SessionContextOFImpl context = new SessionContextOFImpl();
             context.setPrimaryConductor(connectionConductor);
             context.setFeatures(features);
+            context.setSessionKey(sessionKey);
+            connectionConductor.setSessionContext(context);
+            context.setValid(true);
             getSessionManager().addSessionContext(sessionKey, context);
         } else {
             // handle auxiliary
@@ -55,7 +58,7 @@ public abstract class OFSessionUtil {
                         + dumpDataPathId(features.getDatapathId()));
             } else {
                 // register auxiliary conductor into existing sessionContext
-                SwitchConnectionDestinguisher auxiliaryKey = createConnectionCookie(features);
+                SwitchConnectionDistinguisher auxiliaryKey = createConnectionCookie(features);
                 if (sessionContext.getAuxiliaryConductor(auxiliaryKey) != null) {
                     LOG.warn("duplicate datapathId+auxiliary occured while registering switch session: "
                             + dumpDataPathId(features.getDatapathId())
@@ -67,6 +70,8 @@ public abstract class OFSessionUtil {
 
                 sessionContext.addAuxiliaryConductor(auxiliaryKey,
                         connectionConductor);
+                connectionConductor.setSessionContext(sessionContext);
+                connectionConductor.setConnectionCookie(auxiliaryKey);
             }
         }
     }
@@ -83,7 +88,7 @@ public abstract class OFSessionUtil {
      * @param datapathId
      * @return new session key
      */
-    public static SwitchConnectionDestinguisher createSwitchSessionKey(
+    public static SwitchConnectionDistinguisher createSwitchSessionKey(
             BigInteger datapathId) {
         SwitchSessionKeyOFImpl key = new SwitchSessionKeyOFImpl();
         key.setDatapathId(datapathId);
@@ -96,7 +101,7 @@ public abstract class OFSessionUtil {
      * @return connection cookie key
      * @see #createConnectionCookie(BigInteger, short)
      */
-    public static SwitchConnectionDestinguisher createConnectionCookie(
+    public static SwitchConnectionDistinguisher createConnectionCookie(
             GetFeaturesOutput features) {
         return createConnectionCookie(features.getDatapathId(),
                 features.getAuxiliaryId());
@@ -107,7 +112,7 @@ public abstract class OFSessionUtil {
      * @param auxiliaryId
      * @return connection cookie key
      */
-    public static SwitchConnectionDestinguisher createConnectionCookie(
+    public static SwitchConnectionDistinguisher createConnectionCookie(
             BigInteger datapathId, short auxiliaryId) {
         SwitchConnectionCookieOFImpl cookie = null;
         if (auxiliaryId != 0) {

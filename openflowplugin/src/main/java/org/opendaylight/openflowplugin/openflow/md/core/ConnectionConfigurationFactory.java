@@ -49,6 +49,16 @@ public abstract class ConnectionConfigurationFactory {
                 // TODO:: TCP/UDP ...
                 return null;
             }
+
+            @Override
+            public long getSwitchIdleTimeout() {
+                return 5000;
+            }
+
+            @Override
+            public Object getSslContext() {
+                return null;
+            }
         };
     }
 

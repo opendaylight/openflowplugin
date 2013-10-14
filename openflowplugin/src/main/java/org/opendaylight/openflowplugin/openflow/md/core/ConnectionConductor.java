@@ -8,6 +8,10 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core;
 
+import java.util.concurrent.Future;
+
+import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
+
 
 /**
  * @author mirehak
@@ -49,4 +53,33 @@ public interface ConnectionConductor {
      * @param conductorState
      */
     public void setConductorState(CONDUCTOR_STATE conductorState);
+
+    /**
+     * terminates owned connection
+     * @return future result of disconnect action
+     */
+    public Future<Boolean> disconnect();
+
+    /**
+     * assign corresponding {@link SessionContext} to this conductor (to handle disconnect caused by switch)
+     * @param context
+     */
+    public void setSessionContext(SessionContext context);
+
+    /**
+     * assign corresponding {@link SwitchConnectionDistinguisher} to this conductor
+     * to handle disconnect caused by switch. This involves auxiliary conductors only.
+     * @param auxiliaryKey
+     */
+    public void setConnectionCookie(SwitchConnectionDistinguisher auxiliaryKey);
+
+    /**
+     * @return the sessionContext
+     */
+    public SessionContext getSessionContext();
+
+    /**
+     * @return the auxiliaryKey (null if this is a primary connection)
+     */
+    public SwitchConnectionDistinguisher getAuxiliaryKey();
 }
