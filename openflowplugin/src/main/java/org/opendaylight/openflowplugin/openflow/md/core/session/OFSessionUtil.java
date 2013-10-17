@@ -50,6 +50,7 @@ public abstract class OFSessionUtil {
             context.setSessionKey(sessionKey);
             connectionConductor.setSessionContext(context);
             context.setValid(true);
+            //TODO: retrieve listenerMapping from sessionManager and push it to conductor
             getSessionManager().addSessionContext(sessionKey, context);
         } else {
             // handle auxiliary
@@ -68,6 +69,7 @@ public abstract class OFSessionUtil {
                             auxiliaryKey);
                 }
 
+                //TODO: retrieve listenerMapping from sessionManager and push it to conductor
                 sessionContext.addAuxiliaryConductor(auxiliaryKey,
                         connectionConductor);
                 connectionConductor.setSessionContext(sessionContext);

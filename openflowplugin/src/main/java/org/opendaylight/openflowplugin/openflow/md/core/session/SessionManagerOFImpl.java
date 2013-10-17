@@ -90,7 +90,6 @@ public class SessionManagerOFImpl implements SessionManager {
             SwitchConnectionDistinguisher connectionCookie) {
         SessionContext context = getSessionContext(sessionKey);
         invalidateAuxiliary(context, connectionCookie, true);
-
     }
 
     /**
@@ -120,11 +119,10 @@ public class SessionManagerOFImpl implements SessionManager {
     public void invalidateOnDisconnect(ConnectionConductor conductor) {
         if (conductor.getAuxiliaryKey() == null) {
             invalidateDeadSessionContext(conductor.getSessionContext());
+            // TODO:: notify listeners
         } else {
             invalidateAuxiliary(conductor.getSessionContext(),
                     conductor.getAuxiliaryKey(), false);
         }
-
     }
-
 }
