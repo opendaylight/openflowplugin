@@ -8,15 +8,18 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
+import org.opendaylight.openflowplugin.openflow.core.IMessageListener;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionManager;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.HelloElementType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoReplyInputBuilder;
@@ -33,14 +36,17 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OpenflowProtocolListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.hello.ElementsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.DisconnectEvent;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SwitchIdleEvent;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SystemNotificationsListener;
+import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 
 /**
@@ -62,6 +68,8 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     private SwitchConnectionDistinguisher auxiliaryKey;
 
     private SessionContext sessionContext;
+
+    private ImmutableMap<Class<? extends DataObject>, Collection<IMessageListener>> listenerMapping;
 
     /**
      * @param connectionAdapter
@@ -193,8 +201,8 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     }
 
     @Override
-    public void onPacketInMessage(PacketInMessage arg0) {
-        // TODO Auto-generated method stub
+    public void onPacketInMessage(PacketInMessage message) {
+        notifyListeners(PacketInMessage.class, message);
     }
 
     @Override
@@ -206,9 +214,8 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     public void onSwitchIdleEvent(SwitchIdleEvent notification) {
         if (!CONDUCTOR_STATE.WORKING.equals(conductorState)) {
             // idle state in any other conductorState than WORKING means real
-            // problem and wont
-            // be handled by echoReply
-            // TODO: invalidate this connection + notify
+            // problem and wont be handled by echoReply, but disconnection
+            OFSessionUtil.getSessionManager().invalidateOnDisconnect(this);
         } else {
             LOG.debug("first idle state occured");
             EchoInputBuilder builder = new EchoInputBuilder();
@@ -313,5 +320,28 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     @Override
     public SessionContext getSessionContext() {
         return sessionContext;
+    }
+    
+    /**
+     * @param listenerMapping the listenerMapping to set
+     */
+    public void setListenerMapping(
+            ImmutableMap<Class<? extends DataObject>, Collection<IMessageListener>> listenerMapping) {
+        //TODO: adjust the listener interface
+        this.listenerMapping = listenerMapping;
+    }
+
+    /**
+     * @param messageType
+     * @param message
+     */
+    private void notifyListeners(Class<? extends DataObject> messageType, DataObject message) {
+        Collection<IMessageListener> listeners = listenerMapping.get(messageType);
+        if (listeners != null) {
+            for (IMessageListener listener : listeners) {
+                //TODO: use some iface (message, conductor (connection+session id)
+                //listener.receive(someId, message);
+            }
+        }
     }
 }
