@@ -110,9 +110,9 @@ public class ConnectionConductorImplTest {
         eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L,
                 EventFactory.DEFAULT_VERSION, new HelloMessageBuilder()));
         eventPlan.add(0,
-                EventFactory.createDefaultWaitForRpcEvent(42, "helloReply"));
+                EventFactory.createDefaultWaitForRpcEvent(43, "helloReply"));
         eventPlan.add(0,
-                EventFactory.createDefaultWaitForRpcEvent(42, "getFeatures"));
+                EventFactory.createDefaultWaitForRpcEvent(44, "getFeatures"));
         GetFeaturesOutputBuilder getFeaturesOutputBuilder = new GetFeaturesOutputBuilder();
         getFeaturesOutputBuilder.setDatapathId(new BigInteger("102030405060"));
         getFeaturesOutputBuilder.setAuxiliaryId((short) 0);
@@ -121,7 +121,7 @@ public class ConnectionConductorImplTest {
         getFeaturesOutputBuilder.setTables((short) 2);
         getFeaturesOutputBuilder.setCapabilities(84L);
 
-        eventPlan.add(0, EventFactory.createDefaultRpcResponseEvent(42,
+        eventPlan.add(0, EventFactory.createDefaultRpcResponseEvent(44,
                 EventFactory.DEFAULT_VERSION, getFeaturesOutputBuilder));
 
         execute(true);
@@ -140,17 +140,17 @@ public class ConnectionConductorImplTest {
         eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L,
                 (short) 0x05, new HelloMessageBuilder()));
         eventPlan.add(0,
-                EventFactory.createDefaultWaitForRpcEvent(42, "helloReply"));
-        eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L,
+                EventFactory.createDefaultWaitForRpcEvent(43, "helloReply"));
+        eventPlan.add(0, EventFactory.createDefaultNotificationEvent(43L,
                 (short) 0x03, new HelloMessageBuilder()));
         eventPlan.add(0,
-                EventFactory.createDefaultWaitForRpcEvent(42, "helloReply"));
-        eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L,
+                EventFactory.createDefaultWaitForRpcEvent(44, "helloReply"));
+        eventPlan.add(0, EventFactory.createDefaultNotificationEvent(44L,
                 (short) 0x01, new HelloMessageBuilder()));
         eventPlan.add(0,
-                EventFactory.createDefaultWaitForRpcEvent(42, "helloReply"));
+                EventFactory.createDefaultWaitForRpcEvent(45, "helloReply"));
         eventPlan.add(0,
-                EventFactory.createDefaultWaitForRpcEvent(42, "getFeatures"));
+                EventFactory.createDefaultWaitForRpcEvent(46, "getFeatures"));
         GetFeaturesOutputBuilder getFeaturesOutputBuilder = new GetFeaturesOutputBuilder();
         getFeaturesOutputBuilder.setDatapathId(new BigInteger("102030405060"));
         getFeaturesOutputBuilder.setAuxiliaryId((short) 0);
@@ -159,7 +159,7 @@ public class ConnectionConductorImplTest {
         getFeaturesOutputBuilder.setTables((short) 2);
         getFeaturesOutputBuilder.setCapabilities(84L);
 
-        eventPlan.add(0, EventFactory.createDefaultRpcResponseEvent(42,
+        eventPlan.add(0, EventFactory.createDefaultRpcResponseEvent(46,
                 EventFactory.DEFAULT_VERSION, getFeaturesOutputBuilder));
 
         executeNow();

@@ -19,7 +19,6 @@ import org.opendaylight.openflowplugin.openflow.core.IMessageListener;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionManager;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.HelloElementType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoReplyInputBuilder;
@@ -36,7 +35,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OpenflowProtocolListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.hello.ElementsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.DisconnectEvent;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SwitchIdleEvent;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SystemNotificationsListener;
@@ -124,6 +122,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         checkState(CONDUCTOR_STATE.HANDSHAKING);
 
         Short remoteVersion = hello.getVersion();
+        long xid = hello.getXid();
         short proposedVersion;
         try {
             proposedVersion = proposeVersion(remoteVersion);
@@ -132,7 +131,8 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
             throw e;
         }
         HelloInputBuilder helloBuilder = new HelloInputBuilder();
-        helloBuilder.setVersion(proposedVersion).setXid(hello.getXid());
+        xid++;
+        helloBuilder.setVersion(proposedVersion).setXid(xid);
         LOG.debug("sending helloReply");
         connectionAdapter.hello(helloBuilder.build());
 
@@ -145,7 +145,8 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
 
             // request features
             GetFeaturesInputBuilder featuresBuilder = new GetFeaturesInputBuilder();
-            featuresBuilder.setVersion(version).setXid(hello.getXid());
+            xid++;
+            featuresBuilder.setVersion(version).setXid(xid);
             Future<RpcResult<GetFeaturesOutput>> featuresFuture = connectionAdapter
                     .getFeatures(featuresBuilder.build());
             LOG.debug("waiting for features");
