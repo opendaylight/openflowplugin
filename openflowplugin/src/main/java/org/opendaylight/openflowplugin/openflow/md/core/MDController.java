@@ -8,13 +8,19 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Future;
 
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionConfiguration;
 import org.opendaylight.openflowjava.protocol.api.connection.SwitchConnectionHandler;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
+import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
+import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,26 +30,37 @@ import com.google.common.collect.Lists;
  * @author mirehak
  *
  */
-public class MDController {
+public class MDController implements IMDController {
 
-    private static final Logger LOG = LoggerFactory
-            .getLogger(MDController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MDController.class);
 
     private SwitchConnectionProvider switchConnectionProvider;
 
+    private ConcurrentMap<Class<? extends DataObject>, Collection<IMDMessageListener>> messageListeners;
+
+    public Map<Class<? extends DataObject>, Collection<IMDMessageListener>> getMessageListeners() {
+        return messageListeners;
+    }
+
+
+    public void init() {
+        LOG.debug("Initializing!");
+        this.messageListeners = new ConcurrentHashMap<Class<? extends DataObject>, Collection<IMDMessageListener>>();
+    }
+
     /**
-     * @param switchConnectionProvider the switchConnectionProvider to set
+     * @param switchConnectionProvider
+     *            the switchConnectionProvider to set
      */
-    public void setSwitchConnectionProvider(
-            SwitchConnectionProvider switchConnectionProvider) {
+    public void setSwitchConnectionProvider(SwitchConnectionProvider switchConnectionProvider) {
         this.switchConnectionProvider = switchConnectionProvider;
     }
 
     /**
-     * @param switchConnectionProviderToUnset the switchConnectionProvider to unset
+     * @param switchConnectionProviderToUnset
+     *            the switchConnectionProvider to unset
      */
-    public void unsetSwitchConnectionProvider(
-            SwitchConnectionProvider switchConnectionProviderToUnset) {
+    public void unsetSwitchConnectionProvider(SwitchConnectionProvider switchConnectionProviderToUnset) {
         if (this.switchConnectionProvider == switchConnectionProviderToUnset) {
             this.switchConnectionProvider = null;
         }
@@ -56,7 +73,7 @@ public class MDController {
      */
     public void start() {
         LOG.debug("starting ..");
-        LOG.debug("switchConnectionProvider: "+switchConnectionProvider);
+        LOG.debug("switchConnectionProvider: " + switchConnectionProvider);
         // setup handler
         SwitchConnectionHandler switchConnectionHandler = new SwitchConnectionHandlerImpl();
         switchConnectionProvider.setSwitchConnectionHandler(switchConnectionHandler);
@@ -69,7 +86,7 @@ public class MDController {
      * @return wished connections configurations
      */
     private static Collection<ConnectionConfiguration> getConnectionConfiguration() {
-        //TODO:: get config from state manager
+        // TODO:: get config from state manager
         ConnectionConfiguration configuration = ConnectionConfigurationFactory.getDefault();
         return Lists.newArrayList(configuration);
     }
@@ -93,5 +110,36 @@ public class MDController {
     public void destroy() {
         // do nothing
     }
+
+    @Override
+    public void addMessageListener(Class<? extends DataObject> messageType, IMDMessageListener listener) {
+
+        Collection<IMDMessageListener> existingValues = messageListeners.get(messageType);
+        if (existingValues == null) {
+               existingValues = new ArrayList<IMDMessageListener>();
+        }
+        existingValues.add(listener);
+        messageListeners.put(messageType, existingValues);
+        // Push the updated Listeners to Session Manager which will be then picked up by ConnectionConductor eventually
+        OFSessionUtil.getSessionManager().setListenerMapping(messageListeners);
+        LOG.debug("{} is now listened by {}", messageType, listener);
+    }
+
+    @Override
+    public void removeMessageListener(Class<? extends DataObject> messageType, IMDMessageListener listener) {
+
+        Collection<IMDMessageListener> values = messageListeners.get(messageType);
+        if (values != null) {
+                    values.remove(listener);
+                    if (values.size() == 0) {
+                        messageListeners.remove(messageType);
+                    }
+                    //Push the updated Listeners to Session Manager which will be then picked up by ConnectionConductor eventually
+                    OFSessionUtil.getSessionManager().setListenerMapping(messageListeners);
+                    LOG.debug("{} is now removed", listener);
+         }
+    }
+
+
 
 }

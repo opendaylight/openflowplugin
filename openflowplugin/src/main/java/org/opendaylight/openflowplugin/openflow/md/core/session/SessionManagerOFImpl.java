@@ -8,11 +8,15 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.session;
 
+import java.util.Collection;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
+import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageListener;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
+import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,10 +25,10 @@ import org.slf4j.LoggerFactory;
  */
 public class SessionManagerOFImpl implements SessionManager {
 
-    private static final Logger LOG = LoggerFactory
-            .getLogger(SessionManagerOFImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SessionManagerOFImpl.class);
     private static SessionManagerOFImpl instance;
     private ConcurrentHashMap<SwitchConnectionDistinguisher, SessionContext> sessionLot;
+    private Map<Class<? extends DataObject>, Collection<IMDMessageListener>> listenerMapping;
 
     /**
      * @return singleton instance
@@ -41,20 +45,17 @@ public class SessionManagerOFImpl implements SessionManager {
     }
 
     @Override
-    public SessionContext getSessionContext(
-            SwitchConnectionDistinguisher sessionKey) {
+    public SessionContext getSessionContext(SwitchConnectionDistinguisher sessionKey) {
         return sessionLot.get(sessionKey);
     }
 
     @Override
-    public void invalidateSessionContext(
-            SwitchConnectionDistinguisher sessionKey) {
+    public void invalidateSessionContext(SwitchConnectionDistinguisher sessionKey) {
         SessionContext context = getSessionContext(sessionKey);
         if (context == null) {
             LOG.warn("context for invalidation not found");
         } else {
-            for (Entry<SwitchConnectionDistinguisher, ConnectionConductor> auxEntry : context
-                    .getAuxiliaryConductors()) {
+            for (Entry<SwitchConnectionDistinguisher, ConnectionConductor> auxEntry : context.getAuxiliaryConductors()) {
                 invalidateAuxiliary(sessionKey, auxEntry.getKey());
             }
             context.getPrimaryConductor().disconnect();
@@ -79,8 +80,7 @@ public class SessionManagerOFImpl implements SessionManager {
     }
 
     @Override
-    public void addSessionContext(SwitchConnectionDistinguisher sessionKey,
-            SessionContext context) {
+    public void addSessionContext(SwitchConnectionDistinguisher sessionKey, SessionContext context) {
         sessionLot.put(sessionKey, context);
         // TODO:: notify listeners
     }
@@ -98,13 +98,12 @@ public class SessionManagerOFImpl implements SessionManager {
      * @param disconnect
      *            true if auxiliary connection is to be disconnected
      */
-    private static void invalidateAuxiliary(SessionContext context,
-            SwitchConnectionDistinguisher connectionCookie, boolean disconnect) {
+    private static void invalidateAuxiliary(SessionContext context, SwitchConnectionDistinguisher connectionCookie,
+            boolean disconnect) {
         if (context == null) {
             LOG.warn("context for invalidation not found");
         } else {
-            ConnectionConductor auxiliaryConductor = context
-                    .removeAuxiliaryConductor(connectionCookie);
+            ConnectionConductor auxiliaryConductor = context.removeAuxiliaryConductor(connectionCookie);
             if (auxiliaryConductor == null) {
                 LOG.warn("auxiliary conductor not found");
             } else {
@@ -121,8 +120,15 @@ public class SessionManagerOFImpl implements SessionManager {
             invalidateDeadSessionContext(conductor.getSessionContext());
             // TODO:: notify listeners
         } else {
-            invalidateAuxiliary(conductor.getSessionContext(),
-                    conductor.getAuxiliaryKey(), false);
+            invalidateAuxiliary(conductor.getSessionContext(), conductor.getAuxiliaryKey(), false);
         }
+    }
+
+    /**
+     * @param listenerMapping
+     *            the listenerMapping to set
+     */
+    public void setListenerMapping(Map<Class<? extends DataObject>, Collection<IMDMessageListener>> listenerMapping) {
+        this.listenerMapping = listenerMapping;
     }
 }

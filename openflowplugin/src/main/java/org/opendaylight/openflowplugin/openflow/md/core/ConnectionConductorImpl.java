@@ -67,7 +67,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
 
     private SessionContext sessionContext;
 
-    private ImmutableMap<Class<? extends DataObject>, Collection<IMessageListener>> listenerMapping;
+    private ImmutableMap<Class<? extends DataObject>, Collection<IMDMessageListener>> listenerMapping;
 
     /**
      * @param connectionAdapter
@@ -327,7 +327,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
      * @param listenerMapping the listenerMapping to set
      */
     public void setListenerMapping(
-            ImmutableMap<Class<? extends DataObject>, Collection<IMessageListener>> listenerMapping) {
+            ImmutableMap<Class<? extends DataObject>, Collection<IMDMessageListener>> listenerMapping) {
         //TODO: adjust the listener interface
         this.listenerMapping = listenerMapping;
     }
@@ -337,11 +337,11 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
      * @param message
      */
     private void notifyListeners(Class<? extends DataObject> messageType, DataObject message) {
-        Collection<IMessageListener> listeners = listenerMapping.get(messageType);
+        Collection<IMDMessageListener> listeners = listenerMapping.get(messageType);
         if (listeners != null) {
-            for (IMessageListener listener : listeners) {
-                //TODO: use some iface (message, conductor (connection+session id)
-                //listener.receive(someId, message);
+                for (IMDMessageListener listener : listeners) {
+                //TODO : need to add unit-tests
+                //listener.receive(this.getAuxiliaryKey().getId(), this.getSessionContext(), message);
             }
         }
     }

@@ -8,9 +8,16 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.session;
 
+import java.util.Collection;
+import java.util.Map;
+
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
+import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageListener;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
+import org.opendaylight.yangtools.yang.binding.DataObject;
+
+
 
 /**
  * @author mirehak
@@ -22,8 +29,7 @@ public interface SessionManager {
      * @return corresponding conductor, holding {@link ConnectionAdapter} to
      *         primary connection
      */
-    public SessionContext getSessionContext(
-            SwitchConnectionDistinguisher sessionKey);
+    public SessionContext getSessionContext(SwitchConnectionDistinguisher sessionKey);
 
     /**
      * disconnect all underlying {@link ConnectionAdapter}s and notify listeners
@@ -38,8 +44,7 @@ public interface SessionManager {
      * @param sessionKey
      * @param context
      */
-    public void addSessionContext(SwitchConnectionDistinguisher sessionKey,
-            SessionContext context);
+    public void addSessionContext(SwitchConnectionDistinguisher sessionKey, SessionContext context);
 
     /**
      * disconnect particular auxiliary {@link ConnectionAdapter}, identified by
@@ -55,4 +60,6 @@ public interface SessionManager {
      * @param connectionConductor
      */
     public void invalidateOnDisconnect(ConnectionConductor connectionConductor);
+
+    public void setListenerMapping(Map<Class<? extends DataObject>, Collection<IMDMessageListener>> listenerMapping);
 }
