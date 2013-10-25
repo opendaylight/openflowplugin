@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.opendaylight.openflowplugin</groupId>
-        <artifactId>commons.openflowplugin</artifactId>
+        <artifactId>openflowplugin-commons</artifactId>
         <version>0.0.1-SNAPSHOT</version>
         <relativePath>../../commons</relativePath>
     </parent>
