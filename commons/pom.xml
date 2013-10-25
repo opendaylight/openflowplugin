@@ -6,26 +6,158 @@
     <prerequisites>
         <maven>3.0</maven>
     </prerequisites>
-    <parent>
-        <groupId>org.opendaylight.controller</groupId>
-        <artifactId>commons.opendaylight</artifactId>
-        <version>1.4.1-SNAPSHOT</version>
-    </parent>
     <groupId>org.opendaylight.openflowplugin</groupId>
-    <artifactId>commons.openflowplugin</artifactId>
+    <artifactId>openflowplugin-commons</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
+    <scm>
+      <connection>scm:git:ssh://git.opendaylight.org:29418/openflowplugin.git</connection>
+      <developerConnection>scm:git:ssh://git.opendaylight.org:29418/openflowplugin.git</developerConnection>
+      <url>https://wiki.opendaylight.org/view/OpenDaylight_OpenFlow_Plugin:Main</url>
+      <tag>HEAD</tag>
+    </scm>
+
+    <distributionManagement>
+      <!-- OpenDayLight Released artifact -->
+      <repository>
+        <id>opendaylight-release</id>
+        <url>${nexusproxy}/repositories/opendaylight.release/</url>
+      </repository>
+      <!-- OpenDayLight Snapshot artifact -->
+      <snapshotRepository>
+        <id>opendaylight-snapshot</id>
+        <url>${nexusproxy}/repositories/opendaylight.snapshot/</url>
+      </snapshotRepository>
+      <!-- Site deployment -->
+      <!-- site>
+           <id>website</id>
+           <url>${sitedeploy}</url>
+           </site -->
+    </distributionManagement>
+
     <properties>
       <project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
+      <slf4j.version>1.7.2</slf4j.version>
+      <logback.version>1.0.9</logback.version>
+      <nexusproxy>http://nexus.opendaylight.org/content</nexusproxy>
+      <openflowjava.version>0.1-SNAPSHOT</openflowjava.version>
+      <controller.model.version>1.0-SNAPSHOT</controller.model.version>
     </properties>
 
     <dependencyManagement>
       <dependencies>
         <dependency>
+          <groupId>org.javassist</groupId>
+          <artifactId>javassist</artifactId>
+          <version>3.17.1-GA</version>
+        </dependency>
+
+        <dependency>
+          <groupId>com.google.guava</groupId>
+          <artifactId>guava</artifactId>
+          <version>14.0.1</version>
+        </dependency>
+        <dependency>
+          <groupId>equinoxSDK381</groupId>
+          <artifactId>org.eclipse.osgi</artifactId>
+          <version>3.8.1.v20120830-144521</version>
+        </dependency>
+        <dependency>
+          <groupId>org.opendaylight.openflowjava</groupId>
+          <artifactId>openflow-protocol-impl</artifactId>
+          <version>${openflowjava.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.opendaylight.openflowjava</groupId>
+          <artifactId>openflow-protocol-api</artifactId>
+          <version>${openflowjava.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.opendaylight.openflowjava</groupId>
+          <artifactId>openflow-protocol-spi</artifactId>
+          <version>${openflowjava.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.opendaylight.openflowjava</groupId>
+          <artifactId>simple-client</artifactId>
+          <version>${openflowjava.version}</version>
+        </dependency>
+
+        <dependency>
+          <groupId>org.opendaylight.controller</groupId>
+          <artifactId>sal</artifactId>
+          <version>0.5.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+          <groupId>org.opendaylight.controller</groupId>
+          <artifactId>sal.connection</artifactId>
+          <version>0.1.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+          <groupId>org.opendaylight.controller.thirdparty</groupId>
+          <artifactId>org.openflow.openflowj</artifactId>
+          <version>1.0.2-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+          <groupId>org.opendaylight.controller.model</groupId>
+          <artifactId>model-flow-base</artifactId>
+          <version>${controller.model.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.opendaylight.controller.model</groupId>
+          <artifactId>model-flow-service</artifactId>
+          <version>${controller.model.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.opendaylight.controller.model</groupId>
+          <artifactId>model-flow-statistics</artifactId>
+          <version>${controller.model.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.opendaylight.controller.model</groupId>
+          <artifactId>model-inventory</artifactId>
+          <version>${controller.model.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.opendaylight.controller</groupId>
+          <artifactId>sal-binding-api</artifactId>
+          <version>${controller.model.version}</version>
+        </dependency>
+
+        <dependency>
           <groupId>org.slf4j</groupId>
           <artifactId>slf4j-log4j12</artifactId>
-          <version>1.7.2</version>
+          <version>${slf4j.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.slf4j</groupId>
+          <artifactId>log4j-over-slf4j</artifactId>
+          <version>${slf4j.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>ch.qos.logback</groupId>
+          <artifactId>logback-core</artifactId>
+          <version>${logback.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>ch.qos.logback</groupId>
+          <artifactId>logback-classic</artifactId>
+          <version>${logback.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.opendaylight.yangtools.thirdparty</groupId>
+            <artifactId>xtend-lib-osgi</artifactId>
+            <version>2.4.3</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+          <groupId>junit</groupId>
+          <artifactId>junit</artifactId>
+          <version>4.8.1</version>
+          <scope>test</scope>
         </dependency>
       </dependencies>
     </dependencyManagement>
@@ -41,7 +173,13 @@
                 <target>1.7</target>
               </configuration>
             </plugin>
+            <plugin>
+              <groupId>org.ops4j.pax.exam</groupId>
+              <artifactId>maven-paxexam-plugin</artifactId>
+              <version>1.2.4</version>
+            </plugin>
           </plugins>
+
         </pluginManagement>
     </build>
 
@@ -61,30 +199,28 @@
     </profiles>
 
     <repositories>
-        <!-- OpenDayLight Released artifact -->
-        <repository>
-            <id>opendaylight-release</id>
-            <name>opendaylight-release</name>
-            <url>http://nexus.opendaylight.org/content/repositories/opendaylight.release/</url>
-        </repository>
-        <!-- OpenDayLight Snapshot artifact -->
-        <repository>
-            <id>opendaylight-snapshot</id>
-            <name>opendaylight-snapshot</name>
-            <url>http://nexus.opendaylight.org/content/repositories/opendaylight.snapshot/</url>
-        </repository>
+      <repository>
+        <id>opendaylight-release</id>
+        <name>opendaylight-release</name>
+        <url>${nexusproxy}/repositories/opendaylight.release/</url>
+      </repository>
+      <repository>
+        <id>opendaylight-snapshot</id>
+        <name>opendaylight-snapshot</name>
+        <url>${nexusproxy}/repositories/opendaylight.snapshot/</url>
+      </repository>
     </repositories>
 
     <pluginRepositories>
-    <pluginRepository>
+      <pluginRepository>
         <id>central2</id>
         <name>central2</name>
-        <url>http://nexus.opendaylight.org/content/repositories/central2/</url>
-    </pluginRepository>
-    <pluginRepository>
+        <url>${nexusproxy}/repositories/central2/</url>
+      </pluginRepository>
+      <pluginRepository>
         <id>opendaylight-snapshot</id>
         <name>central2</name>
-        <url>http://nexus.opendaylight.org/content/repositories/opendaylight.snapshot/</url>
-    </pluginRepository>
+        <url>${nexusproxy}/repositories/opendaylight.snapshot/</url>
+      </pluginRepository>
     </pluginRepositories>
 </project>

@@ -4,21 +4,18 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.opendaylight.openflowplugin</groupId>
-        <artifactId>commons.openflowplugin</artifactId>
+        <artifactId>openflowplugin-commons</artifactId>
         <version>0.0.1-SNAPSHOT</version>
         <relativePath>../commons</relativePath>
     </parent>
 
     <artifactId>openflowplugin</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
 
     <properties>
         <yang.prototype.version>1.0-SNAPSHOT</yang.prototype.version>
         <yang.version>0.5.9-SNAPSHOT</yang.version>
-        <openflow-protocol.version>0.1-SNAPSHOT</openflow-protocol.version>
     </properties>
-
 
     <build>
         <plugins>
@@ -61,39 +58,32 @@
             <version>1.0.2-SNAPSHOT</version>
         </dependency>
         <dependency>
+            <groupId>org.opendaylight.controller.model</groupId>
             <artifactId>model-flow-base</artifactId>
-            <groupId>org.opendaylight.controller.model</groupId>
-            <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
+            <groupId>org.opendaylight.controller.model</groupId>
             <artifactId>model-flow-service</artifactId>
-            <groupId>org.opendaylight.controller.model</groupId>
-            <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
+            <groupId>org.opendaylight.controller.model</groupId>
             <artifactId>model-flow-statistics</artifactId>
-            <groupId>org.opendaylight.controller.model</groupId>
-            <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <artifactId>model-inventory</artifactId>
             <groupId>org.opendaylight.controller.model</groupId>
-            <version>1.0-SNAPSHOT</version>
+            <artifactId>model-inventory</artifactId>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>sal-binding-api</artifactId>
-            <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.openflowjava</groupId>
             <artifactId>openflow-protocol-api</artifactId>
-            <version>${openflow-protocol.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.openflowjava</groupId>
             <artifactId>openflow-protocol-spi</artifactId>
-            <version>${openflow-protocol.version}</version>
         </dependency>
 
         <dependency>
@@ -109,13 +99,11 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.8.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
-            <version>${slf4j.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.controller</groupId>
