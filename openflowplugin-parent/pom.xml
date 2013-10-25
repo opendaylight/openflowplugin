@@ -8,11 +8,10 @@
     <packaging>pom</packaging>
 
     <modules>
-      <module>commons</module>
-      <module>openflow_netty</module>
-      <module>openflowplugin</module>
-      <module>openflowplugin-it</module>
+      <module>../commons</module>
+      <module>../openflow_netty</module>
+      <module>../openflowplugin</module>
+      <module>../openflowplugin-it</module>
     </modules>
-
 </project>
 
