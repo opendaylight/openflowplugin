@@ -85,14 +85,14 @@ public class MDControllerTest {
 
     private class DataPacketService implements IMDMessageListener {
         @Override
-        public void receive(byte[] cookie, SessionContext sw, DataObject msg) {
+        public void receive(SwitchConnectionDistinguisher cookie, SessionContext sw, DataObject msg) {
             LOG.debug("Received a packet in DataPacket Service");
         }
     }
 
     private class FlowProgrammerService implements IMDMessageListener {
         @Override
-        public void receive(byte[] cookie, SessionContext sw, DataObject msg) {
+        public void receive(SwitchConnectionDistinguisher cookie, SessionContext sw, DataObject msg) {
             LOG.debug("Received a packet in Flow Programmer Service");
         }
     }

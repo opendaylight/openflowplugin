@@ -15,6 +15,6 @@ public interface IMDMessageListener {
      * @param msg
      *            The OF message
      */
-    public void receive(byte[] cookie, SessionContext sw, DataObject msg);
+    public void receive(SwitchConnectionDistinguisher cookie, SessionContext sw, DataObject msg);
 
 }

@@ -117,9 +117,9 @@ public class MDController implements IMDController {
         Collection<IMDMessageListener> existingValues = messageListeners.get(messageType);
         if (existingValues == null) {
                existingValues = new ArrayList<IMDMessageListener>();
+               messageListeners.put(messageType, existingValues);
         }
         existingValues.add(listener);
-        messageListeners.put(messageType, existingValues);
         // Push the updated Listeners to Session Manager which will be then picked up by ConnectionConductor eventually
         OFSessionUtil.getSessionManager().setListenerMapping(messageListeners);
         LOG.debug("{} is now listened by {}", messageType, listener);

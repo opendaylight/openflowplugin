@@ -341,7 +341,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         if (listeners != null) {
                 for (IMDMessageListener listener : listeners) {
                 //TODO : need to add unit-tests
-                //listener.receive(this.getAuxiliaryKey().getId(), this.getSessionContext(), message);
+                //listener.receive(this.getAuxiliaryKey(), this.getSessionContext(), message);
             }
         }
     }
