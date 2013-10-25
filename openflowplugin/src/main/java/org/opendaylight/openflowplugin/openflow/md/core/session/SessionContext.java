@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.session;
 
+
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -75,5 +76,19 @@ public interface SessionContext {
     public SwitchConnectionDistinguisher getSessionKey();
 
     // TODO:: add listeners here, manager will set them and conductor use them
+
+    /**
+     *  get message service to send the message to switch
+     *
+     * @return the message service
+     */
+    public IMessageService getMessageService();
+
+   /**
+    * @return the unique xid for this session
+    */
+    public Long getNextXid();
+
+
 
 }

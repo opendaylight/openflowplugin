@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
@@ -27,12 +28,16 @@ public class SessionContextOFImpl implements SessionContext {
     private ConcurrentHashMap<SwitchConnectionDistinguisher, ConnectionConductor> auxiliaryConductors;
     private boolean valid;
     private SwitchConnectionDistinguisher sessionKey;
+    private IMessageService messageService;
+    private final AtomicLong xid;
 
     /**
      * default ctor
      */
     public SessionContextOFImpl() {
         auxiliaryConductors = new ConcurrentHashMap<>();
+        messageService = new MessageServiceImpl(this);
+        xid = new AtomicLong();
     }
 
     @Override
@@ -105,5 +110,15 @@ public class SessionContextOFImpl implements SessionContext {
     @Override
     public SwitchConnectionDistinguisher getSessionKey() {
         return sessionKey;
+    }
+
+    @Override
+    public IMessageService getMessageService() {
+        return messageService;
+    }
+
+    @Override
+    public Long getNextXid() {
+        return xid.incrementAndGet();
     }
 }
