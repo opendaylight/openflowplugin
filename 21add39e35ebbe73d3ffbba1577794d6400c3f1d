@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da6255ed_ffcc6337",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/MDController.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2013-10-25T07:06:46Z",
+      "side": 1,
+      "message": "this put is needed only if existing values were created, should be inside the if block",
+      "revId": "21add39e35ebbe73d3ffbba1577794d6400c3f1d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da6255ed_dfd19fce",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/MDController.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2013-10-25T07:06:46Z",
+      "side": 1,
+      "message": "mapping could be set into sessionManager in init method - only once in the beginnig",
+      "revId": "21add39e35ebbe73d3ffbba1577794d6400c3f1d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da6255ed_bfd6ebc3",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/MDController.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 138,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2013-10-25T07:06:46Z",
+      "side": 1,
+      "message": "mapping could be set into sessionManager in init method - only once in the beginnig",
+      "revId": "21add39e35ebbe73d3ffbba1577794d6400c3f1d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
