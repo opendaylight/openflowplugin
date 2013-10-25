@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "da6255ed_ba0ef932",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/MDController.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 919
+      },
+      "writtenOn": "2013-10-25T10:27:36Z",
+      "side": 1,
+      "message": "Yes i agree",
+      "parentUuid": "da6255ed_ffcc6337",
+      "revId": "21add39e35ebbe73d3ffbba1577794d6400c3f1d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da6255ed_dfd19fce",
         "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/MDController.java",
         "patchSetId": 1
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "da6255ed_fa047116",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/MDController.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 919
+      },
+      "writtenOn": "2013-10-25T10:27:36Z",
+      "side": 1,
+      "message": "Iam not sure if i understood this.\nThere is no guarantee that message listeners could have already registered by the time MDController init is called. Then we will end up with empty map.",
+      "parentUuid": "da6255ed_dfd19fce",
+      "revId": "21add39e35ebbe73d3ffbba1577794d6400c3f1d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da6255ed_bfd6ebc3",
         "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/MDController.java",
         "patchSetId": 1
@@ -47,6 +83,24 @@
       "writtenOn": "2013-10-25T07:06:46Z",
       "side": 1,
       "message": "mapping could be set into sessionManager in init method - only once in the beginnig",
+      "revId": "21add39e35ebbe73d3ffbba1577794d6400c3f1d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da6255ed_da09ad2d",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/MDController.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 138,
+      "author": {
+        "id": 919
+      },
+      "writtenOn": "2013-10-25T10:27:36Z",
+      "side": 1,
+      "message": "Atleast remove cannot happen by the time init of MDController is called during bundle start.",
+      "parentUuid": "da6255ed_bfd6ebc3",
       "revId": "21add39e35ebbe73d3ffbba1577794d6400c3f1d",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
