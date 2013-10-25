@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.opendaylight.openflowplugin</groupId>
-        <artifactId>commons.openflowplugin</artifactId>
+        <artifactId>openflowplugin-commons</artifactId>
         <version>0.0.1-SNAPSHOT</version>
         <relativePath>../commons</relativePath>
     </parent>
@@ -19,7 +19,6 @@
             <plugin>
                 <groupId>org.ops4j.pax.exam</groupId>
                 <artifactId>maven-paxexam-plugin</artifactId>
-                <version>1.2.4</version>
                 <executions>
                     <execution>
                         <id>generate-config</id>
@@ -80,13 +79,11 @@
         <dependency>
             <groupId>org.opendaylight.openflowjava</groupId>
             <artifactId>openflow-protocol-impl</artifactId>
-            <version>0.1-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.openflowjava</groupId>
             <artifactId>simple-client</artifactId>
-            <version>0.1-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
 
@@ -98,7 +95,6 @@
         <dependency>
             <groupId>org.opendaylight.yangtools.thirdparty</groupId>
             <artifactId>xtend-lib-osgi</artifactId>
-            <version>2.4.3</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -122,7 +118,6 @@
         <dependency>
             <groupId>equinoxSDK381</groupId>
             <artifactId>org.eclipse.osgi</artifactId>
-            <version>3.8.1.v20120830-144521</version>
             <scope>test</scope>
         </dependency>
         <dependency>
