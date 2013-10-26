@@ -1,0 +1,140 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da6255ed_dafe4d6b",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/ConnectionConductorImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 63
+      },
+      "writtenOn": "2013-10-26T08:05:06Z",
+      "side": 1,
+      "message": "1. At later point refactor the handshake into a maintainable innerclass which uses State-Pattern. So include a TODO item explaining the same\n\n2. Include a static final variable to indicate if BitMap-based negotiation is enabled / disabled. This would help a lot while testing and isolating issues related to processing of BitMaps from switches.",
+      "revId": "740d4c5e5c5942a4fd0db5ae38ab3ee4036d5ed2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da6255ed_fa091196",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/ConnectionConductorImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 63
+      },
+      "writtenOn": "2013-10-26T08:05:06Z",
+      "side": 1,
+      "message": "Include a TODO item here to move these ErrorQueueHandler threads to a possible thread-pool. This is for later refactoring",
+      "revId": "740d4c5e5c5942a4fd0db5ae38ab3ee4036d5ed2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da6255ed_ba039972",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/ConnectionConductorImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 63
+      },
+      "writtenOn": "2013-10-26T08:05:06Z",
+      "side": 1,
+      "message": "Add more trace/debug level log statements which would help in debugging. This is a very sensitive part.",
+      "revId": "740d4c5e5c5942a4fd0db5ae38ab3ee4036d5ed2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da6255ed_5af25d9b",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/ConnectionConductorImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 185,
+      "author": {
+        "id": 63
+      },
+      "writtenOn": "2013-10-26T08:05:06Z",
+      "side": 1,
+      "message": "Add trace/debug logs to log incoming message contents",
+      "revId": "740d4c5e5c5942a4fd0db5ae38ab3ee4036d5ed2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da6255ed_7af52182",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/ConnectionConductorImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 207,
+      "author": {
+        "id": 63
+      },
+      "writtenOn": "2013-10-26T08:05:06Z",
+      "side": 1,
+      "message": "Catch specific Exception not a catch-all one",
+      "revId": "740d4c5e5c5942a4fd0db5ae38ab3ee4036d5ed2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da6255ed_3aefa9b2",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/ConnectionConductorImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 234,
+      "author": {
+        "id": 63
+      },
+      "writtenOn": "2013-10-26T08:05:06Z",
+      "side": 1,
+      "message": "Why argument for xid is inconsistent primitive long here and Object Long in postHandShake. Can we make xid arguments more consistent ?",
+      "revId": "740d4c5e5c5942a4fd0db5ae38ab3ee4036d5ed2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da6255ed_1a2ce501",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/ConnectionConductorImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 254,
+      "author": {
+        "id": 63
+      },
+      "writtenOn": "2013-10-26T08:05:06Z",
+      "side": 1,
+      "message": "Add trace / debug logs to trace features request which we are sending",
+      "revId": "740d4c5e5c5942a4fd0db5ae38ab3ee4036d5ed2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da6255ed_fa30f157",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/session/IMessageService.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 63
+      },
+      "writtenOn": "2013-10-26T08:05:06Z",
+      "side": 1,
+      "message": "I feel that it would be good if we rename this as IMessageDispatchService. That would make the intention of API very clear and rhymes better with IMDMessageListener",
+      "revId": "740d4c5e5c5942a4fd0db5ae38ab3ee4036d5ed2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
