@@ -13,9 +13,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageListener;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
+import org.opendaylight.yangtools.concepts.ListenerRegistration;
+import org.opendaylight.yangtools.concepts.util.ListenerRegistry;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +32,8 @@ public class SessionManagerOFImpl implements SessionManager {
     private static SessionManagerOFImpl instance;
     private ConcurrentHashMap<SwitchConnectionDistinguisher, SessionContext> sessionLot;
     private Map<Class<? extends DataObject>, Collection<IMDMessageListener>> listenerMapping;
+
+    private final ListenerRegistry<SessionListener> sessionListeners = new ListenerRegistry<>();
 
     /**
      * @return singleton instance
@@ -82,7 +87,9 @@ public class SessionManagerOFImpl implements SessionManager {
     @Override
     public void addSessionContext(SwitchConnectionDistinguisher sessionKey, SessionContext context) {
         sessionLot.put(sessionKey, context);
-        // TODO:: notify listeners
+
+        sessionNotifier.onSessionAdded(sessionKey, context);
+
     }
 
     @Override
@@ -131,4 +138,24 @@ public class SessionManagerOFImpl implements SessionManager {
     public void setListenerMapping(Map<Class<? extends DataObject>, Collection<IMDMessageListener>> listenerMapping) {
         this.listenerMapping = listenerMapping;
     }
+
+    @Override
+    public ListenerRegistration<SessionListener> registerSessionListener(SessionListener listener) {
+        return sessionListeners.register(listener);
+    }
+
+    private final SessionListener sessionNotifier = new SessionListener() {
+
+        @Override
+        public void onSessionAdded(SwitchConnectionDistinguisher sessionKey, SessionContext context) {
+            for (ListenerRegistration<SessionListener> listener : sessionListeners) {
+                try {
+                    listener.getInstance().onSessionAdded(sessionKey, context);
+                } catch (Exception e) {
+                    LOG.error("Unhandled exeption occured while invoking onSessionAdded on listener", e);
+                }
+            }
+        }
+    };
+
 }

@@ -15,9 +15,8 @@ import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageListener;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
+import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
-
-
 
 /**
  * @author mirehak
@@ -62,4 +61,6 @@ public interface SessionManager {
     public void invalidateOnDisconnect(ConnectionConductor connectionConductor);
 
     public void setListenerMapping(Map<Class<? extends DataObject>, Collection<IMDMessageListener>> listenerMapping);
+
+    public ListenerRegistration<SessionListener> registerSessionListener(SessionListener listener);
 }

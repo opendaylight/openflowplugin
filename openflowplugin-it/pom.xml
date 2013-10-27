@@ -72,6 +72,18 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.opendaylight.controller</groupId>
+            <artifactId>sal-binding-it</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+        <groupId>org.opendaylight.controller</groupId>
+        <artifactId>sal-binding-broker-impl</artifactId>
+        <version>1.0-SNAPSHOT</version>
+        <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.opendaylight.openflowplugin</groupId>
             <artifactId>openflowplugin</artifactId>
             <version>0.0.1-SNAPSHOT</version>
