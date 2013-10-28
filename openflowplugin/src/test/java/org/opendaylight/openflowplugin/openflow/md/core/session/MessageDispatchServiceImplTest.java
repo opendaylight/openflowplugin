@@ -2,6 +2,7 @@ package org.opendaylight.openflowplugin.openflow.md.core.session;
 
 import java.math.BigInteger;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -36,7 +37,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OpenflowProtocolListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOutInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOutInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.Port;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortModInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatus;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.RoleRequestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.RoleRequestOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetAsyncInput;
@@ -228,6 +231,54 @@ class MockSessionContext implements SessionContext {
     public Long getNextXid() {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    public Map<Long, Port> getPhysicalPorts() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Set<Long> getPorts() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Port getPhysicalPort(Long portNumber) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Boolean getPortBandwidth(Long portNumber) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public boolean isPortEnabled(long portNumber) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean isPortEnabled(Port port) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public List<Port> getEnabledPorts() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void processPortStatusMsg(PortStatus arg0) {
+        // TODO Auto-generated method stub
+
     }
 
 }

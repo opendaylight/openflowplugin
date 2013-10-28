@@ -11,12 +11,12 @@ package org.opendaylight.openflowplugin.openflow.md.core;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
-import org.opendaylight.openflowplugin.openflow.core.IMessageListener;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionManager;
@@ -76,7 +76,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
 
     private SessionContext sessionContext;
 
-    private ImmutableMap<Class<? extends DataObject>, Collection<IMDMessageListener>> listenerMapping;
+    private Map<Class<? extends DataObject>, Collection<IMDMessageListener>> listenerMapping;
 
     private boolean isFirstHelloNegotiation = true;
 
@@ -161,14 +161,14 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
 
     @Override
     public void onExperimenterMessage(ExperimenterMessage experimenterMessage) {
-        // TODO Auto-generated method stub
         LOG.debug("experimenter received, type: "
                 + experimenterMessage.getExpType());
+        notifyListeners(ExperimenterMessage.class, experimenterMessage);
     }
 
     @Override
-    public void onFlowRemovedMessage(FlowRemovedMessage arg0) {
-        // TODO Auto-generated method stub
+    public void onFlowRemovedMessage(FlowRemovedMessage message) {
+        notifyListeners(FlowRemovedMessage.class, message);
     }
 
 
@@ -323,8 +323,9 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     }
 
     @Override
-    public void onPortStatusMessage(PortStatusMessage arg0) {
-        // TODO Auto-generated method stub
+    public void onPortStatusMessage(PortStatusMessage message) {
+        this.getSessionContext().processPortStatusMsg(message);
+        notifyListeners(PortStatusMessage.class, message);
     }
 
     @Override
@@ -482,7 +483,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
      * @param listenerMapping the listenerMapping to set
      */
     public void setListenerMapping(
-            ImmutableMap<Class<? extends DataObject>, Collection<IMDMessageListener>> listenerMapping) {
+            Map<Class<? extends DataObject>, Collection<IMDMessageListener>> listenerMapping) {
         //TODO: adjust the listener interface
         this.listenerMapping = listenerMapping;
     }
@@ -495,9 +496,15 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         Collection<IMDMessageListener> listeners = listenerMapping.get(messageType);
         if (listeners != null) {
                 for (IMDMessageListener listener : listeners) {
-                //TODO : need to add unit-tests
-                //listener.receive(this.getAuxiliaryKey(), this.getSessionContext(), message);
-            }
+                    // Pass cookie only for PACKT_IN
+                    if ( messageType.equals("PacketInMessage.class")){
+                        listener.receive(this.getAuxiliaryKey(), this.getSessionContext(), message);
+                    } else {
+                        listener.receive(null, this.getSessionContext(), message);
+                    }
+                }
+        } else {
+            LOG.warn("No listeners for this message Type {}", messageType);
         }
     }
 
