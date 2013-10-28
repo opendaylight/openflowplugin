@@ -8,7 +8,11 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.session;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -16,6 +20,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.Port;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatus;
 
 /**
  * @author mirehak
@@ -27,12 +33,16 @@ public class SessionContextOFImpl implements SessionContext {
     private ConcurrentHashMap<SwitchConnectionDistinguisher, ConnectionConductor> auxiliaryConductors;
     private boolean valid;
     private SwitchConnectionDistinguisher sessionKey;
+    private final Map<Long, Port> physicalPorts;
+    private final Map<Long, Boolean> portBandwidth;
 
     /**
      * default ctor
      */
     public SessionContextOFImpl() {
         auxiliaryConductors = new ConcurrentHashMap<>();
+        this.physicalPorts = new HashMap<Long, Port>();
+        this.portBandwidth = new HashMap<Long, Boolean>();
     }
 
     @Override
@@ -105,5 +115,95 @@ public class SessionContextOFImpl implements SessionContext {
     @Override
     public SwitchConnectionDistinguisher getSessionKey() {
         return sessionKey;
+    }
+
+    @Override
+    public Map<Long, Port> getPhysicalPorts() {
+        return this.physicalPorts;
+    }
+
+    @Override
+    public Set<Long> getPorts() {
+        return this.physicalPorts.keySet();
+    }
+
+    @Override
+    public Port getPhysicalPort(Long portNumber) {
+        return this.physicalPorts.get(portNumber);
+    }
+
+    @Override
+    public Boolean getPortBandwidth(Long portNumber) {
+        return this.portBandwidth.get(portNumber);
+    }
+
+    @Override
+    public boolean isPortEnabled(long portNumber) {
+        return isPortEnabled(physicalPorts.get(portNumber));
+    }
+
+    @Override
+    public boolean isPortEnabled(Port port) {
+        if (port == null) {
+            return false;
+        }
+        if (port.getConfig().isPortDown()) {
+            return false;
+        }
+        if (port.getState().isLinkDown()) {
+            return false;
+        }
+        if (port.getState().isBlocked()) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public List<Port> getEnabledPorts() {
+        List<Port> result = new ArrayList<Port>();
+        synchronized (this.physicalPorts) {
+            for (Port port : physicalPorts.values()) {
+                if (isPortEnabled(port)) {
+                    result.add(port);
+                }
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public void processPortStatusMsg(PortStatus msg) {
+        Port port = msg;
+        if (msg.getReason().getIntValue() == 2) {
+            updatePhysicalPort(port);
+        } else if (msg.getReason().getIntValue() == 0) {
+            updatePhysicalPort(port);
+        } else if (msg.getReason().getIntValue() == 1) {
+            deletePhysicalPort(port);
+        }
+
+    }
+
+    private void updatePhysicalPort(Port port) {
+        Long portNumber = port.getPortNo();
+        physicalPorts.put(portNumber, port);
+        portBandwidth
+                .put(portNumber,
+                        ( (port.getCurrentFeatures().is_100gbFd())
+                          |(port.getCurrentFeatures().is_100mbFd()) | (port.getCurrentFeatures().is_100mbHd())
+                          | (port.getCurrentFeatures().is_10gbFd()) | (port.getCurrentFeatures().is_10mbFd())
+                          | (port.getCurrentFeatures().is_10mbHd()) | (port.getCurrentFeatures().is_1gbFd())
+                          | (port.getCurrentFeatures().is_1gbHd()) | (port.getCurrentFeatures().is_1tbFd())
+                          | (port.getCurrentFeatures().is_40gbFd()) | (port.getCurrentFeatures().isAutoneg())
+                          | (port.getCurrentFeatures().isCopper()) | (port.getCurrentFeatures().isFiber())
+                          | (port.getCurrentFeatures().isOther()) | (port.getCurrentFeatures().isPause())
+                          | (port.getCurrentFeatures().isPauseAsym()) ) );
+    }
+
+    private void deletePhysicalPort(Port port) {
+        Long portNumber = port.getPortNo();
+        physicalPorts.remove(portNumber);
+        portBandwidth.remove(portNumber);
     }
 }

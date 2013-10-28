@@ -8,12 +8,16 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.session;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
 import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.Port;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatus;
 
 /**
  * @author mirehak
@@ -73,6 +77,55 @@ public interface SessionContext {
      * @return the sessionKey
      */
     public SwitchConnectionDistinguisher getSessionKey();
+
+    /**
+     * Returns a map containing all OFPhysicalPorts of this switch.
+     * @return The Map of OFPhysicalPort
+     */
+    public Map<Long, Port> getPhysicalPorts();
+
+    /**
+     * Returns a Set containing all port IDs of this switch.
+     * @return The Set of port ID
+     */
+    public Set<Long> getPorts();
+
+    /**
+     * Returns OFPhysicalPort of the specified portNumber of this switch.
+     * @param portNumber The port ID
+     * @return OFPhysicalPort for the specified PortNumber
+     */
+    public Port getPhysicalPort(Long portNumber);
+
+    /**
+     * Returns the bandwidth of the specified portNumber of this switch.
+     * @param portNumber the port ID
+     * @return bandwidth
+     */
+    public Boolean getPortBandwidth(Long portNumber);
+
+    /**
+     * Returns True if the port is enabled,
+     * @param portNumber
+     * @return True if the port is enabled
+     */
+    public boolean isPortEnabled(long portNumber);
+
+    /**
+     * Returns True if the port is enabled.
+     * @param port
+     * @return True if the port is enabled
+     */
+    public boolean isPortEnabled(Port port);
+
+    /**
+     * Returns a list containing all enabled ports of this switch.
+     * @return: List containing all enabled ports of this switch
+     */
+    public List<Port> getEnabledPorts();
+
+    public void processPortStatusMsg(PortStatus arg0);
+
 
     // TODO:: add listeners here, manager will set them and conductor use them
 
