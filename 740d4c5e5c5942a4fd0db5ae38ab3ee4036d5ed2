@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "da6255ed_4ec17e7f",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/ConnectionConductorImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 918
+      },
+      "writtenOn": "2013-10-28T07:07:38Z",
+      "side": 1,
+      "message": "updated code to handle comments.",
+      "parentUuid": "da6255ed_dafe4d6b",
+      "revId": "740d4c5e5c5942a4fd0db5ae38ab3ee4036d5ed2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da6255ed_fa091196",
         "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/ConnectionConductorImpl.java",
         "patchSetId": 1
@@ -30,6 +48,24 @@
       "writtenOn": "2013-10-26T08:05:06Z",
       "side": 1,
       "message": "Include a TODO item here to move these ErrorQueueHandler threads to a possible thread-pool. This is for later refactoring",
+      "revId": "740d4c5e5c5942a4fd0db5ae38ab3ee4036d5ed2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da6255ed_6edd6270",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/ConnectionConductorImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 918
+      },
+      "writtenOn": "2013-10-28T07:07:38Z",
+      "side": 1,
+      "message": "agree and comment is handled.",
+      "parentUuid": "da6255ed_fa091196",
       "revId": "740d4c5e5c5942a4fd0db5ae38ab3ee4036d5ed2",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "da6255ed_4eda9e79",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/ConnectionConductorImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 918
+      },
+      "writtenOn": "2013-10-28T07:07:38Z",
+      "side": 1,
+      "message": "added log statement to print version field and bitmap that we are sending to library.",
+      "parentUuid": "da6255ed_ba039972",
+      "revId": "740d4c5e5c5942a4fd0db5ae38ab3ee4036d5ed2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da6255ed_5af25d9b",
         "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/ConnectionConductorImpl.java",
         "patchSetId": 1
@@ -64,6 +118,24 @@
       "writtenOn": "2013-10-26T08:05:06Z",
       "side": 1,
       "message": "Add trace/debug logs to log incoming message contents",
+      "revId": "740d4c5e5c5942a4fd0db5ae38ab3ee4036d5ed2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da6255ed_2ee76a42",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/ConnectionConductorImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 185,
+      "author": {
+        "id": 918
+      },
+      "writtenOn": "2013-10-28T07:07:38Z",
+      "side": 1,
+      "message": "handled.",
+      "parentUuid": "da6255ed_5af25d9b",
       "revId": "740d4c5e5c5942a4fd0db5ae38ab3ee4036d5ed2",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -87,6 +159,24 @@
     },
     {
       "key": {
+        "uuid": "da6255ed_0ee4a639",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/ConnectionConductorImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 207,
+      "author": {
+        "id": 918
+      },
+      "writtenOn": "2013-10-28T07:07:38Z",
+      "side": 1,
+      "message": "updated here and above also.",
+      "parentUuid": "da6255ed_7af52182",
+      "revId": "740d4c5e5c5942a4fd0db5ae38ab3ee4036d5ed2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da6255ed_3aefa9b2",
         "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/ConnectionConductorImpl.java",
         "patchSetId": 1
@@ -98,6 +188,24 @@
       "writtenOn": "2013-10-26T08:05:06Z",
       "side": 1,
       "message": "Why argument for xid is inconsistent primitive long here and Object Long in postHandShake. Can we make xid arguments more consistent ?",
+      "revId": "740d4c5e5c5942a4fd0db5ae38ab3ee4036d5ed2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da6255ed_eed03255",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/ConnectionConductorImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 234,
+      "author": {
+        "id": 918
+      },
+      "writtenOn": "2013-10-28T07:07:38Z",
+      "side": 1,
+      "message": "xid made consistent in both the methods sendHelloReply and postHandshake.",
+      "parentUuid": "da6255ed_3aefa9b2",
       "revId": "740d4c5e5c5942a4fd0db5ae38ab3ee4036d5ed2",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -121,6 +229,24 @@
     },
     {
       "key": {
+        "uuid": "da6255ed_ced56e44",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/ConnectionConductorImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 254,
+      "author": {
+        "id": 918
+      },
+      "writtenOn": "2013-10-28T07:07:38Z",
+      "side": 1,
+      "message": "updated.",
+      "parentUuid": "da6255ed_1a2ce501",
+      "revId": "740d4c5e5c5942a4fd0db5ae38ab3ee4036d5ed2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da6255ed_fa30f157",
         "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/session/IMessageService.java",
         "patchSetId": 1
@@ -132,6 +258,24 @@
       "writtenOn": "2013-10-26T08:05:06Z",
       "side": 1,
       "message": "I feel that it would be good if we rename this as IMessageDispatchService. That would make the intention of API very clear and rhymes better with IMDMessageListener",
+      "revId": "740d4c5e5c5942a4fd0db5ae38ab3ee4036d5ed2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da6255ed_aeca3a9f",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/session/IMessageService.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 918
+      },
+      "writtenOn": "2013-10-28T07:07:38Z",
+      "side": 1,
+      "message": "agree, interface renamed to IMessageDispatchService",
+      "parentUuid": "da6255ed_fa30f157",
       "revId": "740d4c5e5c5942a4fd0db5ae38ab3ee4036d5ed2",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
