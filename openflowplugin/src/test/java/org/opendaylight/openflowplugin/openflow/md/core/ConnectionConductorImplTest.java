@@ -9,6 +9,8 @@
 package org.opendaylight.openflowplugin.openflow.md.core;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -21,14 +23,19 @@ import org.opendaylight.openflowplugin.openflow.md.core.plan.ConnectionAdapterSt
 import org.opendaylight.openflowplugin.openflow.md.core.plan.EventFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.plan.SwitchTestEvent;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ErrorType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.HelloElementType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoRequestMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloMessageBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.hello.Elements;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.hello.ElementsBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.Lists;
 
 /**
  * @author mirehak
@@ -142,15 +149,17 @@ public class ConnectionConductorImplTest {
         eventPlan.add(0,
                 EventFactory.createDefaultWaitForRpcEvent(43, "helloReply"));
         eventPlan.add(0, EventFactory.createDefaultNotificationEvent(43L,
-                (short) 0x03, new HelloMessageBuilder()));
-        eventPlan.add(0,
-                EventFactory.createDefaultWaitForRpcEvent(44, "helloReply"));
-        eventPlan.add(0, EventFactory.createDefaultNotificationEvent(44L,
                 (short) 0x01, new HelloMessageBuilder()));
         eventPlan.add(0,
-                EventFactory.createDefaultWaitForRpcEvent(45, "helloReply"));
+                EventFactory.createDefaultWaitForRpcEvent(44, "helloReply"));
+        // Commented : connection will terminate if hello message is sent again
+        // with not supported version
+//        eventPlan.add(0, EventFactory.createDefaultNotificationEvent(44L,
+//                (short) 0x01, new HelloMessageBuilder()));
+//        eventPlan.add(0,
+//                EventFactory.createDefaultWaitForRpcEvent(45, "helloReply"));
         eventPlan.add(0,
-                EventFactory.createDefaultWaitForRpcEvent(46, "getFeatures"));
+                EventFactory.createDefaultWaitForRpcEvent(45, "getFeatures"));
         GetFeaturesOutputBuilder getFeaturesOutputBuilder = new GetFeaturesOutputBuilder();
         getFeaturesOutputBuilder.setDatapathId(new BigInteger("102030405060"));
         getFeaturesOutputBuilder.setAuxiliaryId((short) 0);
@@ -159,7 +168,7 @@ public class ConnectionConductorImplTest {
         getFeaturesOutputBuilder.setTables((short) 2);
         getFeaturesOutputBuilder.setCapabilities(84L);
 
-        eventPlan.add(0, EventFactory.createDefaultRpcResponseEvent(46,
+        eventPlan.add(0, EventFactory.createDefaultRpcResponseEvent(45,
                 EventFactory.DEFAULT_VERSION, getFeaturesOutputBuilder));
 
         executeNow();
@@ -355,4 +364,214 @@ public class ConnectionConductorImplTest {
         }
     }
 
+    //////// Start - Version Negotiation Test //////////////
+
+    /**
+     * Test of version negotiation Where switch version = 1.0
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testVersionNegotiation10() throws Exception {
+        Short version = (short) 0x01;
+        eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42, version, new HelloMessageBuilder()));
+        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(43, "helloReply"));
+        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(44, "getFeatures"));
+        eventPlan.add(0,
+                EventFactory.createDefaultRpcResponseEvent(44, EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
+
+        executeNow();
+        Assert.assertEquals(version, connectionConductor.getVersion());
+    }
+
+    /**
+     * Test of version negotiation Where switch version < 1.0
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testVersionNegotiation00() throws Exception {
+        Short version = (short) 0x00;
+        eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L, version, new HelloMessageBuilder()));
+        executeNow();
+        Assert.assertNull(connectionConductor.getVersion());
+    }
+
+    /**
+     * Test of version negotiation Where 1.0 < switch version < 1.3
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testVersionNegotiation11() throws Exception {
+        Short version = (short) 0x02;
+        Short expVersion = (short) 0x01;
+        eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L, version, new HelloMessageBuilder()));
+        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(43, "helloReply"));
+        Assert.assertNull(connectionConductor.getVersion());
+        eventPlan.add(0, EventFactory.createDefaultNotificationEvent(44, expVersion, new HelloMessageBuilder()));
+        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(45, "helloReply"));
+        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(46, "getFeatures"));
+        eventPlan.add(0,
+                EventFactory.createDefaultRpcResponseEvent(46, EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
+        executeNow();
+        Assert.assertEquals(expVersion, connectionConductor.getVersion());
+
+    }
+
+    /**
+     * Test of version negotiation Where switch version = 1.3
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testVersionNegotiation13() throws Exception {
+        Short version = (short) 0x04;
+        eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L, version, new HelloMessageBuilder()));
+        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(43, "helloReply"));
+        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(44, "getFeatures"));
+        eventPlan.add(0,
+                EventFactory.createDefaultRpcResponseEvent(44, EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
+
+        executeNow();
+        Assert.assertEquals(version, connectionConductor.getVersion());
+    }
+
+    /**
+     * Test of version negotiation Where switch version >= 1.3
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testVersionNegotiation15() throws Exception {
+        Short version = (short) 0x06;
+        Short expVersion = (short) 0x04;
+        eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L, version, new HelloMessageBuilder()));
+        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(43, "helloReply"));
+        Assert.assertNull(connectionConductor.getVersion());
+        eventPlan.add(0, EventFactory.createDefaultNotificationEvent(44, expVersion, new HelloMessageBuilder()));
+        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(45, "helloReply"));
+        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(46, "getFeatures"));
+        eventPlan.add(0,
+                EventFactory.createDefaultRpcResponseEvent(46, EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
+        executeNow();
+        Assert.assertEquals(expVersion, connectionConductor.getVersion());
+    }
+
+    /**
+     * Test of version negotiation Where switch version > 1.3
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testVersionNegotiation15_MultipleCall() throws Exception {
+        Short version = (short) 0x06;
+        eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L, version, new HelloMessageBuilder()));
+        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(43, "helloReply"));
+        Assert.assertNull(connectionConductor.getVersion());
+        eventPlan.add(0, EventFactory.createDefaultNotificationEvent(44, version, new HelloMessageBuilder()));
+        executeNow();
+        // TODO : check for connection termination
+        Assert.assertNull(connectionConductor.getVersion());
+    }
+
+    /**
+     * Test of version negotiation Where bitmap version {0x05,0x01}
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testVersionNegotiation10InBitmap() throws Exception {
+        Short version = (short) 0x01;
+        eventPlan.add(
+                0,
+                EventFactory.createDefaultNotificationEvent(42L, (short) 0x05,
+                        getHelloBitmapMessage(Lists.newArrayList((short) 0x05, (short) 0x01))));
+        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(43, "helloReply"));
+        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(44, "getFeatures"));
+        eventPlan.add(0,
+                EventFactory.createDefaultRpcResponseEvent(44, EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
+
+        executeNow();
+        Assert.assertEquals(version, connectionConductor.getVersion());
+    }
+
+    /**
+     * Test of version negotiation Where bitmap version {0x05,0x04}
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testVersionNegotiation13InBitmap() throws Exception {
+        Short version = (short) 0x04;
+        eventPlan.add(
+                0,
+                EventFactory.createDefaultNotificationEvent(42L, (short) 0x05,
+                        getHelloBitmapMessage(Lists.newArrayList((short) 0x05, (short) 0x04))));
+        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(43, "helloReply"));
+        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(44, "getFeatures"));
+        eventPlan.add(0,
+                EventFactory.createDefaultRpcResponseEvent(44, EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
+
+        executeNow();
+        Assert.assertEquals(version, connectionConductor.getVersion());
+    }
+
+    /**
+     * Test of version negotiation Where bitmap version {0x05,0x02}
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testVersionNegotiationNoCommonVersionInBitmap() throws Exception {
+        eventPlan.add(
+                0,
+                EventFactory.createDefaultNotificationEvent(42L, (short) 0x05,
+                        getHelloBitmapMessage(Lists.newArrayList((short) 0x05, (short) 0x04))));
+        executeNow();
+        Assert.assertNull(connectionConductor.getVersion());
+    }
+
+    private HelloMessageBuilder getHelloBitmapMessage(List<Short> versionOrder) {
+        short highestVersion = versionOrder.get(0);
+        int elementsCount = highestVersion / Integer.SIZE;
+        ElementsBuilder elementsBuilder = new ElementsBuilder();
+
+        List<Elements> elementList = new ArrayList<Elements>();
+        int orderIndex = versionOrder.size();
+        int value = versionOrder.get(--orderIndex);
+        for (int index = 0; index <= elementsCount; index++) {
+            List<Boolean> booleanList = new ArrayList<Boolean>();
+            for (int i = 0; i < Integer.SIZE; i++) {
+                if (value == ((index * Integer.SIZE) + i)) {
+                    booleanList.add(true);
+                    value = (orderIndex == 0) ? highestVersion : versionOrder.get(--orderIndex);
+                } else {
+                    booleanList.add(false);
+                }
+            }
+            elementsBuilder.setType(HelloElementType.forValue(1));
+            elementsBuilder.setVersionBitmap(booleanList);
+            elementList.add(elementsBuilder.build());
+        }
+
+        HelloMessageBuilder builder = new HelloMessageBuilder();
+        builder.setXid(10L);
+        builder.setVersion(highestVersion);
+        builder.setElements(elementList);
+        return builder;
+
+    }
+
+    private GetFeaturesOutputBuilder getFeatureResponseMsg() {
+        GetFeaturesOutputBuilder getFeaturesOutputBuilder = new GetFeaturesOutputBuilder();
+        getFeaturesOutputBuilder.setDatapathId(new BigInteger("102030405060"));
+        getFeaturesOutputBuilder.setAuxiliaryId((short) 0);
+        getFeaturesOutputBuilder.setBuffers(4L);
+        getFeaturesOutputBuilder.setReserved(0L);
+        getFeaturesOutputBuilder.setTables((short) 2);
+        getFeaturesOutputBuilder.setCapabilities(84L);
+
+        return getFeaturesOutputBuilder;
+    }
 }

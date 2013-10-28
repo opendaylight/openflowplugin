@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.openflow.md.core;
 
 import java.util.concurrent.Future;
 
+import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
 
 
@@ -82,4 +83,10 @@ public interface ConnectionConductor {
      * @return the auxiliaryKey (null if this is a primary connection)
      */
     public SwitchConnectionDistinguisher getAuxiliaryKey();
+
+    /**
+     * @return the connectionAdapter
+     */
+    public ConnectionAdapter getConnectionAdapter();
+
 }
