@@ -6,16 +6,20 @@ import java.util.List;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev130819.action.action.DropAction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev130819.action.action.DropActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev130819.flow.Action;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev130819.flow.ActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev130819.flow.MatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.action.action.DropAction;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.action.action.DropActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.action.list.Action;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.action.list.ActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.InstructionsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev130819.match.IpMatch;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev130819.match.IpMatchBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev130819.match.layer._3.match.Ipv4MatchBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev130819.match.layer._4.match.TcpMatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.IpMatch;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.IpMatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.TcpMatchBuilder;
 
 public class SimpleDropFirewallCli {
 
@@ -59,7 +63,17 @@ public class SimpleDropFirewallCli {
 
         List<Action> actions = Collections.singletonList(action.build());
         //
-        ret.setAction(actions);
+        ApplyActionsBuilder aaBldr = new ApplyActionsBuilder();
+        aaBldr.setAction(actions);
+        
+        InstructionBuilder instructionBldr = new InstructionBuilder();
+        instructionBldr.setInstruction(aaBldr.build());
+        
+        List<Instruction> isntructions = Collections.singletonList(instructionBldr.build());
+        InstructionsBuilder instructionsBldr = new InstructionsBuilder();
+		instructionsBldr.setInstruction(isntructions);
+        
+        ret.setInstructions(instructionsBldr.build());
 
         return ret.build();
     }

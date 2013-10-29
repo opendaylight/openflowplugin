@@ -14,7 +14,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionConfiguration;
 import org.opendaylight.openflowjava.protocol.api.connection.SwitchConnectionHandler;
@@ -99,6 +102,12 @@ public class MDController implements IMDController {
      */
     public void stop() {
         LOG.debug("stopping");
+        Future<List<Boolean>> srvStopped = switchConnectionProvider.shutdown();
+        try {
+            srvStopped.get(5000, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            LOG.error(e.getMessage(), e);
+        }
     }
 
     /**

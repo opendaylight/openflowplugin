@@ -12,8 +12,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddF
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.NodeFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev130819.Flow;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev130819.FlowModFlags;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupInput;
@@ -95,7 +95,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         return target;
     }
 
-    private Match toMatch(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev130819.flow.Match match) {
+    private Match toMatch(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match match) {
         MatchBuilder target = new MatchBuilder();
 
         target.setMatchEntries(toMatchEntries(match));
@@ -104,7 +104,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     }
 
     private List<MatchEntries> toMatchEntries(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev130819.flow.Match match) {
+            org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match match) {
         List<MatchEntries> entries = new ArrayList<>();
 
         return null;
