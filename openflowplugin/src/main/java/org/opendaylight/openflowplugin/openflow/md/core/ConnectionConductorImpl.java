@@ -48,8 +48,8 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
+import com.google.common.util.concurrent.Futures;
 
 /**
  * @author mirehak
@@ -261,7 +261,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         LOG.debug("version set: " + proposedVersion);
         // request features
         GetFeaturesInputBuilder featuresBuilder = new GetFeaturesInputBuilder();
-            featuresBuilder.setVersion(version).setXid(xid);
+        featuresBuilder.setVersion(version).setXid(xid);
         LOG.debug("sending feature request for version={} and xid={}", version, xid);
         Future<RpcResult<GetFeaturesOutput>> featuresFuture = connectionAdapter
                 .getFeatures(featuresBuilder.build());
@@ -275,8 +275,10 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
                         , rpcFeatures.getErrors());
             } else {
                 GetFeaturesOutput featureOutput =  rpcFeatures.getResult();
-                LOG.debug("obtained features: datapathId={}"
-                        , featureOutput.getDatapathId());
+                LOG.debug("obtained features: datapathId={}",
+                        featureOutput.getDatapathId());
+                LOG.debug("obtained features: auxiliaryId={}",
+                        featureOutput.getAuxiliaryId());
                 conductorState = CONDUCTOR_STATE.WORKING;
 
                 OFSessionUtil.registerSession(this,
@@ -285,7 +287,10 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
                 LOG.info("handshake SETTLED: datapathId={}, auxiliaryId={}", featureOutput.getDatapathId(), featureOutput.getAuxiliaryId());
             }
         } catch (Exception e) {
+            //handshake failed
+            LOG.error("issuing disconnect during handshake, reason: "+e.getMessage());
             handleException(e);
+            disconnect();
         }
     }
 
@@ -301,8 +306,9 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
      * @param e
      */
     private void handleException(Exception e) {
+        Exception causeAndThread = new Exception("IN THREAD: "+Thread.currentThread().getName(), e);
         try {
-            errorQueue.put(e);
+            errorQueue.put(causeAndThread);
         } catch (InterruptedException e1) {
             LOG.error(e1.getMessage(), e1);
         }
@@ -334,6 +340,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         if (!CONDUCTOR_STATE.WORKING.equals(conductorState)) {
             // idle state in any other conductorState than WORKING means real
             // problem and wont be handled by echoReply, but disconnection
+            disconnect();
             OFSessionUtil.getSessionManager().invalidateOnDisconnect(this);
         } else {
             LOG.debug("first idle state occured");
@@ -347,7 +354,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
 
             try {
                 // TODO: read timeout from config
-                RpcResult<EchoOutput> echoReplyValue = echoReplyFuture.get(5,
+                RpcResult<EchoOutput> echoReplyValue = echoReplyFuture.get(getMaxTimeout(),
                         TimeUnit.SECONDS);
                 if (echoReplyValue.isSuccessful()) {
                     conductorState = CONDUCTOR_STATE.WORKING;
@@ -358,10 +365,15 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
                                 "while receiving echoReply in TIMEOUTING state: "
                                         + cause.getMessage(), cause);
                     }
+                    //switch issue occurred
+                    throw new Exception("switch issue occurred");
                 }
             } catch (Exception e) {
                 LOG.error("while waiting for echoReply in TIMEOUTING state: "
                         + e.getMessage(), e);
+                //switch is not responding
+                disconnect();
+                OFSessionUtil.getSessionManager().invalidateOnDisconnect(this);
             }
         }
     }
@@ -457,7 +469,17 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
 
     @Override
     public Future<Boolean> disconnect() {
-        return connectionAdapter.disconnect();
+        LOG.info("disconnecting: sessionCtx="+sessionContext+"|auxId="+auxiliaryKey);
+        
+        Future<Boolean> result = null;
+        if (connectionAdapter.isAlive()) {
+            result = connectionAdapter.disconnect();
+        } else {
+            LOG.debug("connection already disconnected");
+            result = Futures.immediateFuture(true);
+        }
+        
+        return result; 
     }
 
     @Override

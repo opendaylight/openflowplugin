@@ -37,7 +37,8 @@ public class ErrorQueueHandler implements Runnable {
             Exception error;
             try {
                 error = errorQueue.take();
-                LOG.error(error.getMessage(), error);
+                Throwable cause = error.getCause();
+                LOG.error(error.getMessage()+" -> "+cause.getMessage(), cause);
             } catch (InterruptedException e) {
                 LOG.warn(e.getMessage());
             }

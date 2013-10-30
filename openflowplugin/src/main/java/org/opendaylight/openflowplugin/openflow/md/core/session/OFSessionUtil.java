@@ -37,8 +37,7 @@ public abstract class OFSessionUtil {
             GetFeaturesOutput features, short version) {
         SwitchConnectionDistinguisher sessionKey = createSwitchSessionKey(features
                 .getDatapathId());
-        SessionContext sessionContext = getSessionManager().getSessionContext(
-                sessionKey);
+        SessionContext sessionContext = getSessionManager().getSessionContext(sessionKey);
 
         if (features.getAuxiliaryId() == 0) {
             // handle primary
@@ -59,7 +58,7 @@ public abstract class OFSessionUtil {
         } else {
             // handle auxiliary
             if (sessionContext == null) {
-                LOG.warn("unexpected auxiliary connection - primary connection missing: "
+                throw new IllegalStateException("unexpected auxiliary connection - primary connection missing: "
                         + dumpDataPathId(features.getDatapathId()));
             } else {
                 // register auxiliary conductor into existing sessionContext
@@ -78,6 +77,16 @@ public abstract class OFSessionUtil {
                         connectionConductor);
                 connectionConductor.setSessionContext(sessionContext);
                 connectionConductor.setConnectionCookie(auxiliaryKey);
+            }
+        }
+        
+        // check registration result
+        SessionContext resulContext = getSessionManager().getSessionContext(sessionKey);
+        if (resulContext == null) {
+            throw new IllegalStateException("session context registration failed");
+        } else {
+            if (!resulContext.isValid()) {
+                throw new IllegalStateException("registered session context is invalid");
             }
         }
     }

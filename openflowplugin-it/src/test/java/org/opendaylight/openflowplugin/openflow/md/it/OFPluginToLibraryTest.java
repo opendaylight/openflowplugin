@@ -5,13 +5,22 @@ import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 
+import java.util.Stack;
+import java.util.concurrent.TimeUnit;
+
 import javax.inject.Inject;
 
+import junit.framework.Assert;
+
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opendaylight.openflowjava.protocol.impl.clients.ClientEvent;
 import org.opendaylight.openflowjava.protocol.impl.clients.ScenarioFactory;
 import org.opendaylight.openflowjava.protocol.impl.clients.ScenarioHandler;
+import org.opendaylight.openflowjava.protocol.impl.clients.SendEvent;
 import org.opendaylight.openflowjava.protocol.impl.clients.SimpleClient;
+import org.opendaylight.openflowjava.protocol.impl.clients.SleepEvent;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
@@ -50,21 +59,100 @@ public class OFPluginToLibraryTest {
     @Inject
     BundleContext ctx;
 
+    private SimpleClient switchSim;
+
+    @After
+    public void tearDown() {
+        try {
+            LOG.debug("tearing down simulator");
+            switchSim.getScenarioDone().get(getFailSafeTimeout(), TimeUnit.MILLISECONDS);
+        } catch (Exception e) {
+            String msg = "waiting for scenario to finish failed: "+e.getMessage();
+            LOG.error(msg, e);
+            Assert.fail(msg);
+        }
+    }
+
     /**
      * test basic integration with OFLib running the handshake
      * @throws Exception
      */
     @Test
-    public void handshake() throws Exception {
+    public void handshakeOk() throws Exception {
         LOG.debug("handshake integration test");
         LOG.debug("switchConnectionProvider: "+switchConnectionProvider);
 
-        SimpleClient switchSim = new SimpleClient("localhost", 6653);
+        switchSim = new SimpleClient("localhost", 6653);
         switchSim.setSecuredClient(false);
-        ScenarioHandler scenario = new ScenarioHandler(ScenarioFactory.createHandshakeScenario());
+        Stack<ClientEvent> handshakeScenario = ScenarioFactory.createHandshakeScenario();
+        
+        ScenarioHandler scenario = new ScenarioHandler(handshakeScenario);
         switchSim.setScenarioHandler(scenario);
         switchSim.start();
-        switchSim.getScenarioDone().get();
+        try {
+            switchSim.getScenarioDone().get(getFailSafeTimeout(), TimeUnit.MILLISECONDS);
+        } catch (Exception e) {
+            String msg = "waiting for scenario to finish failed: "+e.getMessage();
+            LOG.error(msg, e);
+            Assert.fail(msg);
+        }
+        //TODO: dump errors of plugin
+    }
+    
+    /**
+     * test basic integration with OFLib running the handshake
+     * @throws Exception
+     */
+    @Test
+    public void handshakeFail1() throws Exception {
+        LOG.debug("handshake integration test");
+        LOG.debug("switchConnectionProvider: "+switchConnectionProvider);
+
+        switchSim = new SimpleClient("localhost", 6653);
+        switchSim.setSecuredClient(false);
+        Stack<ClientEvent> handshakeScenario = ScenarioFactory.createHandshakeScenario();
+        SendEvent featuresReply = new SendEvent(new byte[] {4, 6, 0, 32, 0, 0, 0, 3, 0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 1, 1, 0, 0, 0, 1, 2, 3, 0, 1, 2, 3});
+        handshakeScenario.setElementAt(featuresReply, 0);
+        
+        ScenarioHandler scenario = new ScenarioHandler(handshakeScenario);
+        switchSim.setScenarioHandler(scenario);
+        switchSim.start();
+        try {
+            switchSim.getScenarioDone().get(getFailSafeTimeout(), TimeUnit.MILLISECONDS);
+        } catch (Exception e) {
+            String msg = "waiting for scenario to finish failed: "+e.getMessage();
+            LOG.error(msg, e);
+            Assert.fail(msg);
+        }
+        //TODO: dump errors of plugin
+    }
+    
+    /**
+     * test basic integration with OFLib running the handshake
+     * @throws Exception
+     */
+    @Test
+    public void handshakeFail2() throws Exception {
+        LOG.debug("handshake integration test");
+        LOG.debug("switchConnectionProvider: "+switchConnectionProvider);
+
+        switchSim = new SimpleClient("localhost", 6653);
+        switchSim.setSecuredClient(false);
+        Stack<ClientEvent> handshakeScenario = ScenarioFactory.createHandshakeScenario();
+        handshakeScenario.setElementAt(new SleepEvent(5000), 0);
+        
+        ScenarioHandler scenario = new ScenarioHandler(handshakeScenario);
+        switchSim.setScenarioHandler(scenario);
+        switchSim.start();
+        tearDown();
+        //TODO: dump errors of plugin
+    }
+
+    /**
+     * @return timeout for case of failure
+     */
+    private static long getFailSafeTimeout() {
+        return 20000;
     }
 
 
