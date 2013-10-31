@@ -158,4 +158,9 @@ public class SessionManagerOFImpl implements SessionManager {
         }
     };
 
+    @Override
+    public Map<Class<? extends DataObject>, Collection<IMDMessageListener>> getListenerMapping() {
+        return this.listenerMapping;
+    }
+
 }

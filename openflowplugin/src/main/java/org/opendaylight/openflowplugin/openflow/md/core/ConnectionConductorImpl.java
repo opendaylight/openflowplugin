@@ -281,6 +281,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
 
                 OFSessionUtil.registerSession(this,
                         featureOutput, version);
+                this.setListenerMapping(OFSessionUtil.getListenersMap());
                 LOG.info("handshake SETTLED: datapathId={}, auxiliaryId={}", featureOutput.getDatapathId(), featureOutput.getAuxiliaryId());
             }
         } catch (Exception e) {
@@ -478,7 +479,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     public SessionContext getSessionContext() {
         return sessionContext;
     }
-
+    
     /**
      * @param listenerMapping the listenerMapping to set
      */

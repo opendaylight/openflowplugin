@@ -15,6 +15,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -64,6 +66,7 @@ public class ConnectionConductorImplTest {
 
     protected ConnectionAdapterStackImpl adapter;
     private ConnectionConductorImpl connectionConductor;
+    private MDController controller;
     private Stack<SwitchTestEvent> eventPlan;
 
     private Thread libSimulation;
@@ -84,6 +87,8 @@ public class ConnectionConductorImplTest {
         adapter = new ConnectionAdapterStackImpl();
         connectionConductor = new ConnectionConductorImpl(adapter);
         connectionConductor.init();
+        controller = new MDController();
+        controller.init();
         eventPlan = new Stack<>();
         adapter.setEventPlan(eventPlan);
         adapter.setProceedTimeout(5000L);
@@ -114,6 +119,7 @@ public class ConnectionConductorImplTest {
         }
         Assert.assertTrue("plan is not finished", eventPlan.isEmpty());
         eventPlan = null;
+        controller = null;
     }
 
     /**
@@ -283,15 +289,31 @@ public class ConnectionConductorImplTest {
      * Test method for
      * {@link org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductorImpl#onFlowRemovedMessage(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemovedMessage)}
      * .
+     * @throws InterruptedException 
      */
     @Test
-    public void testOnFlowRemovedMessage() {
+    public void testOnFlowRemovedMessage() throws InterruptedException {
         IMDMessageListener objFms = new FlowRemovedMessageService() ;
-        Map<Class<? extends DataObject>, Collection<IMDMessageListener>> listenerMapping = new HashMap<Class<? extends DataObject>, Collection<IMDMessageListener>>();
-        Collection<IMDMessageListener> existingValues = new ArrayList<IMDMessageListener>();
-        existingValues.add(objFms);
-        listenerMapping.put(FlowRemovedMessage.class, existingValues);
-        connectionConductor.setListenerMapping(listenerMapping);
+        controller.addMessageListener(FlowRemovedMessage.class, objFms);
+        
+        // Complete HandShake
+        eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L,
+        EventFactory.DEFAULT_VERSION, new HelloMessageBuilder()));
+        eventPlan.add(0,
+        EventFactory.createDefaultWaitForRpcEvent(43, "helloReply"));
+        eventPlan.add(0,EventFactory.createDefaultWaitForRpcEvent(44, "getFeatures"));
+        GetFeaturesOutputBuilder getFeaturesOutputBuilder = new GetFeaturesOutputBuilder();
+        getFeaturesOutputBuilder.setDatapathId(new BigInteger("102030405060"));
+        getFeaturesOutputBuilder.setAuxiliaryId((short) 0);
+        getFeaturesOutputBuilder.setBuffers(4L);
+        getFeaturesOutputBuilder.setReserved(0L);
+        getFeaturesOutputBuilder.setTables((short) 2);
+        getFeaturesOutputBuilder.setCapabilities(84L);
+        eventPlan.add(0, EventFactory.createDefaultRpcResponseEvent(44,
+          EventFactory.DEFAULT_VERSION, getFeaturesOutputBuilder));
+        execute(true);
+        
+        // Now send Flow Removed messages
         FlowRemovedMessageBuilder builder1 = new FlowRemovedMessageBuilder();
         builder1.setXid(1L);
         connectionConductor.onFlowRemovedMessage(builder1.build());
@@ -327,15 +349,31 @@ public class ConnectionConductorImplTest {
      * Test method for
      * {@link org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductorImpl#onPacketInMessage(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage)}
      * .
+     * @throws InterruptedException 
      */
     @Test
-    public void testOnPacketInMessage() {
+    public void testOnPacketInMessage() throws InterruptedException {
         IMDMessageListener objPms = new PacketInMessageService() ;
-        Map<Class<? extends DataObject>, Collection<IMDMessageListener>> listenerMapping = new HashMap<Class<? extends DataObject>, Collection<IMDMessageListener>>();
-        Collection<IMDMessageListener> existingValues = new ArrayList<IMDMessageListener>();
-        existingValues.add(objPms);
-        listenerMapping.put(PacketInMessage.class, existingValues);
-        connectionConductor.setListenerMapping(listenerMapping);
+        controller.addMessageListener(PacketInMessage.class, objPms);
+        
+        // Complete HandShake
+        eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L,
+        EventFactory.DEFAULT_VERSION, new HelloMessageBuilder()));
+        eventPlan.add(0,
+        EventFactory.createDefaultWaitForRpcEvent(43, "helloReply"));
+        eventPlan.add(0,EventFactory.createDefaultWaitForRpcEvent(44, "getFeatures"));
+        GetFeaturesOutputBuilder getFeaturesOutputBuilder = new GetFeaturesOutputBuilder();
+        getFeaturesOutputBuilder.setDatapathId(new BigInteger("102030405060"));
+        getFeaturesOutputBuilder.setAuxiliaryId((short) 0);
+        getFeaturesOutputBuilder.setBuffers(4L);
+        getFeaturesOutputBuilder.setReserved(0L);
+        getFeaturesOutputBuilder.setTables((short) 2);
+        getFeaturesOutputBuilder.setCapabilities(84L);
+        eventPlan.add(0, EventFactory.createDefaultRpcResponseEvent(44,
+          EventFactory.DEFAULT_VERSION, getFeaturesOutputBuilder));
+        execute(true);
+        
+        // Now send PacketIn
         PacketInMessageBuilder builder1 = new PacketInMessageBuilder();
         builder1.setBufferId((long)1);
         connectionConductor.onPacketInMessage(builder1.build());
@@ -349,20 +387,32 @@ public class ConnectionConductorImplTest {
      * Test method for
      * {@link org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductorImpl#onPortStatusMessage(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage)}
      * .
+     * @throws InterruptedException 
      */
     @Test
-    public void testOnPortStatusMessage() {
-        GetFeaturesOutputBuilder builder = new GetFeaturesOutputBuilder();
-        builder.setDatapathId(new BigInteger("102030405060"));
-        builder.setAuxiliaryId((short) 0);
-        OFSessionUtil.registerSession(connectionConductor,
-                builder.build(), (short)0x04);
+    public void testOnPortStatusMessage() throws InterruptedException {
+        
         IMDMessageListener objPSms = new PortStatusMessageService() ;
-        Map<Class<? extends DataObject>, Collection<IMDMessageListener>> listenerMapping = new HashMap<Class<? extends DataObject>, Collection<IMDMessageListener>>();
-        Collection<IMDMessageListener> existingValues = new ArrayList<IMDMessageListener>();
-        existingValues.add(objPSms);
-        listenerMapping.put(PortStatusMessage.class, existingValues);
-        connectionConductor.setListenerMapping(listenerMapping);
+        controller.addMessageListener(PortStatusMessage.class, objPSms);
+        
+        // Complete HandShake
+        eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L,
+        EventFactory.DEFAULT_VERSION, new HelloMessageBuilder()));
+        eventPlan.add(0,
+        EventFactory.createDefaultWaitForRpcEvent(43, "helloReply"));
+        eventPlan.add(0,EventFactory.createDefaultWaitForRpcEvent(44, "getFeatures"));
+        GetFeaturesOutputBuilder getFeaturesOutputBuilder = new GetFeaturesOutputBuilder();
+        getFeaturesOutputBuilder.setDatapathId(new BigInteger("102030405060"));
+        getFeaturesOutputBuilder.setAuxiliaryId((short) 0);
+        getFeaturesOutputBuilder.setBuffers(4L);
+        getFeaturesOutputBuilder.setReserved(0L);
+        getFeaturesOutputBuilder.setTables((short) 2);
+        getFeaturesOutputBuilder.setCapabilities(84L);
+        eventPlan.add(0, EventFactory.createDefaultRpcResponseEvent(44,
+          EventFactory.DEFAULT_VERSION, getFeaturesOutputBuilder));
+        execute(true);
+        
+        // Send Port Status messages
         PortStatusMessageBuilder builder1 = new PortStatusMessageBuilder();
         PortFeatures features = new PortFeatures(true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false);
         builder1.setPortNo(90L).setReason(PortReason.OFPPRADD).setCurrentFeatures(features);

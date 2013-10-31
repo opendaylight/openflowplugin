@@ -9,10 +9,14 @@
 package org.opendaylight.openflowplugin.openflow.md.core.session;
 
 import java.math.BigInteger;
+import java.util.Collection;
+import java.util.Map;
 
 import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
+import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageListener;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
+import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -131,6 +135,13 @@ public abstract class OFSessionUtil {
      */
     public static SessionManager getSessionManager() {
         return SessionManagerOFImpl.getInstance();
+    }
+    
+    /**
+    * @return session manager listener Map
+    */
+    public static Map<Class<? extends DataObject>, Collection<IMDMessageListener>> getListenersMap() {
+        return getSessionManager().getListenerMapping();
     }
 
 }

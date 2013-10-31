@@ -49,6 +49,8 @@ public class MDController implements IMDController {
     public void init() {
         LOG.debug("Initializing!");
         this.messageListeners = new ConcurrentHashMap<Class<? extends DataObject>, Collection<IMDMessageListener>>();
+        // Push the updated Listeners to Session Manager which will be then picked up by ConnectionConductor eventually
+        OFSessionUtil.getSessionManager().setListenerMapping(messageListeners);
     }
 
     /**
@@ -129,8 +131,6 @@ public class MDController implements IMDController {
                messageListeners.put(messageType, existingValues);
         }
         existingValues.add(listener);
-        // Push the updated Listeners to Session Manager which will be then picked up by ConnectionConductor eventually
-        OFSessionUtil.getSessionManager().setListenerMapping(messageListeners);
         LOG.debug("{} is now listened by {}", messageType, listener);
     }
 
@@ -143,12 +143,9 @@ public class MDController implements IMDController {
                     if (values.size() == 0) {
                         messageListeners.remove(messageType);
                     }
-                    //Push the updated Listeners to Session Manager which will be then picked up by ConnectionConductor eventually
-                    OFSessionUtil.getSessionManager().setListenerMapping(messageListeners);
                     LOG.debug("{} is now removed", listener);
          }
     }
-
 
 
 }

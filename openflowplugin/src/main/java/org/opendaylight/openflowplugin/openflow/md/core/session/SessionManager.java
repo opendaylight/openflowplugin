@@ -61,6 +61,8 @@ public interface SessionManager {
     public void invalidateOnDisconnect(ConnectionConductor connectionConductor);
 
     public void setListenerMapping(Map<Class<? extends DataObject>, Collection<IMDMessageListener>> listenerMapping);
+    
+    public Map<Class<? extends DataObject>, Collection<IMDMessageListener>> getListenerMapping();
 
     public ListenerRegistration<SessionListener> registerSessionListener(SessionListener listener);
 }
