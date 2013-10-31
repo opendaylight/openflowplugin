@@ -8,10 +8,13 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core;
 
+import java.util.List;
 import java.util.concurrent.Future;
 
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
+
+import com.google.common.collect.Lists;
 
 
 /**
@@ -34,6 +37,9 @@ public interface ConnectionConductor {
         /** talking to switch is over - resting in pieces */
         RIP
     }
+
+    /** supported version ordered by height (highest version is at the beginning) */
+    public static final List<Short> versionOrder = Lists.newArrayList((short) 0x04, (short) 0x01);
 
     /**
      * initialize wiring around {@link #connectionAdapter}

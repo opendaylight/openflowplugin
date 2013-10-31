@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  */
 public class MessageDispatchServiceImpl implements IMessageDispatchService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(OFSessionUtil.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MessageDispatchServiceImpl.class);
 
     private SessionContext session;
 
@@ -64,10 +64,10 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
     private ConnectionAdapter getConnectionAdapter(SwitchConnectionDistinguisher cookie) {
 
         if (!session.isValid()) {
-            LOG.warn("Session for the cookie {} is invalid." + cookie);
+            LOG.warn("Session for the cookie {} is invalid.", cookie);
             throw new IllegalArgumentException("Session for the cookie is invalid.");
         }
-        LOG.debug("finding connecton for cookie value {}. " + cookie);
+        LOG.debug("finding connecton for cookie value {}. ", cookie);
         // set main connection as default
         ConnectionAdapter connectionAdapter = session.getPrimaryConductor().getConnectionAdapter();
         if (null != cookie) {

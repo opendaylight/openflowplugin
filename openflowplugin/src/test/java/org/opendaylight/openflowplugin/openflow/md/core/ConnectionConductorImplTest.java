@@ -10,13 +10,11 @@ package org.opendaylight.openflowplugin.openflow.md.core;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Stack;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -27,7 +25,6 @@ import org.junit.Test;
 import org.opendaylight.openflowplugin.openflow.md.core.plan.ConnectionAdapterStackImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.plan.EventFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.plan.SwitchTestEvent;
-import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ErrorType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.HelloElementType;
@@ -40,17 +37,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemovedMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemovedMessageBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloMessageBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.hello.Elements;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.hello.ElementsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessageBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.hello.Elements;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.hello.ElementsBuilder;
 import org.opendaylight.yangtools.yang.binding.DataObject;
-import org.opendaylight.yangtools.yang.binding.Notification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,7 +56,7 @@ import com.google.common.collect.Lists;
  */
 public class ConnectionConductorImplTest {
 
-    private static final Logger LOG = LoggerFactory
+    protected static final Logger LOG = LoggerFactory
             .getLogger(ConnectionConductorImplTest.class);
 
     protected ConnectionAdapterStackImpl adapter;
@@ -72,12 +67,12 @@ public class ConnectionConductorImplTest {
     private Thread libSimulation;
     private ScheduledThreadPoolExecutor pool = new ScheduledThreadPoolExecutor(
             8);
-    private int experimenterMessageCounter;
-    private int packetinMessageCounter;
-    private int flowremovedMessageCounter;
-    private int portstatusAddMessageCounter;
-    private int portstatusDeleteMessageCounter;
-    private int portstatusModifyMessageCounter;
+    protected int experimenterMessageCounter;
+    protected int packetinMessageCounter;
+    protected int flowremovedMessageCounter;
+    protected int portstatusAddMessageCounter;
+    protected int portstatusDeleteMessageCounter;
+    protected int portstatusModifyMessageCounter;
 
     /**
      * @throws java.lang.Exception
@@ -236,6 +231,9 @@ public class ConnectionConductorImplTest {
         builder1.setExperimenter(84L).setExpType(4L);
         eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L,
                 EventFactory.DEFAULT_VERSION, builder1));
+        
+        connectionConductor.setListenerMapping(assembleListenerMapping());
+        
         executeLater();
 
         Runnable sendExperimenterCmd = new Runnable() {
@@ -642,7 +640,7 @@ public class ConnectionConductorImplTest {
         eventPlan.add(
                 0,
                 EventFactory.createDefaultNotificationEvent(42L, (short) 0x05,
-                        getHelloBitmapMessage(Lists.newArrayList((short) 0x05, (short) 0x04))));
+                        getHelloBitmapMessage(Lists.newArrayList((short) 0x05, (short) 0x02))));
         executeNow();
         Assert.assertNull(connectionConductor.getVersion());
     }
@@ -652,11 +650,11 @@ public class ConnectionConductorImplTest {
         int elementsCount = highestVersion / Integer.SIZE;
         ElementsBuilder elementsBuilder = new ElementsBuilder();
 
-        List<Elements> elementList = new ArrayList<Elements>();
+        List<Elements> elementList = new ArrayList<>();
         int orderIndex = versionOrder.size();
         int value = versionOrder.get(--orderIndex);
         for (int index = 0; index <= elementsCount; index++) {
-            List<Boolean> booleanList = new ArrayList<Boolean>();
+            List<Boolean> booleanList = new ArrayList<>();
             for (int i = 0; i < Integer.SIZE; i++) {
                 if (value == ((index * Integer.SIZE) + i)) {
                     booleanList.add(true);
@@ -736,12 +734,7 @@ public class ConnectionConductorImplTest {
      */
     @Test
     public void testOnExperimenterMessage() throws InterruptedException {
-        IMDMessageListener objEms = new ExperimenterMessageService() ;
-        Map<Class<? extends DataObject>, Collection<IMDMessageListener>> listenerMapping = new HashMap<Class<? extends DataObject>, Collection<IMDMessageListener>>();
-        Collection<IMDMessageListener> existingValues = new ArrayList<IMDMessageListener>();
-        existingValues.add(objEms);
-        listenerMapping.put(ExperimenterMessage.class, existingValues);
-        connectionConductor.setListenerMapping(listenerMapping);
+        connectionConductor.setListenerMapping(assembleListenerMapping());
         ExperimenterMessageBuilder builder1 = new ExperimenterMessageBuilder();
         builder1.setExperimenter(84L).setExpType(4L);
         connectionConductor.onExperimenterMessage(builder1.build());
@@ -749,6 +742,18 @@ public class ConnectionConductorImplTest {
         builder1.setExperimenter(85L).setExpType(4L);
         connectionConductor.onExperimenterMessage(builder1.build());
         Assert.assertEquals(2, experimenterMessageCounter);
+    }
+
+    /**
+     * @return listener mapping
+     */
+    private Map<Class<? extends DataObject>, Collection<IMDMessageListener>> assembleListenerMapping() {
+        IMDMessageListener objEms = new ExperimenterMessageService() ;
+        Map<Class<? extends DataObject>, Collection<IMDMessageListener>> listenerMapping = new HashMap<>();
+        Collection<IMDMessageListener> existingValues = new ArrayList<>();
+        existingValues.add(objEms);
+        listenerMapping.put(ExperimenterMessage.class, existingValues);
+        return listenerMapping;
     }
 
 }

@@ -363,7 +363,6 @@ class MockConnectionConductor implements ConnectionConductor {
     public MessageType getMessageType() {
         return adapter.getMessageType();
     }
-
 }
 
 enum MessageType {
@@ -534,9 +533,7 @@ class MockConnectionAdapter implements ConnectionAdapter {
 
     @Override
     public void fireConnectionReadyNotification() {
-        if (connectionReadyListener != null) {
             connectionReadyListener.onConnectionReady();
-        }
     }
 
     @Override

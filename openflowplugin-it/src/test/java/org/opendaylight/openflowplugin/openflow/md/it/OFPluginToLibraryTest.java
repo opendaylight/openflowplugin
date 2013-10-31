@@ -21,6 +21,8 @@ import org.opendaylight.openflowjava.protocol.impl.clients.ScenarioHandler;
 import org.opendaylight.openflowjava.protocol.impl.clients.SendEvent;
 import org.opendaylight.openflowjava.protocol.impl.clients.SimpleClient;
 import org.opendaylight.openflowjava.protocol.impl.clients.SleepEvent;
+import org.opendaylight.openflowjava.protocol.impl.clients.WaitForMessageEvent;
+import org.opendaylight.openflowjava.protocol.impl.util.ByteBufUtils;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
@@ -61,6 +63,9 @@ public class OFPluginToLibraryTest {
 
     private SimpleClient switchSim;
 
+    /**
+     * test tear down
+     */
     @After
     public void tearDown() {
         try {
@@ -78,13 +83,45 @@ public class OFPluginToLibraryTest {
      * @throws Exception
      */
     @Test
-    public void handshakeOk() throws Exception {
+    public void handshakeOk1() throws Exception {
         LOG.debug("handshake integration test");
         LOG.debug("switchConnectionProvider: "+switchConnectionProvider);
 
         switchSim = new SimpleClient("localhost", 6653);
         switchSim.setSecuredClient(false);
         Stack<ClientEvent> handshakeScenario = ScenarioFactory.createHandshakeScenario();
+        
+        ScenarioHandler scenario = new ScenarioHandler(handshakeScenario);
+        switchSim.setScenarioHandler(scenario);
+        switchSim.start();
+        try {
+            switchSim.getScenarioDone().get(getFailSafeTimeout(), TimeUnit.MILLISECONDS);
+        } catch (Exception e) {
+            String msg = "waiting for scenario to finish failed: "+e.getMessage();
+            LOG.error(msg, e);
+            Assert.fail(msg);
+        }
+        //TODO: dump errors of plugin
+    }
+    
+    /**
+     * test basic integration with OFLib running the handshake (with version bitmap)
+     * @throws Exception
+     */
+    @Test
+    public void handshakeOk2() throws Exception {
+        LOG.debug("handshake integration test");
+        LOG.debug("switchConnectionProvider: "+switchConnectionProvider);
+
+        switchSim = new SimpleClient("localhost", 6653);
+        switchSim.setSecuredClient(false);
+        Stack<ClientEvent> handshakeScenario = new Stack<>();
+        // handshake with versionbitmap
+        handshakeScenario.add(0, new SendEvent(ByteBufUtils.hexStringToBytes("04 00 00 10 00 00 00 01 00 01 00 08 00 00 00 10")));
+        handshakeScenario.add(0, new WaitForMessageEvent(ByteBufUtils.hexStringToBytes("04 00 00 10 00 00 00 15 00 01 00 08 00 00 00 12")));
+        handshakeScenario.add(0, new WaitForMessageEvent(ByteBufUtils.hexStringToBytes("04 05 00 08 00 00 00 03")));
+        handshakeScenario.add(0, new SendEvent(ByteBufUtils.hexStringToBytes("04 06 00 20 00 00 00 03 "
+                + "00 01 02 03 04 05 06 07 00 01 02 03 01 00 00 00 00 01 02 03 00 01 02 03")));
         
         ScenarioHandler scenario = new ScenarioHandler(handshakeScenario);
         switchSim.setScenarioHandler(scenario);

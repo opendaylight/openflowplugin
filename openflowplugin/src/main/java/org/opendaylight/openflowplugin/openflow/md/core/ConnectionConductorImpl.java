@@ -8,20 +8,21 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionReadyListener;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionManager;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.HelloElementType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoReplyInputBuilder;
@@ -31,7 +32,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemovedMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestMessage;
@@ -39,7 +40,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.hello.Elements;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.hello.ElementsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.DisconnectEvent;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SwitchIdleEvent;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SystemNotificationsListener;
@@ -49,7 +49,6 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.Futures;
 
 /**
@@ -58,7 +57,7 @@ import com.google.common.util.concurrent.Futures;
 public class ConnectionConductorImpl implements OpenflowProtocolListener,
         SystemNotificationsListener, ConnectionConductor, ConnectionReadyListener {
 
-    private static final Logger LOG = LoggerFactory
+    protected static final Logger LOG = LoggerFactory
             .getLogger(ConnectionConductorImpl.class);
 
     /* variable to make BitMap-based negotiation enabled / disabled.
@@ -68,8 +67,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     private static final boolean isBitmapNegotiationEnable = true;
     private LinkedBlockingQueue<Exception> errorQueue = new LinkedBlockingQueue<>();
 
-    private final ConnectionAdapter connectionAdapter;
-    private final List<Short> versionOrder;
+    protected final ConnectionAdapter connectionAdapter;
     private ConnectionConductor.CONDUCTOR_STATE conductorState;
     private Short version;
 
@@ -79,7 +77,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
 
     private Map<Class<? extends DataObject>, Collection<IMDMessageListener>> listenerMapping;
 
-    private boolean isFirstHelloNegotiation = true;
+    protected boolean isFirstHelloNegotiation = true;
 
 
 
@@ -89,8 +87,6 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     public ConnectionConductorImpl(ConnectionAdapter connectionAdapter) {
         this.connectionAdapter = connectionAdapter;
         conductorState = CONDUCTOR_STATE.HANDSHAKING;
-        versionOrder = Lists.newArrayList((short) 0x04, (short) 0x01);
-        // TODO: add a thread pool to handle ErrorQueueHandler
         new Thread(new ErrorQueueHandler(errorQueue)).start();
     }
 
@@ -105,51 +101,44 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     /**
      * send first hello message to switch
      */
-    private void sendFirstHelloMessage() {
-        short highestVersion = versionOrder.get(0);
-        Long helloXid = 1L;
-        HelloInputBuilder helloInputbuilder = new HelloInputBuilder();
-        helloInputbuilder.setVersion(highestVersion);
-        helloInputbuilder.setXid(helloXid);
+    protected void sendFirstHelloMessage() {
+        Short highestVersion = ConnectionConductor.versionOrder.get(0);
+        Long helloXid = 21L;
+        HelloInput helloInput = null;
+        
         if (isBitmapNegotiationEnable) {
-            int elementsCount = highestVersion / Integer.SIZE;
-            ElementsBuilder elementsBuilder = new ElementsBuilder();
-
-            List<Elements> elementList = new ArrayList<Elements>();
-            int orderIndex = versionOrder.size();
-            int value = versionOrder.get(--orderIndex);
-            for (int index = 0; index <= elementsCount; index++) {
-                List<Boolean> booleanList = new ArrayList<Boolean>();
-                for (int i = 0; i < Integer.SIZE; i++) {
-                    if (value == ((index * Integer.SIZE) + i)) {
-                        booleanList.add(true);
-                        value = (orderIndex == 0) ? highestVersion : versionOrder.get(--orderIndex);
-                    } else {
-                        booleanList.add(false);
-                    }
-                }
-                elementsBuilder.setType(HelloElementType.forValue(1));
-                elementsBuilder.setVersionBitmap(booleanList);
-                elementList.add(elementsBuilder.build());
-            }
-            helloInputbuilder.setElements(elementList);
-            LOG.debug("sending first hello message: version header={} , version bitmap={}", highestVersion, elementList);
+            helloInput = MessageFactory.createHelloInput(highestVersion, helloXid, ConnectionConductor.versionOrder);
+            LOG.debug("sending first hello message: vertsion header={} , version bitmap={}", 
+                    highestVersion, helloInput.getElements());
         } else {
+            helloInput = MessageFactory.createHelloInput(highestVersion, helloXid);
             LOG.debug("sending first hello message: version header={} ", highestVersion);
         }
-        connectionAdapter.hello(helloInputbuilder.build());
-
+        
+        try {
+            RpcResult<Void> helloResult = connectionAdapter.hello(helloInput).get(getMaxTimeout(), getMaxTimeoutUnit());
+            smokeRpc(helloResult);
+            LOG.debug("FIRST HELLO sent.");
+        } catch (Throwable e) {
+            LOG.debug("FIRST HELLO sending failed.");
+            handleException(e);
+        }
     }
 
     @Override
-    public void onEchoRequestMessage(EchoRequestMessage echoRequestMessage) {
-        LOG.debug("echo request received: " + echoRequestMessage.getXid());
-        EchoReplyInputBuilder builder = new EchoReplyInputBuilder();
-        builder.setVersion(echoRequestMessage.getVersion());
-        builder.setXid(echoRequestMessage.getXid());
-        builder.setData(echoRequestMessage.getData());
-
-        connectionAdapter.echoReply(builder.build());
+    public void onEchoRequestMessage(final EchoRequestMessage echoRequestMessage) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                LOG.debug("echo request received: " + echoRequestMessage.getXid());
+                EchoReplyInputBuilder builder = new EchoReplyInputBuilder();
+                builder.setVersion(echoRequestMessage.getVersion());
+                builder.setXid(echoRequestMessage.getXid());
+                builder.setData(echoRequestMessage.getData());
+                
+                connectionAdapter.echoReply(builder.build());
+            }
+        }).start();            
     }
 
     @Override
@@ -186,17 +175,17 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     @Override
     public void onHelloMessage(final HelloMessage hello) {
         // do handshake
-        LOG.info("handshake STARTED");
-        checkState(CONDUCTOR_STATE.HANDSHAKING);
 
         new Thread(new Runnable() {
-
             @Override
             public void run() {
+                LOG.info("handshake STARTED");
+                checkState(CONDUCTOR_STATE.HANDSHAKING);
+                
                 Short remoteVersion = hello.getVersion();
                 List<Elements> elements = hello.getElements();
-                long xid = hello.getXid();
-                short proposedVersion;
+                Long xid = hello.getXid();
+                Short proposedVersion;
                 LOG.debug("Hello message version={} and bitmap={}", remoteVersion, elements);
                 try {
                     // find the version from header version field
@@ -205,7 +194,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
                 } catch (IllegalArgumentException e) {
                     handleException(e);
                     connectionAdapter.disconnect();
-                    throw e;
+                    return;
                 }
                 
                 // sent version is equal to remote --> version is negotiated
@@ -222,7 +211,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
                     } catch (IllegalArgumentException ex) {
                         handleException(ex);
                         connectionAdapter.disconnect();
-                        throw ex;
+                        return;
                     }
                     LOG.debug("sending helloReply for common bitmap version : {}", proposedVersion);
                     sendHelloReply(proposedVersion, ++xid);
@@ -240,7 +229,6 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
                     }
                 }
             }
-            
         }).start();
     }
 
@@ -249,20 +237,44 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
      * @param proposedVersion
      * @param hello
      */
-    private void sendHelloReply(Short proposedVersion, Long xid)
+    protected void sendHelloReply(Short proposedVersion, Long xid)
     {
-        HelloInputBuilder helloBuilder = new HelloInputBuilder();
-        helloBuilder.setVersion(proposedVersion).setXid(xid);
-        connectionAdapter.hello(helloBuilder.build());
+        HelloInput helloMsg = MessageFactory.createHelloInput(proposedVersion, xid);
+        RpcResult<Void> result;
+        try {
+            result = connectionAdapter.hello(helloMsg).get(getMaxTimeout(), getMaxTimeoutUnit());
+            smokeRpc(result);
+        } catch (Throwable e) {
+            handleException(e);
+        }
     }
 
+
+    /**
+     * @param futureResult
+     * @throws Throwable 
+     */
+    private static void smokeRpc(RpcResult<?> result) throws Throwable {
+        if (!result.isSuccessful()) {
+            Throwable firstCause = null;
+            StringBuffer sb = new StringBuffer();
+            for (RpcError error : result.getErrors()) {
+                if (firstCause != null) {
+                    firstCause = error.getCause();
+                }
+                
+                sb.append("rpcError:").append(error.getCause().getMessage()).append(";");
+            }
+            throw new Exception(sb.toString(), firstCause);
+        }
+    }
 
     /**
      * after handshake set features, register to session
      * @param proposedVersion
      * @param xId
      */
-    private void postHandshake(Short proposedVersion, Long xid) {
+    protected void postHandshake(Short proposedVersion, Long xid) {
         // set version
         version = proposedVersion;
         LOG.debug("version set: " + proposedVersion);
@@ -273,27 +285,23 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         Future<RpcResult<GetFeaturesOutput>> featuresFuture = connectionAdapter
                 .getFeatures(featuresBuilder.build());
         LOG.debug("waiting for features");
-        RpcResult<GetFeaturesOutput> rpcFeatures;
         try {
-            rpcFeatures = featuresFuture.get(getMaxTimeout(),
-                    TimeUnit.MILLISECONDS);
-            if (!rpcFeatures.isSuccessful()) {
-                LOG.error("obtained features problem: {}"
-                        , rpcFeatures.getErrors());
-            } else {
-                GetFeaturesOutput featureOutput =  rpcFeatures.getResult();
-                LOG.debug("obtained features: datapathId={}",
-                        featureOutput.getDatapathId());
-                LOG.debug("obtained features: auxiliaryId={}",
-                        featureOutput.getAuxiliaryId());
-                conductorState = CONDUCTOR_STATE.WORKING;
+            RpcResult<GetFeaturesOutput> rpcFeatures = 
+                    featuresFuture.get(getMaxTimeout(), getMaxTimeoutUnit());
+            smokeRpc(rpcFeatures);
+            
+            GetFeaturesOutput featureOutput =  rpcFeatures.getResult();
+            LOG.debug("obtained features: datapathId={}",
+                    featureOutput.getDatapathId());
+            LOG.debug("obtained features: auxiliaryId={}",
+                    featureOutput.getAuxiliaryId());
+            conductorState = CONDUCTOR_STATE.WORKING;
 
-                OFSessionUtil.registerSession(this,
-                        featureOutput, version);
-                this.setListenerMapping(OFSessionUtil.getListenersMap());
-                LOG.info("handshake SETTLED: datapathId={}, auxiliaryId={}", featureOutput.getDatapathId(), featureOutput.getAuxiliaryId());
-            }
-        } catch (Exception e) {
+            OFSessionUtil.registerSession(this,
+                    featureOutput, version);
+            this.setListenerMapping(OFSessionUtil.getListenersMap());
+            LOG.info("handshake SETTLED: datapathId={}, auxiliaryId={}", featureOutput.getDatapathId(), featureOutput.getAuxiliaryId());
+        } catch (Throwable e) {
             //handshake failed
             LOG.error("issuing disconnect during handshake, reason: "+e.getMessage());
             handleException(e);
@@ -308,12 +316,28 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         // TODO:: get from configuration
         return 2000;
     }
+    
+    /**
+     * @return milliseconds
+     */
+    private TimeUnit getMaxTimeoutUnit() {
+        // TODO:: get from configuration
+        return TimeUnit.MILLISECONDS;
+    }
+
 
     /**
      * @param e
      */
-    private void handleException(Exception e) {
-        Exception causeAndThread = new Exception("IN THREAD: "+Thread.currentThread().getName(), e);
+    protected void handleException(Throwable e) {
+        String sessionKeyId = null;
+        if (getSessionContext() != null) {
+            sessionKeyId = Arrays.toString(getSessionContext().getSessionKey().getId());
+        }
+        
+        Exception causeAndThread = new Exception(
+                "IN THREAD: "+Thread.currentThread().getName() +
+                "; session:"+sessionKeyId, e);
         try {
             errorQueue.put(causeAndThread);
         } catch (InterruptedException e1) {
@@ -362,7 +386,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
             try {
                 // TODO: read timeout from config
                 RpcResult<EchoOutput> echoReplyValue = echoReplyFuture.get(getMaxTimeout(),
-                        TimeUnit.SECONDS);
+                        getMaxTimeoutUnit());
                 if (echoReplyValue.isSuccessful()) {
                     conductorState = CONDUCTOR_STATE.WORKING;
                 } else {
@@ -402,7 +426,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     /**
      * @param handshaking
      */
-    private void checkState(CONDUCTOR_STATE expectedState) {
+    protected void checkState(CONDUCTOR_STATE expectedState) {
         if (!conductorState.equals(expectedState)) {
             throw new IllegalStateException("Expected state: " + expectedState
                     + ", actual state:" + conductorState);
@@ -422,7 +446,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
      */
     protected short proposeVersion(short remoteVersion) {
         Short proposal = null;
-        for (short offer : versionOrder) {
+        for (short offer : ConnectionConductor.versionOrder) {
             if (offer <= remoteVersion) {
                 proposal = offer;
                 break;
@@ -440,7 +464,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
      * @param list
      * @return
      */
-    protected short proposeBitmapVersion(List<Elements> list)
+    protected Short proposeBitmapVersion(List<Elements> list)
     {
         Short supportedHighestVersion = null;
         if((null != list) && (0 != list.size()))
@@ -449,7 +473,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
            {
               List<Boolean> bitmap = element.getVersionBitmap();
               // check for version bitmap
-              for(short bitPos : versionOrder)
+              for(short bitPos : ConnectionConductor.versionOrder)
               {
                   // with all the version it should work.
                   if(bitmap.get(bitPos % Integer.SIZE))
@@ -514,7 +538,6 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
      */
     public void setListenerMapping(
             Map<Class<? extends DataObject>, Collection<IMDMessageListener>> listenerMapping) {
-        //TODO: adjust the listener interface
         this.listenerMapping = listenerMapping;
     }
 
@@ -545,6 +568,14 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
 
     @Override
     public void onConnectionReady() {
-        // TODO Auto-generated method stub
+        LOG.debug("connection is ready-to-use");
+        //TODO: fire first helloMessage
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                sendFirstHelloMessage();
+            }
+        }).start();
     }
+    
 }

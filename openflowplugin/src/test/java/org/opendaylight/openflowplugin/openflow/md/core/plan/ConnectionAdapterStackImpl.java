@@ -15,10 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
-import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 import org.opendaylight.controller.sal.common.util.RpcErrors;
 import org.opendaylight.controller.sal.common.util.Rpcs;
@@ -89,8 +86,6 @@ public class ConnectionAdapterStackImpl implements ConnectionAdapter, Runnable {
     protected SystemNotificationsListener systemListener;
 
     protected Map<Long, SettableFuture<?>> rpcResults = new HashMap<>();
-    private ScheduledThreadPoolExecutor pool = new ScheduledThreadPoolExecutor(
-            8);
     protected boolean planTouched = false;
 
     private long proceedTimeout;
@@ -98,6 +93,8 @@ public class ConnectionAdapterStackImpl implements ConnectionAdapter, Runnable {
     protected List<Exception> occuredExceptions = new ArrayList<>();
 
     private ConnectionReadyListener connectionReadyListener;
+    
+    private int planItemCounter;
 
     /**
      * default ctor
@@ -293,8 +290,15 @@ public class ConnectionAdapterStackImpl implements ConnectionAdapter, Runnable {
         String msg = null;
         LOG.debug("checking rpc: " + rpcName);
         if (!(eventPlan.peek() instanceof SwitchTestWaitForRpcEvent)) {
-            msg = "expected [rpc], got [" + rpcInput.getClass().getSimpleName()
-                    + "]";
+            if (eventPlan.peek() instanceof SwitchTestNotificationEvent) {
+                SwitchTestNotificationEvent notifEvent = (SwitchTestNotificationEvent) (eventPlan.peek());
+                msg = "expected [notification: " +notifEvent.getPlannedNotification()+ "], got [" + rpcInput.getClass().getSimpleName()
+                        + "]";
+            } else if (eventPlan.peek() instanceof SwitchTestRcpResponseEvent) {
+                SwitchTestRcpResponseEvent rpcEvent = (SwitchTestRcpResponseEvent) (eventPlan.peek());
+                msg = "expected [rpc: " +rpcEvent.getPlannedRpcResponse()+ "], got [" + rpcInput.getClass().getSimpleName()
+                        + "]";
+            }
         } else {
             SwitchTestWaitForRpcEvent switchTestRpcEvent = (SwitchTestWaitForRpcEvent) eventPlan
                     .peek();
@@ -308,18 +312,19 @@ public class ConnectionAdapterStackImpl implements ConnectionAdapter, Runnable {
         }
 
         if (msg != null) {
-            LOG.debug("check .. FAILED: " + msg);
+            LOG.debug("rpc check .. FAILED: " + msg);
             occuredExceptions.add(new IllegalArgumentException(msg));
         }
-        LOG.debug("check .. OK");
+        LOG.debug("rpc check .. OK");
     }
 
     /**
      * discard current event, execute next, if possible
      */
     private synchronized void next() {
-        LOG.debug("STEPPING TO NEXT event in plan");
+        LOG.debug("<---> STEPPING TO NEXT event in plan (leaving [{}] {})", planItemCounter, eventPlan.peek());
         eventPlan.pop();
+        planItemCounter ++;
         planTouched = true;
         notify();
     }
@@ -329,7 +334,7 @@ public class ConnectionAdapterStackImpl implements ConnectionAdapter, Runnable {
      */
     private synchronized void proceed() {
         boolean processed = false;
-        LOG.debug("proceeding plan item: " + eventPlan.peek());
+        LOG.debug("proceeding plan item[{}]: {}", planItemCounter, eventPlan.peek());
         if (eventPlan.peek() instanceof SwitchTestNotificationEvent) {
             SwitchTestNotificationEvent notification = (SwitchTestNotificationEvent) eventPlan
                     .peek();
@@ -346,7 +351,7 @@ public class ConnectionAdapterStackImpl implements ConnectionAdapter, Runnable {
             next();
         } else {
             try {
-                LOG.debug("now waiting for HANDLER to act");
+                LOG.debug("now WAITING for OF_LISTENER to act ..");
                 wait(proceedTimeout);
             } catch (InterruptedException e) {
                 LOG.error(e.getMessage(), e);
@@ -356,7 +361,8 @@ public class ConnectionAdapterStackImpl implements ConnectionAdapter, Runnable {
 
     @Override
     public void run() {
-        LOG.debug("evenPlan STARTING ..");
+        LOG.debug("|---> evenPlan STARTING ..");
+        planItemCounter = 0;
         while (!eventPlan.isEmpty()) {
             planTouched = false;
             proceed();
@@ -367,11 +373,11 @@ public class ConnectionAdapterStackImpl implements ConnectionAdapter, Runnable {
         }
 
         try {
-            pool.awaitTermination(10 * JOB_DELAY, TimeUnit.MILLISECONDS);
+            Thread.sleep(JOB_DELAY);
         } catch (InterruptedException e) {
             LOG.error(e.getMessage(), e);
         }
-        LOG.debug("eventPlan done");
+        LOG.debug("<---| eventPlan DONE");
     }
 
     /**
@@ -380,116 +386,98 @@ public class ConnectionAdapterStackImpl implements ConnectionAdapter, Runnable {
     private void processNotification(
             final SwitchTestNotificationEvent notificationEvent) {
 
-        Callable<Void> notifyCmd = new Callable<Void>() {
-            @Override
-            public Void call() throws Exception {
-                Notification notification = notificationEvent
-                        .getPlannedNotification();
-                LOG.debug("notificating HANDLER: "
-                        + notification.getClass().getSimpleName());
+        Notification notification = notificationEvent
+                .getPlannedNotification();
+        LOG.debug("notificating OF_LISTENER: "
+                + notification.getClass().getSimpleName());
 
-                // system events
-                if (notification instanceof DisconnectEvent) {
-                    systemListener
-                            .onDisconnectEvent((DisconnectEvent) notification);
-                }
-                // of notifications
-                else if (notification instanceof EchoRequestMessage) {
-                    ofListener
-                            .onEchoRequestMessage((EchoRequestMessage) notification);
-                } else if (notification instanceof ErrorMessage) {
-                    ofListener.onErrorMessage((ErrorMessage) notification);
-                } else if (notification instanceof ExperimenterMessage) {
-                    ofListener
-                            .onExperimenterMessage((ExperimenterMessage) notification);
-                } else if (notification instanceof FlowRemovedMessage) {
-                    ofListener
-                            .onFlowRemovedMessage((FlowRemovedMessage) notification);
-                } else if (notification instanceof HelloMessage) {
-                    ofListener.onHelloMessage((HelloMessage) notification);
-                } else if (notification instanceof MultipartReplyMessage) {
-                    ofListener
-                            .onMultipartReplyMessage((MultipartReplyMessage) notification);
-                } else if (notification instanceof MultipartRequestMessage) {
-                    ofListener
-                            .onMultipartRequestMessage((MultipartRequestMessage) notification);
-                } else if (notification instanceof PacketInMessage) {
-                    ofListener
-                            .onPacketInMessage((PacketInMessage) notification);
-                } else if (notification instanceof PortStatusMessage) {
-                    ofListener
-                            .onPortStatusMessage((PortStatusMessage) notification);
-                }
-                // default
-                else {
-                    occuredExceptions.add(new IllegalStateException(
-                            "message listening not supported for type: "
-                                    + notification.getClass()));
-                }
+        // system events
+        if (notification instanceof DisconnectEvent) {
+            systemListener
+            .onDisconnectEvent((DisconnectEvent) notification);
+        }
+        // of notifications
+        else if (notification instanceof EchoRequestMessage) {
+            ofListener
+            .onEchoRequestMessage((EchoRequestMessage) notification);
+        } else if (notification instanceof ErrorMessage) {
+            ofListener.onErrorMessage((ErrorMessage) notification);
+        } else if (notification instanceof ExperimenterMessage) {
+            ofListener
+            .onExperimenterMessage((ExperimenterMessage) notification);
+        } else if (notification instanceof FlowRemovedMessage) {
+            ofListener
+            .onFlowRemovedMessage((FlowRemovedMessage) notification);
+        } else if (notification instanceof HelloMessage) {
+            ofListener.onHelloMessage((HelloMessage) notification);
+        } else if (notification instanceof MultipartReplyMessage) {
+            ofListener
+            .onMultipartReplyMessage((MultipartReplyMessage) notification);
+        } else if (notification instanceof MultipartRequestMessage) {
+            ofListener
+            .onMultipartRequestMessage((MultipartRequestMessage) notification);
+        } else if (notification instanceof PacketInMessage) {
+            ofListener
+            .onPacketInMessage((PacketInMessage) notification);
+        } else if (notification instanceof PortStatusMessage) {
+            ofListener
+            .onPortStatusMessage((PortStatusMessage) notification);
+        }
+        // default
+        else {
+            occuredExceptions.add(new IllegalStateException(
+                    "message listening not supported for type: "
+                            + notification.getClass()));
+        }
 
-                LOG.debug("thread finished");
-                return null;
-            }
-
-        };
-
-        pool.schedule(notifyCmd, JOB_DELAY, TimeUnit.MILLISECONDS);
+        LOG.debug("notification ["+notification.getClass().getSimpleName()+"] .. done");
     }
 
     /**
      * @param rpcResponse
      */
     private void processRpcResponse(final SwitchTestRcpResponseEvent rpcResponse) {
-        Callable<Void> notifyCmd = new Callable<Void>() {
-            @Override
-            public Void call() throws Exception {
+        OfHeader plannedRpcResponseValue = rpcResponse
+                .getPlannedRpcResponse();
+        LOG.debug("rpc-responding to OF_LISTENER: " + rpcResponse.getXid());
 
-                OfHeader plannedRpcResponseValue = rpcResponse
-                        .getPlannedRpcResponse();
-                LOG.debug("rpc-responding to HANDLER: " + rpcResponse.getXid());
+        @SuppressWarnings("unchecked")
+        SettableFuture<RpcResult<?>> response = (SettableFuture<RpcResult<?>>) rpcResults
+        .get(rpcResponse.getXid());
 
-                @SuppressWarnings("unchecked")
-                SettableFuture<RpcResult<?>> response = (SettableFuture<RpcResult<?>>) rpcResults
-                        .get(rpcResponse.getXid());
-
-                if (response != null) {
-                    boolean successful = plannedRpcResponseValue != null;
-                    Collection<RpcError> errors;
-                    if (successful) {
-                        errors = Collections.emptyList();
-                    } else {
-                        errors = Lists
-                                .newArrayList(RpcErrors
-                                        .getRpcError(
-                                                "unit",
-                                                "unit",
-                                                "not requested",
-                                                ErrorSeverity.ERROR,
-                                                "planned response to RPC.id = "
-                                                        + rpcResponse.getXid(),
+        if (response != null) {
+            boolean successful = plannedRpcResponseValue != null;
+            Collection<RpcError> errors;
+            if (successful) {
+                errors = Collections.emptyList();
+            } else {
+                errors = Lists
+                        .newArrayList(RpcErrors
+                                .getRpcError(
+                                        "unit",
+                                        "unit",
+                                        "not requested",
+                                        ErrorSeverity.ERROR,
+                                        "planned response to RPC.id = "
+                                                + rpcResponse.getXid(),
                                                 ErrorType.RPC,
                                                 new Exception(
                                                         "rpc response failed (planned behavior)")));
-                    }
-                    RpcResult<?> result = Rpcs.getRpcResult(successful,
-                            plannedRpcResponseValue, errors);
-                    response.set(result);
-                } else {
-                    String msg = "RpcResponse not expected: xid="
-                            + rpcResponse.getXid()
-                            + ", "
-                            + plannedRpcResponseValue.getClass()
-                                    .getSimpleName();
-                    LOG.error(msg);
-                    occuredExceptions.add(new IllegalStateException(msg));
-                }
-
-                LOG.debug("thread finished");
-                return null;
             }
-        };
+            RpcResult<?> result = Rpcs.getRpcResult(successful,
+                    plannedRpcResponseValue, errors);
+            response.set(result);
+        } else {
+            String msg = "RpcResponse not expected: xid="
+                    + rpcResponse.getXid()
+                    + ", "
+                    + plannedRpcResponseValue.getClass()
+                    .getSimpleName();
+            LOG.error(msg);
+            occuredExceptions.add(new IllegalStateException(msg));
+        }
 
-        pool.schedule(notifyCmd, JOB_DELAY, TimeUnit.MILLISECONDS);
+        LOG.debug("rpc ["+rpcResponse.getXid()+"] .. done");
     }
 
     /**
@@ -509,7 +497,8 @@ public class ConnectionAdapterStackImpl implements ConnectionAdapter, Runnable {
      */
     private static SettableFuture<RpcResult<Void>> createOneWayRpcResult() {
         SettableFuture<RpcResult<Void>> result = SettableFuture.create();
-        result.set(null);
+        List<RpcError> errors = Collections.emptyList();
+        result.set(Rpcs.getRpcResult(true, (Void) null, errors));
         return result;
     }
 
@@ -538,9 +527,7 @@ public class ConnectionAdapterStackImpl implements ConnectionAdapter, Runnable {
 
     @Override
     public void fireConnectionReadyNotification() {
-        if (connectionReadyListener != null) {
             connectionReadyListener.onConnectionReady();
-        }
     }
 
     @Override
