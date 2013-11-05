@@ -14,6 +14,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
+import org.opendaylight.openflowjava.protocol.api.connection.ConnectionReadyListener;
 import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInput;
@@ -372,6 +373,7 @@ enum MessageType {
 class MockConnectionAdapter implements ConnectionAdapter {
 
     private MessageType messageType;
+    private ConnectionReadyListener connectionReadyListener;
 
     public MockConnectionAdapter() {
         setMessageType(MessageType.NONE);
@@ -528,6 +530,19 @@ class MockConnectionAdapter implements ConnectionAdapter {
      */
     public void setMessageType(MessageType messageType) {
         this.messageType = messageType;
+    }
+
+    @Override
+    public void fireConnectionReadyNotification() {
+        if (connectionReadyListener != null) {
+            connectionReadyListener.onConnectionReady();
+        }
+    }
+
+    @Override
+    public void setConnectionReadyListener(
+            ConnectionReadyListener connectionReadyListener) {
+        this.connectionReadyListener = connectionReadyListener;
     }
 
 }

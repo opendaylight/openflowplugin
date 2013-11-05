@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 import org.opendaylight.controller.sal.common.util.RpcErrors;
 import org.opendaylight.controller.sal.common.util.Rpcs;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
+import org.opendaylight.openflowjava.protocol.api.connection.ConnectionReadyListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoInput;
@@ -95,6 +96,8 @@ public class ConnectionAdapterStackImpl implements ConnectionAdapter, Runnable {
     private long proceedTimeout;
 
     protected List<Exception> occuredExceptions = new ArrayList<>();
+
+    private ConnectionReadyListener connectionReadyListener;
 
     /**
      * default ctor
@@ -269,7 +272,7 @@ public class ConnectionAdapterStackImpl implements ConnectionAdapter, Runnable {
 
     @Override
     public void checkListeners() {
-        if (ofListener == null || systemListener == null) {
+        if (ofListener == null || systemListener == null || connectionReadyListener == null) {
             occuredExceptions
                     .add(new IllegalStateException("missing listeners"));
         }
@@ -531,5 +534,18 @@ public class ConnectionAdapterStackImpl implements ConnectionAdapter, Runnable {
      */
     public List<Exception> getOccuredExceptions() {
         return occuredExceptions;
+    }
+
+    @Override
+    public void fireConnectionReadyNotification() {
+        if (connectionReadyListener != null) {
+            connectionReadyListener.onConnectionReady();
+        }
+    }
+
+    @Override
+    public void setConnectionReadyListener(
+            ConnectionReadyListener connectionReadyListener) {
+        this.connectionReadyListener = connectionReadyListener;
     }
 }

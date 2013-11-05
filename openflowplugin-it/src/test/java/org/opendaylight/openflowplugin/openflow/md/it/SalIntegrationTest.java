@@ -1,5 +1,12 @@
 package org.opendaylight.openflowplugin.openflow.md.it;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.opendaylight.controller.test.sal.binding.it.TestHelper.baseModelBundles;
+import static org.opendaylight.controller.test.sal.binding.it.TestHelper.bindingAwareSalBundles;
+import static org.opendaylight.controller.test.sal.binding.it.TestHelper.configMinumumBundles;
+import static org.opendaylight.controller.test.sal.binding.it.TestHelper.flowCapableModelBundles;
+import static org.opendaylight.controller.test.sal.binding.it.TestHelper.mdSalCoreBundles;
 import static org.ops4j.pax.exam.CoreOptions.junitBundles;
 import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.CoreOptions.options;
@@ -13,10 +20,9 @@ import javax.inject.Inject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
+import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ConsumerContext;
 import org.opendaylight.controller.sal.binding.api.BindingAwareConsumer;
 import org.opendaylight.controller.sal.binding.api.NotificationService;
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ConsumerContext;
-import org.opendaylight.controller.test.sal.binding.it.TestHelper;
 import org.opendaylight.openflowjava.protocol.impl.clients.ScenarioFactory;
 import org.opendaylight.openflowjava.protocol.impl.clients.ScenarioHandler;
 import org.opendaylight.openflowjava.protocol.impl.clients.SimpleClient;
@@ -32,9 +38,6 @@ import org.ops4j.pax.exam.junit.PaxExam;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.junit.Assert.*;
-import static org.opendaylight.controller.test.sal.binding.it.TestHelper.*;
 
 /**
  * @author mirehak
@@ -121,6 +124,7 @@ public class SalIntegrationTest {
                 mavenBundle(ODL, "sal").versionAsInProject(), mavenBundle(ODL, "sal.connection").versionAsInProject(),
 
                 mdSalCoreBundles(), bindingAwareSalBundles(), baseModelBundles(), flowCapableModelBundles(),
+                configMinumumBundles(),
 
                 mavenBundle("org.opendaylight.controller.thirdparty", "org.openflow.openflowj").versionAsInProject(),
 
@@ -143,6 +147,13 @@ public class SalIntegrationTest {
         List<NodeRemoved> nodeRemoved = new ArrayList<>();
         List<NodeConnectorUpdated> nodeConnectorUpdated = new ArrayList<>();
         List<NodeConnectorRemoved> nodeConnectorRemoved = new ArrayList<>();
+        
+        /**
+         * default ctor
+         */
+        protected TestInventoryListener() {
+            // do nothing
+        }
 
         @Override
         public void onNodeUpdated(NodeUpdated notification) {
@@ -163,6 +174,6 @@ public class SalIntegrationTest {
         public void onNodeConnectorRemoved(NodeConnectorRemoved notification) {
             nodeConnectorRemoved.add(notification);
         }
-    };
+    }
 
 }

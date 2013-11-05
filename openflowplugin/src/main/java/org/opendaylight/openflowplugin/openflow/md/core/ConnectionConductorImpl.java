@@ -17,6 +17,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
+import org.opendaylight.openflowjava.protocol.api.connection.ConnectionReadyListener;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionManager;
@@ -55,7 +56,7 @@ import com.google.common.util.concurrent.Futures;
  * @author mirehak
  */
 public class ConnectionConductorImpl implements OpenflowProtocolListener,
-        SystemNotificationsListener, ConnectionConductor {
+        SystemNotificationsListener, ConnectionConductor, ConnectionReadyListener {
 
     private static final Logger LOG = LoggerFactory
             .getLogger(ConnectionConductorImpl.class);
@@ -97,8 +98,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     public void init() {
         connectionAdapter.setMessageListener(this);
         connectionAdapter.setSystemListener(this);
-        //TODO : Wait for library to provide interface from which we can send first hello message
-//        sendFirstHelloMessage();
+        connectionAdapter.setConnectionReadyListener(this);
     }
 
 
@@ -184,57 +184,64 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
      *   TODO: Better to handle handshake into a maintainable innerclass which uses State-Pattern.
      */
     @Override
-    public void onHelloMessage(HelloMessage hello) {
+    public void onHelloMessage(final HelloMessage hello) {
         // do handshake
         LOG.info("handshake STARTED");
         checkState(CONDUCTOR_STATE.HANDSHAKING);
 
-        Short remoteVersion = hello.getVersion();
-        List<Elements> elements = hello.getElements();
-        long xid = hello.getXid();
-        short proposedVersion;
-        LOG.debug("Hello message version={} and bitmap={}", remoteVersion, elements);
-        try {
-            // find the version from header version field
-            proposedVersion = proposeVersion(remoteVersion);
+        new Thread(new Runnable() {
 
-        } catch (IllegalArgumentException e) {
-            handleException(e);
-            connectionAdapter.disconnect();
-            throw e;
-        }
-
-        // sent version is equal to remote --> version is negotiated
-        if (proposedVersion == remoteVersion) {
-            LOG.debug("sending helloReply as version in header is supported: {}", proposedVersion);
-            sendHelloReply(proposedVersion, ++xid);
-            postHandshake(proposedVersion, ++xid);
-
-        } else if (isBitmapNegotiationEnable && null != elements && 0 != elements.size()) {
-            try {
-                // hello contains version bitmap, checking highest common
-                // version in bitmap
-                proposedVersion = proposeBitmapVersion(elements);
-            } catch (IllegalArgumentException ex) {
-                handleException(ex);
-                connectionAdapter.disconnect();
-                throw ex;
+            @Override
+            public void run() {
+                Short remoteVersion = hello.getVersion();
+                List<Elements> elements = hello.getElements();
+                long xid = hello.getXid();
+                short proposedVersion;
+                LOG.debug("Hello message version={} and bitmap={}", remoteVersion, elements);
+                try {
+                    // find the version from header version field
+                    proposedVersion = proposeVersion(remoteVersion);
+                    
+                } catch (IllegalArgumentException e) {
+                    handleException(e);
+                    connectionAdapter.disconnect();
+                    throw e;
+                }
+                
+                // sent version is equal to remote --> version is negotiated
+                if (proposedVersion == remoteVersion) {
+                    LOG.debug("sending helloReply as version in header is supported: {}", proposedVersion);
+                    sendHelloReply(proposedVersion, ++xid);
+                    postHandshake(proposedVersion, ++xid);
+                    
+                } else if (isBitmapNegotiationEnable && null != elements && 0 != elements.size()) {
+                    try {
+                        // hello contains version bitmap, checking highest common
+                        // version in bitmap
+                        proposedVersion = proposeBitmapVersion(elements);
+                    } catch (IllegalArgumentException ex) {
+                        handleException(ex);
+                        connectionAdapter.disconnect();
+                        throw ex;
+                    }
+                    LOG.debug("sending helloReply for common bitmap version : {}", proposedVersion);
+                    sendHelloReply(proposedVersion, ++xid);
+                    postHandshake(proposedVersion, ++xid);
+                } else {
+                    if (isFirstHelloNegotiation) {
+                        isFirstHelloNegotiation = false;
+                        LOG.debug("sending helloReply for lowest supported version : {}", proposedVersion);
+                        // send hello reply with lower version number supported
+                        sendHelloReply(proposedVersion, ++xid);
+                    } else {
+                        // terminate the connection.
+                        LOG.debug("Version negotiation failed. unsupported version : {}", remoteVersion);
+                        connectionAdapter.disconnect();
+                    }
+                }
             }
-            LOG.debug("sending helloReply for common bitmap version : {}", proposedVersion);
-            sendHelloReply(proposedVersion, ++xid);
-            postHandshake(proposedVersion, ++xid);
-        } else {
-            if (isFirstHelloNegotiation) {
-                isFirstHelloNegotiation = false;
-                LOG.debug("sending helloReply for lowest supported version : {}", proposedVersion);
-                // send hello reply with lower version number supported
-                sendHelloReply(proposedVersion, ++xid);
-            } else {
-                // terminate the connection.
-                LOG.debug("Version negotiation failed. unsupported version : {}", remoteVersion);
-                connectionAdapter.disconnect();
-            }
-        }
+            
+        }).start();
     }
 
     /**
@@ -534,5 +541,10 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     @Override
     public ConnectionAdapter getConnectionAdapter() {
         return connectionAdapter;
+    }
+
+    @Override
+    public void onConnectionReady() {
+        // TODO Auto-generated method stub
     }
 }
