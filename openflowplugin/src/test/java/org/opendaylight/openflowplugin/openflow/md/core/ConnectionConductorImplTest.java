@@ -26,6 +26,8 @@ import org.opendaylight.openflowplugin.openflow.md.core.plan.ConnectionAdapterSt
 import org.opendaylight.openflowplugin.openflow.md.core.plan.EventFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.plan.SwitchTestEvent;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
+import org.opendaylight.openflowplugin.openflow.md.queue.PopListener;
+import org.opendaylight.openflowplugin.openflow.md.queue.QueueKeeperLightImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ErrorType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.HelloElementType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortFeatures;
@@ -74,13 +76,26 @@ public class ConnectionConductorImplTest {
     protected int portstatusDeleteMessageCounter;
     protected int portstatusModifyMessageCounter;
 
+    private QueueKeeperLightImpl<Object> queueKeeper;
+
+    private PopListener<Object> popListener;
+
     /**
      * @throws java.lang.Exception
      */
     @Before
     public void setUp() throws Exception {
         adapter = new ConnectionAdapterStackImpl();
+        
+        popListener = new PopListenerCountingImpl<>();
+        
+        queueKeeper = new QueueKeeperLightImpl<>();
+        queueKeeper.setListenerMapping(assembleListenerMapping());
+        queueKeeper.init();
+        queueKeeper.addPopListener(popListener);
+        
         connectionConductor = new ConnectionConductorImpl(adapter);
+        connectionConductor.setQueueKeeper(queueKeeper);
         connectionConductor.init();
         controller = new MDController();
         controller.init();
@@ -98,6 +113,8 @@ public class ConnectionConductorImplTest {
         if (libSimulation != null) {
             libSimulation.join();
         }
+        queueKeeper.shutdown();
+        
         for (Exception problem : adapter.getOccuredExceptions()) {
             LOG.error("during simulation on adapter side: "
                     + problem.getMessage());
@@ -734,13 +751,22 @@ public class ConnectionConductorImplTest {
      */
     @Test
     public void testOnExperimenterMessage() throws InterruptedException {
+        final int maxProcessingTimeout = 500;
+        
         connectionConductor.setListenerMapping(assembleListenerMapping());
         ExperimenterMessageBuilder builder1 = new ExperimenterMessageBuilder();
         builder1.setExperimenter(84L).setExpType(4L);
         connectionConductor.onExperimenterMessage(builder1.build());
+        synchronized (popListener) {
+            popListener.wait(maxProcessingTimeout);
+        }
         Assert.assertEquals(1, experimenterMessageCounter);
+        
         builder1.setExperimenter(85L).setExpType(4L);
         connectionConductor.onExperimenterMessage(builder1.build());
+        synchronized (popListener) {
+            popListener.wait(maxProcessingTimeout);
+        }
         Assert.assertEquals(2, experimenterMessageCounter);
     }
 

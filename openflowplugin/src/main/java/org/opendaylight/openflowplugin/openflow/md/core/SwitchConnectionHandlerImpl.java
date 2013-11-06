@@ -12,12 +12,27 @@ import java.net.InetAddress;
 
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.SwitchConnectionHandler;
+import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
+import org.opendaylight.openflowplugin.openflow.md.queue.QueueKeeperLightImpl;
 
 /**
  * @author mirehak
  *
  */
 public class SwitchConnectionHandlerImpl implements SwitchConnectionHandler {
+    
+    private QueueKeeperLightImpl<Object> queueKeeper;
+
+    /**
+     * 
+     */
+    public SwitchConnectionHandlerImpl() {
+        queueKeeper = new QueueKeeperLightImpl<>();
+        queueKeeper.setListenerMapping(OFSessionUtil.getListenersMap());
+        queueKeeper.init();
+        // TODO: add pop-listeners consuming object processed via queue
+        //queueKeeper.addPopListener(listener);
+    }
 
     @Override
     public boolean accept(InetAddress address) {
@@ -27,7 +42,8 @@ public class SwitchConnectionHandlerImpl implements SwitchConnectionHandler {
 
     @Override
     public void onSwitchConnected(ConnectionAdapter connectionAdapter) {
-        ConnectionConductor conductor = ConnectionConductorFactory.createConductor(connectionAdapter);
+        ConnectionConductor conductor = ConnectionConductorFactory.createConductor(
+                connectionAdapter, queueKeeper);
     }
 
 }

@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.openflow.md.core;
 
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
+import org.opendaylight.openflowplugin.openflow.md.queue.QueueKeeper;
 
 /**
  * @author mirehak
@@ -18,10 +19,13 @@ public abstract class ConnectionConductorFactory {
 
     /**
      * @param connectionAdapter
+     * @param queueKeeper 
      * @return conductor for given connection
      */
-    public static ConnectionConductor createConductor(ConnectionAdapter connectionAdapter) {
+    public static ConnectionConductor createConductor(ConnectionAdapter connectionAdapter, 
+            QueueKeeper<Object> queueKeeper) {
         ConnectionConductor connectionConductor = new ConnectionConductorImpl(connectionAdapter);
+        connectionConductor.setQueueKeeper(queueKeeper);
         connectionConductor.init();
         return connectionConductor;
     }

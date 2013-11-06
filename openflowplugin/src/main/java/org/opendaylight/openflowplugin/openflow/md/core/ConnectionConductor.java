@@ -13,6 +13,7 @@ import java.util.concurrent.Future;
 
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
+import org.opendaylight.openflowplugin.openflow.md.queue.QueueKeeper;
 
 import com.google.common.collect.Lists;
 
@@ -94,5 +95,12 @@ public interface ConnectionConductor {
      * @return the connectionAdapter
      */
     public ConnectionAdapter getConnectionAdapter();
+
+    /**
+     * assign global queueKeeper
+     * @param queueKeeper
+     * TODO: replace object generic type
+     */
+    void setQueueKeeper(QueueKeeper<Object> queueKeeper);
 
 }

@@ -23,6 +23,8 @@ import org.opendaylight.openflowjava.protocol.api.connection.ConnectionReadyList
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionManager;
+import org.opendaylight.openflowplugin.openflow.md.queue.QueueKeeper;
+import org.opendaylight.openflowplugin.openflow.md.queue.QueueKeeperLightImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoReplyInputBuilder;
@@ -79,6 +81,9 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
 
     protected boolean isFirstHelloNegotiation = true;
 
+    // TODO: use appropriate interface instead of Object
+    private QueueKeeper<Object> queueKeeper;
+
 
 
     /**
@@ -95,6 +100,14 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         connectionAdapter.setMessageListener(this);
         connectionAdapter.setSystemListener(this);
         connectionAdapter.setConnectionReadyListener(this);
+    }
+    
+    /**
+     * @param queueKeeper the queueKeeper to set
+     */
+    @Override
+    public void setQueueKeeper(QueueKeeper<Object> queueKeeper) {
+        this.queueKeeper = queueKeeper;
     }
 
 
@@ -150,9 +163,8 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
 
     @Override
     public void onExperimenterMessage(ExperimenterMessage experimenterMessage) {
-        LOG.debug("experimenter received, type: "
-                + experimenterMessage.getExpType());
-        notifyListeners(ExperimenterMessage.class, experimenterMessage);
+        queueKeeper.push(ExperimenterMessage.class, experimenterMessage, this);
+//        notifyListeners(ExperimenterMessage.class, experimenterMessage);
     }
 
     @Override
@@ -544,7 +556,9 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     /**
      * @param messageType
      * @param message
+     * @deprecated use {@link QueueKeeper} strategy
      */
+    @Deprecated
     private void notifyListeners(Class<? extends DataObject> messageType, DataObject message) {
         Collection<IMDMessageListener> listeners = listenerMapping.get(messageType);
         if (listeners != null) {
