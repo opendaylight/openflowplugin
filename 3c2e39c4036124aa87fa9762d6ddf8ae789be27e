@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "da6255ed_f56d9105",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/ConnectionConductorImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 165,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2013-11-07T12:12:25Z",
+      "side": 1,
+      "message": "agree - this is just the first usage point - I thought it might be a good idea to keep such a change on minimum in case somebody is changing Conductor class too",
+      "parentUuid": "da6255ed_95ce5559",
+      "revId": "3c2e39c4036124aa87fa9762d6ddf8ae789be27e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da6255ed_55469dc0",
         "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/queue/QueueKeeperLightImpl.java",
         "patchSetId": 1
@@ -30,6 +48,24 @@
       "writtenOn": "2013-11-07T11:38:59Z",
       "side": 1,
       "message": "Reference-counting the threads per queue-keeper/conductor/connection - 10 on-demand threads here and adding 1 constantly running TicketFinisher thread and ErrorQueue thread per conductor, Each connection would now have 2 permanent threads and 10 on-demand pool threads. Is the understanding correct ? We know that this is only a temporary case and we would come back to this once functional issues are addressed.",
+      "revId": "3c2e39c4036124aa87fa9762d6ddf8ae789be27e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da6255ed_7581a18e",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/queue/QueueKeeperLightImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2013-11-07T12:12:25Z",
+      "side": 1,
+      "message": "Almost correct - but now as you summarized this I think that ErrorQueue might be common for all conductors (perhaps even served by multiple threads). \n\nThe ticketFinisher was intended to be one per queue (later we can add more queues as you proposed).\n\nOh and there is one thread per connection in library (netty.io pipeline).",
+      "parentUuid": "da6255ed_55469dc0",
       "revId": "3c2e39c4036124aa87fa9762d6ddf8ae789be27e",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
