@@ -33,6 +33,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortReason;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoRequestMessageBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterMessage;
@@ -69,16 +70,47 @@ public class ConnectionConductorImplTest {
     private Thread libSimulation;
     private ScheduledThreadPoolExecutor pool = new ScheduledThreadPoolExecutor(
             8);
-    protected int experimenterMessageCounter;
-    protected int packetinMessageCounter;
-    protected int flowremovedMessageCounter;
-    protected int portstatusAddMessageCounter;
-    protected int portstatusDeleteMessageCounter;
-    protected int portstatusModifyMessageCounter;
 
     private QueueKeeperLightImpl<Object> queueKeeper;
 
     private PopListener<Object> popListener;
+
+    private int experimenterMessageCounter;
+    private int packetinMessageCounter;
+    private int flowremovedMessageCounter;
+    private int portstatusAddMessageCounter;
+    private int portstatusDeleteMessageCounter;
+    private int portstatusModifyMessageCounter;
+    private int errorMessageCounter;
+    
+    public void incrExperimenterMessageCounter() {
+        this.experimenterMessageCounter++;
+    }
+
+    public void incrPacketinMessageCounter() {
+        this.packetinMessageCounter++;
+    }
+
+    public void incrFlowremovedMessageCounter() {
+        this.flowremovedMessageCounter++;
+    }
+
+    public void incrPortstatusAddMessageCounter() {
+        this.portstatusAddMessageCounter++;
+    }
+
+    public void incrPortstatusDeleteMessageCounter() {
+        this.portstatusDeleteMessageCounter++;
+    }
+
+    public void incrPortstatusModifyMessageCounter() {
+        this.portstatusModifyMessageCounter++;
+    }
+
+    public void incrErrorMessageCounter() {
+        this.errorMessageCounter++;
+    }
+
 
     /**
      * @throws java.lang.Exception
@@ -705,41 +737,50 @@ public class ConnectionConductorImplTest {
         return getFeaturesOutputBuilder;
     }
 
-    private class ExperimenterMessageService implements IMDMessageListener {
+    public class ExperimenterMessageService implements IMDMessageListener {
         @Override
         public void receive(SwitchConnectionDistinguisher cookie, SessionContext sw, DataObject msg) {
             LOG.debug("Received a packet in Experimenter Service");
-            experimenterMessageCounter++;
+            ConnectionConductorImplTest.this.incrExperimenterMessageCounter();
+            
         }
     }
 
-    private class PacketInMessageService implements IMDMessageListener {
+    public class PacketInMessageService implements IMDMessageListener {
         @Override
         public void receive(SwitchConnectionDistinguisher cookie, SessionContext sw, DataObject msg) {
             LOG.debug("Received a packet in PacketIn Service");
-            packetinMessageCounter++;
+            ConnectionConductorImplTest.this.incrPacketinMessageCounter();
         }
     }
 
-    private class FlowRemovedMessageService implements IMDMessageListener {
+    public class FlowRemovedMessageService implements IMDMessageListener {
         @Override
         public void receive(SwitchConnectionDistinguisher cookie, SessionContext sw, DataObject msg) {
             LOG.debug("Received a packet in FlowRemoved Service");
-            flowremovedMessageCounter++;
+            ConnectionConductorImplTest.this.incrFlowremovedMessageCounter();
         }
     }
 
-    private class PortStatusMessageService implements IMDMessageListener {
+    public class PortStatusMessageService implements IMDMessageListener {
         @Override
         public void receive(SwitchConnectionDistinguisher cookie, SessionContext sw, DataObject msg) {
             LOG.debug("Received a packet in PortStatus Service");
             if ( (((PortStatusMessage)msg).getReason().equals(PortReason.OFPPRADD))  ) {
-                portstatusAddMessageCounter++;
+                ConnectionConductorImplTest.this.incrPortstatusAddMessageCounter();
             } else if (((PortStatusMessage)msg).getReason().equals(PortReason.OFPPRDELETE)){
-                portstatusDeleteMessageCounter++;
+                ConnectionConductorImplTest.this.incrPortstatusDeleteMessageCounter();
             } else if (((PortStatusMessage)msg).getReason().equals(PortReason.OFPPRMODIFY)) {
-                portstatusModifyMessageCounter++;
+                ConnectionConductorImplTest.this.incrPortstatusModifyMessageCounter();
             }
+        }
+    }
+    
+    public class ErrorMessageService implements IMDMessageListener {
+        @Override
+        public void receive(SwitchConnectionDistinguisher cookie, SessionContext sw, DataObject msg) {
+            LOG.debug("Received a packet in Experimenter Service");
+            ConnectionConductorImplTest.this.incrErrorMessageCounter();
         }
     }
 
@@ -769,6 +810,31 @@ public class ConnectionConductorImplTest {
         }
         Assert.assertEquals(2, experimenterMessageCounter);
     }
+    
+    /**
+     * Test method for
+     * {@link org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductorImpl#onExperimenterMessage(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessage)}
+     * .
+     * @throws InterruptedException
+     */
+    @Test
+    public void testOnErrorMessage() throws InterruptedException {
+        final int maxProcessingTimeout = 500;
+        connectionConductor.setListenerMapping(assembleListenerMapping());
+        ErrorMessageBuilder builder1 = new ErrorMessageBuilder();
+        builder1.setCode(100);
+        connectionConductor.onErrorMessage(builder1.build());
+        synchronized (popListener) {
+            popListener.wait(maxProcessingTimeout);
+        }
+        Assert.assertEquals(1, errorMessageCounter);
+        builder1.setCode(200);
+        connectionConductor.onErrorMessage(builder1.build());
+        synchronized (popListener) {
+            popListener.wait(maxProcessingTimeout);
+        }
+        Assert.assertEquals(2, errorMessageCounter);
+    }
 
     /**
      * @return listener mapping
@@ -779,6 +845,9 @@ public class ConnectionConductorImplTest {
         Collection<IMDMessageListener> existingValues = new ArrayList<>();
         existingValues.add(objEms);
         listenerMapping.put(ExperimenterMessage.class, existingValues);
+        IMDMessageListener objErms = new ErrorMessageService() ;
+        existingValues.add(objErms);
+        listenerMapping.put(ErrorMessage.class, existingValues);
         return listenerMapping;
     }
 
