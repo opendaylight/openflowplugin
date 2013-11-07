@@ -154,9 +154,9 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
 
     @Override
     public void onErrorMessage(ErrorMessage errorMessage) {
-        // TODO Auto-generated method stub
         LOG.debug("error received, type: " + errorMessage.getType()
                 + "; code: " + errorMessage.getCode());
+        notifyListeners(ErrorMessage.class, errorMessage);
     }
 
     @Override

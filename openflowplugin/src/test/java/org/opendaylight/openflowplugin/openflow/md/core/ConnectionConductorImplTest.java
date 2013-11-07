@@ -15,8 +15,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -27,20 +25,19 @@ import org.junit.Test;
 import org.opendaylight.openflowplugin.openflow.md.core.plan.ConnectionAdapterStackImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.plan.EventFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.plan.SwitchTestEvent;
-import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ErrorType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.HelloElementType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortReason;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoRequestMessageBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemovedMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemovedMessageBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.hello.Elements;
@@ -50,7 +47,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessageBuilder;
 import org.opendaylight.yangtools.yang.binding.DataObject;
-import org.opendaylight.yangtools.yang.binding.Notification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,7 +57,7 @@ import com.google.common.collect.Lists;
  */
 public class ConnectionConductorImplTest {
 
-    private static final Logger LOG = LoggerFactory
+    protected static final Logger LOG = LoggerFactory
             .getLogger(ConnectionConductorImplTest.class);
 
     protected ConnectionAdapterStackImpl adapter;
@@ -78,6 +74,35 @@ public class ConnectionConductorImplTest {
     private int portstatusAddMessageCounter;
     private int portstatusDeleteMessageCounter;
     private int portstatusModifyMessageCounter;
+    private int errorMessageCounter;
+    
+    public void setExperimenterMessageCounter(int experimenterMessageCounter) {
+        this.experimenterMessageCounter += experimenterMessageCounter;
+    }
+
+    public void setPacketinMessageCounter(int packetinMessageCounter) {
+        this.packetinMessageCounter += packetinMessageCounter;
+    }
+
+    public void setFlowremovedMessageCounter(int flowremovedMessageCounter) {
+        this.flowremovedMessageCounter += flowremovedMessageCounter;
+    }
+
+    public void setPortstatusAddMessageCounter(int portstatusAddMessageCounter) {
+        this.portstatusAddMessageCounter += portstatusAddMessageCounter;
+    }
+
+    public void setPortstatusDeleteMessageCounter(int portstatusDeleteMessageCounter) {
+        this.portstatusDeleteMessageCounter += portstatusDeleteMessageCounter;
+    }
+
+    public void setPortstatusModifyMessageCounter(int portstatusModifyMessageCounter) {
+        this.portstatusModifyMessageCounter += portstatusModifyMessageCounter;
+    }
+
+    public void setErrorMessageCounter(int errorMessageCounter) {
+        this.errorMessageCounter += errorMessageCounter;
+    }
 
     /**
      * @throws java.lang.Exception
@@ -690,41 +715,50 @@ public class ConnectionConductorImplTest {
         return getFeaturesOutputBuilder;
     }
 
-    private class ExperimenterMessageService implements IMDMessageListener {
+    public class ExperimenterMessageService implements IMDMessageListener {
         @Override
         public void receive(SwitchConnectionDistinguisher cookie, SessionContext sw, DataObject msg) {
             LOG.debug("Received a packet in Experimenter Service");
-            experimenterMessageCounter++;
+            ConnectionConductorImplTest.this.setExperimenterMessageCounter(1);
+            
         }
     }
 
-    private class PacketInMessageService implements IMDMessageListener {
+    public class PacketInMessageService implements IMDMessageListener {
         @Override
         public void receive(SwitchConnectionDistinguisher cookie, SessionContext sw, DataObject msg) {
             LOG.debug("Received a packet in PacketIn Service");
-            packetinMessageCounter++;
+            ConnectionConductorImplTest.this.setPacketinMessageCounter(1);
         }
     }
 
-    private class FlowRemovedMessageService implements IMDMessageListener {
+    public class FlowRemovedMessageService implements IMDMessageListener {
         @Override
         public void receive(SwitchConnectionDistinguisher cookie, SessionContext sw, DataObject msg) {
             LOG.debug("Received a packet in FlowRemoved Service");
-            flowremovedMessageCounter++;
+            ConnectionConductorImplTest.this.setFlowremovedMessageCounter(1);
         }
     }
 
-    private class PortStatusMessageService implements IMDMessageListener {
+    public class PortStatusMessageService implements IMDMessageListener {
         @Override
         public void receive(SwitchConnectionDistinguisher cookie, SessionContext sw, DataObject msg) {
             LOG.debug("Received a packet in PortStatus Service");
             if ( (((PortStatusMessage)msg).getReason().equals(PortReason.OFPPRADD))  ) {
-                portstatusAddMessageCounter++;
+                ConnectionConductorImplTest.this.setPortstatusAddMessageCounter(1);
             } else if (((PortStatusMessage)msg).getReason().equals(PortReason.OFPPRDELETE)){
-                portstatusDeleteMessageCounter++;
+                ConnectionConductorImplTest.this.setPortstatusDeleteMessageCounter(1);
             } else if (((PortStatusMessage)msg).getReason().equals(PortReason.OFPPRMODIFY)) {
-                portstatusModifyMessageCounter++;
+                ConnectionConductorImplTest.this.setPortstatusModifyMessageCounter(1);
             }
+        }
+    }
+    
+    public class ErrorMessageService implements IMDMessageListener {
+        @Override
+        public void receive(SwitchConnectionDistinguisher cookie, SessionContext sw, DataObject msg) {
+            LOG.debug("Received a packet in Experimenter Service");
+            ConnectionConductorImplTest.this.setErrorMessageCounter(1);
         }
     }
 
@@ -749,6 +783,29 @@ public class ConnectionConductorImplTest {
         builder1.setExperimenter(85L).setExpType(4L);
         connectionConductor.onExperimenterMessage(builder1.build());
         Assert.assertEquals(2, experimenterMessageCounter);
+    }
+    
+    /**
+     * Test method for
+     * {@link org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductorImpl#onExperimenterMessage(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessage)}
+     * .
+     * @throws InterruptedException
+     */
+    @Test
+    public void testOnErrorMessage() throws InterruptedException {
+        IMDMessageListener objEms = new ErrorMessageService();
+        Map<Class<? extends DataObject>, Collection<IMDMessageListener>> listenerMapping = new HashMap<Class<? extends DataObject>, Collection<IMDMessageListener>>();
+        Collection<IMDMessageListener> existingValues = new ArrayList<IMDMessageListener>();
+        existingValues.add(objEms);
+        listenerMapping.put(ErrorMessage.class, existingValues);
+        connectionConductor.setListenerMapping(listenerMapping);
+        ErrorMessageBuilder builder1 = new ErrorMessageBuilder();
+        builder1.setCode(100);
+        connectionConductor.onErrorMessage(builder1.build());
+        Assert.assertEquals(1, errorMessageCounter);
+        builder1.setCode(200);
+        connectionConductor.onErrorMessage(builder1.build());
+        Assert.assertEquals(2, errorMessageCounter);
     }
 
 }
