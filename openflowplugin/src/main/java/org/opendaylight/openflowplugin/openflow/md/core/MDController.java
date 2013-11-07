@@ -48,7 +48,7 @@ public class MDController implements IMDController {
 
     public void init() {
         LOG.debug("Initializing!");
-        this.messageListeners = new ConcurrentHashMap<Class<? extends DataObject>, Collection<IMDMessageListener>>();
+        this.messageListeners = new ConcurrentHashMap<>();
         // Push the updated Listeners to Session Manager which will be then picked up by ConnectionConductor eventually
         OFSessionUtil.getSessionManager().setListenerMapping(messageListeners);
     }

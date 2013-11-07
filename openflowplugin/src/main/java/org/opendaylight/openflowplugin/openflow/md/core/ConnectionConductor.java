@@ -103,4 +103,9 @@ public interface ConnectionConductor {
      */
     void setQueueKeeper(QueueKeeper<Object> queueKeeper);
 
+    /**
+     * @param errorHandler for internal exception handling
+     */
+    void setErrorHandler(ErrorHandler errorHandler);
+
 }

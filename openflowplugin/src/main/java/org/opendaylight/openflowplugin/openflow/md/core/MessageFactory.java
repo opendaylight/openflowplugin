@@ -77,4 +77,20 @@ public abstract class MessageFactory {
         }
         return helloInputbuilder.build();
     }
+
+    /**
+     * @param elements
+     * @return version boolean list
+     */
+    public static List<Boolean> digVersions(List<Elements> elements) {
+        List<Boolean> result = null;
+        if (elements != null && !elements.isEmpty()) {
+            for (Elements elm : elements) {
+                if (HelloElementType.VERSIONBITMAP.equals(elm.getType())) {
+                    result = elm.getVersionBitmap();
+                }
+            }
+        }
+        return result;
+    }
 }

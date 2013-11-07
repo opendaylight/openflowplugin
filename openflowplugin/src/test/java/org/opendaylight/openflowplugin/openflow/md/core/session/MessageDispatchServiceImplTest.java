@@ -16,6 +16,7 @@ import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionReadyListener;
 import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
+import org.opendaylight.openflowplugin.openflow.md.core.ErrorHandler;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.openflow.md.queue.QueueKeeper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInput;
@@ -367,6 +368,10 @@ class MockConnectionConductor implements ConnectionConductor {
 
     public void setQueueKeeper(QueueKeeper<Object> queueKeeper) {
         // do nothing yet
+    }
+
+    @Override
+    public void setErrorHandler(ErrorHandler errorHandler) {
     }
 }
 

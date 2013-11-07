@@ -8,8 +8,10 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core;
 
+import java.util.Arrays;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,18 +19,18 @@ import org.slf4j.LoggerFactory;
  * dumping all exceptions to log
  * @author mirehak
  */
-public class ErrorQueueHandler implements Runnable {
+public class ErrorHandlerQueueImpl implements Runnable, ErrorHandler {
 
     private static final Logger LOG = LoggerFactory
-            .getLogger(ErrorQueueHandler.class);
+            .getLogger(ErrorHandlerQueueImpl.class);
 
     private LinkedBlockingQueue<Exception> errorQueue;
 
     /**
-     * @param errorQueue
+     * default ctor
      */
-    public ErrorQueueHandler(LinkedBlockingQueue<Exception> errorQueue) {
-        this.errorQueue = errorQueue;
+    public ErrorHandlerQueueImpl() {
+        this.errorQueue = new LinkedBlockingQueue<>();
     }
 
     @Override
@@ -42,6 +44,27 @@ public class ErrorQueueHandler implements Runnable {
             } catch (InterruptedException e) {
                 LOG.warn(e.getMessage());
             }
+        }
+    }
+    
+    /**
+     * @param e
+     * @param sessionContext TODO
+     */
+    @Override
+    public void handleException(Throwable e, SessionContext sessionContext) {
+        String sessionKeyId = null;
+        if (sessionContext != null) {
+            sessionKeyId = Arrays.toString(sessionContext.getSessionKey().getId());
+        }
+        
+        Exception causeAndThread = new Exception(
+                "IN THREAD: "+Thread.currentThread().getName() +
+                "; session:"+sessionKeyId, e);
+        try {
+            errorQueue.put(causeAndThread);
+        } catch (InterruptedException e1) {
+            LOG.error(e1.getMessage(), e1);
         }
     }
 }

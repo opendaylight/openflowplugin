@@ -8,15 +8,9 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionReadyListener;
@@ -24,7 +18,6 @@ import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionManager;
 import org.opendaylight.openflowplugin.openflow.md.queue.QueueKeeper;
-import org.opendaylight.openflowplugin.openflow.md.queue.QueueKeeperLightImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoReplyInputBuilder;
@@ -45,7 +38,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.DisconnectEvent;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SwitchIdleEvent;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SystemNotificationsListener;
-import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
@@ -67,17 +59,15 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
      * BitMaps from switches.
      */
     private static final boolean isBitmapNegotiationEnable = true;
-    private LinkedBlockingQueue<Exception> errorQueue = new LinkedBlockingQueue<>();
+    private ErrorHandler errorHandler;
 
-    protected final ConnectionAdapter connectionAdapter;
+    private final ConnectionAdapter connectionAdapter;
     private ConnectionConductor.CONDUCTOR_STATE conductorState;
     private Short version;
 
     private SwitchConnectionDistinguisher auxiliaryKey;
 
     private SessionContext sessionContext;
-
-    private Map<Class<? extends DataObject>, Collection<IMDMessageListener>> listenerMapping;
 
     protected boolean isFirstHelloNegotiation = true;
 
@@ -92,7 +82,6 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     public ConnectionConductorImpl(ConnectionAdapter connectionAdapter) {
         this.connectionAdapter = connectionAdapter;
         conductorState = CONDUCTOR_STATE.HANDSHAKING;
-        new Thread(new ErrorQueueHandler(errorQueue)).start();
     }
 
     @Override
@@ -110,6 +99,13 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         this.queueKeeper = queueKeeper;
     }
 
+    /**
+     * @param errorHandler the errorHandler to set
+     */
+    @Override
+    public void setErrorHandler(ErrorHandler errorHandler) {
+        this.errorHandler = errorHandler;
+    }
 
     /**
      * send first hello message to switch
@@ -122,7 +118,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         if (isBitmapNegotiationEnable) {
             helloInput = MessageFactory.createHelloInput(highestVersion, helloXid, ConnectionConductor.versionOrder);
             LOG.debug("sending first hello message: vertsion header={} , version bitmap={}", 
-                    highestVersion, helloInput.getElements());
+                    highestVersion, MessageFactory.digVersions(helloInput.getElements()));
         } else {
             helloInput = MessageFactory.createHelloInput(highestVersion, helloXid);
             LOG.debug("sending first hello message: version header={} ", highestVersion);
@@ -134,7 +130,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
             LOG.debug("FIRST HELLO sent.");
         } catch (Throwable e) {
             LOG.debug("FIRST HELLO sending failed.");
-            handleException(e);
+            errorHandler.handleException(e, getSessionContext());
         }
     }
 
@@ -149,7 +145,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
                 builder.setXid(echoRequestMessage.getXid());
                 builder.setData(echoRequestMessage.getData());
                 
-                connectionAdapter.echoReply(builder.build());
+                getConnectionAdapter().echoReply(builder.build());
             }
         }).start();            
     }
@@ -157,18 +153,16 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     @Override
     public void onErrorMessage(ErrorMessage errorMessage) {
         queueKeeper.push(ErrorMessage.class, errorMessage, this);
-       // notifyListeners(ErrorMessage.class, errorMessage);
     }
 
     @Override
     public void onExperimenterMessage(ExperimenterMessage experimenterMessage) {
         queueKeeper.push(ExperimenterMessage.class, experimenterMessage, this);
-//        notifyListeners(ExperimenterMessage.class, experimenterMessage);
     }
 
     @Override
     public void onFlowRemovedMessage(FlowRemovedMessage message) {
-        notifyListeners(FlowRemovedMessage.class, message);
+        queueKeeper.push(FlowRemovedMessage.class, message, this);
     }
 
 
@@ -197,14 +191,14 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
                 List<Elements> elements = hello.getElements();
                 Long xid = hello.getXid();
                 Short proposedVersion;
-                LOG.debug("Hello message version={} and bitmap={}", remoteVersion, elements);
+                LOG.debug("Hello message version={} and bitmap={}", remoteVersion, MessageFactory.digVersions(elements));
                 try {
                     // find the version from header version field
                     proposedVersion = proposeVersion(remoteVersion);
                     
                 } catch (IllegalArgumentException e) {
-                    handleException(e);
-                    connectionAdapter.disconnect();
+                    errorHandler.handleException(e, getSessionContext());
+                    getConnectionAdapter().disconnect();
                     return;
                 }
                 
@@ -220,8 +214,8 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
                         // version in bitmap
                         proposedVersion = proposeBitmapVersion(elements);
                     } catch (IllegalArgumentException ex) {
-                        handleException(ex);
-                        connectionAdapter.disconnect();
+                        errorHandler.handleException(ex, getSessionContext());
+                        getConnectionAdapter().disconnect();
                         return;
                     }
                     LOG.debug("sending helloReply for common bitmap version : {}", proposedVersion);
@@ -236,7 +230,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
                     } else {
                         // terminate the connection.
                         LOG.debug("Version negotiation failed. unsupported version : {}", remoteVersion);
-                        connectionAdapter.disconnect();
+                        getConnectionAdapter().disconnect();
                     }
                 }
             }
@@ -256,7 +250,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
             result = connectionAdapter.hello(helloMsg).get(getMaxTimeout(), getMaxTimeoutUnit());
             smokeRpc(result);
         } catch (Throwable e) {
-            handleException(e);
+            errorHandler.handleException(e, getSessionContext());
         }
     }
 
@@ -310,12 +304,11 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
 
             OFSessionUtil.registerSession(this,
                     featureOutput, version);
-            this.setListenerMapping(OFSessionUtil.getListenersMap());
             LOG.info("handshake SETTLED: datapathId={}, auxiliaryId={}", featureOutput.getDatapathId(), featureOutput.getAuxiliaryId());
         } catch (Throwable e) {
             //handshake failed
             LOG.error("issuing disconnect during handshake, reason: "+e.getMessage());
-            handleException(e);
+            errorHandler.handleException(e, getSessionContext());
             disconnect();
         }
     }
@@ -323,7 +316,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     /**
      * @return rpc-response timeout in [ms]
      */
-    private long getMaxTimeout() {
+    protected long getMaxTimeout() {
         // TODO:: get from configuration
         return 2000;
     }
@@ -331,93 +324,77 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     /**
      * @return milliseconds
      */
-    private TimeUnit getMaxTimeoutUnit() {
+    protected TimeUnit getMaxTimeoutUnit() {
         // TODO:: get from configuration
         return TimeUnit.MILLISECONDS;
     }
 
-
-    /**
-     * @param e
-     */
-    protected void handleException(Throwable e) {
-        String sessionKeyId = null;
-        if (getSessionContext() != null) {
-            sessionKeyId = Arrays.toString(getSessionContext().getSessionKey().getId());
-        }
-        
-        Exception causeAndThread = new Exception(
-                "IN THREAD: "+Thread.currentThread().getName() +
-                "; session:"+sessionKeyId, e);
-        try {
-            errorQueue.put(causeAndThread);
-        } catch (InterruptedException e1) {
-            LOG.error(e1.getMessage(), e1);
-        }
+    @Override
+    public void onMultipartReplyMessage(MultipartReplyMessage message) {
+        queueKeeper.push(MultipartReplyMessage.class, message, this);
     }
 
     @Override
-    public void onMultipartReplyMessage(MultipartReplyMessage arg0) {
-        // TODO Auto-generated method stub
-    }
-
-    @Override
-    public void onMultipartRequestMessage(MultipartRequestMessage arg0) {
-        // TODO Auto-generated method stub
+    public void onMultipartRequestMessage(MultipartRequestMessage message) {
+        queueKeeper.push(MultipartRequestMessage.class, message, this);
     }
 
     @Override
     public void onPacketInMessage(PacketInMessage message) {
-        notifyListeners(PacketInMessage.class, message);
+        queueKeeper.push(PacketInMessage.class, message, this);
     }
 
     @Override
     public void onPortStatusMessage(PortStatusMessage message) {
         this.getSessionContext().processPortStatusMsg(message);
-        notifyListeners(PortStatusMessage.class, message);
+        queueKeeper.push(PortStatusMessage.class, message, this);
     }
 
     @Override
     public void onSwitchIdleEvent(SwitchIdleEvent notification) {
-        if (!CONDUCTOR_STATE.WORKING.equals(conductorState)) {
-            // idle state in any other conductorState than WORKING means real
-            // problem and wont be handled by echoReply, but disconnection
-            disconnect();
-            OFSessionUtil.getSessionManager().invalidateOnDisconnect(this);
-        } else {
-            LOG.debug("first idle state occured");
-            EchoInputBuilder builder = new EchoInputBuilder();
-            builder.setVersion(version);
-            // TODO: get xid from sessionContext
-            builder.setXid(42L);
-
-            Future<RpcResult<EchoOutput>> echoReplyFuture = connectionAdapter
-                    .echo(builder.build());
-
-            try {
-                // TODO: read timeout from config
-                RpcResult<EchoOutput> echoReplyValue = echoReplyFuture.get(getMaxTimeout(),
-                        getMaxTimeoutUnit());
-                if (echoReplyValue.isSuccessful()) {
-                    conductorState = CONDUCTOR_STATE.WORKING;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (!CONDUCTOR_STATE.WORKING.equals(getConductorState())) {
+                    // idle state in any other conductorState than WORKING means real
+                    // problem and wont be handled by echoReply, but disconnection
+                    disconnect();
+                    OFSessionUtil.getSessionManager().invalidateOnDisconnect(ConnectionConductorImpl.this);
                 } else {
-                    for (RpcError replyError : echoReplyValue.getErrors()) {
-                        Throwable cause = replyError.getCause();
-                        LOG.error(
-                                "while receiving echoReply in TIMEOUTING state: "
-                                        + cause.getMessage(), cause);
+                    LOG.debug("first idle state occured");
+                    EchoInputBuilder builder = new EchoInputBuilder();
+                    builder.setVersion(getVersion());
+                    builder.setXid(getSessionContext().getNextXid());
+                    
+                    Future<RpcResult<EchoOutput>> echoReplyFuture = getConnectionAdapter()
+                            .echo(builder.build());
+                    
+                    try {
+                        RpcResult<EchoOutput> echoReplyValue = echoReplyFuture.get(getMaxTimeout(),
+                                getMaxTimeoutUnit());
+                        if (echoReplyValue.isSuccessful()) {
+                            setConductorState(CONDUCTOR_STATE.WORKING);
+                        } else {
+                            for (RpcError replyError : echoReplyValue.getErrors()) {
+                                Throwable cause = replyError.getCause();
+                                LOG.error(
+                                        "while receiving echoReply in TIMEOUTING state: "
+                                                + cause.getMessage(), cause);
+                            }
+                            //switch issue occurred
+                            throw new Exception("switch issue occurred");
+                        }
+                    } catch (Exception e) {
+                        LOG.error("while waiting for echoReply in TIMEOUTING state: "
+                                + e.getMessage(), e);
+                        //switch is not responding
+                        disconnect();
+                        OFSessionUtil.getSessionManager().invalidateOnDisconnect(ConnectionConductorImpl.this);
                     }
-                    //switch issue occurred
-                    throw new Exception("switch issue occurred");
                 }
-            } catch (Exception e) {
-                LOG.error("while waiting for echoReply in TIMEOUTING state: "
-                        + e.getMessage(), e);
-                //switch is not responding
-                disconnect();
-                OFSessionUtil.getSessionManager().invalidateOnDisconnect(this);
             }
-        }
+            
+        }).start();
     }
 
     /**
@@ -544,36 +521,6 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         return sessionContext;
     }
     
-    /**
-     * @param listenerMapping the listenerMapping to set
-     */
-    public void setListenerMapping(
-            Map<Class<? extends DataObject>, Collection<IMDMessageListener>> listenerMapping) {
-        this.listenerMapping = listenerMapping;
-    }
-
-    /**
-     * @param messageType
-     * @param message
-     * @deprecated use {@link QueueKeeper} strategy
-     */
-    @Deprecated
-    private void notifyListeners(Class<? extends DataObject> messageType, DataObject message) {
-        Collection<IMDMessageListener> listeners = listenerMapping.get(messageType);
-        if (listeners != null) {
-                for (IMDMessageListener listener : listeners) {
-                    // Pass cookie only for PACKT_IN
-                    if ( messageType.equals("PacketInMessage.class")){
-                        listener.receive(this.getAuxiliaryKey(), this.getSessionContext(), message);
-                    } else {
-                        listener.receive(null, this.getSessionContext(), message);
-                    }
-                }
-        } else {
-            LOG.warn("No listeners for this message Type {}", messageType);
-        }
-    }
-
     @Override
     public ConnectionAdapter getConnectionAdapter() {
         return connectionAdapter;
@@ -582,7 +529,6 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     @Override
     public void onConnectionReady() {
         LOG.debug("connection is ready-to-use");
-        //TODO: fire first helloMessage
         new Thread(new Runnable() {
             @Override
             public void run() {

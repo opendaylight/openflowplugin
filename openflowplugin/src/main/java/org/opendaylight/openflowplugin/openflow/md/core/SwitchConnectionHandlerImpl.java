@@ -22,6 +22,7 @@ import org.opendaylight.openflowplugin.openflow.md.queue.QueueKeeperLightImpl;
 public class SwitchConnectionHandlerImpl implements SwitchConnectionHandler {
     
     private QueueKeeperLightImpl<Object> queueKeeper;
+    private ErrorHandler errorHandler;
 
     /**
      * 
@@ -32,6 +33,8 @@ public class SwitchConnectionHandlerImpl implements SwitchConnectionHandler {
         queueKeeper.init();
         // TODO: add pop-listeners consuming object processed via queue
         //queueKeeper.addPopListener(listener);
+        
+        errorHandler = new ErrorHandlerQueueImpl();
     }
 
     @Override
@@ -44,6 +47,7 @@ public class SwitchConnectionHandlerImpl implements SwitchConnectionHandler {
     public void onSwitchConnected(ConnectionAdapter connectionAdapter) {
         ConnectionConductor conductor = ConnectionConductorFactory.createConductor(
                 connectionAdapter, queueKeeper);
+        conductor.setErrorHandler(errorHandler);
     }
 
 }

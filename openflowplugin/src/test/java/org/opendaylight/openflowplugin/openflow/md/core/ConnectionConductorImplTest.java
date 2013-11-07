@@ -62,6 +62,9 @@ public class ConnectionConductorImplTest {
     protected static final Logger LOG = LoggerFactory
             .getLogger(ConnectionConductorImplTest.class);
 
+    /** in [ms] */
+    private final int maxProcessingTimeout = 500;
+    
     protected ConnectionAdapterStackImpl adapter;
     private ConnectionConductorImpl connectionConductor;
     private MDController controller;
@@ -122,7 +125,6 @@ public class ConnectionConductorImplTest {
         popListener = new PopListenerCountingImpl<>();
         
         queueKeeper = new QueueKeeperLightImpl<>();
-        queueKeeper.setListenerMapping(assembleListenerMapping());
         queueKeeper.init();
         queueKeeper.addPopListener(popListener);
         
@@ -131,10 +133,13 @@ public class ConnectionConductorImplTest {
         connectionConductor.init();
         controller = new MDController();
         controller.init();
+        queueKeeper.setListenerMapping(controller.getMessageListeners());
         eventPlan = new Stack<>();
         adapter.setEventPlan(eventPlan);
         adapter.setProceedTimeout(5000L);
         adapter.checkListeners();
+        
+        controller.getMessageListeners().putAll(assembleListenerMapping());
     }
 
     /**
@@ -281,8 +286,6 @@ public class ConnectionConductorImplTest {
         eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L,
                 EventFactory.DEFAULT_VERSION, builder1));
         
-        connectionConductor.setListenerMapping(assembleListenerMapping());
-        
         executeLater();
 
         Runnable sendExperimenterCmd = new Runnable() {
@@ -364,9 +367,15 @@ public class ConnectionConductorImplTest {
         FlowRemovedMessageBuilder builder1 = new FlowRemovedMessageBuilder();
         builder1.setXid(1L);
         connectionConductor.onFlowRemovedMessage(builder1.build());
+        synchronized (popListener) {
+            popListener.wait(maxProcessingTimeout);
+        }
         Assert.assertEquals(1, flowremovedMessageCounter);
         builder1.setXid(2L);
         connectionConductor.onFlowRemovedMessage(builder1.build());
+        synchronized (popListener) {
+            popListener.wait(maxProcessingTimeout);
+        }
         Assert.assertEquals(2, flowremovedMessageCounter);
     }
 
@@ -424,9 +433,15 @@ public class ConnectionConductorImplTest {
         PacketInMessageBuilder builder1 = new PacketInMessageBuilder();
         builder1.setBufferId((long)1);
         connectionConductor.onPacketInMessage(builder1.build());
+        synchronized (popListener) {
+            popListener.wait(maxProcessingTimeout);
+        }
         Assert.assertEquals(1, packetinMessageCounter);
         builder1.setBufferId((long)2);
         connectionConductor.onPacketInMessage(builder1.build());
+        synchronized (popListener) {
+            popListener.wait(maxProcessingTimeout);
+        }
         Assert.assertEquals(2, packetinMessageCounter);
     }
 
@@ -464,12 +479,21 @@ public class ConnectionConductorImplTest {
         PortFeatures features = new PortFeatures(true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false);
         builder1.setPortNo(90L).setReason(PortReason.OFPPRADD).setCurrentFeatures(features);
         connectionConductor.onPortStatusMessage(builder1.build());
+        synchronized (popListener) {
+            popListener.wait(maxProcessingTimeout);
+        }
         Assert.assertEquals(1, portstatusAddMessageCounter);
         builder1.setPortNo(90L).setReason(PortReason.OFPPRMODIFY).setCurrentFeatures(features);
         connectionConductor.onPortStatusMessage(builder1.build());
+        synchronized (popListener) {
+            popListener.wait(maxProcessingTimeout);
+        }
         Assert.assertEquals(1, portstatusModifyMessageCounter);
         builder1.setPortNo(90L).setReason(PortReason.OFPPRDELETE).setCurrentFeatures(features);
         connectionConductor.onPortStatusMessage(builder1.build());
+        synchronized (popListener) {
+            popListener.wait(maxProcessingTimeout);
+        }
         Assert.assertEquals(1, portstatusDeleteMessageCounter);
     }
 
@@ -792,9 +816,6 @@ public class ConnectionConductorImplTest {
      */
     @Test
     public void testOnExperimenterMessage() throws InterruptedException {
-        final int maxProcessingTimeout = 500;
-        
-        connectionConductor.setListenerMapping(assembleListenerMapping());
         ExperimenterMessageBuilder builder1 = new ExperimenterMessageBuilder();
         builder1.setExperimenter(84L).setExpType(4L);
         connectionConductor.onExperimenterMessage(builder1.build());
@@ -819,8 +840,6 @@ public class ConnectionConductorImplTest {
      */
     @Test
     public void testOnErrorMessage() throws InterruptedException {
-        final int maxProcessingTimeout = 500;
-        connectionConductor.setListenerMapping(assembleListenerMapping());
         ErrorMessageBuilder builder1 = new ErrorMessageBuilder();
         builder1.setCode(100);
         connectionConductor.onErrorMessage(builder1.build());
@@ -837,7 +856,11 @@ public class ConnectionConductorImplTest {
     }
 
     /**
-     * @return listener mapping
+     * @return listener mapping for :
+     * <ul>
+     * <li>experimenter</li>
+     * <li>error</li>
+     * </ul>
      */
     private Map<Class<? extends DataObject>, Collection<IMDMessageListener>> assembleListenerMapping() {
         IMDMessageListener objEms = new ExperimenterMessageService() ;
