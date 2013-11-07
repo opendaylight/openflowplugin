@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da6255ed_6b81be8e",
+        "filename": "openflowplugin/src/test/java/org/opendaylight/openflowplugin/openflow/md/core/ConnectionConductorImplTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 62
+      },
+      "writtenOn": "2013-11-07T21:08:37Z",
+      "side": 1,
+      "message": "Why are these methods called \"setXYZMessageCounter\" when in reality they are increment methods rather than setters?",
+      "revId": "d102c9d9585b6b779fda273d1ee32fbc5c0737e9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
