@@ -11,6 +11,7 @@
       <module>../commons</module>
       <module>../openflow_netty</module>
       <module>../openflowplugin</module>
+      <module>../distribution/base</module>
       <module>../openflowplugin-it</module>
     </modules>
 </project>
