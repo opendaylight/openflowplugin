@@ -5,18 +5,26 @@ import java.util.concurrent.Future;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInput;
+
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInput;
+
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.SalGroupService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.SalMeterService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeterInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeterOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInput;
 import org.opendaylight.yangtools.concepts.CompositeObjectRegistration;
@@ -51,20 +59,20 @@ public interface ModelDrivenSwitch extends //
     public Future<RpcResult<Void>> updateFlow(UpdateFlowInput input);
 
     @Override
-    public Future<RpcResult<Void>> addGroup(AddGroupInput input);
+    public Future<RpcResult<AddGroupOutput>> addGroup(AddGroupInput input);
 
     @Override
-    public Future<RpcResult<Void>> addMeter(AddMeterInput input);
+    public Future<RpcResult<AddMeterOutput>> addMeter(AddMeterInput input);
 
     @Override
-    public Future<RpcResult<Void>> removeGroup(RemoveGroupInput input);
+    public Future<RpcResult<RemoveGroupOutput>> removeGroup(RemoveGroupInput input);
 
     @Override
-    public Future<RpcResult<Void>> removeMeter(RemoveMeterInput input);
+    public Future<RpcResult<RemoveMeterOutput>> removeMeter(RemoveMeterInput input);
 
     @Override
-    public Future<RpcResult<Void>> updateGroup(UpdateGroupInput input);
+    public Future<RpcResult<UpdateGroupOutput>> updateGroup(UpdateGroupInput input);
 
     @Override
-    public Future<RpcResult<Void>> updateMeter(UpdateMeterInput input);
+    public Future<RpcResult<UpdateMeterOutput>> updateMeter(UpdateMeterInput input);
 }

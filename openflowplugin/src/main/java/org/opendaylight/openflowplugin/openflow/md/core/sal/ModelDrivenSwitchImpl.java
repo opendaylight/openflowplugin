@@ -12,16 +12,23 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddF
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.NodeFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeterInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeterOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.MatchEntries;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowMod;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
@@ -34,10 +41,12 @@ import org.slf4j.Logger;
 
 public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 
-    public static final Logger LOG = org.slf4j.LoggerFactory.getLogger(ModelDrivenSwitchImpl.class);
+    public static final Logger LOG = org.slf4j.LoggerFactory
+            .getLogger(ModelDrivenSwitchImpl.class);
     private final NodeId nodeId;
 
-    protected ModelDrivenSwitchImpl(NodeId nodeId, InstanceIdentifier<Node> identifier, SessionContext context) {
+    protected ModelDrivenSwitchImpl(NodeId nodeId,
+            InstanceIdentifier<Node> identifier, SessionContext context) {
         super(identifier, context);
         this.nodeId = nodeId;
     }
@@ -50,13 +59,13 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     }
 
     @Override
-    public Future<RpcResult<Void>> addGroup(AddGroupInput input) {
+    public Future<RpcResult<AddGroupOutput>> addGroup(AddGroupInput input) {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public Future<RpcResult<Void>> addMeter(AddMeterInput input) {
+    public Future<RpcResult<AddMeterOutput>> addMeter(AddMeterInput input) {
         // TODO Auto-generated method stub
         return null;
     }
@@ -68,13 +77,15 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     }
 
     @Override
-    public Future<RpcResult<Void>> removeGroup(RemoveGroupInput input) {
+    public Future<RpcResult<RemoveGroupOutput>> removeGroup(
+            RemoveGroupInput input) {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public Future<RpcResult<Void>> removeMeter(RemoveMeterInput input) {
+    public Future<RpcResult<RemoveMeterOutput>> removeMeter(
+            RemoveMeterInput input) {
         // TODO Auto-generated method stub
         return null;
     }
@@ -95,7 +106,8 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         return target;
     }
 
-    private Match toMatch(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match match) {
+    private Match toMatch(
+            org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match match) {
         MatchBuilder target = new MatchBuilder();
 
         target.setMatchEntries(toMatchEntries(match));
@@ -117,13 +129,15 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     }
 
     @Override
-    public Future<RpcResult<Void>> updateGroup(UpdateGroupInput input) {
+    public Future<RpcResult<UpdateGroupOutput>> updateGroup(
+            UpdateGroupInput input) {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public Future<RpcResult<Void>> updateMeter(UpdateMeterInput input) {
+    public Future<RpcResult<UpdateMeterOutput>> updateMeter(
+            UpdateMeterInput input) {
         // TODO Auto-generated method stub
         return null;
     }
