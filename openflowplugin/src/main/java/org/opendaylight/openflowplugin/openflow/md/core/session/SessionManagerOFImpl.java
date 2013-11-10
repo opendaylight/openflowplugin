@@ -8,14 +8,17 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.session;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
-import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageListener;
+import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
+import org.opendaylight.openflowplugin.openflow.md.core.TranslatorKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.concepts.util.ListenerRegistry;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -27,12 +30,12 @@ import org.slf4j.LoggerFactory;
  */
 public class SessionManagerOFImpl implements SessionManager {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SessionManagerOFImpl.class);
+    protected static final Logger LOG = LoggerFactory.getLogger(SessionManagerOFImpl.class);
     private static SessionManagerOFImpl instance;
     private ConcurrentHashMap<SwitchConnectionDistinguisher, SessionContext> sessionLot;
-    private Map<Class<? extends DataObject>, Collection<IMDMessageListener>> listenerMapping;
+    private Map<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, DataObject>>> translatorMapping;
 
-    private final ListenerRegistry<SessionListener> sessionListeners = new ListenerRegistry<>();
+    protected final ListenerRegistry<SessionListener> sessionListeners = new ListenerRegistry<>();
 
     /**
      * @return singleton instance
@@ -84,6 +87,9 @@ public class SessionManagerOFImpl implements SessionManager {
     }
 
     private void removeSessionContext(SessionContext sessionContext) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("removing session: {}", Arrays.toString(sessionContext.getSessionKey().getId()));
+        }
         sessionLot.remove(sessionContext.getSessionKey(), sessionContext);
         sessionNotifier.onSessionRemoved(sessionContext);
     }
@@ -135,12 +141,9 @@ public class SessionManagerOFImpl implements SessionManager {
         }
     }
 
-    /**
-     * @param listenerMapping
-     *            the listenerMapping to set
-     */
-    public void setListenerMapping(Map<Class<? extends DataObject>, Collection<IMDMessageListener>> listenerMapping) {
-        this.listenerMapping = listenerMapping;
+    @Override
+    public void setTranslatorMapping(Map<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, DataObject>>> translatorMapping) {
+        this.translatorMapping = translatorMapping;
     }
 
     @Override
@@ -173,8 +176,8 @@ public class SessionManagerOFImpl implements SessionManager {
     };
 
     @Override
-    public Map<Class<? extends DataObject>, Collection<IMDMessageListener>> getListenerMapping() {
-        return this.listenerMapping;
+    public Map<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, DataObject>>> getTranslatorMapping() {
+        return this.translatorMapping;
     }
 
 }

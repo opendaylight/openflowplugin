@@ -15,14 +15,11 @@ import junit.framework.Assert;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opendaylight.controller.test.sal.binding.it.TestHelper;
 import org.opendaylight.openflowjava.protocol.impl.clients.ClientEvent;
-import org.opendaylight.openflowjava.protocol.impl.clients.ScenarioFactory;
 import org.opendaylight.openflowjava.protocol.impl.clients.ScenarioHandler;
-import org.opendaylight.openflowjava.protocol.impl.clients.SendEvent;
 import org.opendaylight.openflowjava.protocol.impl.clients.SimpleClient;
 import org.opendaylight.openflowjava.protocol.impl.clients.SleepEvent;
-import org.opendaylight.openflowjava.protocol.impl.clients.WaitForMessageEvent;
-import org.opendaylight.openflowjava.protocol.impl.util.ByteBufUtils;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
@@ -89,7 +86,8 @@ public class OFPluginToLibraryTest {
 
         switchSim = new SimpleClient("localhost", 6653);
         switchSim.setSecuredClient(false);
-        Stack<ClientEvent> handshakeScenario = ScenarioFactory.createHandshakeScenario();
+        Stack<ClientEvent> handshakeScenario = ScenarioFactory.createHandshakeScenarioVBM(
+                ScenarioFactory.VERSION_BITMAP_13, (short) 0, ScenarioFactory.VERSION_BITMAP_10_13);
         
         ScenarioHandler scenario = new ScenarioHandler(handshakeScenario);
         switchSim.setScenarioHandler(scenario);
@@ -115,13 +113,8 @@ public class OFPluginToLibraryTest {
 
         switchSim = new SimpleClient("localhost", 6653);
         switchSim.setSecuredClient(false);
-        Stack<ClientEvent> handshakeScenario = new Stack<>();
-        // handshake with versionbitmap
-        handshakeScenario.add(0, new SendEvent(ByteBufUtils.hexStringToBytes("04 00 00 10 00 00 00 01 00 01 00 08 00 00 00 10")));
-        handshakeScenario.add(0, new WaitForMessageEvent(ByteBufUtils.hexStringToBytes("04 00 00 10 00 00 00 15 00 01 00 08 00 00 00 12")));
-        handshakeScenario.add(0, new WaitForMessageEvent(ByteBufUtils.hexStringToBytes("04 05 00 08 00 00 00 03")));
-        handshakeScenario.add(0, new SendEvent(ByteBufUtils.hexStringToBytes("04 06 00 20 00 00 00 03 "
-                + "00 01 02 03 04 05 06 07 00 01 02 03 01 00 00 00 00 01 02 03 00 01 02 03")));
+        Stack<ClientEvent> handshakeScenario = ScenarioFactory.createHandshakeScenario(
+                (short) 0, ScenarioFactory.VERSION_BITMAP_10_13);
         
         ScenarioHandler scenario = new ScenarioHandler(handshakeScenario);
         switchSim.setScenarioHandler(scenario);
@@ -147,9 +140,8 @@ public class OFPluginToLibraryTest {
 
         switchSim = new SimpleClient("localhost", 6653);
         switchSim.setSecuredClient(false);
-        Stack<ClientEvent> handshakeScenario = ScenarioFactory.createHandshakeScenario();
-        SendEvent featuresReply = new SendEvent(new byte[] {4, 6, 0, 32, 0, 0, 0, 3, 0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 1, 1, 0, 0, 0, 1, 2, 3, 0, 1, 2, 3});
-        handshakeScenario.setElementAt(featuresReply, 0);
+        Stack<ClientEvent> handshakeScenario = ScenarioFactory.createHandshakeScenario((short) 1, 
+                ScenarioFactory.VERSION_BITMAP_10_13);
         
         ScenarioHandler scenario = new ScenarioHandler(handshakeScenario);
         switchSim.setScenarioHandler(scenario);
@@ -175,7 +167,8 @@ public class OFPluginToLibraryTest {
 
         switchSim = new SimpleClient("localhost", 6653);
         switchSim.setSecuredClient(false);
-        Stack<ClientEvent> handshakeScenario = ScenarioFactory.createHandshakeScenario();
+        Stack<ClientEvent> handshakeScenario = ScenarioFactory.createHandshakeScenario((short) 1, 
+                ScenarioFactory.VERSION_BITMAP_10_13);
         handshakeScenario.setElementAt(new SleepEvent(5000), 0);
         
         ScenarioHandler scenario = new ScenarioHandler(handshakeScenario);
@@ -204,23 +197,16 @@ public class OFPluginToLibraryTest {
                 mavenBundle("org.slf4j", "log4j-over-slf4j").versionAsInProject(),
                 mavenBundle("ch.qos.logback", "logback-core").versionAsInProject(),
                 mavenBundle("ch.qos.logback", "logback-classic").versionAsInProject(),
-                mavenBundle("org.opendaylight.yangtools.thirdparty", "xtend-lib-osgi").versionAsInProject(),
-                mavenBundle("com.google.guava", "guava").versionAsInProject(),
-                mavenBundle("org.javassist", "javassist").versionAsInProject(),
                 mavenBundle("org.apache.felix", "org.apache.felix.dependencymanager").versionAsInProject(),
-                mavenBundle("org.apache.commons", "commons-lang3").versionAsInProject(),
-
+                TestHelper.mdSalCoreBundles(), TestHelper.bindingAwareSalBundles(),
+                TestHelper.flowCapableModelBundles(), TestHelper.baseModelBundles(),
+                
+                
                 mavenBundle(ODL, "sal").versionAsInProject(),
                 mavenBundle(ODL, "sal.connection").versionAsInProject(),
-                mavenBundle(ODL, "sal-binding-api").versionAsInProject(),
                 mavenBundle(ODL, "sal-common").versionAsInProject(),
-                mavenBundle(ODL, "sal-common-api").versionAsInProject(),
-                mavenBundle(ODL, "sal-common-util").versionAsInProject(),
 
                 mavenBundle("org.opendaylight.controller.thirdparty", "org.openflow.openflowj").versionAsInProject(),
-                mavenBundle(ODL_MODEL, "model-flow-base").versionAsInProject(),
-                mavenBundle(ODL_MODEL, "model-inventory").versionAsInProject(),
-                mavenBundle(ODL_MODEL, "model-flow-service").versionAsInProject(),
                 mavenBundle(ODL_MODEL, "model-flow-statistics").versionAsInProject(),
 
                 mavenBundle(OFLIBRARY, "openflow-protocol-impl").versionAsInProject(),
@@ -232,15 +218,6 @@ public class OFPluginToLibraryTest {
                 mavenBundle(NETTY, "netty-common").versionAsInProject(),
                 mavenBundle(NETTY, "netty-transport").versionAsInProject(),
                 mavenBundle(NETTY, "netty-codec").versionAsInProject(),
-
-                mavenBundle(YANG_MODEL, "ietf-inet-types").versionAsInProject(),
-                mavenBundle(YANG_MODEL, "ietf-yang-types").versionAsInProject(),
-                mavenBundle(YANG_MODEL, "yang-ext").versionAsInProject(),
-                mavenBundle(YANG_MODEL, "opendaylight-l2-types").versionAsInProject(),
-
-                mavenBundle(YANG, "concepts").versionAsInProject(),
-                mavenBundle(YANG, "yang-binding").versionAsInProject(),
-                mavenBundle(YANG, "yang-common").versionAsInProject(),
 
                 mavenBundle(OFLIBRARY, "simple-client").versionAsInProject().start(),
                 mavenBundle(OFPLUGIN, "openflowplugin").versionAsInProject(),

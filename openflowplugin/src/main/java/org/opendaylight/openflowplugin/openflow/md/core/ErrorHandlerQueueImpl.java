@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
  * dumping all exceptions to log
  * @author mirehak
  */
-public class ErrorHandlerQueueImpl implements Runnable, ErrorHandler {
+public class ErrorHandlerQueueImpl implements ErrorHandler {
 
     private static final Logger LOG = LoggerFactory
             .getLogger(ErrorHandlerQueueImpl.class);
@@ -47,10 +47,6 @@ public class ErrorHandlerQueueImpl implements Runnable, ErrorHandler {
         }
     }
     
-    /**
-     * @param e
-     * @param sessionContext TODO
-     */
     @Override
     public void handleException(Throwable e, SessionContext sessionContext) {
         String sessionKeyId = null;

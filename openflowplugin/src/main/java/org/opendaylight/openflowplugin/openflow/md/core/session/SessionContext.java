@@ -120,7 +120,7 @@ public interface SessionContext {
 
     /**
      * Returns a list containing all enabled ports of this switch.
-     * @return: List containing all enabled ports of this switch
+     * @return List containing all enabled ports of this switch
      */
     public List<Port> getEnabledPorts();
 

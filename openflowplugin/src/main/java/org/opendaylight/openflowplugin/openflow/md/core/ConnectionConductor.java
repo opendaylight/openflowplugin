@@ -14,6 +14,8 @@ import java.util.concurrent.Future;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.openflow.md.queue.QueueKeeper;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
+import org.opendaylight.yangtools.yang.binding.DataObject;
 
 import com.google.common.collect.Lists;
 
@@ -99,9 +101,8 @@ public interface ConnectionConductor {
     /**
      * assign global queueKeeper
      * @param queueKeeper
-     * TODO: replace object generic type
      */
-    void setQueueKeeper(QueueKeeper<Object> queueKeeper);
+    void setQueueKeeper(QueueKeeper<OfHeader, DataObject> queueKeeper);
 
     /**
      * @param errorHandler for internal exception handling

@@ -13,8 +13,10 @@ import java.util.Map;
 
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
-import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageListener;
+import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
+import org.opendaylight.openflowplugin.openflow.md.core.TranslatorKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 
@@ -60,9 +62,19 @@ public interface SessionManager {
      */
     public void invalidateOnDisconnect(ConnectionConductor connectionConductor);
 
-    public void setListenerMapping(Map<Class<? extends DataObject>, Collection<IMDMessageListener>> listenerMapping);
+    /**
+     * @param translatorMapping
+     */
+    public void setTranslatorMapping(Map<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, DataObject>>> translatorMapping);
     
-    public Map<Class<? extends DataObject>, Collection<IMDMessageListener>> getListenerMapping();
+    /**
+     * @return translator mapping
+     */
+    public Map<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, DataObject>>> getTranslatorMapping();
 
+    /**
+     * @param listener
+     * @return registration
+     */
     public ListenerRegistration<SessionListener> registerSessionListener(SessionListener listener);
 }

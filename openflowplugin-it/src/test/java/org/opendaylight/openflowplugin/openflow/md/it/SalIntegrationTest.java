@@ -23,7 +23,6 @@ import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ConsumerContext;
 import org.opendaylight.controller.sal.binding.api.BindingAwareConsumer;
 import org.opendaylight.controller.sal.binding.api.NotificationService;
-import org.opendaylight.openflowjava.protocol.impl.clients.ScenarioFactory;
 import org.opendaylight.openflowjava.protocol.impl.clients.ScenarioHandler;
 import org.opendaylight.openflowjava.protocol.impl.clients.SimpleClient;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
@@ -95,7 +94,8 @@ public class SalIntegrationTest {
 
         SimpleClient switchSim = new SimpleClient("localhost", 6653);
         switchSim.setSecuredClient(false);
-        ScenarioHandler scenario = new ScenarioHandler(ScenarioFactory.createHandshakeScenario());
+        ScenarioHandler scenario = new ScenarioHandler(ScenarioFactory.createHandshakeScenarioVBM(
+                ScenarioFactory.VERSION_BITMAP_13, (short) 0, ScenarioFactory.VERSION_BITMAP_10_13));
         switchSim.setScenarioHandler(scenario);
         switchSim.start();
 

@@ -4,17 +4,16 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
-
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketIn;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemoved;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketIn;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class MDControllerTest {
-    private static final Logger LOG = LoggerFactory
+    protected static final Logger LOG = LoggerFactory
             .getLogger(ConnectionConductorImplTest.class);
 
     protected MDController controller;
@@ -45,55 +44,59 @@ public class MDControllerTest {
      */
     @Test
     public void testAddMessageListeners() {
-            // Empty map
-            int size = controller.getMessageListeners().size();
-            Assert.assertEquals(size, 0);
-            // Add one
-            IMDMessageListener objDps = new DataPacketService() ;
-            controller.addMessageListener(PacketIn.class, objDps);
-            size = controller.getMessageListeners().size();
-            Assert.assertEquals(size, 1);
-            // Remove one
-            controller.removeMessageListener(PacketIn.class, objDps);
-            size = controller.getMessageListeners().size();
-            Assert.assertEquals(size, 0);
-            // Add two and remove One
-            IMDMessageListener objFps = new FlowProgrammerService();
-            controller.addMessageListener(PacketIn.class, objDps);
-            controller.addMessageListener(FlowRemoved.class, objFps);
-            controller.removeMessageListener(FlowRemoved.class, objFps);
-            size = controller.getMessageListeners().size();
-            Assert.assertEquals(size, 1);
-            // Add one more and remove both
-            controller.addMessageListener(FlowRemoved.class, objFps);
-            controller.removeMessageListener(PacketIn.class, objDps);
-            controller.removeMessageListener(FlowRemoved.class, objFps);
-            size = controller.getMessageListeners().size();
-            Assert.assertEquals(size, 0);
-            // Add multiple listeners to messageTypes
-            controller.addMessageListener(PacketIn.class, objDps);
-            controller.addMessageListener(PacketIn.class, objFps); // Duplicate value entry
-            controller.addMessageListener(FlowRemoved.class, objFps);
-            size = controller.getMessageListeners().size();
-            Assert.assertEquals(size, 2);
-            // Remove one of the multiple listener, still size remains same
-            controller.removeMessageListener(PacketIn.class, objFps);
-            size = controller.getMessageListeners().size();
-            Assert.assertEquals(size, 2);
-
+        //clean translators
+        controller.getMessageTranslators().clear();
+        
+        // Empty map
+        int size = controller.getMessageTranslators().size();
+        Assert.assertEquals(0, size);
+        // Add one
+        IMDMessageTranslator<OfHeader, DataObject> objDps = new DataPacketService() ;
+        controller.addMessageTranslator(PacketIn.class, 4, objDps);
+        size = controller.getMessageTranslators().size();
+        Assert.assertEquals(1, size);
+        // Remove one
+        controller.removeMessageTranslator(PacketIn.class, 4, objDps);
+        size = controller.getMessageTranslators().size();
+        Assert.assertEquals(0, size);
+        // Add two and remove One
+        IMDMessageTranslator objFps = new FlowProgrammerService();
+        controller.addMessageTranslator(PacketIn.class, 4, objDps);
+        controller.addMessageTranslator(FlowRemoved.class, 4, objFps);
+        controller.removeMessageTranslator(FlowRemoved.class, 4, objFps);
+        size = controller.getMessageTranslators().size();
+        Assert.assertEquals(1, size);
+        // Add one more and remove both
+        controller.addMessageTranslator(FlowRemoved.class, 4, objFps);
+        controller.removeMessageTranslator(PacketIn.class, 4, objDps);
+        controller.removeMessageTranslator(FlowRemoved.class, 4, objFps);
+        size = controller.getMessageTranslators().size();
+        Assert.assertEquals(0, size);
+        // Add multiple listeners to messageTypes
+        controller.addMessageTranslator(PacketIn.class, 4, objDps);
+        controller.addMessageTranslator(PacketIn.class, 4, objFps); // Duplicate value entry
+        controller.addMessageTranslator(FlowRemoved.class, 4, objFps);
+        size = controller.getMessageTranslators().size();
+        Assert.assertEquals(2, size);
+        // Remove one of the multiple listener, still size remains same
+        controller.removeMessageTranslator(PacketIn.class, 4, objFps);
+        size = controller.getMessageTranslators().size();
+        Assert.assertEquals(2, size);
     }
 
-    private class DataPacketService implements IMDMessageListener {
+    private class DataPacketService implements IMDMessageTranslator<OfHeader, DataObject> {
         @Override
-        public void receive(SwitchConnectionDistinguisher cookie, SessionContext sw, DataObject msg) {
+        public DataObject translate(SwitchConnectionDistinguisher cookie, SessionContext sw, OfHeader msg) {
             LOG.debug("Received a packet in DataPacket Service");
+            return null;
         }
     }
 
-    private class FlowProgrammerService implements IMDMessageListener {
+    private class FlowProgrammerService implements IMDMessageTranslator<OfHeader, DataObject> {
         @Override
-        public void receive(SwitchConnectionDistinguisher cookie, SessionContext sw, DataObject msg) {
+        public DataObject translate(SwitchConnectionDistinguisher cookie, SessionContext sw, OfHeader msg) {
             LOG.debug("Received a packet in Flow Programmer Service");
+            return null;
         }
     }
 

@@ -7,22 +7,24 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.queue;
 
+import java.util.List;
+
 import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
-import org.opendaylight.yangtools.yang.binding.DataObject;
 
 import com.google.common.util.concurrent.SettableFuture;
 
 /**
  * @author mirehak
- * @param <T> result type
+ * @param <IN> source type
+ * @param <OUT> result type
  *
  */
-public class TicketImpl<T> implements Ticket<T> {
+public class TicketImpl<IN, OUT> implements Ticket<IN, OUT> {
     
-    private DataObject message;
+    private IN message;
     private ConnectionConductor conductor;
-    private SettableFuture<T> future;
-    private Class<? extends DataObject> registeredMessageType;
+    private SettableFuture<List<OUT>> future;
+    private Class<? extends IN> registeredMessageType;
     
     /**
      * default ctor 
@@ -32,8 +34,7 @@ public class TicketImpl<T> implements Ticket<T> {
     }
 
     @Override
-    public SettableFuture<T> getResult() {
-        // TODO Auto-generated method stub
+    public SettableFuture<List<OUT>> getResult() {
         return future;
     }
 
@@ -41,14 +42,14 @@ public class TicketImpl<T> implements Ticket<T> {
      * @return the message
      */
     @Override
-    public DataObject getMessage() {
+    public IN getMessage() {
         return message;
     }
 
     /**
      * @param message the message to set
      */
-    public void setMessage(DataObject message) {
+    public void setMessage(IN message) {
         this.message = message;
     }
 
@@ -71,7 +72,7 @@ public class TicketImpl<T> implements Ticket<T> {
      * @param registeredMessageType
      */
     public void setRegisteredMessageType(
-            Class<? extends DataObject> registeredMessageType) {
+            Class<? extends IN> registeredMessageType) {
         this.registeredMessageType = registeredMessageType;
     }
     
@@ -79,7 +80,7 @@ public class TicketImpl<T> implements Ticket<T> {
      * @return the registeredMessageType
      */
     @Override
-    public Class<? extends DataObject> getRegisteredMessageType() {
+    public Class<? extends IN> getRegisteredMessageType() {
         return registeredMessageType;
     }
 }

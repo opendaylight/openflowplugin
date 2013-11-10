@@ -5,20 +5,21 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.openflowplugin.openflow.md.core;
+package org.opendaylight.openflowplugin.openflow.md.queue;
 
-import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
+import java.util.List;
+
+import com.google.common.util.concurrent.SettableFuture;
 
 /**
  * @author mirehak
- *
+ * @param <T> result typer 
  */
-public interface ErrorHandler extends Runnable {
+public interface TicketResult<T> {
 
     /**
-     * @param e cause
-     * @param sessionContext of source
+     * @return processed result
      */
-    void handleException(Throwable e, SessionContext sessionContext);
+    SettableFuture<List<T>> getResult();
 
 }

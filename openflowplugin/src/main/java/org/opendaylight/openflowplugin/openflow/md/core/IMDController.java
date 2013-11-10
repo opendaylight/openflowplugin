@@ -1,5 +1,6 @@
 package org.opendaylight.openflowplugin.openflow.md.core;
 
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 
 public interface IMDController {
@@ -7,22 +8,24 @@ public interface IMDController {
     /**
      * Allows application to start receiving OF messages received from switches.
      *
-     * @param type
+     * @param messageType
      *            the type of OF message that applications want to receive
-     * @param listener
+     * @param version corresponding OF version
+     * @param translator
      *            : Object that implements the IMDMessageListener
      */
-    public void addMessageListener(Class<? extends DataObject> messageType, IMDMessageListener listener);
+    public void addMessageTranslator(Class<? extends DataObject> messageType, int version, IMDMessageTranslator<OfHeader, DataObject> translator);
 
     /**
      * Allows application to stop receiving OF message received from switches.
      *
-     * @param type
+     * @param messageType
      *            The type of OF message that applications want to stop
      *            receiving
-     * @param listener
+     * @param version TODO
+     * @param translator
      *            The object that implements the IMDMessageListener
      */
-    public void removeMessageListener(Class<? extends DataObject> messageType, IMDMessageListener listener);
+    public void removeMessageTranslator(Class<? extends DataObject> messageType, int version, IMDMessageTranslator<OfHeader, DataObject> translator);
 
 }

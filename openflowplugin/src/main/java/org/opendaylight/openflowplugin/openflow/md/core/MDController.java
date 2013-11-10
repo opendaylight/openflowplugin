@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.openflow.md.core;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,10 +24,14 @@ import org.opendaylight.openflowjava.protocol.api.connection.ConnectionConfigura
 import org.opendaylight.openflowjava.protocol.api.connection.SwitchConnectionHandler;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
+import org.opendaylight.openflowplugin.openflow.md.core.translator.ErrorTranslator;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessage;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 
 /**
@@ -39,18 +44,26 @@ public class MDController implements IMDController {
 
     private SwitchConnectionProvider switchConnectionProvider;
 
-    private ConcurrentMap<Class<? extends DataObject>, Collection<IMDMessageListener>> messageListeners;
+    private ConcurrentMap<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, DataObject>>> messageTranslators;
 
-    public Map<Class<? extends DataObject>, Collection<IMDMessageListener>> getMessageListeners() {
-        return messageListeners;
+    /**
+     * @return translator mapping
+     */
+    public Map<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, DataObject>>> getMessageTranslators() {
+        return messageTranslators;
     }
 
-
+    /**
+     * provisioning of translator mapping
+     */
     public void init() {
         LOG.debug("Initializing!");
-        this.messageListeners = new ConcurrentHashMap<>();
+        messageTranslators = new ConcurrentHashMap<>();
+        addMessageTranslator(ErrorMessage.class, 4, new ErrorTranslator());
+        addMessageTranslator(ErrorMessage.class, 1, new ErrorTranslator());
+        
         // Push the updated Listeners to Session Manager which will be then picked up by ConnectionConductor eventually
-        OFSessionUtil.getSessionManager().setListenerMapping(messageListeners);
+        OFSessionUtil.getSessionManager().setTranslatorMapping(messageTranslators);
     }
 
     /**
@@ -123,27 +136,28 @@ public class MDController implements IMDController {
     }
 
     @Override
-    public void addMessageListener(Class<? extends DataObject> messageType, IMDMessageListener listener) {
-
-        Collection<IMDMessageListener> existingValues = messageListeners.get(messageType);
+    public void addMessageTranslator(Class<? extends DataObject> messageType, int version, IMDMessageTranslator<OfHeader, DataObject> translator) {
+        TranslatorKey tKey = new TranslatorKey(version, messageType.getName());
+        
+        Collection<IMDMessageTranslator<OfHeader, DataObject>> existingValues = messageTranslators.get(tKey);
         if (existingValues == null) {
-               existingValues = new ArrayList<IMDMessageListener>();
-               messageListeners.put(messageType, existingValues);
+            existingValues = new ArrayList<>();
+            messageTranslators.put(tKey, existingValues);
         }
-        existingValues.add(listener);
-        LOG.debug("{} is now listened by {}", messageType, listener);
+        existingValues.add(translator);
+        LOG.debug("{} is now listened by {}", messageType, translator);
     }
 
     @Override
-    public void removeMessageListener(Class<? extends DataObject> messageType, IMDMessageListener listener) {
-
-        Collection<IMDMessageListener> values = messageListeners.get(messageType);
+    public void removeMessageTranslator(Class<? extends DataObject> messageType, int version, IMDMessageTranslator<OfHeader, DataObject> translator) {
+        TranslatorKey tKey = new TranslatorKey(version, messageType.getName());
+        Collection<IMDMessageTranslator<OfHeader, DataObject>> values = messageTranslators.get(tKey);
         if (values != null) {
-                    values.remove(listener);
-                    if (values.size() == 0) {
-                        messageListeners.remove(messageType);
-                    }
-                    LOG.debug("{} is now removed", listener);
+            values.remove(translator);
+            if (values.isEmpty()) {
+                messageTranslators.remove(tKey);
+            }
+            LOG.debug("{} is now removed", translator);
          }
     }
 

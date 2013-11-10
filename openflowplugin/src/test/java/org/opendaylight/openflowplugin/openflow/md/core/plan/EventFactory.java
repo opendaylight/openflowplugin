@@ -8,6 +8,11 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.plan;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.concurrent.Callable;
+
+import org.opendaylight.openflowjava.protocol.api.connection.ConnectionReadyListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.binding.Notification;
 import org.slf4j.Logger;
@@ -90,6 +95,18 @@ public abstract class EventFactory {
         event.setXid(xid);
         return event;
     }
+    
+    /**
+     * @param events
+     * @return wait for all wrapper
+     */
+    public static SwitchTestWaitForAllEvent createDefaultWaitForAllEvent(
+            SwitchTestWaitForRpcEvent... events) {
+        SwitchTestWaitForAllEventImpl eventBag = new SwitchTestWaitForAllEventImpl();
+        HashSet<SwitchTestWaitForRpcEvent> eventsSet = new HashSet<>(Arrays.asList(events));
+        eventBag.setEventBag(eventsSet);
+        return eventBag;
+    }
 
     /**
      * @param xid
@@ -118,6 +135,23 @@ public abstract class EventFactory {
      */
     public static <E> E setupHeader(long xid, E builder) {
         return setupHeader(xid, DEFAULT_VERSION, builder);
+    }
+
+    /**
+     * @param connectionConductor 
+     * @return scenario callback
+     */
+    public static SwitchTestCallbackEventImpl createConnectionReadyCallback(
+            final ConnectionReadyListener connectionConductor) {
+        SwitchTestCallbackEventImpl connectionReadyCallback = new SwitchTestCallbackEventImpl();
+        connectionReadyCallback.setCallable(new Callable<Void>() {
+            @Override
+            public Void call() throws Exception {
+                connectionConductor.onConnectionReady();
+                return null;
+            }
+        });
+        return connectionReadyCallback;
     }
 
 }

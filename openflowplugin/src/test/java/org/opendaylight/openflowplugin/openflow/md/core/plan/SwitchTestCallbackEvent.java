@@ -5,20 +5,19 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.openflowplugin.openflow.md.core;
 
-import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
+package org.opendaylight.openflowplugin.openflow.md.core.plan;
+
+import java.util.concurrent.Callable;
 
 /**
  * @author mirehak
- *
  */
-public interface ErrorHandler extends Runnable {
+public interface SwitchTestCallbackEvent extends SwitchTestEvent {
 
     /**
-     * @param e cause
-     * @param sessionContext of source
+     * @return callback to be executed
      */
-    void handleException(Throwable e, SessionContext sessionContext);
+    public Callable<Void> getCallback();
 
 }
