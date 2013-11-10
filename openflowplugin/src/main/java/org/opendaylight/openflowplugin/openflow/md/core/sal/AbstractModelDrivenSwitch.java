@@ -1,9 +1,15 @@
+/**
+ * Copyright (c) 2013 Cisco Systems, Inc. and others.  All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.opendaylight.openflowplugin.openflow.md.core.sal;
 
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
 import org.opendaylight.openflowplugin.openflow.md.ModelDrivenSwitch;
-import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.SalGroupService;
@@ -14,8 +20,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.Pa
 import org.opendaylight.yangtools.concepts.CompositeObjectRegistration;
 import org.opendaylight.yangtools.concepts.CompositeObjectRegistration.CompositeObjectRegistrationBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.RpcService;
 
+/**
+ * RPC abstract for MD-switch
+ */
 public abstract class AbstractModelDrivenSwitch implements ModelDrivenSwitch {
 
     private final InstanceIdentifier<Node> identifier;
@@ -64,7 +72,10 @@ public abstract class AbstractModelDrivenSwitch implements ModelDrivenSwitch {
         return builder.toInstance();
     }
 
-    public SessionContext getConductor() {
+    /**
+     * @return session context 
+     */
+    public SessionContext getSessionContext() {
         return sessionContext;
     }
 

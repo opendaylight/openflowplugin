@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.queue;
 
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutionException;
@@ -16,23 +17,24 @@ import org.slf4j.LoggerFactory;
 
 /**
  * @author mirehak
- * @param <T> result type
+ * @param <IN> source type
+ * @param <OUT> result type
  *
  */
-public class TicketFinisher<T> implements Runnable {
+public class TicketFinisher<OUT> implements Runnable {
     
     private static final Logger LOG = LoggerFactory
             .getLogger(TicketFinisher.class);
     
-    private final BlockingQueue<Ticket<T>> queue;
-    private final Set<PopListener<T>> listeners;
+    private final BlockingQueue<TicketResult<OUT>> queue;
+    private final Set<PopListener<OUT>> listeners;
     
     /**
      * @param queue
      * @param listeners
      */
-    public TicketFinisher(BlockingQueue<Ticket<T>> queue,
-            Set<PopListener<T>> listeners) {
+    public TicketFinisher(BlockingQueue<TicketResult<OUT>> queue,
+            Set<PopListener<OUT>> listeners) {
         this.queue = queue;
         this.listeners = listeners;
     }
@@ -40,13 +42,18 @@ public class TicketFinisher<T> implements Runnable {
 
     @Override
     public void run() {
-        try {
-            Ticket<T> result = queue.take();
-            for (PopListener<T> consumer : listeners) {
-                consumer.onPop(result.getResult().get());
+        while (true) {
+            try {
+                //TODO:: handle shutdown of queue
+                TicketResult<OUT> result = queue.take();
+                List<OUT> processedMessage = result.getResult().get();
+                LOG.debug("finishing ticket: {}", System.identityHashCode(result));
+                for (PopListener<OUT> consumer : listeners) {
+                    consumer.onPop(processedMessage);
+                }
+            } catch (ExecutionException | InterruptedException e) {
+                LOG.error(e.getMessage(), e);
             }
-        } catch (ExecutionException | InterruptedException e) {
-            LOG.error(e.getMessage(), e);
         }
     }
 }

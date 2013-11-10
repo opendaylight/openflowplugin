@@ -8,26 +8,19 @@
 package org.opendaylight.openflowplugin.openflow.md.queue;
 
 import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
-import org.opendaylight.yangtools.yang.binding.DataObject;
-
-import com.google.common.util.concurrent.SettableFuture;
 
 /**
  * @author mirehak
  *
- * @param <T> resulting type of process ticket
+ * @param <IN> source type of process ticket
+ * @param <OUT> resulting type of process ticket
  */
-public interface Ticket<T> {
-
-    /**
-     * @return processed result
-     */
-    SettableFuture<T> getResult();
+public interface Ticket<IN, OUT> extends TicketResult<OUT> {
 
     /**
      * @return registered type of processed message
      */
-    Class<? extends DataObject> getRegisteredMessageType();
+    Class<? extends IN> getRegisteredMessageType();
 
     /**
      * @return connection wrapper
@@ -37,5 +30,5 @@ public interface Ticket<T> {
     /**
      * @return processed message
      */
-    DataObject getMessage();
+    IN getMessage();
 }

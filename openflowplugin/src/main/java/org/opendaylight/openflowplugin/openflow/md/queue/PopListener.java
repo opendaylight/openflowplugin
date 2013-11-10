@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.queue;
 
+import java.util.List;
+
 /**
  * @author mirehak
  * @param <T> result type
@@ -17,6 +19,6 @@ public interface PopListener<T> {
     /**
      * @param processedMessage
      */
-    void onPop(T processedMessage);
+    void onPop(List<T> processedMessage);
 
 }

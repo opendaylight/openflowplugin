@@ -9,13 +9,16 @@
 package org.opendaylight.openflowplugin.openflow.md.core.session;
 
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 
 import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
-import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageListener;
+import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
+import org.opendaylight.openflowplugin.openflow.md.core.TranslatorKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +41,10 @@ public abstract class OFSessionUtil {
         SwitchConnectionDistinguisher sessionKey = createSwitchSessionKey(features
                 .getDatapathId());
         SessionContext sessionContext = getSessionManager().getSessionContext(sessionKey);
-
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("registering sessionKey: {}", Arrays.toString(sessionKey.getId()));
+        }
+        
         if (features.getAuxiliaryId() == 0) {
             // handle primary
             if (sessionContext != null) {
@@ -149,8 +155,8 @@ public abstract class OFSessionUtil {
     /**
     * @return session manager listener Map
     */
-    public static Map<Class<? extends DataObject>, Collection<IMDMessageListener>> getListenersMap() {
-        return getSessionManager().getListenerMapping();
+    public static Map<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, DataObject>>> getListenersMap() {
+        return getSessionManager().getTranslatorMapping();
     }
 
 }

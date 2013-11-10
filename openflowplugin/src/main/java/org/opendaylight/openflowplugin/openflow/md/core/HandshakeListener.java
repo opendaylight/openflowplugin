@@ -7,18 +7,18 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core;
 
-import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 
 /**
  * @author mirehak
  *
  */
-public interface ErrorHandler extends Runnable {
-
+public interface HandshakeListener {
+    
     /**
-     * @param e cause
-     * @param sessionContext of source
+     * @param featureOutput obtained
+     * @param version negotiated
      */
-    void handleException(Throwable e, SessionContext sessionContext);
+    void onHandshakeSuccessfull(GetFeaturesOutput featureOutput, Short version);
 
 }

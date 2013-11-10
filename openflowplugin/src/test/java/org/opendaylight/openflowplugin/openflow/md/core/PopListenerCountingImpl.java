@@ -7,7 +7,11 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core;
 
+import java.util.List;
+
 import org.opendaylight.openflowplugin.openflow.md.queue.PopListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author mirehak
@@ -16,11 +20,14 @@ import org.opendaylight.openflowplugin.openflow.md.queue.PopListener;
  */
 public class PopListenerCountingImpl<T> implements PopListener<T> {
 
+    private static final Logger LOG = LoggerFactory
+            .getLogger(PopListenerCountingImpl.class);
     private int count = 0;
 
     @Override
-    public synchronized void onPop(T processedMessage) {
-        count ++;
+    public synchronized void onPop(List<T> processedMessage) {
+        LOG.debug("message popped: {}", processedMessage);
+        count += processedMessage.size();
         notify();
     }
     

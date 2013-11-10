@@ -43,6 +43,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemovedMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloMessageBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
@@ -75,9 +76,9 @@ public class ConnectionConductorImplTest {
     private ScheduledThreadPoolExecutor pool = new ScheduledThreadPoolExecutor(
             8);
 
-    private QueueKeeperLightImpl<Object> queueKeeper;
+    private QueueKeeperLightImpl queueKeeper;
 
-    private PopListener<Object> popListener;
+    private PopListener<DataObject> popListener;
 
     private int experimenterMessageCounter;
     private int packetinMessageCounter;
@@ -86,6 +87,8 @@ public class ConnectionConductorImplTest {
     private int portstatusDeleteMessageCounter;
     private int portstatusModifyMessageCounter;
     private int errorMessageCounter;
+
+    private ErrorHandlerQueueImpl errorHandler;
     
     public void incrExperimenterMessageCounter() {
         this.experimenterMessageCounter++;
@@ -125,22 +128,25 @@ public class ConnectionConductorImplTest {
         
         popListener = new PopListenerCountingImpl<>();
         
-        queueKeeper = new QueueKeeperLightImpl<>();
+        queueKeeper = new QueueKeeperLightImpl();
         queueKeeper.init();
         queueKeeper.addPopListener(popListener);
         
         connectionConductor = new ConnectionConductorImpl(adapter);
         connectionConductor.setQueueKeeper(queueKeeper);
         connectionConductor.init();
+        errorHandler = new ErrorHandlerQueueImpl();
+        pool.execute(errorHandler);
+        connectionConductor.setErrorHandler(errorHandler);
         controller = new MDController();
         controller.init();
-        queueKeeper.setListenerMapping(controller.getMessageListeners());
+        queueKeeper.setTranslatorMapping(controller.getMessageTranslators());
         eventPlan = new Stack<>();
         adapter.setEventPlan(eventPlan);
         adapter.setProceedTimeout(5000L);
         adapter.checkListeners();
         
-        controller.getMessageListeners().putAll(assembleListenerMapping());
+        controller.getMessageTranslators().putAll(assembleTranslatorMapping());
     }
 
     /**
@@ -152,6 +158,7 @@ public class ConnectionConductorImplTest {
             libSimulation.join();
         }
         queueKeeper.shutdown();
+        connectionConductor.shutdownPool();
         
         for (Exception problem : adapter.getOccuredExceptions()) {
             LOG.error("during simulation on adapter side: "
@@ -170,6 +177,7 @@ public class ConnectionConductorImplTest {
         Assert.assertTrue("plan is not finished", eventPlan.isEmpty());
         eventPlan = null;
         controller = null;
+        errorHandler = null;
     }
 
     /**
@@ -193,24 +201,17 @@ public class ConnectionConductorImplTest {
      */
     @Test
     public void testHandshake1() throws Exception {
+        eventPlan.add(0, EventFactory.createConnectionReadyCallback(connectionConductor));
         eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L,
                 EventFactory.DEFAULT_VERSION, new HelloMessageBuilder()));
-        eventPlan.add(0,
-                EventFactory.createDefaultWaitForRpcEvent(43, "helloReply"));
-        eventPlan.add(0,
-                EventFactory.createDefaultWaitForRpcEvent(44, "getFeatures"));
-        GetFeaturesOutputBuilder getFeaturesOutputBuilder = new GetFeaturesOutputBuilder();
-        getFeaturesOutputBuilder.setDatapathId(new BigInteger("102030405060"));
-        getFeaturesOutputBuilder.setAuxiliaryId((short) 0);
-        getFeaturesOutputBuilder.setBuffers(4L);
-        getFeaturesOutputBuilder.setReserved(0L);
-        getFeaturesOutputBuilder.setTables((short) 2);
-        getFeaturesOutputBuilder.setCapabilities(createCapabilities(84));
+        eventPlan.add(0, EventFactory.createDefaultWaitForAllEvent(
+                EventFactory.createDefaultWaitForRpcEvent(21, "helloReply"),
+                EventFactory.createDefaultWaitForRpcEvent(43, "getFeatures")));
+        eventPlan.add(0, EventFactory.createDefaultRpcResponseEvent(43,
+                EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
 
-        eventPlan.add(0, EventFactory.createDefaultRpcResponseEvent(44,
-                EventFactory.DEFAULT_VERSION, getFeaturesOutputBuilder));
-
-        execute(true);
+        executeNow();
+        
         Assert.assertEquals(ConnectionConductor.CONDUCTOR_STATE.WORKING,
                 connectionConductor.getConductorState());
         Assert.assertEquals((short) 0x04, connectionConductor.getVersion()
@@ -223,34 +224,26 @@ public class ConnectionConductorImplTest {
      */
     @Test
     public void testHandshake2() throws Exception {
+        connectionConductor.setBitmapNegotiationEnable(false);
+        eventPlan.add(0, EventFactory.createConnectionReadyCallback(connectionConductor));
         eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L,
                 (short) 0x05, new HelloMessageBuilder()));
         eventPlan.add(0,
-                EventFactory.createDefaultWaitForRpcEvent(43, "helloReply"));
+                EventFactory.createDefaultWaitForRpcEvent(21, "helloReply"));
         eventPlan.add(0, EventFactory.createDefaultNotificationEvent(43L,
-                (short) 0x01, new HelloMessageBuilder()));
+                (short) 0x03, new HelloMessageBuilder()));
         eventPlan.add(0,
                 EventFactory.createDefaultWaitForRpcEvent(44, "helloReply"));
-        // Commented : connection will terminate if hello message is sent again
-        // with not supported version
-//        eventPlan.add(0, EventFactory.createDefaultNotificationEvent(44L,
-//                (short) 0x01, new HelloMessageBuilder()));
-//        eventPlan.add(0,
-//                EventFactory.createDefaultWaitForRpcEvent(45, "helloReply"));
+        eventPlan.add(0, EventFactory.createDefaultNotificationEvent(44L,
+                (short) 0x01, new HelloMessageBuilder()));
         eventPlan.add(0,
                 EventFactory.createDefaultWaitForRpcEvent(45, "getFeatures"));
-        GetFeaturesOutputBuilder getFeaturesOutputBuilder = new GetFeaturesOutputBuilder();
-        getFeaturesOutputBuilder.setDatapathId(new BigInteger("102030405060"));
-        getFeaturesOutputBuilder.setAuxiliaryId((short) 0);
-        getFeaturesOutputBuilder.setBuffers(4L);
-        getFeaturesOutputBuilder.setReserved(0L);
-        getFeaturesOutputBuilder.setTables((short) 2);
-        getFeaturesOutputBuilder.setCapabilities(createCapabilities(84));
 
         eventPlan.add(0, EventFactory.createDefaultRpcResponseEvent(45,
-                EventFactory.DEFAULT_VERSION, getFeaturesOutputBuilder));
+                EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
 
         executeNow();
+        
         Assert.assertEquals(ConnectionConductor.CONDUCTOR_STATE.WORKING,
                 connectionConductor.getConductorState());
         Assert.assertEquals((short) 0x01, connectionConductor.getVersion()
@@ -344,31 +337,27 @@ public class ConnectionConductorImplTest {
      */
     @Test
     public void testOnFlowRemovedMessage() throws InterruptedException {
-        IMDMessageListener objFms = new FlowRemovedMessageService() ;
-        controller.addMessageListener(FlowRemovedMessage.class, objFms);
+        IMDMessageTranslator<OfHeader, DataObject> objFms = new FlowRemovedMessageService() ;
+        controller.addMessageTranslator(FlowRemovedMessage.class, 4, objFms);
         
         // Complete HandShake
+        eventPlan.add(0, EventFactory.createConnectionReadyCallback(connectionConductor));
         eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L,
-        EventFactory.DEFAULT_VERSION, new HelloMessageBuilder()));
-        eventPlan.add(0,
-        EventFactory.createDefaultWaitForRpcEvent(43, "helloReply"));
-        eventPlan.add(0,EventFactory.createDefaultWaitForRpcEvent(44, "getFeatures"));
-        GetFeaturesOutputBuilder getFeaturesOutputBuilder = new GetFeaturesOutputBuilder();
-        getFeaturesOutputBuilder.setDatapathId(new BigInteger("102030405060"));
-        getFeaturesOutputBuilder.setAuxiliaryId((short) 0);
-        getFeaturesOutputBuilder.setBuffers(4L);
-        getFeaturesOutputBuilder.setReserved(0L);
-        getFeaturesOutputBuilder.setTables((short) 2);
-        getFeaturesOutputBuilder.setCapabilities(createCapabilities(84));
-        eventPlan.add(0, EventFactory.createDefaultRpcResponseEvent(44,
-          EventFactory.DEFAULT_VERSION, getFeaturesOutputBuilder));
+                EventFactory.DEFAULT_VERSION, new HelloMessageBuilder()));
+        eventPlan.add(0, EventFactory.createDefaultWaitForAllEvent(
+                EventFactory.createDefaultWaitForRpcEvent(21, "helloReply"),
+                EventFactory.createDefaultWaitForRpcEvent(43, "getFeatures")));
+        eventPlan.add(0, EventFactory.createDefaultRpcResponseEvent(43,
+          EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
         execute(true);
         
         // Now send Flow Removed messages
         FlowRemovedMessageBuilder builder1 = new FlowRemovedMessageBuilder();
+        builder1.setVersion((short) 4);
         builder1.setXid(1L);
         connectionConductor.onFlowRemovedMessage(builder1.build());
         synchronized (popListener) {
+            LOG.debug("about to wait for popListener");
             popListener.wait(maxProcessingTimeout);
         }
         Assert.assertEquals(1, flowremovedMessageCounter);
@@ -410,28 +399,23 @@ public class ConnectionConductorImplTest {
      */
     @Test
     public void testOnPacketInMessage() throws InterruptedException {
-        IMDMessageListener objPms = new PacketInMessageService() ;
-        controller.addMessageListener(PacketInMessage.class, objPms);
+        IMDMessageTranslator<OfHeader, DataObject> objPms = new PacketInMessageService() ;
+        controller.addMessageTranslator(PacketInMessage.class, 4, objPms);
         
         // Complete HandShake
+        eventPlan.add(0, EventFactory.createConnectionReadyCallback(connectionConductor));
         eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L,
         EventFactory.DEFAULT_VERSION, new HelloMessageBuilder()));
-        eventPlan.add(0,
-        EventFactory.createDefaultWaitForRpcEvent(43, "helloReply"));
-        eventPlan.add(0,EventFactory.createDefaultWaitForRpcEvent(44, "getFeatures"));
-        GetFeaturesOutputBuilder getFeaturesOutputBuilder = new GetFeaturesOutputBuilder();
-        getFeaturesOutputBuilder.setDatapathId(new BigInteger("102030405060"));
-        getFeaturesOutputBuilder.setAuxiliaryId((short) 0);
-        getFeaturesOutputBuilder.setBuffers(4L);
-        getFeaturesOutputBuilder.setReserved(0L);
-        getFeaturesOutputBuilder.setTables((short) 2);
-        getFeaturesOutputBuilder.setCapabilities(createCapabilities(84));
-        eventPlan.add(0, EventFactory.createDefaultRpcResponseEvent(44,
-          EventFactory.DEFAULT_VERSION, getFeaturesOutputBuilder));
+        eventPlan.add(0, EventFactory.createDefaultWaitForAllEvent(
+                EventFactory.createDefaultWaitForRpcEvent(21, "helloReply"),
+                EventFactory.createDefaultWaitForRpcEvent(43, "getFeatures")));
+        eventPlan.add(0, EventFactory.createDefaultRpcResponseEvent(43,
+          EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
         execute(true);
         
         // Now send PacketIn
         PacketInMessageBuilder builder1 = new PacketInMessageBuilder();
+        builder1.setVersion((short) 4);
         builder1.setBufferId((long)1);
         connectionConductor.onPacketInMessage(builder1.build());
         synchronized (popListener) {
@@ -455,28 +439,23 @@ public class ConnectionConductorImplTest {
     @Test
     public void testOnPortStatusMessage() throws InterruptedException {
         
-        IMDMessageListener objPSms = new PortStatusMessageService() ;
-        controller.addMessageListener(PortStatusMessage.class, objPSms);
+        IMDMessageTranslator<OfHeader, DataObject> objPSms = new PortStatusMessageService() ;
+        controller.addMessageTranslator(PortStatusMessage.class, 4, objPSms);
         
         // Complete HandShake
+        eventPlan.add(0, EventFactory.createConnectionReadyCallback(connectionConductor));
         eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L,
         EventFactory.DEFAULT_VERSION, new HelloMessageBuilder()));
-        eventPlan.add(0,
-        EventFactory.createDefaultWaitForRpcEvent(43, "helloReply"));
-        eventPlan.add(0,EventFactory.createDefaultWaitForRpcEvent(44, "getFeatures"));
-        GetFeaturesOutputBuilder getFeaturesOutputBuilder = new GetFeaturesOutputBuilder();
-        getFeaturesOutputBuilder.setDatapathId(new BigInteger("102030405060"));
-        getFeaturesOutputBuilder.setAuxiliaryId((short) 0);
-        getFeaturesOutputBuilder.setBuffers(4L);
-        getFeaturesOutputBuilder.setReserved(0L);
-        getFeaturesOutputBuilder.setTables((short) 2);
-        getFeaturesOutputBuilder.setCapabilities(createCapabilities(84));
-        eventPlan.add(0, EventFactory.createDefaultRpcResponseEvent(44,
-          EventFactory.DEFAULT_VERSION, getFeaturesOutputBuilder));
+        eventPlan.add(0, EventFactory.createDefaultWaitForAllEvent(
+                EventFactory.createDefaultWaitForRpcEvent(21, "helloReply"),
+                EventFactory.createDefaultWaitForRpcEvent(43, "getFeatures")));
+        eventPlan.add(0, EventFactory.createDefaultRpcResponseEvent(43,
+          EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
         execute(true);
         
         // Send Port Status messages
         PortStatusMessageBuilder builder1 = new PortStatusMessageBuilder();
+        builder1.setVersion((short) 4);
         PortFeatures features = new PortFeatures(true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false);
         builder1.setPortNo(90L).setReason(PortReason.OFPPRADD).setCurrentFeatures(features);
         connectionConductor.onPortStatusMessage(builder1.build());
@@ -499,34 +478,6 @@ public class ConnectionConductorImplTest {
     }
 
     /**
-     * Test method for
-     * {@link org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductorImpl#proposeVersion(short)}
-     * .
-     */
-    @Test
-    public void testProposeVersion() {
-        short[] remoteVer = new short[] { 0x05, 0x04, 0x03, 0x02, 0x01, 0x8f,
-                0xff };
-        short[] expectedProposal = new short[] { 0x04, 0x04, 0x01, 0x01, 0x01,
-                0x04, 0x04 };
-
-        for (int i = 0; i < remoteVer.length; i++) {
-            short actualProposal = connectionConductor
-                    .proposeVersion(remoteVer[i]);
-            Assert.assertEquals(
-                    String.format("proposing for version: %04x", remoteVer[i]),
-                    expectedProposal[i], actualProposal);
-        }
-
-        try {
-            connectionConductor.proposeVersion((short) 0);
-            Assert.fail("there should be no proposition for this version");
-        } catch (Exception e) {
-            // expected
-        }
-    }
-
-    /**
      * @throws InterruptedException
      */
     private void executeLater() throws InterruptedException {
@@ -538,6 +489,7 @@ public class ConnectionConductorImplTest {
      */
     private void executeNow() throws InterruptedException {
         execute(true);
+        connectionConductor.shutdownPool();
     }
 
     /**
@@ -560,9 +512,13 @@ public class ConnectionConductorImplTest {
      */
     @Test
     public void testVersionNegotiation10() throws Exception {
+        LOG.debug("testVersionNegotiation10");
         Short version = (short) 0x01;
+        eventPlan.add(0, EventFactory.createConnectionReadyCallback(connectionConductor));
         eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42, version, new HelloMessageBuilder()));
-        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(43, "helloReply"));
+        eventPlan.add(0, EventFactory.createDefaultWaitForAllEvent(
+                EventFactory.createDefaultWaitForRpcEvent(21, "helloReply"),
+                EventFactory.createDefaultWaitForRpcEvent(43, "helloReply")));
         eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(44, "getFeatures"));
         eventPlan.add(0,
                 EventFactory.createDefaultRpcResponseEvent(44, EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
@@ -591,16 +547,21 @@ public class ConnectionConductorImplTest {
      */
     @Test
     public void testVersionNegotiation11() throws Exception {
+        LOG.debug("testVersionNegotiation11");
+        connectionConductor.setBitmapNegotiationEnable(false);
         Short version = (short) 0x02;
         Short expVersion = (short) 0x01;
-        eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L, version, new HelloMessageBuilder()));
-        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(43, "helloReply"));
         Assert.assertNull(connectionConductor.getVersion());
+        
+        eventPlan.add(0, EventFactory.createConnectionReadyCallback(connectionConductor));
+        eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L, version, new HelloMessageBuilder()));
+        eventPlan.add(0, EventFactory.createDefaultWaitForAllEvent(
+                EventFactory.createDefaultWaitForRpcEvent(21, "helloReply"),
+                EventFactory.createDefaultWaitForRpcEvent(43, "helloReply")));
         eventPlan.add(0, EventFactory.createDefaultNotificationEvent(44, expVersion, new HelloMessageBuilder()));
-        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(45, "helloReply"));
-        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(46, "getFeatures"));
+        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(45, "getFeatures"));
         eventPlan.add(0,
-                EventFactory.createDefaultRpcResponseEvent(46, EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
+                EventFactory.createDefaultRpcResponseEvent(45, EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
         executeNow();
         Assert.assertEquals(expVersion, connectionConductor.getVersion());
 
@@ -613,12 +574,15 @@ public class ConnectionConductorImplTest {
      */
     @Test
     public void testVersionNegotiation13() throws Exception {
+        LOG.debug("testVersionNegotiation13");
         Short version = (short) 0x04;
+        eventPlan.add(0, EventFactory.createConnectionReadyCallback(connectionConductor));
         eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L, version, new HelloMessageBuilder()));
-        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(43, "helloReply"));
-        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(44, "getFeatures"));
+        eventPlan.add(0, EventFactory.createDefaultWaitForAllEvent(
+                EventFactory.createDefaultWaitForRpcEvent(21, "helloReply"),
+                EventFactory.createDefaultWaitForRpcEvent(43, "getFeatures")));
         eventPlan.add(0,
-                EventFactory.createDefaultRpcResponseEvent(44, EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
+                EventFactory.createDefaultRpcResponseEvent(43, EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
 
         executeNow();
         Assert.assertEquals(version, connectionConductor.getVersion());
@@ -631,16 +595,19 @@ public class ConnectionConductorImplTest {
      */
     @Test
     public void testVersionNegotiation15() throws Exception {
+        LOG.debug("testVersionNegotiation15");
+        connectionConductor.setBitmapNegotiationEnable(false);
         Short version = (short) 0x06;
         Short expVersion = (short) 0x04;
-        eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L, version, new HelloMessageBuilder()));
-        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(43, "helloReply"));
         Assert.assertNull(connectionConductor.getVersion());
+        
+        eventPlan.add(0, EventFactory.createConnectionReadyCallback(connectionConductor));
+        eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L, version, new HelloMessageBuilder()));
+        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(21, "helloReply"));
         eventPlan.add(0, EventFactory.createDefaultNotificationEvent(44, expVersion, new HelloMessageBuilder()));
-        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(45, "helloReply"));
-        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(46, "getFeatures"));
+        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(45, "getFeatures"));
         eventPlan.add(0,
-                EventFactory.createDefaultRpcResponseEvent(46, EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
+                EventFactory.createDefaultRpcResponseEvent(45, EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
         executeNow();
         Assert.assertEquals(expVersion, connectionConductor.getVersion());
     }
@@ -652,10 +619,14 @@ public class ConnectionConductorImplTest {
      */
     @Test
     public void testVersionNegotiation15_MultipleCall() throws Exception {
+        LOG.debug("testVersionNegotiation15_MultipleCall");
+        connectionConductor.setBitmapNegotiationEnable(false);
         Short version = (short) 0x06;
-        eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L, version, new HelloMessageBuilder()));
-        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(43, "helloReply"));
         Assert.assertNull(connectionConductor.getVersion());
+
+        eventPlan.add(0, EventFactory.createConnectionReadyCallback(connectionConductor));
+        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(21, "helloReply"));
+        eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42, version, new HelloMessageBuilder()));
         eventPlan.add(0, EventFactory.createDefaultNotificationEvent(44, version, new HelloMessageBuilder()));
         executeNow();
         // TODO : check for connection termination
@@ -669,15 +640,19 @@ public class ConnectionConductorImplTest {
      */
     @Test
     public void testVersionNegotiation10InBitmap() throws Exception {
+        LOG.debug("testVersionNegotiation10InBitmap");
         Short version = (short) 0x01;
+        
+        eventPlan.add(0, EventFactory.createConnectionReadyCallback(connectionConductor));
         eventPlan.add(
                 0,
                 EventFactory.createDefaultNotificationEvent(42L, (short) 0x05,
                         getHelloBitmapMessage(Lists.newArrayList((short) 0x05, (short) 0x01))));
-        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(43, "helloReply"));
-        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(44, "getFeatures"));
+        eventPlan.add(0, EventFactory.createDefaultWaitForAllEvent(
+                EventFactory.createDefaultWaitForRpcEvent(21, "helloReply"),
+                EventFactory.createDefaultWaitForRpcEvent(43, "getFeatures")));
         eventPlan.add(0,
-                EventFactory.createDefaultRpcResponseEvent(44, EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
+                EventFactory.createDefaultRpcResponseEvent(43, EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
 
         executeNow();
         Assert.assertEquals(version, connectionConductor.getVersion());
@@ -690,15 +665,19 @@ public class ConnectionConductorImplTest {
      */
     @Test
     public void testVersionNegotiation13InBitmap() throws Exception {
+        LOG.debug("testVersionNegotiation13InBitmap");
         Short version = (short) 0x04;
+        
+        eventPlan.add(0, EventFactory.createConnectionReadyCallback(connectionConductor));
         eventPlan.add(
                 0,
                 EventFactory.createDefaultNotificationEvent(42L, (short) 0x05,
                         getHelloBitmapMessage(Lists.newArrayList((short) 0x05, (short) 0x04))));
-        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(43, "helloReply"));
-        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(44, "getFeatures"));
+        eventPlan.add(0, EventFactory.createDefaultWaitForAllEvent(
+                EventFactory.createDefaultWaitForRpcEvent(21, "helloReply"),
+                EventFactory.createDefaultWaitForRpcEvent(43, "getFeatures")));
         eventPlan.add(0,
-                EventFactory.createDefaultRpcResponseEvent(44, EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
+                EventFactory.createDefaultRpcResponseEvent(43, EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
 
         executeNow();
         Assert.assertEquals(version, connectionConductor.getVersion());
@@ -778,34 +757,36 @@ public class ConnectionConductorImplTest {
         return capabilities;
     }
     
-    public class ExperimenterMessageService implements IMDMessageListener {
+    public class ExperimenterMessageService implements IMDMessageTranslator<OfHeader, DataObject> {
         @Override
-        public void receive(SwitchConnectionDistinguisher cookie, SessionContext sw, DataObject msg) {
+        public DataObject translate(SwitchConnectionDistinguisher cookie, SessionContext sw, OfHeader msg) {
             LOG.debug("Received a packet in Experimenter Service");
             ConnectionConductorImplTest.this.incrExperimenterMessageCounter();
-            
+            return null;
         }
     }
 
-    public class PacketInMessageService implements IMDMessageListener {
+    public class PacketInMessageService implements IMDMessageTranslator<OfHeader, DataObject> {
         @Override
-        public void receive(SwitchConnectionDistinguisher cookie, SessionContext sw, DataObject msg) {
+        public DataObject translate(SwitchConnectionDistinguisher cookie, SessionContext sw, OfHeader msg) {
             LOG.debug("Received a packet in PacketIn Service");
             ConnectionConductorImplTest.this.incrPacketinMessageCounter();
+            return null;
         }
     }
 
-    public class FlowRemovedMessageService implements IMDMessageListener {
+    public class FlowRemovedMessageService implements IMDMessageTranslator<OfHeader, DataObject> {
         @Override
-        public void receive(SwitchConnectionDistinguisher cookie, SessionContext sw, DataObject msg) {
+        public DataObject translate(SwitchConnectionDistinguisher cookie, SessionContext sw, OfHeader msg) {
             LOG.debug("Received a packet in FlowRemoved Service");
             ConnectionConductorImplTest.this.incrFlowremovedMessageCounter();
+            return null;
         }
     }
 
-    public class PortStatusMessageService implements IMDMessageListener {
+    public class PortStatusMessageService implements IMDMessageTranslator<OfHeader, DataObject> {
         @Override
-        public void receive(SwitchConnectionDistinguisher cookie, SessionContext sw, DataObject msg) {
+        public DataObject translate(SwitchConnectionDistinguisher cookie, SessionContext sw, OfHeader msg) {
             LOG.debug("Received a packet in PortStatus Service");
             if ( (((PortStatusMessage)msg).getReason().equals(PortReason.OFPPRADD))  ) {
                 ConnectionConductorImplTest.this.incrPortstatusAddMessageCounter();
@@ -814,14 +795,16 @@ public class ConnectionConductorImplTest {
             } else if (((PortStatusMessage)msg).getReason().equals(PortReason.OFPPRMODIFY)) {
                 ConnectionConductorImplTest.this.incrPortstatusModifyMessageCounter();
             }
+            return null;
         }
     }
     
-    public class ErrorMessageService implements IMDMessageListener {
+    public class ErrorMessageService implements IMDMessageTranslator<OfHeader, DataObject> {
         @Override
-        public void receive(SwitchConnectionDistinguisher cookie, SessionContext sw, DataObject msg) {
+        public DataObject translate(SwitchConnectionDistinguisher cookie, SessionContext sw, OfHeader msg) {
             LOG.debug("Received a packet in Experimenter Service");
             ConnectionConductorImplTest.this.incrErrorMessageCounter();
+            return null;
         }
     }
 
@@ -834,6 +817,7 @@ public class ConnectionConductorImplTest {
     @Test
     public void testOnExperimenterMessage() throws InterruptedException {
         ExperimenterMessageBuilder builder1 = new ExperimenterMessageBuilder();
+        builder1.setVersion((short) 4);
         builder1.setExperimenter(84L).setExpType(4L);
         connectionConductor.onExperimenterMessage(builder1.build());
         synchronized (popListener) {
@@ -858,6 +842,7 @@ public class ConnectionConductorImplTest {
     @Test
     public void testOnErrorMessage() throws InterruptedException {
         ErrorMessageBuilder builder1 = new ErrorMessageBuilder();
+        builder1.setVersion((short) 4);
         builder1.setCode(100);
         connectionConductor.onErrorMessage(builder1.build());
         synchronized (popListener) {
@@ -879,16 +864,20 @@ public class ConnectionConductorImplTest {
      * <li>error</li>
      * </ul>
      */
-    private Map<Class<? extends DataObject>, Collection<IMDMessageListener>> assembleListenerMapping() {
-        IMDMessageListener objEms = new ExperimenterMessageService() ;
-        Map<Class<? extends DataObject>, Collection<IMDMessageListener>> listenerMapping = new HashMap<>();
-        Collection<IMDMessageListener> existingValues = new ArrayList<>();
+    private Map<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, DataObject>>> assembleTranslatorMapping() {
+        Map<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, DataObject>>> translatorMapping = new HashMap<>();
+        TranslatorKey tKey;
+        
+        IMDMessageTranslator<OfHeader, DataObject> objEms = new ExperimenterMessageService() ;
+        Collection<IMDMessageTranslator<OfHeader, DataObject>> existingValues = new ArrayList<>();
         existingValues.add(objEms);
-        listenerMapping.put(ExperimenterMessage.class, existingValues);
-        IMDMessageListener objErms = new ErrorMessageService() ;
+        tKey = new TranslatorKey(4, ExperimenterMessage.class.getName());
+        translatorMapping.put(tKey, existingValues);
+        IMDMessageTranslator<OfHeader, DataObject> objErms = new ErrorMessageService() ;
         existingValues.add(objErms);
-        listenerMapping.put(ErrorMessage.class, existingValues);
-        return listenerMapping;
+        tKey = new TranslatorKey(4, ErrorMessage.class.getName());
+        translatorMapping.put(tKey, existingValues);
+        return translatorMapping;
     }
 
 }

@@ -55,7 +55,7 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
     /**
      * get proper connection adapter to send the message to switch.
      *
-     * @param - cookie to identify the right connection, it can be null also.
+     * @param cookie to identify the right connection, it can be null also.
      * @return connectionAdapter associated with cookie, otherwise return best
      *         suitable connection.
      *

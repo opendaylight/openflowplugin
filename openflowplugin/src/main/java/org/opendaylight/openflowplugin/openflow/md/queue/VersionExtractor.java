@@ -5,20 +5,18 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.openflowplugin.openflow.md.core;
-
-import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
+package org.opendaylight.openflowplugin.openflow.md.queue;
 
 /**
  * @author mirehak
+ * @param <T> message type
  *
  */
-public interface ErrorHandler extends Runnable {
+public interface VersionExtractor<T> {
 
     /**
-     * @param e cause
-     * @param sessionContext of source
+     * @param message
+     * @return version of message
      */
-    void handleException(Throwable e, SessionContext sessionContext);
-
+    Short extractVersion(T message);
 }

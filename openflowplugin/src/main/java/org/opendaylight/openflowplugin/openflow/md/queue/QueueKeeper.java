@@ -11,37 +11,37 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
-import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageListener;
-import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
+import org.opendaylight.openflowplugin.openflow.md.core.TranslatorKey;
 
 /**
  * @author mirehak
- * @param <T> result type
- *
+ * @param <IN> source type
+ * @param <OUT> result type
  */
-public interface QueueKeeper<T> {
+public interface QueueKeeper<IN, OUT> {
     
     /**
      * @param listener
      */
-    void addPopListener(PopListener<T> listener);
+    void addPopListener(PopListener<OUT> listener);
     
     /**
      * @param listener
      * @return removed listener
      */
-    boolean removePopListener(PopListener<T> listener);
+    boolean removePopListener(PopListener<OUT> listener);
     
     /**
-     * @param listenerMapping
+     * @param translatorMapping
      */
-    void setListenerMapping(Map<Class<? extends DataObject>, Collection<IMDMessageListener>> listenerMapping);
+    void setTranslatorMapping(Map<TranslatorKey, Collection<IMDMessageTranslator<IN, OUT>>> translatorMapping);
 
     /**
      * @param registeredMessageClazz registered message type
      * @param message 
      * @param conductor 
      */
-    void push(Class<? extends DataObject> registeredMessageClazz, DataObject message, 
+    void push(Class<? extends IN> registeredMessageClazz, IN message, 
             ConnectionConductor conductor);
 }
