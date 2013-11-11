@@ -111,34 +111,35 @@ public class SalIntegrationTest {
      */
     @Configuration
     public Option[] config() {
-        return options(systemProperty("osgi.console").value("2401"), mavenBundle("org.slf4j", "slf4j-api")
-                .versionAsInProject(), mavenBundle("org.slf4j", "log4j-over-slf4j").versionAsInProject(),
+        return options(systemProperty("osgi.console").value("2401"),
+                mavenBundle("org.slf4j", "slf4j-api").versionAsInProject(), 
+                mavenBundle("org.slf4j", "log4j-over-slf4j").versionAsInProject(),
                 mavenBundle("ch.qos.logback", "logback-core").versionAsInProject(),
                 mavenBundle("ch.qos.logback", "logback-classic").versionAsInProject(),
-                mavenBundle("org.opendaylight.yangtools.thirdparty", "xtend-lib-osgi").versionAsInProject(),
-                mavenBundle("com.google.guava", "guava").versionAsInProject(),
-                mavenBundle("org.javassist", "javassist").versionAsInProject(),
+                
                 mavenBundle("org.apache.felix", "org.apache.felix.dependencymanager").versionAsInProject(),
-                mavenBundle("org.apache.commons", "commons-lang3").versionAsInProject(),
-
-                mavenBundle(ODL, "sal").versionAsInProject(), mavenBundle(ODL, "sal.connection").versionAsInProject(),
-
-                mdSalCoreBundles(), bindingAwareSalBundles(), baseModelBundles(), flowCapableModelBundles(),
-                configMinumumBundles(),
-
-                mavenBundle("org.opendaylight.controller.thirdparty", "org.openflow.openflowj").versionAsInProject(),
 
                 mavenBundle(OFLIBRARY, "openflow-protocol-impl").versionAsInProject(),
                 mavenBundle(OFLIBRARY, "openflow-protocol-api").versionAsInProject(),
                 mavenBundle(OFLIBRARY, "openflow-protocol-spi").versionAsInProject(),
 
-                mavenBundle(NETTY, "netty-handler").versionAsInProject(), mavenBundle(NETTY, "netty-buffer")
-                        .versionAsInProject(), mavenBundle(NETTY, "netty-common").versionAsInProject(),
-                mavenBundle(NETTY, "netty-transport").versionAsInProject(), mavenBundle(NETTY, "netty-codec")
-                        .versionAsInProject(),
+                mavenBundle(ODL, "sal").versionAsInProject(), 
+                mavenBundle(ODL, "sal.connection").versionAsInProject(),
+                mdSalCoreBundles(), baseModelBundles(), flowCapableModelBundles(),
+                configMinumumBundles(),
+
+                bindingAwareSalBundles(), 
+
+                mavenBundle(NETTY, "netty-handler").versionAsInProject(), 
+                mavenBundle(NETTY, "netty-buffer").versionAsInProject(), 
+                mavenBundle(NETTY, "netty-common").versionAsInProject(),
+                mavenBundle(NETTY, "netty-transport").versionAsInProject(), 
+                mavenBundle(NETTY, "netty-codec").versionAsInProject(),
 
                 mavenBundle(OFLIBRARY, "simple-client").versionAsInProject().start(),
-                mavenBundle(OFPLUGIN, "openflowplugin").versionAsInProject(), junitBundles());
+                mavenBundle(OFPLUGIN, "openflowplugin").versionAsInProject(), junitBundles(),
+                mavenBundle("org.opendaylight.controller.thirdparty", "org.openflow.openflowj").versionAsInProject()
+                );
     }
 
     private static class TestInventoryListener implements OpendaylightInventoryListener {

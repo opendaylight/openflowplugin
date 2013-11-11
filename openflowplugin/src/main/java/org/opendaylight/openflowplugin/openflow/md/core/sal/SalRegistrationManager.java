@@ -1,6 +1,5 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal;
 
-import java.io.Console;
 import java.math.BigInteger;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -78,6 +77,10 @@ public class SalRegistrationManager implements SessionListener, SwitchInventory 
     private NodeUpdated nodeAdded(ModelDrivenSwitch sw, GetFeaturesOutput features) {
         NodeUpdatedBuilder builder = new NodeUpdatedBuilder();
         builder.setId(sw.getNodeId());
+        builder.setNodeRef(new NodeRef(InstanceIdentifier.builder()
+                .node(Nodes.class)
+                .node(Node.class, new NodeKey(builder.getId()))
+                .toInstance()));
         return builder.build();
     }
 
