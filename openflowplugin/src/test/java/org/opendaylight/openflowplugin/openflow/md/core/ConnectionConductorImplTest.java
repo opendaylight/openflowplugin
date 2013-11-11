@@ -28,6 +28,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.plan.SwitchTestEvent;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.openflow.md.queue.PopListener;
 import org.opendaylight.openflowplugin.openflow.md.queue.QueueKeeperLightImpl;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Capabilities;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ErrorType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.HelloElementType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortFeatures;
@@ -204,7 +205,7 @@ public class ConnectionConductorImplTest {
         getFeaturesOutputBuilder.setBuffers(4L);
         getFeaturesOutputBuilder.setReserved(0L);
         getFeaturesOutputBuilder.setTables((short) 2);
-        getFeaturesOutputBuilder.setCapabilities(84L);
+        getFeaturesOutputBuilder.setCapabilities(createCapabilities(84));
 
         eventPlan.add(0, EventFactory.createDefaultRpcResponseEvent(44,
                 EventFactory.DEFAULT_VERSION, getFeaturesOutputBuilder));
@@ -244,7 +245,7 @@ public class ConnectionConductorImplTest {
         getFeaturesOutputBuilder.setBuffers(4L);
         getFeaturesOutputBuilder.setReserved(0L);
         getFeaturesOutputBuilder.setTables((short) 2);
-        getFeaturesOutputBuilder.setCapabilities(84L);
+        getFeaturesOutputBuilder.setCapabilities(createCapabilities(84));
 
         eventPlan.add(0, EventFactory.createDefaultRpcResponseEvent(45,
                 EventFactory.DEFAULT_VERSION, getFeaturesOutputBuilder));
@@ -358,7 +359,7 @@ public class ConnectionConductorImplTest {
         getFeaturesOutputBuilder.setBuffers(4L);
         getFeaturesOutputBuilder.setReserved(0L);
         getFeaturesOutputBuilder.setTables((short) 2);
-        getFeaturesOutputBuilder.setCapabilities(84L);
+        getFeaturesOutputBuilder.setCapabilities(createCapabilities(84));
         eventPlan.add(0, EventFactory.createDefaultRpcResponseEvent(44,
           EventFactory.DEFAULT_VERSION, getFeaturesOutputBuilder));
         execute(true);
@@ -424,7 +425,7 @@ public class ConnectionConductorImplTest {
         getFeaturesOutputBuilder.setBuffers(4L);
         getFeaturesOutputBuilder.setReserved(0L);
         getFeaturesOutputBuilder.setTables((short) 2);
-        getFeaturesOutputBuilder.setCapabilities(84L);
+        getFeaturesOutputBuilder.setCapabilities(createCapabilities(84));
         eventPlan.add(0, EventFactory.createDefaultRpcResponseEvent(44,
           EventFactory.DEFAULT_VERSION, getFeaturesOutputBuilder));
         execute(true);
@@ -469,7 +470,7 @@ public class ConnectionConductorImplTest {
         getFeaturesOutputBuilder.setBuffers(4L);
         getFeaturesOutputBuilder.setReserved(0L);
         getFeaturesOutputBuilder.setTables((short) 2);
-        getFeaturesOutputBuilder.setCapabilities(84L);
+        getFeaturesOutputBuilder.setCapabilities(createCapabilities(84));
         eventPlan.add(0, EventFactory.createDefaultRpcResponseEvent(44,
           EventFactory.DEFAULT_VERSION, getFeaturesOutputBuilder));
         execute(true);
@@ -756,11 +757,27 @@ public class ConnectionConductorImplTest {
         getFeaturesOutputBuilder.setBuffers(4L);
         getFeaturesOutputBuilder.setReserved(0L);
         getFeaturesOutputBuilder.setTables((short) 2);
-        getFeaturesOutputBuilder.setCapabilities(84L);
+        getFeaturesOutputBuilder.setCapabilities(createCapabilities(84));
 
         return getFeaturesOutputBuilder;
     }
 
+    /**
+     * @return
+     */
+    private static Capabilities createCapabilities(long input) {
+        final Boolean FLOW_STATS = (input & (1 << 0)) != 0;
+        final Boolean TABLE_STATS = (input & (1 << 1)) != 0;
+        final Boolean PORT_STATS = (input & (1 << 2)) != 0;
+        final Boolean GROUP_STATS = (input & (1 << 3)) != 0;
+        final Boolean IP_REASM = (input & (1 << 5)) != 0;
+        final Boolean QUEUE_STATS = (input & (1 << 6)) != 0;
+        final Boolean PORT_BLOCKED = (input & (1 << 8)) != 0;
+        Capabilities capabilities = new Capabilities(FLOW_STATS, GROUP_STATS, IP_REASM,
+                PORT_BLOCKED, PORT_STATS, QUEUE_STATS, TABLE_STATS);
+        return capabilities;
+    }
+    
     public class ExperimenterMessageService implements IMDMessageListener {
         @Override
         public void receive(SwitchConnectionDistinguisher cookie, SessionContext sw, DataObject msg) {
