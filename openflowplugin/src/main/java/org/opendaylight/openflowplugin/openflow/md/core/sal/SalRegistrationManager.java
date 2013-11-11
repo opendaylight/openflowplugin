@@ -103,7 +103,7 @@ public class SalRegistrationManager implements SessionListener, SwitchInventory 
     public static NodeId nodeIdFromDatapathId(BigInteger datapathId) {
         // FIXME: Convert to textual representation of datapathID
         String current = datapathId.toString();
-        return new NodeId("openflow://" + current);
+        return new NodeId("openflow:" + current);
     }
 
     public SessionManager getSessionManager() {
