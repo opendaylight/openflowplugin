@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageListener;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
@@ -65,7 +64,7 @@ public class SessionManagerOFImpl implements SessionManager {
             }
             context.getPrimaryConductor().disconnect();
             context.setValid(false);
-            sessionLot.remove(sessionKey);
+            removeSessionContext(context);
             // TODO:: notify listeners
         }
     }
@@ -79,9 +78,14 @@ public class SessionManagerOFImpl implements SessionManager {
                 invalidateAuxiliary(sessionContext, auxEntry.getKey(), true);
             }
             sessionContext.setValid(false);
-            sessionLot.remove(sessionContext.getSessionKey(), sessionContext);
+            removeSessionContext(sessionContext);
             // TODO:: notify listeners
         }
+    }
+
+    private void removeSessionContext(SessionContext sessionContext) {
+        sessionLot.remove(sessionContext.getSessionKey(), sessionContext);
+        sessionNotifier.onSessionRemoved(sessionContext);
     }
 
     @Override
@@ -153,6 +157,16 @@ public class SessionManagerOFImpl implements SessionManager {
                     listener.getInstance().onSessionAdded(sessionKey, context);
                 } catch (Exception e) {
                     LOG.error("Unhandled exeption occured while invoking onSessionAdded on listener", e);
+                }
+            }
+        }
+
+        public void onSessionRemoved(SessionContext context) {
+            for (ListenerRegistration<SessionListener> listener : sessionListeners) {
+                try {
+                    listener.getInstance().onSessionRemoved(context);
+                } catch (Exception e) {
+                    LOG.error("Unhandled exeption occured while invoking onSessionRemoved on listener", e);
                 }
             }
         }

@@ -8,4 +8,6 @@ public interface SessionListener extends EventListener {
 
     void onSessionAdded(SwitchConnectionDistinguisher sessionKey, SessionContext context);
 
+    void onSessionRemoved(SessionContext context);
+
 }
