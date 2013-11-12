@@ -15,6 +15,8 @@ import org.opendaylight.openflowplugin.openflow.md.core.session.SessionListener;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRemoved;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRemovedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeUpdatedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -63,7 +65,7 @@ public class SalRegistrationManager implements SessionListener, SwitchInventory 
         GetFeaturesOutput features = context.getFeatures();
         BigInteger datapathId = features.getDatapathId();
         InstanceIdentifier<Node> identifier = identifierFromDatapathId(datapathId);
-
+        NodeRef nodeRef = new NodeRef(identifier);
         NodeId nodeId = nodeIdFromDatapathId(datapathId);
         ModelDrivenSwitchImpl ofSwitch = new ModelDrivenSwitchImpl(nodeId, identifier, context);
         salSwitches.put(identifier, ofSwitch);
@@ -71,16 +73,31 @@ public class SalRegistrationManager implements SessionListener, SwitchInventory 
 
         LOG.info("ModelDrivenSwitch for {} registered to MD-SAL.", datapathId.toString());
 
-        publishService.publish(nodeAdded(ofSwitch, features));
+        publishService.publish(nodeAdded(ofSwitch, features,nodeRef));
     }
 
-    private NodeUpdated nodeAdded(ModelDrivenSwitch sw, GetFeaturesOutput features) {
+    @Override
+    public void onSessionRemoved(SessionContext context) {
+        GetFeaturesOutput features = context.getFeatures();
+        BigInteger datapathId = features.getDatapathId();
+        InstanceIdentifier<Node> identifier = identifierFromDatapathId(datapathId);
+        NodeRef nodeRef = new NodeRef(identifier);
+        NodeRemoved nodeRemoved = nodeRemoved(nodeRef);
+
+        LOG.info("ModelDrivenSwitch for {} unregistred from MD-SAL.", datapathId.toString());
+        publishService.publish(nodeRemoved);
+    }
+
+    private NodeUpdated nodeAdded(ModelDrivenSwitch sw, GetFeaturesOutput features, NodeRef nodeRef) {
         NodeUpdatedBuilder builder = new NodeUpdatedBuilder();
         builder.setId(sw.getNodeId());
-        builder.setNodeRef(new NodeRef(InstanceIdentifier.builder()
-                .node(Nodes.class)
-                .node(Node.class, new NodeKey(builder.getId()))
-                .toInstance()));
+        builder.setNodeRef(nodeRef);
+        return builder.build();
+    }
+
+    private NodeRemoved nodeRemoved(NodeRef nodeRef) {
+        NodeRemovedBuilder builder = new NodeRemovedBuilder();
+        builder.setNodeRef(nodeRef);
         return builder.build();
     }
 
