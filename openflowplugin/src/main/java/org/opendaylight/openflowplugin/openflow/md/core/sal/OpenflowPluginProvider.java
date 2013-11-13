@@ -4,17 +4,24 @@ import java.util.Collection;
 import java.util.Collections;
 
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
-import org.opendaylight.controller.sal.binding.api.BindingAwareProvider;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ConsumerContext;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
+import org.opendaylight.controller.sal.binding.api.BindingAwareProvider;
+import org.opendaylight.controller.sal.binding.api.data.DataBrokerService;
+import org.opendaylight.controller.sal.binding.api.data.DataProviderService;
+import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yangtools.yang.binding.RpcService;
 import org.osgi.framework.BundleContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class OpenflowPluginProvider implements BindingAwareProvider {
-
+    private final static Logger LOG = LoggerFactory.getLogger(OpenflowPluginProvider.class);
     private BindingAwareBroker broker;
 
     private BundleContext context;
+    private DataProviderService dataService;
+    private InventoryDataServiceUtil inventoryUtil;
 
     public BundleContext getContext() {
         return context;
@@ -29,6 +36,11 @@ public class OpenflowPluginProvider implements BindingAwareProvider {
     @Override
     public void onSessionInitiated(ProviderContext session) {
         registrationManager.onSessionInitiated(session);
+        dataService = session.getSALService(DataProviderService.class);
+        LOG.error("About to instantiate InventoryUtil: " + inventoryUtil);
+        inventoryUtil = new InventoryDataServiceUtil(dataService);
+        LOG.error("OpenflowPlugin Provider Initialized. InventoryUtil: " + inventoryUtil);
+
     }
 
     @Override
