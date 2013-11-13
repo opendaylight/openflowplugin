@@ -14,6 +14,7 @@ import org.opendaylight.controller.sal.binding.api.NotificationService;
 import org.opendaylight.controller.sal.binding.api.data.DataBrokerService;
 import org.opendaylight.controller.sal.binding.api.data.DataChangeListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorUpdated;
@@ -46,7 +47,7 @@ public class SimpleDropFirewall {
 
     public boolean addFlow(AddFlowInput flow) throws InterruptedException,
             ExecutionException, TimeoutException {
-        Future<RpcResult<Void>> result = flowService.addFlow(flow);
+        Future<RpcResult<AddFlowOutput>> result = flowService.addFlow(flow);
 
         return result.get(5, TimeUnit.SECONDS).isSuccessful();
     }
