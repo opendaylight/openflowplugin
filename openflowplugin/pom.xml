@@ -29,6 +29,9 @@
                         <Export-Package>
                             org.opendaylight.openflowplugin.openflow.internal
                         </Export-Package>
+                        <Import-Package>
+                            org.opendaylight.controller.sal.common.util
+                        </Import-Package>
                         <Embed-Transitive>
                             false
                         </Embed-Transitive>
@@ -109,7 +112,6 @@
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>sal-common-util</artifactId>
             <version>${yang.prototype.version}</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>
