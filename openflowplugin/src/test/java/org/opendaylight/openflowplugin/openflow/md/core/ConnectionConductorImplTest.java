@@ -89,7 +89,7 @@ public class ConnectionConductorImplTest {
     private int errorMessageCounter;
 
     private ErrorHandlerQueueImpl errorHandler;
-    
+
     public void incrExperimenterMessageCounter() {
         this.experimenterMessageCounter++;
     }
@@ -127,7 +127,7 @@ public class ConnectionConductorImplTest {
         adapter = new ConnectionAdapterStackImpl();
 
         popListener = new PopListenerCountingImpl<>();
-        
+
         queueKeeper = new QueueKeeperLightImpl();
         queueKeeper.init();
         queueKeeper.addPopListener(popListener);
@@ -145,7 +145,7 @@ public class ConnectionConductorImplTest {
         adapter.setEventPlan(eventPlan);
         adapter.setProceedTimeout(5000L);
         adapter.checkListeners();
-        
+
         controller.getMessageTranslators().putAll(assembleTranslatorMapping());
     }
 
@@ -159,7 +159,7 @@ public class ConnectionConductorImplTest {
         }
         queueKeeper.shutdown();
         connectionConductor.shutdownPool();
-        
+
         for (Exception problem : adapter.getOccuredExceptions()) {
             LOG.error("during simulation on adapter side: "
                     + problem.getMessage());
@@ -211,7 +211,7 @@ public class ConnectionConductorImplTest {
                 EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
 
         executeNow();
-        
+
         Assert.assertEquals(ConnectionConductor.CONDUCTOR_STATE.WORKING,
                 connectionConductor.getConductorState());
         Assert.assertEquals((short) 0x04, connectionConductor.getVersion()
@@ -243,7 +243,7 @@ public class ConnectionConductorImplTest {
                 EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
 
         executeNow();
-        
+
         Assert.assertEquals(ConnectionConductor.CONDUCTOR_STATE.WORKING,
                 connectionConductor.getConductorState());
         Assert.assertEquals((short) 0x01, connectionConductor.getVersion()
@@ -339,7 +339,7 @@ public class ConnectionConductorImplTest {
     public void testOnFlowRemovedMessage() throws InterruptedException {
         IMDMessageTranslator<OfHeader, DataObject> objFms = new FlowRemovedMessageService() ;
         controller.addMessageTranslator(FlowRemovedMessage.class, 4, objFms);
-        
+
         // Complete HandShake
         eventPlan.add(0, EventFactory.createConnectionReadyCallback(connectionConductor));
         eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L,
@@ -401,7 +401,7 @@ public class ConnectionConductorImplTest {
     public void testOnPacketInMessage() throws InterruptedException {
         IMDMessageTranslator<OfHeader, DataObject> objPms = new PacketInMessageService() ;
         controller.addMessageTranslator(PacketInMessage.class, 4, objPms);
-        
+
         // Complete HandShake
         eventPlan.add(0, EventFactory.createConnectionReadyCallback(connectionConductor));
         eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L,
@@ -417,12 +417,14 @@ public class ConnectionConductorImplTest {
         PacketInMessageBuilder builder1 = new PacketInMessageBuilder();
         builder1.setVersion((short) 4);
         builder1.setBufferId((long)1);
+        builder1.setInPort(0);
         connectionConductor.onPacketInMessage(builder1.build());
         synchronized (popListener) {
             popListener.wait(maxProcessingTimeout);
         }
         Assert.assertEquals(1, packetinMessageCounter);
         builder1.setBufferId((long)2);
+        builder1.setInPort(0);
         connectionConductor.onPacketInMessage(builder1.build());
         synchronized (popListener) {
             popListener.wait(maxProcessingTimeout);
@@ -438,10 +440,10 @@ public class ConnectionConductorImplTest {
      */
     @Test
     public void testOnPortStatusMessage() throws InterruptedException {
-        
+
         IMDMessageTranslator<OfHeader, DataObject> objPSms = new PortStatusMessageService() ;
         controller.addMessageTranslator(PortStatusMessage.class, 4, objPSms);
-        
+
         // Complete HandShake
         eventPlan.add(0, EventFactory.createConnectionReadyCallback(connectionConductor));
         eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L,
@@ -552,7 +554,7 @@ public class ConnectionConductorImplTest {
         Short version = (short) 0x02;
         Short expVersion = (short) 0x01;
         Assert.assertNull(connectionConductor.getVersion());
-        
+
         eventPlan.add(0, EventFactory.createConnectionReadyCallback(connectionConductor));
         eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L, version, new HelloMessageBuilder()));
         eventPlan.add(0, EventFactory.createDefaultWaitForAllEvent(
@@ -600,7 +602,7 @@ public class ConnectionConductorImplTest {
         Short version = (short) 0x06;
         Short expVersion = (short) 0x04;
         Assert.assertNull(connectionConductor.getVersion());
-        
+
         eventPlan.add(0, EventFactory.createConnectionReadyCallback(connectionConductor));
         eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L, version, new HelloMessageBuilder()));
         eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(21, "helloReply"));
@@ -642,7 +644,7 @@ public class ConnectionConductorImplTest {
     public void testVersionNegotiation10InBitmap() throws Exception {
         LOG.debug("testVersionNegotiation10InBitmap");
         Short version = (short) 0x01;
-        
+
         eventPlan.add(0, EventFactory.createConnectionReadyCallback(connectionConductor));
         eventPlan.add(
                 0,
@@ -667,7 +669,7 @@ public class ConnectionConductorImplTest {
     public void testVersionNegotiation13InBitmap() throws Exception {
         LOG.debug("testVersionNegotiation13InBitmap");
         Short version = (short) 0x04;
-        
+
         eventPlan.add(0, EventFactory.createConnectionReadyCallback(connectionConductor));
         eventPlan.add(
                 0,
@@ -756,7 +758,7 @@ public class ConnectionConductorImplTest {
                 PORT_BLOCKED, PORT_STATS, QUEUE_STATS, TABLE_STATS);
         return capabilities;
     }
-    
+
     public class ExperimenterMessageService implements IMDMessageTranslator<OfHeader, DataObject> {
         @Override
         public DataObject translate(SwitchConnectionDistinguisher cookie, SessionContext sw, OfHeader msg) {
@@ -798,7 +800,7 @@ public class ConnectionConductorImplTest {
             return null;
         }
     }
-    
+
     public class ErrorMessageService implements IMDMessageTranslator<OfHeader, DataObject> {
         @Override
         public DataObject translate(SwitchConnectionDistinguisher cookie, SessionContext sw, OfHeader msg) {
@@ -867,7 +869,7 @@ public class ConnectionConductorImplTest {
     private Map<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, DataObject>>> assembleTranslatorMapping() {
         Map<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, DataObject>>> translatorMapping = new HashMap<>();
         TranslatorKey tKey;
-        
+
         IMDMessageTranslator<OfHeader, DataObject> objEms = new ExperimenterMessageService() ;
         Collection<IMDMessageTranslator<OfHeader, DataObject>> existingValues = new ArrayList<>();
         existingValues.add(objEms);

@@ -10,6 +10,8 @@ package org.opendaylight.openflowplugin.openflow.md.core;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.math.BigInteger;
+import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
@@ -19,6 +21,13 @@ import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionManager;
 import org.opendaylight.openflowplugin.openflow.md.queue.QueueKeeper;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.PortNumberMatchEntry;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.MatchEntries;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoReplyInputBuilder;
@@ -38,6 +47,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.D
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SwitchIdleEvent;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SystemNotificationsListener;
 import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.Cookie;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceivedBuilder;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier.InstanceIdentifierBuilder;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
@@ -83,7 +97,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         this.connectionAdapter = connectionAdapter;
         conductorState = CONDUCTOR_STATE.HANDSHAKING;
         hsPool = Executors.newFixedThreadPool(1);
-        handshakeManager = new HandshakeManagerImpl(connectionAdapter, 
+        handshakeManager = new HandshakeManagerImpl(connectionAdapter,
                 ConnectionConductor.versionOrder.get(0), ConnectionConductor.versionOrder);
         handshakeManager.setUseVersionBitmap(isBitmapNegotiationEnable);
         handshakeManager.setHandshakeListener(this);
@@ -95,7 +109,10 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         connectionAdapter.setSystemListener(this);
         connectionAdapter.setConnectionReadyListener(this);
     }
-    
+
+    /**
+     * @param queueKeeper the queueKeeper to set
+     */
     @Override
     public void setQueueKeeper(QueueKeeper<OfHeader, DataObject> queueKeeper) {
         this.queueKeeper = queueKeeper;
@@ -189,12 +206,89 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
 
     @Override
     public void onPacketInMessage(PacketInMessage message) {
+        LOG.info("PacketIn: InPort: {} Cookie: {} Match.type: {}",
+                 message.getInPort(), message.getCookie(),
+                 message.getMatch() != null ? message.getMatch().getType()
+                                           : message.getMatch());
+
+        // create a packet received event builder
+        PacketReceivedBuilder pktInBuilder = new PacketReceivedBuilder();
+        pktInBuilder.setPayload(message.getData());
+
+        // get the DPID
+        GetFeaturesOutput features = sessionContext.getFeatures();
+        BigInteger dpid = features.getDatapathId();
+
+        // get the Cookie if it exists
+        if(message.getCookie() != null) {
+            pktInBuilder.setCookie(new Cookie(message.getCookie().longValue()));
+        }
+
+        // extract the port number
+        Long port = null;
+
+        if (message.getInPort() != null) {
+            // this doesn't work--at least for OF1.3
+            port = message.getInPort().longValue();
+        }
+
+        // this should work for OF1.3
+        if (message.getMatch() != null && message.getMatch().getMatchEntries() != null) {
+            List<MatchEntries> entries = message.getMatch().getMatchEntries();
+            for (MatchEntries entry : entries) {
+                PortNumberMatchEntry tmp = entry.getAugmentation(PortNumberMatchEntry.class);
+                if (tmp != null) {
+                    if (port == null) {
+                        port = tmp.getPortNumber().getValue();
+                    } else {
+                        LOG.warn("Multiple input ports (at least {} and {})",
+                                 port, tmp.getPortNumber().getValue());
+                    }
+                }
+            }
+        }
+
+        if (port == null) {
+            // no incoming port, so drop the event
+            LOG.warn("Received packet_in, but couldn't find an input port");
+            return;
+        }else{
+            LOG.info("Receive packet_in from {} on port {}", dpid, port);
+        }
+
+        //TODO: need to get the NodeConnectorRef, but NodeConnectors aren't there yet
+        InstanceIdentifier<NodeConnector> nci = ncIndentifierFromDPIDandPort(dpid, port);
+        NodeConnectorRef ncr = new NodeConnectorRef(nci);
+        PacketReceived pktInEvent = pktInBuilder.build();
+
+        // allow others to process this message as well
         queueKeeper.push(PacketInMessage.class, message, this);
+    }
+
+    public static InstanceIdentifier<NodeConnector> ncIndentifierFromDPIDandPort(BigInteger dpid, Long port) {
+        InstanceIdentifierBuilder<?> builder = InstanceIdentifier.builder().node(Node.class);
+
+        // TODO: this doesn't work yet, needs to actaully get the ref for the real NodeConnector
+        //       but that doesn't exist yet
+        NodeConnectorKey ncKey = ncKeyFromDPIDandPort(dpid, port);
+        return builder.node(NodeConnector.class, ncKey).toInstance();
+    }
+
+
+    public static NodeConnectorKey ncKeyFromDPIDandPort(BigInteger dpid, Long port){
+        return new NodeConnectorKey(ncIDfromDPIDandPort(dpid, port));
+    }
+
+    public static NodeConnectorId ncIDfromDPIDandPort(BigInteger dpid, Long port){
+        return new NodeConnectorId("openflow:"+dpid.toString()+":"+port.toString());
     }
 
     @Override
     public void onPortStatusMessage(PortStatusMessage message) {
+        // update the list of ports
         this.getSessionContext().processPortStatusMsg(message);
+
+        // do any more processing that needs to be done
         queueKeeper.push(PortStatusMessage.class, message, this);
     }
 
@@ -325,16 +419,17 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         LOG.debug("connection is ready-to-use");
         hsPool.execute(handshakeManager);
     }
-    
+
     @Override
     public void onHandshakeSuccessfull(GetFeaturesOutput featureOutput,
             Short negotiatedVersion) {
         version = negotiatedVersion;
         conductorState = CONDUCTOR_STATE.WORKING;
-        
-        OFSessionUtil.registerSession(this, featureOutput, negotiatedVersion);        
+
+
+        OFSessionUtil.registerSession(this, featureOutput, negotiatedVersion);
     }
-    
+
     /**
      * @param isBitmapNegotiationEnable the isBitmapNegotiationEnable to set
      */
@@ -342,9 +437,10 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
             boolean isBitmapNegotiationEnable) {
         this.isBitmapNegotiationEnable = isBitmapNegotiationEnable;
     }
-    
+
     protected void shutdownPool() {
         hsPool.shutdownNow();
         LOG.debug("pool is terminated: {}", hsPool.isTerminated());
     }
+
 }
