@@ -24,6 +24,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetAsyncInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetConfigInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.TableModInput;
+
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateGroupOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateGroupOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateMeterOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateMeterOutputBuilder;
+
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
 /**
@@ -68,7 +76,7 @@ public interface IMessageDispatchService {
      *            any connection
      * @return - the future
      */
-    Future<RpcResult<java.lang.Void>> flowMod(FlowModInput input, SwitchConnectionDistinguisher cookie);
+    Future<RpcResult<UpdateFlowOutput>> flowMod(FlowModInput input, SwitchConnectionDistinguisher cookie);
 
     /**
      * send get async message to switch
@@ -129,7 +137,7 @@ public interface IMessageDispatchService {
      *            any connection
      * @return - the future
      */
-    Future<RpcResult<java.lang.Void>> groupMod(GroupModInput input, SwitchConnectionDistinguisher cookie);
+    Future<RpcResult<UpdateGroupOutput>> groupMod(GroupModInput input, SwitchConnectionDistinguisher cookie);
 
     /**
      * send meter modification message to switch
@@ -141,7 +149,7 @@ public interface IMessageDispatchService {
      *            any connection
      * @return - the future
      */
-    Future<RpcResult<java.lang.Void>> meterMod(MeterModInput input, SwitchConnectionDistinguisher cookie);
+    Future<RpcResult<UpdateMeterOutput>> meterMod(MeterModInput input, SwitchConnectionDistinguisher cookie);
 
     /**
      * send packet out message to switch
