@@ -1,0 +1,89 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da6255ed_bdedb227",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/MessageHandlerImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 63
+      },
+      "writtenOn": "2013-11-13T09:02:33Z",
+      "side": 1,
+      "message": "I think we must have different IMDMessageListener for each service something like FlowServiceMessageListener, StatsServiceMessageListener, InventoryMessageListener etc. So, can we rename this class as FlowServiceMessageListener as it \"subscribes\" to only flow-related events from MDController",
+      "revId": "03008bcecd1de70814059501ba2bba3cea409585",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da6255ed_7df73af6",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/MessageHandlerImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 63
+      },
+      "writtenOn": "2013-11-13T09:02:33Z",
+      "side": 1,
+      "message": "How MDController is injected into this ? I guess this must be done during Activation of OFPlugin. Create FlowMessageListener, inject MDController and then init() - are we in sync ?",
+      "revId": "03008bcecd1de70814059501ba2bba3cea409585",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da6255ed_3dd9c283",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/MessageHandlerImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 63
+      },
+      "writtenOn": "2013-11-13T09:02:33Z",
+      "side": 1,
+      "message": "Same as ProviderContext. Any reason to expose this via getter ?",
+      "revId": "03008bcecd1de70814059501ba2bba3cea409585",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da6255ed_1de83e0f",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/MessageHandlerImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 63
+      },
+      "writtenOn": "2013-11-13T09:02:33Z",
+      "side": 1,
+      "message": "NotificationServiceProvider is locally acquired during onSessionInitiated and is not set by any external class so this setter is also not needed",
+      "revId": "03008bcecd1de70814059501ba2bba3cea409585",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da6255ed_5ddeb66e",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/MessageHandlerImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 63
+      },
+      "writtenOn": "2013-11-13T09:02:33Z",
+      "side": 1,
+      "message": "Any reason why we let ProviderContext escape this class via getter ?",
+      "revId": "03008bcecd1de70814059501ba2bba3cea409585",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
