@@ -109,7 +109,6 @@
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>sal-common-util</artifactId>
             <version>${yang.prototype.version}</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

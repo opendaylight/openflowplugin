@@ -9,9 +9,12 @@ import org.opendaylight.openflowplugin.openflow.md.ModelDrivenSwitch;
 import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.NodeFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
@@ -52,7 +55,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     }
 
     @Override
-    public Future<RpcResult<Void>> addFlow(AddFlowInput input) {
+    public Future<RpcResult<AddFlowOutput>> addFlow(AddFlowInput input) {
         // TODO Auto-generated method stub
 
         return null;
@@ -71,7 +74,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     }
 
     @Override
-    public Future<RpcResult<Void>> removeFlow(RemoveFlowInput input) {
+    public Future<RpcResult<RemoveFlowOutput>> removeFlow(RemoveFlowInput input) {
         // TODO Auto-generated method stub
         return null;
     }
@@ -123,7 +126,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     }
 
     @Override
-    public Future<RpcResult<Void>> updateFlow(UpdateFlowInput input) {
+    public Future<RpcResult<UpdateFlowOutput>> updateFlow(UpdateFlowInput input) {
         // TODO Auto-generated method stub
         return null;
     }
