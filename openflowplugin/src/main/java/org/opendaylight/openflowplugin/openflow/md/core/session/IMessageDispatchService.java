@@ -68,7 +68,7 @@ public interface IMessageDispatchService {
      *            any connection
      * @return - the future
      */
-    Future<RpcResult<java.lang.Void>> flowMod(FlowModInput input, SwitchConnectionDistinguisher cookie);
+    Future<RpcResult<FlowModOutput>> flowMod(FlowModInput input, SwitchConnectionDistinguisher cookie);
 
     /**
      * send get async message to switch
@@ -129,7 +129,7 @@ public interface IMessageDispatchService {
      *            any connection
      * @return - the future
      */
-    Future<RpcResult<java.lang.Void>> groupMod(GroupModInput input, SwitchConnectionDistinguisher cookie);
+    Future<RpcResult<GroupModOutput>> groupMod(GroupModInput input, SwitchConnectionDistinguisher cookie);
 
     /**
      * send meter modification message to switch
@@ -141,7 +141,7 @@ public interface IMessageDispatchService {
      *            any connection
      * @return - the future
      */
-    Future<RpcResult<java.lang.Void>> meterMod(MeterModInput input, SwitchConnectionDistinguisher cookie);
+    Future<RpcResult<MeterModOutput>> meterMod(MeterModInput input, SwitchConnectionDistinguisher cookie);
 
     /**
      * send packet out message to switch
