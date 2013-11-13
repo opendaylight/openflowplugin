@@ -28,7 +28,9 @@ public abstract class AbstractModelDrivenSwitch implements ModelDrivenSwitch {
 
     private RoutedRpcRegistration<PacketProcessingService> packetRegistration;
 
-    private final SessionContext sessionContext;
+    // Make this SessionContext to be available to ModelDrivenSwitch
+    // ModelDrivenSwitch will need to get MessageDispatcherService from SessionContext
+    protected final SessionContext sessionContext;
 
     protected AbstractModelDrivenSwitch(InstanceIdentifier<Node> identifier,SessionContext conductor) {
         this.identifier = identifier;
