@@ -4,9 +4,12 @@ import java.util.Collection;
 import java.util.Collections;
 
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
-import org.opendaylight.controller.sal.binding.api.BindingAwareProvider;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ConsumerContext;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
+import org.opendaylight.controller.sal.binding.api.BindingAwareProvider;
+import org.opendaylight.controller.sal.binding.api.data.DataBrokerService;
+import org.opendaylight.controller.sal.binding.api.data.DataProviderService;
+import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yangtools.yang.binding.RpcService;
 import org.osgi.framework.BundleContext;
 
@@ -15,6 +18,8 @@ public class OpenflowPluginProvider implements BindingAwareProvider {
     private BindingAwareBroker broker;
 
     private BundleContext context;
+    private DataProviderService dataService;
+    private InventoryDataServiceUtil inventoryUtil;
 
     public BundleContext getContext() {
         return context;
@@ -29,6 +34,9 @@ public class OpenflowPluginProvider implements BindingAwareProvider {
     @Override
     public void onSessionInitiated(ProviderContext session) {
         registrationManager.onSessionInitiated(session);
+        dataService = session.getSALService(DataProviderService.class);
+        inventoryUtil = new InventoryDataServiceUtil(dataService);
+
     }
 
     @Override
