@@ -9,6 +9,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetAsyncInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetAsyncOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetConfigInput;
@@ -18,7 +21,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetQueueConfigInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetQueueConfigOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GroupModInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GroupModInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GroupModOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GroupModOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MeterModInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MeterModInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MeterModOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MeterModOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOutInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.RoleRequestInput;
@@ -94,8 +103,33 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
     }
 
     @Override
-    public Future<RpcResult<Void>> flowMod(FlowModInput input, SwitchConnectionDistinguisher cookie) {
-        return getConnectionAdapter(cookie).flowMod(input);
+    public Future<RpcResult<FlowModOutput>> flowMod(FlowModInput input, SwitchConnectionDistinguisher cookie) {
+        
+        // Set Xid before invoking RPC on OFLibrary
+        // TODO : Cleaner approach is to use a copy constructor once it is implemented 
+        Long Xid = session.getNextXid();
+        FlowModInputBuilder mdInput = new FlowModInputBuilder();
+        mdInput.setXid(Xid);
+        mdInput.setBufferId(input.getBufferId());
+        mdInput.setCommand(input.getCommand());
+        mdInput.setCookie(input.getCookie());
+        mdInput.setCookieMask(input.getCookieMask());
+        mdInput.setFlags(input.getFlags());
+        mdInput.setHardTimeout(input.getHardTimeout());
+        mdInput.setIdleTimeout(input.getHardTimeout());
+        mdInput.setMatch(input.getMatch());
+        mdInput.setOutGroup(input.getOutGroup());
+        mdInput.setOutPort(input.getOutPort());
+        mdInput.setPriority(input.getPriority());
+        mdInput.setTableId(input.getTableId());
+        mdInput.setVersion(input.getVersion());
+        getConnectionAdapter(cookie).flowMod(mdInput.build());
+        
+        // Send the same Xid back to caller - MessageDrivenSwitch
+        FlowModOutputBuilder flowModOutput = new FlowModOutputBuilder();
+        flowModOutput.setXid(Xid);
+        return flowModOutput.build();
+        
     }
 
     @Override
@@ -120,13 +154,48 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
     }
 
     @Override
-    public Future<RpcResult<Void>> groupMod(GroupModInput input, SwitchConnectionDistinguisher cookie) {
-        return getConnectionAdapter(cookie).groupMod(input);
+    public Future<RpcResult<GroupModOutput>> groupMod(GroupModInput input, SwitchConnectionDistinguisher cookie) {
+        
+        // Set Xid before invoking RPC on OFLibrary
+        // TODO : Cleaner approach is to use a copy constructor once it is implemented
+        Long Xid = session.getNextXid();
+        GroupModInputBuilder mdInput = new GroupModInputBuilder();
+        mdInput.setXid(Xid);
+        mdInput.setBucketsList(input.getBucketsList());
+        mdInput.setCommand(input.getCommand());
+        mdInput.setGroupId(input.getGroupId());
+        mdInput.setType(input.getType());
+        mdInput.setVersion(input.getVersion());
+        getConnectionAdapter(cookie).groupMod(mdInput.build());
+        
+        // Send the same Xid back to caller - MessageDrivenSwitch
+        GroupModOutputBuilder groupModOutput = new GroupModOutputBuilder();
+        groupModOutput.setXid(Xid);
+        return groupModOutput.build();
+        
     }
 
     @Override
-    public Future<RpcResult<Void>> meterMod(MeterModInput input, SwitchConnectionDistinguisher cookie) {
-        return getConnectionAdapter(cookie).meterMod(input);
+    public Future<RpcResult<MeterModOutput>> meterMod(MeterModInput input, SwitchConnectionDistinguisher cookie) {
+        
+        // Set Xid before invoking RPC on OFLibrary
+        // TODO : Cleaner approach is to use a copy constructor once it is implemented
+        Long Xid = session.getNextXid();
+        MeterModInputBuilder mdInput = new MeterModInputBuilder();
+        mdInput.setXid(Xid);
+        mdInput.setBands(input.getBands());
+        mdInput.setCommand(input.getCommand());
+        mdInput.setFlags(input.getFlags());
+        mdInput.setMeterId(input.getMeterId());
+        mdInput.setVersion(input.getVersion());
+        mdInput.setVersion(input.getVersion());
+        getConnectionAdapter(cookie).meterMod(mdInput.build());
+        
+        // Send the same Xid back to caller - MessageDrivenSwitch
+        MeterModOutputBuilder meterModOutput = new MeterModOutputBuilder();
+        meterModOutput.setXid(Xid);
+        return meterModOutput.build();
+        
     }
 
     @Override
