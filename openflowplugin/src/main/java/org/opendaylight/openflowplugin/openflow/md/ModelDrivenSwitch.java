@@ -4,7 +4,10 @@ import java.util.concurrent.Future;
 
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutput;
 
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInput;
@@ -47,16 +50,16 @@ public interface ModelDrivenSwitch extends //
     public NodeId getNodeId();
 
     @Override
-    public Future<RpcResult<Void>> addFlow(AddFlowInput input);
+    public Future<RpcResult<AddFlowOutput>> addFlow(AddFlowInput input);
 
     @Override
-    public Future<RpcResult<Void>> removeFlow(RemoveFlowInput input);
+    public Future<RpcResult<RemoveFlowOutput>> removeFlow(RemoveFlowInput input);
 
     @Override
     public Future<RpcResult<Void>> transmitPacket(TransmitPacketInput input);
 
     @Override
-    public Future<RpcResult<Void>> updateFlow(UpdateFlowInput input);
+    public Future<RpcResult<UpdateFlowOutput>> updateFlow(UpdateFlowInput input);
 
     @Override
     public Future<RpcResult<AddGroupOutput>> addGroup(AddGroupInput input);

@@ -42,9 +42,12 @@ import org.opendaylight.openflowplugin.openflow.core.IController;
 import org.opendaylight.openflowplugin.openflow.core.IMessageListener;
 import org.opendaylight.openflowplugin.openflow.core.ISwitch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutput;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.openflow.protocol.OFError;
 import org.openflow.protocol.OFFlowMod;
@@ -810,18 +813,18 @@ public class FlowProgrammerService implements IPluginInFlowProgrammerService, Sa
 
 
     @Override
-    public Future<RpcResult<Void>> addFlow(AddFlowInput input) {
+    public Future<RpcResult<AddFlowOutput>> addFlow(AddFlowInput input) {
         throw new UnsupportedOperationException("Not implemented yet.");
     }
 
 
     @Override
-    public Future<RpcResult<Void>> removeFlow(RemoveFlowInput input) {
+    public Future<RpcResult<RemoveFlowOutput>> removeFlow(RemoveFlowInput input) {
         throw new UnsupportedOperationException("Not implemented yet.");
     }
 
     @Override
-    public Future<RpcResult<Void>> updateFlow(UpdateFlowInput input) {
+    public Future<RpcResult<UpdateFlowOutput>> updateFlow(UpdateFlowInput input) {
         throw new UnsupportedOperationException("Not implemented yet.");
     }
 }
