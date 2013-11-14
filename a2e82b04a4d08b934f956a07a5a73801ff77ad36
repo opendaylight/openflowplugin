@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "da6255ed_53e8e7e1",
+        "filename": "openflowplugin/pom.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2013-11-14T11:43:23Z",
+      "side": 1,
+      "message": "SAL Common util is already in POM but with scope test,\nthat is why maven raised issue and also dependency was not available during compile. Please remove the other declaration.",
+      "revId": "a2e82b04a4d08b934f956a07a5a73801ff77ad36",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da6255ed_336e9397",
         "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/session/IMessageDispatchService.java",
         "patchSetId": 3
