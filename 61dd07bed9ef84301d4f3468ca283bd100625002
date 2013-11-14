@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da6255ed_ce78aa91",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/HandshakeManagerImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 284,
+      "author": {
+        "id": 63
+      },
+      "writtenOn": "2013-11-14T18:44:28Z",
+      "side": 1,
+      "message": "Is FeaturesReply not expected to be received via ConnectionConductorImpl via specific onFeaturesReply or something similar ? How can we get this via RPC Result ? Because this is Features-Reply OF Message",
+      "revId": "61dd07bed9ef84301d4f3468ca283bd100625002",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
