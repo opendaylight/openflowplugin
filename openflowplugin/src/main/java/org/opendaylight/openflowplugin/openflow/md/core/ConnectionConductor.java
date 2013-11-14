@@ -21,10 +21,6 @@ import com.google.common.collect.Lists;
 /**
  * @author mirehak
  */
-/**
- * @author mirehak
- *
- */
 public interface ConnectionConductor {
 
     /** distinguished connection states */

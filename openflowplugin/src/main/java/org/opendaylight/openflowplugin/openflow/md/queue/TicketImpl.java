@@ -18,14 +18,14 @@ import com.google.common.util.concurrent.SettableFuture;
  *
  */
 public class TicketImpl<T> implements Ticket<T> {
-    
+
     private DataObject message;
     private ConnectionConductor conductor;
     private SettableFuture<T> future;
     private Class<? extends DataObject> registeredMessageType;
-    
+
     /**
-     * default ctor 
+     * default ctor
      */
     public TicketImpl() {
         future = SettableFuture.create();
@@ -33,7 +33,6 @@ public class TicketImpl<T> implements Ticket<T> {
 
     @Override
     public SettableFuture<T> getResult() {
-        // TODO Auto-generated method stub
         return future;
     }
 
@@ -74,7 +73,7 @@ public class TicketImpl<T> implements Ticket<T> {
             Class<? extends DataObject> registeredMessageType) {
         this.registeredMessageType = registeredMessageType;
     }
-    
+
     /**
      * @return the registeredMessageType
      */
