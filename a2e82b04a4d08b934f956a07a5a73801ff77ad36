@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da6255ed_336e9397",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/session/IMessageDispatchService.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 223,
+      "author": {
+        "id": 63
+      },
+      "writtenOn": "2013-11-14T11:01:17Z",
+      "side": 1,
+      "message": "I assume that for consistency this would also become Future\u003cRpcResult\u003cUpdateTableOutput\u003e\u003e when appropriate changes are done in the YANG RPC model between NSF and OFPlugin",
+      "revId": "a2e82b04a4d08b934f956a07a5a73801ff77ad36",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da6255ed_33f573cb",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/session/MessageDispatchServiceImpl.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 63
+      },
+      "writtenOn": "2013-11-14T11:01:17Z",
+      "side": 1,
+      "message": "The varible response is not being used anywhere down. Pls check if there are errors returned in this Future\u003cRpcResult\u003cVoid\u003e\u003e object and set those errors in UpdateFlowOutputBuilder if suitable API is available in UpdateFlowOutput ... \n\nIf such error-reporting setter is not available in the *Output objects, models must be corrected. For now, this should not be an issue and we can flag a TODO item for such cleanups\n\nI think it would be better if we add log statements with debug level so that any issues could be traced",
+      "revId": "a2e82b04a4d08b934f956a07a5a73801ff77ad36",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da6255ed_1304afbe",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/session/MessageDispatchServiceImpl.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 182,
+      "author": {
+        "id": 63
+      },
+      "writtenOn": "2013-11-14T11:01:17Z",
+      "side": 1,
+      "message": "Same as above",
+      "revId": "a2e82b04a4d08b934f956a07a5a73801ff77ad36",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da6255ed_f3febbad",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/session/MessageDispatchServiceImpl.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 211,
+      "author": {
+        "id": 63
+      },
+      "writtenOn": "2013-11-14T11:01:17Z",
+      "side": 1,
+      "message": "Same as above",
+      "revId": "a2e82b04a4d08b934f956a07a5a73801ff77ad36",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
