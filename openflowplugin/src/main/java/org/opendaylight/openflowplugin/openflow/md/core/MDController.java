@@ -10,6 +10,8 @@ package org.opendaylight.openflowplugin.openflow.md.core;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -25,9 +27,11 @@ import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionPro
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.translator.ErrorTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.translator.PacketInTranslator;
+import org.opendaylight.openflowplugin.openflow.md.queue.PopListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInput;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,9 +49,11 @@ public class MDController implements IMDController {
     private SwitchConnectionProvider switchConnectionProvider;
 
     private ConcurrentMap<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, DataObject>>> messageTranslators;
+    private Map<Class<? extends DataObject>, Collection<PopListener<DataObject>>> popListeners;
 
     final private int OF10 = 1;
     final private int OF13 = 4;
+
 
     /**
      * @return translator mapping
@@ -62,12 +68,19 @@ public class MDController implements IMDController {
     public void init() {
         LOG.debug("Initializing!");
         messageTranslators = new ConcurrentHashMap<>();
+        popListeners = new ConcurrentHashMap<>();
+        //TODO: move registration to factory
         addMessageTranslator(ErrorMessage.class, OF10, new ErrorTranslator());
         addMessageTranslator(ErrorMessage.class, OF13, new ErrorTranslator());
         addMessageTranslator(PacketInMessage.class,OF10, new PacketInTranslator());
         addMessageTranslator(PacketInMessage.class,OF13, new PacketInTranslator());
+        
+        //TODO: move registration to factory
+        addMessagePopListener(TransmitPacketInput.class, new NotificationPopListener<DataObject>());
+        
         // Push the updated Listeners to Session Manager which will be then picked up by ConnectionConductor eventually
         OFSessionUtil.getSessionManager().setTranslatorMapping(messageTranslators);
+        OFSessionUtil.getSessionManager().setPopListenerMapping(popListeners);
     }
 
     /**
@@ -145,11 +158,11 @@ public class MDController implements IMDController {
 
         Collection<IMDMessageTranslator<OfHeader, DataObject>> existingValues = messageTranslators.get(tKey);
         if (existingValues == null) {
-            existingValues = new ArrayList<>();
+            existingValues = new LinkedHashSet<>();
             messageTranslators.put(tKey, existingValues);
         }
         existingValues.add(translator);
-        LOG.debug("{} is now listened by {}", messageType, translator);
+        LOG.debug("{} is now translated by {}", messageType, translator);
     }
 
     @Override
@@ -161,7 +174,30 @@ public class MDController implements IMDController {
             if (values.isEmpty()) {
                 messageTranslators.remove(tKey);
             }
-            LOG.debug("{} is now removed", translator);
+            LOG.debug("{} is now removed from translators", translator);
+         }
+    }
+    
+    @Override
+    public void addMessagePopListener(Class<? extends DataObject> messageType, PopListener<DataObject> popListener) {
+        Collection<PopListener<DataObject>> existingValues = popListeners.get(messageType);
+        if (existingValues == null) {
+            existingValues = new LinkedHashSet<>();
+            popListeners.put(messageType, existingValues);
+        }
+        existingValues.add(popListener);
+        LOG.debug("{} is now popListened by {}", messageType, popListener);
+    }
+
+    @Override
+    public void removeMessagePopListener(Class<? extends DataObject> messageType, PopListener<DataObject> popListener) {
+        Collection<PopListener<DataObject>> values = popListeners.get(messageType);
+        if (values != null) {
+            values.remove(popListener);
+            if (values.isEmpty()) {
+                popListeners.remove(messageType);
+            }
+            LOG.debug("{} is now removed from popListeners", popListener);
          }
     }
 

@@ -20,6 +20,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.openflow.md.core.TranslatorKey;
+import org.opendaylight.openflowplugin.openflow.md.queue.PopListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.concepts.util.ListenerRegistry;
@@ -33,9 +34,11 @@ import org.slf4j.LoggerFactory;
 public class SessionManagerOFImpl implements SessionManager {
 
     protected static final Logger LOG = LoggerFactory.getLogger(SessionManagerOFImpl.class);
-    private static SessionManagerOFImpl instance;
+    private static SessionManager instance;
     private ConcurrentHashMap<SwitchConnectionDistinguisher, SessionContext> sessionLot;
     private Map<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, DataObject>>> translatorMapping;
+    private Map<Class<? extends DataObject>, Collection<PopListener<DataObject>>> popListenerMapping;
+
 
     protected final ListenerRegistry<SessionListener> sessionListeners = new ListenerRegistry<>();
     private NotificationProviderService notificationProviderService;
@@ -169,6 +172,7 @@ public class SessionManagerOFImpl implements SessionManager {
             }
         }
 
+        @Override
         public void onSessionRemoved(SessionContext context) {
             for (ListenerRegistration<SessionListener> listener : sessionListeners) {
                 try {
@@ -179,6 +183,7 @@ public class SessionManagerOFImpl implements SessionManager {
             }
         }
     };
+    
 
     @Override
     public Map<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, DataObject>>> getTranslatorMapping() {
@@ -206,6 +211,17 @@ public class SessionManagerOFImpl implements SessionManager {
     @Override
     public NotificationProviderService getNotificationProviderService() {
         return notificationProviderService;
+    }
+
+    @Override
+    public Map<Class<? extends DataObject>, Collection<PopListener<DataObject>>> getPopListenerMapping() {
+        return popListenerMapping;
+    }
+    
+    @Override
+    public void setPopListenerMapping(
+            Map<Class<? extends DataObject>, Collection<PopListener<DataObject>>> popListenerMapping) {
+        this.popListenerMapping = popListenerMapping;
     }
 
 }

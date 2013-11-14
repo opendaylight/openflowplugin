@@ -22,26 +22,18 @@ import org.opendaylight.openflowplugin.openflow.md.core.TranslatorKey;
 public interface QueueKeeper<IN, OUT> {
     
     /**
-     * @param listener
-     */
-    void addPopListener(PopListener<OUT> listener);
-    
-    /**
-     * @param listener
-     * @return removed listener
-     */
-    boolean removePopListener(PopListener<OUT> listener);
-    
-    /**
      * @param translatorMapping
      */
     void setTranslatorMapping(Map<TranslatorKey, Collection<IMDMessageTranslator<IN, OUT>>> translatorMapping);
 
     /**
-     * @param registeredMessageClazz registered message type
      * @param message
      * @param conductor
      */
-    void push(Class<? extends IN> registeredMessageClazz, IN message, 
-            ConnectionConductor conductor);
+    void push(IN message, ConnectionConductor conductor);
+
+    /**
+     * @param popListenersMapping the popListenersMapping to set
+     */
+    void setPopListenersMapping(Map<Class<? extends OUT>, Collection<PopListener<OUT>>> popListenersMapping);
 }

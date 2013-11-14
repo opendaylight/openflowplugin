@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.translator;
 
+import org.opendaylight.openflowplugin.openflow.md.core.ByteUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;

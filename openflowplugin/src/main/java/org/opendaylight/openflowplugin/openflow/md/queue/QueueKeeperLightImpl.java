@@ -8,10 +8,7 @@
 package org.opendaylight.openflowplugin.openflow.md.queue;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -32,7 +29,7 @@ public class QueueKeeperLightImpl implements QueueKeeper<OfHeader, DataObject> {
     private static final Logger LOG = LoggerFactory
             .getLogger(QueueKeeperLightImpl.class);
     
-    private Set<PopListener<DataObject>> listeners;
+    private Map<Class<? extends DataObject>, Collection<PopListener<DataObject>>> popListenersMapping;
     private BlockingQueue<TicketResult<DataObject>> processQueue;
     private ScheduledThreadPoolExecutor pool;
     private int poolSize = 10;
@@ -43,16 +40,36 @@ public class QueueKeeperLightImpl implements QueueKeeper<OfHeader, DataObject> {
         public Short extractVersion(OfHeader message) {
             return message.getVersion();
         }
-    }; 
+    };
+    
+    private RegisteredTypeExtractor<OfHeader> registeredSrcTypeExtractor = 
+            new RegisteredTypeExtractor<OfHeader>() {
+        @SuppressWarnings("unchecked")
+        @Override
+        public Class<? extends OfHeader> extractRegisteredType(
+                OfHeader message) {
+            return (Class<? extends OfHeader>) message.getImplementedInterface();
+        }
+    };
+    
+    private RegisteredTypeExtractor<DataObject> registeredOutTypeExtractor = 
+            new RegisteredTypeExtractor<DataObject>() {
+        @SuppressWarnings("unchecked")
+        @Override
+        public Class<? extends DataObject> extractRegisteredType(
+                DataObject message) {
+            return (Class<? extends DataObject>) message.getImplementedInterface();
+        }
+    };
     
     /**
      * prepare queue
      */
     public void init() {
-        listeners = Collections.synchronizedSet(new HashSet<PopListener<DataObject>>());
         processQueue = new LinkedBlockingQueue<>(100);
         pool = new ScheduledThreadPoolExecutor(poolSize);
-        TicketFinisher<DataObject> finisher = new TicketFinisher<>(processQueue, listeners);
+        TicketFinisher<DataObject> finisher = new TicketFinisher<>(
+                processQueue, popListenersMapping, registeredOutTypeExtractor);
         new Thread(finisher).start();
     }
     
@@ -64,12 +81,12 @@ public class QueueKeeperLightImpl implements QueueKeeper<OfHeader, DataObject> {
     }
 
     @Override
-    public void push(Class<? extends OfHeader> registeredMessageType, OfHeader message, ConnectionConductor conductor) {
+    public void push(OfHeader message, ConnectionConductor conductor) {
         TicketImpl<OfHeader, DataObject> ticket = new TicketImpl<>();
         ticket.setConductor(conductor);
         ticket.setMessage(message);
-        ticket.setRegisteredMessageType(registeredMessageType);
-        LOG.debug("ticket scheduling: {}, ticket: {}", registeredMessageType.getSimpleName(), System.identityHashCode(ticket));
+        LOG.debug("ticket scheduling: {}, ticket: {}", 
+                message.getImplementedInterface().getSimpleName(), System.identityHashCode(ticket));
         //TODO: block if queue limit reached 
         processQueue.add(ticket);
         scheduleTicket(ticket);
@@ -79,17 +96,8 @@ public class QueueKeeperLightImpl implements QueueKeeper<OfHeader, DataObject> {
      * @param ticket
      */
     private void scheduleTicket(Ticket<OfHeader, DataObject> ticket) {
-        pool.execute(TicketProcessorFactory.createProcessor(ticket, versionExtractor, translatorMapping));
-    }
-
-    @Override
-    public synchronized void addPopListener(PopListener<DataObject> listener) {
-        listeners.add(listener);
-    }
-
-    @Override
-    public synchronized boolean removePopListener(PopListener<DataObject> listener) {
-        return listeners.remove(listener);
+        pool.execute(TicketProcessorFactory.createProcessor(ticket, versionExtractor, 
+                registeredSrcTypeExtractor, translatorMapping));
     }
 
     /**
@@ -103,5 +111,11 @@ public class QueueKeeperLightImpl implements QueueKeeper<OfHeader, DataObject> {
     public void setTranslatorMapping(
             Map<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, DataObject>>> translatorMapping) {
         this.translatorMapping = translatorMapping;
+    }
+    
+    @Override
+    public void setPopListenersMapping(
+            Map<Class<? extends DataObject>, Collection<PopListener<DataObject>>> popListenersMapping) {
+        this.popListenersMapping = popListenersMapping;
     }
 }

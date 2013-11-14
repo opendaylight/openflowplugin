@@ -7,8 +7,9 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.queue;
 
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutionException;
 
@@ -27,16 +28,20 @@ public class TicketFinisher<OUT> implements Runnable {
             .getLogger(TicketFinisher.class);
     
     private final BlockingQueue<TicketResult<OUT>> queue;
-    private final Set<PopListener<OUT>> listeners;
+    private final Map<Class<? extends OUT>, Collection<PopListener<OUT>>> popListenersMapping;
+    private final RegisteredTypeExtractor<OUT> registeredOutTypeExtractor;
     
     /**
      * @param queue
-     * @param listeners
+     * @param popListenersMapping
+     * @param registeredOutTypeExtractor
      */
     public TicketFinisher(BlockingQueue<TicketResult<OUT>> queue,
-            Set<PopListener<OUT>> listeners) {
+            Map<Class<? extends OUT>, Collection<PopListener<OUT>>> popListenersMapping, 
+            RegisteredTypeExtractor<OUT> registeredOutTypeExtractor) {
         this.queue = queue;
-        this.listeners = listeners;
+        this.popListenersMapping = popListenersMapping;
+        this.registeredOutTypeExtractor = registeredOutTypeExtractor;
     }
 
 
@@ -46,10 +51,19 @@ public class TicketFinisher<OUT> implements Runnable {
             try {
                 //TODO:: handle shutdown of queue
                 TicketResult<OUT> result = queue.take();
-                List<OUT> processedMessage = result.getResult().get();
+                List<OUT> processedMessages = result.getResult().get();
                 LOG.debug("finishing ticket: {}", System.identityHashCode(result));
-                for (PopListener<OUT> consumer : listeners) {
-                    consumer.onPop(processedMessage);
+                for (OUT msg : processedMessages) {
+                    Class<? extends Object> registeredType = 
+                            registeredOutTypeExtractor.extractRegisteredType(msg);
+                    Collection<PopListener<OUT>> popListeners = popListenersMapping.get(registeredType);
+                    if (popListeners == null) {
+                        LOG.warn("no popListener registered for type {}"+registeredType);
+                    } else {
+                        for (PopListener<OUT> consumer : popListeners) {
+                            consumer.onPop(msg);
+                        }
+                    }
                 }
             } catch (ExecutionException | InterruptedException e) {
                 LOG.error(e.getMessage(), e);

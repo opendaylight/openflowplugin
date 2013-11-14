@@ -69,8 +69,8 @@ import org.openflow.protocol.OFPort;
  */
 public final class ActionConvertor {
 
-    ActionConvertor() {
-
+    private ActionConvertor() {
+        // NOOP
     }
 
     public static List<ActionsList> getActionList(
@@ -297,13 +297,13 @@ Action action, ActionBuilder actionBuilder,
 
     }
 
-    public static ActionsList emtpyAction(ActionBuilder actionBuilder, ActionsListBuilder actionsListBuilder) {
+    private static ActionsList emtpyAction(ActionBuilder actionBuilder, ActionsListBuilder actionsListBuilder) {
 
         actionsListBuilder.setAction(actionBuilder.build());
         return actionsListBuilder.build();
     }
 
-    public static ActionsList salToOFOutputAction(Action action, ActionBuilder actionBuilder,
+    private static ActionsList salToOFOutputAction(Action action, ActionBuilder actionBuilder,
             ActionsListBuilder actionsListBuilder) {
 
 

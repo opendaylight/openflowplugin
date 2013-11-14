@@ -107,8 +107,6 @@ public class HandshakeManagerImpl implements HandshakeManager {
             connectionAdapter.disconnect();
             LOG.debug("ret - "+ex.getMessage());
         }
-        
-        receivedHelloLoc = null;
     }
 
     /**

@@ -1,18 +1,19 @@
 package org.opendaylight.openflowplugin.openflow.md.core;
 
+import org.opendaylight.openflowplugin.openflow.md.queue.PopListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 
 public interface IMDController {
 
     /**
-     * Allows application to start receiving OF messages received from switches.
+     * Allows application to start translating OF messages received from switches.
      *
      * @param messageType
      *            the type of OF message that applications want to receive
      * @param version corresponding OF version
      * @param translator
-     *            : Object that implements the IMDMessageListener
+     *            : Object that implements the {@link IMDMessageTranslator}
      */
     public void addMessageTranslator(Class<? extends DataObject> messageType, int version, IMDMessageTranslator<OfHeader, DataObject> translator);
 
@@ -24,8 +25,28 @@ public interface IMDController {
      *            receiving
      * @param version TODO
      * @param translator
-     *            The object that implements the IMDMessageListener
+     *            The object that implements the {@link IMDMessageTranslator}
      */
     public void removeMessageTranslator(Class<? extends DataObject> messageType, int version, IMDMessageTranslator<OfHeader, DataObject> translator);
+
+    /**
+     * Allows application to start pop-listening MD-SAL messages received from switches.
+     *
+     * @param messageType
+     *            the type of OF message that applications want to receive
+     * @param popListener
+     *            : Object that implements the {@link PopListener}
+     */
+    void removeMessagePopListener(Class<? extends DataObject> messageType, PopListener<DataObject> popListener);
+
+    /**
+     * Allows application to stop pop-listening MD-SAL messages received from switches.
+     *
+     * @param messageType
+     *            the type of OF message that applications want to receive
+     * @param popListener
+     *            : Object that implements the {@link PopListener}
+     */
+    void addMessagePopListener(Class<? extends DataObject> messageType, PopListener<DataObject> popListener);
 
 }

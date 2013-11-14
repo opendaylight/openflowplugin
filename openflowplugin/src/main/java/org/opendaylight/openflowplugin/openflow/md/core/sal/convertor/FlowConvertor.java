@@ -224,7 +224,7 @@ public class FlowConvertor {
         return flowMod.build();
     }
 
-    public static Match toMatch(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match match) {
+    private static Match toMatch(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match match) {
 
         MatchEntriesBuilder matchEntriesBuilder = new MatchEntriesBuilder();
         MatchBuilder matchBuilder = new MatchBuilder();

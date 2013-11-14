@@ -23,6 +23,10 @@ public interface SessionListener extends EventListener {
      */
     void onSessionAdded(SwitchConnectionDistinguisher sessionKey, SessionContext context);
 
+    /**
+     * fired upon session removed
+     * @param context
+     */
     void onSessionRemoved(SessionContext context);
 
 }

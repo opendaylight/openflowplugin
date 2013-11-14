@@ -127,17 +127,17 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
 
     @Override
     public void onErrorMessage(ErrorMessage errorMessage) {
-        queueKeeper.push(ErrorMessage.class, errorMessage, this);
+        queueKeeper.push(errorMessage, this);
     }
 
     @Override
     public void onExperimenterMessage(ExperimenterMessage experimenterMessage) {
-        queueKeeper.push(ExperimenterMessage.class, experimenterMessage, this);
+        queueKeeper.push(experimenterMessage, this);
     }
 
     @Override
     public void onFlowRemovedMessage(FlowRemovedMessage message) {
-        queueKeeper.push(FlowRemovedMessage.class, message, this);
+        queueKeeper.push(message, this);
     }
 
 
@@ -178,18 +178,18 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
 
     @Override
     public void onMultipartReplyMessage(MultipartReplyMessage message) {
-        queueKeeper.push(MultipartReplyMessage.class, message, this);
+        queueKeeper.push(message, this);
     }
 
     @Override
     public void onPacketInMessage(PacketInMessage message) {
-        queueKeeper.push(PacketInMessage.class, message, this);
+        queueKeeper.push(message, this);
     }
 
     @Override
     public void onPortStatusMessage(PortStatusMessage message) {
         this.getSessionContext().processPortStatusMsg(message);
-        queueKeeper.push(PortStatusMessage.class, message, this);
+        queueKeeper.push(message, this);
     }
 
     @Override

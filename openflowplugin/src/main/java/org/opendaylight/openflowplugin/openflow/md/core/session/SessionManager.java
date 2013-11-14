@@ -18,6 +18,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.openflow.md.core.TranslatorKey;
+import org.opendaylight.openflowplugin.openflow.md.queue.PopListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -75,7 +76,7 @@ public interface SessionManager {
     public Map<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, DataObject>>> getTranslatorMapping();
 
     /**
-     * @param notificationServiceProvider
+     * @param notificationProviderService
      */
     public void setNotificationProviderService(NotificationProviderService notificationProviderService);
 
@@ -85,7 +86,7 @@ public interface SessionManager {
     public DataProviderService getDataProviderService();
 
     /**
-     * @param notificationServiceProvider
+     * @param dataServiceProvider
      */
     public void setDataProviderService(DataProviderService dataServiceProvider);
 
@@ -99,4 +100,14 @@ public interface SessionManager {
      * @return registration
      */
     public ListenerRegistration<SessionListener> registerSessionListener(SessionListener listener);
+
+    /**
+     * @return popListener mapping, key=message type; value=collection of listeners
+     */
+    public Map<Class<? extends DataObject>, Collection<PopListener<DataObject>>> getPopListenerMapping();
+
+    /**
+     * @param popListenerMapping the popListenerMapping to set
+     */
+    void setPopListenerMapping(Map<Class<? extends DataObject>, Collection<PopListener<DataObject>>> popListenerMapping);
 }

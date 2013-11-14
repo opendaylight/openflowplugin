@@ -31,17 +31,20 @@ public abstract class TicketProcessorFactory {
     /**
      * @param ticket
      * @param versionExtractor 
+     * @param registeredTypeExtractor 
      * @param translatorMapping
      * @return runnable ticket processor
      */
     public static <IN, OUT> Runnable createProcessor(
             final Ticket<IN, OUT> ticket,
             final VersionExtractor<IN> versionExtractor,
+            final RegisteredTypeExtractor<IN> registeredTypeExtractor,
             final Map<TranslatorKey, Collection<IMDMessageTranslator<IN, OUT>>> translatorMapping) {
         return new Runnable() {
             @Override
             public void run() {
-                LOG.debug("message received, type: {}", ticket.getRegisteredMessageType().getSimpleName());
+                LOG.debug("message received, type: {}", registeredTypeExtractor.extractRegisteredType(
+                        ticket.getMessage()).getSimpleName());
                 List<OUT> translate;
                 try {
                     translate = translate();
@@ -51,7 +54,7 @@ public abstract class TicketProcessorFactory {
                     ticket.getResult().setException(e);
                 }
                 LOG.debug("message processing done (type: {}, ticket: {})", 
-                        ticket.getRegisteredMessageType().getSimpleName(), 
+                        registeredTypeExtractor.extractRegisteredType(ticket.getMessage()).getSimpleName(), 
                         System.identityHashCode(ticket));
             }
 
@@ -62,7 +65,7 @@ public abstract class TicketProcessorFactory {
                 List<OUT> result = new ArrayList<>();
                 
                 IN message = ticket.getMessage();
-                Class<? extends IN> messageType = ticket.getRegisteredMessageType();
+                Class<? extends IN> messageType = registeredTypeExtractor.extractRegisteredType(ticket.getMessage());
                 ConnectionConductor conductor = ticket.getConductor();
                 Collection<IMDMessageTranslator<IN, OUT>> translators = null;
                 LOG.debug("translating ticket: {}, ticket: {}", messageType.getSimpleName(), System.identityHashCode(ticket));

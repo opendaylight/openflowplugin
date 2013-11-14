@@ -24,7 +24,6 @@ public class TicketImpl<IN, OUT> implements Ticket<IN, OUT> {
     private IN message;
     private ConnectionConductor conductor;
     private SettableFuture<List<OUT>> future;
-    private Class<? extends IN> registeredMessageType;
     
     /**
      * default ctor
@@ -66,21 +65,5 @@ public class TicketImpl<IN, OUT> implements Ticket<IN, OUT> {
      */
     public void setConductor(ConnectionConductor conductor) {
         this.conductor = conductor;
-    }
-
-    /**
-     * @param registeredMessageType
-     */
-    public void setRegisteredMessageType(
-            Class<? extends IN> registeredMessageType) {
-        this.registeredMessageType = registeredMessageType;
-    }
-
-    /**
-     * @return the registeredMessageType
-     */
-    @Override
-    public Class<? extends IN> getRegisteredMessageType() {
-        return registeredMessageType;
     }
 }

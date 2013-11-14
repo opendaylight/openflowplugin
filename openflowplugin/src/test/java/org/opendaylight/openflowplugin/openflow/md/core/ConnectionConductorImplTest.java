@@ -130,7 +130,6 @@ public class ConnectionConductorImplTest {
         
         queueKeeper = new QueueKeeperLightImpl();
         queueKeeper.init();
-        queueKeeper.addPopListener(popListener);
 
         connectionConductor = new ConnectionConductorImpl(adapter);
         connectionConductor.setQueueKeeper(queueKeeper);
@@ -147,6 +146,19 @@ public class ConnectionConductorImplTest {
         adapter.checkListeners();
         
         controller.getMessageTranslators().putAll(assembleTranslatorMapping());
+        queueKeeper.setPopListenersMapping(assemblePopListenerMapping());
+    }
+
+    /**
+     * @return
+     */
+    private Map<Class<? extends DataObject>, Collection<PopListener<DataObject>>> assemblePopListenerMapping() {
+        Map<Class<? extends DataObject>, Collection<PopListener<DataObject>>> mapping = new HashMap<>();
+        Collection<PopListener<DataObject>> popListenerBag = new ArrayList<>();
+        popListenerBag.add(popListener);
+        //TODO: add testing registered types
+        mapping.put(DataObject.class, popListenerBag);
+        return mapping;
     }
 
     /**

@@ -7,23 +7,16 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.queue;
 
-import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
-
 /**
  * @author mirehak
- *
- * @param <IN> source type of process ticket
- * @param <OUT> resulting type of process ticket
+ * @param <T> parent type of message 
  */
-public interface Ticket<IN, OUT> extends TicketResult<OUT> {
-
+public interface RegisteredTypeExtractor<T> {
+    
     /**
-     * @return connection wrapper
+     * @param message
+     * @return registered message type
      */
-    ConnectionConductor getConductor();
+    public Class<? extends T> extractRegisteredType(T message);
 
-    /**
-     * @return processed message
-     */
-    IN getMessage();
 }
