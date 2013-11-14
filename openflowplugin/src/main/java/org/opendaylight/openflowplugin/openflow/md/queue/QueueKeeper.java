@@ -20,18 +20,18 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
  *
  */
 public interface QueueKeeper<T> {
-    
+
     /**
      * @param listener
      */
     void addPopListener(PopListener<T> listener);
-    
+
     /**
      * @param listener
      * @return removed listener
      */
     boolean removePopListener(PopListener<T> listener);
-    
+
     /**
      * @param listenerMapping
      */
@@ -39,9 +39,9 @@ public interface QueueKeeper<T> {
 
     /**
      * @param registeredMessageClazz registered message type
-     * @param message 
-     * @param conductor 
+     * @param message
+     * @param conductor
      */
-    void push(Class<? extends DataObject> registeredMessageClazz, DataObject message, 
+    void push(Class<? extends DataObject> registeredMessageClazz, DataObject message,
             ConnectionConductor conductor);
 }

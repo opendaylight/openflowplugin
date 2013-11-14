@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * @author mirehak
- * 
+ *
  */
 public abstract class TicketProcessorFactory {
 
@@ -45,7 +45,7 @@ public abstract class TicketProcessorFactory {
             }
 
             /**
-             * @param listenerMapping
+             *
              */
             private void notifyListener() {
                 DataObject message = ticket.getMessage();
