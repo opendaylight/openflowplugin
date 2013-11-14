@@ -39,8 +39,8 @@ public interface QueueKeeper<IN, OUT> {
 
     /**
      * @param registeredMessageClazz registered message type
-     * @param message 
-     * @param conductor 
+     * @param message
+     * @param conductor
      */
     void push(Class<? extends IN> registeredMessageClazz, IN message, 
             ConnectionConductor conductor);

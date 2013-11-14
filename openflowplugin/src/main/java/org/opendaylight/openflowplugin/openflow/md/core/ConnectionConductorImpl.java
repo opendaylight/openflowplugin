@@ -120,10 +120,10 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
                 builder.setVersion(echoRequestMessage.getVersion());
                 builder.setXid(echoRequestMessage.getXid());
                 builder.setData(echoRequestMessage.getData());
-                
+
                 getConnectionAdapter().echoReply(builder.build());
             }
-        }).start();            
+        }).start();
     }
 
     @Override
@@ -149,7 +149,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
      * 2. If HelloMessage contains bitmap and common version found in bitmap
      *    then continue connection processing. if no common version found, just disconnect.
      * 3. If HelloMessage version is not supported, send HelloMessage with lower supported version.
-     *    If Hello message received again with not supported version, just disconnect.
+     * 4. If Hello message received again with not supported version, just disconnect.
      *
      *   TODO: Better to handle handshake into a maintainable innerclass which uses State-Pattern.
      */
@@ -168,7 +168,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         // TODO:: get from configuration
         return 2000;
     }
-    
+
     /**
      * @return milliseconds
      */
@@ -213,10 +213,10 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
                     EchoInputBuilder builder = new EchoInputBuilder();
                     builder.setVersion(getVersion());
                     builder.setXid(getSessionContext().getNextXid());
-                    
+
                     Future<RpcResult<EchoOutput>> echoReplyFuture = getConnectionAdapter()
                             .echo(builder.build());
-                    
+
                     try {
                         RpcResult<EchoOutput> echoReplyValue = echoReplyFuture.get(getMaxTimeout(),
                                 getMaxTimeoutUnit());
@@ -241,7 +241,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
                     }
                 }
             }
-            
+
         }).start();
     }
 
@@ -283,7 +283,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     @Override
     public Future<Boolean> disconnect() {
         LOG.info("disconnecting: sessionCtx="+sessionContext+"|auxId="+auxiliaryKey);
-        
+
         Future<Boolean> result = null;
         if (connectionAdapter.isAlive()) {
             result = connectionAdapter.disconnect();
@@ -291,8 +291,8 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
             LOG.debug("connection already disconnected");
             result = Futures.immediateFuture(true);
         }
-        
-        return result; 
+
+        return result;
     }
 
     @Override
@@ -314,7 +314,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     public SessionContext getSessionContext() {
         return sessionContext;
     }
-    
+
     @Override
     public ConnectionAdapter getConnectionAdapter() {
         return connectionAdapter;

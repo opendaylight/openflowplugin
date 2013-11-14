@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * @author mirehak
- * 
+ *
  */
 public abstract class TicketProcessorFactory {
 
@@ -56,7 +56,7 @@ public abstract class TicketProcessorFactory {
             }
 
             /**
-             * @param listenerMapping
+             *
              */
             private List<OUT> translate() {
                 List<OUT> result = new ArrayList<>();

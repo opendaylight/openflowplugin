@@ -27,7 +27,7 @@ public class TicketImpl<IN, OUT> implements Ticket<IN, OUT> {
     private Class<? extends IN> registeredMessageType;
     
     /**
-     * default ctor 
+     * default ctor
      */
     public TicketImpl() {
         future = SettableFuture.create();
@@ -75,7 +75,7 @@ public class TicketImpl<IN, OUT> implements Ticket<IN, OUT> {
             Class<? extends IN> registeredMessageType) {
         this.registeredMessageType = registeredMessageType;
     }
-    
+
     /**
      * @return the registeredMessageType
      */

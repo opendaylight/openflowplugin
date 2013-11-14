@@ -66,7 +66,7 @@ public class ConnectionConductorImplTest {
 
     /** in [ms] */
     private final int maxProcessingTimeout = 500;
-    
+
     protected ConnectionAdapterStackImpl adapter;
     private ConnectionConductorImpl connectionConductor;
     private MDController controller;
@@ -125,13 +125,13 @@ public class ConnectionConductorImplTest {
     @Before
     public void setUp() throws Exception {
         adapter = new ConnectionAdapterStackImpl();
-        
+
         popListener = new PopListenerCountingImpl<>();
         
         queueKeeper = new QueueKeeperLightImpl();
         queueKeeper.init();
         queueKeeper.addPopListener(popListener);
-        
+
         connectionConductor = new ConnectionConductorImpl(adapter);
         connectionConductor.setQueueKeeper(queueKeeper);
         connectionConductor.init();
@@ -279,7 +279,7 @@ public class ConnectionConductorImplTest {
         builder1.setExperimenter(84L).setExpType(4L);
         eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L,
                 EventFactory.DEFAULT_VERSION, builder1));
-        
+
         executeLater();
 
         Runnable sendExperimenterCmd = new Runnable() {
@@ -333,7 +333,7 @@ public class ConnectionConductorImplTest {
      * Test method for
      * {@link org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductorImpl#onFlowRemovedMessage(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemovedMessage)}
      * .
-     * @throws InterruptedException 
+     * @throws InterruptedException
      */
     @Test
     public void testOnFlowRemovedMessage() throws InterruptedException {
@@ -350,7 +350,7 @@ public class ConnectionConductorImplTest {
         eventPlan.add(0, EventFactory.createDefaultRpcResponseEvent(43,
           EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
         execute(true);
-        
+
         // Now send Flow Removed messages
         FlowRemovedMessageBuilder builder1 = new FlowRemovedMessageBuilder();
         builder1.setVersion((short) 4);
@@ -395,7 +395,7 @@ public class ConnectionConductorImplTest {
      * Test method for
      * {@link org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductorImpl#onPacketInMessage(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage)}
      * .
-     * @throws InterruptedException 
+     * @throws InterruptedException
      */
     @Test
     public void testOnPacketInMessage() throws InterruptedException {
@@ -412,7 +412,7 @@ public class ConnectionConductorImplTest {
         eventPlan.add(0, EventFactory.createDefaultRpcResponseEvent(43,
           EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
         execute(true);
-        
+
         // Now send PacketIn
         PacketInMessageBuilder builder1 = new PacketInMessageBuilder();
         builder1.setVersion((short) 4);
@@ -434,7 +434,7 @@ public class ConnectionConductorImplTest {
      * Test method for
      * {@link org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductorImpl#onPortStatusMessage(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage)}
      * .
-     * @throws InterruptedException 
+     * @throws InterruptedException
      */
     @Test
     public void testOnPortStatusMessage() throws InterruptedException {
@@ -452,7 +452,7 @@ public class ConnectionConductorImplTest {
         eventPlan.add(0, EventFactory.createDefaultRpcResponseEvent(43,
           EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
         execute(true);
-        
+
         // Send Port Status messages
         PortStatusMessageBuilder builder1 = new PortStatusMessageBuilder();
         builder1.setVersion((short) 4);
@@ -824,7 +824,7 @@ public class ConnectionConductorImplTest {
             popListener.wait(maxProcessingTimeout);
         }
         Assert.assertEquals(1, experimenterMessageCounter);
-        
+
         builder1.setExperimenter(85L).setExpType(4L);
         connectionConductor.onExperimenterMessage(builder1.build());
         synchronized (popListener) {
@@ -832,7 +832,7 @@ public class ConnectionConductorImplTest {
         }
         Assert.assertEquals(2, experimenterMessageCounter);
     }
-    
+
     /**
      * Test method for
      * {@link org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductorImpl#onExperimenterMessage(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessage)}
@@ -858,7 +858,7 @@ public class ConnectionConductorImplTest {
     }
 
     /**
-     * @return listener mapping for :
+     * @return listener mapping for:
      * <ul>
      * <li>experimenter</li>
      * <li>error</li>
