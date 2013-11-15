@@ -16,6 +16,24 @@
       "revId": "61dd07bed9ef84301d4f3468ca283bd100625002",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da6255ed_c92ae47d",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/HandshakeManagerImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 284,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2013-11-15T08:18:00Z",
+      "side": 1,
+      "message": "There is no onFeaturesReply on conductor. When adapter receives answer from switch, it will set the result to future object. Until then the Future.get call is a blocking operation here.",
+      "parentUuid": "da6255ed_ce78aa91",
+      "revId": "61dd07bed9ef84301d4f3468ca283bd100625002",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
