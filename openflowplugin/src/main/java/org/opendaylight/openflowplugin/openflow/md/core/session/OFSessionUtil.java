@@ -45,7 +45,7 @@ public abstract class OFSessionUtil {
             LOG.debug("registering sessionKey: {}", Arrays.toString(sessionKey.getId()));
         }
         
-        if (features.getAuxiliaryId() == 0) {
+        if (features.getAuxiliaryId() == null || features.getAuxiliaryId() == 0) {
             // handle primary
             if (sessionContext != null) {
                 LOG.warn("duplicate datapathId occured while registering new switch session: "
@@ -59,7 +59,6 @@ public abstract class OFSessionUtil {
             context.setSessionKey(sessionKey);
             connectionConductor.setSessionContext(context);
             context.setValid(true);
-            //TODO: retrieve listenerMapping from sessionManager and push it to conductor
             getSessionManager().addSessionContext(sessionKey, context);
         } else {
             // handle auxiliary
@@ -78,7 +77,6 @@ public abstract class OFSessionUtil {
                             auxiliaryKey);
                 }
 
-                //TODO: retrieve listenerMapping from sessionManager and push it to conductor
                 sessionContext.addAuxiliaryConductor(auxiliaryKey,
                         connectionConductor);
                 connectionConductor.setSessionContext(sessionContext);
