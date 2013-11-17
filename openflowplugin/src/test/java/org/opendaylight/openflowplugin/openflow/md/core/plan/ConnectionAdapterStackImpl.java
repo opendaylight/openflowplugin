@@ -55,6 +55,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.RoleRequestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.RoleRequestOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SendMultipartRequestMessageInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetAsyncInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetConfigInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.TableModInput;
@@ -96,7 +97,7 @@ public class ConnectionAdapterStackImpl implements ConnectionAdapter, Runnable {
     protected List<Exception> occuredExceptions = new ArrayList<>();
 
     private ConnectionReadyListener connectionReadyListener;
-    
+
     private int planItemCounter;
 
     /**
@@ -277,13 +278,13 @@ public class ConnectionAdapterStackImpl implements ConnectionAdapter, Runnable {
     private boolean checkRpc(OfHeader rpcInput, String rpcName) {
         String msg = null;
         boolean finished = true;
-        
+
         if (eventPlan.isEmpty()) {
             throw new IllegalStateException("eventPlan already depleted");
         }
-        
+
         LOG.debug("checking rpc: name={}, ver={}, xid={}", rpcName, rpcInput.getVersion(), rpcInput.getXid());
-        if (!(eventPlan.peek() instanceof SwitchTestWaitForRpcEvent) 
+        if (!(eventPlan.peek() instanceof SwitchTestWaitForRpcEvent)
                 && !(eventPlan.peek() instanceof SwitchTestWaitForAllEvent)) {
             if (eventPlan.peek() instanceof SwitchTestNotificationEvent) {
                 SwitchTestNotificationEvent notifEvent = (SwitchTestNotificationEvent) (eventPlan.peek());
@@ -300,14 +301,14 @@ public class ConnectionAdapterStackImpl implements ConnectionAdapter, Runnable {
                         .peek();
                 Set<SwitchTestWaitForRpcEvent> eventBag = switchTestWaitForAll.getWaitEventBag();
                 List<String> msgLot = new ArrayList<>();
-                
+
                 if (eventBag == null || eventBag.isEmpty()) {
                     msg = "no wait events in bag";
                 } else {
                     finished = false;
                     for (SwitchTestWaitForRpcEvent switchTestWaitForRpc : eventBag) {
-                        String msgPart = checkSingleRpcContent(rpcInput, rpcName, switchTestWaitForRpc); 
-                        
+                        String msgPart = checkSingleRpcContent(rpcInput, rpcName, switchTestWaitForRpc);
+
                         if (msgPart != null) {
                             msgLot.add(msgPart);
                         } else {
@@ -321,14 +322,14 @@ public class ConnectionAdapterStackImpl implements ConnectionAdapter, Runnable {
                         }
                     }
                 }
-                
+
                 if (!msgLot.isEmpty()) {
                     msg = Joiner.on(" | ").join(msgLot);
                 }
             } else if (eventPlan.peek() instanceof SwitchTestWaitForRpcEvent) {
                 SwitchTestWaitForRpcEvent switchTestRpcEvent = (SwitchTestWaitForRpcEvent) eventPlan
                         .peek();
-                msg = checkSingleRpcContent(rpcInput, rpcName, switchTestRpcEvent); 
+                msg = checkSingleRpcContent(rpcInput, rpcName, switchTestRpcEvent);
             }
         }
 
@@ -346,7 +347,7 @@ public class ConnectionAdapterStackImpl implements ConnectionAdapter, Runnable {
      * @param rpcName
      * @param msgTmp
      * @param switchTestWaitForRpc
-     * @return 
+     * @return
      */
     private static String checkSingleRpcContent(OfHeader rpcInput, String rpcName,
             SwitchTestWaitForRpcEvent switchTestWaitForRpc) {
@@ -357,11 +358,11 @@ public class ConnectionAdapterStackImpl implements ConnectionAdapter, Runnable {
         } else if (!rpcInput.getXid().equals(switchTestWaitForRpc.getXid())) {
             failureMsg = "expected "+rpcName+".xid [" + switchTestWaitForRpc.getXid()
                     + "], got [" + rpcInput.getXid() + "]";
-        } 
-        
+        }
+
         return failureMsg;
     }
-    
+
     /**
      * @param rpcInput
      *            rpc call parameter
@@ -606,5 +607,13 @@ public class ConnectionAdapterStackImpl implements ConnectionAdapter, Runnable {
     public void setConnectionReadyListener(
             ConnectionReadyListener connectionReadyListener) {
         this.connectionReadyListener = connectionReadyListener;
+    }
+
+    @Override
+    public Future<RpcResult<Void>> sendMultipartRequestMessage(
+            SendMultipartRequestMessageInput arg0) {
+        checkRpcAndNext(arg0, "sendMultipartRequestMessage");
+        SettableFuture<RpcResult<Void>> result = createOneWayRpcResult();
+        return result;
     }
 }
