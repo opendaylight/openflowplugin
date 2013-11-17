@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
+import org.opendaylight.controller.sal.binding.api.data.DataProviderService;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.openflowplugin.openflow.md.ModelDrivenSwitch;
 import org.opendaylight.openflowplugin.openflow.md.SwitchInventory;
@@ -20,6 +21,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionListener;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionManager;
+import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRemoved;
@@ -48,6 +50,10 @@ public class SalRegistrationManager implements SessionListener, SwitchInventory 
 
     private NotificationProviderService publishService;
 
+    private DataProviderService dataProviderService;
+
+    private InventoryDataServiceUtil inventoryUtil;
+
     public NotificationProviderService getPublishService() {
         return publishService;
     }
@@ -60,9 +66,20 @@ public class SalRegistrationManager implements SessionListener, SwitchInventory 
         return providerContext;
     }
 
+    public DataProviderService getDataProviderService() {
+        return dataProviderService;
+    }
+
+
+    public InventoryDataServiceUtil getInventoryUtil() {
+        return inventoryUtil;
+    }
+
     public void onSessionInitiated(ProviderContext session) {
         this.providerContext = session;
         this.publishService = session.getSALService(NotificationProviderService.class);
+        this.dataProviderService = session.getSALService(DataProviderService.class);
+        this.inventoryUtil = new InventoryDataServiceUtil(getDataProviderService());
 
         // We register as listener for Session Manager
         getSessionManager().registerSessionListener(this);
@@ -83,7 +100,7 @@ public class SalRegistrationManager implements SessionListener, SwitchInventory 
 
         LOG.info("ModelDrivenSwitch for {} registered to MD-SAL.", datapathId.toString());
 
-        publishService.publish(nodeAdded(ofSwitch, features,nodeRef));
+        // onNodeUpdate(nodeAdded(ofSwitch, features,nodeRef));
     }
 
     @Override
@@ -135,5 +152,11 @@ public class SalRegistrationManager implements SessionListener, SwitchInventory 
 
     public SessionManager getSessionManager() {
         return OFSessionUtil.getSessionManager();
+    }
+
+    @Override
+    public void onNodeUpdate(NodeUpdated nodeUpdate) {
+        publishService.publish(nodeUpdate);
+
     }
 }

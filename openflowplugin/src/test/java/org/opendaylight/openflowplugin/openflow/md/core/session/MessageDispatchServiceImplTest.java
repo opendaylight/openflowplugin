@@ -46,6 +46,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatus;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.RoleRequestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.RoleRequestOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SendMultipartRequestMessageInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetAsyncInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetConfigInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.TableModInput;
@@ -553,6 +554,12 @@ class MockConnectionAdapter implements ConnectionAdapter {
     public void setConnectionReadyListener(
             ConnectionReadyListener connectionReadyListener) {
         this.connectionReadyListener = connectionReadyListener;
+    }
+
+    @Override
+    public Future<RpcResult<Void>> sendMultipartRequestMessage(
+            SendMultipartRequestMessageInput input) {
+        return null;
     }
 
 }
