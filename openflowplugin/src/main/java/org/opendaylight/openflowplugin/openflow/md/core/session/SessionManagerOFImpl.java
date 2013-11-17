@@ -18,6 +18,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.openflow.md.core.TranslatorKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.concepts.util.ListenerRegistry;
@@ -102,6 +103,10 @@ public class SessionManagerOFImpl implements SessionManager {
 
     }
 
+    public void onUpdatedNode(NodeUpdated nodeUpdated) {
+        sessionNotifier.onNodeUpdate(nodeUpdated);
+    }
+
     @Override
     public void invalidateAuxiliary(SwitchConnectionDistinguisher sessionKey,
             SwitchConnectionDistinguisher connectionCookie) {
@@ -168,6 +173,17 @@ public class SessionManagerOFImpl implements SessionManager {
             for (ListenerRegistration<SessionListener> listener : sessionListeners) {
                 try {
                     listener.getInstance().onSessionRemoved(context);
+                } catch (Exception e) {
+                    LOG.error("Unhandled exeption occured while invoking onSessionRemoved on listener", e);
+                }
+            }
+        }
+
+        @Override
+        public void onNodeUpdate(NodeUpdated nodeUpdate) {
+            for (ListenerRegistration<SessionListener> listener : sessionListeners) {
+                try {
+                    listener.getInstance().onNodeUpdate(nodeUpdate);
                 } catch (Exception e) {
                     LOG.error("Unhandled exeption occured while invoking onSessionRemoved on listener", e);
                 }
