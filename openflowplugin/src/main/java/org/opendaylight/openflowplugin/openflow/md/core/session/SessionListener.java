@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.openflow.md.core.session;
 import java.util.EventListener;
 
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeUpdated;
 
 /**
  * listens on session changes
@@ -24,5 +25,7 @@ public interface SessionListener extends EventListener {
     void onSessionAdded(SwitchConnectionDistinguisher sessionKey, SessionContext context);
 
     void onSessionRemoved(SessionContext context);
+
+    void onNodeUpdate(NodeUpdated nodeUpdate);
 
 }

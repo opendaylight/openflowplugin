@@ -16,6 +16,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.openflow.md.core.TranslatorKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -48,6 +49,13 @@ public interface SessionManager {
     public void addSessionContext(SwitchConnectionDistinguisher sessionKey, SessionContext context);
 
     /**
+     * UpdateNode
+     *
+     * @param nodeUpdated
+     */
+    public void onUpdatedNode(NodeUpdated nodeUpdated);
+
+    /**
      * disconnect particular auxiliary {@link ConnectionAdapter}, identified by
      * sessionKey and connectionCookie
      *
@@ -66,7 +74,7 @@ public interface SessionManager {
      * @param translatorMapping
      */
     public void setTranslatorMapping(Map<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, DataObject>>> translatorMapping);
-    
+
     /**
      * @return translator mapping
      */
