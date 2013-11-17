@@ -23,9 +23,9 @@ http://maven.apache.org/maven-v4_0_0.xsd">
     <!-- base distribution -->
 
     <dependency>
-      <groupId>org.opendaylight.integration</groupId>
-      <artifactId>distributions-base</artifactId>
-      <version>0.1.0-SNAPSHOT</version>
+      <groupId>org.opendaylight.controller</groupId>
+      <artifactId>distribution.opendaylight</artifactId>
+      <version>0.1.1-SNAPSHOT</version>
       <type>zip</type>
       <classifier>osgipackage</classifier>
       <!-- Make sure this isn't included on any classpath-->
@@ -77,8 +77,8 @@ http://maven.apache.org/maven-v4_0_0.xsd">
             <phase>generate-resources</phase>
             <configuration>
              <outputDirectory>${project.build.directory}/generated-resources</outputDirectory>
-             <includeArtifacIds>distributions-base</includeArtifacIds>
-             <includeGroupIds>org.opendaylight.integration</includeGroupIds>
+             <includeArtifacIds>distribution.opendaylight</includeArtifacIds>
+             <includeGroupIds>org.opendaylight.controller</includeGroupIds>
              <excludeTransitive>true</excludeTransitive>
              <ignorePermissions>false</ignorePermissions>
             </configuration>
