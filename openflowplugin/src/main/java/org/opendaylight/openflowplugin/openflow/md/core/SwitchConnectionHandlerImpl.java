@@ -13,6 +13,7 @@ import java.net.InetAddress;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.SwitchConnectionHandler;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
+import org.opendaylight.openflowplugin.openflow.md.queue.PopListener;
 import org.opendaylight.openflowplugin.openflow.md.queue.QueueKeeperLightImpl;
 
 /**
@@ -20,12 +21,12 @@ import org.opendaylight.openflowplugin.openflow.md.queue.QueueKeeperLightImpl;
  *
  */
 public class SwitchConnectionHandlerImpl implements SwitchConnectionHandler {
-    
+
     private QueueKeeperLightImpl queueKeeper;
     private ErrorHandler errorHandler;
 
     /**
-     * 
+     *
      */
     public SwitchConnectionHandlerImpl() {
         queueKeeper = new QueueKeeperLightImpl();
@@ -33,7 +34,8 @@ public class SwitchConnectionHandlerImpl implements SwitchConnectionHandler {
         queueKeeper.init();
         // TODO: add pop-listeners consuming object processed via queue
         //queueKeeper.addPopListener(listener);
-        
+        queueKeeper.addPopListener(new NotificationPopListener());
+
         errorHandler = new ErrorHandlerQueueImpl();
         new Thread(errorHandler).start();
     }
