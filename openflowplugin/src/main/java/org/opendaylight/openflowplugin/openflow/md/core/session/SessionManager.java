@@ -11,6 +11,8 @@ package org.opendaylight.openflowplugin.openflow.md.core.session;
 import java.util.Collection;
 import java.util.Map;
 
+import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+import org.opendaylight.controller.sal.binding.api.data.DataProviderService;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
@@ -66,11 +68,31 @@ public interface SessionManager {
      * @param translatorMapping
      */
     public void setTranslatorMapping(Map<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, DataObject>>> translatorMapping);
-    
+
     /**
      * @return translator mapping
      */
     public Map<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, DataObject>>> getTranslatorMapping();
+
+    /**
+     * @param notificationServiceProvider
+     */
+    public void setNotificationProviderService(NotificationProviderService notificationProviderService);
+
+    /**
+     * @return notificationServiceProvider
+     */
+    public DataProviderService getDataProviderService();
+
+    /**
+     * @param notificationServiceProvider
+     */
+    public void setDataProviderService(DataProviderService dataServiceProvider);
+
+    /**
+     * @return notificationServiceProvider
+     */
+    public NotificationProviderService getNotificationProviderService();
 
     /**
      * @param listener

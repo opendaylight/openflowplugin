@@ -13,6 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+import org.opendaylight.controller.sal.binding.api.data.DataProviderService;
 import org.opendaylight.openflowplugin.openflow.md.ModelDrivenSwitch;
 import org.opendaylight.openflowplugin.openflow.md.SwitchInventory;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
@@ -48,6 +49,8 @@ public class SalRegistrationManager implements SessionListener, SwitchInventory 
 
     private NotificationProviderService publishService;
 
+    private DataProviderService dataService;
+
     public NotificationProviderService getPublishService() {
         return publishService;
     }
@@ -63,9 +66,12 @@ public class SalRegistrationManager implements SessionListener, SwitchInventory 
     public void onSessionInitiated(ProviderContext session) {
         this.providerContext = session;
         this.publishService = session.getSALService(NotificationProviderService.class);
+        this.dataService = session.getSALService(DataProviderService.class);
 
         // We register as listener for Session Manager
         getSessionManager().registerSessionListener(this);
+        getSessionManager().setNotificationProviderService(publishService);
+        getSessionManager().setDataProviderService(dataService);
         LOG.info("SalRegistrationManager initialized");
 
     }
