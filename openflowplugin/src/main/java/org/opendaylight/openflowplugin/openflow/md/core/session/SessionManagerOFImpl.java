@@ -14,6 +14,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+import org.opendaylight.controller.sal.binding.api.data.DataProviderService;
 import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
@@ -36,6 +38,9 @@ public class SessionManagerOFImpl implements SessionManager {
     private Map<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, DataObject>>> translatorMapping;
 
     protected final ListenerRegistry<SessionListener> sessionListeners = new ListenerRegistry<>();
+    private NotificationProviderService notificationProviderService;
+
+    private DataProviderService dataProviderService;
 
     /**
      * @return singleton instance
@@ -178,6 +183,29 @@ public class SessionManagerOFImpl implements SessionManager {
     @Override
     public Map<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, DataObject>>> getTranslatorMapping() {
         return this.translatorMapping;
+    }
+
+    @Override
+    public void setNotificationProviderService(
+            NotificationProviderService notificationProviderService) {
+        this.notificationProviderService = notificationProviderService;
+
+    }
+
+    @Override
+    public DataProviderService getDataProviderService() {
+        return dataProviderService;
+    }
+
+    @Override
+    public void setDataProviderService(DataProviderService dataServiceProvider) {
+        this.dataProviderService = dataServiceProvider;
+
+    }
+
+    @Override
+    public NotificationProviderService getNotificationProviderService() {
+        return notificationProviderService;
     }
 
 }
