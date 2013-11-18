@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.openflow.md.core;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -25,13 +24,14 @@ import org.opendaylight.openflowjava.protocol.api.connection.SwitchConnectionHan
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.translator.ErrorTranslator;
+import org.opendaylight.openflowplugin.openflow.md.core.translator.PacketInTranslator;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 
 /**
@@ -46,6 +46,9 @@ public class MDController implements IMDController {
 
     private ConcurrentMap<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, DataObject>>> messageTranslators;
 
+    final private int OF10 = 1;
+    final private int OF13 = 4;
+
     /**
      * @return translator mapping
      */
@@ -59,9 +62,10 @@ public class MDController implements IMDController {
     public void init() {
         LOG.debug("Initializing!");
         messageTranslators = new ConcurrentHashMap<>();
-        addMessageTranslator(ErrorMessage.class, 4, new ErrorTranslator());
-        addMessageTranslator(ErrorMessage.class, 1, new ErrorTranslator());
-        
+        addMessageTranslator(ErrorMessage.class, OF10, new ErrorTranslator());
+        addMessageTranslator(ErrorMessage.class, OF13, new ErrorTranslator());
+        addMessageTranslator(PacketInMessage.class,OF10, new PacketInTranslator());
+        addMessageTranslator(PacketInMessage.class,OF13, new PacketInTranslator());
         // Push the updated Listeners to Session Manager which will be then picked up by ConnectionConductor eventually
         OFSessionUtil.getSessionManager().setTranslatorMapping(messageTranslators);
     }
@@ -138,7 +142,7 @@ public class MDController implements IMDController {
     @Override
     public void addMessageTranslator(Class<? extends DataObject> messageType, int version, IMDMessageTranslator<OfHeader, DataObject> translator) {
         TranslatorKey tKey = new TranslatorKey(version, messageType.getName());
-        
+
         Collection<IMDMessageTranslator<OfHeader, DataObject>> existingValues = messageTranslators.get(tKey);
         if (existingValues == null) {
             existingValues = new ArrayList<>();
