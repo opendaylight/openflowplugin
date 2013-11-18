@@ -14,6 +14,7 @@ import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -71,6 +72,13 @@ public class SalIntegrationTest {
     BindingAwareBroker broker;
 
     /**
+     * @return timeout for case of failure
+     */
+    private static long getFailSafeTimeout() {
+        return 20000;
+    }
+    
+    /**
      * test basic integration with OFLib running the handshake
      *
      * @throws Exception
@@ -99,7 +107,7 @@ public class SalIntegrationTest {
         switchSim.setScenarioHandler(scenario);
         switchSim.start();
 
-        switchSim.getScenarioDone().get();
+        switchSim.getScenarioDone().get(getFailSafeTimeout(), TimeUnit.MILLISECONDS);
         Thread.sleep(2000);
         assertEquals(1, listener.nodeUpdated.size());
         assertNotNull(listener.nodeUpdated.get(0));

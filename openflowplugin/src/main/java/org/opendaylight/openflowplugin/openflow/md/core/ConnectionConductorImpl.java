@@ -29,7 +29,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessage;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OpenflowProtocolListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
@@ -180,11 +179,6 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     @Override
     public void onMultipartReplyMessage(MultipartReplyMessage message) {
         queueKeeper.push(MultipartReplyMessage.class, message, this);
-    }
-
-    @Override
-    public void onMultipartRequestMessage(MultipartRequestMessage message) {
-        queueKeeper.push(MultipartRequestMessage.class, message, this);
     }
 
     @Override

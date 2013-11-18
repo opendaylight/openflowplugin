@@ -46,7 +46,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MeterModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessage;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestMessage;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OpenflowProtocolListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
@@ -55,7 +55,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.RoleRequestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.RoleRequestOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SendMultipartRequestMessageInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetAsyncInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetConfigInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.TableModInput;
@@ -486,9 +485,6 @@ public class ConnectionAdapterStackImpl implements ConnectionAdapter, Runnable {
         } else if (notification instanceof MultipartReplyMessage) {
             ofListener
             .onMultipartReplyMessage((MultipartReplyMessage) notification);
-        } else if (notification instanceof MultipartRequestMessage) {
-            ofListener
-            .onMultipartRequestMessage((MultipartRequestMessage) notification);
         } else if (notification instanceof PacketInMessage) {
             ofListener
             .onPacketInMessage((PacketInMessage) notification);
@@ -610,9 +606,9 @@ public class ConnectionAdapterStackImpl implements ConnectionAdapter, Runnable {
     }
 
     @Override
-    public Future<RpcResult<Void>> sendMultipartRequestMessage(
-            SendMultipartRequestMessageInput arg0) {
-        checkRpcAndNext(arg0, "sendMultipartRequestMessage");
+    public Future<RpcResult<Void>> multipartRequest(
+            MultipartRequestInput arg0) {
+        checkRpcAndNext(arg0, "multipartRequestInput");
         SettableFuture<RpcResult<Void>> result = createOneWayRpcResult();
         return result;
     }
