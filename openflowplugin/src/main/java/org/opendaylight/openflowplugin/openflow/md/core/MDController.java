@@ -8,9 +8,7 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +29,7 @@ import org.opendaylight.openflowplugin.openflow.md.queue.PopListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInput;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
@@ -74,10 +73,12 @@ public class MDController implements IMDController {
         addMessageTranslator(ErrorMessage.class, OF13, new ErrorTranslator());
         addMessageTranslator(PacketInMessage.class,OF10, new PacketInTranslator());
         addMessageTranslator(PacketInMessage.class,OF13, new PacketInTranslator());
-        
+
         //TODO: move registration to factory
-        addMessagePopListener(TransmitPacketInput.class, new NotificationPopListener<DataObject>());
-        
+        NotificationPopListener<DataObject> notificationPopListener = new NotificationPopListener<DataObject>();
+        addMessagePopListener(PacketReceived.class,notificationPopListener);
+        addMessagePopListener(TransmitPacketInput.class, notificationPopListener);
+
         // Push the updated Listeners to Session Manager which will be then picked up by ConnectionConductor eventually
         OFSessionUtil.getSessionManager().setTranslatorMapping(messageTranslators);
         OFSessionUtil.getSessionManager().setPopListenerMapping(popListeners);
@@ -177,7 +178,7 @@ public class MDController implements IMDController {
             LOG.debug("{} is now removed from translators", translator);
          }
     }
-    
+
     @Override
     public void addMessagePopListener(Class<? extends DataObject> messageType, PopListener<DataObject> popListener) {
         Collection<PopListener<DataObject>> existingValues = popListeners.get(messageType);
