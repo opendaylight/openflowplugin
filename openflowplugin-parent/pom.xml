@@ -13,6 +13,7 @@
       <module>../openflowplugin</module>
       <module>../distribution/base</module>
       <module>../openflowplugin-it</module>
+      <module>../test-provider</module>
     </modules>
 </project>
 
