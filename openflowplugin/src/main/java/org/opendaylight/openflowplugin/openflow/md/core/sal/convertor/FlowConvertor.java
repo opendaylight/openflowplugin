@@ -210,7 +210,7 @@ public class FlowConvertor {
         if (flow instanceof AddFlowInput) {
             flowMod.setCommand(FlowModCommand.OFPFCADD);
         } else if (flow instanceof RemoveFlowInput) {
-            if (flow.isStrict()) {
+            if (flow.isStrict() != null && flow.isStrict()) {
                 flowMod.setCommand(FlowModCommand.OFPFCDELETESTRICT);
             } else {
                 flowMod.setCommand(FlowModCommand.OFPFCDELETE);
@@ -321,6 +321,7 @@ public class FlowConvertor {
         }
 
         if (match.getEthernetMatch() != null) {
+            matchEntriesBuilder = new MatchEntriesBuilder();
             EthernetMatch ethernetMatch = match.getEthernetMatch();
             EthernetDestination ethernetDestination = ethernetMatch.getEthernetDestination();
             if (ethernetDestination != null) {
@@ -535,6 +536,7 @@ public class FlowConvertor {
 
         Layer3Match layer3Match = match.getLayer3Match();
         if (layer3Match != null) {
+            matchEntriesBuilder = new MatchEntriesBuilder();
             if (layer3Match instanceof Ipv4Match) {
                 Ipv4Match ipv4Match = (Ipv4Match) layer3Match;
                 if (ipv4Match.getIpv4Source() != null) {

@@ -162,7 +162,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
      */
     @Override
     public synchronized void onHelloMessage(final HelloMessage hello) {
-        LOG.debug("processing HELLO.xid{}", hello.getXid());
+        LOG.debug("processing HELLO.xid: {}", hello.getXid());
         firstHelloProcessed = true;
         checkState(CONDUCTOR_STATE.HANDSHAKING);
         HandshakeStepWrapper handshakeStepWrapper = new HandshakeStepWrapper(

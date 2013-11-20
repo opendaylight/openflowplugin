@@ -5,6 +5,7 @@ import java.math.BigInteger;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.opendaylight.openflowplugin.openflow.md.core.ByteUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
@@ -27,9 +28,10 @@ public class ErrorTranslator implements IMDMessageTranslator<OfHeader, List<Data
 		if( msg instanceof ErrorMessage) {
 			ErrorMessage message = (ErrorMessage)msg ;
 			List<DataObject> list = new CopyOnWriteArrayList<DataObject>();
-			LOG.error(" Error Message received: type={}, code={}, data={} ",
-	                message.getType(), message.getCode(),
-	                new String(message.getData()) ) ;
+			LOG.error(" Error Message received: type={}[{}], code={}[{}], data={}[{}] ",
+	                message.getType(), message.getTypeString(), message.getCode(), 
+	                message.getCodeString(), new String(message.getData()), 
+	                ByteUtil.bytesToHexstring(message.getData(), " ")) ;
 
 
 			// create a Node Error Notification event builder
