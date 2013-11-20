@@ -25,10 +25,13 @@ import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionPro
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.translator.ErrorTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.translator.ExperimenterTranslator;
+import org.opendaylight.openflowplugin.openflow.md.core.translator.MultiPartMessageDescToNodeUpdatedTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.translator.PacketInTranslator;
 import org.opendaylight.openflowplugin.openflow.md.queue.PopListener;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterMessage;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
@@ -75,12 +78,14 @@ public class MDController implements IMDController {
         addMessageTranslator(ErrorMessage.class, OF13, new ErrorTranslator());
         addMessageTranslator(PacketInMessage.class,OF10, new PacketInTranslator());
         addMessageTranslator(PacketInMessage.class,OF13, new PacketInTranslator());
-        addMessageTranslator(ExperimenterMessage.class, OF10, new ExperimenterTranslator());       
+        addMessageTranslator(MultipartReplyMessage.class,OF13, new MultiPartMessageDescToNodeUpdatedTranslator());
+        addMessageTranslator(ExperimenterMessage.class, OF10, new ExperimenterTranslator());
 
         //TODO: move registration to factory
         NotificationPopListener<DataObject> notificationPopListener = new NotificationPopListener<DataObject>();
         addMessagePopListener(PacketReceived.class,notificationPopListener);
         addMessagePopListener(TransmitPacketInput.class, notificationPopListener);
+        addMessagePopListener(NodeUpdated.class, notificationPopListener);
 
         // Push the updated Listeners to Session Manager which will be then picked up by ConnectionConductor eventually
         OFSessionUtil.getSessionManager().setTranslatorMapping(messageTranslators);
