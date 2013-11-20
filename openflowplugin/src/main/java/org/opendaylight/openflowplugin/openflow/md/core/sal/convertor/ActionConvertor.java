@@ -365,7 +365,12 @@ Action action, ActionBuilder actionBuilder,
             }
 
             if (uri.getValue() == NodeConnectorIDType.CONTROLLER) {
-                //portAction.setPort(new PortNumber((long) OFPort.OFPP_CONTROLLER.getValue()));
+                // TODO:Check with michael
+                // portAction.setPort(new PortNumber((long)
+                // OFPort.OFPP_CONTROLLER.getValue()));
+                // FIXME: these constants are different among protocols, we need to know target 
+                // version and we need to create enums for all (2) protocols (prefferably 
+                // yang generated) and we definitely need to remove the old stuff 
             }
 
         actionBuilder
