@@ -273,4 +273,11 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
         return getConnectionAdapter(cookie).tableMod(input);
     }
 
+    @Override
+    public Future<RpcResult<Void>> sendMultipartRequestMessage(MultipartRequestInput input,
+            SwitchConnectionDistinguisher cookie) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

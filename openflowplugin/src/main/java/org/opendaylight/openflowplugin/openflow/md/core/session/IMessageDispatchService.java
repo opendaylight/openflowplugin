@@ -230,5 +230,11 @@ public interface IMessageDispatchService {
      * @return - the future
      */
     Future<RpcResult<java.lang.Void>> tableMod(TableModInput input, SwitchConnectionDistinguisher cookie);
+    
+    /**
+     * Send multipart request to switch
+     */
+    Future<RpcResult<java.lang.Void>> sendMultipartRequestMessage(MultipartRequestInput input,
+            SwitchConnectionDistinguisher cookie);
 
 }

@@ -27,8 +27,12 @@ import org.opendaylight.openflowplugin.openflow.md.core.translator.ErrorTranslat
 import org.opendaylight.openflowplugin.openflow.md.core.translator.ExperimenterTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.translator.FlowRemovedTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.translator.MultiPartMessageDescToNodeUpdatedTranslator;
+import org.opendaylight.openflowplugin.openflow.md.core.translator.MultipartReplyTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.translator.PacketInTranslator;
 import org.opendaylight.openflowplugin.openflow.md.queue.PopListener;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GroupDescStatsUpdated;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GroupFeaturesUpdated;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GroupStatisticsUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterMessage;
@@ -83,12 +87,18 @@ public class MDController implements IMDController {
         addMessageTranslator(PacketInMessage.class,OF13, new PacketInTranslator());
         addMessageTranslator(MultipartReplyMessage.class,OF13, new MultiPartMessageDescToNodeUpdatedTranslator());
         addMessageTranslator(ExperimenterMessage.class, OF10, new ExperimenterTranslator());
+        addMessageTranslator(MultipartReplyMessage.class,OF13, new MultipartReplyTranslator());
 
         //TODO: move registration to factory
         NotificationPopListener<DataObject> notificationPopListener = new NotificationPopListener<DataObject>();
         addMessagePopListener(PacketReceived.class,notificationPopListener);
         addMessagePopListener(TransmitPacketInput.class, notificationPopListener);
         addMessagePopListener(NodeUpdated.class, notificationPopListener);
+        
+        //Notification registrations for group-statistics
+        addMessagePopListener(GroupStatisticsUpdated.class, notificationPopListener);
+        addMessagePopListener(GroupFeaturesUpdated.class, notificationPopListener);
+        addMessagePopListener(GroupDescStatsUpdated.class, notificationPopListener);
 
         // Push the updated Listeners to Session Manager which will be then picked up by ConnectionConductor eventually
         OFSessionUtil.getSessionManager().setTranslatorMapping(messageTranslators);
