@@ -16,7 +16,7 @@ import org.opendaylight.controller.sal.common.util.Rpcs;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.FlowConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.GroupConvertor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.MeterConverter;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.MeterConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.session.IMessageDispatchService;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
@@ -155,7 +155,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     @Override
     public Future<RpcResult<AddMeterOutput>> addMeter(AddMeterInput input) {
     	// Convert the AddMeterInput to MeterModInput 
-    	MeterModInput ofMeterModInput = MeterConverter.toMeterModInput(input) ;
+    	MeterModInput ofMeterModInput = MeterConvertor.toMeterModInput(input) ;
     	
     	 	
     	// For Meter provisioning, the SwitchConnectionDistinguisher is set to null so  
@@ -262,7 +262,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     public Future<RpcResult<RemoveMeterOutput>> removeMeter(
             RemoveMeterInput input) {
     	// Convert the RemoveMeterInput to MeterModInput 
-    	MeterModInput ofMeterModInput = MeterConverter.toMeterModInput(input) ;
+    	MeterModInput ofMeterModInput = MeterConvertor.toMeterModInput(input) ;
     	
     	 	
     	// For Meter provisioning, the SwitchConnectionDistinguisher is set to null so  
@@ -402,7 +402,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     public Future<RpcResult<UpdateMeterOutput>> updateMeter(
             UpdateMeterInput input) {
     	// Convert the UpdateMeterInput to MeterModInput 
-    	MeterModInput ofMeterModInput = MeterConverter.toMeterModInput(input.getUpdatedMeter()) ;
+    	MeterModInput ofMeterModInput = MeterConvertor.toMeterModInput(input.getUpdatedMeter()) ;
     	
     	 	
     	// For Meter provisioning, the SwitchConnectionDistinguisher is set to null so  

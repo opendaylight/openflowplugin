@@ -17,6 +17,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PushMplsAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PushPbbAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PushVlanAction;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetMplsTtlAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetNwTtlAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetQueueAction;
@@ -33,6 +34,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.MplsTtlActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.NwTtlAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.NwTtlActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.OxmFieldsAction;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.OxmFieldsActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.PortAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.PortActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.QueueIdAction;
@@ -53,8 +56,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.actions.list.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.EtherType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumber;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.MatchEntries;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
 import org.openflow.protocol.OFPort;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 
@@ -68,7 +74,8 @@ import org.openflow.protocol.OFPort;
  *
  */
 public final class ActionConvertor {
-
+    private static final Logger logger = LoggerFactory.getLogger(ActionConvertor.class);
+    private static final String PREFIX_SEPARATOR = "/";
     private ActionConvertor() {
         // NOOP
     }
@@ -113,8 +120,9 @@ public final class ActionConvertor {
                 actionsList.add(SalToOFSetNwTtl(action, actionBuilder, actionsListBuilder));
             else if (action instanceof DecNwTtl)
                 actionsList.add(SalToOFDecNwTtl(action, actionBuilder, actionsListBuilder));
-            // else if(action instanceof SetF) //TODO:SAL Class Missing //
-            // actionsList.add(SalToOFSetField(action));
+            else if (action instanceof SetField)
+                actionsList.add(SalToOFSetField(action, actionBuilder, actionsListBuilder));
+
             else if (action instanceof PushPbbAction)
                 actionsList.add(SalToOFPushPbbAction(action, actionBuilder, actionsListBuilder));
             else if (action instanceof PopPbbAction)
@@ -128,6 +136,27 @@ public final class ActionConvertor {
 
     }
 
+
+    private static ActionsList SalToOFSetField(Action action, ActionBuilder actionBuilder,
+            ActionsListBuilder actionsListBuilder) {
+
+        org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match match = ((SetField) action)
+                .getMatch();
+
+        List<MatchEntries> matchEntries = FlowConvertor.toMatch(match);
+
+        OxmFieldsActionBuilder oxmFieldsActionBuilder = new OxmFieldsActionBuilder();
+
+        oxmFieldsActionBuilder.setMatchEntries(matchEntries);
+
+        actionBuilder
+                .setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.SetField.class);
+
+        actionBuilder.addAugmentation(OxmFieldsAction.class, oxmFieldsActionBuilder.build());
+        actionsListBuilder.setAction(actionBuilder.build());
+        return actionsListBuilder.build();
+
+    }
 
     private static ActionsList SalToOFDecNwTtl(Action action, ActionBuilder actionBuilder,
             ActionsListBuilder actionsListBuilder) {
@@ -336,7 +365,7 @@ Action action, ActionBuilder actionBuilder,
             }
 
             if (uri.getValue() == NodeConnectorIDType.CONTROLLER) {
-                portAction.setPort(new PortNumber((long) OFPort.OFPP_CONTROLLER.getValue()));
+                //portAction.setPort(new PortNumber((long) OFPort.OFPP_CONTROLLER.getValue()));
             }
 
         actionBuilder

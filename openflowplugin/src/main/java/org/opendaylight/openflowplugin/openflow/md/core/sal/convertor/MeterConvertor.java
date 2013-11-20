@@ -1,47 +1,41 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
-
 /****
-*
-* This class is used for converting the data from SAL layer to OF Library Layer for Meter Mod Command.
-*
-*/
+ *
+ * This class is used for converting the data from SAL layer to OF Library Layer for Meter Mod Command.
+ *
+ */
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-
-
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterFlags.Flags;
-
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.band.type.band.type.Drop;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.band.type.band.type.DscpRemark;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.band.type.band.type.Experimenter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.MeterBandHeaders;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.MeterBandHeader;
-// import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.MeterBandHeaderBuilder;
-
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterBandType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterModCommand;
-
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MeterModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MeterModInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.MeterBand;
-
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.meter.band.MeterBandDropBuilder;
-
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.meter.band.MeterBandDscpRemarkBuilder;
-
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.meter.band.MeterBandExperimenterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.mod.Bands;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.mod.BandsBuilder;
+//import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.MeterBandHeaderBuilder;
 
 
-public final class MeterConverter {
-	
-	 private MeterConverter(){
+public final class MeterConvertor {
+
+	 private static List<Bands> bands;
+	 private static MeterModInputBuilder meterModInputBuilder;
+	 private static MeterFlags flags;
+	 private MeterConvertor(){
 
 	 }
 
@@ -51,9 +45,6 @@ public final class MeterConverter {
 	 * @return MeterModInput required by OF Library
 	 */
 	public static MeterModInput  toMeterModInput(org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter source ) {
-		 List<Bands> bands = null;
-		 MeterModInputBuilder meterModInputBuilder = null;
-		 MeterFlags flags = null ;
 
 		 meterModInputBuilder = new MeterModInputBuilder();
 
@@ -67,16 +58,16 @@ public final class MeterConverter {
 
 			meterModInputBuilder.setMeterId(new MeterId(source.getMeterId().getValue()));
 
-			getFlagsFromSAL(source.getFlags(), flags);
+			getFlagsFromSAL(source.getFlags());
 				meterModInputBuilder.setFlags(flags);
-			getBandsFromSAL(source.getMeterBandHeaders(), bands);
+			getBandsFromSAL(source.getMeterBandHeaders());
 		 		 meterModInputBuilder.setBands(bands);
 		 return meterModInputBuilder.build();
 	 }
 
 
 
-	 private static void getBandsFromSAL(MeterBandHeaders meterBandHeaders, List<Bands> bands) {
+	 private static void getBandsFromSAL(MeterBandHeaders meterBandHeaders) {
 
 		Iterator <MeterBandHeader> bandHeadersIterator  = meterBandHeaders.getMeterBandHeader().iterator();
 		MeterBandHeader meterBandHeader;
@@ -89,7 +80,7 @@ public final class MeterConverter {
 				meterBandHeader = bandHeadersIterator.next();
 				MeterBand meterBandItem = null;
 				//The band types :drop,DSCP_Remark or experimenter.
-			//	meterBandHeaderBuilder = new MeterBandHeaderBuilder();
+				//meterBandHeaderBuilder = new MeterBandHeaderBuilder();
 
 
 				if(meterBandHeader.getMeterBandTypes().getFlags().isOfpmbtDrop()){
@@ -140,7 +131,7 @@ public final class MeterConverter {
 	}
 
 	 //get it from plugin(SAL) layer
-	 private static void getFlagsFromSAL(Flags flags2, MeterFlags flags) {
+	 private static void getFlagsFromSAL(Flags flags2) {
 	                        boolean meterBurst_SAL = false;
 	                        boolean meterKbps_SAL = false;
 				boolean meterPktps_SAL = false;
@@ -156,5 +147,6 @@ public final class MeterConverter {
 
 
 		}
+
 
 }

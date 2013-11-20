@@ -23,9 +23,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.Remo
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActions;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ClearActions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.GoToTable;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.Meter;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ClearActions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.WriteActions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.WriteMetadata;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.arp.match.fields.ArpSourceHardwareAddress;
@@ -149,7 +149,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Vlan
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.VlanVid;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.MatchEntries;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.MatchEntriesBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowMod;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.match.grouping.Match;
@@ -214,7 +213,7 @@ public class FlowConvertor {
         flowMod.setFlags(ofFlowModFlags);
 
         if (flow.getMatch() != null) {
-            flowMod.setMatch(toMatch(flow.getMatch()));
+            flowMod.setMatch((Match) toMatch(flow.getMatch()));
         }
 
         if (flow.getInstructions() != null) {
@@ -224,7 +223,8 @@ public class FlowConvertor {
         return flowMod.build();
     }
 
-    private static Match toMatch(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match match) {
+    public static List<MatchEntries> toMatch(
+            org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match match) {
 
         MatchEntriesBuilder matchEntriesBuilder = new MatchEntriesBuilder();
         MatchBuilder matchBuilder = new MatchBuilder();
@@ -682,7 +682,7 @@ public class FlowConvertor {
         }
 
         matchBuilder.setMatchEntries(matchEntriesList);
-        return matchBuilder.build();
+        return matchEntriesList;
     }
 
     private static List<Instructions> toInstructions(
