@@ -272,5 +272,4 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
     public Future<RpcResult<Void>> tableMod(TableModInput input, SwitchConnectionDistinguisher cookie) {
         return getConnectionAdapter(cookie).tableMod(input);
     }
-
 }
