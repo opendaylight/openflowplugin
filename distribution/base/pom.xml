@@ -38,6 +38,14 @@ http://maven.apache.org/maven-v4_0_0.xsd">
       <artifactId>openflowplugin</artifactId>
       <version>0.0.1-SNAPSHOT</version>
     </dependency>
+    
+    <!-- debug provider -->
+    <dependency>
+      <groupId>org.opendaylight.openflowplugin</groupId>
+      <artifactId>test-provider</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
+    </dependency>
+
 
     <!-- openflowjava -->
     <dependency>
