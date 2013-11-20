@@ -13,9 +13,11 @@ import org.opendaylight.openflowplugin.openflow.md.ModelDrivenSwitch;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.SalGroupService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.OpendaylightGroupStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.SalMeterService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.OpendaylightMeterStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService;
 import org.opendaylight.yangtools.concepts.CompositeObjectRegistration;
 import org.opendaylight.yangtools.concepts.CompositeObjectRegistration.CompositeObjectRegistrationBuilder;
@@ -35,6 +37,10 @@ public abstract class AbstractModelDrivenSwitch implements ModelDrivenSwitch {
     private RoutedRpcRegistration<SalMeterService> meterRegistration;
 
     private RoutedRpcRegistration<PacketProcessingService> packetRegistration;
+
+    private RoutedRpcRegistration<OpendaylightGroupStatisticsService> groupStatisticsRegistration;
+
+    private RoutedRpcRegistration<OpendaylightMeterStatisticsService> meterStatisticsRegistration;
 
     protected final SessionContext sessionContext;
 
@@ -68,6 +74,14 @@ public abstract class AbstractModelDrivenSwitch implements ModelDrivenSwitch {
         //packetRegistration = ctx.addRoutedRpcImplementation(PacketProcessingService.class, this);
         //packetRegistration.registerPath(NodeContext.class, getIdentifier());
         //builder.add(packetRegistration);
+        
+        groupStatisticsRegistration = ctx.addRoutedRpcImplementation(OpendaylightGroupStatisticsService.class, this);
+        groupStatisticsRegistration.registerPath(NodeContext.class, getIdentifier());
+        builder.add(groupStatisticsRegistration);
+
+        meterStatisticsRegistration = ctx.addRoutedRpcImplementation(OpendaylightMeterStatisticsService.class, this);
+        meterStatisticsRegistration.registerPath(NodeContext.class, getIdentifier());
+        builder.add(meterStatisticsRegistration);
 
         return builder.toInstance();
     }
