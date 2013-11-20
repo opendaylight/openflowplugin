@@ -365,7 +365,9 @@ Action action, ActionBuilder actionBuilder,
             }
 
             if (uri.getValue() == NodeConnectorIDType.CONTROLLER) {
-                portAction.setPort(new PortNumber((long) OFPort.OFPP_CONTROLLER.getValue()));
+            // TODO:Check with michael
+            // portAction.setPort(new PortNumber((long)
+            // OFPort.OFPP_CONTROLLER.getValue()));
             }
 
         actionBuilder
