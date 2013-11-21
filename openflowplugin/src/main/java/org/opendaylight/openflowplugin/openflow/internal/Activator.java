@@ -379,21 +379,15 @@ public class Activator extends ComponentActivatorAbstractBase {
                     .setCallbacks("setStatisticsManager", "unsetStatisticsManager").setRequired(false));
         } else
 
-        if (imp.equals(MDController.class)) {
-            // c.setInterface(new String[] { IDiscoveryListener.class.getName(),
-            // IContainerListener.class.getName(),
-            // IRefreshInternalProvider.class.getName(),
-            // IInventoryShimExternalListener.class.getName() }, null);
-            c.add(createServiceDependency().setService(SwitchConnectionProvider.class)
-                    .setCallbacks("setSwitchConnectionProvider", "unsetSwitchConnectionProvider").setRequired(true));
-            logger.debug("configuring MDController ..");
-        } else if (imp == pluginProvider) {
+         if (imp == pluginProvider) {
             // c.setInterface(new String[] { IDiscoveryListener.class.getName(),
             // IContainerListener.class.getName(),
             // IRefreshInternalProvider.class.getName(),
             // IInventoryShimExternalListener.class.getName() }, null);
             c.add(createServiceDependency().setService(BindingAwareBroker.class)
                     .setCallbacks("setBroker", "unsetBroker").setRequired(true));
+            c.add(createServiceDependency().setService(SwitchConnectionProvider.class)
+                    .setCallbacks("setSwitchConnectionProvider", "unsetSwitchConnectionProvider").setRequired(true));
             logger.debug("configuring Binding Aware Provider");
         }
     }

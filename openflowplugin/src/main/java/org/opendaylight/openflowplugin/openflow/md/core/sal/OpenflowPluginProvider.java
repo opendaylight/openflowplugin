@@ -11,9 +11,11 @@ import java.util.Collection;
 import java.util.Collections;
 
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
-import org.opendaylight.controller.sal.binding.api.BindingAwareProvider;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ConsumerContext;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
+import org.opendaylight.controller.sal.binding.api.BindingAwareProvider;
+import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
+import org.opendaylight.openflowplugin.openflow.md.core.MDController;
 import org.opendaylight.yangtools.yang.binding.RpcService;
 import org.osgi.framework.BundleContext;
 
@@ -25,6 +27,20 @@ public class OpenflowPluginProvider implements BindingAwareProvider {
     private BindingAwareBroker broker;
 
     private BundleContext context;
+
+    private SwitchConnectionProvider switchConnectionProvider;
+
+    private MDController mdController;
+
+    public void unsetSwitchConnectionProvider() {
+        switchConnectionProvider = null;
+    }
+
+    public void setSwitchConnectionProvider(
+            SwitchConnectionProvider switchConnectionProvider) {
+        this.switchConnectionProvider = switchConnectionProvider;
+        registerProvider();
+    }
 
     public BundleContext getContext() {
         return context;
@@ -39,6 +55,10 @@ public class OpenflowPluginProvider implements BindingAwareProvider {
     @Override
     public void onSessionInitiated(ProviderContext session) {
         registrationManager.onSessionInitiated(session);
+        mdController = new MDController();
+        mdController.setSwitchConnectionProvider(switchConnectionProvider);
+        mdController.init();
+        mdController.start();
     }
 
     @Override
@@ -62,10 +82,22 @@ public class OpenflowPluginProvider implements BindingAwareProvider {
 
     public void setBroker(BindingAwareBroker broker) {
         this.broker = broker;
-        broker.registerProvider(this, context);
+        registerProvider();
     };
 
     public void unsetBroker(BindingAwareBroker broker) {
         this.broker = null;
     };
-}
+
+    private boolean hasAllDependencies(){
+        if(this.broker != null && this.switchConnectionProvider != null) {
+            return true;
+        }
+        return false;
+    }
+    private void registerProvider() {
+        if(hasAllDependencies()) {
+            this.broker.registerProvider(this,context);
+        }
+    }
+ }
