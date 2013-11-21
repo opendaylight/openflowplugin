@@ -25,10 +25,12 @@ import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionPro
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.translator.ErrorTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.translator.ExperimenterTranslator;
+import org.opendaylight.openflowplugin.openflow.md.core.translator.FlowRemovedTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.translator.PacketInTranslator;
 import org.opendaylight.openflowplugin.openflow.md.queue.PopListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterMessage;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemovedMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
@@ -73,9 +75,10 @@ public class MDController implements IMDController {
         //TODO: move registration to factory
         addMessageTranslator(ErrorMessage.class, OF10, new ErrorTranslator());
         addMessageTranslator(ErrorMessage.class, OF13, new ErrorTranslator());
+        addMessageTranslator(FlowRemovedMessage.class, OF13, new FlowRemovedTranslator());
         addMessageTranslator(PacketInMessage.class,OF10, new PacketInTranslator());
         addMessageTranslator(PacketInMessage.class,OF13, new PacketInTranslator());
-        addMessageTranslator(ExperimenterMessage.class, OF10, new ExperimenterTranslator());       
+        addMessageTranslator(ExperimenterMessage.class, OF10, new ExperimenterTranslator());
 
         //TODO: move registration to factory
         NotificationPopListener<DataObject> notificationPopListener = new NotificationPopListener<DataObject>();
