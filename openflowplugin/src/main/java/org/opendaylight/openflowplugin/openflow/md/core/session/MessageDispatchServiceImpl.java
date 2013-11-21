@@ -9,7 +9,6 @@ import java.util.concurrent.Future;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
-
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev131103.TransactionId;
@@ -17,7 +16,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.Upd
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeterOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeterOutputBuilder;
-
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterInput;
@@ -35,6 +33,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GroupModInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MeterModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MeterModInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOutInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.RoleRequestInput;
@@ -114,9 +113,9 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
 
     @Override
     public Future<RpcResult<UpdateFlowOutput>> flowMod(FlowModInput input, SwitchConnectionDistinguisher cookie) {
-        
+
         // Set Xid before invoking RPC on OFLibrary
-        // TODO : Cleaner approach is to use a copy constructor once it is implemented 
+        // TODO : Cleaner approach is to use a copy constructor once it is implemented
         Long Xid = session.getNextXid();
         FlowModInputBuilder mdInput = new FlowModInputBuilder();
         mdInput.setXid(Xid);
@@ -135,22 +134,22 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
         mdInput.setVersion(input.getVersion());
         LOG.debug("Calling OFLibrary flowMod");
         Future<RpcResult<Void>> response = getConnectionAdapter(cookie).flowMod(mdInput.build());
-        
+
         // Send the same Xid back to caller - MessageDrivenSwitch
         UpdateFlowOutputBuilder flowModOutput = new UpdateFlowOutputBuilder();
         String stringXid =Xid.toString();
         BigInteger bigIntXid = new BigInteger( stringXid );
         flowModOutput.setTransactionId(new TransactionId(bigIntXid));
-        
+
         UpdateFlowOutput result = flowModOutput.build();
         Collection<RpcError> errors = Collections.emptyList();
         RpcResult<UpdateFlowOutput> rpcResult = Rpcs.getRpcResult(true, result, errors);
-        
+
         // solution 1: sending directly and hooking listener to get error
         // hookup listener to catch the possible error with no reference to returned future-object
         LOG.debug("Returning to ModelDrivenSwitch for flowMod RPC");
         return Futures.immediateFuture(rpcResult);
-        
+
     }
 
     @Override
@@ -176,7 +175,7 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
 
     @Override
     public Future<RpcResult<UpdateGroupOutput>> groupMod(GroupModInput input, SwitchConnectionDistinguisher cookie) {
-        
+
         // Set Xid before invoking RPC on OFLibrary
         // TODO : Cleaner approach is to use a copy constructor once it is implemented
         Long Xid = session.getNextXid();
@@ -189,7 +188,7 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
         mdInput.setVersion(input.getVersion());
         LOG.debug("Calling OFLibrary groupMod");
         Future<RpcResult<Void>> response = getConnectionAdapter(cookie).groupMod(mdInput.build());
-        
+
         // Send the same Xid back to caller - MessageDrivenSwitch
         UpdateGroupOutputBuilder groupModOutput = new UpdateGroupOutputBuilder();
         String stringXid =Xid.toString();
@@ -198,17 +197,17 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
         UpdateGroupOutput result = groupModOutput.build();
         Collection<RpcError> errors = Collections.emptyList();
         RpcResult<UpdateGroupOutput> rpcResult = Rpcs.getRpcResult(true, result, errors);
-        
+
         // solution 1: sending directly and hooking listener to get error
         // hookup listener to catch the possible error with no reference to returned future-object
         LOG.debug("Returning to ModelDrivenSwitch for groupMod RPC");
         return Futures.immediateFuture(rpcResult);
-        
+
     }
 
     @Override
     public Future<RpcResult<UpdateMeterOutput>> meterMod(MeterModInput input, SwitchConnectionDistinguisher cookie) {
-        
+
         // Set Xid before invoking RPC on OFLibrary
         // TODO : Cleaner approach is to use a copy constructor once it is implemented
         Long Xid = session.getNextXid();
@@ -222,7 +221,7 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
         mdInput.setVersion(input.getVersion());
         LOG.debug("Calling OFLibrary meterMod");
         Future<RpcResult<Void>> response = getConnectionAdapter(cookie).meterMod(mdInput.build());
-        
+
         // Send the same Xid back to caller - MessageDrivenSwitch
         UpdateMeterOutputBuilder meterModOutput = new UpdateMeterOutputBuilder();
         String stringXid =Xid.toString();
@@ -231,12 +230,17 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
         UpdateMeterOutput result = meterModOutput.build();
         Collection<RpcError> errors = Collections.emptyList();
         RpcResult<UpdateMeterOutput> rpcResult = Rpcs.getRpcResult(true, result, errors);
-        
+
         // solution 1: sending directly and hooking listener to get error
         // hookup listener to catch the possible error with no reference to returned future-object
         LOG.debug("Returning to ModelDrivenSwitch for meterMod RPC");
         return Futures.immediateFuture(rpcResult);
-        
+
+    }
+
+    @Override
+    public Future<RpcResult<java.lang.Void>> multipartRequest(MultipartRequestInput input, SwitchConnectionDistinguisher cookie) {
+        return getConnectionAdapter(cookie).multipartRequest(input);
     }
 
     @Override
