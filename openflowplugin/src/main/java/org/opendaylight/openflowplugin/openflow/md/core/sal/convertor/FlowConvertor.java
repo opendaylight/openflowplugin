@@ -68,6 +68,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.Ipv4AddressMatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.Ipv6AddressMatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.Ipv6AddressMatchEntryBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.Ipv6FlabelMatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.Ipv6FlabelMatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.IsidMatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.IsidMatchEntryBuilder;
@@ -151,7 +152,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.MatchEntriesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.match.grouping.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.match.grouping.MatchBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -213,7 +213,9 @@ public class FlowConvertor {
         flowMod.setFlags(ofFlowModFlags);
 
         if (flow.getMatch() != null) {
-            flowMod.setMatch((Match) toMatch(flow.getMatch()));
+            MatchBuilder matchBuilder = new MatchBuilder();
+            matchBuilder.setMatchEntries(toMatch(flow.getMatch()));
+            flowMod.setMatch(matchBuilder.build());
         }
 
         if (flow.getInstructions() != null) {
@@ -227,7 +229,6 @@ public class FlowConvertor {
             org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match match) {
 
         MatchEntriesBuilder matchEntriesBuilder = new MatchEntriesBuilder();
-        MatchBuilder matchBuilder = new MatchBuilder();
         List<MatchEntries> matchEntriesList = new ArrayList<>();
 
         if (match.getInPort() != null) {
@@ -566,6 +567,7 @@ public class FlowConvertor {
                     matchEntriesBuilder.setOxmMatchField(Ipv6Flabel.class);
                     Ipv6FlabelMatchEntryBuilder ipv6FlabelBuilder = new Ipv6FlabelMatchEntryBuilder();
                     ipv6FlabelBuilder.setIpv6Flabel(ipv6Match.getIpv6Label().getIpv6Flabel());
+                    matchEntriesBuilder.addAugmentation(Ipv6FlabelMatchEntry.class, ipv6FlabelBuilder.build());
                     if (ipv6Match.getIpv6Label().getFlabelMask() != null) {
                         addMaskAugmentation(matchEntriesBuilder, ipv6Match.getIpv6Label().getFlabelMask());
                     }
@@ -597,6 +599,7 @@ public class FlowConvertor {
                 }
 
                 if (ipv6Match.getIpv6Exthdr() != null) {
+                    // verify
                     matchEntriesBuilder.setOxmClass(OpenflowBasicClass.class);
                     matchEntriesBuilder.setHasMask(false);
                     matchEntriesBuilder.setOxmMatchField(Ipv6Exthdr.class);
@@ -681,7 +684,6 @@ public class FlowConvertor {
             }
         }
 
-        matchBuilder.setMatchEntries(matchEntriesList);
         return matchEntriesList;
     }
 
@@ -769,6 +771,7 @@ public class FlowConvertor {
     }
 
     private static void addIpv6PrefixAugmentation(MatchEntriesBuilder builder, Ipv6Prefix address) {
+        // TODO: bug
         String[] addressParts = address.getValue().split(PREFIX_SEPARATOR);
         Integer prefix = null;
         if (addressParts.length == 2) {
@@ -793,7 +796,9 @@ public class FlowConvertor {
     private static void addIpv4PrefixAugmentation(MatchEntriesBuilder builder, Ipv4Prefix address) {
         String[] addressParts = address.getValue().split(PREFIX_SEPARATOR);
         Integer prefix = null;
-        if (addressParts.length == 2) {
+        if (addressParts.length < 2) {
+            prefix = 0;
+        } else {
             prefix = Integer.parseInt(addressParts[1]);
         }
 
@@ -801,8 +806,15 @@ public class FlowConvertor {
         Ipv4AddressMatchEntryBuilder ipv4AddressBuilder = new Ipv4AddressMatchEntryBuilder();
         ipv4AddressBuilder.setIpv4Address(ipv4Address);
         builder.addAugmentation(Ipv4AddressMatchEntry.class, ipv4AddressBuilder.build());
-        if (prefix != null) {
-            addMaskAugmentation(builder, ByteBuffer.allocate(1).putInt(prefix).array());
+        if (prefix != 0) {
+            int mask = 0xffffffff << (32 - prefix);
+            byte[] maskBytes = new byte[4];
+
+            for (int currByte = 3; currByte >= 0; --currByte) {
+                maskBytes[currByte] = 0;
+                maskBytes[currByte] |= ((mask >>> 8 * (3 - currByte)) & (0xff));
+            }
+            addMaskAugmentation(builder, maskBytes);
         }
     }
 
