@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.session;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -18,11 +19,18 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.ModelDrivenSwitchImpl;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.SalRegistrationManager;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.Port;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatus;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 /**
  * @author mirehak
@@ -203,6 +211,25 @@ public class SessionContextOFImpl implements SessionContext {
     private void updatePhysicalPort(Port port) {
         Long portNumber = port.getPortNo();
         physicalPorts.put(portNumber, port);
+
+        NotificationProviderService nps = OFSessionUtil.getSessionManager().getNotificationProviderService();
+
+        SessionContext context = primaryConductor.getSessionContext();
+        GetFeaturesOutput features = context.getFeatures();
+        BigInteger datapathId = features.getDatapathId();
+        InstanceIdentifier<Node> identifier = SalRegistrationManager.identifierFromDatapathId(datapathId);
+        NodeRef nodeRef = new NodeRef(identifier);
+        NodeId nodeId = SalRegistrationManager.nodeIdFromDatapathId(datapathId);
+
+
+        ModelDrivenSwitchImpl ofSwitch = new ModelDrivenSwitchImpl(nodeId, identifier, context);
+        salSwitches.put(identifier, ofSwitch);
+        ofSwitch.register(providerContext);
+
+
+        // TODO: need to get
+
+        // TODO: this makes no damn sense unless you mean does it have a bandwidth
         portBandwidth
                 .put(portNumber,
                         ( (port.getCurrentFeatures().is_100gbFd())

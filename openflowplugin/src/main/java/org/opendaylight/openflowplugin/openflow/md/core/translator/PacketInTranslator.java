@@ -29,6 +29,7 @@ public class PacketInTranslator implements IMDMessageTranslator<OfHeader, DataOb
 
     protected static final Logger LOG = LoggerFactory
             .getLogger(PacketInTranslator.class);
+
     @Override
     public PacketReceived translate(SwitchConnectionDistinguisher cookie,
             SessionContext sc, OfHeader msg) {
