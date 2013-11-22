@@ -45,6 +45,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyDesc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestDescBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestPortDescBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.DisconnectEvent;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SwitchIdleEvent;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SystemNotificationsListener;
@@ -351,6 +352,16 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         builder.setVersion(getVersion());
         builder.setFlags(new MultipartRequestFlags(false));
         builder.setMultipartRequestBody(new MultipartRequestDescBuilder().build());
+        builder.setXid(getSessionContext().getNextXid());
+        getConnectionAdapter().multipartRequest(builder.build());
+    }
+
+    private void requestPorts() {
+        MultipartRequestInputBuilder builder = new MultipartRequestInputBuilder();
+        builder.setType(MultipartType.OFPMPPORTDESC);
+        builder.setVersion(getVersion());
+        builder.setFlags(new MultipartRequestFlags(false));
+        builder.setMultipartRequestBody(new MultipartRequestPortDescBuilder().build());
         builder.setXid(getSessionContext().getNextXid());
         getConnectionAdapter().multipartRequest(builder.build());
     }
