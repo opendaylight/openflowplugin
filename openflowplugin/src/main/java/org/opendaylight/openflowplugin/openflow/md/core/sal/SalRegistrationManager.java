@@ -123,8 +123,8 @@ public class SalRegistrationManager implements SessionListener, SwitchInventory 
 
     public static InstanceIdentifier<Node> identifierFromDatapathId(BigInteger datapathId) {
         NodeKey nodeKey = nodeKeyFromDatapathId(datapathId);
-        InstanceIdentifierBuilder<?> builder = InstanceIdentifier.builder(Node.class,nodeKey);
-        return (InstanceIdentifier<Node>) builder.toInstance();
+        InstanceIdentifierBuilder<Node> builder = InstanceIdentifier.builder(Nodes.class).child(Node.class,nodeKey);
+        return builder.toInstance();
     }
 
     public static NodeKey nodeKeyFromDatapathId(BigInteger datapathId) {
