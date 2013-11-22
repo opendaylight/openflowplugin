@@ -67,7 +67,6 @@ public class SalRegistrationManager implements SessionListener, SwitchInventory 
         this.providerContext = session;
         this.publishService = session.getSALService(NotificationProviderService.class);
         this.dataService = session.getSALService(DataProviderService.class);
-
         // We register as listener for Session Manager
         getSessionManager().registerSessionListener(this);
         getSessionManager().setNotificationProviderService(publishService);
@@ -123,10 +122,9 @@ public class SalRegistrationManager implements SessionListener, SwitchInventory 
     }
 
     public static InstanceIdentifier<Node> identifierFromDatapathId(BigInteger datapathId) {
-        InstanceIdentifierBuilder<?> builder = InstanceIdentifier.builder().node(Nodes.class);
-
         NodeKey nodeKey = nodeKeyFromDatapathId(datapathId);
-        return builder.node(Node.class, nodeKey).toInstance();
+        InstanceIdentifierBuilder<?> builder = InstanceIdentifier.builder(Node.class,nodeKey);
+        return (InstanceIdentifier<Node>) builder.toInstance();
     }
 
     public static NodeKey nodeKeyFromDatapathId(BigInteger datapathId) {

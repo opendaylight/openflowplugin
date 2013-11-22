@@ -8,17 +8,26 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core;
 
+import java.math.BigInteger;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionReadyListener;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionManager;
 import org.opendaylight.openflowplugin.openflow.md.queue.QueueKeeper;
+import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeUpdated;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeUpdatedBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeUpdated;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeUpdatedBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartRequestFlags;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoReplyInputBuilder;
@@ -29,10 +38,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessage;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OpenflowProtocolListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyDesc;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestDescBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.DisconnectEvent;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SwitchIdleEvent;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SystemNotificationsListener;
@@ -82,7 +94,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         this.connectionAdapter = connectionAdapter;
         conductorState = CONDUCTOR_STATE.HANDSHAKING;
         hsPool = Executors.newFixedThreadPool(1);
-        handshakeManager = new HandshakeManagerImpl(connectionAdapter, 
+        handshakeManager = new HandshakeManagerImpl(connectionAdapter,
                 ConnectionConductor.versionOrder.get(0), ConnectionConductor.versionOrder);
         handshakeManager.setUseVersionBitmap(isBitmapNegotiationEnable);
         handshakeManager.setHandshakeListener(this);
@@ -94,7 +106,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         connectionAdapter.setSystemListener(this);
         connectionAdapter.setConnectionReadyListener(this);
     }
-    
+
     @Override
     public void setQueueKeeper(QueueKeeper<OfHeader, DataObject> queueKeeper) {
         this.queueKeeper = queueKeeper;
@@ -319,16 +331,30 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         LOG.debug("connection is ready-to-use");
         hsPool.execute(handshakeManager);
     }
-    
+
     @Override
     public void onHandshakeSuccessfull(GetFeaturesOutput featureOutput,
             Short negotiatedVersion) {
         version = negotiatedVersion;
         conductorState = CONDUCTOR_STATE.WORKING;
-        
-        OFSessionUtil.registerSession(this, featureOutput, negotiatedVersion);        
+        OFSessionUtil.registerSession(this, featureOutput, negotiatedVersion);
+        requestDesc();
     }
-    
+
+    /*
+     *  Send an OFPMP_DESC request message to the switch
+     */
+
+    private void requestDesc() {
+        MultipartRequestInputBuilder builder = new MultipartRequestInputBuilder();
+        builder.setType(MultipartType.OFPMPDESC);
+        builder.setVersion(getVersion());
+        builder.setFlags(new MultipartRequestFlags(false));
+        builder.setMultipartRequestBody(new MultipartRequestDescBuilder().build());
+        builder.setXid(getSessionContext().getNextXid());
+        getConnectionAdapter().multipartRequest(builder.build());
+    }
+
     /**
      * @param isBitmapNegotiationEnable the isBitmapNegotiationEnable to set
      */
@@ -336,7 +362,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
             boolean isBitmapNegotiationEnable) {
         this.isBitmapNegotiationEnable = isBitmapNegotiationEnable;
     }
-    
+
     protected void shutdownPool() {
         hsPool.shutdownNow();
         LOG.debug("pool is terminated: {}", hsPool.isTerminated());
