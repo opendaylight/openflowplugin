@@ -150,9 +150,7 @@ public class InventoryDataServiceUtil {
             Long portNo) {
         NodeId nodeId =nodeIdFromDatapathId(datapathId);
         NodeConnectorId nodeConnectorId =  nodeConnectorIdfromDatapathPortNo(datapathId,portNo);
-        InstanceIdentifierBuilder<?> builder = InstanceIdentifier.builder().node(Nodes.class)
-                .node(Node.class,new NodeKey(nodeId))
-                .node(NodeConnector.class, new NodeConnectorKey(nodeConnectorId));
+        InstanceIdentifierBuilder<?> builder = InstanceIdentifier.builder(NodeConnector.class, new NodeConnectorKey(nodeConnectorId));
         return (InstanceIdentifier<NodeConnector>) builder.toInstance();
     }
 }
