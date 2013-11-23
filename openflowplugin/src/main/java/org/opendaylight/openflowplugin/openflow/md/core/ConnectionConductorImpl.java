@@ -340,6 +340,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         conductorState = CONDUCTOR_STATE.WORKING;
         OFSessionUtil.registerSession(this, featureOutput, negotiatedVersion);
         requestDesc();
+        requestPorts();
     }
 
     /*

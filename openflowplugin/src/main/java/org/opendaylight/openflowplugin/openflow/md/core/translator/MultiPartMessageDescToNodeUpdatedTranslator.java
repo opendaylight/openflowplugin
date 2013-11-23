@@ -22,7 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class MultiPartMessageDescToNodeUpdatedTranslator implements IMDMessageTranslator<OfHeader, List<DataObject>> {
-    protected static final Logger LOG = LoggerFactory.getLogger(PacketInTranslator.class);
+    protected static final Logger LOG = LoggerFactory.getLogger(MultiPartMessageDescToNodeUpdatedTranslator.class);
     @Override
     public List<DataObject> translate(SwitchConnectionDistinguisher cookie,
             SessionContext sc, OfHeader msg) {
