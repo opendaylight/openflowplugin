@@ -89,7 +89,7 @@ public class ConnectionConductorImplTest {
     private int errorMessageCounter;
 
     private ErrorHandlerQueueImpl errorHandler;
-    
+
     public void incrExperimenterMessageCounter() {
         this.experimenterMessageCounter++;
     }
@@ -127,7 +127,7 @@ public class ConnectionConductorImplTest {
         adapter = new ConnectionAdapterStackImpl();
 
         popListener = new PopListenerCountingImpl<>();
-        
+
         queueKeeper = new QueueKeeperLightImpl();
         queueKeeper.init();
 
@@ -144,7 +144,7 @@ public class ConnectionConductorImplTest {
         adapter.setEventPlan(eventPlan);
         adapter.setProceedTimeout(5000L);
         adapter.checkListeners();
-        
+
         controller.getMessageTranslators().putAll(assembleTranslatorMapping());
         queueKeeper.setPopListenersMapping(assemblePopListenerMapping());
     }
@@ -171,7 +171,7 @@ public class ConnectionConductorImplTest {
         }
         queueKeeper.shutdown();
         connectionConductor.shutdownPool();
-        
+
         for (Exception problem : adapter.getOccuredExceptions()) {
             LOG.error("during simulation on adapter side: "
                     + problem.getMessage());
@@ -223,7 +223,7 @@ public class ConnectionConductorImplTest {
                 EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
 
         executeNow();
-        
+
         Assert.assertEquals(ConnectionConductor.CONDUCTOR_STATE.WORKING,
                 connectionConductor.getConductorState());
         Assert.assertEquals((short) 0x04, connectionConductor.getVersion()
@@ -255,7 +255,7 @@ public class ConnectionConductorImplTest {
                 EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
 
         executeNow();
-        
+
         Assert.assertEquals(ConnectionConductor.CONDUCTOR_STATE.WORKING,
                 connectionConductor.getConductorState());
         Assert.assertEquals((short) 0x01, connectionConductor.getVersion()
@@ -349,9 +349,9 @@ public class ConnectionConductorImplTest {
      */
     @Test
     public void testOnFlowRemovedMessage() throws InterruptedException {
-        IMDMessageTranslator<OfHeader, DataObject> objFms = new FlowRemovedMessageService() ;
+        IMDMessageTranslator<OfHeader, List<DataObject>> objFms = new FlowRemovedMessageService() ;
         controller.addMessageTranslator(FlowRemovedMessage.class, 4, objFms);
-        
+
         // Complete HandShake
         eventPlan.add(0, EventFactory.createConnectionReadyCallback(connectionConductor));
         eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L,
@@ -411,9 +411,9 @@ public class ConnectionConductorImplTest {
      */
     @Test
     public void testOnPacketInMessage() throws InterruptedException {
-        IMDMessageTranslator<OfHeader, DataObject> objPms = new PacketInMessageService() ;
+        IMDMessageTranslator<OfHeader, List<DataObject>> objPms = new PacketInMessageService() ;
         controller.addMessageTranslator(PacketInMessage.class, 4, objPms);
-        
+
         // Complete HandShake
         eventPlan.add(0, EventFactory.createConnectionReadyCallback(connectionConductor));
         eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L,
@@ -450,10 +450,10 @@ public class ConnectionConductorImplTest {
      */
     @Test
     public void testOnPortStatusMessage() throws InterruptedException {
-        
-        IMDMessageTranslator<OfHeader, DataObject> objPSms = new PortStatusMessageService() ;
+
+        IMDMessageTranslator<OfHeader, List<DataObject>> objPSms = new PortStatusMessageService() ;
         controller.addMessageTranslator(PortStatusMessage.class, 4, objPSms);
-        
+
         // Complete HandShake
         eventPlan.add(0, EventFactory.createConnectionReadyCallback(connectionConductor));
         eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L,
@@ -564,7 +564,7 @@ public class ConnectionConductorImplTest {
         Short version = (short) 0x02;
         Short expVersion = (short) 0x01;
         Assert.assertNull(connectionConductor.getVersion());
-        
+
         eventPlan.add(0, EventFactory.createConnectionReadyCallback(connectionConductor));
         eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L, version, new HelloMessageBuilder()));
         eventPlan.add(0, EventFactory.createDefaultWaitForAllEvent(
@@ -612,7 +612,7 @@ public class ConnectionConductorImplTest {
         Short version = (short) 0x06;
         Short expVersion = (short) 0x04;
         Assert.assertNull(connectionConductor.getVersion());
-        
+
         eventPlan.add(0, EventFactory.createConnectionReadyCallback(connectionConductor));
         eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L, version, new HelloMessageBuilder()));
         eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(21, "helloReply"));
@@ -654,7 +654,7 @@ public class ConnectionConductorImplTest {
     public void testVersionNegotiation10InBitmap() throws Exception {
         LOG.debug("testVersionNegotiation10InBitmap");
         Short version = (short) 0x01;
-        
+
         eventPlan.add(0, EventFactory.createConnectionReadyCallback(connectionConductor));
         eventPlan.add(
                 0,
@@ -679,7 +679,7 @@ public class ConnectionConductorImplTest {
     public void testVersionNegotiation13InBitmap() throws Exception {
         LOG.debug("testVersionNegotiation13InBitmap");
         Short version = (short) 0x04;
-        
+
         eventPlan.add(0, EventFactory.createConnectionReadyCallback(connectionConductor));
         eventPlan.add(
                 0,
@@ -768,37 +768,37 @@ public class ConnectionConductorImplTest {
                 PORT_BLOCKED, PORT_STATS, QUEUE_STATS, TABLE_STATS);
         return capabilities;
     }
-    
-    public class ExperimenterMessageService implements IMDMessageTranslator<OfHeader, DataObject> {
+
+    public class ExperimenterMessageService implements IMDMessageTranslator<OfHeader, List<DataObject>> {
         @Override
-        public DataObject translate(SwitchConnectionDistinguisher cookie, SessionContext sw, OfHeader msg) {
+        public List<DataObject> translate(SwitchConnectionDistinguisher cookie, SessionContext sw, OfHeader msg) {
             LOG.debug("Received a packet in Experimenter Service");
             ConnectionConductorImplTest.this.incrExperimenterMessageCounter();
             return null;
         }
     }
 
-    public class PacketInMessageService implements IMDMessageTranslator<OfHeader, DataObject> {
+    public class PacketInMessageService implements IMDMessageTranslator<OfHeader, List<DataObject>> {
         @Override
-        public DataObject translate(SwitchConnectionDistinguisher cookie, SessionContext sw, OfHeader msg) {
+        public List<DataObject> translate(SwitchConnectionDistinguisher cookie, SessionContext sw, OfHeader msg) {
             LOG.debug("Received a packet in PacketIn Service");
             ConnectionConductorImplTest.this.incrPacketinMessageCounter();
             return null;
         }
     }
 
-    public class FlowRemovedMessageService implements IMDMessageTranslator<OfHeader, DataObject> {
+    public class FlowRemovedMessageService implements IMDMessageTranslator<OfHeader, List<DataObject>> {
         @Override
-        public DataObject translate(SwitchConnectionDistinguisher cookie, SessionContext sw, OfHeader msg) {
+        public List<DataObject> translate(SwitchConnectionDistinguisher cookie, SessionContext sw, OfHeader msg) {
             LOG.debug("Received a packet in FlowRemoved Service");
             ConnectionConductorImplTest.this.incrFlowremovedMessageCounter();
             return null;
         }
     }
 
-    public class PortStatusMessageService implements IMDMessageTranslator<OfHeader, DataObject> {
+    public class PortStatusMessageService implements IMDMessageTranslator<OfHeader, List<DataObject>> {
         @Override
-        public DataObject translate(SwitchConnectionDistinguisher cookie, SessionContext sw, OfHeader msg) {
+        public List<DataObject> translate(SwitchConnectionDistinguisher cookie, SessionContext sw, OfHeader msg) {
             LOG.debug("Received a packet in PortStatus Service");
             if ( (((PortStatusMessage)msg).getReason().equals(PortReason.OFPPRADD))  ) {
                 ConnectionConductorImplTest.this.incrPortstatusAddMessageCounter();
@@ -810,10 +810,10 @@ public class ConnectionConductorImplTest {
             return null;
         }
     }
-    
-    public class ErrorMessageService implements IMDMessageTranslator<OfHeader, DataObject> {
+
+    public class ErrorMessageService implements IMDMessageTranslator<OfHeader, List<DataObject>> {
         @Override
-        public DataObject translate(SwitchConnectionDistinguisher cookie, SessionContext sw, OfHeader msg) {
+        public List<DataObject> translate(SwitchConnectionDistinguisher cookie, SessionContext sw, OfHeader msg) {
             LOG.debug("Received a packet in Experimenter Service");
             ConnectionConductorImplTest.this.incrErrorMessageCounter();
             return null;
@@ -876,16 +876,16 @@ public class ConnectionConductorImplTest {
      * <li>error</li>
      * </ul>
      */
-    private Map<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, DataObject>>> assembleTranslatorMapping() {
-        Map<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, DataObject>>> translatorMapping = new HashMap<>();
+    private Map<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, List<DataObject>>>> assembleTranslatorMapping() {
+        Map<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, List<DataObject>>>> translatorMapping = new HashMap<>();
         TranslatorKey tKey;
-        
-        IMDMessageTranslator<OfHeader, DataObject> objEms = new ExperimenterMessageService() ;
-        Collection<IMDMessageTranslator<OfHeader, DataObject>> existingValues = new ArrayList<>();
+
+        IMDMessageTranslator<OfHeader, List<DataObject>> objEms = new ExperimenterMessageService() ;
+        Collection<IMDMessageTranslator<OfHeader, List<DataObject>>> existingValues = new ArrayList<>();
         existingValues.add(objEms);
         tKey = new TranslatorKey(4, ExperimenterMessage.class.getName());
         translatorMapping.put(tKey, existingValues);
-        IMDMessageTranslator<OfHeader, DataObject> objErms = new ErrorMessageService() ;
+        IMDMessageTranslator<OfHeader, List<DataObject>> objErms = new ErrorMessageService() ;
         existingValues.add(objErms);
         tKey = new TranslatorKey(4, ErrorMessage.class.getName());
         translatorMapping.put(tKey, existingValues);

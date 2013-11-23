@@ -1,5 +1,7 @@
 package org.opendaylight.openflowplugin.openflow.md.core;
 
+import java.util.List;
+
 import org.opendaylight.openflowplugin.openflow.md.queue.PopListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -15,7 +17,7 @@ public interface IMDController {
      * @param translator
      *            : Object that implements the {@link IMDMessageTranslator}
      */
-    public void addMessageTranslator(Class<? extends DataObject> messageType, int version, IMDMessageTranslator<OfHeader, DataObject> translator);
+    public void addMessageTranslator(Class<? extends DataObject> messageType, int version, IMDMessageTranslator<OfHeader, List<DataObject>> translator);
 
     /**
      * Allows application to stop receiving OF message received from switches.
@@ -27,7 +29,7 @@ public interface IMDController {
      * @param translator
      *            The object that implements the {@link IMDMessageTranslator}
      */
-    public void removeMessageTranslator(Class<? extends DataObject> messageType, int version, IMDMessageTranslator<OfHeader, DataObject> translator);
+    public void removeMessageTranslator(Class<? extends DataObject> messageType, int version, IMDMessageTranslator<OfHeader, List<DataObject>> translator);
 
     /**
      * Allows application to start pop-listening MD-SAL messages received from switches.

@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.openflow.md.core.session;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
@@ -36,7 +37,7 @@ public class SessionManagerOFImpl implements SessionManager {
     protected static final Logger LOG = LoggerFactory.getLogger(SessionManagerOFImpl.class);
     private static SessionManager instance;
     private ConcurrentHashMap<SwitchConnectionDistinguisher, SessionContext> sessionLot;
-    private Map<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, DataObject>>> translatorMapping;
+    private Map<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, List<DataObject>>>> translatorMapping;
     private Map<Class<? extends DataObject>, Collection<PopListener<DataObject>>> popListenerMapping;
 
 
@@ -150,7 +151,7 @@ public class SessionManagerOFImpl implements SessionManager {
     }
 
     @Override
-    public void setTranslatorMapping(Map<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, DataObject>>> translatorMapping) {
+    public void setTranslatorMapping(Map<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, List<DataObject>>>> translatorMapping) {
         this.translatorMapping = translatorMapping;
     }
 
@@ -183,10 +184,10 @@ public class SessionManagerOFImpl implements SessionManager {
             }
         }
     };
-    
+
 
     @Override
-    public Map<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, DataObject>>> getTranslatorMapping() {
+    public Map<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, List<DataObject>>>> getTranslatorMapping() {
         return this.translatorMapping;
     }
 
@@ -217,7 +218,7 @@ public class SessionManagerOFImpl implements SessionManager {
     public Map<Class<? extends DataObject>, Collection<PopListener<DataObject>>> getPopListenerMapping() {
         return popListenerMapping;
     }
-    
+
     @Override
     public void setPopListenerMapping(
             Map<Class<? extends DataObject>, Collection<PopListener<DataObject>>> popListenerMapping) {

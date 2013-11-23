@@ -1,5 +1,7 @@
 package org.opendaylight.openflowplugin.openflow.md.core;
 
+import java.util.List;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -46,12 +48,12 @@ public class MDControllerTest {
     public void testAddMessageListeners() {
         //clean translators
         controller.getMessageTranslators().clear();
-        
+
         // Empty map
         int size = controller.getMessageTranslators().size();
         Assert.assertEquals(0, size);
         // Add one
-        IMDMessageTranslator<OfHeader, DataObject> objDps = new DataPacketService() ;
+        IMDMessageTranslator<OfHeader, List<DataObject>> objDps = new DataPacketService() ;
         controller.addMessageTranslator(PacketIn.class, 4, objDps);
         size = controller.getMessageTranslators().size();
         Assert.assertEquals(1, size);
@@ -84,9 +86,9 @@ public class MDControllerTest {
         Assert.assertEquals(2, size);
     }
 
-    private class DataPacketService implements IMDMessageTranslator<OfHeader, DataObject> {
+    private class DataPacketService implements IMDMessageTranslator<OfHeader, List<DataObject>> {
         @Override
-        public DataObject translate(SwitchConnectionDistinguisher cookie, SessionContext sw, OfHeader msg) {
+        public List<DataObject> translate(SwitchConnectionDistinguisher cookie, SessionContext sw, OfHeader msg) {
             LOG.debug("Received a packet in DataPacket Service");
             return null;
         }

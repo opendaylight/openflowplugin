@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.openflow.md.core.session;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
@@ -68,12 +69,12 @@ public interface SessionManager {
     /**
      * @param translatorMapping
      */
-    public void setTranslatorMapping(Map<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, DataObject>>> translatorMapping);
+    public void setTranslatorMapping(Map<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, List<DataObject>>>> translatorMapping);
 
     /**
      * @return translator mapping
      */
-    public Map<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, DataObject>>> getTranslatorMapping();
+    public Map<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, List<DataObject>>>> getTranslatorMapping();
 
     /**
      * @param notificationProviderService

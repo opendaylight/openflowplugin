@@ -30,8 +30,8 @@ public abstract class TicketProcessorFactory {
 
     /**
      * @param ticket
-     * @param versionExtractor 
-     * @param registeredTypeExtractor 
+     * @param versionExtractor
+     * @param registeredTypeExtractor
      * @param translatorMapping
      * @return runnable ticket processor
      */
@@ -39,7 +39,7 @@ public abstract class TicketProcessorFactory {
             final Ticket<IN, OUT> ticket,
             final VersionExtractor<IN> versionExtractor,
             final RegisteredTypeExtractor<IN> registeredTypeExtractor,
-            final Map<TranslatorKey, Collection<IMDMessageTranslator<IN, OUT>>> translatorMapping) {
+            final Map<TranslatorKey, Collection<IMDMessageTranslator<IN, List<OUT>>>> translatorMapping) {
         return new Runnable() {
             @Override
             public void run() {
@@ -53,8 +53,8 @@ public abstract class TicketProcessorFactory {
                     LOG.error("translation problem: {}", e.getMessage());
                     ticket.getResult().setException(e);
                 }
-                LOG.debug("message processing done (type: {}, ticket: {})", 
-                        registeredTypeExtractor.extractRegisteredType(ticket.getMessage()).getSimpleName(), 
+                LOG.debug("message processing done (type: {}, ticket: {})",
+                        registeredTypeExtractor.extractRegisteredType(ticket.getMessage()).getSimpleName(),
                         System.identityHashCode(ticket));
             }
 
@@ -63,30 +63,33 @@ public abstract class TicketProcessorFactory {
              */
             private List<OUT> translate() {
                 List<OUT> result = new ArrayList<>();
-                
+
                 IN message = ticket.getMessage();
                 Class<? extends IN> messageType = registeredTypeExtractor.extractRegisteredType(ticket.getMessage());
                 ConnectionConductor conductor = ticket.getConductor();
-                Collection<IMDMessageTranslator<IN, OUT>> translators = null;
+                Collection<IMDMessageTranslator<IN, List<OUT>>> translators = null;
                 LOG.debug("translating ticket: {}, ticket: {}", messageType.getSimpleName(), System.identityHashCode(ticket));
-                
+
                 Short version = versionExtractor.extractVersion(message);
                 if (version == null) {
-                   throw new IllegalArgumentException("version is NULL"); 
+                   throw new IllegalArgumentException("version is NULL");
                 }
                 TranslatorKey tKey = new TranslatorKey(version, messageType.getName());
                 translators = translatorMapping.get(tKey);
-                
+
                 LOG.debug("translatorKey: {} + {}", version, messageType.getName());
 
                 if (translators != null) {
-                    for (IMDMessageTranslator<IN, OUT> translator : translators) {
+                    for (IMDMessageTranslator<IN, List<OUT>> translator : translators) {
                         SwitchConnectionDistinguisher cookie = null;
                         // Pass cookie only for PACKT_IN
                         if (messageType.equals("PacketInMessage.class")) {
                             cookie = conductor.getAuxiliaryKey();
                         }
-                        result.add(translator.translate(cookie, conductor.getSessionContext(), message));
+                        List<OUT> translatorOutput = translator.translate(cookie, conductor.getSessionContext(), message);
+                        if(translatorOutput != null) {
+                            result.addAll(translator.translate(cookie, conductor.getSessionContext(), message));
+                        }
                     }
                 } else {
                     LOG.warn("No translators for this message Type: {}", messageType);

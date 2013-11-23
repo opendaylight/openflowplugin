@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.openflow.md.core.session;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
@@ -45,7 +46,7 @@ public abstract class OFSessionUtil {
         if (LOG.isDebugEnabled()) {
             LOG.debug("registering sessionKey: {}", Arrays.toString(sessionKey.getId()));
         }
-        
+
         if (features.getAuxiliaryId() == null || features.getAuxiliaryId() == 0) {
             // handle primary
             if (sessionContext != null) {
@@ -84,7 +85,7 @@ public abstract class OFSessionUtil {
                 connectionConductor.setConnectionCookie(auxiliaryKey);
             }
         }
-        
+
         // check registration result
         SessionContext resulContext = getSessionManager().getSessionContext(sessionKey);
         if (resulContext == null) {
@@ -150,11 +151,11 @@ public abstract class OFSessionUtil {
     public static SessionManager getSessionManager() {
         return SessionManagerOFImpl.getInstance();
     }
-    
+
     /**
     * @return session manager listener Map
     */
-    public static Map<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, DataObject>>> getTranslatorMap() {
+    public static Map<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, List<DataObject>>>> getTranslatorMap() {
         return getSessionManager().getTranslatorMapping();
     }
 

@@ -25,15 +25,15 @@ import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionPro
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.translator.ErrorTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.translator.ExperimenterTranslator;
-import org.opendaylight.openflowplugin.openflow.md.core.translator.MultiPartMessageDescToNodeUpdatedTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.translator.FlowRemovedTranslator;
+import org.opendaylight.openflowplugin.openflow.md.core.translator.MultiPartMessageDescToNodeUpdatedTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.translator.PacketInTranslator;
 import org.opendaylight.openflowplugin.openflow.md.queue.PopListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterMessage;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemovedMessage;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
@@ -54,7 +54,7 @@ public class MDController implements IMDController {
 
     private SwitchConnectionProvider switchConnectionProvider;
 
-    private ConcurrentMap<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, DataObject>>> messageTranslators;
+    private ConcurrentMap<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, List<DataObject>>>> messageTranslators;
     private Map<Class<? extends DataObject>, Collection<PopListener<DataObject>>> popListeners;
 
     final private int OF10 = 1;
@@ -64,7 +64,7 @@ public class MDController implements IMDController {
     /**
      * @return translator mapping
      */
-    public Map<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, DataObject>>> getMessageTranslators() {
+    public Map<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, List<DataObject>>>> getMessageTranslators() {
         return messageTranslators;
     }
 
@@ -165,10 +165,10 @@ public class MDController implements IMDController {
     }
 
     @Override
-    public void addMessageTranslator(Class<? extends DataObject> messageType, int version, IMDMessageTranslator<OfHeader, DataObject> translator) {
+    public void addMessageTranslator(Class<? extends DataObject> messageType, int version, IMDMessageTranslator<OfHeader, List<DataObject>> translator) {
         TranslatorKey tKey = new TranslatorKey(version, messageType.getName());
 
-        Collection<IMDMessageTranslator<OfHeader, DataObject>> existingValues = messageTranslators.get(tKey);
+        Collection<IMDMessageTranslator<OfHeader, List<DataObject>>> existingValues = messageTranslators.get(tKey);
         if (existingValues == null) {
             existingValues = new LinkedHashSet<>();
             messageTranslators.put(tKey, existingValues);
@@ -178,9 +178,9 @@ public class MDController implements IMDController {
     }
 
     @Override
-    public void removeMessageTranslator(Class<? extends DataObject> messageType, int version, IMDMessageTranslator<OfHeader, DataObject> translator) {
+    public void removeMessageTranslator(Class<? extends DataObject> messageType, int version, IMDMessageTranslator<OfHeader, List<DataObject>> translator) {
         TranslatorKey tKey = new TranslatorKey(version, messageType.getName());
-        Collection<IMDMessageTranslator<OfHeader, DataObject>> values = messageTranslators.get(tKey);
+        Collection<IMDMessageTranslator<OfHeader, List<DataObject>>> values = messageTranslators.get(tKey);
         if (values != null) {
             values.remove(translator);
             if (values.isEmpty()) {

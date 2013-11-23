@@ -8,6 +8,7 @@
 package org.opendaylight.openflowplugin.openflow.md.queue;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
@@ -20,11 +21,11 @@ import org.opendaylight.openflowplugin.openflow.md.core.TranslatorKey;
  * @param <OUT> result type
  */
 public interface QueueKeeper<IN, OUT> {
-    
+
     /**
      * @param translatorMapping
      */
-    void setTranslatorMapping(Map<TranslatorKey, Collection<IMDMessageTranslator<IN, OUT>>> translatorMapping);
+    void setTranslatorMapping(Map<TranslatorKey, Collection<IMDMessageTranslator<IN, List<OUT>>>> translatorMapping);
 
     /**
      * @param message

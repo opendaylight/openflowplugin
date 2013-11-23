@@ -1,6 +1,8 @@
 package org.opendaylight.openflowplugin.openflow.md.core.translator;
 
 import java.math.BigInteger;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
@@ -19,14 +21,15 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MultiPartMessageDescToNodeUpdatedTranslator implements IMDMessageTranslator<OfHeader, DataObject> {
+public class MultiPartMessageDescToNodeUpdatedTranslator implements IMDMessageTranslator<OfHeader, List<DataObject>> {
     protected static final Logger LOG = LoggerFactory.getLogger(PacketInTranslator.class);
     @Override
-    public NodeUpdated translate(SwitchConnectionDistinguisher cookie,
+    public List<DataObject> translate(SwitchConnectionDistinguisher cookie,
             SessionContext sc, OfHeader msg) {
         if(msg instanceof MultipartReply && ((MultipartReply) msg).getType() == MultipartType.OFPMPDESC) {
-            LOG.info("MultipartReplyMessage Being translated to NodeUpdated ");
+            LOG.info("MultipartReplyMessage - MultipartReplyDesc Being translated to NodeUpdated ");
             MultipartReplyMessage message = (MultipartReplyMessage) msg;
+            List<DataObject> list = new CopyOnWriteArrayList<DataObject>();
             BigInteger datapathId = sc.getFeatures().getDatapathId();
             NodeUpdatedBuilder builder = InventoryDataServiceUtil.nodeUpdatedBuilderFromDataPathId(datapathId);
             FlowCapableNodeUpdatedBuilder fnub = new FlowCapableNodeUpdatedBuilder();
@@ -37,7 +40,9 @@ public class MultiPartMessageDescToNodeUpdatedTranslator implements IMDMessageTr
             fnub.setDescription(body.getDpDesc());
             fnub.setSoftware(body.getSwDesc());
             builder.addAugmentation(FlowCapableNodeUpdated.class, fnub.build());
-            return builder.build();
+            NodeUpdated nodeUpdated = builder.build();
+            list.add(nodeUpdated);
+            return list;
         } else {
             return null;
         }

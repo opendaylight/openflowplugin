@@ -2,6 +2,7 @@ package org.opendaylight.openflowplugin.openflow.md.core.translator;
 
 import java.math.BigInteger;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
@@ -25,15 +26,16 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier.InstanceIdenti
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class PacketInTranslator implements IMDMessageTranslator<OfHeader, DataObject> {
+public class PacketInTranslator implements IMDMessageTranslator<OfHeader, List<DataObject>> {
 
     protected static final Logger LOG = LoggerFactory
             .getLogger(PacketInTranslator.class);
     @Override
-    public PacketReceived translate(SwitchConnectionDistinguisher cookie,
+    public List<DataObject> translate(SwitchConnectionDistinguisher cookie,
             SessionContext sc, OfHeader msg) {
         if(msg instanceof PacketInMessage) {
             PacketInMessage message = (PacketInMessage)msg;
+            List<DataObject> list = new CopyOnWriteArrayList<DataObject>();
             LOG.info("PacketIn: InPort: {} Cookie: {} Match.type: {}",
                     message.getInPort(), message.getCookie(),
                     message.getMatch() != null ? message.getMatch().getType()
@@ -88,7 +90,8 @@ public class PacketInTranslator implements IMDMessageTranslator<OfHeader, DataOb
            InstanceIdentifier<NodeConnector> nci = ncIndentifierFromDPIDandPort(dpid, port);
            NodeConnectorRef ncr = new NodeConnectorRef(nci);
            PacketReceived pktInEvent = pktInBuilder.build();
-            return pktInEvent;
+           list.add(pktInEvent);
+            return list;
         } else {
             return null;
         }

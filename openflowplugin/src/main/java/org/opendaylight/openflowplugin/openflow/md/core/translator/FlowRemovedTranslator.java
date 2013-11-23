@@ -2,8 +2,10 @@ package org.opendaylight.openflowplugin.openflow.md.core.translator;
 
 import java.math.BigInteger;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
@@ -111,15 +113,16 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, DataObject> {
+public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, List<DataObject>> {
 
     protected static final Logger LOG = LoggerFactory.getLogger(FlowRemovedTranslator.class);
     private static final String PREFIX_SEPARATOR = "/";
 
     @Override
-    public DataObject translate(SwitchConnectionDistinguisher cookie, SessionContext sc, OfHeader msg) {
+    public List<DataObject> translate(SwitchConnectionDistinguisher cookie, SessionContext sc, OfHeader msg) {
         if (msg instanceof FlowRemovedMessage) {
             FlowRemovedMessage ofFlow = (FlowRemovedMessage) msg;
+            List<DataObject> list = new CopyOnWriteArrayList<DataObject>();
             LOG.debug("Flow Removed Message received: Table Id={}, Flow removed reason={} ", ofFlow.getTableId(),
                     ofFlow.getReason());
 
@@ -143,8 +146,8 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Dat
             if (ofMatch != null) {
                 salFlowRemoved.setMatch(fromMatch(ofMatch));
             }
-
-            return salFlowRemoved.build();
+            list.add(salFlowRemoved.build());
+            return list;
         } else {
             LOG.error("Message is not a flow removed message ");
             return null;
