@@ -7,6 +7,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
+import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
@@ -85,33 +86,12 @@ public class PacketInTranslator implements IMDMessageTranslator<OfHeader, List<D
            }else{
                LOG.info("Receive packet_in from {} on port {}", dpid, port);
            }
-
-           //TODO: need to get the NodeConnectorRef, but NodeConnectors aren't there yet
-           InstanceIdentifier<NodeConnector> nci = ncIndentifierFromDPIDandPort(dpid, port);
-           NodeConnectorRef ncr = new NodeConnectorRef(nci);
+           pktInBuilder.setIngress(InventoryDataServiceUtil.nodeConnectorRefFromDatapathIdPortno(dpid,port));
            PacketReceived pktInEvent = pktInBuilder.build();
            list.add(pktInEvent);
             return list;
         } else {
             return null;
         }
-    }
-
-    public static InstanceIdentifier<NodeConnector> ncIndentifierFromDPIDandPort(BigInteger dpid, Long port) {
-        InstanceIdentifierBuilder<?> builder = InstanceIdentifier.builder().node(Node.class);
-
-        // TODO: this doesn't work yet, needs to actaully get the ref for the real NodeConnector
-        //       but that doesn't exist yet
-        NodeConnectorKey ncKey = ncKeyFromDPIDandPort(dpid, port);
-        return builder.node(NodeConnector.class, ncKey).toInstance();
-    }
-
-
-    public static NodeConnectorKey ncKeyFromDPIDandPort(BigInteger dpid, Long port){
-        return new NodeConnectorKey(ncIDfromDPIDandPort(dpid, port));
-    }
-
-    public static NodeConnectorId ncIDfromDPIDandPort(BigInteger dpid, Long port){
-        return new NodeConnectorId("openflow:"+dpid.toString()+":"+port.toString());
     }
 }
