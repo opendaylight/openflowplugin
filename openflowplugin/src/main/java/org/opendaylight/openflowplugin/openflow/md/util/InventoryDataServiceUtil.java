@@ -5,6 +5,12 @@ import java.util.List;
 
 import org.opendaylight.controller.sal.binding.api.data.DataModificationTransaction;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.TableId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.TableUpdatedBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.flow.node.Table;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.flow.node.TableKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowTableRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorUpdatedBuilder;
@@ -117,6 +123,7 @@ public class InventoryDataServiceUtil {
         return builder;
     }
 
+
     public static NodeId nodeIdFromDatapathId(BigInteger datapathId) {
         // FIXME: Convert to textual representation of datapathID
         String current = datapathId.toString();
@@ -168,4 +175,24 @@ public class InventoryDataServiceUtil {
         builder.setId(InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(datapathId,portNo));
         return builder;
     }
+
+    public static TableUpdatedBuilder tableUpdatedBuilderFromDataPathIdTableId(BigInteger datapathId,Short tableId) {
+        TableUpdatedBuilder builder = new TableUpdatedBuilder();
+        builder.setId(new TableId(tableId));
+        builder.setTableRef(tableRefFromDataPathIdTableId(datapathId,tableId));
+        return builder;
+    }
+
+    private static FlowTableRef tableRefFromDataPathIdTableId(BigInteger datapathId, Short tableId) {
+        return new FlowTableRef(tableRefFromDataPathIdTableId(datapathId, new TableId(tableId)));
+    }
+
+    private static InstanceIdentifier<Table> tableRefFromDataPathIdTableId(BigInteger datapathId, TableId tableId) {
+        NodeId nodeId = nodeIdFromDatapathId(datapathId);
+        return InstanceIdentifier.builder(Nodes.class) //
+                .child(Node.class, new NodeKey(nodeId)).augmentation(FlowCapableNode.class) //
+                .child(Table.class, new TableKey(tableId)).toInstance();
+    }
+
+
 }
