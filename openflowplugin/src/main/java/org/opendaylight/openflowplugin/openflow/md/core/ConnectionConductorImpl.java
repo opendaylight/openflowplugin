@@ -19,6 +19,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionManager;
 import org.opendaylight.openflowplugin.openflow.md.queue.QueueKeeper;
+import org.opendaylight.openflowplugin.openflow.md.util.OFConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartRequestFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoInputBuilder;
@@ -37,6 +38,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestDescBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestFlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestPortDescBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.DisconnectEvent;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SwitchIdleEvent;
@@ -343,6 +345,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         OFSessionUtil.registerSession(this, featureOutput, negotiatedVersion);
         requestDesc();
         requestPorts();
+        requestTableFeatures();
     }
 
     /*
@@ -350,23 +353,40 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
      */
 
     private void requestDesc() {
-        MultipartRequestInputBuilder builder = new MultipartRequestInputBuilder();
-        builder.setType(MultipartType.OFPMPDESC);
-        builder.setVersion(getVersion());
-        builder.setFlags(new MultipartRequestFlags(false));
+        LOG.info("Sending MultipartRequestDesc to " + this.getSessionContext().getFeatures().getDatapathId());
+        MultipartRequestInputBuilder builder = multiPartRequestInputBuilderForType(MultipartType.OFPMPDESC);
         builder.setMultipartRequestBody(new MultipartRequestDescBuilder().build());
-        builder.setXid(getSessionContext().getNextXid());
         getConnectionAdapter().multipartRequest(builder.build());
     }
 
     private void requestPorts() {
+        LOG.info("Sending MultipartRequestPortDesc to " + this.getSessionContext().getFeatures().getDatapathId());
+        MultipartRequestInputBuilder builder = multiPartRequestInputBuilderForType(MultipartType.OFPMPPORTDESC);
+        builder.setMultipartRequestBody(new MultipartRequestPortDescBuilder().build());
+        getConnectionAdapter().multipartRequest(builder.build());
+    }
+
+    private void requestTableFeatures() {
+        LOG.info("Sending MultipartRequestTableFeatures to " + this.getSessionContext().getFeatures().getDatapathId());
+        MultipartRequestInputBuilder builder = multiPartRequestInputBuilderForType(MultipartType.OFPMPTABLEFEATURES);
+        // builder.setMultipartRequestBody(new MultipartRequestTableFeaturesBuilder().build());
+        getConnectionAdapter().multipartRequest(builder.build());
+    }
+
+    private void requestFlows() {
+        MultipartRequestInputBuilder builder = multiPartRequestInputBuilderForType(MultipartType.OFPMPFLOW);
+        MultipartRequestFlowBuilder fb = new MultipartRequestFlowBuilder();
+        fb.setTableId(OFConstants.OFPTT_ALL);
+    }
+
+    private MultipartRequestInputBuilder multiPartRequestInputBuilderForType(MultipartType type) {
+        LOG.info("Constructing MultipartRequest of type " + type.toString());
         MultipartRequestInputBuilder builder = new MultipartRequestInputBuilder();
-        builder.setType(MultipartType.OFPMPPORTDESC);
+        builder.setType(type);
         builder.setVersion(getVersion());
         builder.setFlags(new MultipartRequestFlags(false));
-        builder.setMultipartRequestBody(new MultipartRequestPortDescBuilder().build());
         builder.setXid(getSessionContext().getNextXid());
-        getConnectionAdapter().multipartRequest(builder.build());
+        return builder;
     }
 
     /**
