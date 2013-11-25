@@ -1,9 +1,6 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
-import java.util.List;
-
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.port.mod.port.Port;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumber;
@@ -35,22 +32,22 @@ public final class PortConvertor {
      */
 
     public static PortModInput toPortModInput(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortMod input) {
+            org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.port.mod.port.Port source,
+            short version) {
 
-        List<Port> source = input.getPort().getPort();
 
         PortConfig config = null;
 
         PortModInputBuilder portModInputBuilder = new PortModInputBuilder();
-        portModInputBuilder.setAdvertise(getPortFeatures(source.get(0).getAdvertisedFeatures()));
-        portModInputBuilder.setPortNo(new PortNumber(source.get(0).getPortNumber()));
-        maskPortConfigFields(source.get(0).getConfiguration(), config);
+        portModInputBuilder.setAdvertise(getPortFeatures(source.getAdvertisedFeatures()));
+        portModInputBuilder.setPortNo(new PortNumber(source.getPortNumber()));
+        maskPortConfigFields(source.getConfiguration(), config);
         portModInputBuilder.setConfig(config);
-        portModInputBuilder.setHwAddress(new MacAddress(source.get(0).getHardwareAddress()));
+        portModInputBuilder.setHwAddress(new MacAddress(source.getHardwareAddress()));
         config = null;
-        maskPortConfigFields(source.get(0).getMask(), config);
+        maskPortConfigFields(source.getMask(), config);
         portModInputBuilder.setMask(config);
-
+        portModInputBuilder.setVersion(version);
         return portModInputBuilder.build();
 
     }

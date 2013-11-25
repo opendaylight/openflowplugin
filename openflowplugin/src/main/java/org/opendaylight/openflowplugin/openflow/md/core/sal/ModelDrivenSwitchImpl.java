@@ -22,14 +22,12 @@ import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.NodeFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
@@ -74,150 +72,152 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     private static final Logger LOG = org.slf4j.LoggerFactory
             .getLogger(ModelDrivenSwitchImpl.class);
     private final NodeId nodeId;
-    private IMessageDispatchService messageService ;
+    private final IMessageDispatchService messageService ;
+    private short version = 0;
 
     protected ModelDrivenSwitchImpl(NodeId nodeId,
             InstanceIdentifier<Node> identifier, SessionContext context) {
         super(identifier, context);
         this.nodeId = nodeId;
         messageService = sessionContext.getMessageDispatchService() ;
+        version = context.getPrimaryConductor().getVersion();
     }
 
     @Override
     public Future<RpcResult<AddFlowOutput>> addFlow(AddFlowInput input) {
-    	// Convert the AddFlowInput to FlowModInput 
-    	FlowModInput ofFlowModInput = FlowConvertor.toFlowModInput(input) ;
-    	    	    	
-    	// For Flow provisioning, the SwitchConnectionDistinguisher is set to null so  
+    	// Convert the AddFlowInput to FlowModInput
+        FlowModInput ofFlowModInput = FlowConvertor.toFlowModInput(input, version);
+
+    	// For Flow provisioning, the SwitchConnectionDistinguisher is set to null so
     	// the request can be routed through any connection to the switch
-    	
+
     	SwitchConnectionDistinguisher cookie = null ;
-    	
+
     	LOG.debug("Calling the FlowMod RPC method on MessageDispatchService");
        	Future<RpcResult<UpdateFlowOutput>> resultFromOFLib = messageService.flowMod(ofFlowModInput, cookie) ;
-       	
+
        	RpcResult<UpdateFlowOutput> rpcResultFromOFLib = null ;
-    	
-    	try { 
+
+    	try {
     		rpcResultFromOFLib = resultFromOFLib.get();
     	} catch( Exception ex ) {
     		LOG.error( " Error while getting result for AddFlow RPC" + ex.getMessage());
     	}
-    	
+
     	UpdateFlowOutput updateFlowOutput = rpcResultFromOFLib.getResult() ;
-    	
+
     	AddFlowOutputBuilder addFlowOutput = new AddFlowOutputBuilder() ;
     	addFlowOutput.setTransactionId(updateFlowOutput.getTransactionId()) ;
     	AddFlowOutput result = addFlowOutput.build();
-    	
+
     	Collection<RpcError> errors = rpcResultFromOFLib.getErrors() ;
-        RpcResult<AddFlowOutput> rpcResult = Rpcs.getRpcResult(true, result, errors); 
-        
+        RpcResult<AddFlowOutput> rpcResult = Rpcs.getRpcResult(true, result, errors);
+
     	LOG.debug("Returning the Add Flow RPC result to MD-SAL");
         return Futures.immediateFuture(rpcResult);
     }
 
     @Override
     public Future<RpcResult<AddGroupOutput>> addGroup(AddGroupInput input) {
-    	// Convert the AddGroupInput to GroupModInput 
-    	GroupModInput ofGroupModInput = GroupConvertor.toGroupModInput(input) ;
-    	
-    	 	
-    	// For Flow provisioning, the SwitchConnectionDistinguisher is set to null so  
+    	// Convert the AddGroupInput to GroupModInput
+        GroupModInput ofGroupModInput = GroupConvertor.toGroupModInput(input, version);
+
+
+    	// For Flow provisioning, the SwitchConnectionDistinguisher is set to null so
     	// the request can be routed through any connection to the switch
-    	
+
     	SwitchConnectionDistinguisher cookie = null ;
-    	
+
     	LOG.debug("Calling the GroupMod RPC method on MessageDispatchService");
     	Future<RpcResult<UpdateGroupOutput>> resultFromOFLib = messageService.groupMod(ofGroupModInput, cookie) ;
-    	
+
     	RpcResult<UpdateGroupOutput> rpcResultFromOFLib = null ;
-    	
-    	try { 
+
+    	try {
     		rpcResultFromOFLib = resultFromOFLib.get();
     	} catch( Exception ex ) {
     		LOG.error( " Error while getting result for AddGroup RPC" + ex.getMessage());
     	}
-    	
+
     	UpdateGroupOutput updateGroupOutput = rpcResultFromOFLib.getResult() ;
-    	
+
     	AddGroupOutputBuilder addGroupOutput = new AddGroupOutputBuilder() ;
     	addGroupOutput.setTransactionId(updateGroupOutput.getTransactionId()) ;
     	AddGroupOutput result = addGroupOutput.build();
-    	
+
     	Collection<RpcError> errors = rpcResultFromOFLib.getErrors() ;
-        RpcResult<AddGroupOutput> rpcResult = Rpcs.getRpcResult(true, result, errors); 
-    	
+        RpcResult<AddGroupOutput> rpcResult = Rpcs.getRpcResult(true, result, errors);
+
         LOG.debug("Returning the Add Group RPC result to MD-SAL");
         return Futures.immediateFuture(rpcResult);
     }
 
     @Override
     public Future<RpcResult<AddMeterOutput>> addMeter(AddMeterInput input) {
-    	// Convert the AddMeterInput to MeterModInput 
-    	MeterModInput ofMeterModInput = MeterConvertor.toMeterModInput(input) ;
-    	
-    	 	
-    	// For Meter provisioning, the SwitchConnectionDistinguisher is set to null so  
+    	// Convert the AddMeterInput to MeterModInput
+        MeterModInput ofMeterModInput = MeterConvertor.toMeterModInput(input, version);
+
+
+    	// For Meter provisioning, the SwitchConnectionDistinguisher is set to null so
     	// the request can be routed through any connection to the switch
-    	
+
     	SwitchConnectionDistinguisher cookie = null ;
-    	
+
     	LOG.debug("Calling the MeterMod RPC method on MessageDispatchService");
     	Future<RpcResult<UpdateMeterOutput>> resultFromOFLib = messageService.meterMod(ofMeterModInput, cookie) ;
-    	
+
     	RpcResult<UpdateMeterOutput> rpcResultFromOFLib = null ;
-    	
-    	try { 
+
+    	try {
     		rpcResultFromOFLib = resultFromOFLib.get();
     	} catch( Exception ex ) {
     		LOG.error( " Error while getting result for AddMeter RPC" + ex.getMessage());
     	}
-    	
+
     	UpdateMeterOutput updateMeterOutput = rpcResultFromOFLib.getResult() ;
-    	
+
     	AddMeterOutputBuilder addMeterOutput = new AddMeterOutputBuilder() ;
     	addMeterOutput.setTransactionId(updateMeterOutput.getTransactionId()) ;
     	AddMeterOutput result = addMeterOutput.build();
-    	
+
     	Collection<RpcError> errors = rpcResultFromOFLib.getErrors() ;
-        RpcResult<AddMeterOutput> rpcResult = Rpcs.getRpcResult(true, result, errors); 
-    	
+        RpcResult<AddMeterOutput> rpcResult = Rpcs.getRpcResult(true, result, errors);
+
         LOG.debug("Returning the Add Meter RPC result to MD-SAL");
         return Futures.immediateFuture(rpcResult);
     }
 
     @Override
     public Future<RpcResult<RemoveFlowOutput>> removeFlow(RemoveFlowInput input) {
-    	// Convert the RemoveFlowInput to FlowModInput 
-    	FlowModInput ofFlowModInput = FlowConvertor.toFlowModInput(input) ;
-    	
-    		
-    	// For Flow provisioning, the SwitchConnectionDistinguisher is set to null so  
+    	// Convert the RemoveFlowInput to FlowModInput
+        FlowModInput ofFlowModInput = FlowConvertor.toFlowModInput(input, version);
+
+
+    	// For Flow provisioning, the SwitchConnectionDistinguisher is set to null so
     	// the request can be routed through any connection to the switch
-    	
+
     	SwitchConnectionDistinguisher cookie = null ;
-    	
+
     	LOG.debug("Calling the FlowMod RPC method on MessageDispatchService");
        	Future<RpcResult<UpdateFlowOutput>> resultFromOFLib = messageService.flowMod(ofFlowModInput, cookie) ;
-    
+
        	RpcResult<UpdateFlowOutput> rpcResultFromOFLib = null ;
-    	
-    	try { 
+
+    	try {
     		rpcResultFromOFLib = resultFromOFLib.get();
     	} catch( Exception ex ) {
     		LOG.error( " Error while getting result for remove Flow RPC" + ex.getMessage());
     	}
-    	
+
     	UpdateFlowOutput updateFlowOutput = rpcResultFromOFLib.getResult() ;
-    	
+
     	RemoveFlowOutputBuilder removeFlowOutput = new RemoveFlowOutputBuilder() ;
     	removeFlowOutput.setTransactionId(updateFlowOutput.getTransactionId()) ;
     	RemoveFlowOutput result = removeFlowOutput.build();
-    	
+
     	Collection<RpcError> errors = rpcResultFromOFLib.getErrors() ;
-        RpcResult<RemoveFlowOutput> rpcResult = Rpcs.getRpcResult(true, result, errors); 
-        
+        RpcResult<RemoveFlowOutput> rpcResult = Rpcs.getRpcResult(true, result, errors);
+
     	LOG.debug("Returning the Remove Flow RPC result to MD-SAL");
         return Futures.immediateFuture(rpcResult);
     }
@@ -225,35 +225,35 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     @Override
     public Future<RpcResult<RemoveGroupOutput>> removeGroup(
             RemoveGroupInput input) {
-    	// Convert the RemoveGroupInput to GroupModInput 
-    	GroupModInput ofGroupModInput = GroupConvertor.toGroupModInput(input.getUpdatedGroup()) ;
-    	
-    	 	
-    	// For Flow provisioning, the SwitchConnectionDistinguisher is set to null so  
+    	// Convert the RemoveGroupInput to GroupModInput
+        GroupModInput ofGroupModInput = GroupConvertor.toGroupModInput(input.getUpdatedGroup(), version);
+
+
+    	// For Flow provisioning, the SwitchConnectionDistinguisher is set to null so
     	// the request can be routed through any connection to the switch
-    	
+
     	SwitchConnectionDistinguisher cookie = null ;
-    	
+
     	LOG.debug("Calling the GroupMod RPC method on MessageDispatchService");
     	Future<RpcResult<UpdateGroupOutput>> resultFromOFLib = messageService.groupMod(ofGroupModInput, cookie) ;
-    	
+
     	RpcResult<UpdateGroupOutput> rpcResultFromOFLib = null ;
-    	
-    	try { 
+
+    	try {
     		rpcResultFromOFLib = resultFromOFLib.get();
     	} catch( Exception ex ) {
     		LOG.error( " Error while getting result for RemoveGroup RPC" + ex.getMessage());
     	}
-    	
+
     	UpdateGroupOutput updateGroupOutput = rpcResultFromOFLib.getResult() ;
-    	
+
     	RemoveGroupOutputBuilder removeGroupOutput = new RemoveGroupOutputBuilder() ;
     	removeGroupOutput.setTransactionId(updateGroupOutput.getTransactionId()) ;
     	RemoveGroupOutput result = removeGroupOutput.build();
-    	
+
     	Collection<RpcError> errors = rpcResultFromOFLib.getErrors() ;
-        RpcResult<RemoveGroupOutput> rpcResult = Rpcs.getRpcResult(true, result, errors); 
-    	
+        RpcResult<RemoveGroupOutput> rpcResult = Rpcs.getRpcResult(true, result, errors);
+
         LOG.debug("Returning the Remove Group RPC result to MD-SAL");
         return Futures.immediateFuture(rpcResult);
     }
@@ -261,35 +261,35 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     @Override
     public Future<RpcResult<RemoveMeterOutput>> removeMeter(
             RemoveMeterInput input) {
-    	// Convert the RemoveMeterInput to MeterModInput 
-    	MeterModInput ofMeterModInput = MeterConvertor.toMeterModInput(input) ;
-    	
-    	 	
-    	// For Meter provisioning, the SwitchConnectionDistinguisher is set to null so  
+    	// Convert the RemoveMeterInput to MeterModInput
+        MeterModInput ofMeterModInput = MeterConvertor.toMeterModInput(input, version);
+
+
+    	// For Meter provisioning, the SwitchConnectionDistinguisher is set to null so
     	// the request can be routed through any connection to the switch
-    	
+
     	SwitchConnectionDistinguisher cookie = null ;
-    	
+
     	LOG.debug("Calling the MeterMod RPC method on MessageDispatchService");
     	Future<RpcResult<UpdateMeterOutput>> resultFromOFLib = messageService.meterMod(ofMeterModInput, cookie) ;
-    	
+
     	RpcResult<UpdateMeterOutput> rpcResultFromOFLib = null ;
-    	
-    	try { 
+
+    	try {
     		rpcResultFromOFLib = resultFromOFLib.get();
     	} catch( Exception ex ) {
     		LOG.error( " Error while getting result for RemoveMeter RPC" + ex.getMessage());
     	}
-    	
+
     	UpdateMeterOutput updatemeterOutput = rpcResultFromOFLib.getResult() ;
-    	
+
     	RemoveMeterOutputBuilder removeMeterOutput = new RemoveMeterOutputBuilder() ;
     	removeMeterOutput.setTransactionId(updatemeterOutput.getTransactionId()) ;
     	RemoveMeterOutput result = removeMeterOutput.build();
-    	
+
     	Collection<RpcError> errors = rpcResultFromOFLib.getErrors() ;
-        RpcResult<RemoveMeterOutput> rpcResult = Rpcs.getRpcResult(true, result, errors); 
-    	
+        RpcResult<RemoveMeterOutput> rpcResult = Rpcs.getRpcResult(true, result, errors);
+
         LOG.debug("Returning the Remove Meter RPC result to MD-SAL");
         return Futures.immediateFuture(rpcResult);
     }
@@ -328,36 +328,36 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 
     @Override
     public Future<RpcResult<UpdateFlowOutput>> updateFlow(UpdateFlowInput input) {
-    	// Convert the UpdateFlowInput to FlowModInput 
-    	FlowModInput ofFlowModInput = FlowConvertor.toFlowModInput(input.getUpdatedFlow()) ;
-    	
+    	// Convert the UpdateFlowInput to FlowModInput
+        FlowModInput ofFlowModInput = FlowConvertor.toFlowModInput(input.getUpdatedFlow(), version);
+
     	// Call the RPC method on MessageDispatchService
-    	    	
-    	// For Flow provisioning, the SwitchConnectionDistinguisher is set to null so  
+
+    	// For Flow provisioning, the SwitchConnectionDistinguisher is set to null so
     	// the request can be routed through any connection to the switch
-    	
+
     	SwitchConnectionDistinguisher cookie = null ;
-    	
+
     	LOG.debug("Calling the FlowMod RPC method on MessageDispatchService");
        	Future<RpcResult<UpdateFlowOutput>> resultFromOFLib = messageService.flowMod(ofFlowModInput, cookie) ;
-    	
+
        	RpcResult<UpdateFlowOutput> rpcResultFromOFLib = null ;
-    	
-    	try { 
+
+    	try {
     		rpcResultFromOFLib = resultFromOFLib.get();
     	} catch( Exception ex ) {
     		LOG.error( " Error while getting result for UpdateFlow RPC" + ex.getMessage());
     	}
-    	
+
     	UpdateFlowOutput updateFlowOutputOFLib = rpcResultFromOFLib.getResult() ;
-    	
+
     	UpdateFlowOutputBuilder updateFlowOutput = new UpdateFlowOutputBuilder() ;
     	updateFlowOutput.setTransactionId(updateFlowOutputOFLib.getTransactionId()) ;
     	UpdateFlowOutput result = updateFlowOutput.build();
-    	
+
     	Collection<RpcError> errors = rpcResultFromOFLib.getErrors() ;
-        RpcResult<UpdateFlowOutput> rpcResult = Rpcs.getRpcResult(true, result, errors); 
-        
+        RpcResult<UpdateFlowOutput> rpcResult = Rpcs.getRpcResult(true, result, errors);
+
     	LOG.debug("Returning the Update Flow RPC result to MD-SAL");
         return Futures.immediateFuture(rpcResult);
     }
@@ -365,35 +365,35 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     @Override
     public Future<RpcResult<UpdateGroupOutput>> updateGroup(
             UpdateGroupInput input) {
-    	// Convert the UpdateGroupInput to GroupModInput 
-    	GroupModInput ofGroupModInput = GroupConvertor.toGroupModInput(input.getUpdatedGroup()) ;
-    	
-    	 	
-    	// For Flow provisioning, the SwitchConnectionDistinguisher is set to null so  
+    	// Convert the UpdateGroupInput to GroupModInput
+        GroupModInput ofGroupModInput = GroupConvertor.toGroupModInput(input.getUpdatedGroup(), version);
+
+
+    	// For Flow provisioning, the SwitchConnectionDistinguisher is set to null so
     	// the request can be routed through any connection to the switch
-    	
+
     	SwitchConnectionDistinguisher cookie = null ;
-    	
+
     	LOG.debug("Calling the GroupMod RPC method on MessageDispatchService");
     	Future<RpcResult<UpdateGroupOutput>> resultFromOFLib = messageService.groupMod(ofGroupModInput, cookie) ;
-    	
+
     	RpcResult<UpdateGroupOutput> rpcResultFromOFLib = null ;
-    	
-    	try { 
+
+    	try {
     		rpcResultFromOFLib = resultFromOFLib.get();
     	} catch( Exception ex ) {
     		LOG.error( " Error while getting result for updateGroup RPC" + ex.getMessage());
     	}
-    	
+
     	UpdateGroupOutput updateGroupOutputOFLib = rpcResultFromOFLib.getResult() ;
-    	
+
     	UpdateGroupOutputBuilder updateGroupOutput = new UpdateGroupOutputBuilder() ;
     	updateGroupOutput.setTransactionId(updateGroupOutputOFLib.getTransactionId()) ;
     	UpdateGroupOutput result = updateGroupOutput.build();
-    	
+
     	Collection<RpcError> errors = rpcResultFromOFLib.getErrors() ;
-        RpcResult<UpdateGroupOutput> rpcResult = Rpcs.getRpcResult(true, result, errors); 
-    	
+        RpcResult<UpdateGroupOutput> rpcResult = Rpcs.getRpcResult(true, result, errors);
+
         LOG.debug("Returning the Update Group RPC result to MD-SAL");
         return Futures.immediateFuture(rpcResult);
     }
@@ -401,35 +401,35 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     @Override
     public Future<RpcResult<UpdateMeterOutput>> updateMeter(
             UpdateMeterInput input) {
-    	// Convert the UpdateMeterInput to MeterModInput 
-    	MeterModInput ofMeterModInput = MeterConvertor.toMeterModInput(input.getUpdatedMeter()) ;
-    	
-    	 	
-    	// For Meter provisioning, the SwitchConnectionDistinguisher is set to null so  
+    	// Convert the UpdateMeterInput to MeterModInput
+        MeterModInput ofMeterModInput = MeterConvertor.toMeterModInput(input.getUpdatedMeter(), version);
+
+
+    	// For Meter provisioning, the SwitchConnectionDistinguisher is set to null so
     	// the request can be routed through any connection to the switch
-    	
+
     	SwitchConnectionDistinguisher cookie = null ;
-    	
+
     	LOG.debug("Calling the MeterMod RPC method on MessageDispatchService");
     	Future<RpcResult<UpdateMeterOutput>> resultFromOFLib = messageService.meterMod(ofMeterModInput, cookie) ;
-    	
+
     	RpcResult<UpdateMeterOutput> rpcResultFromOFLib = null ;
-    	
-    	try { 
+
+    	try {
     		rpcResultFromOFLib = resultFromOFLib.get();
     	} catch( Exception ex ) {
     		LOG.error( " Error while getting result for UpdateMeter RPC" + ex.getMessage());
     	}
-    	
+
     	UpdateMeterOutput updateMeterOutputFromOFLib = rpcResultFromOFLib.getResult() ;
-    	
+
     	UpdateMeterOutputBuilder updateMeterOutput = new UpdateMeterOutputBuilder() ;
     	updateMeterOutput.setTransactionId(updateMeterOutputFromOFLib.getTransactionId()) ;
     	UpdateMeterOutput result = updateMeterOutput.build();
-    	
+
     	Collection<RpcError> errors = rpcResultFromOFLib.getErrors() ;
-        RpcResult<UpdateMeterOutput> rpcResult = Rpcs.getRpcResult(true, result, errors); 
-    	
+        RpcResult<UpdateMeterOutput> rpcResult = Rpcs.getRpcResult(true, result, errors);
+
         LOG.debug("Returning the Update Meter RPC result to MD-SAL");
         return Futures.immediateFuture(rpcResult);
     }
