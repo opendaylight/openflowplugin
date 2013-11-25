@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da6255ed_541684a8",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/MeterConvertor.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2013-11-25T19:26:33Z",
+      "side": 1,
+      "message": "these lines seems to break threadsafe approach as here is all static",
+      "revId": "696f98adf7d9dd0f919c529018afad87afe9a087",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
