@@ -40,11 +40,14 @@ public final class MeterConvertor {
 	 }
 
 	 //Get all the data for the meter from the Yang/SAL-Layer
-	 /**
-	 * @param Yang Data source
-	 * @return MeterModInput required by OF Library
-	 */
-	public static MeterModInput  toMeterModInput(org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter source ) {
+	     /**
+     * @param version
+     * @param Yang
+     *            Data source
+     * @return MeterModInput required by OF Library
+     */
+    public static MeterModInput toMeterModInput(
+            org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter source, short version) {
 
 		 meterModInputBuilder = new MeterModInputBuilder();
 
@@ -62,6 +65,7 @@ public final class MeterConvertor {
 				meterModInputBuilder.setFlags(flags);
 			getBandsFromSAL(source.getMeterBandHeaders());
 		 		 meterModInputBuilder.setBands(bands);
+        meterModInputBuilder.setVersion(version);
 		 return meterModInputBuilder.build();
 	 }
 

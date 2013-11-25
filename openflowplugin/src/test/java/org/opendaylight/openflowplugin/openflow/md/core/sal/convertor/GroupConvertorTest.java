@@ -103,7 +103,7 @@ public class GroupConvertorTest {
 
         addGroupBuilder.setBuckets(buckets);
 
-        GroupModInput outAddGroupInput = GroupConvertor.toGroupModInput(addGroupBuilder.build());
+        GroupModInput outAddGroupInput = GroupConvertor.toGroupModInput(addGroupBuilder.build(), (short) 0X4);
 
         Assert.assertEquals(GroupModCommand.OFPGCADD, outAddGroupInput.getCommand());
         Assert.assertEquals(GroupType.OFPGTALL, outAddGroupInput.getType());

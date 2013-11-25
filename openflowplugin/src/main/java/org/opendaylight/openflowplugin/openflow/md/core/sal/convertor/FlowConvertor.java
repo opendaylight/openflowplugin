@@ -163,7 +163,7 @@ public class FlowConvertor {
     private static final Logger logger = LoggerFactory.getLogger(FlowConvertor.class);
     private static final String PREFIX_SEPARATOR = "/";
 
-    public static FlowModInput toFlowModInput(Flow flow) {
+    public static FlowModInput toFlowModInput(Flow flow, short version) {
         FlowModInputBuilder flowMod = new FlowModInputBuilder();
 
         flowMod.setCookie(flow.getCookie());
@@ -219,9 +219,9 @@ public class FlowConvertor {
         }
 
         if (flow.getInstructions() != null) {
-            flowMod.setInstructions(toInstructions(flow.getInstructions()));
+            flowMod.setInstructions(toInstructions(flow.getInstructions(), version));
         }
-
+        flowMod.setVersion(version);
         return flowMod.build();
     }
 
@@ -688,7 +688,8 @@ public class FlowConvertor {
     }
 
     private static List<Instructions> toInstructions(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Instructions instructions) {
+            org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Instructions instructions,
+            short version) {
         List<Instructions> instructionsList = new ArrayList<>();
         InstructionsBuilder instructionBuilder = new InstructionsBuilder();
 
@@ -720,7 +721,8 @@ public class FlowConvertor {
                 instructionBuilder
                         .setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.WriteActions.class);
                 ActionsInstructionBuilder actionsInstructionBuilder = new ActionsInstructionBuilder();
-                actionsInstructionBuilder.setActionsList(ActionConvertor.getActionList(writeActions.getAction()));
+                actionsInstructionBuilder.setActionsList(ActionConvertor.getActionList(writeActions.getAction(),
+                        version));
                 instructionBuilder.addAugmentation(ActionsInstruction.class, actionsInstructionBuilder.build());
             }
 
@@ -729,7 +731,8 @@ public class FlowConvertor {
                 instructionBuilder
                         .setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.ApplyActions.class);
                 ActionsInstructionBuilder actionsInstructionBuilder = new ActionsInstructionBuilder();
-                actionsInstructionBuilder.setActionsList(ActionConvertor.getActionList(applyActions.getAction()));
+                actionsInstructionBuilder.setActionsList(ActionConvertor.getActionList(applyActions.getAction(),
+                        version));
                 instructionBuilder.addAugmentation(ActionsInstruction.class, actionsInstructionBuilder.build());
             }
 
@@ -738,7 +741,8 @@ public class FlowConvertor {
                 instructionBuilder
                         .setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.ClearActions.class);
                 ActionsInstructionBuilder actionsInstructionBuilder = new ActionsInstructionBuilder();
-                actionsInstructionBuilder.setActionsList(ActionConvertor.getActionList(clearActions.getAction()));
+                actionsInstructionBuilder.setActionsList(ActionConvertor.getActionList(clearActions.getAction(),
+                        version));
                 instructionBuilder.addAugmentation(ActionsInstruction.class, actionsInstructionBuilder.build());
             }
 

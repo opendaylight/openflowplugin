@@ -30,7 +30,7 @@ public final class GroupConvertor {
 
     public static GroupModInput toGroupModInput(
 
-            org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group source) {
+    org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group source, short version) {
         List<BucketsList> bucketLists = new ArrayList<BucketsList>();
         GroupModInputBuilder groupModInputBuilder = new GroupModInputBuilder();
         if (source instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput)
@@ -54,14 +54,14 @@ public final class GroupConvertor {
 
         groupModInputBuilder.setGroupId(source.getGroupId().getValue());
 
-        getbucketList(source.getBuckets(), bucketLists);
+        getbucketList(source.getBuckets(), bucketLists, version);
         groupModInputBuilder.setBucketsList(bucketLists);
-
+        groupModInputBuilder.setVersion(version);
         return groupModInputBuilder.build();
 
     }
 
-    private static void getbucketList(Buckets buckets, List<BucketsList> bucketLists) {
+    private static void getbucketList(Buckets buckets, List<BucketsList> bucketLists, short version) {
 
         Iterator<org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.Bucket> groupBucketIterator = buckets
                 .getBucket().iterator();
@@ -76,7 +76,7 @@ public final class GroupConvertor {
             bucketBuilder.setWatchGroup(groupBucket.getWatchGroup());
             bucketBuilder.setWatchPort(new PortNumber(groupBucket.getWatchPort()));
 
-            List<ActionsList> bucketActionList = ActionConvertor.getActionList(groupBucket.getAction());
+            List<ActionsList> bucketActionList = ActionConvertor.getActionList(groupBucket.getAction(), version);
             bucketBuilder.setActionsList(bucketActionList);
             BucketsList bucket = bucketBuilder.build();
             bucketLists.add(bucket);

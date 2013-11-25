@@ -55,17 +55,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.actions.list.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.EtherType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumber;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumberValues;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumberValuesV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.MatchEntries;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
 import org.openflow.protocol.OFPort;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-
-
-
-
-
 
 /**
  * @author usha@ericsson Action List:This class takes data from SAL layer and
@@ -80,7 +76,8 @@ public final class ActionConvertor {
     }
 
     public static List<ActionsList> getActionList(
-            List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> actions)
+            List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> actions,
+            short version)
 
     {
         ActionBuilder  actionBuilder = new ActionBuilder();
@@ -94,7 +91,7 @@ public final class ActionConvertor {
                     actionItem).getAction();
 
             if (action instanceof OutputAction)
-               actionsList.add(salToOFOutputAction(action,actionBuilder,actionsListBuilder));
+                actionsList.add(salToOFOutputAction(action, actionBuilder, actionsListBuilder, version));
             else if (action instanceof GroupAction)
                 actionsList.add(SalToOFGroupAction(action, actionBuilder, actionsListBuilder));
             else if (action instanceof CopyTtlOut)
@@ -351,7 +348,7 @@ public final class ActionConvertor {
     private static ActionsList salToOFOutputAction(
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
             ActionBuilder actionBuilder,
-            ActionsListBuilder actionsListBuilder) {
+ ActionsListBuilder actionsListBuilder, short version) {
 
 
         OutputAction outputAction = ((OutputAction) action);
@@ -384,9 +381,14 @@ public final class ActionConvertor {
 
             if (uri.getValue() == NodeConnectorIDType.CONTROLLER) {
 
-            // portAction.setPort(new PortNumber((long)
-            // OFPort.OFPP_CONTROLLER.getValue()));
+            if (version == 0X4) {
+                // TODO:To remove the and operation once the BitContent is in
+                // place in OF Plugin .
+                portAction.setPort(new PortNumber(PortNumberValues.CONTROLLER.getIntValue() & 0x00000000ffffffffL));
+            } else {
+                portAction.setPort(new PortNumber((long) PortNumberValuesV10.CONTROLLER.getIntValue()));
 
+            }
         }
 
         actionBuilder

@@ -67,7 +67,7 @@ public class ActionConvertorTest {
         pbbActionData();
         setFieldData();
         setExperimenterData();
-        List<ActionsList> OFActionsList = ActionConvertor.getActionList(actions);
+        List<ActionsList> OFActionsList = ActionConvertor.getActionList(actions, (short) 0X4);
 
         OutputActions(OFActionsList);
 
