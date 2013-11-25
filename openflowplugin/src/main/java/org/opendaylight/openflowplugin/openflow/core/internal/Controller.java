@@ -132,20 +132,20 @@ public class Controller implements IController, CommandProvider, IPluginInConnec
      *
      */
     public void start() {
-        logger.debug("Starting!");
+        logger.debug("Starting! - omitting whole startup");
         /*
          * start a thread to handle event coming from the switch
          */
-        switchEventThread = new Thread(new EventHandler(), "SwitchEvent Thread");
-        switchEventThread.start();
-
-        // spawn a thread to start to listen on the open flow port
-        controllerIO = new ControllerIO(this);
-        try {
-            controllerIO.start();
-        } catch (IOException ex) {
-            logger.error("Caught exception while starting:", ex);
-        }
+//        switchEventThread = new Thread(new EventHandler(), "SwitchEvent Thread");
+//        switchEventThread.start();
+//
+//        // spawn a thread to start to listen on the open flow port
+//        controllerIO = new ControllerIO(this);
+//        try {
+//            controllerIO.start();
+//        } catch (IOException ex) {
+//            logger.error("Caught exception while starting:", ex);
+//        }
     }
 
     /**
