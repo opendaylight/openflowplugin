@@ -73,28 +73,28 @@ public class HandshakeManagerImpl implements HandshakeManager {
     }
 
     @Override
-    public synchronized void run() {
+    public synchronized void shake() {
         LOG.info("handshake STARTED");
         setActiveXid(20L);
         HelloMessage receivedHelloLoc = receivedHello;
         
-        if (receivedHelloLoc == null) {
-            // first Hello sending
-            sendHelloMessage(highestVersion, getNextXid());
-            lastProposedVersion = highestVersion;
-            LOG.debug("ret - firstHello+wait");
-            return;
-        }
-        
-        // process the 2. and later hellos
-        Short remoteVersion = receivedHelloLoc.getVersion();
-        List<Elements> elements = receivedHelloLoc.getElements();
-        setActiveXid(receivedHelloLoc.getXid());
-        List<Boolean> remoteVersionBitmap = MessageFactory.digVersions(elements);
-        LOG.debug("Hello message: version={}, bitmap={}, xid={}", remoteVersion, 
-                remoteVersionBitmap, receivedHelloLoc.getXid());
-        
         try {
+            if (receivedHelloLoc == null) {
+                // first Hello sending
+                sendHelloMessage(highestVersion, getNextXid());
+                lastProposedVersion = highestVersion;
+                LOG.debug("ret - firstHello+wait");
+                return;
+            }
+
+            // process the 2. and later hellos
+            Short remoteVersion = receivedHelloLoc.getVersion();
+            List<Elements> elements = receivedHelloLoc.getElements();
+            setActiveXid(receivedHelloLoc.getXid());
+            List<Boolean> remoteVersionBitmap = MessageFactory.digVersions(elements);
+            LOG.debug("Hello message: version={}, bitmap={}, xid={}", remoteVersion, 
+                    remoteVersionBitmap, receivedHelloLoc.getXid());
+        
             if (useVersionBitmap && remoteVersionBitmap != null) {
                 // versionBitmap on both sides -> ONE STEP DECISION
                 handleVersionBitmapNegotiation(elements);
@@ -102,7 +102,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
                 // versionBitmap missing at least on one side -> STEP-BY-STEP NEGOTIATION applying 
                 handleStepByStepVersionNegotiation(remoteVersion);
             }
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
             errorHandler.handleException(ex, null);
             connectionAdapter.disconnect();
             LOG.debug("ret - "+ex.getMessage());
@@ -111,8 +111,9 @@ public class HandshakeManagerImpl implements HandshakeManager {
 
     /**
      * @param remoteVersion
+     * @throws Throwable 
      */
-    private void handleStepByStepVersionNegotiation(Short remoteVersion) {
+    private void handleStepByStepVersionNegotiation(Short remoteVersion) throws Throwable {
         LOG.debug("remoteVersion:{} lastProposedVersion:{}, highestVersion:{}", 
                 remoteVersion, lastProposedVersion, highestVersion);
         if (remoteVersion == lastProposedVersion) {
@@ -133,8 +134,9 @@ public class HandshakeManagerImpl implements HandshakeManager {
 
     /**
      * @param remoteVersion
+     * @throws Throwable 
      */
-    private void handleLowerVersionProposal(Short remoteVersion) {
+    private void handleLowerVersionProposal(Short remoteVersion) throws Throwable {
         Short proposedVersion;
         // find the version from header version field
         proposedVersion = proposeNextVersion(remoteVersion);
@@ -151,8 +153,9 @@ public class HandshakeManagerImpl implements HandshakeManager {
 
     /**
      * @param elements
+     * @throws Throwable 
      */
-    private void handleVersionBitmapNegotiation(List<Elements> elements) {
+    private void handleVersionBitmapNegotiation(List<Elements> elements) throws Throwable {
         Short proposedVersion;
         proposedVersion = proposeCommonBitmapVersion(elements);
         postHandshake(proposedVersion, getNextXid());
@@ -246,8 +249,9 @@ public class HandshakeManagerImpl implements HandshakeManager {
      * send hello reply without versionBitmap
      * @param helloVersion
      * @param helloXid
+     * @throws Throwable 
      */
-    protected void sendHelloMessage(Short helloVersion, Long helloXid) {
+    private void sendHelloMessage(Short helloVersion, Long helloXid) throws Throwable {
         //Short highestVersion = ConnectionConductor.versionOrder.get(0);
         //final Long helloXid = 21L;
         HelloInput helloInput = MessageFactory.createHelloInput(helloVersion, helloXid, versionOrder);
@@ -261,7 +265,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
             LOG.debug("FIRST HELLO sent.");
         } catch (Throwable e) {
             LOG.debug("FIRST HELLO sending failed.");
-            errorHandler.handleException(e, null);
+            throw e;
         }
     }
 
@@ -269,8 +273,9 @@ public class HandshakeManagerImpl implements HandshakeManager {
      * after handshake set features, register to session
      * @param proposedVersion
      * @param xId
+     * @throws Throwable 
      */
-    protected void postHandshake(Short proposedVersion, Long xid) {
+    protected void postHandshake(Short proposedVersion, Long xid) throws Throwable {
         // set version
         version = proposedVersion;
         LOG.debug("version set: " + proposedVersion);
@@ -299,8 +304,8 @@ public class HandshakeManagerImpl implements HandshakeManager {
         } catch (Throwable e) {
             //handshake failed
             LOG.error("issuing disconnect during handshake, reason: "+e.getMessage());
-            errorHandler.handleException(e, null);
             connectionAdapter.disconnect();
+            throw e;
         }
         
         LOG.debug("postHandshake DONE");

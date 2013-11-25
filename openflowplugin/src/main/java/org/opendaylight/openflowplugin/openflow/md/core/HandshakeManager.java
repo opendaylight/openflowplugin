@@ -14,7 +14,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * @author mirehak
  *
  */
-public interface HandshakeManager extends Runnable {
+public interface HandshakeManager {
 
     /**
      * @return negotiated version
@@ -45,4 +45,9 @@ public interface HandshakeManager extends Runnable {
      * @param isBitmapNegotiationEnable
      */
     void setUseVersionBitmap(boolean isBitmapNegotiationEnable);
+
+    /**
+     * process current handshake step
+     */
+    void shake();
 }
