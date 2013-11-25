@@ -32,7 +32,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.osgi.framework.BundleContext;
-
+import org.opendaylight.openflowplugin.test.OpenflowpluginTestServiceProvider;
 
 
 public class OpenflowpluginTestCommandProvider implements CommandProvider {
@@ -49,10 +49,25 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 		ctx.registerService(CommandProvider.class.getName(), this, null);
     }
 
-
+	 @Override
+	    public String getHelp() {
+	    	StringBuffer help = new StringBuffer();	    	
+	        help.append("---FRM MD-SAL test module---\n");
+	        help.append("\t loadFlowData <node id>        - node ref\n");        
+	        return help.toString();
+	    }
 
 	public void _loadFlowData(CommandInterpreter ci) {
-		NodeRef nodeOne = createNodeRef(OpenflowpluginTestActivator.NODE_ID);
+		String nref = ci.nextArgument();
+		NodeRef nodeOne = null;
+        if (nref == null) {
+            ci.println("Please enter node ref");
+            nodeOne = createNodeRef(OpenflowpluginTestActivator.NODE_ID);
+        } else {
+        	ci.println("node ref " + nref);
+        	nodeOne = createNodeRef(nref);
+        }
+		 
         // Sample data , committing to DataStore
         DataModification modification = (DataModification) dataBrokerService.beginTransaction();
         long id = 123;
@@ -83,14 +98,13 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 	private static NodeRef createNodeRef(String string) {
         NodeKey key = new NodeKey(new NodeId(string));
         InstanceIdentifier<Node> path =
-        	InstanceIdentifier.builder().node(Nodes.class).node(Node.class, key).toInstance();
+        	InstanceIdentifier.builder(Nodes.class).child(Node.class, key).toInstance();
 
         return new NodeRef(path);
     }
 
-    @Override
-    public String getHelp() {
-        return "No help";
-    }
+   
+    
+    
 }
 
