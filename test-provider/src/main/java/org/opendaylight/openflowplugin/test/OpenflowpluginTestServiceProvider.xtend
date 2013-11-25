@@ -16,15 +16,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.Remo
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInput
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeContext
-import org.opendaylight.yangtools.concepts.CompositeObjectRegistration
-import org.opendaylight.yangtools.concepts.Registration
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier
-import org.opendaylight.yangtools.yang.binding.NotificationListener
-import org.slf4j.LoggerFactory
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId
+import org.opendaylight.yangtools.concepts.CompositeObjectRegistration
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier
+import org.slf4j.LoggerFactory
 
 class OpenflowpluginTestServiceProvider implements AutoCloseable, SalFlowService {
 
@@ -35,19 +33,15 @@ class OpenflowpluginTestServiceProvider implements AutoCloseable, SalFlowService
     DataProviderService dataService;
     
     @Property
-    RoutedRpcRegistration<SalFlowService> flowRegistration;
-        
+    RoutedRpcRegistration<SalFlowService> flowRegistration;        
 
     @Property
-    NotificationProviderService notificationService;
-
-
+    NotificationProviderService notificationService;	
+	
     def void start() {
         LOG.info("SalFlowServiceProvider Started.");
-        
     }
-
-
+    
     override close() {
        LOG.info("SalFlowServiceProvide stopped.");
         flowRegistration.close;
@@ -73,8 +67,7 @@ class OpenflowpluginTestServiceProvider implements AutoCloseable, SalFlowService
     def CompositeObjectRegistration<OpenflowpluginTestServiceProvider> register(ProviderContext ctx) {
         val builder = CompositeObjectRegistration
                 .<OpenflowpluginTestServiceProvider> builderFor(this);
-
-        flowRegistration = ctx.addRoutedRpcImplementation(SalFlowService, this);
+        flowRegistration = ctx.addRoutedRpcImplementation(SalFlowService, this);     
         val nodeIndentifier = InstanceIdentifier.builder(Nodes).child(Node, new NodeKey(new NodeId(OpenflowpluginTestActivator.NODE_ID)));
         flowRegistration.registerPath(NodeContext, nodeIndentifier.toInstance());
         builder.add(flowRegistration);

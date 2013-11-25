@@ -16,16 +16,15 @@ import org.osgi.framework.BundleContext
 class OpenflowpluginTestActivator extends AbstractBindingAwareProvider {
 
     static var OpenflowpluginTestServiceProvider provider = new OpenflowpluginTestServiceProvider();
-    var OpenflowpluginTestCommandProvider cmdProvider;
-    public static final String NODE_ID =  "foo:node:1";
+    var OpenflowpluginTestCommandProvider cmdProvider;    
+    public static final String NODE_ID =  "foo:node:1";  
 
     override onSessionInitiated(ProviderContext session) {
         provider.dataService = session.getSALService(DataProviderService)
         provider.notificationService = session.getSALService(NotificationProviderService)
         provider.start();
         provider.register(session);
-        cmdProvider.onSessionInitiated(session);
-        
+        cmdProvider.onSessionInitiated(session);        
     }
     
     override startImpl(BundleContext ctx) {
