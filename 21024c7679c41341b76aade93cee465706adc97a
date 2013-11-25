@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da6255ed_149dac59",
+        "filename": "test-provider/src/main/java/org/opendaylight/openflowplugin/test/OpenflowpluginTestActivator.xtend",
+        "patchSetId": 2
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 9
+      },
+      "writtenOn": "2013-11-25T18:35:09Z",
+      "side": 0,
+      "message": "Please don\u0027t move to bare strings.",
+      "revId": "21024c7679c41341b76aade93cee465706adc97a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

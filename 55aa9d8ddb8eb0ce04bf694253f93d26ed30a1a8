@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da6255ed_f4ca184e",
+        "filename": "test-provider/src/main/java/org/opendaylight/openflowplugin/test/OpenflowpluginTestCommandProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 9
+      },
+      "writtenOn": "2013-11-25T18:35:09Z",
+      "side": 1,
+      "message": "Please have a default value if none is provided on the command line.  Please makes sure that before we loadFlowDatat that we have registered an rpc handler for that node.",
+      "revId": "55aa9d8ddb8eb0ce04bf694253f93d26ed30a1a8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da6255ed_b476e03c",
+        "filename": "test-provider/src/main/java/org/opendaylight/openflowplugin/test/OpenflowpluginTestCommandProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 9
+      },
+      "writtenOn": "2013-11-25T18:35:09Z",
+      "side": 1,
+      "message": "Please use ci.println rather than System.out.println",
+      "revId": "55aa9d8ddb8eb0ce04bf694253f93d26ed30a1a8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da6255ed_94719c46",
+        "filename": "test-provider/src/main/java/org/opendaylight/openflowplugin/test/OpenflowpluginTestServiceProvider.xtend",
+        "patchSetId": 2
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 9
+      },
+      "writtenOn": "2013-11-25T18:35:09Z",
+      "side": 1,
+      "message": "Please don\u0027t use bare strings...",
+      "revId": "55aa9d8ddb8eb0ce04bf694253f93d26ed30a1a8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
