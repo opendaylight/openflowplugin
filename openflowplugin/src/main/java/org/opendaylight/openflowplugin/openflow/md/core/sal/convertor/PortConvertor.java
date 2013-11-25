@@ -1,15 +1,15 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
+import java.util.List;
+
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.port.mod.port.Port;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumber;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortReason;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortState;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortModInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatus;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.port.desc.Ports;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.port.desc.PortsBuilder;
 import org.slf4j.Logger;
@@ -33,19 +33,22 @@ public final class PortConvertor {
      * @param source
      * @return
      */
+
     public static PortModInput toPortModInput(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.port.mod.port.Port source) {
+            org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortMod input) {
+
+        List<Port> source = input.getPort().getPort();
 
         PortConfig config = null;
 
         PortModInputBuilder portModInputBuilder = new PortModInputBuilder();
-        portModInputBuilder.setAdvertise(getPortFeatures(source.getAdvertisedFeatures()));
-        portModInputBuilder.setPortNo(new PortNumber(source.getPortNumber()));
-        maskPortConfigFields(source.getConfiguration(), config);
+        portModInputBuilder.setAdvertise(getPortFeatures(source.get(0).getAdvertisedFeatures()));
+        portModInputBuilder.setPortNo(new PortNumber(source.get(0).getPortNumber()));
+        maskPortConfigFields(source.get(0).getConfiguration(), config);
         portModInputBuilder.setConfig(config);
-        portModInputBuilder.setHwAddress(new MacAddress(source.getHardwareAddress()));
+        portModInputBuilder.setHwAddress(new MacAddress(source.get(0).getHardwareAddress()));
         config = null;
-        maskPortConfigFields(source.getMask(), config);
+        maskPortConfigFields(source.get(0).getMask(), config);
         portModInputBuilder.setMask(config);
 
         return portModInputBuilder.build();
@@ -139,53 +142,6 @@ public final class PortConvertor {
 
     }
 
-    /**
-     * This method is used called when the ports are added, modi ed, and removed
-     * from the datapath, the controller needs to be informed with the
-     * OFPT_PORT_STATUS message
-     *
-     * @param source
-     *            :SAL Layer input from say REST API
-     * @return OF Layer data required for constructing the OFPT_PORT_STATUS
-     *         message
-     */
-    public static PortStatus toGetPortStatus(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.FlowPortStatus source) {
 
-        PortConfig config = null;
-        PortState portState = null;
-
-        PortStatusMessageBuilder portStatusMessageBuilder = new PortStatusMessageBuilder();
-
-        if (source.getReason().getIntValue() == 0)
-            portStatusMessageBuilder.setReason(PortReason.OFPPRADD);
-
-        else if (source.getReason().getIntValue() == 1)
-            portStatusMessageBuilder.setReason(PortReason.OFPPRDELETE);
-
-        else if (source.getReason().getIntValue() == 2)
-            portStatusMessageBuilder.setReason(PortReason.OFPPRMODIFY);
-
-        portStatusMessageBuilder.setPortNo(source.getPortNumber()); // portNO
-
-        portStatusMessageBuilder.setHwAddr(source.getHardwareAddress());
-        portStatusMessageBuilder.setName(source.getName());
-
-        maskPortConfigFields(source.getConfiguration(), config);
-
-        portStatusMessageBuilder.setConfig(config);
-
-        getPortState(source.getState(), portState);
-        portStatusMessageBuilder.setState(portState);
-        portStatusMessageBuilder.setCurrentFeatures(getPortFeatures(source.getCurrentFeature()));
-        portStatusMessageBuilder.setAdvertisedFeatures(getPortFeatures(source.getAdvertisedFeatures()));
-        portStatusMessageBuilder.setSupportedFeatures(getPortFeatures(source.getSupported()));
-        portStatusMessageBuilder.setPeerFeatures(getPortFeatures(source.getPeerFeatures()));
-        portStatusMessageBuilder.setCurrSpeed(source.getCurrentSpeed());
-        portStatusMessageBuilder.setMaxSpeed(source.getMaximumSpeed());
-
-        return portStatusMessageBuilder.build();
-
-    }
 
 }
