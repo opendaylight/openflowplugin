@@ -4,9 +4,9 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.opendaylight.openflowplugin</groupId>
-        <artifactId>openflowplugin-commons</artifactId>
+        <artifactId>openflowplugin-parent</artifactId>
         <version>0.0.1-SNAPSHOT</version>
-        <relativePath>../commons</relativePath>
+        <relativePath>../</relativePath>
     </parent>
 
     <artifactId>openflowplugin</artifactId>
@@ -26,15 +26,12 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Export-Package>
-                            org.opendaylight.openflowplugin.openflow.internal
-                        </Export-Package>
-                        <Embed-Transitive>
-                            false
-                        </Embed-Transitive>
                         <Bundle-Activator>
-                            org.opendaylight.openflowplugin.openflow.internal.Activator
+                            org.opendaylight.openflowplugin.openflow.md.Activator
                         </Bundle-Activator>
+                        <Private-Package>
+                            org.opendaylight.openflowplugin.md.*
+                        </Private-Package>
                     </instructions>
                     <manifestLocation>${project.build.directory}/META-INF</manifestLocation>
                 </configuration>
@@ -51,11 +48,6 @@
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>sal.connection</artifactId>
             <version>0.1.1-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.controller.thirdparty</groupId>
-            <artifactId>org.openflow.openflowj</artifactId>
-            <version>1.0.2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.controller.model</groupId>

@@ -3,9 +3,9 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.opendaylight.openflowplugin</groupId>
-        <artifactId>openflowplugin-commons</artifactId>
+        <artifactId>openflowplugin-parent</artifactId>
         <version>0.0.1-SNAPSHOT</version>
-        <relativePath>../commons</relativePath>
+        <relativePath>../</relativePath>
     </parent>
     <artifactId>test-provider</artifactId>
     <packaging>bundle</packaging>
