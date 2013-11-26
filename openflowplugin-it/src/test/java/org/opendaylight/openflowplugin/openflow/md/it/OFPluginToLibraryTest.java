@@ -88,7 +88,7 @@ public class OFPluginToLibraryTest {
         switchSim.setSecuredClient(false);
         Stack<ClientEvent> handshakeScenario = ScenarioFactory.createHandshakeScenarioVBM(
                 ScenarioFactory.VERSION_BITMAP_13, (short) 0, ScenarioFactory.VERSION_BITMAP_10_13);
-        
+
         ScenarioHandler scenario = new ScenarioHandler(handshakeScenario);
         switchSim.setScenarioHandler(scenario);
         switchSim.start();
@@ -101,7 +101,7 @@ public class OFPluginToLibraryTest {
         }
         //TODO: dump errors of plugin
     }
-    
+
     /**
      * test basic integration with OFLib running the handshake (with version bitmap)
      * @throws Exception
@@ -115,7 +115,7 @@ public class OFPluginToLibraryTest {
         switchSim.setSecuredClient(false);
         Stack<ClientEvent> handshakeScenario = ScenarioFactory.createHandshakeScenario(
                 (short) 0, ScenarioFactory.VERSION_BITMAP_10_13);
-        
+
         ScenarioHandler scenario = new ScenarioHandler(handshakeScenario);
         switchSim.setScenarioHandler(scenario);
         switchSim.start();
@@ -128,7 +128,7 @@ public class OFPluginToLibraryTest {
         }
         //TODO: dump errors of plugin
     }
-    
+
     /**
      * test basic integration with OFLib running the handshake
      * @throws Exception
@@ -140,9 +140,9 @@ public class OFPluginToLibraryTest {
 
         switchSim = new SimpleClient("localhost", 6653);
         switchSim.setSecuredClient(false);
-        Stack<ClientEvent> handshakeScenario = ScenarioFactory.createHandshakeScenario((short) 1, 
+        Stack<ClientEvent> handshakeScenario = ScenarioFactory.createHandshakeScenario((short) 1,
                 ScenarioFactory.VERSION_BITMAP_10_13);
-        
+
         ScenarioHandler scenario = new ScenarioHandler(handshakeScenario);
         switchSim.setScenarioHandler(scenario);
         switchSim.start();
@@ -155,7 +155,7 @@ public class OFPluginToLibraryTest {
         }
         //TODO: dump errors of plugin
     }
-    
+
     /**
      * test basic integration with OFLib running the handshake
      * @throws Exception
@@ -167,10 +167,10 @@ public class OFPluginToLibraryTest {
 
         switchSim = new SimpleClient("localhost", 6653);
         switchSim.setSecuredClient(false);
-        Stack<ClientEvent> handshakeScenario = ScenarioFactory.createHandshakeScenario((short) 1, 
+        Stack<ClientEvent> handshakeScenario = ScenarioFactory.createHandshakeScenario((short) 1,
                 ScenarioFactory.VERSION_BITMAP_10_13);
         handshakeScenario.setElementAt(new SleepEvent(5000), 0);
-        
+
         ScenarioHandler scenario = new ScenarioHandler(handshakeScenario);
         switchSim.setScenarioHandler(scenario);
         switchSim.start();
@@ -200,13 +200,12 @@ public class OFPluginToLibraryTest {
                 mavenBundle("org.apache.felix", "org.apache.felix.dependencymanager").versionAsInProject(),
                 TestHelper.mdSalCoreBundles(), TestHelper.bindingAwareSalBundles(),
                 TestHelper.flowCapableModelBundles(), TestHelper.baseModelBundles(),
-                
-                
+
+
                 mavenBundle(ODL, "sal").versionAsInProject(),
                 mavenBundle(ODL, "sal.connection").versionAsInProject(),
                 mavenBundle(ODL, "sal-common").versionAsInProject(),
 
-                mavenBundle("org.opendaylight.controller.thirdparty", "org.openflow.openflowj").versionAsInProject(),
                 mavenBundle(ODL_MODEL, "model-flow-statistics").versionAsInProject(),
 
                 mavenBundle(OFLIBRARY, "openflow-protocol-impl").versionAsInProject(),

@@ -3,9 +3,9 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.opendaylight.openflowplugin</groupId>
-        <artifactId>openflowplugin-commons</artifactId>
+        <artifactId>openflowplugin-parent</artifactId>
         <version>0.0.1-SNAPSHOT</version>
-        <relativePath>../commons</relativePath>
+        <relativePath>../</relativePath>
     </parent>
 
     <artifactId>openflowplugin-it</artifactId>
@@ -147,6 +147,11 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.controller</groupId>
+            <artifactId>config-netconf-connector</artifactId>
+            <version>0.2.3-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>
