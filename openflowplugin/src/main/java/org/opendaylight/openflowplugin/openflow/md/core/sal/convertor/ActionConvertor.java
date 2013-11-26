@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.opendaylight.controller.sal.core.NodeConnector.NodeConnectorIDType;
+import org.opendaylight.openflowplugin.openflow.md.OFConstants;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputAction;
@@ -57,7 +58,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.MatchEntries;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
-import org.openflow.protocol.OFPort;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -363,10 +363,10 @@ public final class ActionConvertor {
 
         Uri uri = outputAction.getOutputNodeConnector();
             if (uri.getValue() == NodeConnectorIDType.ALL)
-                portAction.setPort(new PortNumber((long) OFPort.OFPP_ALL.getValue()));
+                portAction.setPort(new PortNumber((long) OFConstants.OFPP_ALL));
 
             if (uri.getValue() == NodeConnectorIDType.SWSTACK)
-                portAction.setPort(new PortNumber((long) OFPort.OFPP_LOCAL.getValue()));
+                portAction.setPort(new PortNumber((long) OFConstants.OFPP_LOCAL));
 
             if ((uri.getValue() == NodeConnectorIDType.HWPATH)
  || (uri.getValue() == NodeConnectorIDType.ONEPK)
@@ -379,7 +379,7 @@ public final class ActionConvertor {
                     || (uri.getValue() == NodeConnectorIDType.PCEP2ONEPK)
                     || (uri.getValue() == NodeConnectorIDType.PCEP2OPENFLOW)
                 || (uri.getValue() == NodeConnectorIDType.PRODUCTION)) {
-                portAction.setPort(new PortNumber((long) OFPort.OFPP_NORMAL.getValue()));
+                portAction.setPort(new PortNumber((long) OFConstants.OFPP_NORMAL));
             }
 
             if (uri.getValue() == NodeConnectorIDType.CONTROLLER) {

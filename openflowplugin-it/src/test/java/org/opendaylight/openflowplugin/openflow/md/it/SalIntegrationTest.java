@@ -77,7 +77,7 @@ public class SalIntegrationTest {
     private static long getFailSafeTimeout() {
         return 20000;
     }
-    
+
     /**
      * test basic integration with OFLib running the handshake
      *
@@ -120,33 +120,32 @@ public class SalIntegrationTest {
     @Configuration
     public Option[] config() {
         return options(systemProperty("osgi.console").value("2401"),
-                mavenBundle("org.slf4j", "slf4j-api").versionAsInProject(), 
+                mavenBundle("org.slf4j", "slf4j-api").versionAsInProject(),
                 mavenBundle("org.slf4j", "log4j-over-slf4j").versionAsInProject(),
                 mavenBundle("ch.qos.logback", "logback-core").versionAsInProject(),
                 mavenBundle("ch.qos.logback", "logback-classic").versionAsInProject(),
-                
+
                 mavenBundle("org.apache.felix", "org.apache.felix.dependencymanager").versionAsInProject(),
 
                 mavenBundle(OFLIBRARY, "openflow-protocol-impl").versionAsInProject(),
                 mavenBundle(OFLIBRARY, "openflow-protocol-api").versionAsInProject(),
                 mavenBundle(OFLIBRARY, "openflow-protocol-spi").versionAsInProject(),
 
-                mavenBundle(ODL, "sal").versionAsInProject(), 
+                mavenBundle(ODL, "sal").versionAsInProject(),
                 mavenBundle(ODL, "sal.connection").versionAsInProject(),
                 mdSalCoreBundles(), baseModelBundles(), flowCapableModelBundles(),
                 configMinumumBundles(),
 
-                bindingAwareSalBundles(), 
+                bindingAwareSalBundles(),
 
-                mavenBundle(NETTY, "netty-handler").versionAsInProject(), 
-                mavenBundle(NETTY, "netty-buffer").versionAsInProject(), 
+                mavenBundle(NETTY, "netty-handler").versionAsInProject(),
+                mavenBundle(NETTY, "netty-buffer").versionAsInProject(),
                 mavenBundle(NETTY, "netty-common").versionAsInProject(),
-                mavenBundle(NETTY, "netty-transport").versionAsInProject(), 
+                mavenBundle(NETTY, "netty-transport").versionAsInProject(),
                 mavenBundle(NETTY, "netty-codec").versionAsInProject(),
 
                 mavenBundle(OFLIBRARY, "simple-client").versionAsInProject().start(),
-                mavenBundle(OFPLUGIN, "openflowplugin").versionAsInProject(), junitBundles(),
-                mavenBundle("org.opendaylight.controller.thirdparty", "org.openflow.openflowj").versionAsInProject()
+                mavenBundle(OFPLUGIN, "openflowplugin").versionAsInProject(), junitBundles()
                 );
     }
 
@@ -156,7 +155,7 @@ public class SalIntegrationTest {
         List<NodeRemoved> nodeRemoved = new ArrayList<>();
         List<NodeConnectorUpdated> nodeConnectorUpdated = new ArrayList<>();
         List<NodeConnectorRemoved> nodeConnectorRemoved = new ArrayList<>();
-        
+
         /**
          * default ctor
          */
