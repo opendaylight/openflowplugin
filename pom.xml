@@ -7,7 +7,7 @@
         <maven>3.0</maven>
     </prerequisites>
     <groupId>org.opendaylight.openflowplugin</groupId>
-    <artifactId>openflowplugin-commons</artifactId>
+    <artifactId>openflowplugin-parent</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
@@ -84,16 +84,6 @@
           <version>${openflowjava.version}</version>
         </dependency>
 
-        <dependency>
-          <groupId>org.opendaylight.controller</groupId>
-          <artifactId>sal</artifactId>
-          <version>0.5.1-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-          <groupId>org.opendaylight.controller</groupId>
-          <artifactId>sal.connection</artifactId>
-          <version>0.1.1-SNAPSHOT</version>
-        </dependency>
         <dependency>
           <groupId>org.opendaylight.controller.thirdparty</groupId>
           <artifactId>org.openflow.openflowj</artifactId>
@@ -278,4 +268,10 @@
         </releases>
       </pluginRepository>
     </pluginRepositories>
+    <modules>
+      <module>openflowplugin</module>
+      <module>distribution/base</module>
+      <module>openflowplugin-it</module>
+      <module>test-provider</module>
+    </modules>
 </project>

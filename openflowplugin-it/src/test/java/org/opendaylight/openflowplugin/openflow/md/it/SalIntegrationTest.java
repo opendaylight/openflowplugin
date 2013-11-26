@@ -145,8 +145,7 @@ public class SalIntegrationTest {
                 mavenBundle(NETTY, "netty-codec").versionAsInProject(),
 
                 mavenBundle(OFLIBRARY, "simple-client").versionAsInProject().start(),
-                mavenBundle(OFPLUGIN, "openflowplugin").versionAsInProject(), junitBundles(),
-                mavenBundle("org.opendaylight.controller.thirdparty", "org.openflow.openflowj").versionAsInProject()
+                mavenBundle(OFPLUGIN, "openflowplugin").versionAsInProject(), junitBundles()
                 );
     }
 
