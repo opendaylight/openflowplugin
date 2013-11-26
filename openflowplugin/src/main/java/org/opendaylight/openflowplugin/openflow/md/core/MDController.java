@@ -143,7 +143,8 @@ public class MDController implements IMDController {
     private static Collection<ConnectionConfiguration> getConnectionConfiguration() {
         // TODO:: get config from state manager
         ConnectionConfiguration configuration = ConnectionConfigurationFactory.getDefault();
-        return Lists.newArrayList(configuration);
+        ConnectionConfiguration configurationLegacy = ConnectionConfigurationFactory.getLegacy();
+        return Lists.newArrayList(configuration, configurationLegacy);
     }
 
     /**

@@ -61,5 +61,45 @@ public abstract class ConnectionConfigurationFactory {
             }
         };
     }
+    
+    /**
+     * @return default connection configuration
+     */
+    public static ConnectionConfiguration getLegacy() {
+        return new ConnectionConfiguration() {
+
+            @Override
+            public InetAddress getAddress() {
+                // all interfaces
+                return null;
+            }
+
+            @Override
+            public int getPort() {
+                return LEGACY_OF_PORT;
+            }
+
+            @Override
+            public FEATURE_SUPPORT getTlsSupport() {
+                return FEATURE_SUPPORT.NOT_SUPPORTED;
+            }
+
+            @Override
+            public Object getTransferProtocol() {
+                // TODO:: TCP/UDP ...
+                return null;
+            }
+
+            @Override
+            public long getSwitchIdleTimeout() {
+                return 5000;
+            }
+
+            @Override
+            public Object getSslContext() {
+                return null;
+            }
+        };
+    }
 
 }
