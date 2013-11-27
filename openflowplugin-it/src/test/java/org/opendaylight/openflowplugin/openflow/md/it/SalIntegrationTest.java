@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
 /**
  * @author mirehak
  */
-@RunWith(PaxExam.class)
+//@RunWith(PaxExam.class)
 public class SalIntegrationTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(SalIntegrationTest.class);
@@ -77,13 +77,13 @@ public class SalIntegrationTest {
     private static long getFailSafeTimeout() {
         return 20000;
     }
-    
+
     /**
      * test basic integration with OFLib running the handshake
      *
      * @throws Exception
      */
-    @Test
+    //@Test
     public void handshakeAndNodeUpdate() throws Exception {
 
         final TestInventoryListener listener = new TestInventoryListener();
@@ -120,28 +120,28 @@ public class SalIntegrationTest {
     @Configuration
     public Option[] config() {
         return options(systemProperty("osgi.console").value("2401"),
-                mavenBundle("org.slf4j", "slf4j-api").versionAsInProject(), 
+                mavenBundle("org.slf4j", "slf4j-api").versionAsInProject(),
                 mavenBundle("org.slf4j", "log4j-over-slf4j").versionAsInProject(),
                 mavenBundle("ch.qos.logback", "logback-core").versionAsInProject(),
                 mavenBundle("ch.qos.logback", "logback-classic").versionAsInProject(),
-                
+
                 mavenBundle("org.apache.felix", "org.apache.felix.dependencymanager").versionAsInProject(),
 
                 mavenBundle(OFLIBRARY, "openflow-protocol-impl").versionAsInProject(),
                 mavenBundle(OFLIBRARY, "openflow-protocol-api").versionAsInProject(),
                 mavenBundle(OFLIBRARY, "openflow-protocol-spi").versionAsInProject(),
 
-                mavenBundle(ODL, "sal").versionAsInProject(), 
+                mavenBundle(ODL, "sal").versionAsInProject(),
                 mavenBundle(ODL, "sal.connection").versionAsInProject(),
                 mdSalCoreBundles(), baseModelBundles(), flowCapableModelBundles(),
                 configMinumumBundles(),
 
-                bindingAwareSalBundles(), 
+                bindingAwareSalBundles(),
 
-                mavenBundle(NETTY, "netty-handler").versionAsInProject(), 
-                mavenBundle(NETTY, "netty-buffer").versionAsInProject(), 
+                mavenBundle(NETTY, "netty-handler").versionAsInProject(),
+                mavenBundle(NETTY, "netty-buffer").versionAsInProject(),
                 mavenBundle(NETTY, "netty-common").versionAsInProject(),
-                mavenBundle(NETTY, "netty-transport").versionAsInProject(), 
+                mavenBundle(NETTY, "netty-transport").versionAsInProject(),
                 mavenBundle(NETTY, "netty-codec").versionAsInProject(),
 
                 mavenBundle(OFLIBRARY, "simple-client").versionAsInProject().start(),
@@ -156,7 +156,7 @@ public class SalIntegrationTest {
         List<NodeRemoved> nodeRemoved = new ArrayList<>();
         List<NodeConnectorUpdated> nodeConnectorUpdated = new ArrayList<>();
         List<NodeConnectorRemoved> nodeConnectorRemoved = new ArrayList<>();
-        
+
         /**
          * default ctor
          */
