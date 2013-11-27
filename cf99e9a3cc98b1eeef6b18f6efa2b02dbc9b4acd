@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da6255ed_c1462f4f",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/ActionConvertor.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 384,
+      "author": {
+        "id": 62
+      },
+      "writtenOn": "2013-11-27T21:44:02Z",
+      "side": 1,
+      "message": "Shouldn\u0027t this be: if (version \u003e\u003d 0X4) ?",
+      "revId": "cf99e9a3cc98b1eeef6b18f6efa2b02dbc9b4acd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
