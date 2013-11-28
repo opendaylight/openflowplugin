@@ -45,8 +45,8 @@ public interface ModelDrivenSwitch extends //
         SalMeterService, //
         SalPortService, //
         PacketProcessingService, //
-        OpendaylightGroupStatisticsService,
-        OpendaylightMeterStatisticsService,
+        OpendaylightGroupStatisticsService, //
+        OpendaylightMeterStatisticsService, //
         Identifiable<InstanceIdentifier<Node>> {
 
     CompositeObjectRegistration<ModelDrivenSwitch> register(ProviderContext ctx);

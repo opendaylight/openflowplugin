@@ -63,17 +63,17 @@ public abstract class AbstractModelDrivenSwitch implements ModelDrivenSwitch {
         flowRegistration.registerPath(NodeContext.class, getIdentifier());
         builder.add(flowRegistration);
 
-        //meterRegistration = ctx.addRoutedRpcImplementation(SalMeterService.class, this);
-        //meterRegistration.registerPath(NodeContext.class, getIdentifier());
-        //builder.add(meterRegistration);
+        meterRegistration = ctx.addRoutedRpcImplementation(SalMeterService.class, this);
+        meterRegistration.registerPath(NodeContext.class, getIdentifier());
+        builder.add(meterRegistration);
 
-        //groupRegistration = ctx.addRoutedRpcImplementation(SalGroupService.class, this);
-        //groupRegistration.registerPath(NodeContext.class, getIdentifier());
-        //builder.add(groupRegistration);
+        groupRegistration = ctx.addRoutedRpcImplementation(SalGroupService.class, this);
+        groupRegistration.registerPath(NodeContext.class, getIdentifier());
+        builder.add(groupRegistration);
 
-        //packetRegistration = ctx.addRoutedRpcImplementation(PacketProcessingService.class, this);
-        //packetRegistration.registerPath(NodeContext.class, getIdentifier());
-        //builder.add(packetRegistration);
+        packetRegistration = ctx.addRoutedRpcImplementation(PacketProcessingService.class, this);
+        packetRegistration.registerPath(NodeContext.class, getIdentifier());
+        builder.add(packetRegistration);
         
         groupStatisticsRegistration = ctx.addRoutedRpcImplementation(OpendaylightGroupStatisticsService.class, this);
         groupStatisticsRegistration.registerPath(NodeContext.class, getIdentifier());
