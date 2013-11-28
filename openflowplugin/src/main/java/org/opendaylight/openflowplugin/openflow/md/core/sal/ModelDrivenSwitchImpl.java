@@ -596,7 +596,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         //Generate xid to associate it with the request
         Long xid = this.getSessionContext().getNextXid();
 
-        LOG.debug("Prepare statistics request for group ({}) - Transaction id - {}",input.getId().toString(),xid);
+        LOG.debug("Prepare statistics request for node {} group ({}) - Transaction id - {}",input.getNode(),input.getGroupId(),xid);
 
         // Create multipart request header
         MultipartRequestInputBuilder mprInput = new MultipartRequestInputBuilder();
