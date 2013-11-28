@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da6255ed_9c753e9a",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/ModelDrivenSwitchImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 785,
+      "author": {
+        "id": 63
+      },
+      "writtenOn": "2013-11-28T08:02:21Z",
+      "side": 1,
+      "message": "Do we still need this given the approach that all downstream transaction-ids would be generated via session.getNextId() ?",
+      "revId": "b3877f9774fe3bb9781f703aa97097be73c938ad",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
