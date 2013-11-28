@@ -264,7 +264,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     public Future<RpcResult<RemoveGroupOutput>> removeGroup(
             RemoveGroupInput input) {
     	// Convert the RemoveGroupInput to GroupModInput
-        GroupModInput ofGroupModInput = GroupConvertor.toGroupModInput(input.getUpdatedGroup(), version);
+        GroupModInput ofGroupModInput = GroupConvertor.toGroupModInput(input, version);
 
 
     	// For Flow provisioning, the SwitchConnectionDistinguisher is set to null so
