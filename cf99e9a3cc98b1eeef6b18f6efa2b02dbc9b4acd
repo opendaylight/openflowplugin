@@ -34,6 +34,24 @@
       "revId": "cf99e9a3cc98b1eeef6b18f6efa2b02dbc9b4acd",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da6255ed_4148ff86",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/ActionConvertor.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 384,
+      "author": {
+        "id": 62
+      },
+      "writtenOn": "2013-11-28T17:56:52Z",
+      "side": 1,
+      "message": "Its extremely likely when 1.4 comes around the existence of this check will be forgotten (and will likely be worked on by some other set of developers); Then for 1.4, we will fall into the else condition i.e. 1.0. If you were handling 1.0, 1.3 and everything else separately your reasoning would be OK - but the way you are handling the version is either 1.3 or it is 1.0. Also these port constants are the same in 1.4 as in 1.3 - and likely to remain so in the foreseeable future. The OpenFlow spec versions had a major surgery around 1.2 (with the OXM and general TLV structures adopted) - however versions 1.3 and beyond are expected to be backward compatible with previous versions. Hence it is OK to handle 1.0 separately with the 1.0 constants and all other versions as 1.3 constants to avoid too many future changes needed (and if things do change in future versions - handle the specific change in the future).",
+      "parentUuid": "da6255ed_a1645b22",
+      "revId": "cf99e9a3cc98b1eeef6b18f6efa2b02dbc9b4acd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
