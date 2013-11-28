@@ -588,7 +588,6 @@ public class FlowConvertor {
                 }
 
                 if (ipv6Match.getIpv6Label() != null) {
-                    // verify
                     matchEntriesBuilder.setOxmClass(OpenflowBasicClass.class);
                     matchEntriesBuilder.setHasMask(false);
                     matchEntriesBuilder.setOxmMatchField(Ipv6Flabel.class);
@@ -688,7 +687,6 @@ public class FlowConvertor {
 
             if (protocolMatchFields.getPbb() != null) {
                 matchEntriesBuilder.setOxmClass(OpenflowBasicClass.class);
-                // verify
                 matchEntriesBuilder.setHasMask(false);
                 matchEntriesBuilder.setOxmMatchField(PbbIsid.class);
                 IsidMatchEntryBuilder isidBuilder = new IsidMatchEntryBuilder();
@@ -802,7 +800,6 @@ public class FlowConvertor {
     }
 
     private static void addIpv6PrefixAugmentation(MatchEntriesBuilder builder, Ipv6Prefix address) {
-        // TODO: bug
         String[] addressParts = address.getValue().split(PREFIX_SEPARATOR);
         Integer prefix = null;
         if (addressParts.length == 2) {
@@ -814,8 +811,27 @@ public class FlowConvertor {
         ipv6AddressBuilder.setIpv6Address(ipv6Address);
         builder.addAugmentation(Ipv6AddressMatchEntry.class, ipv6AddressBuilder.build());
         if (prefix != null) {
-            addMaskAugmentation(builder, ByteBuffer.allocate(2).putInt(prefix).array());
+            addMaskAugmentation(builder, convertIpv6PrefixToByteArray(prefix));
         }
+    }
+
+    private static byte[] convertIpv6PrefixToByteArray(int prefix) {
+        // TODO: Temporary fix. Has performance impacts.
+        byte[] mask = new byte[16];
+        int oneCount = prefix;
+        for (int count = 0; count < 16; count++) {
+            int byteBits = 0;
+            if (oneCount >= 8) {
+                byteBits = 8;
+                oneCount = oneCount - 8;
+            } else {
+                byteBits = oneCount;
+                oneCount = 0;
+            }
+
+            mask[count] = (byte) (256 - Math.pow(2, 8 - byteBits));
+        }
+        return mask;
     }
 
     private static void addMetadataAugmentation(MatchEntriesBuilder builder, BigInteger metadata) {
@@ -839,12 +855,8 @@ public class FlowConvertor {
         builder.addAugmentation(Ipv4AddressMatchEntry.class, ipv4AddressBuilder.build());
         if (prefix != 0) {
             int mask = 0xffffffff << (32 - prefix);
-            byte[] maskBytes = new byte[4];
-
-            for (int currByte = 3; currByte >= 0; --currByte) {
-                maskBytes[currByte] = 0;
-                maskBytes[currByte] |= ((mask >>> 8 * (3 - currByte)) & (0xff));
-            }
+            byte[] maskBytes = new byte[] { (byte) (mask >>> 24), (byte) (mask >>> 16), (byte) (mask >>> 8),
+                    (byte) mask };
             addMaskAugmentation(builder, maskBytes);
         }
     }
