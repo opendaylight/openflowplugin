@@ -55,8 +55,8 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 	private DataBrokerService dataBrokerService;
 	private ProviderContext pc;
 	private BundleContext ctx;
-	private Flow testFlow;
-    private Node testNode;
+	private FlowBuilder testFlow;
+    private NodeBuilder testNode;
     private String originalFlowName = "Foo";
     private String updatedFlowName = "Bar";
 
@@ -68,27 +68,29 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 	    pc = session;
 		dataBrokerService = session.getSALService(DataBrokerService.class);
 		ctx.registerService(CommandProvider.class.getName(), this, null);
-		createTestNode();
-		createTestFlow();
+		createTestFlow(createTestNode(null));
     }
 
-	private void createTestNode() {
-	    NodeRef nodeOne = createNodeRef(OpenflowpluginTestActivator.NODE_ID);
+	private NodeBuilder createTestNode(String nodeId) {
+	    if(nodeId == null) {
+	        nodeId = OpenflowpluginTestActivator.NODE_ID;
+	    }
+	    NodeRef nodeOne = createNodeRef(nodeId);
         NodeBuilder builder = new NodeBuilder();
-        builder.setId(new NodeId(OpenflowpluginTestActivator.NODE_ID));
+        builder.setId(new NodeId(nodeId));
         builder.setKey(new NodeKey(builder.getId()));
-        testNode = builder.build();
+        testNode = builder;
+        return builder;
 	}
 
-	private InstanceIdentifier<Node> nodeToInstanceId(Node node) {
+	private InstanceIdentifier<Node> nodeBuilderToInstanceId(NodeBuilder node) {
 	    return InstanceIdentifier.builder(Nodes.class).child(Node.class, node.getKey()).toInstance();
 	}
 
-	private void createTestFlow() {
-        // Sample data , committing to DataStore
-        DataModification modification = (DataModification) dataBrokerService.beginTransaction();
+	private FlowBuilder createTestFlow(NodeBuilder nodeBuilder) {
+
         long id = 123;
-        FlowKey key = new FlowKey(id, new NodeRef(new NodeRef(nodeToInstanceId(testNode))));
+        FlowKey key = new FlowKey(id, new NodeRef(new NodeRef(nodeBuilderToInstanceId(nodeBuilder))));
         FlowBuilder flow = new FlowBuilder();
         flow.setKey(key);
         MatchBuilder match = new MatchBuilder();
@@ -119,16 +121,18 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
      //   flow.setAction(actions);
         flow.setPriority(2);
         flow.setFlowName(originalFlowName);
-        testFlow = flow.build();
+        testFlow = flow;
+        return flow;
 	}
 
-	public void _removeFlow(CommandInterpreter ci) {
-	    DataModification modification = (DataModification) dataBrokerService.beginTransaction();
-        InstanceIdentifier<Flow> path1 = InstanceIdentifier.builder(Flows.class).child(Flow.class, testFlow.getKey()).toInstance();
-        DataObject cls = (DataObject) modification.readConfigurationData(path1);
-        modification.removeOperationalData(nodeToInstanceId(testNode));
+	public void _removeMDFlow(CommandInterpreter ci) {
+	    DataModification<InstanceIdentifier<?>, DataObject> modification = dataBrokerService.beginTransaction();
+	    NodeBuilder tn = createTestNode(ci.nextArgument());
+	    FlowBuilder tf = createTestFlow(tn);
+        InstanceIdentifier<Flow> path1 = InstanceIdentifier.builder(Flows.class).child(Flow.class, tf.getKey()).toInstance();
+        modification.removeOperationalData(nodeBuilderToInstanceId(tn));
         modification.removeOperationalData(path1);
-        modification.removeConfigurationData(nodeToInstanceId(testNode));
+        modification.removeConfigurationData(nodeBuilderToInstanceId(tn));
         modification.removeConfigurationData(path1);
         Future<RpcResult<TransactionStatus>> commitFuture = modification.commit();
         try {
@@ -145,18 +149,19 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         }
 	}
 
-	public void _addFlow(CommandInterpreter ci) {
-        writeFlow(ci, testFlow);
+	public void _addMDFlow(CommandInterpreter ci) {
+        NodeBuilder tn = createTestNode(ci.nextArgument());
+        FlowBuilder tf = createTestFlow(tn);
+        writeFlow(ci, tf, tn);
     }
 
-	private void writeFlow(CommandInterpreter ci,Flow flow) {
-	    DataModification modification = (DataModification) dataBrokerService.beginTransaction();
+	private void writeFlow(CommandInterpreter ci,FlowBuilder flow, NodeBuilder nodeBuilder) {
+	    DataModification<InstanceIdentifier<?>, DataObject> modification = dataBrokerService.beginTransaction();
         InstanceIdentifier<Flow> path1 = InstanceIdentifier.builder(Flows.class).child(Flow.class, flow.getKey()).toInstance();
-        DataObject cls = (DataObject) modification.readConfigurationData(path1);
-        modification.putOperationalData(nodeToInstanceId(testNode), testNode);
-        modification.putOperationalData(path1, flow);
-        modification.putConfigurationData(nodeToInstanceId(testNode), testNode);
-        modification.putConfigurationData(path1, flow);
+        modification.putOperationalData(nodeBuilderToInstanceId(nodeBuilder), nodeBuilder.build());
+        modification.putOperationalData(path1, flow.build());
+        modification.putConfigurationData(nodeBuilderToInstanceId(nodeBuilder), nodeBuilder.build());
+        modification.putConfigurationData(path1, flow.build());
         Future<RpcResult<TransactionStatus>> commitFuture = modification.commit();
         try {
             RpcResult<TransactionStatus> result = commitFuture.get();
@@ -172,12 +177,13 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         }
 	}
 
-	public void _modifyFlow(CommandInterpreter ci) {
-	    FlowBuilder flow = new FlowBuilder(testFlow);
-	    flow.setFlowName(updatedFlowName);
-	    writeFlow(ci, flow.build());
-	    flow.setFlowName(originalFlowName);
-	    writeFlow(ci, flow.build());
+	public void _modifyMDFlow(CommandInterpreter ci) {
+        NodeBuilder tn = createTestNode(ci.nextArgument());
+	    FlowBuilder tf = createTestFlow(tn);
+	    tf.setFlowName(updatedFlowName);
+	    writeFlow(ci, tf,tn);
+	    tf.setFlowName(originalFlowName);
+	    writeFlow(ci, tf,tn);
 	}
 
 	private static NodeRef createNodeRef(String string) {
