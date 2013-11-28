@@ -603,8 +603,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 
         //Generate xid to associate it with the request
         Long xid = this.getSessionContext().getNextXid();
-
-        LOG.debug("Prepare statistics request for group ({}) - Transaction id - {}",input.getId().toString(),xid);
+        LOG.debug("Prepare statistics request for group ({}) - Transaction id - {}",input.getGroupId().toString(),xid);
 
         // Create multipart request header
         MultipartRequestInputBuilder mprInput = new MultipartRequestInputBuilder();
@@ -799,27 +798,27 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 	public Future<RpcResult<UpdatePortOutput>> updatePort(UpdatePortInput input) {
 		PortModInput ofPortModInput = null ;
 		RpcResult<UpdatePortOutput> rpcResultFromOFLib = null ;
-		
-				
-		// For Flow provisioning, the SwitchConnectionDistinguisher is set to null so  
+
+
+		// For Flow provisioning, the SwitchConnectionDistinguisher is set to null so
     	// the request can be routed through any connection to the switch
-    	
+
     	SwitchConnectionDistinguisher cookie = null ;
-    	
-		// NSF sends a list of port and the ModelDrivenSwitch will 
+
+		// NSF sends a list of port and the ModelDrivenSwitch will
     	// send one port at a time towards the switch ( mutiple RPCs calls)
 		List<Port> inputPorts = input.getUpdatedPort().getPort().getPort() ;
-		
+
 		// Get the Xid. The same Xid has to be sent in all the RPCs
 		Long Xid = sessionContext.getNextXid();
-		
+
 		for( Port inputPort : inputPorts) {
-		   
-			// Convert the UpdateGroupInput to GroupModInput 
+
+			// Convert the UpdateGroupInput to GroupModInput
 				ofPortModInput = PortConvertor.toPortModInput(inputPort, version) ;
-					    	 	
+
 				// Insert the Xid ( transaction Id) before calling the RPC on the OFLibrary
-		    	
+
 		        PortModInputBuilder mdInput = new PortModInputBuilder();
 		        mdInput.setXid(Xid);
 		        mdInput.setVersion(ofPortModInput.getVersion()) ;
@@ -831,33 +830,33 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 		        mdInput.setConfig(ofPortModInput.getConfig()) ;
 		        mdInput.setAdvertiseV10(ofPortModInput.getAdvertiseV10()) ;
 		        mdInput.setAdvertise(ofPortModInput.getAdvertise()) ;
-		        
+
 		    	LOG.debug("Calling the PortMod RPC method on MessageDispatchService");
 		    	Future<RpcResult<UpdatePortOutput>> resultFromOFLib = messageService.portMod(ofPortModInput, cookie) ;
-				    	
-		    	try { 
+
+		    	try {
 		    		rpcResultFromOFLib = resultFromOFLib.get();
 		    	} catch( Exception ex ) {
 		    		LOG.error( " Error while getting result for updatePort RPC" + ex.getMessage());
 		    	}
-		    	
+
 		    	// The Future response value for all the RPCs except the last one is ignored
-		    	
+
 		}
-		    	
+
 				//Extract the Xid only from the Future for the last RPC and
 				// send it back to the NSF
 		    	UpdatePortOutput updatePortOutputOFLib = rpcResultFromOFLib.getResult() ;
-		    	
+
 		    	UpdatePortOutputBuilder updatePortOutput = new UpdatePortOutputBuilder() ;
 		    	updatePortOutput.setTransactionId(updatePortOutputOFLib.getTransactionId()) ;
 		    	UpdatePortOutput result = updatePortOutput.build();
-		    	
+
 		    	Collection<RpcError> errors = rpcResultFromOFLib.getErrors() ;
-		        RpcResult<UpdatePortOutput> rpcResult = Rpcs.getRpcResult(true, result, errors); 
-		    	
+		        RpcResult<UpdatePortOutput> rpcResult = Rpcs.getRpcResult(true, result, errors);
+
 		        LOG.debug("Returning the Update Group RPC result to MD-SAL");
 		        return Futures.immediateFuture(rpcResult);
-	
+
 	}
 }
