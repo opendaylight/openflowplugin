@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "da6255ed_972cf903",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2013-11-28T17:23:28Z",
+      "side": 1,
+      "message": "code was not compilable",
+      "parentUuid": "da6255ed_d7add189",
+      "revId": "76218dafc3bdd0dbf8a3e5b9839328c802568f34",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da6255ed_f79e9553",
         "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/ModelDrivenSwitchImpl.java",
         "patchSetId": 1
@@ -30,6 +48,24 @@
       "writtenOn": "2013-11-28T16:26:41Z",
       "side": 1,
       "message": "is this the only thing that the patch fixes? Because there are a lot of changes in the patch, seems that most of them are whitespace/formatting?",
+      "revId": "76218dafc3bdd0dbf8a3e5b9839328c802568f34",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da6255ed_772f45f7",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/ModelDrivenSwitchImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 606,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2013-11-28T17:23:28Z",
+      "side": 1,
+      "message": "here was the compilation error",
+      "parentUuid": "da6255ed_f79e9553",
       "revId": "76218dafc3bdd0dbf8a3e5b9839328c802568f34",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
