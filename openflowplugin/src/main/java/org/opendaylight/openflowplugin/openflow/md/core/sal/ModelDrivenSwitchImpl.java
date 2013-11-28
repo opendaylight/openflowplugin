@@ -19,6 +19,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistingu
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.FlowConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.GroupConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.MeterConvertor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.PortConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.session.IMessageDispatchService;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
@@ -32,6 +33,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.Upda
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev131103.TransactionId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.port.mod.port.Port;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutputBuilder;
@@ -86,6 +88,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GroupModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MeterModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortModInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortModInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.match.grouping.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.match.grouping.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestGroupBuilder;
@@ -95,6 +99,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestMeterConfigBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestMeterFeaturesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.GetPortOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.UpdatePortInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.UpdatePortOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.UpdatePortOutputBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -780,4 +788,76 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         return new TransactionId(bigIntXid);
 
     }
+
+	@Override
+	public Future<RpcResult<GetPortOutput>> getPort() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Future<RpcResult<UpdatePortOutput>> updatePort(UpdatePortInput input) {
+		PortModInput ofPortModInput = null ;
+		RpcResult<UpdatePortOutput> rpcResultFromOFLib = null ;
+		
+				
+		// For Flow provisioning, the SwitchConnectionDistinguisher is set to null so  
+    	// the request can be routed through any connection to the switch
+    	
+    	SwitchConnectionDistinguisher cookie = null ;
+    	
+		// NSF sends a list of port and the ModelDrivenSwitch will 
+    	// send one port at a time towards the switch ( mutiple RPCs calls)
+		List<Port> inputPorts = input.getUpdatedPort().getPort().getPort() ;
+		
+		// Get the Xid. The same Xid has to be sent in all the RPCs
+		Long Xid = sessionContext.getNextXid();
+		
+		for( Port inputPort : inputPorts) {
+		   
+			// Convert the UpdateGroupInput to GroupModInput 
+				ofPortModInput = PortConvertor.toPortModInput(inputPort, version) ;
+					    	 	
+				// Insert the Xid ( transaction Id) before calling the RPC on the OFLibrary
+		    	
+		        PortModInputBuilder mdInput = new PortModInputBuilder();
+		        mdInput.setXid(Xid);
+		        mdInput.setVersion(ofPortModInput.getVersion()) ;
+		        mdInput.setPortNo(ofPortModInput.getPortNo()) ;
+		        mdInput.setMaskV10(ofPortModInput.getMaskV10()) ;
+		        mdInput.setMask(ofPortModInput.getMask()) ;
+		        mdInput.setHwAddress(ofPortModInput.getHwAddress());
+		        mdInput.setConfigV10(ofPortModInput.getConfigV10()) ;
+		        mdInput.setConfig(ofPortModInput.getConfig()) ;
+		        mdInput.setAdvertiseV10(ofPortModInput.getAdvertiseV10()) ;
+		        mdInput.setAdvertise(ofPortModInput.getAdvertise()) ;
+		        
+		    	LOG.debug("Calling the PortMod RPC method on MessageDispatchService");
+		    	Future<RpcResult<UpdatePortOutput>> resultFromOFLib = messageService.portMod(ofPortModInput, cookie) ;
+				    	
+		    	try { 
+		    		rpcResultFromOFLib = resultFromOFLib.get();
+		    	} catch( Exception ex ) {
+		    		LOG.error( " Error while getting result for updatePort RPC" + ex.getMessage());
+		    	}
+		    	
+		    	// The Future response value for all the RPCs except the last one is ignored
+		    	
+		}
+		    	
+				//Extract the Xid only from the Future for the last RPC and
+				// send it back to the NSF
+		    	UpdatePortOutput updatePortOutputOFLib = rpcResultFromOFLib.getResult() ;
+		    	
+		    	UpdatePortOutputBuilder updatePortOutput = new UpdatePortOutputBuilder() ;
+		    	updatePortOutput.setTransactionId(updatePortOutputOFLib.getTransactionId()) ;
+		    	UpdatePortOutput result = updatePortOutput.build();
+		    	
+		    	Collection<RpcError> errors = rpcResultFromOFLib.getErrors() ;
+		        RpcResult<UpdatePortOutput> rpcResult = Rpcs.getRpcResult(true, result, errors); 
+		    	
+		        LOG.debug("Returning the Update Group RPC result to MD-SAL");
+		        return Futures.immediateFuture(rpcResult);
+	
+	}
 }

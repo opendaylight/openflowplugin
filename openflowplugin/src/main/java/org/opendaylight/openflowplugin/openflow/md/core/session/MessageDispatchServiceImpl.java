@@ -41,6 +41,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetAsyncInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetConfigInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.TableModInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.UpdatePortOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.UpdatePortOutputBuilder;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
@@ -249,8 +251,22 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
     }
 
     @Override
-    public Future<RpcResult<Void>> portMod(PortModInput input, SwitchConnectionDistinguisher cookie) {
-        return getConnectionAdapter(cookie).portMod(input);
+    public Future<RpcResult<UpdatePortOutput>> portMod(PortModInput input, SwitchConnectionDistinguisher cookie) {
+
+        LOG.debug("Calling OFLibrary portMod");
+        Future<RpcResult<Void>> response = getConnectionAdapter(cookie).portMod(input);
+        
+        // Send the same Xid back to caller - ModelDrivenSwitch
+        UpdatePortOutputBuilder portModOutput = new UpdatePortOutputBuilder();
+        String stringXid =input.getXid().toString();
+        BigInteger bigIntXid = new BigInteger( stringXid );
+        portModOutput.setTransactionId(new TransactionId(bigIntXid));
+        UpdatePortOutput result = portModOutput.build();
+        Collection<RpcError> errors = Collections.emptyList();
+        RpcResult<UpdatePortOutput> rpcResult = Rpcs.getRpcResult(true, result, errors);
+
+        LOG.debug("Returning to ModelDrivenSwitch for portMod RPC");
+        return Futures.immediateFuture(rpcResult);
     }
 
     @Override
