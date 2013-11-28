@@ -69,6 +69,24 @@
       "revId": "76218dafc3bdd0dbf8a3e5b9839328c802568f34",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da6255ed_9761993b",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/ModelDrivenSwitchImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 606,
+      "author": {
+        "id": 9
+      },
+      "writtenOn": "2013-11-28T18:01:41Z",
+      "side": 1,
+      "message": "Alissa... openflowplugin has not chosen to enforce a whitespace policy... and this patch was to fix an active breakage... which was also resolved by https://git.opendaylight.org/gerrit/#/c/3211/1\n\nSo I will abandon this one",
+      "parentUuid": "da6255ed_f79e9553",
+      "revId": "76218dafc3bdd0dbf8a3e5b9839328c802568f34",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
