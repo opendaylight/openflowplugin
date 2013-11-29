@@ -22,8 +22,8 @@ import org.opendaylight.controller.md.sal.common.api.data.DataModification;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.data.DataBrokerService;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DropAction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DropActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DecNwTtl;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DecNwTtlBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.config.rev130819.Flows;
@@ -101,24 +101,42 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         Ipv4Match i4m = ipv4Match.build();
         match.setLayer3Match(i4m);
         flow.setMatch(match.build());
+
+        // Create a drop action
+        /*
+         * Note: We are mishandling drop actions
         DropAction dropAction = new DropActionBuilder().build();
-        ApplyActionsBuilder aab = new ApplyActionsBuilder();
         ActionBuilder ab = new ActionBuilder();
         ab.setAction(dropAction);
+        */
+
+        DecNwTtlBuilder ta = new DecNwTtlBuilder();
+        DecNwTtl decNwTtl = ta.build();
+        ActionBuilder ab = new ActionBuilder();
+        ab.setAction(decNwTtl);
+
+        // Add our drop action to a list
         List<Action> actionList = new ArrayList<Action>();
         actionList.add(ab.build());
+
+        // Create an Apply Action
+        ApplyActionsBuilder aab = new ApplyActionsBuilder();
         aab.setAction(actionList);
+
+        // Wrap our Apply Action in an Instruction
         InstructionBuilder ib = new InstructionBuilder();
         ib.setInstruction(aab.build());
+
+        // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
         List<Instruction> instructions = new ArrayList<Instruction>();
+        instructions.add(ib.build());
         isb.setInstruction(instructions);
-        flow.setInstructions(isb.build());
-     //   ActionBuilder action = new ActionBuilder();
 
-      //  List<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev130819.flow.Action> actions = Collections
-             //   .singletonList(action.build());
-     //   flow.setAction(actions);
+        // Add our instructions to the flow
+        flow.setInstructions(isb.build());
+
+
         flow.setPriority(2);
         flow.setFlowName(originalFlowName);
         testFlow = flow;
