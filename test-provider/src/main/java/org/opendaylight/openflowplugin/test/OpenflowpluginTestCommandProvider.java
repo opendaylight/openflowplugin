@@ -22,6 +22,7 @@ import org.opendaylight.controller.md.sal.common.api.data.DataModification;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.data.DataBrokerService;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DropAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DropActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
@@ -41,8 +42,19 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.EtherType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanPcp;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetDestination;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetDestinationBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetSourceBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetTypeBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanIdBuilder;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -55,148 +67,168 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 	private DataBrokerService dataBrokerService;
 	private ProviderContext pc;
 	private BundleContext ctx;
-	private FlowBuilder testFlow;
-    private NodeBuilder testNode;
-    private String originalFlowName = "Foo";
-    private String updatedFlowName = "Bar";
+	private Flow testFlow;
+	private Node testNode;
+	private String originalFlowName = "Foo";
+	private String updatedFlowName = "Bar";
 
 	public OpenflowpluginTestCommandProvider(BundleContext ctx) {
-	    this.ctx = ctx;
+		this.ctx = ctx;
 	}
 
 	public void onSessionInitiated(ProviderContext session) {
-	    pc = session;
+		pc = session;
 		dataBrokerService = session.getSALService(DataBrokerService.class);
 		ctx.registerService(CommandProvider.class.getName(), this, null);
-		createTestFlow(createTestNode(null));
-    }
-
-	private NodeBuilder createTestNode(String nodeId) {
-	    if(nodeId == null) {
-	        nodeId = OpenflowpluginTestActivator.NODE_ID;
-	    }
-	    NodeRef nodeOne = createNodeRef(nodeId);
-        NodeBuilder builder = new NodeBuilder();
-        builder.setId(new NodeId(nodeId));
-        builder.setKey(new NodeKey(builder.getId()));
-        testNode = builder;
-        return builder;
+		createTestNode();
+		createTestFlow();
 	}
 
-	private InstanceIdentifier<Node> nodeBuilderToInstanceId(NodeBuilder node) {
-	    return InstanceIdentifier.builder(Nodes.class).child(Node.class, node.getKey()).toInstance();
+	private void createTestNode() {
+		NodeRef nodeOne = createNodeRef(OpenflowpluginTestActivator.NODE_ID);
+		NodeBuilder builder = new NodeBuilder();
+		builder.setId(new NodeId(OpenflowpluginTestActivator.NODE_ID));
+		builder.setKey(new NodeKey(builder.getId()));
+		testNode = builder.build();
 	}
 
-	private FlowBuilder createTestFlow(NodeBuilder nodeBuilder) {
-
-        long id = 123;
-        FlowKey key = new FlowKey(id, new NodeRef(new NodeRef(nodeBuilderToInstanceId(nodeBuilder))));
-        FlowBuilder flow = new FlowBuilder();
-        flow.setKey(key);
-        MatchBuilder match = new MatchBuilder();
-        Ipv4MatchBuilder ipv4Match = new Ipv4MatchBuilder();
-        // ipv4Match.setIpv4Destination(new Ipv4Prefix(cliInput.get(4)));
-        Ipv4Prefix prefix = new Ipv4Prefix("10.0.0.1/24");
-        ipv4Match.setIpv4Destination(prefix);
-        Ipv4Match i4m = ipv4Match.build();
-        match.setLayer3Match(i4m);
-        flow.setMatch(match.build());
-        DropAction dropAction = new DropActionBuilder().build();
-        ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        ActionBuilder ab = new ActionBuilder();
-        ab.setAction(dropAction);
-        List<Action> actionList = new ArrayList<Action>();
-        actionList.add(ab.build());
-        aab.setAction(actionList);
-        InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(aab.build());
-        InstructionsBuilder isb = new InstructionsBuilder();
-        List<Instruction> instructions = new ArrayList<Instruction>();
-        isb.setInstruction(instructions);
-        flow.setInstructions(isb.build());
-     //   ActionBuilder action = new ActionBuilder();
-
-      //  List<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev130819.flow.Action> actions = Collections
-             //   .singletonList(action.build());
-     //   flow.setAction(actions);
-        flow.setPriority(2);
-        flow.setFlowName(originalFlowName);
-        testFlow = flow;
-        return flow;
+	private InstanceIdentifier<Node> nodeToInstanceId(Node node) {
+		return InstanceIdentifier.builder(Nodes.class).child(Node.class, node.getKey()).toInstance();
 	}
 
-	public void _removeMDFlow(CommandInterpreter ci) {
-	    DataModification<InstanceIdentifier<?>, DataObject> modification = dataBrokerService.beginTransaction();
-	    NodeBuilder tn = createTestNode(ci.nextArgument());
-	    FlowBuilder tf = createTestFlow(tn);
-        InstanceIdentifier<Flow> path1 = InstanceIdentifier.builder(Flows.class).child(Flow.class, tf.getKey()).toInstance();
-        modification.removeOperationalData(nodeBuilderToInstanceId(tn));
-        modification.removeOperationalData(path1);
-        modification.removeConfigurationData(nodeBuilderToInstanceId(tn));
-        modification.removeConfigurationData(path1);
-        Future<RpcResult<TransactionStatus>> commitFuture = modification.commit();
-        try {
-            RpcResult<TransactionStatus> result = commitFuture.get();
-            TransactionStatus status = result.getResult();
-            ci.println("Status of Flow Data Loaded Transaction: " + status);
+	private void createTestFlow() {
+		// Sample data , committing to DataStore
+		DataModification modification = (DataModification) dataBrokerService.beginTransaction();
+		long id = 123;
+		FlowKey key = new FlowKey(id, new NodeRef(new NodeRef(nodeToInstanceId(testNode))));
+		FlowBuilder flow = new FlowBuilder();
+		flow.setKey(key);      
+		EthernetMatchBuilder  ethernetmatch = new EthernetMatchBuilder();
+		//EthernetDestinationBuilder abc1 = new EthernetDestinationBuilder();
+		EthernetTypeBuilder ethtype = new EthernetTypeBuilder();
+		EtherType type = new EtherType(0x88DDL);
+		ethernetmatch.setEthernetType(ethtype.setType(type).build());
+		EthernetDestinationBuilder ethdest = new EthernetDestinationBuilder();
+		MacAddress macdest = new MacAddress("ff:ff:ff:ff:ff:ff");
+		ethdest.setAddress(macdest);
+		ethernetmatch.setEthernetDestination(ethdest.build());
+		EthernetSourceBuilder ethsrc = new EthernetSourceBuilder();
+		MacAddress macsrc = new MacAddress("00:00:00:00:23:ae");
+		ethsrc.setAddress(macsrc);
+		ethernetmatch.setEthernetSource(ethsrc.build());
+		MatchBuilder match = new MatchBuilder();
+		Ipv4MatchBuilder ipv4Match = new Ipv4MatchBuilder();
+		// ipv4Match.setIpv4Destination(new Ipv4Prefix(cliInput.get(4)));
+		
+		VlanMatchBuilder vlanBuilder = new VlanMatchBuilder(); // vlan match
+        VlanIdBuilder vlanIdBuilder = new VlanIdBuilder();
+        // VlanId vlanId = new VlanId(10);
+        VlanId vlanId = new VlanId(5000);
+        VlanPcp vpcp = new VlanPcp((short) 8);
+        vlanBuilder.setVlanPcp(vpcp);
+        vlanBuilder.setVlanId(vlanIdBuilder.setVlanId(vlanId).build());
+        match.setEthernetMatch(ethernetmatch.build());
+        match.setVlanMatch(vlanBuilder.build());
+		Ipv4Prefix prefix = new Ipv4Prefix("121.0.0.1/24");
+		ipv4Match.setIpv4Destination(prefix);
+		Ipv4Prefix prefix1 = new Ipv4Prefix("112.0.0.11/23");
+		ipv4Match.setIpv4Source(prefix1);
+		Ipv4Match i4m = ipv4Match.build();
+		match.setLayer3Match(i4m);
+		
+		flow.setMatch(match.build());
+		DropAction dropAction = new DropActionBuilder().build();
+		ApplyActionsBuilder aab = new ApplyActionsBuilder();
+		ActionBuilder ab = new ActionBuilder();
+		ab.setAction(dropAction);
+		List<Action> actionList = new ArrayList<Action>();
+		actionList.add(ab.build());
+		aab.setAction(actionList);
+		InstructionBuilder ib = new InstructionBuilder();
+		ib.setInstruction(aab.build());
+		InstructionsBuilder isb = new InstructionsBuilder();
+		List<Instruction> instructions = new ArrayList<Instruction>();
+		isb.setInstruction(instructions);
+		flow.setInstructions(isb.build());
+		//   ActionBuilder action = new ActionBuilder();
 
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+		//  List<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev130819.flow.Action> actions = Collections
+		//   .singletonList(action.build());
+		//   flow.setAction(actions);
+		flow.setPriority(2);
+		flow.setFlowName(originalFlowName);
+		testFlow = flow.build();
 	}
 
-	public void _addMDFlow(CommandInterpreter ci) {
-        NodeBuilder tn = createTestNode(ci.nextArgument());
-        FlowBuilder tf = createTestFlow(tn);
-        writeFlow(ci, tf, tn);
-    }
+	public void _removeFlow(CommandInterpreter ci) {
+		DataModification modification = (DataModification) dataBrokerService.beginTransaction();
+		InstanceIdentifier<Flow> path1 = InstanceIdentifier.builder(Flows.class).child(Flow.class, testFlow.getKey()).toInstance();
+		DataObject cls = (DataObject) modification.readConfigurationData(path1);
+		modification.removeOperationalData(nodeToInstanceId(testNode));
+		modification.removeOperationalData(path1);
+		modification.removeConfigurationData(nodeToInstanceId(testNode));
+		modification.removeConfigurationData(path1);
+		Future<RpcResult<TransactionStatus>> commitFuture = modification.commit();
+		try {
+			RpcResult<TransactionStatus> result = commitFuture.get();
+			TransactionStatus status = result.getResult();
+			ci.println("Status of Flow Data Loaded Transaction: " + status);
 
-	private void writeFlow(CommandInterpreter ci,FlowBuilder flow, NodeBuilder nodeBuilder) {
-	    DataModification<InstanceIdentifier<?>, DataObject> modification = dataBrokerService.beginTransaction();
-        InstanceIdentifier<Flow> path1 = InstanceIdentifier.builder(Flows.class).child(Flow.class, flow.getKey()).toInstance();
-        modification.putOperationalData(nodeBuilderToInstanceId(nodeBuilder), nodeBuilder.build());
-        modification.putOperationalData(path1, flow.build());
-        modification.putConfigurationData(nodeBuilderToInstanceId(nodeBuilder), nodeBuilder.build());
-        modification.putConfigurationData(path1, flow.build());
-        Future<RpcResult<TransactionStatus>> commitFuture = modification.commit();
-        try {
-            RpcResult<TransactionStatus> result = commitFuture.get();
-            TransactionStatus status = result.getResult();
-            ci.println("Status of Flow Data Loaded Transaction: " + status);
-
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
-	public void _modifyMDFlow(CommandInterpreter ci) {
-        NodeBuilder tn = createTestNode(ci.nextArgument());
-	    FlowBuilder tf = createTestFlow(tn);
-	    tf.setFlowName(updatedFlowName);
-	    writeFlow(ci, tf,tn);
-	    tf.setFlowName(originalFlowName);
-	    writeFlow(ci, tf,tn);
+	public void _addFlow(CommandInterpreter ci) {
+		writeFlow(ci, testFlow);
+	}
+
+	private void writeFlow(CommandInterpreter ci,Flow flow) {
+		DataModification modification = (DataModification) dataBrokerService.beginTransaction();
+		InstanceIdentifier<Flow> path1 = InstanceIdentifier.builder(Flows.class).child(Flow.class, flow.getKey()).toInstance();
+		DataObject cls = (DataObject) modification.readConfigurationData(path1);
+		modification.putOperationalData(nodeToInstanceId(testNode), testNode);
+		modification.putOperationalData(path1, flow);
+		modification.putConfigurationData(nodeToInstanceId(testNode), testNode);
+		modification.putConfigurationData(path1, flow);
+		Future<RpcResult<TransactionStatus>> commitFuture = modification.commit();
+		try {
+			RpcResult<TransactionStatus> result = commitFuture.get();
+			TransactionStatus status = result.getResult();
+			ci.println("Status of Flow Data Loaded Transaction: " + status);
+
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public void _modifyFlow(CommandInterpreter ci) {
+		FlowBuilder flow = new FlowBuilder(testFlow);
+		flow.setFlowName(updatedFlowName);
+		writeFlow(ci, flow.build());
+		flow.setFlowName(originalFlowName);
+		writeFlow(ci, flow.build());
 	}
 
 	private static NodeRef createNodeRef(String string) {
-        NodeKey key = new NodeKey(new NodeId(string));
-        InstanceIdentifier<Node> path =
-        	InstanceIdentifier.builder().node(Nodes.class).node(Node.class, key).toInstance();
+		NodeKey key = new NodeKey(new NodeId(string));
+		InstanceIdentifier<Node> path =
+				InstanceIdentifier.builder().node(Nodes.class).node(Node.class, key).toInstance();
 
-        return new NodeRef(path);
-    }
+		return new NodeRef(path);
+	}
 
-    @Override
-    public String getHelp() {
-        return "No help";
-    }
+	@Override
+	public String getHelp() {
+		return "No help";
+	}
 }
 
