@@ -39,9 +39,9 @@ public class ErrorTranslator implements IMDMessageTranslator<OfHeader, List<Data
 
 			nodeErrBuilder.setTransactionId(new TransactionId(BigInteger.valueOf(message.getXid() ) ) ) ;
 
-			nodeErrBuilder.setCode(message.getCode());
+			nodeErrBuilder.setType(ErrorType.forValue(message.getType()));
 
-			nodeErrBuilder.setType(ErrorType.forValue(message.getType().getIntValue()));
+			nodeErrBuilder.setCode(message.getCode());
 
 			nodeErrBuilder.setData( new String( message.getData() ) ) ;
 

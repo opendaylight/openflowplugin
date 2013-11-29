@@ -319,7 +319,7 @@ public class ConnectionConductorImplTest {
         eventPlan.add(0,
                 EventFactory.createDefaultWaitForRpcEvent(42, "experimenter"));
         ErrorMessageBuilder builder1 = new ErrorMessageBuilder();
-        builder1.setType(ErrorType.BADREQUEST).setCode(3)
+        builder1.setType(ErrorType.BADREQUEST.getIntValue()).setCode(3)
                 .setData(new byte[] { 1, 2, 3 });
 
         eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L,
