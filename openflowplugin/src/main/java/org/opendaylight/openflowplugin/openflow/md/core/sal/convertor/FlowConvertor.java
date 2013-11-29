@@ -31,45 +31,23 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.WriteActions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.WriteMetadata;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.arp.match.fields.ArpSourceHardwareAddress;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.arp.match.fields.ArpSourceHardwareAddressBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.arp.match.fields.ArpTargetHardwareAddress;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.arp.match.fields.ArpTargetHardwareAddressBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetDestination;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetDestinationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetSource;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetSourceBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetTypeBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ipv6.match.fields.Ipv6LabelBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatch;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Icmpv4Match;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Icmpv4MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Icmpv6Match;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Icmpv6MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.IpMatch;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.IpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Layer3Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Layer4Match;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.MetadataBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.ProtocolMatchFields;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.ProtocolMatchFieldsBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.TunnelBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatch;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.ArpMatch;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.ArpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4Match;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6Match;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.SctpMatch;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.SctpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.TcpMatch;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.TcpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.UdpMatch;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.UdpMatchBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.protocol.match.fields.PbbBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanIdBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.ActionsInstruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.ActionsInstructionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.BosMatchEntry;
@@ -110,7 +88,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.MplsLabelMatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.OpCodeMatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.OpCodeMatchEntryBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.OxmFieldsAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.PortMatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.PortMatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.PortNumberMatchEntry;
@@ -132,6 +109,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.InstructionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.EtherType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowModCommand;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MatchTypeBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.TableId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.ArpOp;
@@ -149,7 +127,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Icmp
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.InPhyPort;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.InPort;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.IpDscp;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.IpEcn;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.IpProto;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Ipv4Dst;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Ipv4Src;
@@ -165,6 +142,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Mpls
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.MplsLabel;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.MplsTc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.OpenflowBasicClass;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.OxmMatchType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.PbbIsid;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.SctpDst;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.SctpSrc;
@@ -190,17 +168,43 @@ public class FlowConvertor {
     private static final Logger logger = LoggerFactory.getLogger(FlowConvertor.class);
     private static final String PREFIX_SEPARATOR = "/";
 
+    // Default values for when things are null
+    private static final  BigInteger DEFAULT_COOKIE = BigInteger.ZERO; // TODO: Someone check me, I have no idea if this is a good default - eaw@cisco.com
+    private static final BigInteger DEFAULT_COOKIE_MASK = BigInteger.ZERO; // TODO: Someone check me, I have no idea if this is a good default - eaw@cisco.com
+    private static final TableId DEFAULT_TABLE_ID = new TableId(new Long(0)); // TODO: Someone check me, I have no idea if this is a good default - eaw@cisco.com
+    private static final Integer DEFAULT_IDLE_TIMEOUT = new Integer(5*60); // TODO: Someone check me, I have no idea if this is a good default - eaw@cisco.com
+    private static final Integer DEFAULT_HARD_TIMEOUT = new Integer(10*60); // TODO: Someone check me, I have no idea if this is a good default - eaw@cisco.com
+    private static final Integer DEFAULT_PRIORITY = new Integer(100);  // TODO: Someone check me, I have no idea if this is a good default - eaw@cisco.com
+    private static final Long DEFAULT_BUFFER_ID = Long.parseLong("ffffffff", 16);  // TODO: Someone check me, I have no idea if this is a good default - eaw@cisco.com
+    private static final Long OFPP_ANY = Long.parseLong("ffffffff", 16);
+    private static final Long DEFAULT_OUT_PORT = OFPP_ANY; // TODO: Someone check me, I have no idea if this is a good default - eaw@cisco.com
+    private static final Long OFPG_ANY = Long.parseLong("ffffffff", 16);
+    private static final Long DEFAULT_OUT_GROUP = OFPG_ANY; // TODO: Someone check me, I have no idea if this is a good default - eaw@cisco.com
+    private static final boolean DEFAULT_OFPFF_FLOW_REM = true; // TODO: Someone check me, I have no idea if this is a good default - eaw@cisco.com
+    private static final boolean DEFAULT_OFPFF_CHECK_OVERLAP = false; // TODO: Someone check me, I have no idea if this is a good default - eaw@cisco.com
+    private static final boolean DEFAULT_OFPFF_RESET_COUNTS = false; // TODO: Someone check me, I have no idea if this is a good default - eaw@cisco.com
+    private static final boolean DEFAULT_OFPFF_NO_PKT_COUNTS = false; // TODO: Someone check me, I have no idea if this is a good default - eaw@cisco.com
+    private static final boolean DEFAULT_OFPFF_NO_BYT_COUNTS = false; // TODO: Someone check me, I have no idea if this is a good default - eaw@cisco.com
+    private static final Class<? extends MatchTypeBase> DEFAULT_MATCH_TYPE = OxmMatchType.class;
+
     public static FlowModInput toFlowModInput(Flow flow, short version) {
         FlowModInputBuilder flowMod = new FlowModInputBuilder();
-
-        flowMod.setCookie(flow.getCookie());
+        if(flow.getCookie() != null){
+            flowMod.setCookie(flow.getCookie());
+        } else {
+            flowMod.setCookie(DEFAULT_COOKIE);
+        }
 
         if (flow.getCookieMask() != null) {
             flowMod.setCookieMask(new BigInteger(flow.getCookieMask().toString()));
+        } else {
+            flowMod.setCookieMask(DEFAULT_COOKIE_MASK);
         }
 
         if (flow.getTableId() != null) {
             flowMod.setTableId(new TableId(flow.getTableId().longValue()));
+        } else {
+            flowMod.setTableId(DEFAULT_TABLE_ID);
         }
 
         if (flow instanceof AddFlowInput) {
@@ -218,17 +222,37 @@ public class FlowConvertor {
                 flowMod.setCommand(FlowModCommand.OFPFCMODIFY);
             }
         }
-
-        flowMod.setIdleTimeout(flow.getIdleTimeout());
-        flowMod.setHardTimeout(flow.getHardTimeout());
-        flowMod.setPriority(flow.getPriority());
-        flowMod.setBufferId(flow.getBufferId());
+        if(flow.getIdleTimeout() != null) {
+            flowMod.setIdleTimeout(flow.getIdleTimeout());
+        } else {
+            flowMod.setIdleTimeout(DEFAULT_IDLE_TIMEOUT);
+        }
+        if(flow.getHardTimeout() != null) {
+            flowMod.setHardTimeout(flow.getHardTimeout());
+        } else {
+            flowMod.setHardTimeout(DEFAULT_HARD_TIMEOUT);
+        }
+        if(flow.getPriority() != null) {
+            flowMod.setPriority(flow.getPriority());
+        } else {
+            flowMod.setPriority(DEFAULT_PRIORITY);
+        }
+        if(flow.getBufferId() != null ) {
+            flowMod.setBufferId(flow.getBufferId());
+        } else {
+            flowMod.setBufferId(DEFAULT_BUFFER_ID);
+        }
 
         if (flow.getOutPort() != null) {
             flowMod.setOutPort(new PortNumber(flow.getOutPort().longValue()));
+        } else {
+            flowMod.setOutPort(new PortNumber(DEFAULT_OUT_PORT));
         }
-
-        flowMod.setOutGroup(flow.getOutGroup());
+        if(flow.getOutGroup() != null) {
+            flowMod.setOutGroup(flow.getOutGroup());
+        } else {
+            flowMod.setOutGroup(DEFAULT_OUT_GROUP);
+        }
 
         org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags flowModFlags = flow.getFlags();
         org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowModFlags ofFlowModFlags = null;
@@ -236,12 +260,17 @@ public class FlowConvertor {
             ofFlowModFlags = new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowModFlags(
                     flowModFlags.isCHECKOVERLAP(), flowModFlags.isNOBYTCOUNTS(), flowModFlags.isNOPKTCOUNTS(),
                     flowModFlags.isRESETCOUNTS(), flowModFlags.isSENDFLOWREM());
+        } else {
+            ofFlowModFlags = new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowModFlags(
+                    DEFAULT_OFPFF_CHECK_OVERLAP,DEFAULT_OFPFF_NO_BYT_COUNTS,DEFAULT_OFPFF_NO_PKT_COUNTS,
+                    DEFAULT_OFPFF_RESET_COUNTS,DEFAULT_OFPFF_FLOW_REM);
         }
         flowMod.setFlags(ofFlowModFlags);
 
         if (flow.getMatch() != null) {
             MatchBuilder matchBuilder = new MatchBuilder();
             matchBuilder.setMatchEntries(toMatch(flow.getMatch()));
+            matchBuilder.setType(DEFAULT_MATCH_TYPE);
             flowMod.setMatch(matchBuilder.build());
         }
 
@@ -873,7 +902,7 @@ public class FlowConvertor {
         portBuilder.setPort(port);
         builder.addAugmentation(PortMatchEntry.class, portBuilder.build());
     }
-    
+
     /**
      * Method converts OF SetField Match to SAL SetFiled matches
      * @param action
@@ -886,7 +915,7 @@ public class FlowConvertor {
 
         List<MatchEntries> matchEntries = oxmFields.getMatchEntries();
         org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.field.MatchBuilder match =new org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.field.MatchBuilder();
-        
+
         EthernetMatchBuilder ethernetMatchBuilder = null;
         VlanMatchBuilder vlanMatchBuilder = null;
         IpMatchBuilder ipMatchBuilder = null;
@@ -899,7 +928,7 @@ public class FlowConvertor {
         ArpMatchBuilder arpMatchBuilder = null;
         Ipv6MatchBuilder ipv6MatchBuilder = null;
         ProtocolMatchFieldsBuilder protocolMatchFieldsBuilder = null;
-        
+
         for(MatchEntries matchEntry : matchEntries){
             if(matchEntry instanceof InPort){
                 PortNumberMatchEntry inPort = matchEntry.getAugmentation(PortNumberMatchEntry.class);
@@ -917,10 +946,10 @@ public class FlowConvertor {
                 }
                 match.setMetadata(metadataBuilder.build());
             }else if (matchEntry instanceof EthDst){
-                
+
                 if(ethernetMatchBuilder == null)
                     ethernetMatchBuilder = new EthernetMatchBuilder();
-                
+
                 MacAddressMatchEntry macAddressMatch = matchEntry.getAugmentation(MacAddressMatchEntry.class);
                 MaskMatchEntry maskMatch = matchEntry.getAugmentation(MaskMatchEntry.class);
                 EthernetDestinationBuilder ethernetDestination =  new EthernetDestinationBuilder();
@@ -932,7 +961,7 @@ public class FlowConvertor {
             }else if (matchEntry instanceof EthSrc){
                 if(ethernetMatchBuilder == null)
                     ethernetMatchBuilder = new EthernetMatchBuilder();
-                
+
                 MacAddressMatchEntry macAddressMatch = matchEntry.getAugmentation(MacAddressMatchEntry.class);
                 MaskMatchEntry maskMatch = matchEntry.getAugmentation(MaskMatchEntry.class);
                 EthernetSourceBuilder ethernetSource =  new EthernetSourceBuilder();
@@ -944,7 +973,7 @@ public class FlowConvertor {
             }else if (matchEntry instanceof EthType){
                 if(ethernetMatchBuilder == null)
                     ethernetMatchBuilder = new EthernetMatchBuilder();
-                
+
                 EthTypeMatchEntry etherTypeMatch = matchEntry.getAugmentation(EthTypeMatchEntry.class);
                 EthernetTypeBuilder ethernetType=  new EthernetTypeBuilder();
                 org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.EtherType etherType = new org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.EtherType((long)etherTypeMatch.getEthType().getValue());
@@ -953,10 +982,10 @@ public class FlowConvertor {
             }else if (matchEntry instanceof VlanVid){
                 if(vlanMatchBuilder == null)
                     vlanMatchBuilder = new VlanMatchBuilder();
-                
+
                 VlanVidMatchEntry vlanVidMatch = matchEntry.getAugmentation(VlanVidMatchEntry.class);
                 MaskMatchEntry maskMatch = matchEntry.getAugmentation(MaskMatchEntry.class);
-                
+
                 VlanIdBuilder vlanIdBuilder = new  VlanIdBuilder();
                 vlanIdBuilder.setVlanId(
                         new org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId(vlanVidMatch.getVlanVid()));
@@ -964,60 +993,60 @@ public class FlowConvertor {
                     vlanIdBuilder.setMask(maskMatch.getMask());
                 }
                 vlanMatchBuilder.setVlanId(vlanIdBuilder.build());
-                
+
             }else if (matchEntry instanceof VlanPcp){
                 if(vlanMatchBuilder == null)
                     vlanMatchBuilder = new VlanMatchBuilder();
-                
+
                 VlanPcpMatchEntry vlanPcpMatch = matchEntry.getAugmentation(VlanPcpMatchEntry.class);
                 vlanMatchBuilder.setVlanPcp(
-                        new org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanPcp(vlanPcpMatch.getVlanPcp())); 
+                        new org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanPcp(vlanPcpMatch.getVlanPcp()));
             }else if (matchEntry instanceof IpDscp){
                 if(ipMatchBuilder == null)
                     ipMatchBuilder = new IpMatchBuilder();
-                
+
                 DscpMatchEntry dscpMatchEntry = matchEntry.getAugmentation(DscpMatchEntry.class);
                 ipMatchBuilder.setIpDscp(dscpMatchEntry.getDscp());
-                
+
             }else if (matchEntry instanceof IpEcn){
                 if(ipMatchBuilder == null)
                     ipMatchBuilder = new IpMatchBuilder();
-                
+
                 EcnMatchEntry ecnMatchEntry = matchEntry.getAugmentation(EcnMatchEntry.class);
                 ipMatchBuilder.setIpEcn(ecnMatchEntry.getEcn());
-                
+
             }else if (matchEntry instanceof IpProto){
                 if(ipMatchBuilder == null)
                     ipMatchBuilder = new IpMatchBuilder();
-             
+
                 ProtocolNumberMatchEntry protocolNumberMatch = matchEntry.getAugmentation(ProtocolNumberMatchEntry.class);
                 ipMatchBuilder.setIpProtocol(protocolNumberMatch.getProtocolNumber());
             }else if (matchEntry instanceof TcpSrc){
                 if(tcpMatchBuilder == null)
                     tcpMatchBuilder = new TcpMatchBuilder();
-                
+
                 PortMatchEntry portMatchEntry = matchEntry.getAugmentation(PortMatchEntry.class);
                 tcpMatchBuilder.setTcpSourcePort(portMatchEntry.getPort());
-                
+
             }else if (matchEntry instanceof TcpDst){
                 if(tcpMatchBuilder == null)
                     tcpMatchBuilder = new TcpMatchBuilder();
 
                 PortMatchEntry portMatchEntry = matchEntry.getAugmentation(PortMatchEntry.class);
                 tcpMatchBuilder.setTcpDestinationPort(portMatchEntry.getPort());
-                
+
             }else if (matchEntry instanceof UdpSrc){
                 if(udpMatchBuilder == null)
                     udpMatchBuilder = new UdpMatchBuilder();
-                
+
                 PortMatchEntry portMatchEntry = matchEntry.getAugmentation(PortMatchEntry.class);
                 udpMatchBuilder.setUdpSourcePort(portMatchEntry.getPort());
 
-                
+
             }else if (matchEntry instanceof UdpDst){
                 if(udpMatchBuilder == null)
                     udpMatchBuilder = new UdpMatchBuilder();
-                
+
                 PortMatchEntry portMatchEntry = matchEntry.getAugmentation(PortMatchEntry.class);
                 udpMatchBuilder.setUdpDestinationPort(portMatchEntry.getPort());
             }else if (matchEntry instanceof SctpSrc){
@@ -1026,7 +1055,7 @@ public class FlowConvertor {
 
                 PortMatchEntry portMatchEntry = matchEntry.getAugmentation(PortMatchEntry.class);
                 sctpMatchBuilder.setSctpSourcePort(portMatchEntry.getPort());
-                
+
             }else if (matchEntry instanceof SctpDst){
                 if(sctpMatchBuilder == null)
                     sctpMatchBuilder = new SctpMatchBuilder();
@@ -1036,43 +1065,43 @@ public class FlowConvertor {
             }else if (matchEntry instanceof Icmpv4Type){
                 if(icmpv4MatchBuilder == null)
                     icmpv4MatchBuilder = new Icmpv4MatchBuilder();
-                
+
                 Icmpv4TypeMatchEntry icmpv4TypeMatchEntry = matchEntry.getAugmentation(Icmpv4TypeMatchEntry.class);
                 icmpv4MatchBuilder.setIcmpv4Type(icmpv4TypeMatchEntry.getIcmpv4Type());
-                
+
             }else if (matchEntry instanceof Icmpv4Code){
                 if(icmpv4MatchBuilder == null)
                     icmpv4MatchBuilder = new Icmpv4MatchBuilder();
-                
+
                 Icmpv4CodeMatchEntry icmpv4CodeMatchEntry = matchEntry.getAugmentation(Icmpv4CodeMatchEntry.class);
                 icmpv4MatchBuilder.setIcmpv4Code(icmpv4CodeMatchEntry.getIcmpv4Code());
-                
+
             }else if (matchEntry instanceof Icmpv6Type){
                 if(icmpv6MatchBuilder == null)
                     icmpv6MatchBuilder = new Icmpv6MatchBuilder();
-                
+
                 Icmpv6TypeMatchEntry icmpv6TypeMatchEntry = matchEntry.getAugmentation(Icmpv6TypeMatchEntry.class);
                 icmpv6MatchBuilder.setIcmpv6Type(icmpv6TypeMatchEntry.getIcmpv6Type());
             }else if (matchEntry instanceof Icmpv6Code){
                 if(icmpv6MatchBuilder == null)
                     icmpv6MatchBuilder = new Icmpv6MatchBuilder();
-                
+
                 Icmpv6CodeMatchEntry icmpv6CodeMatchEntry = matchEntry.getAugmentation(Icmpv6CodeMatchEntry.class);
                 icmpv6MatchBuilder.setIcmpv6Code(icmpv6CodeMatchEntry.getIcmpv6Code());
             }else if (matchEntry instanceof Ipv4Src){
                 if(ipv4MatchBuilder == null)
                     ipv4MatchBuilder = new Ipv4MatchBuilder();
-                
+
                 Ipv4AddressMatchEntry ipv4AddressMatchEntry = matchEntry.getAugmentation(Ipv4AddressMatchEntry.class);
                 MaskMatchEntry maskMatchEntry = matchEntry.getAugmentation(MaskMatchEntry.class);
                 ipv4MatchBuilder.setIpv4Source(
                         new Ipv4Prefix(ipv4AddressMatchEntry.getIpv4Address().getValue()
                                 +"/"+new String(maskMatchEntry.getMask())));
-                
+
             }else if (matchEntry instanceof Ipv4Dst){
                 if(ipv4MatchBuilder == null)
                     ipv4MatchBuilder = new Ipv4MatchBuilder();
-                
+
                 Ipv4AddressMatchEntry ipv4AddressMatchEntry = matchEntry.getAugmentation(Ipv4AddressMatchEntry.class);
                 MaskMatchEntry maskMatchEntry = matchEntry.getAugmentation(MaskMatchEntry.class);
                 ipv4MatchBuilder.setIpv4Destination(
@@ -1081,45 +1110,45 @@ public class FlowConvertor {
             }else if (matchEntry instanceof ArpOp){
                 if(arpMatchBuilder == null)
                     arpMatchBuilder = new ArpMatchBuilder();
-                
+
                 OpCodeMatchEntry opCodeMatchEntry = matchEntry.getAugmentation(OpCodeMatchEntry.class);
                 arpMatchBuilder.setArpOp(opCodeMatchEntry.getOpCode());
-                
+
             }else if (matchEntry instanceof ArpSpa){
                 if(arpMatchBuilder == null)
                     arpMatchBuilder = new ArpMatchBuilder();
-                
+
                 Ipv4AddressMatchEntry ipv4AddressMatchEntry = matchEntry.getAugmentation(Ipv4AddressMatchEntry.class);
                 MaskMatchEntry maskMatchEntry = matchEntry.getAugmentation(MaskMatchEntry.class);
                 arpMatchBuilder.setArpSourceTransportAddress(
                         new Ipv4Prefix(ipv4AddressMatchEntry.getIpv4Address().getValue()
                                 +"/"+new String(maskMatchEntry.getMask())));
-                
+
             }else if (matchEntry instanceof ArpTpa){
                 if(arpMatchBuilder == null)
                     arpMatchBuilder = new ArpMatchBuilder();
-                
+
                 Ipv4AddressMatchEntry ipv4AddressMatchEntry = matchEntry.getAugmentation(Ipv4AddressMatchEntry.class);
                 MaskMatchEntry maskMatchEntry = matchEntry.getAugmentation(MaskMatchEntry.class);
                 arpMatchBuilder.setArpTargetTransportAddress(
                         new Ipv4Prefix(ipv4AddressMatchEntry.getIpv4Address().getValue()
                                 +"/"+new String(maskMatchEntry.getMask())));
-                
+
             }else if (matchEntry instanceof ArpSha){
                 if(arpMatchBuilder == null)
                     arpMatchBuilder = new ArpMatchBuilder();
-                
+
                 MacAddressMatchEntry macAddressMatchEntry = matchEntry.getAugmentation(MacAddressMatchEntry.class);
                 MaskMatchEntry maskMatchEntry = matchEntry.getAugmentation(MaskMatchEntry.class);
                 ArpSourceHardwareAddressBuilder arpSourceHardwareAddressBuilder = new ArpSourceHardwareAddressBuilder();
                 arpSourceHardwareAddressBuilder.setAddress(macAddressMatchEntry.getMacAddress());
                 arpSourceHardwareAddressBuilder.setMask(maskMatchEntry.getMask());
                 arpMatchBuilder.setArpSourceHardwareAddress(arpSourceHardwareAddressBuilder.build());
-                
+
             }else if (matchEntry instanceof ArpTha){
                 if(arpMatchBuilder == null)
                     arpMatchBuilder = new ArpMatchBuilder();
-                
+
                 MacAddressMatchEntry macAddressMatchEntry = matchEntry.getAugmentation(MacAddressMatchEntry.class);
                 MaskMatchEntry maskMatchEntry = matchEntry.getAugmentation(MaskMatchEntry.class);
                 ArpTargetHardwareAddressBuilder arpTargetHardwareAddressBuilder = new ArpTargetHardwareAddressBuilder();
@@ -1129,21 +1158,21 @@ public class FlowConvertor {
             }else if (matchEntry instanceof Ipv6Src){
                 if(ipv6MatchBuilder == null)
                     ipv6MatchBuilder = new Ipv6MatchBuilder();
-                
+
                 Ipv6AddressMatchEntry ipv6AddressMatchEntry = matchEntry.getAugmentation(Ipv6AddressMatchEntry.class);
                 MaskMatchEntry maskMatchEntry = matchEntry.getAugmentation(MaskMatchEntry.class);
                 ipv6MatchBuilder.setIpv6Source(new Ipv6Prefix (ipv6AddressMatchEntry.getIpv6Address().getValue()+
                         "/"+new String(maskMatchEntry.getMask())));
-                
+
             }else if (matchEntry instanceof Ipv6Dst){
                 if(ipv6MatchBuilder == null)
                     ipv6MatchBuilder = new Ipv6MatchBuilder();
-                
+
                 Ipv6AddressMatchEntry ipv6AddressMatchEntry = matchEntry.getAugmentation(Ipv6AddressMatchEntry.class);
                 MaskMatchEntry maskMatchEntry = matchEntry.getAugmentation(MaskMatchEntry.class);
                 ipv6MatchBuilder.setIpv6Destination(new Ipv6Prefix (ipv6AddressMatchEntry.getIpv6Address().getValue()+
                         "/"+new String(maskMatchEntry.getMask())));
-                
+
             }else if (matchEntry instanceof Ipv6Flabel){
                 if(ipv6MatchBuilder == null)
                     ipv6MatchBuilder = new Ipv6MatchBuilder();
@@ -1173,7 +1202,7 @@ public class FlowConvertor {
 
                 MacAddressMatchEntry macAddressMatchEntry = matchEntry.getAugmentation(MacAddressMatchEntry.class);
                 ipv6MatchBuilder.setIpv6NdTll(macAddressMatchEntry.getMacAddress());
-                
+
             }else if (matchEntry instanceof Ipv6Exthdr){
                 if(ipv6MatchBuilder == null)
                     ipv6MatchBuilder = new Ipv6MatchBuilder();
@@ -1190,40 +1219,40 @@ public class FlowConvertor {
                 pseudoFieldInt |= pseudoField.isHop()?(1 << 6):~(1 << 6);
                 pseudoFieldInt |= pseudoField.isUnrep()?(1 << 7):~(1 << 7);
                 pseudoFieldInt |= pseudoField.isUnseq()?(1 << 8):~(1 << 8);
-                
+
                 ipv6MatchBuilder.setIpv6Exthdr(pseudoFieldInt);
             }else if (matchEntry instanceof MplsLabel){
                 if(protocolMatchFieldsBuilder == null)
                     protocolMatchFieldsBuilder = new ProtocolMatchFieldsBuilder();
-                
+
                 MplsLabelMatchEntry MplsLabelMatchEntry = matchEntry.getAugmentation(MplsLabelMatchEntry.class);
                 protocolMatchFieldsBuilder.setMplsLabel(MplsLabelMatchEntry.getMplsLabel());
-                
+
             }else if (matchEntry instanceof MplsBos){
                 if(protocolMatchFieldsBuilder == null)
                     protocolMatchFieldsBuilder = new ProtocolMatchFieldsBuilder();
-                
+
                 BosMatchEntry bosMatchEntry = matchEntry.getAugmentation(BosMatchEntry.class);
                 protocolMatchFieldsBuilder.setMplsBos(bosMatchEntry.isBos()?(short)1:(short)0);
-                
+
             }else if (matchEntry instanceof MplsTc) {
                 if(protocolMatchFieldsBuilder == null)
                     protocolMatchFieldsBuilder = new ProtocolMatchFieldsBuilder();
-                
+
                 TcMatchEntry tcMatchEntry = matchEntry.getAugmentation(TcMatchEntry.class);
                 protocolMatchFieldsBuilder.setMplsTc(tcMatchEntry.getTc());
-                
+
             }else if (matchEntry instanceof PbbIsid){
                 if(protocolMatchFieldsBuilder == null)
                     protocolMatchFieldsBuilder = new ProtocolMatchFieldsBuilder();
-                
+
                 IsidMatchEntry isidMatchEntry = matchEntry.getAugmentation(IsidMatchEntry.class);
                 PbbBuilder pbbBuilder = new PbbBuilder();
                 pbbBuilder.setPbbIsid(isidMatchEntry.getIsid());
                 MaskMatchEntry maskMatchEntry = matchEntry.getAugmentation(MaskMatchEntry.class);
                 if(maskMatchEntry != null)
                     pbbBuilder.setPbbMask(maskMatchEntry.getMask());
-                
+
                 protocolMatchFieldsBuilder.setPbb(pbbBuilder.build());
             }else if (matchEntry instanceof TunnelId){
                 MetadataMatchEntry metadataMatchEntry = matchEntry.getAugmentation(MetadataMatchEntry.class);
@@ -1253,10 +1282,10 @@ public class FlowConvertor {
             match.setLayer4Match(sctpMatchBuilder.build());
         }
         if(icmpv4MatchBuilder != null){
-            match.setIcmpv4Match(icmpv4MatchBuilder.build()); 
+            match.setIcmpv4Match(icmpv4MatchBuilder.build());
         }
         if(icmpv6MatchBuilder != null){
-            match.setIcmpv6Match(icmpv6MatchBuilder.build()); 
+            match.setIcmpv6Match(icmpv6MatchBuilder.build());
         }
         if(ipv4MatchBuilder != null){
             match.setLayer3Match(ipv4MatchBuilder.build());
@@ -1271,7 +1300,7 @@ public class FlowConvertor {
             match.setProtocolMatchFields(protocolMatchFieldsBuilder.build());
         }
         setField.setMatch(match.build());
-        
+
   */      return setField.build();
     }
 
