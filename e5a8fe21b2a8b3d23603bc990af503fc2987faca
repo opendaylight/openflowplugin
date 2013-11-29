@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da6255ed_ed7242e2",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/FlowConvertor.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 836,
+      "author": {
+        "id": 62
+      },
+      "writtenOn": "2013-11-29T20:20:16Z",
+      "side": 1,
+      "message": "Do we need to add an else condition here - as an error handling case? i.e. curInstruction is not instanceof GotoTable, WriteMetadata, etc.?",
+      "revId": "e5a8fe21b2a8b3d23603bc990af503fc2987faca",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
