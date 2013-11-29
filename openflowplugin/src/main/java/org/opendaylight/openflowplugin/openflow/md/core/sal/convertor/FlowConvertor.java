@@ -308,13 +308,15 @@ public class FlowConvertor {
         }
 
         if (match.getMetadata() != null) {
+            boolean hasmask = false;
             matchEntriesBuilder.setOxmClass(OpenflowBasicClass.class);
-            matchEntriesBuilder.setHasMask(false);
             matchEntriesBuilder.setOxmMatchField(Metadata.class);
             addMetadataAugmentation(matchEntriesBuilder, match.getMetadata().getMetadata());
             if (match.getMetadata().getMetadataMask() != null) {
+                hasmask = true;
                 addMaskAugmentation(matchEntriesBuilder, match.getMetadata().getMetadataMask());
             }
+            matchEntriesBuilder.setHasMask(hasmask);
             matchEntriesList.add(matchEntriesBuilder.build());
         }
 
@@ -322,25 +324,29 @@ public class FlowConvertor {
             EthernetMatch ethernetMatch = match.getEthernetMatch();
             EthernetDestination ethernetDestination = ethernetMatch.getEthernetDestination();
             if (ethernetDestination != null) {
+                boolean hasmask = false;
                 matchEntriesBuilder.setOxmClass(OpenflowBasicClass.class);
-                matchEntriesBuilder.setHasMask(false);
                 matchEntriesBuilder.setOxmMatchField(EthDst.class);
                 addMacAddressAugmentation(matchEntriesBuilder, ethernetDestination.getAddress());
                 if (ethernetDestination.getMask() != null) {
+                    hasmask = true;
                     addMaskAugmentation(matchEntriesBuilder, ethernetDestination.getMask());
                 }
+                matchEntriesBuilder.setHasMask(hasmask);
                 matchEntriesList.add(matchEntriesBuilder.build());
             }
 
             EthernetSource ethernetSource = ethernetMatch.getEthernetSource();
             if (ethernetSource != null) {
+                boolean hasmask = false;
                 matchEntriesBuilder.setOxmClass(OpenflowBasicClass.class);
-                matchEntriesBuilder.setHasMask(false);
                 matchEntriesBuilder.setOxmMatchField(EthSrc.class);
                 addMacAddressAugmentation(matchEntriesBuilder, ethernetSource.getAddress());
                 if (ethernetSource.getMask() != null) {
+                    hasmask = true;
                     addMaskAugmentation(matchEntriesBuilder, ethernetSource.getMask());
                 }
+                matchEntriesBuilder.setHasMask(hasmask);
                 matchEntriesList.add(matchEntriesBuilder.build());
             }
 
@@ -360,8 +366,8 @@ public class FlowConvertor {
         if (vlanMatch != null) {
             if (vlanMatch.getVlanId() != null) {
                 // verify
+                boolean hasmask = false;
                 matchEntriesBuilder.setOxmClass(OpenflowBasicClass.class);
-                matchEntriesBuilder.setHasMask(true);
                 matchEntriesBuilder.setOxmMatchField(VlanVid.class);
                 VlanVidMatchEntryBuilder vlanVidBuilder = new VlanVidMatchEntryBuilder();
                 Integer vidEntryValue = vlanMatch.getVlanId().getVlanId().getValue();
@@ -369,8 +375,10 @@ public class FlowConvertor {
                 vlanVidBuilder.setVlanVid(vidEntryValue);
                 matchEntriesBuilder.addAugmentation(VlanVidMatchEntry.class, vlanVidBuilder.build());
                 if (vlanMatch.getVlanId().getMask() != null) {
+                    hasmask = true;
                     addMaskAugmentation(matchEntriesBuilder, vlanMatch.getVlanId().getMask());
                 }
+                matchEntriesBuilder.setHasMask(hasmask);
                 matchEntriesList.add(matchEntriesBuilder.build());
             }
 
@@ -531,16 +539,16 @@ public class FlowConvertor {
                 Ipv4Match ipv4Match = (Ipv4Match) layer3Match;
                 if (ipv4Match.getIpv4Source() != null) {
                     matchEntriesBuilder.setOxmClass(OpenflowBasicClass.class);
-                    matchEntriesBuilder.setHasMask(false);
                     matchEntriesBuilder.setOxmMatchField(Ipv4Src.class);
-                    addIpv4PrefixAugmentation(matchEntriesBuilder, ipv4Match.getIpv4Source());
+                    boolean hasMask = addIpv4PrefixAugmentation(matchEntriesBuilder, ipv4Match.getIpv4Source());
+                    matchEntriesBuilder.setHasMask(hasMask);
                     matchEntriesList.add(matchEntriesBuilder.build());
                 }
                 if (ipv4Match.getIpv4Destination() != null) {
                     matchEntriesBuilder.setOxmClass(OpenflowBasicClass.class);
-                    matchEntriesBuilder.setHasMask(false);
                     matchEntriesBuilder.setOxmMatchField(Ipv4Dst.class);
-                    addIpv4PrefixAugmentation(matchEntriesBuilder, ipv4Match.getIpv4Destination());
+                    boolean hasMask = addIpv4PrefixAugmentation(matchEntriesBuilder, ipv4Match.getIpv4Destination());
+                    matchEntriesBuilder.setHasMask(hasMask);
                     matchEntriesList.add(matchEntriesBuilder.build());
                 }
             }
@@ -559,41 +567,45 @@ public class FlowConvertor {
 
                 if (arpMatch.getArpSourceTransportAddress() != null) {
                     matchEntriesBuilder.setOxmClass(OpenflowBasicClass.class);
-                    matchEntriesBuilder.setHasMask(false);
                     matchEntriesBuilder.setOxmMatchField(ArpSpa.class);
-                    addIpv4PrefixAugmentation(matchEntriesBuilder, arpMatch.getArpSourceTransportAddress());
+                    boolean hasMask = addIpv4PrefixAugmentation(matchEntriesBuilder, arpMatch.getArpSourceTransportAddress());
+                    matchEntriesBuilder.setHasMask(hasMask);
                     matchEntriesList.add(matchEntriesBuilder.build());
                 }
 
                 if (arpMatch.getArpTargetTransportAddress() != null) {
                     matchEntriesBuilder.setOxmClass(OpenflowBasicClass.class);
-                    matchEntriesBuilder.setHasMask(false);
                     matchEntriesBuilder.setOxmMatchField(ArpTpa.class);
-                    addIpv4PrefixAugmentation(matchEntriesBuilder, arpMatch.getArpTargetTransportAddress());
+                    boolean hasMask = addIpv4PrefixAugmentation(matchEntriesBuilder, arpMatch.getArpTargetTransportAddress());
+                    matchEntriesBuilder.setHasMask(hasMask);
                     matchEntriesList.add(matchEntriesBuilder.build());
                 }
 
                 ArpSourceHardwareAddress arpSourceHardwareAddress = arpMatch.getArpSourceHardwareAddress();
                 if (arpSourceHardwareAddress != null) {
+                    boolean hasmask = false;
                     matchEntriesBuilder.setOxmClass(OpenflowBasicClass.class);
-                    matchEntriesBuilder.setHasMask(false);
                     matchEntriesBuilder.setOxmMatchField(ArpSha.class);
                     addMacAddressAugmentation(matchEntriesBuilder, arpSourceHardwareAddress.getAddress());
                     if (arpSourceHardwareAddress.getMask() != null) {
+                        hasmask = true;
                         addMaskAugmentation(matchEntriesBuilder, arpSourceHardwareAddress.getMask());
                     }
+                    matchEntriesBuilder.setHasMask(hasmask);
                     matchEntriesList.add(matchEntriesBuilder.build());
                 }
 
                 ArpTargetHardwareAddress arpTargetHardwareAddress = arpMatch.getArpTargetHardwareAddress();
                 if (arpTargetHardwareAddress != null) {
+                    boolean hasmask = false;
                     matchEntriesBuilder.setOxmClass(OpenflowBasicClass.class);
-                    matchEntriesBuilder.setHasMask(false);
                     matchEntriesBuilder.setOxmMatchField(ArpTha.class);
                     addMacAddressAugmentation(matchEntriesBuilder, arpTargetHardwareAddress.getAddress());
                     if (arpTargetHardwareAddress.getMask() != null) {
+                        hasmask = true;
                         addMaskAugmentation(matchEntriesBuilder, arpTargetHardwareAddress.getMask());
                     }
+                    matchEntriesBuilder.setHasMask(hasmask);
                     matchEntriesList.add(matchEntriesBuilder.build());
                 }
             }
@@ -602,30 +614,32 @@ public class FlowConvertor {
                 Ipv6Match ipv6Match = (Ipv6Match) layer3Match;
                 if (ipv6Match.getIpv6Source() != null) {
                     matchEntriesBuilder.setOxmClass(OpenflowBasicClass.class);
-                    matchEntriesBuilder.setHasMask(false);
                     matchEntriesBuilder.setOxmMatchField(Ipv6Src.class);
-                    addIpv6PrefixAugmentation(matchEntriesBuilder, ipv6Match.getIpv6Source());
+                    boolean hasmask = addIpv6PrefixAugmentation(matchEntriesBuilder, ipv6Match.getIpv6Source());
+                    matchEntriesBuilder.setHasMask(hasmask);
                     matchEntriesList.add(matchEntriesBuilder.build());
                 }
 
                 if (ipv6Match.getIpv6Destination() != null) {
                     matchEntriesBuilder.setOxmClass(OpenflowBasicClass.class);
-                    matchEntriesBuilder.setHasMask(false);
                     matchEntriesBuilder.setOxmMatchField(Ipv6Dst.class);
-                    addIpv6PrefixAugmentation(matchEntriesBuilder, ipv6Match.getIpv6Destination());
+                    boolean hasmask = addIpv6PrefixAugmentation(matchEntriesBuilder, ipv6Match.getIpv6Destination());
+                    matchEntriesBuilder.setHasMask(hasmask);
                     matchEntriesList.add(matchEntriesBuilder.build());
                 }
 
                 if (ipv6Match.getIpv6Label() != null) {
+                    boolean hasmask = false;
                     matchEntriesBuilder.setOxmClass(OpenflowBasicClass.class);
-                    matchEntriesBuilder.setHasMask(false);
                     matchEntriesBuilder.setOxmMatchField(Ipv6Flabel.class);
                     Ipv6FlabelMatchEntryBuilder ipv6FlabelBuilder = new Ipv6FlabelMatchEntryBuilder();
                     ipv6FlabelBuilder.setIpv6Flabel(ipv6Match.getIpv6Label().getIpv6Flabel());
                     matchEntriesBuilder.addAugmentation(Ipv6FlabelMatchEntry.class, ipv6FlabelBuilder.build());
                     if (ipv6Match.getIpv6Label().getFlabelMask() != null) {
+                        hasmask = true;
                         addMaskAugmentation(matchEntriesBuilder, ipv6Match.getIpv6Label().getFlabelMask());
                     }
+                    matchEntriesBuilder.setHasMask(hasmask);
                     matchEntriesList.add(matchEntriesBuilder.build());
                 }
 
@@ -654,9 +668,8 @@ public class FlowConvertor {
                 }
 
                 if (ipv6Match.getIpv6Exthdr() != null) {
-                    // verify
+                    // TODO: verify
                     matchEntriesBuilder.setOxmClass(OpenflowBasicClass.class);
-                    matchEntriesBuilder.setHasMask(false);
                     matchEntriesBuilder.setOxmMatchField(Ipv6Exthdr.class);
                     PseudoFieldMatchEntryBuilder pseudoBuilder = new PseudoFieldMatchEntryBuilder();
                     Integer bitmap = ipv6Match.getIpv6Exthdr();
@@ -673,6 +686,7 @@ public class FlowConvertor {
                             UNSEQ));
                     matchEntriesBuilder.addAugmentation(PseudoFieldMatchEntry.class, pseudoBuilder.build());
                     addMaskAugmentation(matchEntriesBuilder, ByteBuffer.allocate(2).putInt(bitmap).array());
+                    matchEntriesBuilder.setHasMask(false);
                     matchEntriesList.add(matchEntriesBuilder.build());
                 }
             }
@@ -715,27 +729,32 @@ public class FlowConvertor {
             }
 
             if (protocolMatchFields.getPbb() != null) {
+                boolean hasmask = false;
                 matchEntriesBuilder.setOxmClass(OpenflowBasicClass.class);
-                matchEntriesBuilder.setHasMask(false);
                 matchEntriesBuilder.setOxmMatchField(PbbIsid.class);
                 IsidMatchEntryBuilder isidBuilder = new IsidMatchEntryBuilder();
                 isidBuilder.setIsid(protocolMatchFields.getPbb().getPbbIsid());
                 matchEntriesBuilder.addAugmentation(IsidMatchEntry.class, isidBuilder.build());
                 if (protocolMatchFields.getPbb().getPbbMask() != null) {
+                    hasmask = true;
                     addMaskAugmentation(matchEntriesBuilder, protocolMatchFields.getPbb().getPbbMask());
                 }
+                matchEntriesBuilder.setHasMask(hasmask);
                 matchEntriesList.add(matchEntriesBuilder.build());
             }
         }
 
         if (match.getTunnel() != null) {
+            boolean hasmask = false;
             matchEntriesBuilder.setOxmClass(OpenflowBasicClass.class);
-            matchEntriesBuilder.setHasMask(false);
             matchEntriesBuilder.setOxmMatchField(TunnelId.class);
             addMetadataAugmentation(matchEntriesBuilder, match.getTunnel().getTunnelId());
             if (match.getTunnel().getTunnelMask() != null) {
+                hasmask = true;
                 addMaskAugmentation(matchEntriesBuilder, match.getTunnel().getTunnelMask());
             }
+            matchEntriesBuilder.setHasMask(false);
+            matchEntriesList.add(matchEntriesBuilder.build());
         }
 
         return matchEntriesList;
@@ -745,10 +764,10 @@ public class FlowConvertor {
             org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Instructions instructions,
             short version) {
         List<Instructions> instructionsList = new ArrayList<>();
-        InstructionsBuilder instructionBuilder = new InstructionsBuilder();
 
         for (org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction instruction : instructions
                 .getInstruction()) {
+            InstructionsBuilder instructionBuilder = new InstructionsBuilder();
             org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction curInstruction = instruction
                     .getInstruction();
             if (curInstruction instanceof GoToTable) {
@@ -758,6 +777,7 @@ public class FlowConvertor {
                 TableIdInstructionBuilder tableBuilder = new TableIdInstructionBuilder();
                 tableBuilder.setTableId(goToTable.getTableId());
                 instructionBuilder.addAugmentation(TableIdInstruction.class, tableBuilder.build());
+                instructionsList.add(instructionBuilder.build());
             }
 
             else if (curInstruction instanceof WriteMetadata) {
@@ -768,6 +788,7 @@ public class FlowConvertor {
                 metadataBuilder.setMetadata(writeMetadata.getMetadata().toByteArray());
                 metadataBuilder.setMetadataMask(writeMetadata.getMetadataMask().toByteArray());
                 instructionBuilder.addAugmentation(MetadataInstruction.class, metadataBuilder.build());
+                instructionsList.add(instructionBuilder.build());
             }
 
             else if (curInstruction instanceof WriteActions) {
@@ -778,6 +799,7 @@ public class FlowConvertor {
                 actionsInstructionBuilder.setActionsList(ActionConvertor.getActionList(writeActions.getAction(),
                         version));
                 instructionBuilder.addAugmentation(ActionsInstruction.class, actionsInstructionBuilder.build());
+                instructionsList.add(instructionBuilder.build());
             }
 
             else if (curInstruction instanceof ApplyActions) {
@@ -788,6 +810,7 @@ public class FlowConvertor {
                 actionsInstructionBuilder.setActionsList(ActionConvertor.getActionList(applyActions.getAction(),
                         version));
                 instructionBuilder.addAugmentation(ActionsInstruction.class, actionsInstructionBuilder.build());
+                instructionsList.add(instructionBuilder.build());
             }
 
             else if (curInstruction instanceof ClearActions) {
@@ -798,6 +821,7 @@ public class FlowConvertor {
                 actionsInstructionBuilder.setActionsList(ActionConvertor.getActionList(clearActions.getAction(),
                         version));
                 instructionBuilder.addAugmentation(ActionsInstruction.class, actionsInstructionBuilder.build());
+                instructionsList.add(instructionBuilder.build());
             }
 
             else if (curInstruction instanceof Meter) {
@@ -808,9 +832,8 @@ public class FlowConvertor {
                 Long meterId = Long.parseLong(meter.getMeter());
                 meterBuilder.setMeterId(meterId);
                 instructionBuilder.addAugmentation(MeterIdInstruction.class, meterBuilder.build());
+                instructionsList.add(instructionBuilder.build());
             }
-
-            instructionsList.add(instructionBuilder.build());
         }
         return instructionsList;
     }
@@ -828,7 +851,8 @@ public class FlowConvertor {
         builder.addAugmentation(Ipv6AddressMatchEntry.class, ipv6AddressBuilder.build());
     }
 
-    private static void addIpv6PrefixAugmentation(MatchEntriesBuilder builder, Ipv6Prefix address) {
+    private static boolean addIpv6PrefixAugmentation(MatchEntriesBuilder builder, Ipv6Prefix address) {
+        boolean hasMask = false;
         String[] addressParts = address.getValue().split(PREFIX_SEPARATOR);
         Integer prefix = null;
         if (addressParts.length == 2) {
@@ -840,8 +864,10 @@ public class FlowConvertor {
         ipv6AddressBuilder.setIpv6Address(ipv6Address);
         builder.addAugmentation(Ipv6AddressMatchEntry.class, ipv6AddressBuilder.build());
         if (prefix != null) {
+            hasMask = true;
             addMaskAugmentation(builder, convertIpv6PrefixToByteArray(prefix));
         }
+        return hasMask;
     }
 
     private static byte[] convertIpv6PrefixToByteArray(int prefix) {
@@ -869,7 +895,11 @@ public class FlowConvertor {
         builder.addAugmentation(MetadataMatchEntry.class, metadataMatchEntry.build());
     }
 
-    private static void addIpv4PrefixAugmentation(MatchEntriesBuilder builder, Ipv4Prefix address) {
+    /**
+     * @return true if Ipv4Prefix contains prefix (and it is used in mask), false otherwise
+     */
+    private static boolean addIpv4PrefixAugmentation(MatchEntriesBuilder builder, Ipv4Prefix address) {
+        boolean hasMask = false;
         String[] addressParts = address.getValue().split(PREFIX_SEPARATOR);
         Integer prefix = null;
         if (addressParts.length < 2) {
@@ -887,7 +917,9 @@ public class FlowConvertor {
             byte[] maskBytes = new byte[] { (byte) (mask >>> 24), (byte) (mask >>> 16), (byte) (mask >>> 8),
                     (byte) mask };
             addMaskAugmentation(builder, maskBytes);
+            hasMask = true;
         }
+        return hasMask;
     }
 
     private static void addMacAddressAugmentation(MatchEntriesBuilder builder, MacAddress address) {
