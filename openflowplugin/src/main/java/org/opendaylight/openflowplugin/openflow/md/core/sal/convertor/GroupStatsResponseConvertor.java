@@ -8,7 +8,7 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupTypes.GroupType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupTypes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.Bucket;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.BucketBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.desc.stats.reply.GroupDescStats;
@@ -104,7 +104,7 @@ public class GroupStatsResponseConvertor {
         
         salGroupDescStats.setBuckets(toSALBucketsDesc(groupDesc.getBucketsList()));
         salGroupDescStats.setGroupId(new GroupId(groupDesc.getGroupId()));
-        salGroupDescStats.setGroupType(GroupType.forValue(groupDesc.getType().getIntValue()));
+        salGroupDescStats.setGroupType(GroupTypes.forValue(groupDesc.getType().getIntValue()));
         
         return salGroupDescStats.build();
     }
