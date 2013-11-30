@@ -17,6 +17,8 @@ class OpenflowpluginTestActivator extends AbstractBindingAwareProvider {
 
     static var OpenflowpluginTestServiceProvider provider = new OpenflowpluginTestServiceProvider();
     var OpenflowpluginTestCommandProvider cmdProvider;
+    var OpenflowpluginGroupTestCommandProvider cmdGroupProvider;
+    var OpenflowpluginMeterTestCommandProvider cmdMeterProvider;
     public static final String NODE_ID =  "foo:node:1";
 
     override onSessionInitiated(ProviderContext session) {
@@ -25,13 +27,15 @@ class OpenflowpluginTestActivator extends AbstractBindingAwareProvider {
         provider.start();
         provider.register(session);
         cmdProvider.onSessionInitiated(session);
-        
+        cmdGroupProvider.onSessionInitiated(session);
+        cmdMeterProvider.onSessionInitiated(session);
     }
     
     override startImpl(BundleContext ctx) {
         super.startImpl(ctx);
         cmdProvider = new OpenflowpluginTestCommandProvider(ctx);
-        
+        cmdGroupProvider = new OpenflowpluginGroupTestCommandProvider(ctx);
+        cmdMeterProvider = new OpenflowpluginMeterTestCommandProvider(ctx);
     }
 
     override protected stopImpl(BundleContext context) {
