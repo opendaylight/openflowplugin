@@ -13,22 +13,28 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlInBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlOutBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DecMplsTtlBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DecNwTtlBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PopMplsActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PopPbbActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PopVlanActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PushMplsActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PushPbbActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PushVlanActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetFieldBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetMplsTtlActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetNwTtlActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetQueueActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlInCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlOutCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DecMplsTtlCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DecNwTtlCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PopMplsActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PopPbbActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PopVlanActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PushMplsActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PushPbbActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PushVlanActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetFieldCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetMplsTtlActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetNwTtlActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetQueueActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ClearActionsCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.GoToTableCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.MeterCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.WriteActionsCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.WriteMetadataCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.ActionRelatedTableFeatureProperty;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.InstructionRelatedTableFeatureProperty;
@@ -249,27 +255,27 @@ public class TableFeaturesReplyConvertor {
                     .getType();
             if (currInstructionType
                     .equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.GotoTable.class)) {
-                builder.setInstruction((new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.GoToTableBuilder()
+                builder.setInstruction((new GoToTableCaseBuilder()
                         .build()));
             } else if (currInstructionType
                     .equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.WriteMetadata.class)) {
-                builder.setInstruction((new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.WriteMetadataBuilder()
+                builder.setInstruction((new WriteMetadataCaseBuilder()
                         .build()));
             } else if (currInstructionType
                     .equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.WriteActions.class)) {
-                builder.setInstruction((new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.WriteActionsBuilder()
+                builder.setInstruction((new WriteActionsCaseBuilder()
                         .build()));
             } else if (currInstructionType
                     .equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.ApplyActions.class)) {
-                builder.setInstruction((new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsBuilder()
+                builder.setInstruction((new ApplyActionsCaseBuilder()
                         .build()));
             } else if (currInstructionType
                     .equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.ClearActions.class)) {
-                builder.setInstruction((new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ClearActionsBuilder()
+                builder.setInstruction((new ClearActionsCaseBuilder()
                         .build()));
             } else if (currInstructionType
                     .equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.Meter.class)) {
-                builder.setInstruction((new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.MeterBuilder()
+                builder.setInstruction((new MeterCaseBuilder()
                         .build()));
             } else if (currInstructionType
                     .equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.Experimenter.class)) {
@@ -302,52 +308,52 @@ public class TableFeaturesReplyConvertor {
                         .getType();
                 if (actionType
                         .equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.Output.class)) {
-                    actionBuilder.setAction(new OutputActionBuilder().build());
+                    actionBuilder.setAction(new OutputActionCaseBuilder().build());
                 } else if (actionType
                         .equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.Group.class)) {
-                    actionBuilder.setAction(new GroupActionBuilder().build());
+                    actionBuilder.setAction(new GroupActionCaseBuilder().build());
                 } else if (actionType
                         .equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.CopyTtlOut.class)) {
-                    actionBuilder.setAction(new CopyTtlOutBuilder().build());
+                    actionBuilder.setAction(new CopyTtlOutCaseBuilder().build());
                 } else if (actionType
                         .equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.CopyTtlIn.class)) {
-                    actionBuilder.setAction(new CopyTtlInBuilder().build());
+                    actionBuilder.setAction(new CopyTtlInCaseBuilder().build());
                 } else if (actionType
                         .equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.SetMplsTtl.class)) {
-                    actionBuilder.setAction(new SetMplsTtlActionBuilder().build());
+                    actionBuilder.setAction(new SetMplsTtlActionCaseBuilder().build());
                 } else if (actionType
                         .equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.DecMplsTtl.class)) {
-                    actionBuilder.setAction(new DecMplsTtlBuilder().build());
+                    actionBuilder.setAction(new DecMplsTtlCaseBuilder().build());
                 } else if (actionType
                         .equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.PushVlan.class)) {
-                    actionBuilder.setAction(new PushVlanActionBuilder().build());
+                    actionBuilder.setAction(new PushVlanActionCaseBuilder().build());
                 } else if (actionType
                         .equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.PopVlan.class)) {
-                    actionBuilder.setAction(new PopVlanActionBuilder().build());
+                    actionBuilder.setAction(new PopVlanActionCaseBuilder().build());
                 } else if (actionType
                         .equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.PushMpls.class)) {
-                    actionBuilder.setAction(new PushMplsActionBuilder().build());
+                    actionBuilder.setAction(new PushMplsActionCaseBuilder().build());
                 } else if (actionType
                         .equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.PopMpls.class)) {
-                    actionBuilder.setAction(new PopMplsActionBuilder().build());
+                    actionBuilder.setAction(new PopMplsActionCaseBuilder().build());
                 } else if (actionType
                         .equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.SetQueue.class)) {
-                    actionBuilder.setAction(new SetQueueActionBuilder().build());
+                    actionBuilder.setAction(new SetQueueActionCaseBuilder().build());
                 } else if (actionType
                         .equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.SetNwTtl.class)) {
-                    actionBuilder.setAction(new SetNwTtlActionBuilder().build());
+                    actionBuilder.setAction(new SetNwTtlActionCaseBuilder().build());
                 } else if (actionType
                         .equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.DecNwTtl.class)) {
-                    actionBuilder.setAction(new DecNwTtlBuilder().build());
+                    actionBuilder.setAction(new DecNwTtlCaseBuilder().build());
                 } else if (actionType
                         .equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.SetField.class)) {
-                    actionBuilder.setAction(new SetFieldBuilder().build());
+                    actionBuilder.setAction(new SetFieldCaseBuilder().build());
                 } else if (actionType
                         .equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.PushPbb.class)) {
-                    actionBuilder.setAction(new PushPbbActionBuilder().build());
+                    actionBuilder.setAction(new PushPbbActionCaseBuilder().build());
                 } else if (actionType
                         .equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.PopPbb.class)) {
-                    actionBuilder.setAction(new PopPbbActionBuilder().build());
+                    actionBuilder.setAction(new PopPbbActionCaseBuilder().build());
                 } else if (actionType
                         .equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.Experimenter.class)) {
                     // TODO: Experimenter Action unhandled.

@@ -11,6 +11,10 @@ import org.opendaylight.controller.md.sal.common.api.TransactionStatus;
 import org.opendaylight.controller.md.sal.common.api.data.DataModification;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.data.DataBrokerService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.MeterBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.MeterKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -18,19 +22,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.config.rev131024.Meters;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.config.rev131024.meters.Meter;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.config.rev131024.meters.MeterBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.config.rev131024.meters.MeterKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.BandType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterBandType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterFlags;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.band.type.band.type.DscpRemark;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.band.type.band.type.DscpRemarkBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.MeterBandHeaders;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.MeterBandHeadersBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.MeterBandHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.MeterBandHeaderBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.meter.band.header.MeterBandTypes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.meter.band.header.MeterBandTypesBuilder;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -59,14 +57,14 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
         createTestMeter();
     }
 
-    private void createUserNode(String nodeRef) {        
+    private void createUserNode(String nodeRef) {
         NodeBuilder builder = new NodeBuilder();
         builder.setId(new NodeId(nodeRef));
         builder.setKey(new NodeKey(builder.getId()));
         testNode = builder.build();
     }
-    
-    private void createTestNode() {       
+
+    private void createTestNode() {
         NodeBuilder builder = new NodeBuilder();
         builder.setId(new NodeId(OpenflowpluginTestActivator.NODE_ID));
         builder.setKey(new NodeKey(builder.getId()));
@@ -80,14 +78,14 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
     private MeterBuilder createTestMeter() {
         // Sample data , committing to DataStore
         DataModification modification = dataBrokerService.beginTransaction();
+
         long id = 12;
-        MeterKey key = new MeterKey(id, new NodeRef(new NodeRef(nodeToInstanceId(testNode))));
+        MeterKey key = new MeterKey(new MeterId(id));
         MeterBuilder meter = new MeterBuilder();
-        meter.setContainerName("abcd");     
-        meter.setId((long) 9);
-        meter.setKey(key);       
+        meter.setMeterId(new MeterId((long) 9));
+        meter.setKey(key);
         meter.setMeterName(originalMeterName);
-        meter.setFlags(new MeterFlags(true, false, false, false));   
+        meter.setFlags(new MeterFlags(true, false, false, false));
         MeterBandHeadersBuilder bandHeaders = new MeterBandHeadersBuilder();
         List<MeterBandHeader> bandHdr = new ArrayList<MeterBandHeader>();
         MeterBandHeaderBuilder bandHeader = new MeterBandHeaderBuilder();
@@ -99,20 +97,20 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
         dscpRemark.setRate((long) 12);
         bandHeader.setBandType(dscpRemark.build());
         MeterBandTypesBuilder bandTypes = new MeterBandTypesBuilder();
-        MeterBandType bandType = new MeterBandType(false, true, false);   
+        MeterBandType bandType = new MeterBandType(false, true, false);
         bandTypes.setFlags(bandType);
         bandHeader.setMeterBandTypes(bandTypes.build());
-        bandHdr.add(bandHeader.build());       
+        bandHdr.add(bandHeader.build());
         bandHeaders.setMeterBandHeader(bandHdr);
         meter.setMeterBandHeaders(bandHeaders.build());
-        
+
         testMeter = meter.build();
         return meter;
     }
 
     public void _removeMeter(CommandInterpreter ci) {
         String nref = ci.nextArgument();
-        
+
         if (nref == null) {
             ci.println("test node added");
             createTestNode();
@@ -122,9 +120,10 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
         }
         MeterBuilder mBuilder = createTestMeter();
         DataModification modification = dataBrokerService.beginTransaction();
-        InstanceIdentifier<Meter> path1 = InstanceIdentifier.builder(Meters.class)
-                .child(Meter.class, mBuilder.getKey()).toInstance();
-        DataObject cls = (DataObject) modification.readConfigurationData(path1);
+        InstanceIdentifier<Meter> path1 = InstanceIdentifier.builder(Nodes.class)
+                .child(Node.class, testNode.getKey()).augmentation(FlowCapableNode.class)
+                .child(Meter.class, new MeterKey(testMeter.getMeterId()))
+                .build();
         modification.removeOperationalData(nodeToInstanceId(testNode));
         modification.removeOperationalData(path1);
         modification.removeConfigurationData(nodeToInstanceId(testNode));
@@ -146,7 +145,7 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
 
     public void _addMeter(CommandInterpreter ci) {
         String nref = ci.nextArgument();
-        
+
         if (nref == null) {
             ci.println("test node added");
             createTestNode();
@@ -154,15 +153,16 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
             ci.println("User node added" + nref);
             createUserNode(nref);
         }
-        createTestMeter();        
+        createTestMeter();
         writeMeter(ci, testMeter);
     }
 
     private void writeMeter(CommandInterpreter ci, Meter meter) {
         DataModification modification = dataBrokerService.beginTransaction();
-        InstanceIdentifier<Meter> path1 = InstanceIdentifier.builder(Meters.class).
-                child(Meter.class, meter.getKey())
-                .toInstance();
+        InstanceIdentifier<Meter> path1 = InstanceIdentifier.builder(Nodes.class)
+                .child(Node.class, testNode.getKey()).augmentation(FlowCapableNode.class)
+                .child(Meter.class, new MeterKey(meter.getMeterId()))
+                .build();
         DataObject cls = (DataObject) modification.readConfigurationData(path1);
         modification.putOperationalData(nodeToInstanceId(testNode), testNode);
         modification.putOperationalData(path1, meter);
@@ -185,7 +185,7 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
 
     public void _modifyMeter(CommandInterpreter ci) {
         String nref = ci.nextArgument();
-        
+
         if (nref == null) {
             ci.println("test node added");
             createTestNode();
@@ -193,13 +193,13 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
             ci.println("User node added" + nref);
             createUserNode(nref);
         }
-        MeterBuilder meter = createTestMeter();        
+        MeterBuilder meter = createTestMeter();
         meter.setMeterName(updatedMeterName);
         writeMeter(ci, meter.build());
         meter.setMeterName(originalMeterName);
         writeMeter(ci, meter.build());
     }
-    
+
     @Override
     public String getHelp() {
         StringBuffer help = new StringBuffer();
@@ -207,8 +207,8 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
         help.append("\t addMeter <node id>        - node ref\n");
         help.append("\t modifyMeter <node id>        - node ref\n");
         help.append("\t removeMeter <node id>        - node ref\n");
-       
+
         return help.toString();
-    }    
-   
+    }
+
 }
