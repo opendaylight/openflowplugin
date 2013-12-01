@@ -13,7 +13,8 @@
       <directory>${project.build.directory}/generated-resources</directory>
       <outputDirectory>/</outputDirectory>
       <excludes>
-        <exclude>opendaylight/plugins/org.opendaylight.controller.thirdparty.org.openflow.openflowj.*.jar</exclude>
+        <exclude>opendaylight/plugins/org.opendaylight.controller.thirdparty.org.openflow.openflowj-*.jar</exclude>
+        <exclude>opendaylight/plugins/org.opendaylight.controller.protocol_plugins.openflow-*.jar</exclude>
       </excludes>
     </fileSet>
   </fileSets>
