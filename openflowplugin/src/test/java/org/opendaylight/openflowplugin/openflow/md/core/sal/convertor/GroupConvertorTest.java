@@ -5,12 +5,15 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlIn;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlInBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupAction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetMplsTtlAction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetMplsTtlActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlInCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetMplsTtlActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.copy.ttl.in._case.CopyTtlIn;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.copy.ttl.in._case.CopyTtlInBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.group.action._case.GroupAction;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.group.action._case.GroupActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.mpls.ttl.action._case.SetMplsTtlAction;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.mpls.ttl.action._case.SetMplsTtlActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
@@ -45,14 +48,14 @@ public class GroupConvertorTest {
         groupActionBuilder.setGroup("005");
         GroupAction groupIdaction = groupActionBuilder.build();
         ActionBuilder actionsB = new ActionBuilder();
-        actionsB.setAction(groupIdaction);
+        actionsB.setAction(new GroupActionCaseBuilder().setGroupAction(groupIdaction).build());
 
         // Action2:
         GroupActionBuilder groupActionBuilder1 = new GroupActionBuilder();
         groupActionBuilder1.setGroup("006");
         GroupAction groupIdaction1 = groupActionBuilder.build();
         ActionBuilder actionsB1 = new ActionBuilder();
-        actionsB1.setAction(groupIdaction1);
+        actionsB1.setAction(new GroupActionCaseBuilder().setGroupAction(groupIdaction1).build());
 
         actionsList.add(actionsB.build());
         actionsList.add(actionsB1.build());
@@ -79,7 +82,7 @@ public class GroupConvertorTest {
         CopyTtlInBuilder copyTtlB = new CopyTtlInBuilder();
         CopyTtlIn copyTtl = copyTtlB.build();
         ActionBuilder actionsB2 = new ActionBuilder();
-        actionsB2.setAction(copyTtl);
+        actionsB2.setAction(new CopyTtlInCaseBuilder().setCopyTtlIn(copyTtl).build());
 
         // Action2:
         SetMplsTtlActionBuilder setMplsTtlActionBuilder = new SetMplsTtlActionBuilder();
@@ -87,7 +90,7 @@ public class GroupConvertorTest {
         SetMplsTtlAction setMAction = setMplsTtlActionBuilder.build();
         ActionBuilder actionsB3 = new ActionBuilder();
 
-        actionsB3.setAction(setMAction);
+        actionsB3.setAction(new SetMplsTtlActionCaseBuilder().setSetMplsTtlAction(setMAction).build());
 
 
         actionsList1.add(actionsB2.build());
