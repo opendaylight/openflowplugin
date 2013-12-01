@@ -26,8 +26,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.dec.nw.ttl._case.DecNwTtlBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.config.rev130819.Flows;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.Tables;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
@@ -98,6 +100,8 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         FlowKey key = new FlowKey(new FlowId(id));
         FlowBuilder flow = new FlowBuilder();
         flow.setKey(key);
+        Short tableId = 0;
+        flow.setTableId(tableId);
         MatchBuilder match = new MatchBuilder();
         Ipv4MatchBuilder ipv4Match = new Ipv4MatchBuilder();
         // ipv4Match.setIpv4Destination(new Ipv4Prefix(cliInput.get(4)));
@@ -153,13 +157,16 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return flow;
     }
 
-    public void _removeMDFlow(CommandInterpreter ci) {
-        DataModification<InstanceIdentifier<?>, DataObject> modification = dataBrokerService.beginTransaction();
-        NodeBuilder tn = createTestNode(ci.nextArgument());
-        FlowBuilder tf = createTestFlow(tn);
-        InstanceIdentifier<Flow> path1 = InstanceIdentifier.builder(Nodes.class).child(Node.class, tn.getKey())
-                .augmentation(FlowCapableNode.class).child(Table.class, new TableKey(tf.getTableId()))
-                .child(Flow.class).toInstance();
+	public void _removeMDFlow(CommandInterpreter ci) {
+	    DataModification<InstanceIdentifier<?>, DataObject> modification = dataBrokerService.beginTransaction();
+	    NodeBuilder tn = createTestNode(ci.nextArgument());
+	    FlowBuilder tf = createTestFlow(tn);
+	    InstanceIdentifier<Flow> path1 = InstanceIdentifier.builder(Nodes.class)
+                .child(Node.class,tn.getKey())
+                .augmentation(FlowCapableNode.class)
+                .child(Table.class,new TableKey(tf.getTableId()))
+                .child(Flow.class)
+                .toInstance();
         modification.removeOperationalData(nodeBuilderToInstanceId(tn));
         modification.removeOperationalData(path1);
         modification.removeConfigurationData(nodeBuilderToInstanceId(tn));
@@ -185,11 +192,14 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         writeFlow(ci, tf, tn);
     }
 
-    private void writeFlow(CommandInterpreter ci, FlowBuilder flow, NodeBuilder nodeBuilder) {
-        DataModification<InstanceIdentifier<?>, DataObject> modification = dataBrokerService.beginTransaction();
-        InstanceIdentifier<Flow> path1 = InstanceIdentifier.builder(Nodes.class)
-                .child(Node.class, nodeBuilder.getKey()).augmentation(FlowCapableNode.class)
-                .child(Table.class, new TableKey(flow.getTableId())).child(Flow.class, flow.getKey()).toInstance();
+	private void writeFlow(CommandInterpreter ci,FlowBuilder flow, NodeBuilder nodeBuilder) {
+	    DataModification<InstanceIdentifier<?>, DataObject> modification = dataBrokerService.beginTransaction();
+	    InstanceIdentifier<Flow> path1 = InstanceIdentifier.builder(Nodes.class)
+                .child(Node.class,nodeBuilder.getKey())
+                .augmentation(FlowCapableNode.class)
+                .child(Table.class,new TableKey(flow.getTableId()))
+                .child(Flow.class,flow.getKey())
+                .toInstance();
         modification.putOperationalData(nodeBuilderToInstanceId(nodeBuilder), nodeBuilder.build());
         modification.putOperationalData(path1, flow.build());
         modification.putConfigurationData(nodeBuilderToInstanceId(nodeBuilder), nodeBuilder.build());

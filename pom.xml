@@ -267,5 +267,6 @@
       <module>distribution/base</module>
       <module>openflowplugin-it</module>
       <module>test-provider</module>
+      <module>drop-test</module>
     </modules>
 </project>

@@ -45,6 +45,19 @@ http://maven.apache.org/maven-v4_0_0.xsd">
       <artifactId>test-provider</artifactId>
       <version>0.0.1-SNAPSHOT</version>
     </dependency>
+    
+    <!-- drop-test provider -->
+    <dependency>
+      <groupId>org.opendaylight.openflowplugin</groupId>
+      <artifactId>drop-test</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+      <version>1.8</version>
+    </dependency>
 
 
     <!-- openflowjava -->
