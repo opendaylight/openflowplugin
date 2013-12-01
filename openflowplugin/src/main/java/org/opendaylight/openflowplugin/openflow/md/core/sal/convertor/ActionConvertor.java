@@ -6,37 +6,67 @@ import java.util.List;
 import org.opendaylight.controller.sal.core.NodeConnector.NodeConnectorIDType;
 import org.opendaylight.openflowjava.protocol.api.util.BinContent;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlIn;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlInBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlOut;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlOutBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DecMplsTtl;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DecMplsTtlBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DecNwTtl;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DecNwTtlBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupAction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputAction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PopMplsAction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PopMplsActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PopPbbAction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PopPbbActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PopVlanAction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PopVlanActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PushMplsAction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PushMplsActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PushPbbAction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PushPbbActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PushVlanAction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PushVlanActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetField;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetMplsTtlAction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetMplsTtlActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetNwTtlAction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetNwTtlActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetQueueAction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetQueueActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlInCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlInCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlOutCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlOutCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DecMplsTtlCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DecMplsTtlCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DecNwTtlCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DecNwTtlCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PopMplsActionCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PopMplsActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PopPbbActionCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PopPbbActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PopVlanActionCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PopVlanActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PushMplsActionCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PushMplsActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PushPbbActionCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PushPbbActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PushVlanActionCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PushVlanActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetFieldCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetMplsTtlActionCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetMplsTtlActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetNwTtlActionCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetNwTtlActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetQueueActionCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetQueueActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.copy.ttl.in._case.CopyTtlIn;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.copy.ttl.in._case.CopyTtlInBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.copy.ttl.out._case.CopyTtlOut;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.copy.ttl.out._case.CopyTtlOutBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.dec.mpls.ttl._case.DecMplsTtl;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.dec.mpls.ttl._case.DecMplsTtlBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.dec.nw.ttl._case.DecNwTtlBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.group.action._case.GroupAction;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.group.action._case.GroupActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.output.action._case.OutputActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.pop.mpls.action._case.PopMplsAction;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.pop.mpls.action._case.PopMplsActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.pop.pbb.action._case.PopPbbAction;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.pop.pbb.action._case.PopPbbActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.pop.vlan.action._case.PopVlanAction;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.pop.vlan.action._case.PopVlanActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.push.mpls.action._case.PushMplsAction;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.push.mpls.action._case.PushMplsActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.push.pbb.action._case.PushPbbAction;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.push.pbb.action._case.PushPbbActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.push.vlan.action._case.PushVlanAction;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.push.vlan.action._case.PushVlanActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.field._case.SetField;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.mpls.ttl.action._case.SetMplsTtlAction;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.mpls.ttl.action._case.SetMplsTtlActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.nw.ttl.action._case.SetNwTtlAction;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.nw.ttl.action._case.SetNwTtlActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.queue.action._case.SetQueueAction;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.queue.action._case.SetQueueActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.EthertypeAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.EthertypeActionBuilder;
@@ -56,6 +86,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.PortActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.QueueIdAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.QueueIdActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.DecNwTtl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.Experimenter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.Group;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.PopMpls;
@@ -109,42 +140,42 @@ public final class ActionConvertor {
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action = actions.get(
                     actionItem).getAction();
 
-            if (action instanceof OutputAction)
-                actionsList.add(salToOFOutputAction(action, actionBuilder, actionsListBuilder, version));
-            else if (action instanceof GroupAction)
-                actionsList.add(SalToOFGroupAction(action, actionBuilder, actionsListBuilder));
-            else if (action instanceof CopyTtlOut)
+            if (action instanceof OutputActionCase)
+                actionsList.add(salToOFOutputAction(((OutputActionCase) action).getOutputAction(), actionBuilder, actionsListBuilder, version));
+            else if (action instanceof GroupActionCase)
+                actionsList.add(SalToOFGroupAction(((GroupActionCase) action).getGroupAction(), actionBuilder, actionsListBuilder));
+            else if (action instanceof CopyTtlOutCase)
                 actionsList.add(SalToOFCopyTTLIOut(actionBuilder, actionsListBuilder));
-            else if (action instanceof CopyTtlIn)
+            else if (action instanceof CopyTtlInCase)
                 actionsList.add(SalToOFCopyTTLIIn(actionBuilder, actionsListBuilder));
-            else if (action instanceof SetMplsTtlAction)
-                actionsList.add(SalToOFSetMplsTtl(action, actionBuilder, actionsListBuilder));
-            else if (action instanceof DecMplsTtl)
+            else if (action instanceof SetMplsTtlActionCase)
+                actionsList.add(SalToOFSetMplsTtl(((SetMplsTtlActionCase) action).getSetMplsTtlAction(), actionBuilder, actionsListBuilder));
+            else if (action instanceof DecMplsTtlCase)
                 actionsList.add(SalToOFDecMplsTtl(actionBuilder, actionsListBuilder));
-            else if (action instanceof PushVlanAction)
-                actionsList.add(SalToOFPushVlanAction(action, actionBuilder, actionsListBuilder));
-            else if (action instanceof PopVlanAction)
-                actionsList.add(SalToOFPopVlan(action, actionBuilder, actionsListBuilder));
-            else if (action instanceof PushMplsAction)
-                actionsList.add(SalToOFPushMplsAction(action, actionBuilder, actionsListBuilder));
-            else if (action instanceof PopMplsAction)
-                actionsList.add(SalToOFPopMpls(action, actionBuilder, actionsListBuilder));
-            else if (action instanceof SetQueueAction)
-                actionsList.add(SalToOFSetQueue(action, actionBuilder, actionsListBuilder));
+            else if (action instanceof PushVlanActionCase)
+                actionsList.add(SalToOFPushVlanAction(((PushVlanActionCase) action).getPushVlanAction(), actionBuilder, actionsListBuilder));
+            else if (action instanceof PopVlanActionCase)
+                actionsList.add(SalToOFPopVlan(((PopVlanActionCase) action).getPopVlanAction(), actionBuilder, actionsListBuilder));
+            else if (action instanceof PushMplsActionCase)
+                actionsList.add(SalToOFPushMplsAction(((PushMplsActionCase) action).getPushMplsAction(), actionBuilder, actionsListBuilder));
+            else if (action instanceof PopMplsActionCase)
+                actionsList.add(SalToOFPopMpls(((PopMplsActionCase) action).getPopMplsAction(), actionBuilder, actionsListBuilder));
+            else if (action instanceof SetQueueActionCase)
+                actionsList.add(SalToOFSetQueue(((SetQueueActionCase) action).getSetQueueAction(), actionBuilder, actionsListBuilder));
 
-            else if (action instanceof SetNwTtlAction)
-                actionsList.add(SalToOFSetNwTtl(action, actionBuilder, actionsListBuilder));
-            else if (action instanceof DecNwTtl)
-                actionsList.add(SalToOFDecNwTtl(action, actionBuilder, actionsListBuilder));
-            else if (action instanceof SetField)
-                actionsList.add(SalToOFSetField(action, actionBuilder, actionsListBuilder));
+            else if (action instanceof SetNwTtlActionCase)
+                actionsList.add(SalToOFSetNwTtl(((SetNwTtlActionCase) action).getSetNwTtlAction(), actionBuilder, actionsListBuilder));
+            else if (action instanceof DecNwTtlCase)
+                actionsList.add(SalToOFDecNwTtl(((DecNwTtlCase) action).getDecNwTtl(), actionBuilder, actionsListBuilder));
+            else if (action instanceof SetFieldCase)
+                actionsList.add(SalToOFSetField(((SetFieldCase) action).getSetField(), actionBuilder, actionsListBuilder));
 
-            else if (action instanceof PushPbbAction)
-                actionsList.add(SalToOFPushPbbAction(action, actionBuilder, actionsListBuilder));
-            else if (action instanceof PopPbbAction)
-                actionsList.add(SalToOFPopPBB(action, actionBuilder, actionsListBuilder));
-            else if (action instanceof ExperimenterAction)
-                actionsList.add(SalToOFExperimenter(action, actionBuilder, actionsListBuilder));
+            else if (action instanceof PushPbbActionCase)
+                actionsList.add(SalToOFPushPbbAction(((PushPbbActionCase) action).getPushPbbAction(), actionBuilder, actionsListBuilder));
+            else if (action instanceof PopPbbActionCase)
+                actionsList.add(SalToOFPopPBB(((PopPbbActionCase) action).getPopPbbAction(), actionBuilder, actionsListBuilder));
+            //else if (action instanceof ExperimenterActionCase)
+            //    actionsList.add(SalToOFExperimenter(((ExperimenterActionCase) action).getExperimenterAction(), actionBuilder, actionsListBuilder));
 
         }
         return actionsList;
@@ -152,11 +183,13 @@ public final class ActionConvertor {
     }
 
     private static ActionsList SalToOFSetField(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
-            ActionBuilder actionBuilder, ActionsListBuilder actionsListBuilder) {
 
-        org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetField setField = (org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetField) action;
-        org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match match = setField.getMatch();
+            SetField setField,
+            ActionBuilder actionBuilder,
+            ActionsListBuilder actionsListBuilder) {
+
+
+        org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match match = setField;
 
         List<MatchEntries> matchEntries = FlowConvertor.toMatch(match);
 
@@ -174,36 +207,48 @@ public final class ActionConvertor {
     }
 
     private static ActionsList SalToOFDecNwTtl(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
-            ActionBuilder actionBuilder, ActionsListBuilder actionsListBuilder) {
-        actionBuilder.setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.DecNwTtl.class);
+
+            org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.dec.nw.ttl._case.DecNwTtl decNwTtl,
+            ActionBuilder actionBuilder,
+            ActionsListBuilder actionsListBuilder) {
+            actionBuilder.setType(DecNwTtl.class);
+
 
         return emtpyAction(actionBuilder, actionsListBuilder);
     }
 
     private static ActionsList SalToOFPushMplsAction(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
-            ActionBuilder actionBuilder, ActionsListBuilder actionsListBuilder) {
+
+            PushMplsAction pushMplsAction,
+            ActionBuilder actionBuilder,
+            ActionsListBuilder actionsListBuilder) {
+
 
         actionBuilder.setType(PushMpls.class);
 
-        return SalToOFPushAction(((PushMplsAction) action).getEthernetType(), actionBuilder, actionsListBuilder);
+        return SalToOFPushAction(((PushMplsAction) pushMplsAction).getEthernetType(), actionBuilder, actionsListBuilder);
 
     }
 
     private static ActionsList SalToOFPushPbbAction(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
-            ActionBuilder actionBuilder, ActionsListBuilder actionsListBuilder) {
+
+            PushPbbAction pushPbbAction,
+            ActionBuilder actionBuilder,
+            ActionsListBuilder actionsListBuilder) {
+
         actionBuilder.setType(PushPbb.class);
 
-        return SalToOFPushAction(((PushPbbAction) action).getEthernetType(), actionBuilder, actionsListBuilder);
+        return SalToOFPushAction(((PushPbbAction) pushPbbAction).getEthernetType(), actionBuilder, actionsListBuilder);
     }
 
     private static ActionsList SalToOFPushVlanAction(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
-            ActionBuilder actionBuilder, ActionsListBuilder actionsListBuilder) {
 
-        PushVlanAction pushVlanAction = (PushVlanAction) action;
+            PushVlanAction pushVlanAction2,
+            ActionBuilder actionBuilder,
+            ActionsListBuilder actionsListBuilder) {
+
+
+        PushVlanAction pushVlanAction = (PushVlanAction) pushVlanAction2;
         VlanId vlanId = new VlanId(pushVlanAction.getVlanId());
         Integer etherType = vlanId.getValue();
         actionBuilder.setType(PushVlan.class);
@@ -213,11 +258,14 @@ public final class ActionConvertor {
     }
 
     private static ActionsList SalToOFSetNwTtl(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
-            ActionBuilder actionBuilder, ActionsListBuilder actionsListBuilder) {
+
+            SetNwTtlAction setNwTtlAction,
+            ActionBuilder actionBuilder,
+            ActionsListBuilder actionsListBuilder) {
+
 
         NwTtlActionBuilder nwTtlActionBuilder = new NwTtlActionBuilder();
-        nwTtlActionBuilder.setNwTtl(((SetNwTtlAction) action).getNwTtl());
+        nwTtlActionBuilder.setNwTtl(((SetNwTtlAction) setNwTtlAction).getNwTtl());
 
         actionBuilder.setType(SetNwTtl.class);
         actionBuilder.addAugmentation(NwTtlAction.class, nwTtlActionBuilder.build());
@@ -227,10 +275,13 @@ public final class ActionConvertor {
     }
 
     private static ActionsList SalToOFSetQueue(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
-            ActionBuilder actionBuilder, ActionsListBuilder actionsListBuilder) {
 
-        SetQueueAction setQueueAction = (SetQueueAction) action;
+            SetQueueAction setQueueAction2,
+            ActionBuilder actionBuilder,
+            ActionsListBuilder actionsListBuilder) {
+
+
+        SetQueueAction setQueueAction = (SetQueueAction) setQueueAction2;
 
         QueueIdActionBuilder queueIdActionBuilder = new QueueIdActionBuilder();
         queueIdActionBuilder.setQueueId(Long.getLong(setQueueAction.getQueue()));
@@ -242,17 +293,23 @@ public final class ActionConvertor {
     }
 
     private static ActionsList SalToOFPopMpls(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
-            ActionBuilder actionBuilder, ActionsListBuilder actionsListBuilder) {
+
+            PopMplsAction popMplsAction,
+            ActionBuilder actionBuilder,
+            ActionsListBuilder actionsListBuilder) {
+
 
         actionBuilder.setType(PopMpls.class);
 
-        return SalToOFPushAction(((PopMplsAction) action).getEthernetType(), actionBuilder, actionsListBuilder);
+        return SalToOFPushAction(popMplsAction.getEthernetType(), actionBuilder, actionsListBuilder);
     }
 
     private static ActionsList SalToOFPopVlan(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
-            ActionBuilder actionBuilder, ActionsListBuilder actionsListBuilder) {
+
+            PopVlanAction popVlanAction,
+            ActionBuilder actionBuilder,
+            ActionsListBuilder actionsListBuilder) {
+
 
         actionBuilder.setType(PushMpls.class);
 
@@ -260,8 +317,11 @@ public final class ActionConvertor {
     }
 
     private static ActionsList SalToOFPopPBB(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
-            ActionBuilder actionBuilder, ActionsListBuilder actionsListBuilder) {
+
+            PopPbbAction popPbbAction,
+            ActionBuilder actionBuilder,
+            ActionsListBuilder actionsListBuilder) {
+
         actionBuilder.setType(PopPbb.class);
         return emtpyAction(actionBuilder, actionsListBuilder);
     }
@@ -283,10 +343,13 @@ public final class ActionConvertor {
     }
 
     private static ActionsList SalToOFGroupAction(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
-            ActionBuilder actionBuilder, ActionsListBuilder actionsListBuilder) {
 
-        GroupAction groupAction = (GroupAction) action;
+            GroupAction groupAction2,
+            ActionBuilder actionBuilder,
+            ActionsListBuilder actionsListBuilder) {
+
+
+        GroupAction groupAction = (GroupAction) groupAction2;
 
         GroupIdActionBuilder groupIdBuilder = new GroupIdActionBuilder();
         groupIdBuilder.setGroupId(Long.getLong(groupAction.getGroup()));
@@ -315,10 +378,13 @@ public final class ActionConvertor {
     }
 
     private static ActionsList SalToOFSetMplsTtl(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
-            ActionBuilder actionBuilder, ActionsListBuilder actionsListBuilder) {
 
-        SetMplsTtlAction mplsTtlAction = (SetMplsTtlAction) action;
+            SetMplsTtlAction setMplsTtlAction,
+            ActionBuilder actionBuilder,
+            ActionsListBuilder actionsListBuilder) {
+
+
+        SetMplsTtlAction mplsTtlAction = (SetMplsTtlAction) setMplsTtlAction;
 
         MplsTtlActionBuilder mplsTtlActionBuilder = new MplsTtlActionBuilder();
         mplsTtlActionBuilder.setMplsTtl(mplsTtlAction.getMplsTtl()/* SAL */);
@@ -349,10 +415,11 @@ public final class ActionConvertor {
     }
 
     private static ActionsList salToOFOutputAction(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
-            ActionBuilder actionBuilder, ActionsListBuilder actionsListBuilder, short version) {
+            org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.output.action._case.OutputAction outputAction,
+            ActionBuilder actionBuilder,
+ ActionsListBuilder actionsListBuilder, short version) {
 
-        OutputAction outputAction = ((OutputAction) action);
+
         PortActionBuilder portAction = new PortActionBuilder();
         MaxLengthActionBuilder maxLenActionBuilder = new MaxLengthActionBuilder();
         maxLenActionBuilder.setMaxLength(outputAction.getMaxLength());
@@ -437,31 +504,31 @@ public final class ActionConvertor {
                 bucketActions.add(ofToSALGroupAction(action));
             else if (action.getType().equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.CopyTtlOut.class)){
                 CopyTtlOutBuilder copyTtlOutaction = new CopyTtlOutBuilder();
-                bucketActions.add(copyTtlOutaction.build());
+                bucketActions.add(new CopyTtlOutCaseBuilder().setCopyTtlOut(copyTtlOutaction.build()).build());
             }
             else if (action.getType().equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.CopyTtlIn.class)){
                 CopyTtlInBuilder copyTtlInaction = new CopyTtlInBuilder();
-                bucketActions.add(copyTtlInaction.build());
+                bucketActions.add(new CopyTtlInCaseBuilder().setCopyTtlIn(copyTtlInaction.build()).build());
             }
             else if (action.getType().equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.SetMplsTtl.class))
                 bucketActions.add(ofToSALSetMplsTtl(action));
             else if (action.getType().equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.DecMplsTtl.class)){
                 DecMplsTtlBuilder decMplsTtl = new DecMplsTtlBuilder(); 
-                bucketActions.add(decMplsTtl.build());
+                bucketActions.add(new DecMplsTtlCaseBuilder().setDecMplsTtl(decMplsTtl.build()).build());
             }
             else if (action.getType().equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.PushVlan.class))
                 bucketActions.add(ofToSALPushVlanAction(action));
             else if (action.getType().equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.PopVlan.class)){
                 PopVlanActionBuilder popVlan = new PopVlanActionBuilder();
-                bucketActions.add(popVlan.build());
+                bucketActions.add(new PopVlanActionCaseBuilder().setPopVlanAction(popVlan.build()).build());
             }
             else if (action.getType().equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.PushMpls.class)){
                 PushMplsActionBuilder pushMpls = new PushMplsActionBuilder(); 
-                bucketActions.add(pushMpls.build());
+                bucketActions.add(new PushMplsActionCaseBuilder().setPushMplsAction(pushMpls.build()).build());
             }
             else if (action.getType().equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.PopMpls.class)){
                 PopMplsActionBuilder popMpls = new PopMplsActionBuilder(); 
-                bucketActions.add(popMpls.build());
+                bucketActions.add(new PopMplsActionCaseBuilder().setPopMplsAction(popMpls.build()).build());
             }
             else if (action.getType().equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.SetQueue.class))
                 bucketActions.add(ofToSALSetQueue(action));
@@ -470,7 +537,7 @@ public final class ActionConvertor {
                 bucketActions.add(ofToSALSetNwTtl(action));
             else if (action.getType().equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.DecNwTtl.class)){
                 DecNwTtlBuilder decNwTtl = new DecNwTtlBuilder();
-                bucketActions.add(decNwTtl.build());
+                bucketActions.add(new DecNwTtlCaseBuilder().setDecNwTtl(decNwTtl.build()).build());
             }
             else if (action.getType().equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.SetField.class))
                 bucketActions.add(FlowConvertor.ofToSALSetField(action));
@@ -479,7 +546,7 @@ public final class ActionConvertor {
                 bucketActions.add(ofToSALPushPbbAction(action));
             else if (action.getType().equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.PopPbb.class)){
                 PopPbbActionBuilder popPbb = new PopPbbActionBuilder(); 
-                bucketActions.add(popPbb.build());
+                bucketActions.add(new PopPbbActionCaseBuilder().setPopPbbAction(popPbb.build()).build());
             }
             else if (action.getType().equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.Experimenter.class)){
                 //bucketActions.add(ofToSALExperimenter(action));
@@ -498,8 +565,9 @@ public final class ActionConvertor {
      *            action.rev130731.actions.actions.list.Action
      * @return OutputAction
      */
-    public static OutputAction ofToSALOutputAction(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.actions.list.Action action) {
+
+    public static OutputActionCase ofToSALOutputAction(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.actions.list.Action action) {
+
 
         OutputActionBuilder outputAction = new OutputActionBuilder();
         PortAction port = action.getAugmentation(PortAction.class);
@@ -516,7 +584,7 @@ public final class ActionConvertor {
             logger.error("Provided action is not OF Output action, no associated length found!");
         }
 
-        return outputAction.build();
+        return new OutputActionCaseBuilder().setOutputAction(outputAction.build()).build();
     }
 
     /**
@@ -525,15 +593,18 @@ public final class ActionConvertor {
      * @param action
      * @return GroupAction
      */
-    public static GroupAction ofToSALGroupAction(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.actions.list.Action action) {
+
+    public static GroupActionCase ofToSALGroupAction(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.actions.list.Action action) {
+
 
         GroupActionBuilder groupAction = new GroupActionBuilder();
 
         GroupIdAction groupId = action.getAugmentation(GroupIdAction.class);
         groupAction.setGroupId(groupId.getGroupId());
 
-        return groupAction.build();
+        
+        return new GroupActionCaseBuilder().setGroupAction(groupAction.build()).build();
+
     }
 
     /**
@@ -543,13 +614,14 @@ public final class ActionConvertor {
      * @param action
      * @return
      */
-    public static SetMplsTtlAction ofToSALSetMplsTtl(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.actions.list.Action action) {
+
+    public static SetMplsTtlActionCase ofToSALSetMplsTtl(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.actions.list.Action action){
+
 
         SetMplsTtlActionBuilder mplsTtlAction = new SetMplsTtlActionBuilder();
         MplsTtlAction mplsTtl = action.getAugmentation(MplsTtlAction.class);
         mplsTtlAction.setMplsTtl(mplsTtl.getMplsTtl());
-        return mplsTtlAction.build();
+        return new SetMplsTtlActionCaseBuilder().setSetMplsTtlAction(mplsTtlAction.build()).build();
     }
 
     /**
@@ -558,15 +630,13 @@ public final class ActionConvertor {
      * @param action
      * @return PushVlanAction
      */
-    public static PushVlanAction ofToSALPushVlanAction(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.actions.list.Action action) {
+    public static PushVlanActionCase ofToSALPushVlanAction(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.actions.list.Action action) {
 
         PushVlanActionBuilder pushVlanAction = new PushVlanActionBuilder();
-
         EthertypeAction etherType = action.getAugmentation(EthertypeAction.class);
         pushVlanAction.setVlanId(new VlanId(etherType.getEthertype().getValue()));
+        return new PushVlanActionCaseBuilder().setPushVlanAction(pushVlanAction.build()).build();
 
-        return pushVlanAction.build();
     }
 
     /**
@@ -575,15 +645,17 @@ public final class ActionConvertor {
      * @param action
      * @return SetQueueAction
      */
-    public static SetQueueAction ofToSALSetQueue(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.actions.list.Action action) {
+
+    public static SetQueueActionCase ofToSALSetQueue(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.actions.list.Action action) {
+
 
         SetQueueActionBuilder setQueueAction = new SetQueueActionBuilder();
 
         QueueIdAction queueId = action.getAugmentation(QueueIdAction.class);
         setQueueAction.setQueueId(queueId.getQueueId());
+        
+        return new SetQueueActionCaseBuilder().setSetQueueAction(setQueueAction.build()).build();
 
-        return setQueueAction.build();
     }
 
     /**
@@ -592,14 +664,16 @@ public final class ActionConvertor {
      * @param action
      * @return SetNwTtlAction
      */
-    public static SetNwTtlAction ofToSALSetNwTtl(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.actions.list.Action action) {
+
+    public static SetNwTtlActionCase ofToSALSetNwTtl(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.actions.list.Action action) {
+
 
         SetNwTtlActionBuilder setNwTtl = new SetNwTtlActionBuilder();
         NwTtlAction nwTtl = action.getAugmentation(NwTtlAction.class);
         setNwTtl.setNwTtl(nwTtl.getNwTtl());
 
-        return setNwTtl.build();
+        return new SetNwTtlActionCaseBuilder().setSetNwTtlAction(setNwTtl.build()).build();
+
     }
 
     /**
@@ -608,15 +682,16 @@ public final class ActionConvertor {
      * @param action
      * @return PushVlanAction
      */
-    public static PushPbbAction ofToSALPushPbbAction(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.actions.list.Action action) {
+    public static PushPbbActionCase ofToSALPushPbbAction(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.actions.list.Action action) {
+
 
         PushPbbActionBuilder pushPbbAction = new PushPbbActionBuilder();
 
         EthertypeAction etherType = action.getAugmentation(EthertypeAction.class);
         pushPbbAction.setEthernetType(etherType.getEthertype().getValue());
 
-        return pushPbbAction.build();
+        return new PushPbbActionCaseBuilder().setPushPbbAction(pushPbbAction.build()).build();
+
     }
 
     public static Object ofToSALExperimenter(
@@ -628,6 +703,5 @@ public final class ActionConvertor {
         /*
          * TODO: Need to explore/discuss about how to handle experimenter
          */
-
     }
 }
