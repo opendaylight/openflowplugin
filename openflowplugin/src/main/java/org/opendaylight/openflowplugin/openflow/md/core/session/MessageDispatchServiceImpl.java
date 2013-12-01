@@ -119,21 +119,8 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
         // Set Xid before invoking RPC on OFLibrary
         // TODO : Cleaner approach is to use a copy constructor once it is implemented
         Long Xid = session.getNextXid();
-        FlowModInputBuilder mdInput = new FlowModInputBuilder();
+        FlowModInputBuilder mdInput = new FlowModInputBuilder(input);
         mdInput.setXid(Xid);
-        mdInput.setBufferId(input.getBufferId());
-        mdInput.setCommand(input.getCommand());
-        mdInput.setCookie(input.getCookie());
-        mdInput.setCookieMask(input.getCookieMask());
-        mdInput.setFlags(input.getFlags());
-        mdInput.setHardTimeout(input.getHardTimeout());
-        mdInput.setIdleTimeout(input.getHardTimeout());
-        mdInput.setMatch(input.getMatch());
-        mdInput.setOutGroup(input.getOutGroup());
-        mdInput.setOutPort(input.getOutPort());
-        mdInput.setPriority(input.getPriority());
-        mdInput.setTableId(input.getTableId());
-        mdInput.setVersion(input.getVersion());
         LOG.debug("Calling OFLibrary flowMod");
         Future<RpcResult<Void>> response = getConnectionAdapter(cookie).flowMod(mdInput.build());
 
@@ -255,7 +242,7 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
 
         LOG.debug("Calling OFLibrary portMod");
         Future<RpcResult<Void>> response = getConnectionAdapter(cookie).portMod(input);
-        
+
         // Send the same Xid back to caller - ModelDrivenSwitch
         UpdatePortOutputBuilder portModOutput = new UpdatePortOutputBuilder();
         String stringXid =input.getXid().toString();
