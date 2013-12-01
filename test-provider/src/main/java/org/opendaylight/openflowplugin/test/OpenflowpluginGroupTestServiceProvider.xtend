@@ -30,7 +30,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.Add
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupInput
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupInput
 
-class OpenflowpluginTestServiceProvider implements AutoCloseable, SalGroupService {
+class OpenflowpluginGroupTestServiceProvider implements AutoCloseable, SalGroupService {
 
 
     static val LOG = LoggerFactory.getLogger(OpenflowpluginTestServiceProvider);
@@ -74,9 +74,9 @@ class OpenflowpluginTestServiceProvider implements AutoCloseable, SalGroupServic
     }
     
     
-    def CompositeObjectRegistration<OpenflowpluginTestServiceProvider> register(ProviderContext ctx) {
+    def CompositeObjectRegistration<OpenflowpluginGroupTestServiceProvider> register(ProviderContext ctx) {
         val builder = CompositeObjectRegistration
-                .<OpenflowpluginTestServiceProvider> builderFor(this);
+                .<OpenflowpluginGroupTestServiceProvider> builderFor(this);
 
         groupRegistration = ctx.addRoutedRpcImplementation(SalGroupService, this);
         val nodeIndentifier = InstanceIdentifier.builder(Nodes).child(Node, new NodeKey(new NodeId(OpenflowpluginTestActivator.NODE_ID)));

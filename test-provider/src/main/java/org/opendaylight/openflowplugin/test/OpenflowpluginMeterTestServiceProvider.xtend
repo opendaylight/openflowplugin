@@ -24,7 +24,7 @@ import org.opendaylight.yangtools.concepts.CompositeObjectRegistration
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier
 import org.slf4j.LoggerFactory
 
-class OpenflowpluginTestServiceProvider implements AutoCloseable, SalMeterService {
+class OpenflowpluginMeterTestServiceProvider implements AutoCloseable, SalMeterService {
 
 
     static val LOG = LoggerFactory.getLogger(OpenflowpluginTestServiceProvider);
@@ -68,9 +68,9 @@ class OpenflowpluginTestServiceProvider implements AutoCloseable, SalMeterServic
     }
     
     
-    def CompositeObjectRegistration<OpenflowpluginTestServiceProvider> register(ProviderContext ctx) {
+    def CompositeObjectRegistration<OpenflowpluginMeterTestServiceProvider> register(ProviderContext ctx) {
         val builder = CompositeObjectRegistration
-                .<OpenflowpluginTestServiceProvider> builderFor(this);
+                .<OpenflowpluginMeterTestServiceProvider> builderFor(this);
 
         meterRegistration = ctx.addRoutedRpcImplementation(SalMeterService, this);
         val nodeIndentifier = InstanceIdentifier.builder(Nodes).child(Node, new NodeKey(new NodeId(OpenflowpluginTestActivator.NODE_ID)));
