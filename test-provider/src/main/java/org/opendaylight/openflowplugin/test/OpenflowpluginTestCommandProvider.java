@@ -29,57 +29,97 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.VlanCfi;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.ControllerActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlInBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlOutBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DecMplsTtlBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DecNwTtl;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DecNwTtlBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DropAction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DropActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.FloodActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.FloodAllActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.HwPathActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.LoopbackActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PopMplsActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PopPbbActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PopVlanActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PushMplsActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PushPbbActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PushVlanActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetDlDstActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetDlSrcActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetDlTypeActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetFieldBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetMplsTtlActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetNextHopActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetNwDstActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetNwSrcActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetNwTosActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetNwTtlActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetQueueActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetTpDstActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetTpSrcActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetVlanCfiActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetVlanIdActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetVlanPcpActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SwPathActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.ControllerActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlInCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlOutCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DecMplsTtlCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DecNwTtlCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DropActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.FloodActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.FloodAllActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.HwPathActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.LoopbackActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PopMplsActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PopPbbActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PopVlanActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PushMplsActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PushPbbActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PushVlanActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetDlDstActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetDlSrcActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetDlTypeActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetMplsTtlActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetNextHopActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetNwDstActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetNwSrcActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetNwTosActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetNwTtlActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetQueueActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetTpDstActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetTpSrcActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetVlanCfiActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetVlanIdActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetVlanPcpActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SwPathActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.controller.action._case.ControllerActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.copy.ttl.in._case.CopyTtlInBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.copy.ttl.out._case.CopyTtlOutBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.dec.mpls.ttl._case.DecMplsTtlBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.dec.nw.ttl._case.DecNwTtl;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.dec.nw.ttl._case.DecNwTtlBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.drop.action._case.DropAction;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.drop.action._case.DropActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.flood.action._case.FloodActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.flood.all.action._case.FloodAllActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.group.action._case.GroupActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.hw.path.action._case.HwPathActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.loopback.action._case.LoopbackActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.output.action._case.OutputActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.pop.mpls.action._case.PopMplsActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.pop.pbb.action._case.PopPbbActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.pop.vlan.action._case.PopVlanActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.push.mpls.action._case.PushMplsActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.push.pbb.action._case.PushPbbActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.push.vlan.action._case.PushVlanActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.dl.dst.action._case.SetDlDstActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.dl.src.action._case.SetDlSrcActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.dl.type.action._case.SetDlTypeActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.field._case.SetFieldBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.mpls.ttl.action._case.SetMplsTtlActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.next.hop.action._case.SetNextHopActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.nw.dst.action._case.SetNwDstActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.nw.src.action._case.SetNwSrcActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.nw.tos.action._case.SetNwTosActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.nw.ttl.action._case.SetNwTtlActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.queue.action._case.SetQueueActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.tp.dst.action._case.SetTpDstActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.tp.src.action._case.SetTpSrcActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.vlan.cfi.action._case.SetVlanCfiActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.vlan.id.action._case.SetVlanIdActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.vlan.pcp.action._case.SetVlanPcpActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.sw.path.action._case.SwPathActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.address.address.Ipv4Builder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.config.rev130819.Flows;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.config.rev130819.flows.Flow;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.config.rev130819.flows.FlowBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.config.rev130819.flows.FlowKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.InstructionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.GoToTableBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.MeterBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.WriteMetadataBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.GoToTableCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.MeterCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.WriteMetadataCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.apply.actions._case.ApplyActionsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.go.to.table._case.GoToTableBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.meter._case.MeterBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.write.metadata._case.WriteMetadataBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -91,6 +131,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.EtherType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanPcp;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.arp.match.fields.ArpSourceHardwareAddressBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.arp.match.fields.ArpTargetHardwareAddressBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetDestinationBuilder;
@@ -116,10 +157,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanIdBuilder;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier.InstanceIdentifierBuilder;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
 
 public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
@@ -421,7 +465,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
             LOG.warn("flow type not understood: {}", flowType);
         }
 
-        FlowKey key = new FlowKey(id, new NodeRef(new NodeRef(nodeBuilderToInstanceId(nodeBuilder))));
+        FlowKey key = new FlowKey(new FlowId(id));
         flow.setBarrier(false);
         // flow.setBufferId(new Long(12));
         BigInteger value = new BigInteger("10", 10);
@@ -433,7 +477,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         flow.setStrict(false);
         flow.setContainerName(null);
         flow.setFlags(new FlowModFlags(false, false, false, false, false));
-        flow.setId(new Long(12));
+        flow.setId(new FlowId(new Long(12)));
         flow.setTableId((short) 2);
         flow.setOutGroup(new Long(2));
         flow.setOutPort(value);
@@ -452,7 +496,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         DecNwTtlBuilder ta = new DecNwTtlBuilder();
         DecNwTtl decNwTtl = ta.build();
         ActionBuilder ab = new ActionBuilder();
-        ab.setAction(decNwTtl);
+        ab.setAction(new DecNwTtlCaseBuilder().setDecNwTtl(decNwTtl).build());
 
         // Add our drop action to a list
         List<Action> actionList = new ArrayList<Action>();
@@ -464,7 +508,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         // Wrap our Apply Action in an Instruction
         InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(aab.build());
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
@@ -480,11 +524,10 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
     private static InstructionsBuilder createMeterInstructions() {
 
         MeterBuilder aab = new MeterBuilder();
-        aab.setMeter("meter");
-        aab.setMeterId(new Long(1));
+        aab.setMeterId(new MeterId(new Long(1)));
 
         InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(aab.build());
+        ib.setInstruction(new MeterCaseBuilder().setMeter(aab.build()).build());
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
@@ -501,7 +544,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         aab.setMetadataMask(new BigInteger("12", 10));
 
         InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(aab.build());
+        ib.setInstruction(new WriteMetadataCaseBuilder().setWriteMetadata(aab.build()).build());
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
@@ -517,7 +560,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         aab.setTableId((short) 2);
 
         InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(aab.build());
+        ib.setInstruction(new GoToTableCaseBuilder().setGoToTable(aab.build()).build());
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
@@ -531,7 +574,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         DropActionBuilder dab = new DropActionBuilder();
         DropAction dropAction = dab.build();
         ActionBuilder ab = new ActionBuilder();
-        ab.setAction(dropAction);
+        ab.setAction(new DropActionCaseBuilder().setDropAction(dropAction).build());
 
         // Add our drop action to a list
         List<Action> actionList = new ArrayList<Action>();
@@ -543,7 +586,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         // Wrap our Apply Action in an Instruction
         InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(aab.build());
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
@@ -559,7 +602,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         ActionBuilder ab = new ActionBuilder();
         ControllerActionBuilder controller = new ControllerActionBuilder();
         controller.setMaxLength(5);
-        ab.setAction(controller.build());
+        ab.setAction(new ControllerActionCaseBuilder().setControllerAction(controller.build()).build());
         actionList.add(ab.build());
         // Create an Apply Action
         ApplyActionsBuilder aab = new ApplyActionsBuilder();
@@ -567,7 +610,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         // Wrap our Apply Action in an Instruction
         InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(aab.build());
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
@@ -586,7 +629,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         output.setMaxLength(56);
         Uri value = new Uri("PCEP");
         output.setOutputNodeConnector(value);
-        ab.setAction(output.build());
+        ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
         actionList.add(ab.build());
         // Create an Apply Action
         ApplyActionsBuilder aab = new ApplyActionsBuilder();
@@ -594,7 +637,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         // Wrap our Apply Action in an Instruction
         InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(aab.build());
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
@@ -611,7 +654,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         PushMplsActionBuilder push = new PushMplsActionBuilder();
         push.setEthernetType(new Integer(0x8847));
-        ab.setAction(push.build());
+        ab.setAction(new PushMplsActionCaseBuilder().setPushMplsAction(push.build()).build());
         actionList.add(ab.build());
         // Create an Apply Action
         ApplyActionsBuilder aab = new ApplyActionsBuilder();
@@ -619,7 +662,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         // Wrap our Apply Action in an Instruction
         InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(aab.build());
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
@@ -636,7 +679,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         PushPbbActionBuilder pbb = new PushPbbActionBuilder();
         pbb.setEthernetType(new Integer(0x88E7));
-        ab.setAction(pbb.build());
+        ab.setAction(new PushPbbActionCaseBuilder().setPushPbbAction(pbb.build()).build());
         actionList.add(ab.build());
         // Create an Apply Action
         ApplyActionsBuilder aab = new ApplyActionsBuilder();
@@ -644,7 +687,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         // Wrap our Apply Action in an Instruction
         InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(aab.build());
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
@@ -661,7 +704,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         PushVlanActionBuilder vlan = new PushVlanActionBuilder();
         vlan.setEthernetType(new Integer(0x8100));
-        ab.setAction(vlan.build());
+        ab.setAction(new PushVlanActionCaseBuilder().setPushVlanAction(vlan.build()).build());
         actionList.add(ab.build());
 
         // Create an Apply Action
@@ -670,7 +713,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         // Wrap our Apply Action in an Instruction
         InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(aab.build());
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
@@ -687,7 +730,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         SetDlDstActionBuilder setdl = new SetDlDstActionBuilder();
         setdl.setAddress(new MacAddress("00:05:b9:7c:81:5f"));
-        ab.setAction(setdl.build());
+        ab.setAction(new SetDlDstActionCaseBuilder().setSetDlDstAction(setdl.build()).build());
         actionList.add(ab.build());
         // Create an Apply Action
         ApplyActionsBuilder aab = new ApplyActionsBuilder();
@@ -695,7 +738,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         // Wrap our Apply Action in an Instruction
         InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(aab.build());
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
@@ -712,7 +755,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         SetDlSrcActionBuilder src = new SetDlSrcActionBuilder();
         src.setAddress(new MacAddress("00:05:b9:7c:81:5f"));
-        ab.setAction(src.build());
+        ab.setAction(new SetDlSrcActionCaseBuilder().setSetDlSrcAction(src.build()).build());
         actionList.add(ab.build());
 
         // Create an Apply Action
@@ -721,7 +764,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         // Wrap our Apply Action in an Instruction
         InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(aab.build());
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
@@ -739,7 +782,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         SetVlanIdActionBuilder vl = new SetVlanIdActionBuilder();
         VlanId a = new VlanId(4000);
         vl.setVlanId(a);
-        ab.setAction(vl.build());
+        ab.setAction(new SetVlanIdActionCaseBuilder().setSetVlanIdAction(vl.build()).build());
         actionList.add(ab.build());
         // Create an Apply Action
         ApplyActionsBuilder aab = new ApplyActionsBuilder();
@@ -747,7 +790,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         // Wrap our Apply Action in an Instruction
         InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(aab.build());
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
@@ -765,7 +808,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         SetVlanPcpActionBuilder pcp = new SetVlanPcpActionBuilder();
         VlanPcp pcp1 = new VlanPcp((short) 2);
         pcp.setVlanPcp(pcp1);
-        ab.setAction(pcp.build());
+        ab.setAction(new SetVlanPcpActionCaseBuilder().setSetVlanPcpAction(pcp.build()).build());
         actionList.add(ab.build());
         // Create an Apply Action
         ApplyActionsBuilder aab = new ApplyActionsBuilder();
@@ -773,7 +816,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         // Wrap our Apply Action in an Instruction
         InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(aab.build());
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
@@ -789,7 +832,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         ActionBuilder ab = new ActionBuilder();
 
         CopyTtlInBuilder ttlin = new CopyTtlInBuilder();
-        ab.setAction(ttlin.build());
+        ab.setAction(new  CopyTtlInCaseBuilder().setCopyTtlIn(ttlin.build()).build());
         actionList.add(ab.build());
         // Create an Apply Action
         ApplyActionsBuilder aab = new ApplyActionsBuilder();
@@ -797,7 +840,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         // Wrap our Apply Action in an Instruction
         InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(aab.build());
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
@@ -813,7 +856,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         ActionBuilder ab = new ActionBuilder();
 
         CopyTtlOutBuilder ttlout = new CopyTtlOutBuilder();
-        ab.setAction(ttlout.build());
+        ab.setAction(new CopyTtlOutCaseBuilder().setCopyTtlOut(ttlout.build()).build());
         actionList.add(ab.build());
         // Create an Apply Action
         ApplyActionsBuilder aab = new ApplyActionsBuilder();
@@ -821,7 +864,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         // Wrap our Apply Action in an Instruction
         InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(aab.build());
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
@@ -837,7 +880,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         ActionBuilder ab = new ActionBuilder();
 
         DecMplsTtlBuilder mpls = new DecMplsTtlBuilder();
-        ab.setAction(mpls.build());
+        ab.setAction(new DecMplsTtlCaseBuilder().setDecMplsTtl(mpls.build()).build());
         actionList.add(ab.build());
         // Create an Apply Action
         ApplyActionsBuilder aab = new ApplyActionsBuilder();
@@ -845,7 +888,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         // Wrap our Apply Action in an Instruction
         InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(aab.build());
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
@@ -861,7 +904,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         ActionBuilder ab = new ActionBuilder();
 
         DecNwTtlBuilder nwttl = new DecNwTtlBuilder();
-        ab.setAction(nwttl.build());
+        ab.setAction(new DecNwTtlCaseBuilder().setDecNwTtl(nwttl.build()).build());
         actionList.add(ab.build());
 
         // Create an Apply Action
@@ -870,7 +913,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         // Wrap our Apply Action in an Instruction
         InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(aab.build());
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
@@ -886,7 +929,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         ActionBuilder ab = new ActionBuilder();
 
         DropActionBuilder drop = new DropActionBuilder();
-        ab.setAction(drop.build());
+        ab.setAction(new DropActionCaseBuilder().setDropAction(drop.build()).build());
         actionList.add(ab.build());
 
         // Create an Apply Action
@@ -895,7 +938,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         // Wrap our Apply Action in an Instruction
         InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(aab.build());
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
@@ -911,7 +954,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         ActionBuilder ab = new ActionBuilder();
 
         FloodActionBuilder fld = new FloodActionBuilder();
-        ab.setAction(fld.build());
+        ab.setAction(new FloodActionCaseBuilder().setFloodAction(fld.build()).build());
         actionList.add(ab.build());
         // Create an Apply Action
         ApplyActionsBuilder aab = new ApplyActionsBuilder();
@@ -919,7 +962,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         // Wrap our Apply Action in an Instruction
         InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(aab.build());
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
@@ -935,7 +978,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         ActionBuilder ab = new ActionBuilder();
 
         FloodAllActionBuilder fldall = new FloodAllActionBuilder();
-        ab.setAction(fldall.build());
+        ab.setAction(new FloodAllActionCaseBuilder().setFloodAllAction(fldall.build()).build());
         actionList.add(ab.build());
         // Create an Apply Action
         ApplyActionsBuilder aab = new ApplyActionsBuilder();
@@ -943,7 +986,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         // Wrap our Apply Action in an Instruction
         InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(aab.build());
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
@@ -961,7 +1004,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         GroupActionBuilder groupActionB = new GroupActionBuilder();
         groupActionB.setGroupId(1L);
         groupActionB.setGroup("0");
-        ab.setAction(groupActionB.build());
+        ab.setAction(new GroupActionCaseBuilder().setGroupAction(groupActionB.build()).build());
         actionList.add(ab.build());
 
         // Create an Apply Action
@@ -970,7 +1013,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         // Wrap our Apply Action in an Instruction
         InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(aab.build());
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
@@ -986,7 +1029,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         ActionBuilder ab = new ActionBuilder();
 
         HwPathActionBuilder hwPathB = new HwPathActionBuilder();
-        ab.setAction(hwPathB.build());
+        ab.setAction(new HwPathActionCaseBuilder().setHwPathAction(hwPathB.build()).build());
         actionList.add(ab.build());
         // Create an Apply Action
         ApplyActionsBuilder aab = new ApplyActionsBuilder();
@@ -994,7 +1037,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         // Wrap our Apply Action in an Instruction
         InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(aab.build());
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
@@ -1010,7 +1053,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         ActionBuilder ab = new ActionBuilder();
 
         LoopbackActionBuilder loopbackActionBuilder = new LoopbackActionBuilder();
-        ab.setAction(loopbackActionBuilder.build());
+        ab.setAction(new LoopbackActionCaseBuilder().setLoopbackAction(loopbackActionBuilder.build()).build());
         actionList.add(ab.build());
 
         // Create an Apply Action
@@ -1019,7 +1062,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         // Wrap our Apply Action in an Instruction
         InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(aab.build());
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
@@ -1036,7 +1079,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         PopMplsActionBuilder popMplsActionBuilder = new PopMplsActionBuilder();
         popMplsActionBuilder.setEthernetType(0XB);
-        ab.setAction(popMplsActionBuilder.build());
+        ab.setAction(new PopMplsActionCaseBuilder().setPopMplsAction(popMplsActionBuilder.build()).build());
         actionList.add(ab.build());
         // Create an Apply Action
         ApplyActionsBuilder aab = new ApplyActionsBuilder();
@@ -1044,7 +1087,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         // Wrap our Apply Action in an Instruction
         InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(aab.build());
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
@@ -1060,7 +1103,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         ActionBuilder ab = new ActionBuilder();
 
         PopPbbActionBuilder popPbbActionBuilder = new PopPbbActionBuilder();
-        ab.setAction(popPbbActionBuilder.build());
+        ab.setAction(new PopPbbActionCaseBuilder().setPopPbbAction(popPbbActionBuilder.build()).build());
         actionList.add(ab.build());
         // Create an Apply Action
         ApplyActionsBuilder aab = new ApplyActionsBuilder();
@@ -1068,7 +1111,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         // Wrap our Apply Action in an Instruction
         InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(aab.build());
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
@@ -1084,7 +1127,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         ActionBuilder ab = new ActionBuilder();
 
         PopVlanActionBuilder popVlanActionBuilder = new PopVlanActionBuilder();
-        ab.setAction(popVlanActionBuilder.build());
+        ab.setAction(new PopVlanActionCaseBuilder().setPopVlanAction(popVlanActionBuilder.build()).build());
         actionList.add(ab.build());
 
         // Create an Apply Action
@@ -1093,7 +1136,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         // Wrap our Apply Action in an Instruction
         InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(aab.build());
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
@@ -1110,7 +1153,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         SetDlTypeActionBuilder setDlTypeActionBuilder = new SetDlTypeActionBuilder();
         setDlTypeActionBuilder.setDlType(new EtherType(8L));
-        ab.setAction(setDlTypeActionBuilder.build());
+        ab.setAction(new SetDlTypeActionCaseBuilder().setSetDlTypeAction(setDlTypeActionBuilder.build()).build());
         actionList.add(ab.build());
 
         // Create an Apply Action
@@ -1119,7 +1162,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         // Wrap our Apply Action in an Instruction
         InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(aab.build());
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
@@ -1135,9 +1178,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         ActionBuilder ab = new ActionBuilder();
 
         SetFieldBuilder setFieldBuilder = new SetFieldBuilder();
-        org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.field.MatchBuilder match = new org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.field.MatchBuilder();
-        match.setInPort(new Long(2));
-        setFieldBuilder.setMatch(match.build());
+        setFieldBuilder.setInPort(new Long(2));
         actionList.add(ab.build());
 
         // Create an Apply Action
@@ -1146,7 +1187,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         // Wrap our Apply Action in an Instruction
         InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(aab.build());
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
@@ -1163,7 +1204,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         SetMplsTtlActionBuilder setMplsTtlActionBuilder = new SetMplsTtlActionBuilder();
         setMplsTtlActionBuilder.setMplsTtl((short) 0X1);
-        ab.setAction(setMplsTtlActionBuilder.build());
+        ab.setAction(new SetMplsTtlActionCaseBuilder().setSetMplsTtlAction(setMplsTtlActionBuilder.build()).build());
         actionList.add(ab.build());
 
         // Create an Apply Action
@@ -1172,7 +1213,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         // Wrap our Apply Action in an Instruction
         InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(aab.build());
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
@@ -1192,7 +1233,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         Ipv4Prefix prefix = new Ipv4Prefix("10.0.0.1/24");
         ipnext.setIpv4Address(prefix);
         setNextHopActionBuilder.setAddress(ipnext.build());
-        ab.setAction(setNextHopActionBuilder.build());
+        ab.setAction(new SetNextHopActionCaseBuilder().setSetNextHopAction(setNextHopActionBuilder.build()).build());
         actionList.add(ab.build());
 
         // Create an Apply Action
@@ -1201,7 +1242,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         // Wrap our Apply Action in an Instruction
         InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(aab.build());
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
@@ -1221,7 +1262,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         Ipv4Prefix prefixdst = new Ipv4Prefix("10.0.0.21/24");
         ipdst.setIpv4Address(prefixdst);
         setNwDstActionBuilder.setAddress(ipdst.build());
-        ab.setAction(setNwDstActionBuilder.build());
+        ab.setAction(new SetNwDstActionCaseBuilder().setSetNwDstAction(setNwDstActionBuilder.build()).build());
         actionList.add(ab.build());
 
         // Create an Apply Action
@@ -1230,7 +1271,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         // Wrap our Apply Action in an Instruction
         InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(aab.build());
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
@@ -1250,7 +1291,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         Ipv4Prefix prefixsrc = new Ipv4Prefix("10.0.23.21/24");
         ipsrc.setIpv4Address(prefixsrc);
         setNwsrcActionBuilder.setAddress(ipsrc.build());
-        ab.setAction(setNwsrcActionBuilder.build());
+        ab.setAction(new SetNwSrcActionCaseBuilder().setSetNwSrcAction(setNwsrcActionBuilder.build()).build());
         actionList.add(ab.build());
 
         // Create an Apply Action
@@ -1259,7 +1300,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         // Wrap our Apply Action in an Instruction
         InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(aab.build());
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
@@ -1276,7 +1317,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         SetNwTosActionBuilder setNwTosActionBuilder = new SetNwTosActionBuilder();
         setNwTosActionBuilder.setTos(1);
-        ab.setAction(setNwTosActionBuilder.build());
+        ab.setAction(new SetNwTosActionCaseBuilder().setSetNwTosAction(setNwTosActionBuilder.build()).build());
         actionList.add(ab.build());
         // Create an Apply Action
         ApplyActionsBuilder aab = new ApplyActionsBuilder();
@@ -1284,7 +1325,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         // Wrap our Apply Action in an Instruction
         InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(aab.build());
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
@@ -1301,7 +1342,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         SetNwTtlActionBuilder setNwTtlActionBuilder = new SetNwTtlActionBuilder();
         setNwTtlActionBuilder.setNwTtl((short) 1);
-        ab.setAction(setNwTtlActionBuilder.build());
+        ab.setAction(new SetNwTtlActionCaseBuilder().setSetNwTtlAction(setNwTtlActionBuilder.build()).build());
         actionList.add(ab.build());
 
         // Create an Apply Action
@@ -1310,7 +1351,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         // Wrap our Apply Action in an Instruction
         InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(aab.build());
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
@@ -1327,7 +1368,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         SetQueueActionBuilder setQueueActionBuilder = new SetQueueActionBuilder();
         setQueueActionBuilder.setQueueId(1L);
-        ab.setAction(setQueueActionBuilder.build());
+        ab.setAction(new  SetQueueActionCaseBuilder().setSetQueueAction(setQueueActionBuilder.build()).build());
         actionList.add(ab.build());
         // Create an Apply Action
         ApplyActionsBuilder aab = new ApplyActionsBuilder();
@@ -1335,7 +1376,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         // Wrap our Apply Action in an Instruction
         InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(aab.build());
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
@@ -1352,7 +1393,8 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         SetTpDstActionBuilder setTpDstActionBuilder = new SetTpDstActionBuilder();
         setTpDstActionBuilder.setPort(new PortNumber(109));
-        ab.setAction(setTpDstActionBuilder.build());
+
+        ab.setAction(new SetTpDstActionCaseBuilder().setSetTpDstAction(setTpDstActionBuilder.build()).build());
         actionList.add(ab.build());
         // Create an Apply Action
         ApplyActionsBuilder aab = new ApplyActionsBuilder();
@@ -1360,7 +1402,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         // Wrap our Apply Action in an Instruction
         InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(aab.build());
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
@@ -1377,7 +1419,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         SetTpSrcActionBuilder setTpSrcActionBuilder = new SetTpSrcActionBuilder();
         setTpSrcActionBuilder.setPort(new PortNumber(109));
-        ab.setAction(setTpSrcActionBuilder.build());
+        ab.setAction(new SetTpSrcActionCaseBuilder().setSetTpSrcAction(setTpSrcActionBuilder.build()).build());
         actionList.add(ab.build());
 
         // Create an Apply Action
@@ -1386,7 +1428,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         // Wrap our Apply Action in an Instruction
         InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(aab.build());
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
@@ -1403,7 +1445,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         SetVlanCfiActionBuilder setVlanCfiActionBuilder = new SetVlanCfiActionBuilder();
         setVlanCfiActionBuilder.setVlanCfi(new VlanCfi(2));
-        ab.setAction(setVlanCfiActionBuilder.build());
+        ab.setAction(new SetVlanCfiActionCaseBuilder().setSetVlanCfiAction(setVlanCfiActionBuilder.build()).build());
         actionList.add(ab.build());
 
         // Create an Apply Action
@@ -1412,7 +1454,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         // Wrap our Apply Action in an Instruction
         InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(aab.build());
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
@@ -1428,7 +1470,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         ActionBuilder ab = new ActionBuilder();
 
         SwPathActionBuilder swPathAction = new SwPathActionBuilder();
-        ab.setAction(swPathAction.build());
+        ab.setAction(new SwPathActionCaseBuilder().setSwPathAction(swPathAction.build()).build());
         actionList.add(ab.build());
 
         // Create an Apply Action
@@ -1437,7 +1479,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         // Wrap our Apply Action in an Instruction
         InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(aab.build());
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
@@ -1863,8 +1905,10 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         DataModification<InstanceIdentifier<?>, DataObject> modification = dataBrokerService.beginTransaction();
         NodeBuilder tn = createTestNode(ci.nextArgument());
         FlowBuilder tf = createTestFlow(tn, ci.nextArgument());
-        InstanceIdentifier<Flow> path1 = InstanceIdentifier.builder(Flows.class).child(Flow.class, tf.getKey())
-                .toInstance();
+        InstanceIdentifier<Flow> path1 = InstanceIdentifier.builder(Nodes.class)
+                .child(Node.class, tn.getKey()).augmentation(FlowCapableNode.class)
+                .child(Table.class, new TableKey(tf.getTableId())).child(Flow.class, tf.getKey())
+                .build();
         modification.removeOperationalData(nodeBuilderToInstanceId(tn));
         modification.removeOperationalData(path1);
         modification.removeConfigurationData(nodeBuilderToInstanceId(tn));
@@ -1892,8 +1936,10 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
     private void writeFlow(CommandInterpreter ci, FlowBuilder flow, NodeBuilder nodeBuilder) {
         DataModification<InstanceIdentifier<?>, DataObject> modification = dataBrokerService.beginTransaction();
-        InstanceIdentifier<Flow> path1 = InstanceIdentifier.builder(Flows.class).child(Flow.class, flow.getKey())
-                .toInstance();
+        InstanceIdentifier<Flow> path1 = InstanceIdentifier.builder(Nodes.class)
+                .child(Node.class, nodeBuilder.getKey()).augmentation(FlowCapableNode.class)
+                .child(Table.class, new TableKey(flow.getTableId())).child(Flow.class, flow.getKey())
+                .build();
         modification.putOperationalData(nodeBuilderToInstanceId(nodeBuilder), nodeBuilder.build());
         modification.putOperationalData(path1, flow.build());
         modification.putConfigurationData(nodeBuilderToInstanceId(nodeBuilder), nodeBuilder.build());
