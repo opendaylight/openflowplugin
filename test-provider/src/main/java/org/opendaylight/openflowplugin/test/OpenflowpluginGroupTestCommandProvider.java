@@ -1,7 +1,6 @@
 package org.opendaylight.openflowplugin.test;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -12,19 +11,21 @@ import org.opendaylight.controller.md.sal.common.api.TransactionStatus;
 import org.opendaylight.controller.md.sal.common.api.data.DataModification;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.data.DataBrokerService;
-
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PopVlanActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PopVlanActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.pop.vlan.action._case.PopVlanActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.config.rev131024.Groups;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.config.rev131024.groups.Group;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.config.rev131024.groups.GroupBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.config.rev131024.groups.GroupKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.BucketId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupTypes;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Groups;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.BucketsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.Bucket;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.BucketBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -54,7 +55,7 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         pc = session;
         dataBrokerService = session.getSALService(DataBrokerService.class);
         ctx.registerService(CommandProvider.class.getName(), this, null);
-        createTestNode();        
+        createTestNode();
     }
 
     private void createUserNode(String nodeRef) {
@@ -64,7 +65,7 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         builder.setKey(new NodeKey(builder.getId()));
         testNode = builder.build();
     }
-    
+
     private void createTestNode() {
         NodeRef nodeOne = createNodeRef(OpenflowpluginTestActivator.NODE_ID);
         NodeBuilder builder = new NodeBuilder();
@@ -81,19 +82,19 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         // Sample data , committing to DataStore
         DataModification modification = dataBrokerService.beginTransaction();
         long id = 123;
-        GroupKey key = new GroupKey(id, new NodeRef(new NodeRef(nodeToInstanceId(testNode))));
+        GroupKey key = new GroupKey(new GroupId(id));
         GroupBuilder group = new GroupBuilder();
         BucketBuilder bucket = new BucketBuilder();
         bucket.setBucketId(new BucketId((long) 12));
         group.setKey(key);
-        group.setInstall(false);       
-        group.setId(id);
+        group.setInstall(false);
+        group.setGroupId(new GroupId(id));
         PopVlanActionBuilder vlanAction = new PopVlanActionBuilder();
         ActionBuilder action = new ActionBuilder();
-        action.setAction(vlanAction.build());
+        action.setAction(new PopVlanActionCaseBuilder().setPopVlanAction(vlanAction.build()).build());
         List<Action> actions = new ArrayList<Action>();
-        actions.add(action.build());        
-        bucket.setAction(actions);    
+        actions.add(action.build());
+        bucket.setAction(actions);
         bucket.setWatchGroup((long) 123);
         bucket.setWatchPort((long) 1234);
         bucket.setWeight(123);
@@ -102,7 +103,7 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         group.setBarrier(false);
         BucketsBuilder value = new BucketsBuilder();
         List<Bucket> value1 = new ArrayList<Bucket>();
-        value1.add(bucket.build());       
+        value1.add(bucket.build());
         value.setBucket(value1);
         group.setBuckets(value.build());
         testGroup = group.build();
@@ -110,7 +111,7 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
 
     public void _removeGroup(CommandInterpreter ci) {
         String nref = ci.nextArgument();
-        
+
         if (nref == null) {
             ci.println("test node added");
             createTestNode();
@@ -120,8 +121,10 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         }
         createTestGroup();
         DataModification modification = dataBrokerService.beginTransaction();
-        InstanceIdentifier<Group> path1 = InstanceIdentifier.builder(Groups.class)
-                .child(Group.class, testGroup.getKey()).toInstance();
+        InstanceIdentifier<Group> path1 = InstanceIdentifier.builder(Nodes.class)
+                .child(Node.class, testNode.getKey()).augmentation(FlowCapableNode.class)
+                .child(Group.class, new GroupKey(testGroup.getGroupId()))
+                .build();
         DataObject cls = (DataObject) modification.readConfigurationData(path1);
         modification.removeOperationalData(nodeToInstanceId(testNode));
         modification.removeOperationalData(path1);
@@ -144,7 +147,7 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
 
     public void _addGroup(CommandInterpreter ci) {
         String nref = ci.nextArgument();
-        
+
         if (nref == null) {
             ci.println("test node added");
             createTestNode();
@@ -158,9 +161,10 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
 
     private void writeGroup(CommandInterpreter ci, Group group) {
         DataModification modification = dataBrokerService.beginTransaction();
-        InstanceIdentifier<Group> path1 = InstanceIdentifier.builder(Groups.class).child(Group.class, group.getKey())
-                .toInstance();
-        DataObject cls = (DataObject) modification.readConfigurationData(path1);
+        InstanceIdentifier<Group> path1 = InstanceIdentifier.builder(Nodes.class)
+                .child(Node.class, testNode.getKey()).augmentation(FlowCapableNode.class)
+                .child(Group.class, new GroupKey(group.getGroupId()))
+                .build();
         modification.putOperationalData(nodeToInstanceId(testNode), testNode);
         modification.putOperationalData(path1, group);
         modification.putConfigurationData(nodeToInstanceId(testNode), testNode);
@@ -182,7 +186,7 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
 
     public void _modifyGroup(CommandInterpreter ci) {
         String nref = ci.nextArgument();
-        
+
         if (nref == null) {
             ci.println("test node added");
             createTestNode();
@@ -205,10 +209,10 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         help.append("\t addGroup <node id>        - node ref\n");
         help.append("\t modifyGroup <node id>        - node ref\n");
         help.append("\t removeGroup <node id>        - node ref\n");
-       
+
         return help.toString();
     }
-    
+
     private static NodeRef createNodeRef(String string) {
         NodeKey key = new NodeKey(new NodeId(string));
         InstanceIdentifier<Node> path =
