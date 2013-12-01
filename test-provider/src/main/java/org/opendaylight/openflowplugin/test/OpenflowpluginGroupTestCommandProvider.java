@@ -12,8 +12,8 @@ import org.opendaylight.controller.md.sal.common.api.TransactionStatus;
 import org.opendaylight.controller.md.sal.common.api.data.DataModification;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.data.DataBrokerService;
-
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PopVlanActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PopVlanActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.pop.vlan.action._case.PopVlanActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.config.rev131024.Groups;
@@ -89,7 +89,7 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         group.setId(id);
         PopVlanActionBuilder vlanAction = new PopVlanActionBuilder();
         ActionBuilder action = new ActionBuilder();
-        action.setAction(vlanAction.build());
+        action.setAction(new PopVlanActionCaseBuilder().setPopVlanAction(vlanAction.build()).build());
         List<Action> actions = new ArrayList<Action>();
         actions.add(action.build());        
         bucket.setAction(actions);          

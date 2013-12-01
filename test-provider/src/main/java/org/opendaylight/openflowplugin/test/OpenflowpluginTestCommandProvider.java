@@ -1,4 +1,3 @@
-
 /*
  * Copyright (c) 2013 Ericsson , Inc. and others.  All rights reserved.
  *
@@ -8,7 +7,6 @@
  */
 
 package org.opendaylight.openflowplugin.test;
-
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,17 +20,23 @@ import org.opendaylight.controller.md.sal.common.api.data.DataModification;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.data.DataBrokerService;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DecNwTtl;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DecNwTtlBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DecNwTtlCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DecNwTtlCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.dec.nw.ttl._case.DecNwTtl;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.dec.nw.ttl._case.DecNwTtlBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.config.rev130819.Flows;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.config.rev130819.flows.Flow;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.config.rev130819.flows.FlowBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.config.rev130819.flows.FlowKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.InstructionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.apply.actions._case.ApplyActionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -51,49 +55,47 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.osgi.framework.BundleContext;
 
-
-
 public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
-	private DataBrokerService dataBrokerService;
-	private ProviderContext pc;
-	private BundleContext ctx;
-	private FlowBuilder testFlow;
+    private DataBrokerService dataBrokerService;
+    private ProviderContext pc;
+    private BundleContext ctx;
+    private FlowBuilder testFlow;
     private NodeBuilder testNode;
     private String originalFlowName = "Foo";
     private String updatedFlowName = "Bar";
 
-	public OpenflowpluginTestCommandProvider(BundleContext ctx) {
-	    this.ctx = ctx;
-	}
-
-	public void onSessionInitiated(ProviderContext session) {
-	    pc = session;
-		dataBrokerService = session.getSALService(DataBrokerService.class);
-		ctx.registerService(CommandProvider.class.getName(), this, null);
-		createTestFlow(createTestNode(null));
+    public OpenflowpluginTestCommandProvider(BundleContext ctx) {
+        this.ctx = ctx;
     }
 
-	private NodeBuilder createTestNode(String nodeId) {
-	    if(nodeId == null) {
-	        nodeId = OpenflowpluginTestActivator.NODE_ID;
-	    }
-	    NodeRef nodeOne = createNodeRef(nodeId);
+    public void onSessionInitiated(ProviderContext session) {
+        pc = session;
+        dataBrokerService = session.getSALService(DataBrokerService.class);
+        ctx.registerService(CommandProvider.class.getName(), this, null);
+        createTestFlow(createTestNode(null));
+    }
+
+    private NodeBuilder createTestNode(String nodeId) {
+        if (nodeId == null) {
+            nodeId = OpenflowpluginTestActivator.NODE_ID;
+        }
+        NodeRef nodeOne = createNodeRef(nodeId);
         NodeBuilder builder = new NodeBuilder();
         builder.setId(new NodeId(nodeId));
         builder.setKey(new NodeKey(builder.getId()));
         testNode = builder;
         return builder;
-	}
+    }
 
-	private InstanceIdentifier<Node> nodeBuilderToInstanceId(NodeBuilder node) {
-	    return InstanceIdentifier.builder(Nodes.class).child(Node.class, node.getKey()).toInstance();
-	}
+    private InstanceIdentifier<Node> nodeBuilderToInstanceId(NodeBuilder node) {
+        return InstanceIdentifier.builder(Nodes.class).child(Node.class, node.getKey()).toInstance();
+    }
 
-	private FlowBuilder createTestFlow(NodeBuilder nodeBuilder) {
+    private FlowBuilder createTestFlow(NodeBuilder nodeBuilder) {
 
         long id = 123;
-        FlowKey key = new FlowKey(id, new NodeRef(new NodeRef(nodeBuilderToInstanceId(nodeBuilder))));
+        FlowKey key = new FlowKey(new FlowId(id));
         FlowBuilder flow = new FlowBuilder();
         flow.setKey(key);
         MatchBuilder match = new MatchBuilder();
@@ -103,27 +105,26 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         ipv4Match.setIpv4Destination(prefix);
         Ipv4Match i4m = ipv4Match.build();
         match.setLayer3Match(i4m);
-        
+
         EthernetMatchBuilder eth = new EthernetMatchBuilder();
         EthernetTypeBuilder ethTypeBuilder = new EthernetTypeBuilder();
         ethTypeBuilder.setType(new EtherType(0x0800L));
         eth.setEthernetType(ethTypeBuilder.build());
         match.setEthernetMatch(eth.build());
-        
+
         flow.setMatch(match.build());
 
         // Create a drop action
         /*
-         * Note: We are mishandling drop actions
-        DropAction dropAction = new DropActionBuilder().build();
-        ActionBuilder ab = new ActionBuilder();
-        ab.setAction(dropAction);
-        */
+         * Note: We are mishandling drop actions DropAction dropAction = new
+         * DropActionBuilder().build(); ActionBuilder ab = new ActionBuilder();
+         * ab.setAction(dropAction);
+         */
 
-        DecNwTtlBuilder ta = new DecNwTtlBuilder();
-        DecNwTtl decNwTtl = ta.build();
+        DecNwTtlCaseBuilder ta = new DecNwTtlCaseBuilder();
+        DecNwTtl decNwTtl = new DecNwTtlBuilder().build();
         ActionBuilder ab = new ActionBuilder();
-        ab.setAction(decNwTtl);
+        ab.setAction(ta.build());
 
         // Add our drop action to a list
         List<Action> actionList = new ArrayList<Action>();
@@ -135,7 +136,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         // Wrap our Apply Action in an Instruction
         InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(aab.build());
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
@@ -146,18 +147,19 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         // Add our instructions to the flow
         flow.setInstructions(isb.build());
 
-
         flow.setPriority(2);
         flow.setFlowName(originalFlowName);
         testFlow = flow;
         return flow;
-	}
+    }
 
-	public void _removeMDFlow(CommandInterpreter ci) {
-	    DataModification<InstanceIdentifier<?>, DataObject> modification = dataBrokerService.beginTransaction();
-	    NodeBuilder tn = createTestNode(ci.nextArgument());
-	    FlowBuilder tf = createTestFlow(tn);
-        InstanceIdentifier<Flow> path1 = InstanceIdentifier.builder(Flows.class).child(Flow.class, tf.getKey()).toInstance();
+    public void _removeMDFlow(CommandInterpreter ci) {
+        DataModification<InstanceIdentifier<?>, DataObject> modification = dataBrokerService.beginTransaction();
+        NodeBuilder tn = createTestNode(ci.nextArgument());
+        FlowBuilder tf = createTestFlow(tn);
+        InstanceIdentifier<Flow> path1 = InstanceIdentifier.builder(Nodes.class).child(Node.class, tn.getKey())
+                .augmentation(FlowCapableNode.class).child(Table.class, new TableKey(tf.getTableId()))
+                .child(Flow.class).toInstance();
         modification.removeOperationalData(nodeBuilderToInstanceId(tn));
         modification.removeOperationalData(path1);
         modification.removeConfigurationData(nodeBuilderToInstanceId(tn));
@@ -175,17 +177,19 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-	}
+    }
 
-	public void _addMDFlow(CommandInterpreter ci) {
+    public void _addMDFlow(CommandInterpreter ci) {
         NodeBuilder tn = createTestNode(ci.nextArgument());
         FlowBuilder tf = createTestFlow(tn);
         writeFlow(ci, tf, tn);
     }
 
-	private void writeFlow(CommandInterpreter ci,FlowBuilder flow, NodeBuilder nodeBuilder) {
-	    DataModification<InstanceIdentifier<?>, DataObject> modification = dataBrokerService.beginTransaction();
-        InstanceIdentifier<Flow> path1 = InstanceIdentifier.builder(Flows.class).child(Flow.class, flow.getKey()).toInstance();
+    private void writeFlow(CommandInterpreter ci, FlowBuilder flow, NodeBuilder nodeBuilder) {
+        DataModification<InstanceIdentifier<?>, DataObject> modification = dataBrokerService.beginTransaction();
+        InstanceIdentifier<Flow> path1 = InstanceIdentifier.builder(Nodes.class)
+                .child(Node.class, nodeBuilder.getKey()).augmentation(FlowCapableNode.class)
+                .child(Table.class, new TableKey(flow.getTableId())).child(Flow.class, flow.getKey()).toInstance();
         modification.putOperationalData(nodeBuilderToInstanceId(nodeBuilder), nodeBuilder.build());
         modification.putOperationalData(path1, flow.build());
         modification.putConfigurationData(nodeBuilderToInstanceId(nodeBuilder), nodeBuilder.build());
@@ -203,21 +207,21 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-	}
+    }
 
-	public void _modifyMDFlow(CommandInterpreter ci) {
+    public void _modifyMDFlow(CommandInterpreter ci) {
         NodeBuilder tn = createTestNode(ci.nextArgument());
-	    FlowBuilder tf = createTestFlow(tn);
-	    tf.setFlowName(updatedFlowName);
-	    writeFlow(ci, tf,tn);
-	    tf.setFlowName(originalFlowName);
-	    writeFlow(ci, tf,tn);
-	}
+        FlowBuilder tf = createTestFlow(tn);
+        tf.setFlowName(updatedFlowName);
+        writeFlow(ci, tf, tn);
+        tf.setFlowName(originalFlowName);
+        writeFlow(ci, tf, tn);
+    }
 
-	private static NodeRef createNodeRef(String string) {
+    private static NodeRef createNodeRef(String string) {
         NodeKey key = new NodeKey(new NodeId(string));
-        InstanceIdentifier<Node> path =
-        	InstanceIdentifier.builder().node(Nodes.class).node(Node.class, key).toInstance();
+        InstanceIdentifier<Node> path = InstanceIdentifier.builder().node(Nodes.class).node(Node.class, key)
+                .toInstance();
 
         return new NodeRef(path);
     }
@@ -227,4 +231,3 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return "No help";
     }
 }
-
