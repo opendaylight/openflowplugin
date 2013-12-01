@@ -499,7 +499,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         // Create multipart request header
         MultipartRequestInputBuilder mprInput = new MultipartRequestInputBuilder();
         mprInput.setType(MultipartType.OFPMPGROUP);
-        mprInput.setVersion((short)0x04);
+        mprInput.setVersion(version);
         mprInput.setXid(xid);
         mprInput.setFlags(new MultipartRequestFlags(false));
 
@@ -537,7 +537,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         // Create multipart request header
         MultipartRequestInputBuilder mprInput = new MultipartRequestInputBuilder();
         mprInput.setType(MultipartType.OFPMPGROUPDESC);
-        mprInput.setVersion((short)0x04);
+        mprInput.setVersion(version);
         mprInput.setXid(xid);
         mprInput.setFlags(new MultipartRequestFlags(false));
 
@@ -574,7 +574,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         // Create multipart request header
         MultipartRequestInputBuilder mprInput = new MultipartRequestInputBuilder();
         mprInput.setType(MultipartType.OFPMPGROUPFEATURES);
-        mprInput.setVersion((short)0x04);
+        mprInput.setVersion(version);
         mprInput.setXid(xid);
         mprInput.setFlags(new MultipartRequestFlags(false));
 
@@ -609,7 +609,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         // Create multipart request header
         MultipartRequestInputBuilder mprInput = new MultipartRequestInputBuilder();
         mprInput.setType(MultipartType.OFPMPGROUP);
-        mprInput.setVersion((short)0x04);
+        mprInput.setVersion(version);
         mprInput.setXid(xid);
         mprInput.setFlags(new MultipartRequestFlags(false));
 
@@ -647,7 +647,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         // Create multipart request header
         MultipartRequestInputBuilder mprInput = new MultipartRequestInputBuilder();
         mprInput.setType(MultipartType.OFPMPMETERCONFIG);
-        mprInput.setVersion((short)0x04);
+        mprInput.setVersion(version);
         mprInput.setXid(xid);
         mprInput.setFlags(new MultipartRequestFlags(false));
 
@@ -684,7 +684,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         // Create multipart request header
         MultipartRequestInputBuilder mprInput = new MultipartRequestInputBuilder();
         mprInput.setType(MultipartType.OFPMPMETER);
-        mprInput.setVersion((short)0x04);
+        mprInput.setVersion(version);
         mprInput.setXid(xid);
         mprInput.setFlags(new MultipartRequestFlags(false));
 
@@ -721,7 +721,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         // Create multipart request header
         MultipartRequestInputBuilder mprInput = new MultipartRequestInputBuilder();
         mprInput.setType(MultipartType.OFPMPMETERFEATURES);
-        mprInput.setVersion((short)0x04);
+        mprInput.setVersion(version);
         mprInput.setXid(xid);
         mprInput.setFlags(new MultipartRequestFlags(false));
 
@@ -755,7 +755,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         // Create multipart request header
         MultipartRequestInputBuilder mprInput = new MultipartRequestInputBuilder();
         mprInput.setType(MultipartType.OFPMPMETER);
-        mprInput.setVersion((short)0x04);
+        mprInput.setVersion(version);
         mprInput.setXid(xid);
         mprInput.setFlags(new MultipartRequestFlags(false));
 

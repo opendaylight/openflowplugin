@@ -37,6 +37,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestDescBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestGroupBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestGroupFeaturesBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestMeterFeaturesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestPortDescBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.DisconnectEvent;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SwitchIdleEvent;
@@ -343,6 +346,8 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         OFSessionUtil.registerSession(this, featureOutput, negotiatedVersion);
         requestDesc();
         requestPorts();
+        requestGroupFeatures();
+        requestMeterFeatures();
     }
 
     /*
@@ -368,7 +373,34 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         builder.setXid(getSessionContext().getNextXid());
         getConnectionAdapter().multipartRequest(builder.build());
     }
+    private void requestGroupFeatures(){
+        MultipartRequestInputBuilder mprInput = new MultipartRequestInputBuilder();
+        mprInput.setType(MultipartType.OFPMPGROUPFEATURES);
+        mprInput.setVersion(getVersion());
+        mprInput.setFlags(new MultipartRequestFlags(false));
+        mprInput.setXid(getSessionContext().getNextXid());
 
+        MultipartRequestGroupFeaturesBuilder mprGroupFeaturesBuild = new MultipartRequestGroupFeaturesBuilder();
+        mprInput.setMultipartRequestBody(mprGroupFeaturesBuild.build());
+
+        LOG.debug("Send group features statistics request :{}",mprGroupFeaturesBuild);
+        getConnectionAdapter().multipartRequest(mprInput.build());
+        
+    }
+    private void requestMeterFeatures(){
+        MultipartRequestInputBuilder mprInput = new MultipartRequestInputBuilder();
+        mprInput.setType(MultipartType.OFPMPMETERFEATURES);
+        mprInput.setVersion(getVersion());
+        mprInput.setFlags(new MultipartRequestFlags(false));
+        mprInput.setXid(getSessionContext().getNextXid());
+
+        MultipartRequestMeterFeaturesBuilder mprMeterFeaturesBuild = new MultipartRequestMeterFeaturesBuilder();
+        mprInput.setMultipartRequestBody(mprMeterFeaturesBuild.build());
+
+        LOG.debug("Send meter features statistics request :{}",mprMeterFeaturesBuild);
+        getConnectionAdapter().multipartRequest(mprInput.build());
+        
+    }
     /**
      * @param isBitmapNegotiationEnable the isBitmapNegotiationEnable to set
      */

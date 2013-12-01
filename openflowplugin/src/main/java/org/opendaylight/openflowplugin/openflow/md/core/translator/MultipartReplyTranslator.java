@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.opendaylight.controller.sal.binding.api.data.DataModificationTransaction;
 import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.GroupStatsResponseConvertor;
@@ -15,12 +16,36 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev131103.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GroupDescStatsUpdatedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GroupFeaturesUpdatedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GroupStatisticsUpdatedBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupFeatures.Capabilities;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupFeatures.Types;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.NodeGroupFeatures;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.NodeGroupFeaturesBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.group.features.GroupFeaturesBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Chaining;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.ChainingChecks;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupAll;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupCapability;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupFf;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupIndirect;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupSelect;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.SelectLiveness;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.SelectWeight;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.MeterConfigStatsUpdatedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.MeterFeaturesUpdatedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.MeterStatisticsUpdatedBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.NodeMeterFeatures;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.NodeMeterFeaturesBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.nodes.node.MeterFeaturesBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterBand;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterBandDrop;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterBandDscpRemark;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterBurst;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterCapability;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterKbps;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterPktps;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyGroup;
@@ -89,18 +114,48 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                 message.setMoreReplies(mpReply.getFlags().isOFPMPFREQMORE());
                 message.setTransactionId(generateTransactionId(mpReply.getXid()));
                 MultipartReplyGroupFeatures replyBody = (MultipartReplyGroupFeatures)mpReply.getMultipartReplyBody();
-                message.setTypes(new Types(replyBody.getTypes().isOFPGTALL(),
-                                            replyBody.getTypes().isOFPGTSELECT(),
-                                            replyBody.getTypes().isOFPGTINDIRECT(),
-                                            replyBody.getTypes().isOFPGTSELECT()));
+                List<Class<? extends GroupType>> supportedGroups = 
+                        new ArrayList<Class<? extends GroupType>>();
+                
+                if(replyBody.getTypes().isOFPGTALL()){
+                    supportedGroups.add(GroupAll.class);
+                }
+                if(replyBody.getTypes().isOFPGTSELECT()){
+                    supportedGroups.add(GroupSelect.class);
+                }
+                if(replyBody.getTypes().isOFPGTINDIRECT()){
+                    supportedGroups.add(GroupIndirect.class);
+                }
+                if(replyBody.getTypes().isOFPGTFF()){
+                    supportedGroups.add(GroupFf.class);
+                }
+                message.setGroupTypesSupported(supportedGroups);
                 message.setMaxGroups(replyBody.getMaxGroups());
-                message.setCapabilities(new Capabilities(replyBody.getCapabilities().isOFPGFCCHAINING(),
-                        replyBody.getCapabilities().isOFPGFCCHAININGCHECKS(),
-                        replyBody.getCapabilities().isOFPGFCSELECTLIVENESS(),
-                        replyBody.getCapabilities().isOFPGFCSELECTWEIGHT()));
+                
+                List<Class<? extends GroupCapability>> supportedCapabilities = 
+                        new ArrayList<Class<? extends GroupCapability>>();
+                
+                if(replyBody.getCapabilities().isOFPGFCCHAINING()){
+                    supportedCapabilities.add(Chaining.class);
+                }
+                if(replyBody.getCapabilities().isOFPGFCCHAININGCHECKS()){
+                    supportedCapabilities.add(ChainingChecks.class);
+                }
+                if(replyBody.getCapabilities().isOFPGFCSELECTLIVENESS()){
+                    supportedCapabilities.add(SelectLiveness.class);
+                }
+                if(replyBody.getCapabilities().isOFPGFCSELECTWEIGHT()){
+                    supportedCapabilities.add(SelectWeight.class);
+                }
+
+                message.setGroupCapabilitiesSupported(supportedCapabilities);
                 
                 message.setActions(getGroupActionsSupportBitmap(replyBody.getActionsBitmap()));
                 listDataObject.add(message.build());
+
+                //augmentGroupFeaturesToNode(message);
+                
+                //Send update notification to all the listeners 
                 return listDataObject;
             }
             case OFPMPMETER: {
@@ -131,7 +186,7 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
             }
             case OFPMPMETERFEATURES:{
                 logger.info("Received meter features multipart reponse");
-                
+                //Convert OF message and send it to SAL listener
                 MeterFeaturesUpdatedBuilder message = new MeterFeaturesUpdatedBuilder();
                 message.setId(node);
                 message.setMoreReplies(mpReply.getFlags().isOFPMPFREQMORE());
@@ -141,12 +196,40 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                 message.setMaxBands(replyBody.getMaxBands());
                 message.setMaxColor(replyBody.getMaxColor());
                 message.setMaxMeter(new Counter32(replyBody.getMaxMeter()));
-                message.setCapabilities(new Counter32(getMeterBandCapabilityBitmap(replyBody.getCapabilities())));
                 
-                 // TODO: Band Types is bitmaps, but plugin is receiving enum.
-                 
-                //message.setBandTypes(replyBody.getBandTypes())
+                List<Class<? extends MeterCapability>> supportedCapabilities = 
+                        new ArrayList<Class<? extends MeterCapability>>();
+                if(replyBody.getCapabilities().isOFPMFBURST()){
+                    supportedCapabilities.add(MeterBurst.class);
+                }
+                if(replyBody.getCapabilities().isOFPMFKBPS()){
+                    supportedCapabilities.add(MeterKbps.class);
+                    
+                }
+                if(replyBody.getCapabilities().isOFPMFPKTPS()){
+                    supportedCapabilities.add(MeterPktps.class);
+                    
+                }
+                if(replyBody.getCapabilities().isOFPMFSTATS()){
+                    supportedCapabilities.add(MeterStats.class);
+                    
+                }
+                message.setMeterCapabilitiesSupported(supportedCapabilities);
+                
+                List<Class<? extends MeterBand>> supportedMeterBand = 
+                        new ArrayList<Class <? extends MeterBand>>();
+                if(replyBody.getBandTypes().isOFPMBTDROP()){
+                    supportedMeterBand.add(MeterBandDrop.class);
+                }
+                if(replyBody.getBandTypes().isOFPMBTDSCPREMARK()){
+                    supportedMeterBand.add(MeterBandDscpRemark.class);
+                }
+                message.setMeterBandSupported(supportedMeterBand);
                 listDataObject.add(message.build());
+
+                //augmentMeterFeaturesToNode(message);
+
+                //Send update notification to all the listeners 
                 return listDataObject;
             }
             default:
@@ -156,6 +239,39 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
         }
         
         return listDataObject;
+    }
+    
+    private void augmentGroupFeaturesToNode(GroupFeaturesUpdatedBuilder message){
+        GroupFeaturesBuilder groupFeatures = new GroupFeaturesBuilder();
+        groupFeatures.setActions(message.getActions());
+        groupFeatures.setGroupCapabilitiesSupported(message.getGroupCapabilitiesSupported());
+        groupFeatures.setGroupTypesSupported(message.getGroupTypesSupported());
+        groupFeatures.setMaxGroups(message.getMaxGroups());
+
+        final NodeBuilder nodeData = new NodeBuilder(); 
+        nodeData.setKey(new NodeKey(message.getId()));
+        
+        NodeGroupFeaturesBuilder nodeGroupFeatures= new NodeGroupFeaturesBuilder();
+        nodeGroupFeatures.setGroupFeatures(groupFeatures.build());
+        //Update augmented data
+        nodeData.addAugmentation(NodeGroupFeatures.class, nodeGroupFeatures.build());
+    }
+
+    private void augmentMeterFeaturesToNode(MeterFeaturesUpdatedBuilder message){
+        MeterFeaturesBuilder meterFeature = new MeterFeaturesBuilder();
+        meterFeature.setMeterBandSupported(message.getMeterBandSupported());
+        meterFeature.setMeterCapabilitiesSupported(message.getMeterCapabilitiesSupported());
+        meterFeature.setMaxBands(message.getMaxBands());
+        meterFeature.setMaxColor(message.getMaxColor());
+        meterFeature.setMaxMeter(message.getMaxMeter());
+        
+        final NodeBuilder nodeData = new NodeBuilder(); 
+        nodeData.setKey(new NodeKey(message.getId()));
+        
+        NodeMeterFeaturesBuilder nodeMeterFeatures= new NodeMeterFeaturesBuilder();
+        nodeMeterFeatures.setMeterFeatures(meterFeature.build());
+        //Update augmented data
+        nodeData.addAugmentation(NodeMeterFeatures.class, nodeMeterFeatures.build());
     }
     
     private NodeId nodeIdFromDatapathId(BigInteger datapathId) {
@@ -203,23 +319,6 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
             supportActionByGroups.add(new Long(supportActionBitmap));
         }
         return supportActionByGroups;
-    }
-    /*
-     * Method returns Capability Bitmap of the meter band.
-     * TODO: I would recommend to use the 'type bits' model to store 
-     * the bitmap for the same reason as i given above for method  
-     * getGroupActionsSupportBitmap.
-     * @param capabilityFlags
-     * @return
-     */
-    
-    private long getMeterBandCapabilityBitmap (org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterFlags capabilityFlags){
-        long capabilityBitmap = 0;
-        capabilityBitmap |= capabilityFlags.isOFPMFKBPS()?(1 << 0): ~(1 << 0);
-        capabilityBitmap |= capabilityFlags.isOFPMFPKTPS()?(1 << 1): ~(1 << 1);
-        capabilityBitmap |= capabilityFlags.isOFPMFBURST()?(1 << 2): ~(1 << 2);
-        capabilityBitmap |= capabilityFlags.isOFPMFSTATS()?(1 << 3): ~(1 << 3);
-        return capabilityBitmap;
     }
 
 }
