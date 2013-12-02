@@ -22,7 +22,7 @@ public abstract class ByteUtil {
     public static String bytesToHexstring(byte[] bytes, String delimiter) {
         StringBuffer sb = new StringBuffer();
         for (int i = 0; i < bytes.length; i++) {
-            short b = bytes[i];
+            byte b = bytes[i];
             sb.append(String.format("%02x%s", b, delimiter));
         }
         return sb.toString();

@@ -244,7 +244,7 @@ public class ActionConvertorTest {
 
             DecNwTtl.class)) {
 
-                Assert.assertEquals(action.getType(), SetNwTtl.class);
+                Assert.assertEquals(action.getType(), DecNwTtl.class);
 
             }
             if (action.getType().equals(PushPbb.class)) {
