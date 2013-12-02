@@ -16,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionReadyListener;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
+import org.opendaylight.openflowplugin.openflow.md.core.session.PortFeaturesUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionManager;
 import org.opendaylight.openflowplugin.openflow.md.queue.QueueKeeper;
@@ -35,9 +36,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OpenflowProtocolListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.Port;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatus;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestDescBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestGroupBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestGroupFeaturesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestMeterFeaturesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestPortDescBuilder;
@@ -81,6 +83,8 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     private HandshakeManager handshakeManager;
 
     private boolean firstHelloProcessed;
+    
+    private PortFeaturesUtil portFeaturesUtils;
 
     /**
      * @param connectionAdapter
@@ -94,6 +98,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
                 ConnectionConductor.versionOrder.get(0), ConnectionConductor.versionOrder);
         handshakeManager.setUseVersionBitmap(isBitmapNegotiationEnable);
         handshakeManager.setHandshakeListener(this);
+        portFeaturesUtils = PortFeaturesUtil.getInstance();
     }
 
     @Override
@@ -198,8 +203,37 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
 
     @Override
     public void onPortStatusMessage(PortStatusMessage message) {
-        this.getSessionContext().processPortStatusMsg(message);
+        processPortStatusMsg(message);
         queueKeeper.push(message, this);
+    }
+    
+    protected void processPortStatusMsg(PortStatus msg) {
+        if (msg.getReason().getIntValue() == 2) {
+            updatePort(msg);
+        } else if (msg.getReason().getIntValue() == 0) {
+            updatePort(msg);
+        } else if (msg.getReason().getIntValue() == 1) {
+            deletePort(msg);
+        }
+    }
+    
+    protected void updatePort(PortStatus msg) {
+        Long portNumber = msg.getPortNo();        
+        Boolean portBandwidth = portFeaturesUtils.getPortBandwidth(msg);
+        
+        if(portBandwidth == null) {
+            LOG.warn("can't get bandwidth info from port: {}, aborting port update", msg.toString());
+        } else {
+            this.getSessionContext().getPhysicalPorts().put(portNumber, msg);
+            this.getSessionContext().getPortsBandwidth().put(portNumber, portBandwidth);                   
+        }            
+    }
+    
+    protected void deletePort(Port port) {
+        Long portNumber = port.getPortNo();
+        
+        this.getSessionContext().getPhysicalPorts().remove(portNumber);
+        this.getSessionContext().getPortsBandwidth().remove(portNumber);
     }
 
     @Override

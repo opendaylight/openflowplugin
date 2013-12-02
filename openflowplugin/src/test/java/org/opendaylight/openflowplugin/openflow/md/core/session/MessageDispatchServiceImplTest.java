@@ -282,9 +282,9 @@ class MockSessionContext implements SessionContext {
     }
 
     @Override
-    public void processPortStatusMsg(PortStatus arg0) {
+    public Map<Long, Boolean> getPortsBandwidth() {
         // TODO Auto-generated method stub
-
+        return null;
     }
 
 }
