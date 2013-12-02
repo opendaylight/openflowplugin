@@ -22,7 +22,6 @@ import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.Port;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatus;
 
 /**
  * @author mirehak
@@ -136,6 +135,11 @@ public class SessionContextOFImpl implements SessionContext {
     public Map<Long, Port> getPhysicalPorts() {
         return this.physicalPorts;
     }
+    
+    @Override
+    public Map<Long, Boolean> getPortsBandwidth() {
+        return this.portBandwidth;
+    }
 
     @Override
     public Set<Long> getPorts() {
@@ -185,40 +189,5 @@ public class SessionContextOFImpl implements SessionContext {
             }
         }
         return result;
-    }
-
-    @Override
-    public void processPortStatusMsg(PortStatus msg) {
-        Port port = msg;
-        if (msg.getReason().getIntValue() == 2) {
-            updatePhysicalPort(port);
-        } else if (msg.getReason().getIntValue() == 0) {
-            updatePhysicalPort(port);
-        } else if (msg.getReason().getIntValue() == 1) {
-            deletePhysicalPort(port);
-        }
-
-    }
-
-    private void updatePhysicalPort(Port port) {
-        Long portNumber = port.getPortNo();
-        physicalPorts.put(portNumber, port);
-        portBandwidth
-                .put(portNumber,
-                        ( (port.getCurrentFeatures().is_100gbFd())
-                          |(port.getCurrentFeatures().is_100mbFd()) | (port.getCurrentFeatures().is_100mbHd())
-                          | (port.getCurrentFeatures().is_10gbFd()) | (port.getCurrentFeatures().is_10mbFd())
-                          | (port.getCurrentFeatures().is_10mbHd()) | (port.getCurrentFeatures().is_1gbFd())
-                          | (port.getCurrentFeatures().is_1gbHd()) | (port.getCurrentFeatures().is_1tbFd())
-                          | (port.getCurrentFeatures().is_40gbFd()) | (port.getCurrentFeatures().isAutoneg())
-                          | (port.getCurrentFeatures().isCopper()) | (port.getCurrentFeatures().isFiber())
-                          | (port.getCurrentFeatures().isOther()) | (port.getCurrentFeatures().isPause())
-                          | (port.getCurrentFeatures().isPauseAsym()) ) );
-    }
-
-    private void deletePhysicalPort(Port port) {
-        Long portNumber = port.getPortNo();
-        physicalPorts.remove(portNumber);
-        portBandwidth.remove(portNumber);
     }
 }

@@ -26,12 +26,14 @@ import org.opendaylight.openflowplugin.openflow.md.core.plan.ConnectionAdapterSt
 import org.opendaylight.openflowplugin.openflow.md.core.plan.EventFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.plan.SwitchTestEvent;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
+import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContextOFImpl;
 import org.opendaylight.openflowplugin.openflow.md.queue.PopListener;
 import org.opendaylight.openflowplugin.openflow.md.queue.QueueKeeperLightImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Capabilities;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ErrorType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.HelloElementType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortFeatures;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortFeaturesV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortReason;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoRequestMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessage;
@@ -892,4 +894,65 @@ public class ConnectionConductorImplTest {
         return translatorMapping;
     }
 
+    /**
+     * Test method for
+     * {@link org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductorImpl#processPortStatusMsg(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage)}
+     * <br><br> 
+     * Tests for getting features from port status message by port version 
+     * <ul>
+     * <li>features are malformed - one of them is null</li>
+     * <li>mismatch between port version and port features</li>
+     * <li>mismatch between port version and port features</li>
+     * <li>non-existing port version</li>
+     * <li>port version OF 1.0</li>
+     * <li>port version OF 1.3</li>
+     * </ul>
+     * 
+     */
+    @Test
+    public void testProcessPortStatusMsg()  {
+		SessionContextOFImpl ctx = new SessionContextOFImpl();
+		connectionConductor.setSessionContext(ctx);
+		
+		long portNumber = 90L;
+		long portNumberV10 = 91L;
+		PortStatusMessage msg;
+		
+		PortStatusMessageBuilder builder = new PortStatusMessageBuilder();	        
+        PortFeatures features = new PortFeatures(true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false);
+        PortFeatures featuresMal = new PortFeatures(true,false,false,false,null,false,false,false,false,false,false,false,false,false,false,false);
+        PortFeaturesV10 featuresV10 = new PortFeaturesV10(true,false,false,false,false,false,false,false,false,false,false,false);
+        
+        //Malformed features	        
+        builder.setVersion((short) 1).setPortNo(portNumber).setReason(PortReason.OFPPRADD).setCurrentFeatures(featuresMal);	        
+        connectionConductor.processPortStatusMsg(builder.build());
+		Assert.assertTrue(connectionConductor.getSessionContext().getPortsBandwidth().isEmpty());
+		Assert.assertTrue(connectionConductor.getSessionContext().getPhysicalPorts().isEmpty());
+		
+        //Version-features mismatch	        
+        builder.setCurrentFeatures(features);	        
+        connectionConductor.processPortStatusMsg(builder.build());
+		Assert.assertTrue(connectionConductor.getSessionContext().getPortsBandwidth().isEmpty());
+		Assert.assertTrue(connectionConductor.getSessionContext().getPhysicalPorts().isEmpty());
+		
+        //Non existing version
+        builder.setVersion((short) 0);
+        connectionConductor.processPortStatusMsg(builder.build());
+		Assert.assertTrue(connectionConductor.getSessionContext().getPortsBandwidth().isEmpty());
+		Assert.assertTrue(connectionConductor.getSessionContext().getPhysicalPorts().isEmpty());
+		
+		//Version OF 1.3
+		builder.setVersion((short) 4);
+		msg = builder.build();
+		connectionConductor.processPortStatusMsg(builder.build());
+		Assert.assertTrue(connectionConductor.getSessionContext().getPortBandwidth(portNumber));
+		Assert.assertEquals(connectionConductor.getSessionContext().getPhysicalPort(portNumber), msg);
+		
+		//Version OF 1.0			
+		builder.setVersion((short) 1).setPortNo(portNumberV10).setCurrentFeatures(null).setCurrentFeaturesV10(featuresV10);
+		msg = builder.build();
+		connectionConductor.processPortStatusMsg(builder.build());
+		Assert.assertTrue(connectionConductor.getSessionContext().getPortBandwidth(portNumberV10));
+		Assert.assertEquals(connectionConductor.getSessionContext().getPhysicalPort(portNumberV10), msg);
+    }
 }

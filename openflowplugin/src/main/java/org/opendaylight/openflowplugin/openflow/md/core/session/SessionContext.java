@@ -83,6 +83,12 @@ public interface SessionContext {
      * @return The Map of OFPhysicalPort
      */
     public Map<Long, Port> getPhysicalPorts();
+    
+    /**
+     * Returns a map containing all bandwidths for all OFPorts of this switch.
+     * @return The Map of bandwidths for all OFPorts
+     */
+    public Map<Long, Boolean> getPortsBandwidth();
 
     /**
      * Returns a Set containing all port IDs of this switch.
@@ -123,9 +129,6 @@ public interface SessionContext {
      * @return List containing all enabled ports of this switch
      */
     public List<Port> getEnabledPorts();
-
-    public void processPortStatusMsg(PortStatus arg0);
-
 
     // TODO:: add listeners here, manager will set them and conductor use them
 
