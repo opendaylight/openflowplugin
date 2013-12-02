@@ -72,8 +72,11 @@ public final class GroupConvertor {
 
         
         groupModInputBuilder.setGroupId(new Long(source.getGroupId().getValue()));
-        getbucketList(source.getBuckets(), bucketLists, version, source.getGroupType().getIntValue());
-        groupModInputBuilder.setBucketsList(bucketLists);
+        // Only if the bucket is configured for the group then add it
+        if (source.getBuckets().getBucket().size() != 0) {
+            getbucketList(source.getBuckets(), bucketLists, version, source.getGroupType().getIntValue());
+            groupModInputBuilder.setBucketsList(bucketLists);
+        }
         groupModInputBuilder.setVersion(version);
         return groupModInputBuilder.build();
 
