@@ -430,57 +430,57 @@ public final class ActionConvertor {
             org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.actions.list.Action action 
             = actionDesc.getAction();
 
-            if (action instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.Output)
+            if (action.getType().equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.Output.class))
                 bucketActions.add(ofToSALOutputAction(action));
-            else if (action instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.Group)
+            else if (action.getType().equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.Group.class))
                 bucketActions.add(ofToSALGroupAction(action));
-            else if (action instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.CopyTtlOut){
+            else if (action.getType().equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.CopyTtlOut.class)){
                 CopyTtlOutBuilder copyTtlOutaction = new CopyTtlOutBuilder();
                 bucketActions.add(copyTtlOutaction.build());
             }
-            else if (action instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.CopyTtlIn){
+            else if (action.getType().equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.CopyTtlIn.class)){
                 CopyTtlInBuilder copyTtlInaction = new CopyTtlInBuilder();
                 bucketActions.add(copyTtlInaction.build());
             }
-            else if (action instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.SetMplsTtl)
+            else if (action.getType().equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.SetMplsTtl.class))
                 bucketActions.add(ofToSALSetMplsTtl(action));
-            else if (action instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.DecMplsTtl){
+            else if (action.getType().equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.DecMplsTtl.class)){
                 DecMplsTtlBuilder decMplsTtl = new DecMplsTtlBuilder(); 
                 bucketActions.add(decMplsTtl.build());
             }
-            else if (action instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.PushVlan)
+            else if (action.getType().equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.PushVlan.class))
                 bucketActions.add(ofToSALPushVlanAction(action));
-            else if (action instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.PopVlan){
+            else if (action.getType().equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.PopVlan.class)){
                 PopVlanActionBuilder popVlan = new PopVlanActionBuilder();
                 bucketActions.add(popVlan.build());
             }
-            else if (action instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.PushMpls){
+            else if (action.getType().equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.PushMpls.class)){
                 PushMplsActionBuilder pushMpls = new PushMplsActionBuilder(); 
                 bucketActions.add(pushMpls.build());
             }
-            else if (action instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.PopMpls){
+            else if (action.getType().equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.PopMpls.class)){
                 PopMplsActionBuilder popMpls = new PopMplsActionBuilder(); 
                 bucketActions.add(popMpls.build());
             }
-            else if (action instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.SetQueue)
+            else if (action.getType().equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.SetQueue.class))
                 bucketActions.add(ofToSALSetQueue(action));
 
-            else if (action instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.SetNwTtl)
+            else if (action.getType().equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.SetNwTtl.class))
                 bucketActions.add(ofToSALSetNwTtl(action));
-            else if (action instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.DecNwTtl){
+            else if (action.getType().equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.DecNwTtl.class)){
                 DecNwTtlBuilder decNwTtl = new DecNwTtlBuilder();
                 bucketActions.add(decNwTtl.build());
             }
-            else if (action instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.SetField)
+            else if (action.getType().equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.SetField.class))
                 bucketActions.add(FlowConvertor.ofToSALSetField(action));
 
-            else if (action instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.PushPbb)
+            else if (action.getType().equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.PushPbb.class))
                 bucketActions.add(ofToSALPushPbbAction(action));
-            else if (action instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.PopPbb){
+            else if (action.getType().equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.PopPbb.class)){
                 PopPbbActionBuilder popPbb = new PopPbbActionBuilder(); 
                 bucketActions.add(popPbb.build());
             }
-            else if (action instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.Experimenter){
+            else if (action.getType().equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.Experimenter.class)){
                 //bucketActions.add(ofToSALExperimenter(action));
                 // TODO: Need to explore/discuss on how to handle experimenter case.
             }
