@@ -114,7 +114,6 @@ public class GroupStatsResponseConvertor {
         
         org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.BucketsBuilder salBucketsDesc  = 
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.BucketsBuilder();
-        
         List<Bucket> allBuckets = new ArrayList<Bucket>();
         
         for( org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.buckets.BucketsList bucketDetails : bucketDescStats){
