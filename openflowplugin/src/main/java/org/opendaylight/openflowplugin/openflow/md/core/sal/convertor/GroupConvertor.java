@@ -53,9 +53,11 @@ public final class GroupConvertor {
             groupModInputBuilder.setType(GroupType.OFPGTFF);
 
         groupModInputBuilder.setGroupId(source.getGroupId().getValue());
-
-        getbucketList(source.getBuckets(), bucketLists, version);
-        groupModInputBuilder.setBucketsList(bucketLists);
+        // Only if the bucket is configured for the group then add it
+        if (source.getBuckets().getBucket().size() != 0) {
+            getbucketList(source.getBuckets(), bucketLists, version);
+            groupModInputBuilder.setBucketsList(bucketLists);
+        }
         groupModInputBuilder.setVersion(version);
         return groupModInputBuilder.build();
 
@@ -83,5 +85,5 @@ public final class GroupConvertor {
         }
 
     }
-    
+
 }
