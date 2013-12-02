@@ -32,6 +32,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.GroupIdAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.MaxLengthAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.OxmFieldsAction;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.PortAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.PortNumberMatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.CopyTtlIn;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.CopyTtlOut;
@@ -155,11 +156,9 @@ public class ActionConvertorTest {
 
             if (action.getType().equals(Output.class)) {
                 Assert.assertEquals((Integer) 10, (action.getAugmentation(MaxLengthAction.class)).getMaxLength());
-                // TOD0: OF needs to changed,once that is done ,revalidation of
-                // the data required.
-                // Assert.assertEquals(-3, (long)
-                // (action.getAugmentation(PortAction.class)).getPort().getValue());
-                // // short
+                long port = 4294967293L;
+                Assert.assertEquals(port, (long) (action.getAugmentation(PortAction.class)).getPort().getValue());
+
 
             }
             if (action.getType().equals(CopyTtlIn.class)) {
