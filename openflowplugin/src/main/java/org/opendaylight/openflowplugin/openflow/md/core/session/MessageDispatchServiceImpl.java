@@ -117,7 +117,7 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
     public Future<RpcResult<UpdateFlowOutput>> flowMod(FlowModInput input, SwitchConnectionDistinguisher cookie) {
 
         // Set Xid before invoking RPC on OFLibrary
-        // TODO : Cleaner approach is to use a copy constructor once it is implemented
+        // TODO : let caller set xid, in that case it will not be required to create FlowModInput again here to set xid 
         Long Xid = session.getNextXid();
         FlowModInputBuilder mdInput = new FlowModInputBuilder(input);
         mdInput.setXid(Xid);
@@ -166,15 +166,10 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
     public Future<RpcResult<UpdateGroupOutput>> groupMod(GroupModInput input, SwitchConnectionDistinguisher cookie) {
 
         // Set Xid before invoking RPC on OFLibrary
-        // TODO : Cleaner approach is to use a copy constructor once it is implemented
+        // TODO : let caller set xid, in that case it will not be required to create object again here to set xid 
         Long Xid = session.getNextXid();
-        GroupModInputBuilder mdInput = new GroupModInputBuilder();
+        GroupModInputBuilder mdInput = new GroupModInputBuilder(input);
         mdInput.setXid(Xid);
-        mdInput.setBucketsList(input.getBucketsList());
-        mdInput.setCommand(input.getCommand());
-        mdInput.setGroupId(input.getGroupId());
-        mdInput.setType(input.getType());
-        mdInput.setVersion(input.getVersion());
         LOG.debug("Calling OFLibrary groupMod");
         Future<RpcResult<Void>> response = getConnectionAdapter(cookie).groupMod(mdInput.build());
 
@@ -183,6 +178,7 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
         String stringXid =Xid.toString();
         BigInteger bigIntXid = new BigInteger( stringXid );
         groupModOutput.setTransactionId(new TransactionId(bigIntXid));
+       
         UpdateGroupOutput result = groupModOutput.build();
         Collection<RpcError> errors = Collections.emptyList();
         RpcResult<UpdateGroupOutput> rpcResult = Rpcs.getRpcResult(true, result, errors);
@@ -198,16 +194,10 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
     public Future<RpcResult<UpdateMeterOutput>> meterMod(MeterModInput input, SwitchConnectionDistinguisher cookie) {
 
         // Set Xid before invoking RPC on OFLibrary
-        // TODO : Cleaner approach is to use a copy constructor once it is implemented
+     // TODO : let caller set xid, in that case it will not be required to create MeterModInput again here to set xid 
         Long Xid = session.getNextXid();
-        MeterModInputBuilder mdInput = new MeterModInputBuilder();
+        MeterModInputBuilder mdInput = new MeterModInputBuilder(input);
         mdInput.setXid(Xid);
-        mdInput.setBands(input.getBands());
-        mdInput.setCommand(input.getCommand());
-        mdInput.setFlags(input.getFlags());
-        mdInput.setMeterId(input.getMeterId());
-        mdInput.setVersion(input.getVersion());
-        mdInput.setVersion(input.getVersion());
         LOG.debug("Calling OFLibrary meterMod");
         Future<RpcResult<Void>> response = getConnectionAdapter(cookie).meterMod(mdInput.build());
 
@@ -216,6 +206,7 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
         String stringXid =Xid.toString();
         BigInteger bigIntXid = new BigInteger( stringXid );
         meterModOutput.setTransactionId(new TransactionId(bigIntXid));
+        
         UpdateMeterOutput result = meterModOutput.build();
         Collection<RpcError> errors = Collections.emptyList();
         RpcResult<UpdateMeterOutput> rpcResult = Rpcs.getRpcResult(true, result, errors);
