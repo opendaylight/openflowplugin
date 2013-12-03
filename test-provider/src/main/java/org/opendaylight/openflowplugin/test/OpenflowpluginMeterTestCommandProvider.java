@@ -138,6 +138,16 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
     }
 
     public void _addMeter(CommandInterpreter ci) {
+        String nref = ci.nextArgument();
+        
+        if (nref == null) {
+            ci.println("test node added");
+            createTestNode();
+        } else {
+            ci.println("User node added" + nref);
+            createUserNode(nref);
+        }
+        createTestMeter();
         writeMeter(ci, testMeter);
     }
 
