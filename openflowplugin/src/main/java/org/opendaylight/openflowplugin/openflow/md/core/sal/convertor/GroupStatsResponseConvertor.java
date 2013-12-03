@@ -7,19 +7,25 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.Counter64;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.BucketId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupTypes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.Bucket;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.BucketBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.BucketKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.desc.stats.reply.GroupDescStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.desc.stats.reply.GroupDescStatsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.desc.stats.reply.GroupDescStatsKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.Buckets;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.BucketsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.DurationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.buckets.BucketCounter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.buckets.BucketCounterBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.buckets.BucketCounterKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply.GroupStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply.GroupStatsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply.GroupStatsKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group.desc.GroupDesc;
 
 /**
@@ -57,9 +63,10 @@ public class GroupStatsResponseConvertor {
         time.setNanosecond(new Counter32(groupStats.getDurationNsec()));
         
         salGroupStats.setDuration(time.build());
-        salGroupStats.setGroupId(groupStats.getGroupId().intValue());
+        salGroupStats.setGroupId(new GroupId(groupStats.getGroupId()));
         salGroupStats.setPacketCount(new Counter64(groupStats.getPacketCount()));
         salGroupStats.setRefCount(new Counter32(groupStats.getRefCount()));
+        salGroupStats.setKey(new GroupStatsKey(salGroupStats.getGroupId()));
         
         return salGroupStats.build();
     }
@@ -70,11 +77,15 @@ public class GroupStatsResponseConvertor {
         BucketsBuilder salBuckets  = new BucketsBuilder();
         
         List<BucketCounter> allBucketStats = new ArrayList<BucketCounter>();
-        
+        int bucketKey = 0;
         for( org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group.group.stats.BucketStats bucketStat : bucketStats){
             BucketCounterBuilder bucketCounter = new BucketCounterBuilder();
             bucketCounter.setByteCount(new Counter64(bucketStat.getByteCount()));
             bucketCounter.setPacketCount(new Counter64(bucketStat.getPacketCount()));
+            BucketId bucketId = new BucketId((long)bucketKey);
+            bucketCounter.setKey(new BucketCounterKey(bucketId));
+            bucketCounter.setBucketId(bucketId);
+            bucketKey++;
             allBucketStats.add(bucketCounter.build());
         }
         salBuckets.setBucketCounter(allBucketStats);
@@ -105,6 +116,7 @@ public class GroupStatsResponseConvertor {
         salGroupDescStats.setBuckets(toSALBucketsDesc(groupDesc.getBucketsList()));
         salGroupDescStats.setGroupId(new GroupId(groupDesc.getGroupId()));
         salGroupDescStats.setGroupType(GroupTypes.forValue(groupDesc.getType().getIntValue()));
+        salGroupDescStats.setKey(new GroupDescStatsKey(salGroupDescStats.getGroupId()));
         
         return salGroupDescStats.build();
     }
@@ -115,22 +127,30 @@ public class GroupStatsResponseConvertor {
         org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.BucketsBuilder salBucketsDesc  = 
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.BucketsBuilder();
         List<Bucket> allBuckets = new ArrayList<Bucket>();
-        
+        int bucketKey = 0;
         for( org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.buckets.BucketsList bucketDetails : bucketDescStats){
             BucketBuilder bucketDesc = new BucketBuilder();
             List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action> convertedSalActions = 
                     ActionConvertor.toSALBucketActions (bucketDetails.getActionsList());
             
             List<Action> actions = new ArrayList<Action>(); 
+            int actionKey = 0;
             for (org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action : convertedSalActions){
-                ActionBuilder warppedAction = new ActionBuilder();
-                warppedAction.setAction(action);
-                actions.add(warppedAction.build());
+                ActionBuilder wrappedAction = new ActionBuilder();
+                wrappedAction.setAction(action);
+                wrappedAction.setKey(new ActionKey(actionKey));
+                wrappedAction.setOrder(actionKey);
+                actions.add(wrappedAction.build());
+                actionKey++;
             }
             bucketDesc.setAction(actions);
             bucketDesc.setWeight(bucketDetails.getWeight());
             bucketDesc.setWatchPort(bucketDetails.getWatchPort().getValue());
             bucketDesc.setWatchGroup(bucketDetails.getWatchGroup());
+            BucketId bucketId = new BucketId((long)bucketKey);
+            bucketDesc.setBucketId(bucketId);
+            bucketDesc.setKey(new BucketKey(bucketId));
+            bucketKey++;
             allBuckets.add(bucketDesc.build());
         }
         salBucketsDesc.setBucket(allBuckets);

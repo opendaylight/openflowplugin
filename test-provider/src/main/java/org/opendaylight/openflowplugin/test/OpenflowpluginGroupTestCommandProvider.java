@@ -20,6 +20,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.config.rev131024.Grou
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.config.rev131024.groups.Group;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.config.rev131024.groups.GroupBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.config.rev131024.groups.GroupKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.BucketId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupTypes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.BucketsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.Bucket;
@@ -83,7 +84,7 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         GroupKey key = new GroupKey(id, new NodeRef(new NodeRef(nodeToInstanceId(testNode))));
         GroupBuilder group = new GroupBuilder();
         BucketBuilder bucket = new BucketBuilder();
-        bucket.setOrder(12);
+        bucket.setBucketId(new BucketId((long) 12));
         group.setKey(key);
         group.setInstall(false);       
         group.setId(id);

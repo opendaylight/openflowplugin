@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.concurrent.Future;
 
 import org.opendaylight.controller.sal.common.util.Rpcs;
+import org.opendaylight.openflowjava.protocol.api.util.BinContent;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.FlowConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.GroupConvertor;
@@ -505,7 +506,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 
         // Create multipart request body for fetch all the group stats
         MultipartRequestGroupBuilder mprGroupBuild = new MultipartRequestGroupBuilder();
-        mprGroupBuild.setGroupId((long) Group.OFPGALL.getIntValue());
+        mprGroupBuild.setGroupId(BinContent.intToUnsignedLong(Group.OFPGALL.getIntValue()));
 
         //Set request body to main multipart request
         mprInput.setMultipartRequestBody(mprGroupBuild.build());
@@ -653,7 +654,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 
         // Create multipart request body for fetch all the meter stats
         MultipartRequestMeterConfigBuilder mprMeterConfigBuild = new MultipartRequestMeterConfigBuilder();
-        mprMeterConfigBuild.setMeterId((long) Meter.OFPMALL.getIntValue());
+        mprMeterConfigBuild.setMeterId(BinContent.intToUnsignedLong(Meter.OFPMALL.getIntValue()));
 
         //Set request body to main multipart request
         mprInput.setMultipartRequestBody(mprMeterConfigBuild.build());
@@ -690,7 +691,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 
         // Create multipart request body for fetch all the meter stats
         MultipartRequestMeterBuilder mprMeterBuild = new MultipartRequestMeterBuilder();
-        mprMeterBuild.setMeterId((long) Meter.OFPMALL.getIntValue());
+        mprMeterBuild.setMeterId(BinContent.intToUnsignedLong(Meter.OFPMALL.getIntValue()));
 
         //Set request body to main multipart request
         mprInput.setMultipartRequestBody(mprMeterBuild.build());
