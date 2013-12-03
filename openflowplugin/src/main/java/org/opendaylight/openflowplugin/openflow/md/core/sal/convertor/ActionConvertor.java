@@ -426,7 +426,6 @@ public final class ActionConvertor {
             List<ActionsList> actionList) {
 
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action> bucketActions = new ArrayList<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action>();
-
         for (ActionsList actionDesc : actionList) {
 
             org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.actions.list.Action action = actionDesc

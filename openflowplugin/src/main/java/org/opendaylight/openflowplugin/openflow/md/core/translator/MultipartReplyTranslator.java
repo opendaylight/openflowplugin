@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.opendaylight.controller.sal.binding.api.data.DataModificationTransaction;
 import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.GroupStatsResponseConvertor;
@@ -16,9 +15,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev131103.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GroupDescStatsUpdatedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GroupFeaturesUpdatedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GroupStatisticsUpdatedBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.NodeGroupFeatures;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.NodeGroupFeaturesBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.group.features.GroupFeaturesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Chaining;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.ChainingChecks;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupAll;
@@ -30,14 +26,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.SelectLiveness;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.SelectWeight;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.MeterConfigStatsUpdatedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.MeterFeaturesUpdatedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.MeterStatisticsUpdatedBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.NodeMeterFeatures;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.NodeMeterFeaturesBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.nodes.node.MeterFeaturesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterBand;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterBandDrop;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterBandDscpRemark;
@@ -239,39 +230,6 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
         }
         
         return listDataObject;
-    }
-    
-    private void augmentGroupFeaturesToNode(GroupFeaturesUpdatedBuilder message){
-        GroupFeaturesBuilder groupFeatures = new GroupFeaturesBuilder();
-        groupFeatures.setActions(message.getActions());
-        groupFeatures.setGroupCapabilitiesSupported(message.getGroupCapabilitiesSupported());
-        groupFeatures.setGroupTypesSupported(message.getGroupTypesSupported());
-        groupFeatures.setMaxGroups(message.getMaxGroups());
-
-        final NodeBuilder nodeData = new NodeBuilder(); 
-        nodeData.setKey(new NodeKey(message.getId()));
-        
-        NodeGroupFeaturesBuilder nodeGroupFeatures= new NodeGroupFeaturesBuilder();
-        nodeGroupFeatures.setGroupFeatures(groupFeatures.build());
-        //Update augmented data
-        nodeData.addAugmentation(NodeGroupFeatures.class, nodeGroupFeatures.build());
-    }
-
-    private void augmentMeterFeaturesToNode(MeterFeaturesUpdatedBuilder message){
-        MeterFeaturesBuilder meterFeature = new MeterFeaturesBuilder();
-        meterFeature.setMeterBandSupported(message.getMeterBandSupported());
-        meterFeature.setMeterCapabilitiesSupported(message.getMeterCapabilitiesSupported());
-        meterFeature.setMaxBands(message.getMaxBands());
-        meterFeature.setMaxColor(message.getMaxColor());
-        meterFeature.setMaxMeter(message.getMaxMeter());
-        
-        final NodeBuilder nodeData = new NodeBuilder(); 
-        nodeData.setKey(new NodeKey(message.getId()));
-        
-        NodeMeterFeaturesBuilder nodeMeterFeatures= new NodeMeterFeaturesBuilder();
-        nodeMeterFeatures.setMeterFeatures(meterFeature.build());
-        //Update augmented data
-        nodeData.addAugmentation(NodeMeterFeatures.class, nodeMeterFeatures.build());
     }
     
     private NodeId nodeIdFromDatapathId(BigInteger datapathId) {
