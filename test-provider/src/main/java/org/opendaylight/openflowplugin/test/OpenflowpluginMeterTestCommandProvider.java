@@ -22,6 +22,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.config.rev131024.mete
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.config.rev131024.meters.MeterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.config.rev131024.meters.MeterKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.BandType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterBandType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.band.type.band.type.DscpRemark;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.band.type.band.type.DscpRemarkBuilder;
@@ -29,6 +30,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.MeterBandHeadersBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.MeterBandHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.MeterBandHeaderBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.meter.band.header.MeterBandTypes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.meter.band.header.MeterBandTypesBuilder;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -85,7 +87,7 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
         MeterBuilder meter = new MeterBuilder();
         meter.setContainerName("abcd");     
         meter.setId((long) 123);
-        meter.setKey(key);
+        meter.setKey(key);       
         meter.setMeterName(originalMeterName);
         meter.setFlags(new MeterFlags(true, false, false, false));   
         MeterBandHeadersBuilder bandHeaders = new MeterBandHeadersBuilder();
@@ -98,9 +100,14 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
         dscpRemark.setPercLevel((short) 1);
         dscpRemark.setRate((long) 12);
         bandHeader.setBandType(dscpRemark.build());
-        bandHdr.add(bandHeader.build());
+        MeterBandTypesBuilder bandTypes = new MeterBandTypesBuilder();
+        MeterBandType bandType = new MeterBandType(false, true, false);   
+        bandTypes.setFlags(bandType);
+        bandHeader.setMeterBandTypes(bandTypes.build());
+        bandHdr.add(bandHeader.build());       
         bandHeaders.setMeterBandHeader(bandHdr);
         meter.setMeterBandHeaders(bandHeaders.build());
+        
         testMeter = meter.build();
     }
 
@@ -114,6 +121,7 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
             ci.println("User node added" + nref);
             createUserNode(nref);
         }
+        createTestMeter();
         DataModification modification = dataBrokerService.beginTransaction();
         InstanceIdentifier<Meter> path1 = InstanceIdentifier.builder(Meters.class)
                 .child(Meter.class, testMeter.getKey()).toInstance();
@@ -147,7 +155,7 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
             ci.println("User node added" + nref);
             createUserNode(nref);
         }
-        createTestMeter();
+        createTestMeter();        
         writeMeter(ci, testMeter);
     }
 

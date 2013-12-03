@@ -1,6 +1,7 @@
 package org.opendaylight.openflowplugin.test;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -11,6 +12,10 @@ import org.opendaylight.controller.md.sal.common.api.TransactionStatus;
 import org.opendaylight.controller.md.sal.common.api.data.DataModification;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.data.DataBrokerService;
+
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PopVlanActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.config.rev131024.Groups;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.config.rev131024.groups.Group;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.config.rev131024.groups.GroupBuilder;
@@ -82,12 +87,18 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         group.setKey(key);
         group.setInstall(false);
         group.setId(id);
+        PopVlanActionBuilder vlanAction = new PopVlanActionBuilder();
+        ActionBuilder action = new ActionBuilder();
+        action.setAction(vlanAction.build());
+        List<Action> actions = new ArrayList<Action>();
+        actions.add(action.build());        
+        bucket.setAction(actions);          
         group.setGroupType(GroupTypes.GroupSelect);
         group.setGroupName(originalGroupName);
         group.setBarrier(false);
         BucketsBuilder value = new BucketsBuilder();
         List<Bucket> value1 = new ArrayList<Bucket>();
-        value1.add(bucket.build());
+        value1.add(bucket.build());       
         value.setBucket(value1);
         group.setBuckets(value.build());
         testGroup = group.build();
