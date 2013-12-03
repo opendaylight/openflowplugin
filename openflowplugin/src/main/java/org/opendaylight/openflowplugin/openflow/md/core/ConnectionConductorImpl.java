@@ -39,10 +39,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.Port;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatus;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestDescBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestGroupFeaturesBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestMeterFeaturesBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestPortDescBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestDescCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestGroupFeaturesCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestMeterFeaturesCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestPortDescCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.DisconnectEvent;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SwitchIdleEvent;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SystemNotificationsListener;
@@ -393,7 +393,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         builder.setType(MultipartType.OFPMPDESC);
         builder.setVersion(getVersion());
         builder.setFlags(new MultipartRequestFlags(false));
-        builder.setMultipartRequestBody(new MultipartRequestDescBuilder().build());
+        builder.setMultipartRequestBody(new MultipartRequestDescCaseBuilder().build());
         builder.setXid(getSessionContext().getNextXid());
         getConnectionAdapter().multipartRequest(builder.build());
     }
@@ -403,7 +403,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         builder.setType(MultipartType.OFPMPPORTDESC);
         builder.setVersion(getVersion());
         builder.setFlags(new MultipartRequestFlags(false));
-        builder.setMultipartRequestBody(new MultipartRequestPortDescBuilder().build());
+        builder.setMultipartRequestBody(new MultipartRequestPortDescCaseBuilder().build());
         builder.setXid(getSessionContext().getNextXid());
         getConnectionAdapter().multipartRequest(builder.build());
     }
@@ -414,7 +414,8 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         mprInput.setFlags(new MultipartRequestFlags(false));
         mprInput.setXid(getSessionContext().getNextXid());
 
-        MultipartRequestGroupFeaturesBuilder mprGroupFeaturesBuild = new MultipartRequestGroupFeaturesBuilder();
+        MultipartRequestGroupFeaturesCaseBuilder mprGroupFeaturesBuild = 
+                new MultipartRequestGroupFeaturesCaseBuilder();
         mprInput.setMultipartRequestBody(mprGroupFeaturesBuild.build());
 
         LOG.debug("Send group features statistics request :{}",mprGroupFeaturesBuild);
@@ -428,7 +429,8 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         mprInput.setFlags(new MultipartRequestFlags(false));
         mprInput.setXid(getSessionContext().getNextXid());
 
-        MultipartRequestMeterFeaturesBuilder mprMeterFeaturesBuild = new MultipartRequestMeterFeaturesBuilder();
+        MultipartRequestMeterFeaturesCaseBuilder mprMeterFeaturesBuild =
+                new MultipartRequestMeterFeaturesCaseBuilder();
         mprInput.setMultipartRequestBody(mprMeterFeaturesBuild.build());
 
         LOG.debug("Send meter features statistics request :{}",mprMeterFeaturesBuild);

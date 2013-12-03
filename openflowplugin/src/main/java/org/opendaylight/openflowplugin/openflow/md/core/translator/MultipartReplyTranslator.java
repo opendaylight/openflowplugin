@@ -39,12 +39,18 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyGroup;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyGroupDesc;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyGroupFeatures;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyMeter;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyMeterConfig;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyMeterFeatures;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyGroupCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyGroupDescCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyGroupFeaturesCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyMeterCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyMeterConfigCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyMeterFeaturesCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group._case.MultipartReplyGroup;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group.desc._case.MultipartReplyGroupDesc;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group.features._case.MultipartReplyGroupFeatures;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.meter._case.MultipartReplyMeter;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.meter.config._case.MultipartReplyMeterConfig;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.meter.features._case.MultipartReplyMeterFeatures;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,7 +85,8 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                 message.setId(node);
                 message.setMoreReplies(mpReply.getFlags().isOFPMPFREQMORE());
                 message.setTransactionId(generateTransactionId(mpReply.getXid()));
-                MultipartReplyGroup replyBody = (MultipartReplyGroup)mpReply.getMultipartReplyBody();
+                MultipartReplyGroupCase caseBody = (MultipartReplyGroupCase)mpReply.getMultipartReplyBody();
+                MultipartReplyGroup replyBody = caseBody.getMultipartReplyGroup();
                 message.setGroupStats(groupStatsConvertor.toSALGroupStatsList(replyBody.getGroupStats()));
                 logger.debug("Converted group statistics : {}",message.toString());
                 listDataObject.add(message.build());
@@ -92,7 +99,8 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                 message.setId(node);
                 message.setMoreReplies(mpReply.getFlags().isOFPMPFREQMORE());
                 message.setTransactionId(generateTransactionId(mpReply.getXid()));
-                MultipartReplyGroupDesc replyBody = (MultipartReplyGroupDesc)mpReply.getMultipartReplyBody();
+                MultipartReplyGroupDescCase caseBody = (MultipartReplyGroupDescCase)mpReply.getMultipartReplyBody();
+                MultipartReplyGroupDesc replyBody = caseBody.getMultipartReplyGroupDesc();
                 message.setGroupDescStats(groupStatsConvertor.toSALGroupDescStatsList(replyBody.getGroupDesc()));
                 logger.debug("Converted group statistics : {}",message.toString());
                 listDataObject.add(message.build());
@@ -104,7 +112,8 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                 message.setId(node);
                 message.setMoreReplies(mpReply.getFlags().isOFPMPFREQMORE());
                 message.setTransactionId(generateTransactionId(mpReply.getXid()));
-                MultipartReplyGroupFeatures replyBody = (MultipartReplyGroupFeatures)mpReply.getMultipartReplyBody();
+                MultipartReplyGroupFeaturesCase caseBody = (MultipartReplyGroupFeaturesCase)mpReply.getMultipartReplyBody();
+                MultipartReplyGroupFeatures replyBody = caseBody.getMultipartReplyGroupFeatures();
                 List<Class<? extends GroupType>> supportedGroups = 
                         new ArrayList<Class<? extends GroupType>>();
                 
@@ -156,7 +165,8 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                 message.setMoreReplies(mpReply.getFlags().isOFPMPFREQMORE());
                 message.setTransactionId(generateTransactionId(mpReply.getXid()));
                 
-                MultipartReplyMeter replyBody = (MultipartReplyMeter)mpReply.getMultipartReplyBody();
+                MultipartReplyMeterCase caseBody = (MultipartReplyMeterCase)mpReply.getMultipartReplyBody();
+                MultipartReplyMeter replyBody = caseBody.getMultipartReplyMeter();
                 message.setMeterStats(meterStatsConvertor.toSALMeterStatsList(replyBody.getMeterStats()));
 
                 listDataObject.add(message.build());
@@ -170,7 +180,8 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                 message.setMoreReplies(mpReply.getFlags().isOFPMPFREQMORE());
                 message.setTransactionId(generateTransactionId(mpReply.getXid()));
                 
-                MultipartReplyMeterConfig replyBody = (MultipartReplyMeterConfig)mpReply.getMultipartReplyBody();
+                MultipartReplyMeterConfigCase caseBody = (MultipartReplyMeterConfigCase)mpReply.getMultipartReplyBody();
+                MultipartReplyMeterConfig replyBody = caseBody.getMultipartReplyMeterConfig();
                 message.setMeterConfigStats(meterStatsConvertor.toSALMeterConfigList(replyBody.getMeterConfig()));
                 listDataObject.add(message.build());
                 return listDataObject;
@@ -183,7 +194,8 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                 message.setMoreReplies(mpReply.getFlags().isOFPMPFREQMORE());
                 message.setTransactionId(generateTransactionId(mpReply.getXid()));
                 
-                MultipartReplyMeterFeatures replyBody = (MultipartReplyMeterFeatures)mpReply.getMultipartReplyBody();
+                MultipartReplyMeterFeaturesCase caseBody = (MultipartReplyMeterFeaturesCase)mpReply.getMultipartReplyBody();
+                MultipartReplyMeterFeatures replyBody = caseBody.getMultipartReplyMeterFeatures();
                 message.setMaxBands(replyBody.getMaxBands());
                 message.setMaxColor(replyBody.getMaxColor());
                 message.setMaxMeter(new Counter32(replyBody.getMaxMeter()));

@@ -16,7 +16,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyDesc;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyDescCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.desc._case.MultipartReplyDesc;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +34,8 @@ public class MultiPartMessageDescToNodeUpdatedTranslator implements IMDMessageTr
             BigInteger datapathId = sc.getFeatures().getDatapathId();
             NodeUpdatedBuilder builder = InventoryDataServiceUtil.nodeUpdatedBuilderFromDataPathId(datapathId);
             FlowCapableNodeUpdatedBuilder fnub = new FlowCapableNodeUpdatedBuilder();
-            MultipartReplyDesc body = (MultipartReplyDesc) message.getMultipartReplyBody();
+            MultipartReplyDescCase caseBody = (MultipartReplyDescCase) message.getMultipartReplyBody();
+            MultipartReplyDesc body = caseBody.getMultipartReplyDesc();
             fnub.setHardware(body.getHwDesc());
             fnub.setManufacturer(body.getMfrDesc());
             fnub.setSerialNumber(body.getSerialNum());

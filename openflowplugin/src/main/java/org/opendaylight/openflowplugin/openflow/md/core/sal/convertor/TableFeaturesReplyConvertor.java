@@ -84,6 +84,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.UdpS
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.VlanPcp;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.VlanVid;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.MatchEntries;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.table.features._case.MultipartReplyTableFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.table.features.properties.TableFeatureProperties;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatch;
@@ -104,13 +105,14 @@ public class TableFeaturesReplyConvertor {
     private static final Logger logger = LoggerFactory.getLogger(TableFeaturesReplyConvertor.class);
 
     public static List<TableFeatures> toTableFeaturesReply(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyTableFeatures ofTableFeaturesList) {
+            MultipartReplyTableFeatures ofTableFeaturesList) {
         if (ofTableFeaturesList == null || ofTableFeaturesList.getTableFeatures() == null) {
             return Collections.<TableFeatures> emptyList();
         }
         List<TableFeatures> salTableFeaturesList = new ArrayList<>();
         TableFeaturesBuilder salTableFeatures = new TableFeaturesBuilder();
-        for (org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.table.features.TableFeatures ofTableFeatures : ofTableFeaturesList
+        for (org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.
+                multipart.reply.table.features._case.multipart.reply.table.features.TableFeatures ofTableFeatures : ofTableFeaturesList
                 .getTableFeatures()) {
             salTableFeatures.setTableId(ofTableFeatures.getTableId());
             salTableFeatures.setName(ofTableFeatures.getName());

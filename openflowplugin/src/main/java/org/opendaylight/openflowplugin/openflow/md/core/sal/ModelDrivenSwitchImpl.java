@@ -33,11 +33,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.Remo
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev131103.TransactionId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.port.mod.port.Port;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupOutput;
@@ -96,15 +96,18 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortModInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.match.grouping.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.match.grouping.MatchBuilder;
-//import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.table.features.TableFeatures;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestGroupBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestGroupDescBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestGroupFeaturesBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestMeterBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestMeterConfigBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestMeterFeaturesBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestTableFeaturesBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.table.features.TableFeatures;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestGroupCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestGroupDescCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestGroupFeaturesCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestMeterCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestMeterConfigCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestMeterFeaturesCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestTableFeaturesCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.group._case.MultipartRequestGroupBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.meter._case.MultipartRequestMeterBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.meter.config._case.MultipartRequestMeterConfigBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.table.features._case.MultipartRequestTableFeaturesBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.table.features._case.multipart.request.table.features.TableFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.GetPortOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.UpdatePortInput;
@@ -514,11 +517,13 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         mprInput.setFlags(new MultipartRequestFlags(false));
 
         // Create multipart request body for fetch all the group stats
+        MultipartRequestGroupCaseBuilder caseBuilder = new MultipartRequestGroupCaseBuilder();
         MultipartRequestGroupBuilder mprGroupBuild = new MultipartRequestGroupBuilder();
         mprGroupBuild.setGroupId(new GroupId(BinContent.intToUnsignedLong(Group.OFPGALL.getIntValue())));
-
+        caseBuilder.setMultipartRequestGroup(mprGroupBuild.build());
+        
         //Set request body to main multipart request
-        mprInput.setMultipartRequestBody(mprGroupBuild.build());
+        mprInput.setMultipartRequestBody(caseBuilder.build());
 
         //Send the request, no cookies associated, use any connection
         LOG.debug("Send group statistics request to the switch :{}",mprGroupBuild);
@@ -552,7 +557,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         mprInput.setFlags(new MultipartRequestFlags(false));
 
         // Create multipart request body for fetch all the group description stats
-        MultipartRequestGroupDescBuilder mprGroupDescBuild = new MultipartRequestGroupDescBuilder();
+        MultipartRequestGroupDescCaseBuilder mprGroupDescBuild = new MultipartRequestGroupDescCaseBuilder();
 
         //Set request body to main multipart request
         mprInput.setMultipartRequestBody(mprGroupDescBuild.build());
@@ -589,7 +594,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         mprInput.setFlags(new MultipartRequestFlags(false));
 
         // Create multipart request body for fetch all the group description stats
-        MultipartRequestGroupFeaturesBuilder mprGroupFeaturesBuild = new MultipartRequestGroupFeaturesBuilder();
+        MultipartRequestGroupFeaturesCaseBuilder mprGroupFeaturesBuild = new MultipartRequestGroupFeaturesCaseBuilder();
 
         //Set request body to main multipart request
         mprInput.setMultipartRequestBody(mprGroupFeaturesBuild.build());
@@ -624,11 +629,13 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         mprInput.setFlags(new MultipartRequestFlags(false));
 
         // Create multipart request body for fetch all the group stats
+        MultipartRequestGroupCaseBuilder caseBuilder = new MultipartRequestGroupCaseBuilder();
         MultipartRequestGroupBuilder mprGroupBuild = new MultipartRequestGroupBuilder();
         mprGroupBuild.setGroupId(new GroupId(input.getGroupId().getValue()));
-
+        caseBuilder.setMultipartRequestGroup(mprGroupBuild.build());
+        
         //Set request body to main multipart request
-        mprInput.setMultipartRequestBody(mprGroupBuild.build());
+        mprInput.setMultipartRequestBody(caseBuilder.build());
 
         //Send the request, no cookies associated, use any connection
         LOG.debug("Send group statistics request :{}",mprGroupBuild);
@@ -662,11 +669,13 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         mprInput.setFlags(new MultipartRequestFlags(false));
 
         // Create multipart request body for fetch all the meter stats
+        MultipartRequestMeterConfigCaseBuilder caseBuilder = new MultipartRequestMeterConfigCaseBuilder();
         MultipartRequestMeterConfigBuilder mprMeterConfigBuild = new MultipartRequestMeterConfigBuilder();
         mprMeterConfigBuild.setMeterId(new MeterId(BinContent.intToUnsignedLong(Meter.OFPMALL.getIntValue())));
-
+        caseBuilder.setMultipartRequestMeterConfig(mprMeterConfigBuild.build());
+        
         //Set request body to main multipart request
-        mprInput.setMultipartRequestBody(mprMeterConfigBuild.build());
+        mprInput.setMultipartRequestBody(caseBuilder.build());
 
         //Send the request, no cookies associated, use any connection
         LOG.debug("Send meter statistics request :{}",mprMeterConfigBuild);
@@ -699,11 +708,13 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         mprInput.setFlags(new MultipartRequestFlags(false));
 
         // Create multipart request body for fetch all the meter stats
+        MultipartRequestMeterCaseBuilder caseBuilder = new MultipartRequestMeterCaseBuilder();
         MultipartRequestMeterBuilder mprMeterBuild = new MultipartRequestMeterBuilder();
         mprMeterBuild.setMeterId(new MeterId(BinContent.intToUnsignedLong(Meter.OFPMALL.getIntValue())));
-
+        caseBuilder.setMultipartRequestMeter(mprMeterBuild.build());
+        
         //Set request body to main multipart request
-        mprInput.setMultipartRequestBody(mprMeterBuild.build());
+        mprInput.setMultipartRequestBody(caseBuilder.build());
 
         //Send the request, no cookies associated, use any connection
         LOG.debug("Send meter statistics request :{}",mprMeterBuild);
@@ -736,7 +747,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         mprInput.setFlags(new MultipartRequestFlags(false));
 
         // Create multipart request body for fetch all the group description stats
-        MultipartRequestMeterFeaturesBuilder mprMeterFeaturesBuild = new MultipartRequestMeterFeaturesBuilder();
+        MultipartRequestMeterFeaturesCaseBuilder mprMeterFeaturesBuild = new MultipartRequestMeterFeaturesCaseBuilder();
 
         //Set request body to main multipart request
         mprInput.setMultipartRequestBody(mprMeterFeaturesBuild.build());
@@ -770,12 +781,14 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         mprInput.setFlags(new MultipartRequestFlags(false));
 
         // Create multipart request body for fetch all the meter stats
+        MultipartRequestMeterCaseBuilder caseBuilder = new MultipartRequestMeterCaseBuilder();
         MultipartRequestMeterBuilder mprMeterBuild = new MultipartRequestMeterBuilder();
         //Select specific meter
         mprMeterBuild.setMeterId(new MeterId(input.getMeterId().getValue()));
-
+        caseBuilder.setMultipartRequestMeter(mprMeterBuild.build());
+        
         //Set request body to main multipart request
-        mprInput.setMultipartRequestBody(mprMeterBuild.build());
+        mprInput.setMultipartRequestBody(caseBuilder.build());
 
         //Send the request, no cookies associated, use any connection
         LOG.debug("Send meter statistics request :{}",mprMeterBuild);
@@ -889,6 +902,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         List<TableFeatures> ofTableFeatureList = TableFeaturesConvertor.toTableFeaturesRequest(input.getUpdatedTable()) ;
         int totalNoOfTableFeatureEntry = ofTableFeatureList.size();
 
+        MultipartRequestTableFeaturesCaseBuilder caseRequest = new MultipartRequestTableFeaturesCaseBuilder();
         MultipartRequestTableFeaturesBuilder tableFeaturesRequest = new MultipartRequestTableFeaturesBuilder();
 
          // Slice the multipart request based on the configuration parameter, which is the no. of TableFeatureList element
@@ -913,7 +927,8 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 
         tableFeaturesRequest.setTableFeatures(tmpOfTableFeatureList) ;
         //Set request body to main multipart request
-        mprInput.setMultipartRequestBody(tableFeaturesRequest.build());
+        caseRequest.setMultipartRequestTableFeatures(tableFeaturesRequest.build());
+        mprInput.setMultipartRequestBody(caseRequest.build());
 
         //Send the request, no cookies associated, use any connection
         LOG.debug("Send Table Feature request :{}",tmpOfTableFeatureList);

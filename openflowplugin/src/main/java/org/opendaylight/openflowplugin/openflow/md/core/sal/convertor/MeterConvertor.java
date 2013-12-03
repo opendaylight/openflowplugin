@@ -23,9 +23,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MeterModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MeterModInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.MeterBand;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.meter.band.MeterBandDropBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.meter.band.MeterBandDscpRemarkBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.meter.band.MeterBandExperimenterBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.meter.band.MeterBandDropCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.meter.band.MeterBandDscpRemarkCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.meter.band.MeterBandExperimenterCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.meter.band.meter.band.drop._case.MeterBandDropBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.meter.band.meter.band.dscp.remark._case.MeterBandDscpRemarkBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.meter.band.meter.band.experimenter._case.MeterBandExperimenterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.mod.Bands;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.mod.BandsBuilder;
 import org.slf4j.Logger;
@@ -104,12 +107,14 @@ public final class MeterConvertor {
 
                 if (meterBandHeader.getMeterBandTypes().getFlags().isOfpmbtDrop()) {
                     if (meterBandHeader.getBandType() != null) {
+                        MeterBandDropCaseBuilder dropCaseBuilder = new MeterBandDropCaseBuilder();
                         MeterBandDropBuilder meterBandDropBuilder = new MeterBandDropBuilder();
                         meterBandDropBuilder.setType(MeterBandType.OFPMBTDROP);
                         Drop drop = (Drop) meterBandHeader.getBandType();
                         meterBandDropBuilder.setBurstSize(drop.getRate());
                         meterBandDropBuilder.setRate(drop.getBurstSize());
-                        meterBandItem = meterBandDropBuilder.build();
+                        dropCaseBuilder.setMeterBandDrop(meterBandDropBuilder.build());
+                        meterBandItem = dropCaseBuilder.build();
                         bandsB = new BandsBuilder();
                         bandsB.setMeterBand(meterBandItem);
                         bands.add(bandsB.build()); // Bands list
@@ -119,13 +124,15 @@ public final class MeterConvertor {
                     }
                 } else if (meterBandHeader.getMeterBandTypes().getFlags().isOfpmbtDscpRemark()) {
                     if (meterBandHeader.getBandType() != null) {
+                        MeterBandDscpRemarkCaseBuilder dscpCaseBuilder = new MeterBandDscpRemarkCaseBuilder();
                         MeterBandDscpRemarkBuilder meterBandDscpRemarkBuilder = new MeterBandDscpRemarkBuilder();
                         meterBandDscpRemarkBuilder.setType(MeterBandType.OFPMBTDSCPREMARK);
                         DscpRemark dscpRemark = (DscpRemark) meterBandHeader.getBandType();
                         meterBandDscpRemarkBuilder.setBurstSize(dscpRemark.getBurstSize());
                         meterBandDscpRemarkBuilder.setRate(dscpRemark.getRate());
                         meterBandDscpRemarkBuilder.setPrecLevel(dscpRemark.getPercLevel());
-                        meterBandItem = meterBandDscpRemarkBuilder.build();
+                        dscpCaseBuilder.setMeterBandDscpRemark(meterBandDscpRemarkBuilder.build());
+                        meterBandItem = dscpCaseBuilder.build();
                         bandsB = new BandsBuilder();
                         bandsB.setMeterBand(meterBandItem);
                         bands.add(bandsB.build()); // Bands list
@@ -135,13 +142,15 @@ public final class MeterConvertor {
                     }
                 } else if (meterBandHeader.getMeterBandTypes().getFlags().isOfpmbtExperimenter()) {
                     if (meterBandHeader.getBandType() != null) {
+                        MeterBandExperimenterCaseBuilder experimenterCaseBuilder = new MeterBandExperimenterCaseBuilder();
                         MeterBandExperimenterBuilder meterBandExperimenterBuilder = new MeterBandExperimenterBuilder();
                         meterBandExperimenterBuilder.setType(MeterBandType.OFPMBTEXPERIMENTER);
                         Experimenter experimenter = (Experimenter) meterBandHeader.getBandType();
                         meterBandExperimenterBuilder.setBurstSize(experimenter.getBurstSize());
                         meterBandExperimenterBuilder.setRate(experimenter.getRate());
                         meterBandExperimenterBuilder.setExperimenter(experimenter.getExperimenter());
-                        meterBandItem = meterBandExperimenterBuilder.build();
+                        experimenterCaseBuilder.setMeterBandExperimenter(meterBandExperimenterBuilder.build());
+                        meterBandItem = experimenterCaseBuilder.build();
                         bandsB = new BandsBuilder();
                         bandsB.setMeterBand(meterBandItem);
                         bands.add(bandsB.build()); // Bands list

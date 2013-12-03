@@ -10,13 +10,13 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.TableFeatu
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev131103.TransactionId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyTableFeatures;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyTableFeaturesCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.table.features._case.MultipartReplyTableFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.TableUpdatedBuilder;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
@@ -44,7 +44,8 @@ public class MultipartReplyTableFeaturesToTableUpdatedTranslator implements
                     .getDatapathId()))));
             message.setMoreReplies(mpReply.getFlags().isOFPMPFREQMORE());
             message.setTransactionId(new TransactionId(new BigInteger(mpReply.getXid().toString() ))) ;
-            MultipartReplyTableFeatures body = (MultipartReplyTableFeatures) mpReply.getMultipartReplyBody();
+            MultipartReplyTableFeaturesCase caseBody = (MultipartReplyTableFeaturesCase) mpReply.getMultipartReplyBody();
+            MultipartReplyTableFeatures body = caseBody.getMultipartReplyTableFeatures();
             message.setTableFeatures(TableFeaturesReplyConvertor.toTableFeaturesReply(body)) ;
             listDataObject.add( message.build()) ;
             
