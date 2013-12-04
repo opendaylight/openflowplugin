@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da6255ed_fc8791d5",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/GroupConvertor.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2013-12-04T12:56:54Z",
+      "side": 1,
+      "message": "Please, if you want to skip curly brackets, write it as oneliner, because usually after a month somebody adds logging into such if-branch and breaks logic.",
+      "revId": "76467d3f85a2bdae315ffa52975e77355bccca14",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
