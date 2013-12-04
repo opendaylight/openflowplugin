@@ -30,6 +30,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 
 public class GroupConvertorTest {
 
+    /**
+     * test of {@link GroupConvertor#toGroupModInput(org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group, short)}
+     */
     @Test
     public void testGroupModConvertorwithallParameters() {
 
@@ -37,8 +40,7 @@ public class GroupConvertorTest {
 
         addGroupBuilder.setGroupId(new GroupId(10L));
 
-        addGroupBuilder
-                .setGroupType(GroupTypes.GroupAll);
+        addGroupBuilder.setGroupType(GroupTypes.GroupAll);
         List<Bucket> bucketList = new ArrayList<Bucket>();
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> actionsList = new ArrayList<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>();
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> actionsList1 = new ArrayList<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>();
@@ -146,4 +148,215 @@ public class GroupConvertorTest {
 
     }
 
+    /**
+     * test of {@link GroupConvertor#toGroupModInput(org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group, short)}
+     */
+    @Test
+    public void testGroupModConvertorNoBucket() {
+        AddGroupInputBuilder addGroupBuilder = new AddGroupInputBuilder();
+
+        addGroupBuilder.setGroupId(new GroupId(10L));
+
+        addGroupBuilder.setGroupType(GroupTypes.GroupAll);
+
+        GroupModInput outAddGroupInput = GroupConvertor.toGroupModInput(addGroupBuilder.build(), (short) 0X4);
+
+        Assert.assertEquals(GroupModCommand.OFPGCADD, outAddGroupInput.getCommand());
+        Assert.assertEquals(GroupType.OFPGTALL, outAddGroupInput.getType());
+    }
+
+    /**
+     * test of {@link GroupConvertor#toGroupModInput(org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group, short)}
+     */
+    @Test
+    public void testGroupModConvertorBucketwithNOWieghtValuesForGroupTypeFastFailure() {
+
+        AddGroupInputBuilder addGroupBuilder = new AddGroupInputBuilder();
+
+        addGroupBuilder.setGroupId(new GroupId(10L));
+
+        addGroupBuilder.setGroupType(GroupTypes.GroupFf);
+        List<Bucket> bucketList = new ArrayList<Bucket>();
+        List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> actionsList = new ArrayList<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>();
+        List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> actionsList1 = new ArrayList<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>();
+
+        // Action1: 005
+        actionsList.add(assembleActionBuilder("005").build());
+        // Action2: 006
+        actionsList.add(assembleActionBuilder("006").build());
+        // .. and mr.Bond is not coming today
+
+        BucketsBuilder bucketsB = new BucketsBuilder();
+
+        BucketBuilder bucketB = new BucketBuilder();
+
+        bucketB.setAction(actionsList);
+        Bucket bucket = bucketB.build();
+
+        bucketList.add(bucket); // List of bucket
+        
+
+        
+        BucketBuilder bucketB1 = new BucketBuilder();
+
+        // Action1
+        actionsList1.add(assembleCopyTtlInBuilder().build());
+        // Action2:
+        actionsList1.add(assembleSetMplsTtlActionBuilder().build());
+
+        bucketB1.setAction(actionsList1);
+
+        Bucket bucket1 = bucketB1.build(); // second bucket
+
+        bucketList.add(bucket1);
+
+        bucketsB.setBucket(bucketList);// List of bucket added to the Buckets
+        Buckets buckets = bucketsB.build();
+
+        addGroupBuilder.setBuckets(buckets);
+
+        GroupModInput outAddGroupInput = GroupConvertor.toGroupModInput(addGroupBuilder.build(), (short) 0X4);
+
+        Assert.assertEquals(GroupModCommand.OFPGCADD, outAddGroupInput.getCommand());
+        Assert.assertEquals(GroupType.OFPGTFF, outAddGroupInput.getType());
+
+        Assert.assertEquals(10L, outAddGroupInput.getGroupId().getValue().longValue());
+
+        List<ActionsList> outActionList = outAddGroupInput.getBucketsList().get(0).getActionsList();
+        for (int outItem = 0; outItem < outActionList.size(); outItem++) {
+            org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.actions.list.Action action = outActionList
+                    .get(outItem).getAction();
+            if (action instanceof GroupIdAction) {
+                Assert.assertEquals((Long) 5L, ((GroupIdAction) action).getGroupId());
+            }
+        }
+
+        List<ActionsList> outActionList1 = outAddGroupInput.getBucketsList().get(1).getActionsList();
+        for (int outItem = 0; outItem < outActionList1.size(); outItem++) {
+            org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.actions.list.Action action = outActionList1
+                    .get(outItem).getAction();
+            if (action instanceof GroupIdAction) {
+                Assert.assertEquals((Long) 6L, ((GroupIdAction) action).getGroupId());
+            }
+        }
+    }
+
+    /**
+     * @return
+     */
+    private static ActionBuilder assembleSetMplsTtlActionBuilder() {
+        SetMplsTtlActionBuilder setMplsTtlActionBuilder = new SetMplsTtlActionBuilder();
+        setMplsTtlActionBuilder.setMplsTtl((short) 0X1);
+        SetMplsTtlActionCaseBuilder setMplsTtlActionCaseBuilder = new SetMplsTtlActionCaseBuilder();
+        setMplsTtlActionCaseBuilder.setSetMplsTtlAction(setMplsTtlActionBuilder.build());
+        ActionBuilder actionsB3 = new ActionBuilder();
+        actionsB3.setAction(setMplsTtlActionCaseBuilder.build());
+        return actionsB3;
+    }
+
+    /**
+     * @return
+     */
+    private static ActionBuilder assembleCopyTtlInBuilder() {
+        CopyTtlInBuilder copyTtlB = new CopyTtlInBuilder();
+        CopyTtlInCaseBuilder copyTtlInCaseBuilder = new CopyTtlInCaseBuilder();
+        copyTtlInCaseBuilder.setCopyTtlIn(copyTtlB.build());
+        ActionBuilder actionsB2 = new ActionBuilder();
+        actionsB2.setAction(copyTtlInCaseBuilder.build());
+        return actionsB2;
+    }
+
+    /**
+     * @param groupName name of group
+     * @return 
+     * 
+     */
+    private static ActionBuilder assembleActionBuilder(String groupName) {
+        GroupActionBuilder groupActionBuilder = new GroupActionBuilder();
+        groupActionBuilder.setGroup(groupName);
+        GroupActionCaseBuilder groupActionCaseBuilder = new GroupActionCaseBuilder();
+        groupActionCaseBuilder.setGroupAction(groupActionBuilder.build());
+        ActionBuilder actionsBld = new ActionBuilder();
+        actionsBld.setAction(groupActionCaseBuilder.build());
+        return actionsBld;
+    }
+
+    /**
+     * test of {@link GroupConvertor#toGroupModInput(org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group, short)}
+     */
+    @Test
+    public void testGroupModConvertorBucketwithNOWieghtValuesForGroupTypeAll() {
+
+        AddGroupInputBuilder addGroupBuilder = new AddGroupInputBuilder();
+
+        addGroupBuilder.setGroupId(new GroupId(10L));
+
+        addGroupBuilder.setGroupType(GroupTypes.GroupAll);
+        List<Bucket> bucketList = new ArrayList<Bucket>();
+        List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> actionsList = new ArrayList<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>();
+        List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> actionsList1 = new ArrayList<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>();
+
+        // Action1
+        actionsList.add(assembleActionBuilder("005").build());
+        // Action2:
+        actionsList.add(assembleActionBuilder("006").build());
+
+        BucketsBuilder bucketsB = new BucketsBuilder();
+
+        BucketBuilder bucketB = new BucketBuilder();
+
+        bucketB.setAction(actionsList);
+        Bucket bucket = bucketB.build();
+
+        bucketList.add(bucket); // List of bucket
+
+        BucketBuilder bucketB1 = new BucketBuilder();
+
+        // Action1
+        actionsList1.add(assembleCopyTtlInBuilder().build());
+        // Action2:
+        actionsList1.add(assembleSetMplsTtlActionBuilder().build());
+
+        bucketB1.setAction(actionsList);
+
+        Bucket bucket1 = bucketB1.build(); // second bucket
+
+        bucketList.add(bucket1);
+
+        bucketsB.setBucket(bucketList);// List of bucket added to the Buckets
+        Buckets buckets = bucketsB.build();
+
+        addGroupBuilder.setBuckets(buckets);
+
+        GroupModInput outAddGroupInput = GroupConvertor.toGroupModInput(addGroupBuilder.build(), (short) 0X4);
+
+        Assert.assertEquals(GroupModCommand.OFPGCADD, outAddGroupInput.getCommand());
+        Assert.assertEquals(GroupType.OFPGTALL, outAddGroupInput.getType());
+
+        Assert.assertEquals(10L, outAddGroupInput.getGroupId().getValue().longValue());
+
+        List<ActionsList> outActionList = outAddGroupInput.getBucketsList().get(0).getActionsList();
+        for (int outItem = 0; outItem < outActionList.size(); outItem++) {
+            org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.actions.list.Action action = outActionList
+                    .get(outItem).getAction();
+            if (action instanceof GroupIdAction) {
+                Assert.assertEquals((Long) 5L, ((GroupIdAction) action).getGroupId());
+
+            }
+
+        }
+
+        List<ActionsList> outActionList1 = outAddGroupInput.getBucketsList().get(1).getActionsList();
+        for (int outItem = 0; outItem < outActionList1.size(); outItem++) {
+            org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.actions.list.Action action = outActionList1
+                    .get(outItem).getAction();
+            if (action instanceof GroupIdAction) {
+
+                Assert.assertEquals((Long) 6L, ((GroupIdAction) action).getGroupId());
+
+            }
+
+        }
+
+    }
 }

@@ -45,7 +45,7 @@ public final class GroupConvertor {
     public static GroupModInput toGroupModInput(
 
     org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group source, short version) {
-        List<BucketsList> bucketLists = new ArrayList<BucketsList>();
+        List<BucketsList> bucketLists = null;
         GroupModInputBuilder groupModInputBuilder = new GroupModInputBuilder();
         if (source instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput) {
             groupModInputBuilder.setCommand(GroupModCommand.OFPGCADD);
@@ -71,10 +71,11 @@ public final class GroupConvertor {
             groupModInputBuilder.setType(GroupType.OFPGTFF);
         }
 
-        
         groupModInputBuilder.setGroupId(new GroupId(source.getGroupId().getValue()));
         // Only if the bucket is configured for the group then add it
-        if (source.getBuckets().getBucket().size() != 0) {
+        if ((source.getBuckets() != null) && (source.getBuckets().getBucket().size() != 0)) {
+
+            bucketLists = new ArrayList<BucketsList>();
             getbucketList(source.getBuckets(), bucketLists, version, source.getGroupType().getIntValue());
             groupModInputBuilder.setBucketsList(bucketLists);
         }
