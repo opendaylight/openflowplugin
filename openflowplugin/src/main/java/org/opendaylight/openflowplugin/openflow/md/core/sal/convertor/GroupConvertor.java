@@ -13,6 +13,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GroupModInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.buckets.BucketsList;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.buckets.BucketsListBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This Utility class decodes the SAL - Group Mod Message and encodes into a OF
@@ -23,7 +25,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  *
  */
 public final class GroupConvertor {
-
+    private static final Logger logger = LoggerFactory.getLogger(GroupConvertor.class);
+    private static final String PREFIX_SEPARATOR = "/";
     private GroupConvertor() {
 
     }
@@ -31,7 +34,7 @@ public final class GroupConvertor {
     public static GroupModInput toGroupModInput(
 
     org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group source, short version) {
-        List<BucketsList> bucketLists = new ArrayList<BucketsList>();
+        List<BucketsList> bucketLists = null;
         GroupModInputBuilder groupModInputBuilder = new GroupModInputBuilder();
         if (source instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput)
             groupModInputBuilder.setCommand(GroupModCommand.OFPGCADD);
@@ -53,15 +56,19 @@ public final class GroupConvertor {
             groupModInputBuilder.setType(GroupType.OFPGTFF);
 
         groupModInputBuilder.setGroupId(source.getGroupId().getValue());
+        // Only if the bucket is configured for the group then add it
+        if ((source.getBuckets() != null) && (source.getBuckets().getBucket().size() != 0)) {
 
-        getbucketList(source.getBuckets(), bucketLists, version);
-        groupModInputBuilder.setBucketsList(bucketLists);
+            bucketLists = new ArrayList<BucketsList>();
+            getbucketList(source.getBuckets(), bucketLists, version, source.getGroupType().getIntValue());
+            groupModInputBuilder.setBucketsList(bucketLists);
+        }
         groupModInputBuilder.setVersion(version);
         return groupModInputBuilder.build();
 
     }
 
-    private static void getbucketList(Buckets buckets, List<BucketsList> bucketLists, short version) {
+    private static void getbucketList(Buckets buckets, List<BucketsList> bucketLists, short version, int groupType) {
 
         Iterator<org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.Bucket> groupBucketIterator = buckets
                 .getBucket().iterator();
@@ -72,9 +79,27 @@ public final class GroupConvertor {
         while (groupBucketIterator.hasNext()) {
             groupBucket = groupBucketIterator.next();
             BucketsListBuilder bucketBuilder = new BucketsListBuilder();
-            bucketBuilder.setWeight(groupBucket.getWeight().intValue());
-            bucketBuilder.setWatchGroup(groupBucket.getWatchGroup());
-            bucketBuilder.setWatchPort(new PortNumber(groupBucket.getWatchPort()));
+
+            if ((groupType == GroupType.OFPGTFF.getIntValue()) && (groupBucket.getWeight() == null)) {
+
+                logger.error("Wieght value required for this OFPGT_FF");
+
+            } else if (groupBucket.getWeight() != null)
+                bucketBuilder.setWeight(groupBucket.getWeight().intValue());
+
+            if ((groupType == GroupType.OFPGTFF.getIntValue()) && (groupBucket.getWatchGroup() == null)) {
+
+                logger.error("WatchGroup required for this OFPGT_FF");
+
+            } else if (groupBucket.getWatchGroup() != null)
+                bucketBuilder.setWatchGroup(groupBucket.getWatchGroup());
+
+            if ((groupType == GroupType.OFPGTFF.getIntValue()) && (groupBucket.getWatchPort() == null)) {
+
+                logger.error("WatchPort required for this OFPGT_FF");
+
+            } else if (groupBucket.getWatchPort() != null)
+                bucketBuilder.setWatchPort(new PortNumber(groupBucket.getWatchPort()));
 
             List<ActionsList> bucketActionList = ActionConvertor.getActionList(groupBucket.getAction(), version);
             bucketBuilder.setActionsList(bucketActionList);
@@ -83,5 +108,5 @@ public final class GroupConvertor {
         }
 
     }
-    
+
 }
