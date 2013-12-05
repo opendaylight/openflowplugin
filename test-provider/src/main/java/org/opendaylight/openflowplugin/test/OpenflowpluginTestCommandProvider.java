@@ -132,7 +132,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         FlowKey key = new FlowKey(id, new NodeRef(new NodeRef(nodeBuilderToInstanceId(nodeBuilder))));
         flow.setKey(key);
         flow.setPriority(2);
-        flow.setFlowName(originalFlowName+"_"+flowType);
+        flow.setFlowName(originalFlowName+"X"+flowType);
         testFlow = flow;
         return flow;
 	}
@@ -241,9 +241,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         MatchBuilder match = new MatchBuilder();
         EthernetMatchBuilder ethernetMatch = new EthernetMatchBuilder();
         EthernetSourceBuilder ethSourceBuilder = new EthernetSourceBuilder();
-        //TODO: use HEX, use binary form
-        //Hex.decodeHex("000000000001".toCharArray());
-        ethSourceBuilder.setAddress(new MacAddress(new String(new byte[]{0,0,0,0,0,1})));
+        ethSourceBuilder.setAddress(new MacAddress("00:00:00:00:00:01"));
         ethernetMatch.setEthernetSource(ethSourceBuilder.build());
         match.setEthernetMatch(ethernetMatch.build());
         
