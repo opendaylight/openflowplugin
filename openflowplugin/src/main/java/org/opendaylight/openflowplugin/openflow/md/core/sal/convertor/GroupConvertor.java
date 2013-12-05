@@ -75,34 +75,35 @@ public final class GroupConvertor {
         org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.Bucket groupBucket;
 
 
-
         while (groupBucketIterator.hasNext()) {
             groupBucket = groupBucketIterator.next();
             BucketsListBuilder bucketBuilder = new BucketsListBuilder();
 
-            if ((groupType == GroupType.OFPGTFF.getIntValue()) && (groupBucket.getWeight() == null)) {
+            if ((groupType == GroupType.OFPGTSELECT.getIntValue()) && (groupBucket.getWeight() == null)) {
 
-                logger.error("Wieght value required for this OFPGT_FF");
+                logger.error("Wieght value required for grouptype:OFPGTSELECT");
 
             } else if (groupBucket.getWeight() != null)
                 bucketBuilder.setWeight(groupBucket.getWeight().intValue());
 
             if ((groupType == GroupType.OFPGTFF.getIntValue()) && (groupBucket.getWatchGroup() == null)) {
 
-                logger.error("WatchGroup required for this OFPGT_FF");
+                logger.error("WatchGroup required for grouptype:OFPGT_FF");
 
             } else if (groupBucket.getWatchGroup() != null)
                 bucketBuilder.setWatchGroup(groupBucket.getWatchGroup());
 
             if ((groupType == GroupType.OFPGTFF.getIntValue()) && (groupBucket.getWatchPort() == null)) {
 
-                logger.error("WatchPort required for this OFPGT_FF");
+                logger.error("WatchPort required for grouptype:OFPGT_FF");
 
             } else if (groupBucket.getWatchPort() != null)
                 bucketBuilder.setWatchPort(new PortNumber(groupBucket.getWatchPort()));
 
-            List<ActionsList> bucketActionList = ActionConvertor.getActionList(groupBucket.getAction(), version);
-            bucketBuilder.setActionsList(bucketActionList);
+            if ( (groupBucket.getAction()!= null) && (groupBucket.getAction().size() != 0)) {
+                List<ActionsList> bucketActionList = ActionConvertor.getActionList(groupBucket.getAction(), version);
+                bucketBuilder.setActionsList(bucketActionList);
+            }
             BucketsList bucket = bucketBuilder.build();
             bucketLists.add(bucket);
         }
