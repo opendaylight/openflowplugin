@@ -344,10 +344,11 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         version = negotiatedVersion;
         conductorState = CONDUCTOR_STATE.WORKING;
         OFSessionUtil.registerSession(this, featureOutput, negotiatedVersion);
+        //TODO: must be version aware
         requestDesc();
-        requestPorts();
-        requestGroupFeatures();
-        requestMeterFeatures();
+//        requestPorts();
+//        requestGroupFeatures();
+//        requestMeterFeatures();
     }
 
     /*
