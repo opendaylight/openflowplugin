@@ -24,6 +24,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddF
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ClearActions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.GoToTable;
@@ -109,6 +110,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.InstructionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.EtherType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowModCommand;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowModFlagsV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MatchTypeBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.TableId;
@@ -153,6 +155,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.UdpD
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.UdpSrc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.VlanPcp;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.VlanVid;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.match.v10.grouping.MatchV10Builder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.MatchEntries;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.MatchEntriesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInput;
@@ -256,29 +259,91 @@ public class FlowConvertor {
 
         org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags flowModFlags = flow.getFlags();
         org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowModFlags ofFlowModFlags = null;
+        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowModFlagsV10 ofFlowModFlagsV10 = null;
         if (flowModFlags != null) {
-            ofFlowModFlags = new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowModFlags(
-                    flowModFlags.isCHECKOVERLAP(), flowModFlags.isNOBYTCOUNTS(), flowModFlags.isNOPKTCOUNTS(),
-                    flowModFlags.isRESETCOUNTS(), flowModFlags.isSENDFLOWREM());
+            if (version == 4) {
+                ofFlowModFlags = new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowModFlags(
+                        flowModFlags.isCHECKOVERLAP(), flowModFlags.isNOBYTCOUNTS(), flowModFlags.isNOPKTCOUNTS(),
+                        flowModFlags.isRESETCOUNTS(), flowModFlags.isSENDFLOWREM());
+            } else if (version == 1) {
+                //TODO: check Boolean _oFPFFEMERG
+                ofFlowModFlagsV10 = new FlowModFlagsV10(flowModFlags.isCHECKOVERLAP(), 
+                        false, flowModFlags.isSENDFLOWREM());
+            }
         } else {
-            ofFlowModFlags = new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowModFlags(
-                    DEFAULT_OFPFF_CHECK_OVERLAP,DEFAULT_OFPFF_NO_BYT_COUNTS,DEFAULT_OFPFF_NO_PKT_COUNTS,
-                    DEFAULT_OFPFF_RESET_COUNTS,DEFAULT_OFPFF_FLOW_REM);
+            if (version == 4) {
+                ofFlowModFlags = new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowModFlags(
+                        DEFAULT_OFPFF_CHECK_OVERLAP,DEFAULT_OFPFF_NO_BYT_COUNTS,DEFAULT_OFPFF_NO_PKT_COUNTS,
+                        DEFAULT_OFPFF_RESET_COUNTS,DEFAULT_OFPFF_FLOW_REM);
+            } else if (version == 1) {
+                ofFlowModFlagsV10 = new FlowModFlagsV10(false, false, true);
+            }
         }
         flowMod.setFlags(ofFlowModFlags);
+        flowMod.setFlagsV10(ofFlowModFlagsV10);
 
         if (flow.getMatch() != null) {
-            MatchBuilder matchBuilder = new MatchBuilder();
-            matchBuilder.setMatchEntries(toMatch(flow.getMatch()));
-            matchBuilder.setType(DEFAULT_MATCH_TYPE);
-            flowMod.setMatch(matchBuilder.build());
+            if (version == 4) {
+                MatchBuilder matchBuilder = new MatchBuilder();
+                matchBuilder.setMatchEntries(toMatch(flow.getMatch()));
+                matchBuilder.setType(DEFAULT_MATCH_TYPE);
+                flowMod.setMatch(matchBuilder.build());
+            } else if (version == 1) {
+                MatchV10Builder matchBuilder = new MatchV10Builder();
+                toMatchV10(flow.getMatch(), matchBuilder);
+                flowMod.setMatchV10(matchBuilder.build());
+            } else {
+                logger.warn("match in version {} not supported", version);
+            }
         }
 
         if (flow.getInstructions() != null) {
+            //TODO: add OF-1.0
             flowMod.setInstructions(toInstructions(flow.getInstructions(), version));
         }
         flowMod.setVersion(version);
         return flowMod.build();
+    }
+
+    /**
+     * @param match
+     * @param matchBuilder
+     */
+    public static void toMatchV10(Match match, MatchV10Builder matchBuilder) {
+        //TODO: temporary method covering ethernet match only
+        long wildcards = ((1 << 22) - 1);
+        if (match.getEthernetMatch() != null) {
+            MacAddress zeroMac = new MacAddress("00:00:00:00:00:00");
+            Ipv4Address zeroIPv4 = new Ipv4Address("0.0.0.0");
+
+            // default values
+            //TODO:: encoding should honor wildcard value and pick only relevant match values
+            matchBuilder.setInPort(0);
+            matchBuilder.setDlDst(zeroMac);
+            matchBuilder.setDlSrc(zeroMac);
+            matchBuilder.setDlType(0);
+            matchBuilder.setDlVlan(0);
+            matchBuilder.setDlVlanPcp((short) 0);
+            matchBuilder.setNwDst(zeroIPv4);
+            matchBuilder.setNwSrc(zeroIPv4);
+            matchBuilder.setNwProto((short) 0);
+            matchBuilder.setNwTos((short) 0);
+            matchBuilder.setTpSrc(0);
+            matchBuilder.setTpDst(0);
+            
+            EthernetMatch ethMatch = match.getEthernetMatch();
+            if (match.getEthernetMatch().getEthernetSource() != null) {
+                wildcards &= ~(1<<2);
+                matchBuilder.setDlSrc(ethMatch.getEthernetSource().getAddress());
+            } else if (match.getEthernetMatch().getEthernetDestination() != null) {
+                wildcards &= ~(1<<3);
+                matchBuilder.setDlDst(ethMatch.getEthernetDestination().getAddress());
+            }  
+            matchBuilder.setWildcards(wildcards);
+            
+        } else {
+            logger.warn("other match types not supported");
+        }
     }
 
     public static List<MatchEntries> toMatch(
