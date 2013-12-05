@@ -60,6 +60,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.Group;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.PopMpls;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.PopPbb;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.PopVlan;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.PushMpls;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.PushPbb;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.PushVlan;
@@ -254,7 +255,7 @@ public final class ActionConvertor {
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
             ActionBuilder actionBuilder, ActionsListBuilder actionsListBuilder) {
 
-        actionBuilder.setType(PushMpls.class);
+        actionBuilder.setType(PopVlan.class);
 
         return emtpyAction(actionBuilder, actionsListBuilder);
     }

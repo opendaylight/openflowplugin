@@ -1,9 +1,11 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.opendaylight.openflowjava.protocol.api.util.BinContent;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.Buckets;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.ActionsList;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupModCommand;
@@ -23,6 +25,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  *
  */
 public final class GroupConvertor {
+    private static final  Integer DEFAULT_WEIGHT = new Integer(0); 
+    private static final Long OFPP_ANY = Long.parseLong("ffffffff", 16);
+    private static final Long DEFAULT_WATCH_PORT = OFPP_ANY;
+    private static final Long OFPG_ANY = Long.parseLong("ffffffff", 16);
+    private static final Long DEFAULT_WATCH_GROUP = OFPG_ANY;
 
     private GroupConvertor() {
 
@@ -72,9 +79,25 @@ public final class GroupConvertor {
         while (groupBucketIterator.hasNext()) {
             groupBucket = groupBucketIterator.next();
             BucketsListBuilder bucketBuilder = new BucketsListBuilder();
-            bucketBuilder.setWeight(groupBucket.getWeight().intValue());
-            bucketBuilder.setWatchGroup(groupBucket.getWatchGroup());
-            bucketBuilder.setWatchPort(new PortNumber(groupBucket.getWatchPort()));
+            
+            if (null != groupBucket.getWeight()) {
+                bucketBuilder.setWeight(groupBucket.getWeight().intValue());
+            } else {
+                bucketBuilder.setWeight(DEFAULT_WEIGHT);
+            }
+            
+            if (null != groupBucket.getWatchGroup()) {
+                bucketBuilder.setWatchGroup(groupBucket.getWatchGroup());
+            } else {
+                bucketBuilder.setWatchGroup(BinContent.intToUnsignedLong(DEFAULT_WATCH_GROUP.intValue()));
+            }
+            
+            if (null != groupBucket.getWatchPort()) {
+                bucketBuilder.setWatchPort(new PortNumber(groupBucket.getWatchPort()));
+            } else {
+                
+                bucketBuilder.setWatchPort(new PortNumber(BinContent.intToUnsignedLong(DEFAULT_WATCH_PORT.intValue())));
+            }
 
             List<ActionsList> bucketActionList = ActionConvertor.getActionList(groupBucket.getAction(), version);
             bucketBuilder.setActionsList(bucketActionList);
