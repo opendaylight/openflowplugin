@@ -1,0 +1,29 @@
+--- /usr/share/pyshared/mininet/node.py	2013-12-06 02:54:41.079577722 +0000
++++ new_node.py	2013-12-06 02:54:20.139578272 +0000
+@@ -952,6 +952,10 @@
+            datapath: userspace or kernel mode (kernel|user)"""
+         Switch.__init__( self, name, **params )
+         self.failMode = failMode
++	protKey = 'protocols'
++	if self.params and protKey in self.params:
++		print 'have protocol params!'
++		self.opts += protKey + '=' + self.params[protKey]
+         self.datapath = datapath
+ 
+     @classmethod
+@@ -1024,12 +1028,13 @@
+         # Annoyingly, --if-exists option seems not to work
+         self.cmd( 'ovs-vsctl del-br', self )
+         self.cmd( 'ovs-vsctl add-br', self )
++	print 'OVSswitch opts: ',self.opts
+         if self.datapath == 'user':
+             self.cmd( 'ovs-vsctl set bridge', self,'datapath_type=netdev' )
+         int( self.dpid, 16 ) # DPID must be a hex string
+         self.cmd( 'ovs-vsctl -- set Bridge', self,
+-                  'other_config:datapath-id=' + self.dpid )
+-        self.cmd( 'ovs-vsctl set-fail-mode', self, self.failMode )
++        	self.opts+' other_config:datapath-id=' + self.dpid )
++	self.cmd( 'ovs-vsctl set-fail-mode', self, self.failMode )
+         for intf in self.intfList():
+             if not intf.IP():
+                 self.attach( intf )
