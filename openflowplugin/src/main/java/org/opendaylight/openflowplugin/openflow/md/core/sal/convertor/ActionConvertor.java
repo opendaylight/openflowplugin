@@ -159,7 +159,7 @@ public final class ActionConvertor {
         org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetField setField = (org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetField) action;
         org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match match = setField.getMatch();
 
-        List<MatchEntries> matchEntries = FlowConvertor.toMatch(match);
+        List<MatchEntries> matchEntries = MatchConvertor.toMatch(match);
 
         OxmFieldsActionBuilder oxmFieldsActionBuilder = new OxmFieldsActionBuilder();
 
@@ -446,7 +446,7 @@ public final class ActionConvertor {
             else if (action.getType().equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.SetMplsTtl.class))
                 bucketActions.add(ofToSALSetMplsTtl(action));
             else if (action.getType().equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.DecMplsTtl.class)){
-                DecMplsTtlBuilder decMplsTtl = new DecMplsTtlBuilder(); 
+                DecMplsTtlBuilder decMplsTtl = new DecMplsTtlBuilder();
                 bucketActions.add(decMplsTtl.build());
             }
             else if (action.getType().equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.PushVlan.class))
@@ -456,11 +456,11 @@ public final class ActionConvertor {
                 bucketActions.add(popVlan.build());
             }
             else if (action.getType().equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.PushMpls.class)){
-                PushMplsActionBuilder pushMpls = new PushMplsActionBuilder(); 
+                PushMplsActionBuilder pushMpls = new PushMplsActionBuilder();
                 bucketActions.add(pushMpls.build());
             }
             else if (action.getType().equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.PopMpls.class)){
-                PopMplsActionBuilder popMpls = new PopMplsActionBuilder(); 
+                PopMplsActionBuilder popMpls = new PopMplsActionBuilder();
                 bucketActions.add(popMpls.build());
             }
             else if (action.getType().equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.SetQueue.class))
@@ -473,12 +473,12 @@ public final class ActionConvertor {
                 bucketActions.add(decNwTtl.build());
             }
             else if (action.getType().equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.SetField.class))
-                bucketActions.add(FlowConvertor.ofToSALSetField(action));
+                bucketActions.add(MatchConvertor.ofToSALSetField(action));
 
             else if (action.getType().equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.PushPbb.class))
                 bucketActions.add(ofToSALPushPbbAction(action));
             else if (action.getType().equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.PopPbb.class)){
-                PopPbbActionBuilder popPbb = new PopPbbActionBuilder(); 
+                PopPbbActionBuilder popPbb = new PopPbbActionBuilder();
                 bucketActions.add(popPbb.build());
             }
             else if (action.getType().equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.Experimenter.class)){
