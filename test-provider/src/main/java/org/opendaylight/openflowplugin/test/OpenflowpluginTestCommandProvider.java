@@ -608,7 +608,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         IpMatchBuilder ipmatch = new IpMatchBuilder(); // ipv4 version
         IpVersion ipv = IpVersion.Ipv4;
-        ipmatch.setIpProto(ipv);
+        //ipmatch.setIpProto(ipv);
 
         PortNumber srcport = new PortNumber(646);
         PortNumber dstport = new PortNumber(646);
@@ -630,7 +630,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         IpMatchBuilder ipmatch2 = new IpMatchBuilder(); // ipv6 version
         IpVersion ipv2 = IpVersion.Ipv6;
-        ipmatch2.setIpProto(ipv);
+       // ipmatch2.setIpProto(ipv);
 
         Icmpv4MatchBuilder icmpv4match = new Icmpv4MatchBuilder(); // icmpv4
                                                                    // match
