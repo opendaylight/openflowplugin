@@ -1,0 +1,35 @@
+This directory will allow you to materialize a Virtual Box VM using
+vagrant that has mininet-2.1.0, OVS-2.0, and patched to make
+it easy to use OpenFlow 1.3 with mininet.
+
+To use it:
+
+1)  Install Virtaul Box:
+https://www.virtualbox.org/
+2)  Install Vagrant:
+http://www.vagrantup.com/
+3)  In this directory, run at the command line
+
+vagrant up
+
+This will build and configure the VM and run
+it.
+
+4)  In this directory, run at the command line
+
+vagrant ssh
+
+(This will ssh to the VM you just ran)
+
+5)  You can then run mininet for OF 1.3 using
+
+sudo mn --topo single,3  --controller 'remote,ip=<your controller IP>' --switch ovsk,protocols=OpenFlow13
+
+
+Many thanks to Fred Hsu who turned me onto Vagrant:
+http://fredhsu.wordpress.com/2013/11/04/vagrant-with-opendaylight/
+
+Many thanks to Michal Rehak who did the original underlying work to
+figure out how to get mininet working with OF 1.3 and is the original
+source of the mininet patch:
+https://wiki.opendaylight.org/view/Openflow_Protocol_Library:OpenVirtualSwitch
