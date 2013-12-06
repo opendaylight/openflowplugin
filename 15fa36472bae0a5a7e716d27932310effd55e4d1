@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da6255ed_76a05d9f",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/GroupConvertor.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2013-12-06T08:37:12Z",
+      "side": 1,
+      "message": "was there any problem with OFPP_ANY \u003d 0xffffffffL ?",
+      "revId": "15fa36472bae0a5a7e716d27932310effd55e4d1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
