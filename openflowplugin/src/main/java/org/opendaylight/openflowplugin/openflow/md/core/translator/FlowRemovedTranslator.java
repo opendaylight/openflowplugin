@@ -25,6 +25,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetDestinationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetSourceBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetTypeBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ipv6.match.fields.Ipv6ExtHeaderBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ipv6.match.fields.Ipv6LabelBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Icmpv4MatchBuilder;
@@ -243,9 +244,7 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
                 } else if (field.equals(IpEcn.class)) {
                     ipMatch.setIpEcn(entry.getAugmentation(EcnMatchEntry.class).getEcn());
                 } else if (field.equals(IpProto.class)) {
-                    ipMatch.setIpProto(org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpVersion
-                            .forValue(entry.getAugmentation(ProtocolNumberMatchEntry.class).getProtocolNumber()
-                                    .intValue()));
+                    ipMatch.setIpProtocol(entry.getAugmentation(ProtocolNumberMatchEntry.class).getProtocolNumber());
                 }
             } else if (field.equals(TcpSrc.class) || field.equals(TcpDst.class)) {
                 if (tcpMatch == null) {
@@ -358,6 +357,7 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
                     ipv6Match.setIpv6NdTll(entry.getAugmentation(MacAddressMatchEntry.class).getMacAddress());
                 } else if (field.equals(Ipv6Exthdr.class)) {
                     // verify
+                    Ipv6ExtHeaderBuilder ipv6ExtHeaderBuilder = new Ipv6ExtHeaderBuilder();
                     PseudoField pseudoField = entry.getAugmentation(PseudoFieldMatchEntry.class).getPseudoField();
                     Map<Integer, Boolean> map = new HashMap<>();
                     map.put(0, pseudoField.isNonext());
@@ -370,7 +370,11 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
                     map.put(7, pseudoField.isUnrep());
                     map.put(8, pseudoField.isUnseq());
                     int bitmap = fillBitMaskFromMap(map);
-                    ipv6Match.setIpv6Exthdr(bitmap);
+                    ipv6ExtHeaderBuilder.setIpv6Exthdr(bitmap);
+                    if (entry.isHasMask()) {
+                        ipv6ExtHeaderBuilder.setIpv6ExthdrMask(entry.getAugmentation(MaskMatchEntry.class).getMask());
+                    }
+                    ipv6Match.setIpv6ExtHeader(ipv6ExtHeaderBuilder.build());
                 }
             } else if (field.equals(MplsLabel.class) || field.equals(MplsTc.class) || field.equals(MplsBos.class)
                     || field.equals(PbbIsid.class)) {
