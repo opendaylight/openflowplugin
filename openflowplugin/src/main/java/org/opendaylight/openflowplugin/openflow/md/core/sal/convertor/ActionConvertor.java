@@ -101,7 +101,6 @@ public final class ActionConvertor {
             short version)
 
     {
-        ActionBuilder actionBuilder = new ActionBuilder();
         ActionsListBuilder actionsListBuilder = new ActionsListBuilder();
         List<ActionsList> actionsList = new ArrayList<ActionsList>();
 
@@ -111,41 +110,41 @@ public final class ActionConvertor {
                     actionItem).getAction();
 
             if (action instanceof OutputAction)
-                actionsList.add(salToOFOutputAction(action, actionBuilder, actionsListBuilder, version));
+                actionsList.add(salToOFOutputAction(action, actionsListBuilder, version));
             else if (action instanceof GroupAction)
-                actionsList.add(SalToOFGroupAction(action, actionBuilder, actionsListBuilder));
+                actionsList.add(SalToOFGroupAction(action, actionsListBuilder));
             else if (action instanceof CopyTtlOut)
-                actionsList.add(SalToOFCopyTTLIOut(actionBuilder, actionsListBuilder));
+                actionsList.add(SalToOFCopyTTLIOut(actionsListBuilder));
             else if (action instanceof CopyTtlIn)
-                actionsList.add(SalToOFCopyTTLIIn(actionBuilder, actionsListBuilder));
+                actionsList.add(SalToOFCopyTTLIIn(actionsListBuilder));
             else if (action instanceof SetMplsTtlAction)
-                actionsList.add(SalToOFSetMplsTtl(action, actionBuilder, actionsListBuilder));
+                actionsList.add(SalToOFSetMplsTtl(action, actionsListBuilder));
             else if (action instanceof DecMplsTtl)
-                actionsList.add(SalToOFDecMplsTtl(actionBuilder, actionsListBuilder));
+                actionsList.add(SalToOFDecMplsTtl(actionsListBuilder));
             else if (action instanceof PushVlanAction)
-                actionsList.add(SalToOFPushVlanAction(action, actionBuilder, actionsListBuilder));
+                actionsList.add(SalToOFPushVlanAction(action, actionsListBuilder));
             else if (action instanceof PopVlanAction)
-                actionsList.add(SalToOFPopVlan(action, actionBuilder, actionsListBuilder));
+                actionsList.add(SalToOFPopVlan(action, actionsListBuilder));
             else if (action instanceof PushMplsAction)
-                actionsList.add(SalToOFPushMplsAction(action, actionBuilder, actionsListBuilder));
+                actionsList.add(SalToOFPushMplsAction(action, actionsListBuilder));
             else if (action instanceof PopMplsAction)
-                actionsList.add(SalToOFPopMpls(action, actionBuilder, actionsListBuilder));
+                actionsList.add(SalToOFPopMpls(action, actionsListBuilder));
             else if (action instanceof SetQueueAction)
-                actionsList.add(SalToOFSetQueue(action, actionBuilder, actionsListBuilder));
+                actionsList.add(SalToOFSetQueue(action, actionsListBuilder));
 
             else if (action instanceof SetNwTtlAction)
-                actionsList.add(SalToOFSetNwTtl(action, actionBuilder, actionsListBuilder));
+                actionsList.add(SalToOFSetNwTtl(action, actionsListBuilder));
             else if (action instanceof DecNwTtl)
-                actionsList.add(SalToOFDecNwTtl(action, actionBuilder, actionsListBuilder));
+                actionsList.add(SalToOFDecNwTtl(action, actionsListBuilder));
             else if (action instanceof SetField)
-                actionsList.add(SalToOFSetField(action, actionBuilder, actionsListBuilder));
+                actionsList.add(SalToOFSetField(action, actionsListBuilder));
 
             else if (action instanceof PushPbbAction)
-                actionsList.add(SalToOFPushPbbAction(action, actionBuilder, actionsListBuilder));
+                actionsList.add(SalToOFPushPbbAction(action, actionsListBuilder));
             else if (action instanceof PopPbbAction)
-                actionsList.add(SalToOFPopPBB(action, actionBuilder, actionsListBuilder));
+                actionsList.add(SalToOFPopPBB(action, actionsListBuilder));
             else if (action instanceof ExperimenterAction)
-                actionsList.add(SalToOFExperimenter(action, actionBuilder, actionsListBuilder));
+                actionsList.add(SalToOFExperimenter(action, actionsListBuilder));
 
         }
         return actionsList;
@@ -154,7 +153,7 @@ public final class ActionConvertor {
 
     private static ActionsList SalToOFSetField(
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
-            ActionBuilder actionBuilder, ActionsListBuilder actionsListBuilder) {
+            ActionsListBuilder actionsListBuilder) {
 
         org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetField setField = (org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetField) action;
         org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match match = setField.getMatch();
@@ -164,7 +163,7 @@ public final class ActionConvertor {
         OxmFieldsActionBuilder oxmFieldsActionBuilder = new OxmFieldsActionBuilder();
 
         oxmFieldsActionBuilder.setMatchEntries(matchEntries);
-
+        ActionBuilder actionBuilder = new ActionBuilder();
         actionBuilder
                 .setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.SetField.class);
 
@@ -176,7 +175,8 @@ public final class ActionConvertor {
 
     private static ActionsList SalToOFDecNwTtl(
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
-            ActionBuilder actionBuilder, ActionsListBuilder actionsListBuilder) {
+            ActionsListBuilder actionsListBuilder) {
+        ActionBuilder actionBuilder = new ActionBuilder();
         actionBuilder.setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.DecNwTtl.class);
 
         return emtpyAction(actionBuilder, actionsListBuilder);
@@ -184,8 +184,8 @@ public final class ActionConvertor {
 
     private static ActionsList SalToOFPushMplsAction(
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
-            ActionBuilder actionBuilder, ActionsListBuilder actionsListBuilder) {
-
+            ActionsListBuilder actionsListBuilder) {
+        ActionBuilder actionBuilder = new ActionBuilder();
         actionBuilder.setType(PushMpls.class);
 
         return SalToOFPushAction(((PushMplsAction) action).getEthernetType(), actionBuilder, actionsListBuilder);
@@ -194,7 +194,8 @@ public final class ActionConvertor {
 
     private static ActionsList SalToOFPushPbbAction(
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
-            ActionBuilder actionBuilder, ActionsListBuilder actionsListBuilder) {
+            ActionsListBuilder actionsListBuilder) {
+        ActionBuilder actionBuilder = new ActionBuilder();
         actionBuilder.setType(PushPbb.class);
 
         return SalToOFPushAction(((PushPbbAction) action).getEthernetType(), actionBuilder, actionsListBuilder);
@@ -202,8 +203,8 @@ public final class ActionConvertor {
 
     private static ActionsList SalToOFPushVlanAction(
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
-            ActionBuilder actionBuilder, ActionsListBuilder actionsListBuilder) {
-
+            ActionsListBuilder actionsListBuilder) {
+        ActionBuilder actionBuilder = new ActionBuilder();
         PushVlanAction pushVlanAction = (PushVlanAction) action;
         VlanId vlanId = new VlanId(pushVlanAction.getVlanId());
         Integer etherType = vlanId.getValue();
@@ -215,8 +216,8 @@ public final class ActionConvertor {
 
     private static ActionsList SalToOFSetNwTtl(
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
-            ActionBuilder actionBuilder, ActionsListBuilder actionsListBuilder) {
-
+            ActionsListBuilder actionsListBuilder) {
+        ActionBuilder actionBuilder = new ActionBuilder();
         NwTtlActionBuilder nwTtlActionBuilder = new NwTtlActionBuilder();
         nwTtlActionBuilder.setNwTtl(((SetNwTtlAction) action).getNwTtl());
 
@@ -229,8 +230,8 @@ public final class ActionConvertor {
 
     private static ActionsList SalToOFSetQueue(
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
-            ActionBuilder actionBuilder, ActionsListBuilder actionsListBuilder) {
-
+            ActionsListBuilder actionsListBuilder) {
+        ActionBuilder actionBuilder = new ActionBuilder();
         SetQueueAction setQueueAction = (SetQueueAction) action;
 
         QueueIdActionBuilder queueIdActionBuilder = new QueueIdActionBuilder();
@@ -244,8 +245,8 @@ public final class ActionConvertor {
 
     private static ActionsList SalToOFPopMpls(
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
-            ActionBuilder actionBuilder, ActionsListBuilder actionsListBuilder) {
-
+            ActionsListBuilder actionsListBuilder) {
+        ActionBuilder actionBuilder = new ActionBuilder();
         actionBuilder.setType(PopMpls.class);
 
         return SalToOFPushAction(((PopMplsAction) action).getEthernetType(), actionBuilder, actionsListBuilder);
@@ -253,8 +254,8 @@ public final class ActionConvertor {
 
     private static ActionsList SalToOFPopVlan(
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
-            ActionBuilder actionBuilder, ActionsListBuilder actionsListBuilder) {
-
+            ActionsListBuilder actionsListBuilder) {
+        ActionBuilder actionBuilder = new ActionBuilder();
         actionBuilder.setType(PopVlan.class);
 
         return emtpyAction(actionBuilder, actionsListBuilder);
@@ -262,15 +263,17 @@ public final class ActionConvertor {
 
     private static ActionsList SalToOFPopPBB(
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
-            ActionBuilder actionBuilder, ActionsListBuilder actionsListBuilder) {
+            ActionsListBuilder actionsListBuilder) {
+        ActionBuilder actionBuilder = new ActionBuilder();
         actionBuilder.setType(PopPbb.class);
         return emtpyAction(actionBuilder, actionsListBuilder);
     }
 
     private static ActionsList SalToOFExperimenter(
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
-            ActionBuilder actionBuilder, ActionsListBuilder actionsListBuilder) {
+            ActionsListBuilder actionsListBuilder) {
 
+        ActionBuilder actionBuilder = new ActionBuilder();
         ExperimenterActionBuilder experimenterActionBuilder = new ExperimenterActionBuilder();
         experimenterActionBuilder.setExperimenter(((ExperimenterAction) action).getExperimenter());
         actionBuilder.setType(Experimenter.class);
@@ -285,12 +288,13 @@ public final class ActionConvertor {
 
     private static ActionsList SalToOFGroupAction(
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
-            ActionBuilder actionBuilder, ActionsListBuilder actionsListBuilder) {
+            ActionsListBuilder actionsListBuilder) {
 
         GroupAction groupAction = (GroupAction) action;
 
         GroupIdActionBuilder groupIdBuilder = new GroupIdActionBuilder();
         groupIdBuilder.setGroupId(Long.getLong(groupAction.getGroup()));
+        ActionBuilder actionBuilder = new ActionBuilder();
         actionBuilder.setType(Group.class);
         actionBuilder.addAugmentation(GroupIdAction.class, groupIdBuilder.build());
         actionsListBuilder.setAction(actionBuilder.build());
@@ -309,7 +313,8 @@ public final class ActionConvertor {
         return actionsListBuilder.build();
     }
 
-    private static ActionsList SalToOFDecMplsTtl(ActionBuilder actionBuilder, ActionsListBuilder actionsListBuilder) {
+    private static ActionsList SalToOFDecMplsTtl(ActionsListBuilder actionsListBuilder) {
+        ActionBuilder actionBuilder = new ActionBuilder();
         actionBuilder
                 .setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.DecMplsTtl.class);
         return emtpyAction(actionBuilder, actionsListBuilder);
@@ -317,7 +322,8 @@ public final class ActionConvertor {
 
     private static ActionsList SalToOFSetMplsTtl(
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
-            ActionBuilder actionBuilder, ActionsListBuilder actionsListBuilder) {
+            ActionsListBuilder actionsListBuilder) {
+        ActionBuilder actionBuilder = new ActionBuilder();
 
         SetMplsTtlAction mplsTtlAction = (SetMplsTtlAction) action;
 
@@ -330,13 +336,15 @@ public final class ActionConvertor {
         return actionsListBuilder.build();
     }
 
-    private static ActionsList SalToOFCopyTTLIIn(ActionBuilder actionBuilder, ActionsListBuilder actionsListBuilder) {
+    private static ActionsList SalToOFCopyTTLIIn(ActionsListBuilder actionsListBuilder) {
+        ActionBuilder actionBuilder = new ActionBuilder();
         actionBuilder
                 .setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.CopyTtlIn.class);
         return emtpyAction(actionBuilder, actionsListBuilder);
     }
 
-    private static ActionsList SalToOFCopyTTLIOut(ActionBuilder actionBuilder, ActionsListBuilder actionsListBuilder) {
+    private static ActionsList SalToOFCopyTTLIOut(ActionsListBuilder actionsListBuilder) {
+        ActionBuilder actionBuilder = new ActionBuilder();
         actionBuilder
                 .setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.CopyTtlOut.class);
         return emtpyAction(actionBuilder, actionsListBuilder);
@@ -351,13 +359,14 @@ public final class ActionConvertor {
 
     private static ActionsList salToOFOutputAction(
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
-            ActionBuilder actionBuilder, ActionsListBuilder actionsListBuilder, short version) {
+            ActionsListBuilder actionsListBuilder, short version) {
+
 
         OutputAction outputAction = ((OutputAction) action);
         PortActionBuilder portAction = new PortActionBuilder();
         MaxLengthActionBuilder maxLenActionBuilder = new MaxLengthActionBuilder();
         maxLenActionBuilder.setMaxLength(outputAction.getMaxLength());
-
+        ActionBuilder actionBuilder = new ActionBuilder();
         actionBuilder.addAugmentation(MaxLengthAction.class, maxLenActionBuilder.build());
 
         Uri uri = outputAction.getOutputNodeConnector();
