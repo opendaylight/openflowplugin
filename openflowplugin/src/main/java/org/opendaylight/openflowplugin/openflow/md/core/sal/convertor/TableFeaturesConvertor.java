@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.ArpOp;
@@ -71,6 +72,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.OxmRelatedTableFeaturePropertyBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.table.features.properties.container.table.feature.properties.NextTableIds;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.table.features.properties.container.table.feature.properties.NextTableIdsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.TableConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.TableFeaturesPropType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlIn;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlOut;
@@ -118,9 +120,11 @@ import org.slf4j.LoggerFactory;
 public class TableFeaturesConvertor {
     private static final Logger logger = LoggerFactory.getLogger(TableFeaturesConvertor.class);
 
-    public static MultipartRequestTableFeatures toTableFeaturesRequest(
+    public static List<TableFeatures> toTableFeaturesRequest(
             org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableFeatures salTableFeaturesList) {
-        MultipartRequestTableFeaturesBuilder tableFeaturesRequest = new MultipartRequestTableFeaturesBuilder();
+        if (salTableFeaturesList == null) {
+            return Collections.<TableFeatures> emptyList();
+        }
         List<TableFeatures> ofTableFeaturesList = new ArrayList<>();
         TableFeaturesBuilder ofTableFeatures = new TableFeaturesBuilder();
         for (org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures salTableFeatures : salTableFeaturesList
@@ -129,128 +133,130 @@ public class TableFeaturesConvertor {
             ofTableFeatures.setName(salTableFeatures.getName());
             ofTableFeatures.setMetadataMatch(salTableFeatures.getMetadataMatch());
             ofTableFeatures.setMetadataWrite(salTableFeatures.getMetadataWrite());
-            // TODO: setConfig
-            // ofTableFeatures.setConfig(salTableFeatures.getConfig());
+            if (salTableFeatures.getConfig() != null) {
+                ofTableFeatures.setConfig(new TableConfig(salTableFeatures.getConfig().isDEPRECATEDMASK()));
+            }
             ofTableFeatures.setTableFeatureProperties(toTableProperties(salTableFeatures.getTableProperties()));
             ofTableFeaturesList.add(ofTableFeatures.build());
         }
-        tableFeaturesRequest.setTableFeatures(ofTableFeaturesList);
-        return tableFeaturesRequest.build();
+        return ofTableFeaturesList;
     }
 
     private static List<TableFeatureProperties> toTableProperties(
             org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.TableProperties tableProperties) {
+        if (tableProperties == null) {
+            return Collections.<TableFeatureProperties> emptyList();
+        }
         List<TableFeatureProperties> ofTablePropertiesList = new ArrayList<>();
         TableFeaturePropertiesBuilder propBuilder = new TableFeaturePropertiesBuilder();
-        if (tableProperties != null) {
-            for (org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeatureProperties property : tableProperties
-                    .getTableFeatureProperties()) {
-                org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.TableFeaturePropType propType = property
-                        .getTableFeaturePropType();
-                if (propType instanceof Instructions) {
-                    org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.instructions.Instructions instructions = ((Instructions) propType)
-                            .getInstructions();
-                    setInstructionTableFeatureProperty(propBuilder, TableFeaturesPropType.OFPTFPTINSTRUCTIONS,
-                            (instructions == null) ? new ArrayList<Instruction>() : instructions.getInstruction());
-                } else if (propType instanceof InstructionsMiss) {
-                    org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.instructions.miss.InstructionsMiss instructions = ((InstructionsMiss) propType)
-                            .getInstructionsMiss();
-                    setInstructionTableFeatureProperty(propBuilder, TableFeaturesPropType.OFPTFPTINSTRUCTIONSMISS,
-                            (instructions == null) ? new ArrayList<Instruction>() : instructions.getInstruction());
-                } else if (propType instanceof NextTable) {
-                    org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.next.table.Tables tables = ((NextTable) propType)
-                            .getTables();
-                    setNextTableFeatureProperty(propBuilder, TableFeaturesPropType.OFPTFPTNEXTTABLES,
-                            (tables == null) ? new ArrayList<Short>() : tables.getTableIds());
-                } else if (propType instanceof NextTableMiss) {
-                    org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.next.table.miss.Tables tables = ((NextTableMiss) propType)
-                            .getTables();
-                    setNextTableFeatureProperty(propBuilder, TableFeaturesPropType.OFPTFPTNEXTTABLESMISS,
-                            (tables == null) ? new ArrayList<Short>() : tables.getTableIds());
-                } else if (propType instanceof WriteActions) {
-                    org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.write.actions.WriteActions writeActions = ((WriteActions) propType)
-                            .getWriteActions();
-                    setActionTableFeatureProperty(
-                            propBuilder,
-                            TableFeaturesPropType.OFPTFPTWRITEACTIONS,
-                            ((writeActions == null) ? new ArrayList<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>()
-                                    : writeActions.getAction()));
-                } else if (propType instanceof WriteActionsMiss) {
-                    org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.write.actions.miss.WriteActionsMiss writeActionsMiss = ((WriteActionsMiss) propType)
-                            .getWriteActionsMiss();
-                    setActionTableFeatureProperty(
-                            propBuilder,
-                            TableFeaturesPropType.OFPTFPTWRITEACTIONSMISS,
-                            ((writeActionsMiss == null) ? new ArrayList<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>()
-                                    : writeActionsMiss.getAction()));
-                } else if (propType instanceof ApplyActions) {
-                    org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.apply.actions.ApplyActions applyActions = ((ApplyActions) propType)
-                            .getApplyActions();
-                    setActionTableFeatureProperty(
-                            propBuilder,
-                            TableFeaturesPropType.OFPTFPTAPPLYACTIONS,
-                            ((applyActions == null) ? new ArrayList<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>()
-                                    : applyActions.getAction()));
-                } else if (propType instanceof ApplyActionsMiss) {
-                    org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.apply.actions.miss.ApplyActionsMiss applyActionsMiss = ((ApplyActionsMiss) propType)
-                            .getApplyActionsMiss();
-                    setActionTableFeatureProperty(
-                            propBuilder,
-                            TableFeaturesPropType.OFPTFPTAPPLYACTIONSMISS,
-                            ((applyActionsMiss == null) ? new ArrayList<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>()
-                                    : applyActionsMiss.getAction()));
-                } else if (propType instanceof Match) {
-                    List<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatch> setFieldMatch = ((Match) propType)
-                            .getSetFieldMatch();
-                    setSetFieldTableFeatureProperty(
-                            propBuilder,
-                            TableFeaturesPropType.OFPTFPTMATCH,
-                            ((setFieldMatch == null) ? new ArrayList<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatch>()
-                                    : setFieldMatch));
-                } else if (propType instanceof Wildcards) {
-                    List<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatch> setFieldMatch = ((Wildcards) propType)
-                            .getSetFieldMatch();
-                    setSetFieldTableFeatureProperty(
-                            propBuilder,
-                            TableFeaturesPropType.OFPTFPTWILDCARDS,
-                            ((setFieldMatch == null) ? new ArrayList<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatch>()
-                                    : setFieldMatch));
-                } else if (propType instanceof WriteSetfield) {
-                    List<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatch> setFieldMatch = ((WriteSetfield) propType)
-                            .getSetFieldMatch();
-                    setSetFieldTableFeatureProperty(
-                            propBuilder,
-                            TableFeaturesPropType.OFPTFPTWRITEACTIONS,
-                            ((setFieldMatch == null) ? new ArrayList<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatch>()
-                                    : setFieldMatch));
-                } else if (propType instanceof WriteSetfieldMiss) {
-                    List<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatch> setFieldMatch = ((WriteSetfieldMiss) propType)
-                            .getSetFieldMatch();
-                    setSetFieldTableFeatureProperty(
-                            propBuilder,
-                            TableFeaturesPropType.OFPTFPTWRITEACTIONSMISS,
-                            ((setFieldMatch == null) ? new ArrayList<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatch>()
-                                    : setFieldMatch));
-                } else if (propType instanceof ApplySetfield) {
-                    List<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatch> setFieldMatch = ((ApplySetfield) propType)
-                            .getSetFieldMatch();
-                    setSetFieldTableFeatureProperty(
-                            propBuilder,
-                            TableFeaturesPropType.OFPTFPTAPPLYACTIONS,
-                            ((setFieldMatch == null) ? new ArrayList<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatch>()
-                                    : setFieldMatch));
-                } else if (propType instanceof ApplySetfieldMiss) {
-                    List<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatch> setFieldMatch = ((ApplySetfieldMiss) propType)
-                            .getSetFieldMatch();
-                    setSetFieldTableFeatureProperty(
-                            propBuilder,
-                            TableFeaturesPropType.OFPTFPTAPPLYACTIONSMISS,
-                            ((setFieldMatch == null) ? new ArrayList<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatch>()
-                                    : setFieldMatch));
-                } // Experimenter and Experimeneter miss Table features are
-                  // unhandled
-                ofTablePropertiesList.add(propBuilder.build());
-            }
+
+        for (org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeatureProperties property : tableProperties
+                .getTableFeatureProperties()) {
+            org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.TableFeaturePropType propType = property
+                    .getTableFeaturePropType();
+            if (propType instanceof Instructions) {
+                org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.instructions.Instructions instructions = ((Instructions) propType)
+                        .getInstructions();
+                setInstructionTableFeatureProperty(propBuilder, TableFeaturesPropType.OFPTFPTINSTRUCTIONS,
+                        (instructions == null) ? new ArrayList<Instruction>() : instructions.getInstruction());
+            } else if (propType instanceof InstructionsMiss) {
+                org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.instructions.miss.InstructionsMiss instructions = ((InstructionsMiss) propType)
+                        .getInstructionsMiss();
+                setInstructionTableFeatureProperty(propBuilder, TableFeaturesPropType.OFPTFPTINSTRUCTIONSMISS,
+                        (instructions == null) ? new ArrayList<Instruction>() : instructions.getInstruction());
+            } else if (propType instanceof NextTable) {
+                org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.next.table.Tables tables = ((NextTable) propType)
+                        .getTables();
+                setNextTableFeatureProperty(propBuilder, TableFeaturesPropType.OFPTFPTNEXTTABLES,
+                        (tables == null) ? new ArrayList<Short>() : tables.getTableIds());
+            } else if (propType instanceof NextTableMiss) {
+                org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.next.table.miss.Tables tables = ((NextTableMiss) propType)
+                        .getTables();
+                setNextTableFeatureProperty(propBuilder, TableFeaturesPropType.OFPTFPTNEXTTABLESMISS,
+                        (tables == null) ? new ArrayList<Short>() : tables.getTableIds());
+            } else if (propType instanceof WriteActions) {
+                org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.write.actions.WriteActions writeActions = ((WriteActions) propType)
+                        .getWriteActions();
+                setActionTableFeatureProperty(
+                        propBuilder,
+                        TableFeaturesPropType.OFPTFPTWRITEACTIONS,
+                        ((writeActions == null) ? new ArrayList<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>()
+                                : writeActions.getAction()));
+            } else if (propType instanceof WriteActionsMiss) {
+                org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.write.actions.miss.WriteActionsMiss writeActionsMiss = ((WriteActionsMiss) propType)
+                        .getWriteActionsMiss();
+                setActionTableFeatureProperty(
+                        propBuilder,
+                        TableFeaturesPropType.OFPTFPTWRITEACTIONSMISS,
+                        ((writeActionsMiss == null) ? new ArrayList<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>()
+                                : writeActionsMiss.getAction()));
+            } else if (propType instanceof ApplyActions) {
+                org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.apply.actions.ApplyActions applyActions = ((ApplyActions) propType)
+                        .getApplyActions();
+                setActionTableFeatureProperty(
+                        propBuilder,
+                        TableFeaturesPropType.OFPTFPTAPPLYACTIONS,
+                        ((applyActions == null) ? new ArrayList<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>()
+                                : applyActions.getAction()));
+            } else if (propType instanceof ApplyActionsMiss) {
+                org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.apply.actions.miss.ApplyActionsMiss applyActionsMiss = ((ApplyActionsMiss) propType)
+                        .getApplyActionsMiss();
+                setActionTableFeatureProperty(
+                        propBuilder,
+                        TableFeaturesPropType.OFPTFPTAPPLYACTIONSMISS,
+                        ((applyActionsMiss == null) ? new ArrayList<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>()
+                                : applyActionsMiss.getAction()));
+            } else if (propType instanceof Match) {
+                List<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatch> setFieldMatch = ((Match) propType)
+                        .getSetFieldMatch();
+                setSetFieldTableFeatureProperty(
+                        propBuilder,
+                        TableFeaturesPropType.OFPTFPTMATCH,
+                        ((setFieldMatch == null) ? new ArrayList<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatch>()
+                                : setFieldMatch));
+            } else if (propType instanceof Wildcards) {
+                List<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatch> setFieldMatch = ((Wildcards) propType)
+                        .getSetFieldMatch();
+                setSetFieldTableFeatureProperty(
+                        propBuilder,
+                        TableFeaturesPropType.OFPTFPTWILDCARDS,
+                        ((setFieldMatch == null) ? new ArrayList<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatch>()
+                                : setFieldMatch));
+            } else if (propType instanceof WriteSetfield) {
+                List<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatch> setFieldMatch = ((WriteSetfield) propType)
+                        .getSetFieldMatch();
+                setSetFieldTableFeatureProperty(
+                        propBuilder,
+                        TableFeaturesPropType.OFPTFPTWRITEACTIONS,
+                        ((setFieldMatch == null) ? new ArrayList<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatch>()
+                                : setFieldMatch));
+            } else if (propType instanceof WriteSetfieldMiss) {
+                List<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatch> setFieldMatch = ((WriteSetfieldMiss) propType)
+                        .getSetFieldMatch();
+                setSetFieldTableFeatureProperty(
+                        propBuilder,
+                        TableFeaturesPropType.OFPTFPTWRITEACTIONSMISS,
+                        ((setFieldMatch == null) ? new ArrayList<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatch>()
+                                : setFieldMatch));
+            } else if (propType instanceof ApplySetfield) {
+                List<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatch> setFieldMatch = ((ApplySetfield) propType)
+                        .getSetFieldMatch();
+                setSetFieldTableFeatureProperty(
+                        propBuilder,
+                        TableFeaturesPropType.OFPTFPTAPPLYACTIONS,
+                        ((setFieldMatch == null) ? new ArrayList<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatch>()
+                                : setFieldMatch));
+            } else if (propType instanceof ApplySetfieldMiss) {
+                List<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatch> setFieldMatch = ((ApplySetfieldMiss) propType)
+                        .getSetFieldMatch();
+                setSetFieldTableFeatureProperty(
+                        propBuilder,
+                        TableFeaturesPropType.OFPTFPTAPPLYACTIONSMISS,
+                        ((setFieldMatch == null) ? new ArrayList<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatch>()
+                                : setFieldMatch));
+            } // Experimenter and Experimeneter miss Table features are
+              // unhandled
+            ofTablePropertiesList.add(propBuilder.build());
         }
         return ofTablePropertiesList;
     }
@@ -360,10 +366,7 @@ public class TableFeaturesConvertor {
             } else if (actionType instanceof PopPbbAction) {
                 actionBuilder
                         .setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.PopPbb.class);
-            } else if (actionType instanceof ExperimenterAction) {
-                actionBuilder
-                        .setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.Experimenter.class);
-            }
+            } // Experimenter action is unhandled
             actionList.add(actionListBuilder.setAction(actionBuilder.build()).build());
         }
         ActionRelatedTableFeaturePropertyBuilder propBuilder = new ActionRelatedTableFeaturePropertyBuilder();
