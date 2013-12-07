@@ -758,7 +758,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
     private static NodeRef createNodeRef(String string) {
         NodeKey key = new NodeKey(new NodeId(string));
-        InstanceIdentifier<Node> path = InstanceIdentifier.builder().node(Nodes.class).node(Node.class, key)
+        InstanceIdentifier<Node> path = InstanceIdentifier.builder(Nodes.class).child(Node.class, key)
                 .toInstance();
 
         return new NodeRef(path);

@@ -10,33 +10,23 @@ package org.opendaylight.openflowplugin.test
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService
-import org.opendaylight.controller.sal.binding.api.data.DataProviderService
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInput
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInput
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupInput
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.SalGroupService
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupInput
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeContext
-import org.opendaylight.yangtools.concepts.CompositeObjectRegistration
-import org.opendaylight.yangtools.concepts.Registration
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier
-import org.opendaylight.yangtools.yang.binding.NotificationListener
-import org.slf4j.LoggerFactory
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.SalGroupService
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupInput
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupInput
+import org.opendaylight.yangtools.concepts.CompositeObjectRegistration
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier
+import org.slf4j.LoggerFactory
 
 class OpenflowpluginGroupTestServiceProvider implements AutoCloseable, SalGroupService {
 
 
-    static val LOG = LoggerFactory.getLogger(OpenflowpluginTestServiceProvider);
-
-    @Property
-    DataProviderService dataService;
+    static val LOG = LoggerFactory.getLogger(OpenflowpluginGroupTestServiceProvider);
     
     @Property
     RoutedRpcRegistration<SalGroupService> groupRegistration;

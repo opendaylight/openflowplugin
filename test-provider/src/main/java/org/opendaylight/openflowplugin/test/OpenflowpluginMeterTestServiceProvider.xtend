@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory
 class OpenflowpluginMeterTestServiceProvider implements AutoCloseable, SalMeterService {
 
 
-    static val LOG = LoggerFactory.getLogger(OpenflowpluginTestServiceProvider);
+    static val LOG = LoggerFactory.getLogger(OpenflowpluginMeterTestServiceProvider);
 
     @Property
     DataProviderService dataService;
@@ -76,7 +76,6 @@ class OpenflowpluginMeterTestServiceProvider implements AutoCloseable, SalMeterS
         val nodeIndentifier = InstanceIdentifier.builder(Nodes).child(Node, new NodeKey(new NodeId(OpenflowpluginTestActivator.NODE_ID)));
         meterRegistration.registerPath(NodeContext, nodeIndentifier.toInstance());
         builder.add(meterRegistration);
-
         return builder.toInstance();
     }
     

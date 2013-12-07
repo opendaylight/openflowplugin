@@ -59,16 +59,14 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
         createTestMeter();
     }
 
-    private void createUserNode(String nodeRef) {
-        NodeRef nodeOne = createNodeRef(nodeRef);
+    private void createUserNode(String nodeRef) {        
         NodeBuilder builder = new NodeBuilder();
         builder.setId(new NodeId(nodeRef));
         builder.setKey(new NodeKey(builder.getId()));
         testNode = builder.build();
     }
     
-    private void createTestNode() {
-        NodeRef nodeOne = createNodeRef(OpenflowpluginTestActivator.NODE_ID);
+    private void createTestNode() {       
         NodeBuilder builder = new NodeBuilder();
         builder.setId(new NodeId(OpenflowpluginTestActivator.NODE_ID));
         builder.setKey(new NodeKey(builder.getId()));
@@ -86,7 +84,7 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
         MeterKey key = new MeterKey(id, new NodeRef(new NodeRef(nodeToInstanceId(testNode))));
         MeterBuilder meter = new MeterBuilder();
         meter.setContainerName("abcd");     
-        meter.setId((long) 123);
+        meter.setId((long) 9);
         meter.setKey(key);       
         meter.setMeterName(originalMeterName);
         meter.setFlags(new MeterFlags(true, false, false, false));   
@@ -211,13 +209,6 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
         help.append("\t removeMeter <node id>        - node ref\n");
        
         return help.toString();
-    }
-    
-    private static NodeRef createNodeRef(String string) {
-        NodeKey key = new NodeKey(new NodeId(string));
-        InstanceIdentifier<Node> path =
-                InstanceIdentifier.builder(Nodes.class).child(Node.class, key).toInstance();
-
-        return new NodeRef(path);
-    }
+    }    
+   
 }

@@ -16,6 +16,8 @@ import org.osgi.framework.BundleContext
 class OpenflowpluginTestActivator extends AbstractBindingAwareProvider {
 
     static var OpenflowpluginTestServiceProvider provider = new OpenflowpluginTestServiceProvider();
+    static var OpenflowpluginGroupTestServiceProvider groupProvider = new OpenflowpluginGroupTestServiceProvider();
+    static var OpenflowpluginMeterTestServiceProvider meterProvider = new OpenflowpluginMeterTestServiceProvider();
     var OpenflowpluginTestCommandProvider cmdProvider;
     var OpenflowpluginGroupTestCommandProvider cmdGroupProvider;
     var OpenflowpluginMeterTestCommandProvider cmdMeterProvider;
@@ -26,6 +28,8 @@ class OpenflowpluginTestActivator extends AbstractBindingAwareProvider {
         provider.notificationService = session.getSALService(NotificationProviderService)
         provider.start();
         provider.register(session);
+        groupProvider.register(session);
+        meterProvider.register(session);
         cmdProvider.onSessionInitiated(session);
         cmdGroupProvider.onSessionInitiated(session);
         cmdMeterProvider.onSessionInitiated(session);
