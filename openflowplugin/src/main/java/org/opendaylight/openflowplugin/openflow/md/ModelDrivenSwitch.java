@@ -34,6 +34,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.GetP
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.SalPortService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.UpdatePortInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.UpdatePortOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.SalTableService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableOutput;
 import org.opendaylight.yangtools.concepts.CompositeObjectRegistration;
 import org.opendaylight.yangtools.concepts.Identifiable;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -44,6 +47,7 @@ public interface ModelDrivenSwitch extends //
         SalFlowService, //
         SalMeterService, //
         SalPortService, //
+        SalTableService,//
         PacketProcessingService, //
         OpendaylightGroupStatisticsService, //
         OpendaylightMeterStatisticsService, //
@@ -91,4 +95,7 @@ public interface ModelDrivenSwitch extends //
     
     @Override
     public Future<RpcResult<UpdatePortOutput>> updatePort(UpdatePortInput input);
+    
+    @Override
+    public Future<RpcResult<UpdateTableOutput>> updateTable(UpdateTableInput input) ;
 }

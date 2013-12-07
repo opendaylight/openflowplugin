@@ -21,6 +21,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.FlowConver
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.GroupConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.MeterConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.PortConvertor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.TableFeaturesConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.session.IMessageDispatchService;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
@@ -93,17 +94,23 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortModInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.match.grouping.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.match.grouping.MatchBuilder;
+//import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.table.features.TableFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestGroupBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestGroupDescBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestGroupFeaturesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestMeterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestMeterConfigBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestMeterFeaturesBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestTableFeaturesBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.table.features.TableFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.GetPortOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.UpdatePortInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.UpdatePortOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.UpdatePortOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableOutputBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -860,5 +867,68 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 		        LOG.debug("Returning the Update Group RPC result to MD-SAL");
 		        return Futures.immediateFuture(rpcResult);
 	
+	}
+	@Override
+	public Future<RpcResult<UpdateTableOutput>> updateTable(
+			UpdateTableInput input) {
+
+		// Get the Xid. The same Xid has to be sent in all the Multipart requests
+        Long xid = this.getSessionContext().getNextXid();
+
+        LOG.debug("Prepare the Multipart Table Mod requests for Transaction Id {} ",xid);
+
+        // Create multipart request header
+        MultipartRequestInputBuilder mprInput = new MultipartRequestInputBuilder();
+        mprInput.setType(MultipartType.OFPMPTABLEFEATURES);
+        mprInput.setVersion((short)0x04);
+        mprInput.setXid(xid);
+
+        //Convert the list of all MD-SAL table feature object into OF library object
+        List<TableFeatures> ofTableFeatureList = TableFeaturesConvertor.toTableFeaturesRequest(input.getUpdatedTable()) ;
+        int totalNoOfTableFeatureEntry = ofTableFeatureList.size();
+
+        MultipartRequestTableFeaturesBuilder tableFeaturesRequest = new MultipartRequestTableFeaturesBuilder();
+
+         // Slice the multipart request based on the configuration parameter, which is the no. of TableFeatureList element
+        // to be put in one multipart message. Default is 5
+        // This parameter must be set based on switch's Buffer capacity
+
+        List<TableFeatures> tmpOfTableFeatureList = null ;
+        String tableFeatureListCount = System.getProperty( "of.tableFeaturesCountPerMultipart", "5") ;
+        int noOfEntriesInMPR = Integer.parseInt(tableFeatureListCount) ;
+
+        int index = 0 ;
+        while(totalNoOfTableFeatureEntry-index > 0 ) {
+        	if( (totalNoOfTableFeatureEntry-index) > noOfEntriesInMPR ) {
+        		mprInput.setFlags(new MultipartRequestFlags(true));
+        		tmpOfTableFeatureList = ofTableFeatureList.subList(index, index + noOfEntriesInMPR);
+        	}
+        	else {
+        		// Last multipart request
+        		mprInput.setFlags(new MultipartRequestFlags(false));
+        		tmpOfTableFeatureList = ofTableFeatureList.subList(index, totalNoOfTableFeatureEntry );
+        	}
+
+        tableFeaturesRequest.setTableFeatures(tmpOfTableFeatureList) ;
+        //Set request body to main multipart request
+        mprInput.setMultipartRequestBody(tableFeaturesRequest.build());
+
+        //Send the request, no cookies associated, use any connection
+        LOG.debug("Send Table Feature request :{}",tmpOfTableFeatureList);
+        this.messageService.multipartRequest(mprInput.build(), null);
+        index += noOfEntriesInMPR ;
+		tmpOfTableFeatureList = null ; // To avoid any corrupt data
+        }
+      //Extract the Xid only from the Future for the last RPC and
+		// send it back to the NSF
+        LOG.debug("Returning the result and transaction id to NSF");
+        LOG.debug("Return results and transaction id back to caller");
+        UpdateTableOutputBuilder output = new UpdateTableOutputBuilder();
+        output.setTransactionId(generateTransactionId(xid));
+
+        Collection<RpcError> errors = Collections.emptyList();
+        RpcResult<UpdateTableOutput> rpcResult = Rpcs.getRpcResult(true, output.build(), errors);
+        return Futures.immediateFuture(rpcResult);
+
 	}
 }
