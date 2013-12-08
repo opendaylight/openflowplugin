@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da6255ed_8aaefe83",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/GroupConvertor.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2013-12-08T22:40:41Z",
+      "side": 1,
+      "message": "Why not to use switch+case construction without integer comparison? I believe that if+else would be also faster than going through as many IFs as the enum has items.",
+      "revId": "37730f1ee7a354a7863e4f9da76d2b8906dbd4d0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
