@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Dscp;
@@ -714,8 +715,28 @@ public class MatchConvertor {
 
     private static void addMetadataAugmentation(MatchEntriesBuilder builder, BigInteger metadata) {
         MetadataMatchEntryBuilder metadataMatchEntry = new MetadataMatchEntryBuilder();
-        metadataMatchEntry.setMetadata(metadata.toByteArray());
+        metadataMatchEntry.setMetadata(convertBigIntegerTo64Bit(metadata));
         builder.addAugmentation(MetadataMatchEntry.class, metadataMatchEntry.build());
+    }
+
+    /**
+     * Utility method to convert BigInteger to 8 element byte array
+     * @param bigInteger
+     * @return byte array containing 64 bits.
+     */
+    public static byte[] convertBigIntegerTo64Bit(BigInteger bigInteger) {
+        if (bigInteger == null) {
+            return null;
+        }
+        byte[] inputArray = bigInteger.toByteArray();
+        byte[] outputArray = new byte[8];
+        if (bigInteger.compareTo(BigInteger.ZERO) < 0) {
+            Arrays.fill(outputArray, (byte) -1);
+        } else {
+            Arrays.fill(outputArray, (byte) 0);
+        }
+        System.arraycopy(inputArray, 0, outputArray, outputArray.length - inputArray.length, inputArray.length);
+        return outputArray;
     }
 
     /**

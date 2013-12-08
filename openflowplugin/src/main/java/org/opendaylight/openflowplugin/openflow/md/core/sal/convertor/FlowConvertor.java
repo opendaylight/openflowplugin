@@ -187,8 +187,9 @@ public class FlowConvertor {
                 instructionBuilder
                         .setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.WriteMetadata.class);
                 MetadataInstructionBuilder metadataBuilder = new MetadataInstructionBuilder();
-                metadataBuilder.setMetadata(writeMetadata.getMetadata().toByteArray());
-                metadataBuilder.setMetadataMask(writeMetadata.getMetadataMask().toByteArray());
+                metadataBuilder.setMetadata(MatchConvertor.convertBigIntegerTo64Bit(writeMetadata.getMetadata()));
+                metadataBuilder
+                        .setMetadataMask(MatchConvertor.convertBigIntegerTo64Bit(writeMetadata.getMetadataMask()));
                 instructionBuilder.addAugmentation(MetadataInstruction.class, metadataBuilder.build());
                 instructionsList.add(instructionBuilder.build());
             }
