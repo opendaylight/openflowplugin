@@ -77,26 +77,26 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         return InstanceIdentifier.builder(Nodes.class).child(Node.class, node.getKey()).toInstance();
     }
 
-    private void createTestGroup() {
+    private GroupBuilder createTestGroup() {
         // Sample data , committing to DataStore
         DataModification modification = dataBrokerService.beginTransaction();
-        long id = 123;
-        GroupKey key = new GroupKey(id, new NodeRef(new NodeRef(nodeToInstanceId(testNode))));
+        Long id = new Long(12);
+        GroupKey key = new GroupKey(id.longValue(), new NodeRef(new NodeRef(nodeToInstanceId(testNode))));
         GroupBuilder group = new GroupBuilder();
         BucketBuilder bucket = new BucketBuilder();
         bucket.setBucketId(new BucketId((long) 12));
         group.setKey(key);
         group.setInstall(false);       
-        group.setId(id);
+        group.setId(new Long(12));
         PopVlanActionBuilder vlanAction = new PopVlanActionBuilder();
         ActionBuilder action = new ActionBuilder();
         action.setAction(vlanAction.build());
         List<Action> actions = new ArrayList<Action>();
         actions.add(action.build());        
         bucket.setAction(actions);    
-        bucket.setWatchGroup((long) 123);
+        bucket.setWatchGroup((long) 14);
         bucket.setWatchPort((long) 1234);
-        bucket.setWeight(123);
+        bucket.setWeight(15);
         group.setGroupType(GroupTypes.GroupSelect);
         group.setGroupName(originalGroupName);
         group.setBarrier(false);
@@ -106,6 +106,7 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         value.setBucket(value1);
         group.setBuckets(value.build());
         testGroup = group.build();
+        return group;
     }
 
     public void _removeGroup(CommandInterpreter ci) {
@@ -118,20 +119,21 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
             ci.println("User node added" + nref);
             createUserNode(nref);
         }
-        createTestGroup();
+        GroupBuilder gbuilder = createTestGroup();
         DataModification modification = dataBrokerService.beginTransaction();
         InstanceIdentifier<Group> path1 = InstanceIdentifier.builder(Groups.class)
-                .child(Group.class, testGroup.getKey()).toInstance();
+                .child(Group.class, gbuilder.getKey()).toInstance();
         DataObject cls = (DataObject) modification.readConfigurationData(path1);
-        modification.removeOperationalData(nodeToInstanceId(testNode));
+        //modification.removeOperationalData(nodeToInstanceId(testNode));
         modification.removeOperationalData(path1);
-        modification.removeConfigurationData(nodeToInstanceId(testNode));
+        //modification.removeConfigurationData(nodeToInstanceId(testNode));
         modification.removeConfigurationData(path1);
         Future<RpcResult<TransactionStatus>> commitFuture = modification.commit();
         try {
             RpcResult<TransactionStatus> result = commitFuture.get();
             TransactionStatus status = result.getResult();
             ci.println("Status of Group Data Loaded Transaction: " + status);
+            ci.println("Status of Group Data Loaded Transaction: ");
 
         } catch (InterruptedException e) {
             // TODO Auto-generated catch block
@@ -189,9 +191,8 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         } else {
             ci.println("User node added" + nref);
             createUserNode(nref);
-        }
-        createTestGroup();
-        GroupBuilder group = new GroupBuilder(testGroup);
+        }        
+        GroupBuilder group = createTestGroup();        
         group.setGroupName(updatedGroupName);
         writeGroup(ci, group.build());
         group.setGroupName(originalGroupName);

@@ -77,10 +77,10 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
         return InstanceIdentifier.builder(Nodes.class).child(Node.class, node.getKey()).toInstance();
     }
 
-    private void createTestMeter() {
+    private MeterBuilder createTestMeter() {
         // Sample data , committing to DataStore
         DataModification modification = dataBrokerService.beginTransaction();
-        long id = 123;
+        long id = 12;
         MeterKey key = new MeterKey(id, new NodeRef(new NodeRef(nodeToInstanceId(testNode))));
         MeterBuilder meter = new MeterBuilder();
         meter.setContainerName("abcd");     
@@ -107,6 +107,7 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
         meter.setMeterBandHeaders(bandHeaders.build());
         
         testMeter = meter.build();
+        return meter;
     }
 
     public void _removeMeter(CommandInterpreter ci) {
@@ -119,10 +120,10 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
             ci.println("User node added" + nref);
             createUserNode(nref);
         }
-        createTestMeter();
+        MeterBuilder mBuilder = createTestMeter();
         DataModification modification = dataBrokerService.beginTransaction();
         InstanceIdentifier<Meter> path1 = InstanceIdentifier.builder(Meters.class)
-                .child(Meter.class, testMeter.getKey()).toInstance();
+                .child(Meter.class, mBuilder.getKey()).toInstance();
         DataObject cls = (DataObject) modification.readConfigurationData(path1);
         modification.removeOperationalData(nodeToInstanceId(testNode));
         modification.removeOperationalData(path1);
@@ -192,8 +193,7 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
             ci.println("User node added" + nref);
             createUserNode(nref);
         }
-        createTestMeter();
-        MeterBuilder meter = new MeterBuilder(testMeter);
+        MeterBuilder meter = createTestMeter();        
         meter.setMeterName(updatedMeterName);
         writeMeter(ci, meter.build());
         meter.setMeterName(originalMeterName);

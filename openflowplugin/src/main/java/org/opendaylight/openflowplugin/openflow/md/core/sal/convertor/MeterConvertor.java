@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.meter.update.UpdatedMeter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.band.type.band.type.Drop;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.band.type.band.type.DscpRemark;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.band.type.band.type.Experimenter;
@@ -49,21 +50,21 @@ public final class MeterConvertor {
             org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter source, short version) {
 
         MeterModInputBuilder meterModInputBuilder = new MeterModInputBuilder();
-
-        List<Bands> bands = new ArrayList<Bands>();
-        MeterFlags flags = null;
-        if (source instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterInput)
+        List<Bands> bands = new ArrayList<Bands>();       
+        
+        if (source instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterInput) {
             meterModInputBuilder.setCommand(MeterModCommand.OFPMCADD);
-        else if (source instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterInput)
+        } else if (source instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterInput) {
             meterModInputBuilder.setCommand(MeterModCommand.OFPMCDELETE);
-        else if (source instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeterInput)
+        } else if (source instanceof UpdatedMeter) {
             meterModInputBuilder.setCommand(MeterModCommand.OFPMCMODIFY);
+        }
 
         meterModInputBuilder.setMeterId(new MeterId(source.getMeterId().getValue()));
 
-        if (source.getFlags() != null) {
-            meterModInputBuilder.setFlags(flags = new MeterFlags(source.getFlags().isMeterBurst(), source.getFlags()
-                    .isMeterKbps(), source.getFlags().isMeterPktps(), source.getFlags().isMeterStats()));
+        if (null != source.getFlags()) {
+            meterModInputBuilder.setFlags(new MeterFlags(source.getFlags().isMeterBurst(), source.getFlags()
+                .isMeterKbps(), source.getFlags().isMeterPktps(), source.getFlags().isMeterStats()));
         } else {
 
             /*
@@ -74,15 +75,15 @@ public final class MeterConvertor {
              * seconds.
              */
 
-            meterModInputBuilder.setFlags(flags = new MeterFlags(false, false, true, false));
+            meterModInputBuilder.setFlags(new MeterFlags(false, false, true, false));
         }
         if (source.getMeterBandHeaders() != null) {
             getBandsFromSAL(source.getMeterBandHeaders(), bands);
+            meterModInputBuilder.setBands(bands);
         } else {
             logger.error("For this meter Id" + source.getMeterId().getValue() + ",no associated band data found!");
         }
-
-        meterModInputBuilder.setBands(bands);
+        
         meterModInputBuilder.setVersion(version);
         return meterModInputBuilder.build();
     }
@@ -98,21 +99,19 @@ public final class MeterConvertor {
             meterBandHeader = bandHeadersIterator.next();
             MeterBand meterBandItem = null;
             // The band types :drop,DSCP_Remark or experimenter.
-            if (null != meterBandHeader.getMeterBandTypes() && null != meterBandHeader.getMeterBandTypes().getFlags()) {
+            if (null != meterBandHeader.getMeterBandTypes() && 
+                    null != meterBandHeader.getMeterBandTypes().getFlags()) {
 
                 if (meterBandHeader.getMeterBandTypes().getFlags().isOfpmbtDrop()) {
                     if (meterBandHeader.getBandType() != null) {
                         MeterBandDropBuilder meterBandDropBuilder = new MeterBandDropBuilder();
                         meterBandDropBuilder.setType(MeterBandType.OFPMBTDROP);
-
                         Drop drop = (Drop) meterBandHeader.getBandType();
-
                         meterBandDropBuilder.setBurstSize(drop.getRate());
                         meterBandDropBuilder.setRate(drop.getBurstSize());
                         meterBandItem = meterBandDropBuilder.build();
                         bandsB = new BandsBuilder();
-                        bandsB.setMeterBand(meterBandItem).build();
-
+                        bandsB.setMeterBand(meterBandItem);
                         bands.add(bandsB.build()); // Bands list
 
                     } else {
@@ -122,16 +121,13 @@ public final class MeterConvertor {
                     if (meterBandHeader.getBandType() != null) {
                         MeterBandDscpRemarkBuilder meterBandDscpRemarkBuilder = new MeterBandDscpRemarkBuilder();
                         meterBandDscpRemarkBuilder.setType(MeterBandType.OFPMBTDSCPREMARK);
-
                         DscpRemark dscpRemark = (DscpRemark) meterBandHeader.getBandType();
-
                         meterBandDscpRemarkBuilder.setBurstSize(dscpRemark.getBurstSize());
                         meterBandDscpRemarkBuilder.setRate(dscpRemark.getRate());
                         meterBandDscpRemarkBuilder.setPrecLevel(dscpRemark.getPercLevel());
                         meterBandItem = meterBandDscpRemarkBuilder.build();
                         bandsB = new BandsBuilder();
-                        bandsB.setMeterBand(meterBandItem).build();
-
+                        bandsB.setMeterBand(meterBandItem);
                         bands.add(bandsB.build()); // Bands list
 
                     } else {
@@ -147,8 +143,7 @@ public final class MeterConvertor {
                         meterBandExperimenterBuilder.setExperimenter(experimenter.getExperimenter());
                         meterBandItem = meterBandExperimenterBuilder.build();
                         bandsB = new BandsBuilder();
-                        bandsB.setMeterBand(meterBandItem).build();
-
+                        bandsB.setMeterBand(meterBandItem);
                         bands.add(bandsB.build()); // Bands list
 
                     } else {
