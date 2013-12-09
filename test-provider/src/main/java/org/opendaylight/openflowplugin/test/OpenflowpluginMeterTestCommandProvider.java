@@ -22,9 +22,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.config.rev131024.Meters;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.BandId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.BandType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterBandType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.band.type.band.type.DscpRemark;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.band.type.band.type.DscpRemarkBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.MeterBandHeadersBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.MeterBandHeader;
@@ -82,8 +85,9 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
         long id = 12;
         MeterKey key = new MeterKey(new MeterId(id));
         MeterBuilder meter = new MeterBuilder();
-        meter.setMeterId(new MeterId((long) 9));
-        meter.setKey(key);
+        meter.setContainerName("abcd");     
+        meter.setKey(key);       
+        meter.setMeterId(new MeterId(9L));
         meter.setMeterName(originalMeterName);
         meter.setFlags(new MeterFlags(true, false, false, false));
         MeterBandHeadersBuilder bandHeaders = new MeterBandHeadersBuilder();
@@ -100,7 +104,8 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
         MeterBandType bandType = new MeterBandType(false, true, false);
         bandTypes.setFlags(bandType);
         bandHeader.setMeterBandTypes(bandTypes.build());
-        bandHdr.add(bandHeader.build());
+        bandHeader.setBandId(new BandId(0L));
+        bandHdr.add(bandHeader.build());       
         bandHeaders.setMeterBandHeader(bandHdr);
         meter.setMeterBandHeaders(bandHeaders.build());
 

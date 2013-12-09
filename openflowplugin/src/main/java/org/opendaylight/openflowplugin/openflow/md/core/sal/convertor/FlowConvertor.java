@@ -15,6 +15,7 @@ import java.util.List;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.UpdatedFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ClearActionsCase;
@@ -102,7 +103,7 @@ public class FlowConvertor {
             } else {
                 flowMod.setCommand(FlowModCommand.OFPFCDELETE);
             }
-        } else if (flow instanceof UpdateFlowInput) {
+        } else if (flow instanceof UpdatedFlow) {
             if (flow.isStrict() != null && flow.isStrict()) {
                 flowMod.setCommand(FlowModCommand.OFPFCMODIFYSTRICT);
             } else {

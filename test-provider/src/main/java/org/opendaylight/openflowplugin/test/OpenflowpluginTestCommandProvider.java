@@ -122,6 +122,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.write.metadata._case.WriteMetadataBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -509,6 +510,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         // Wrap our Apply Action in an Instruction
         InstructionBuilder ib = new InstructionBuilder();
         ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
+        ib.setKey(new InstructionKey(0));
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();

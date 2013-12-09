@@ -93,6 +93,7 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         PopVlanActionBuilder vlanAction = new PopVlanActionBuilder();
         ActionBuilder action = new ActionBuilder();
         action.setAction(new PopVlanActionCaseBuilder().setPopVlanAction(vlanAction.build()).build());
+        action.setOrder(0);
         List<Action> actions = new ArrayList<Action>();
         actions.add(action.build());
         bucket.setAction(actions);
