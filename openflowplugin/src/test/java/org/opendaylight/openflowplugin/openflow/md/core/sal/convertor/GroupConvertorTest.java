@@ -112,7 +112,7 @@ public class GroupConvertorTest {
         Assert.assertEquals(GroupModCommand.OFPGCADD, outAddGroupInput.getCommand());
         Assert.assertEquals(GroupType.OFPGTALL, outAddGroupInput.getType());
 
-        Assert.assertEquals(10L, (long) outAddGroupInput.getGroupId());
+        Assert.assertEquals(10L, (long) outAddGroupInput.getGroupId().getValue());
         Assert.assertEquals(10, (int) outAddGroupInput.getBucketsList().get(0).getWeight());
         Assert.assertEquals(20L, (long) outAddGroupInput.getBucketsList().get(0).getWatchPort().getValue());
         Assert.assertEquals((Long) 22L, outAddGroupInput.getBucketsList().get(0).getWatchGroup());
