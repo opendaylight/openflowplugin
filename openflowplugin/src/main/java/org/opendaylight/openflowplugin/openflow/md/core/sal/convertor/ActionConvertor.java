@@ -424,7 +424,7 @@ public final class ActionConvertor {
                 || (uri.getValue() == NodeConnectorIDType.PCEP2OPENFLOW)
                 || (uri.getValue() == NodeConnectorIDType.PRODUCTION)) {
             if (version >= OF13) {
-                portAction.setPort(new PortNumber((long) PortNumberValuesV10.NORMAL.getIntValue()));
+                portAction.setPort(new PortNumber(BinContent.intToUnsignedLong(PortNumberValues.NORMAL.getIntValue())));
 
             } else if (version == OF10) {
                 portAction.setPort(new PortNumber((long) PortNumberValuesV10.NORMAL.getIntValue()));
