@@ -70,7 +70,7 @@ public class MeterStatsResponseConvertor {
         salMeterStats.setDuration(time.build());
         
         salMeterStats.setFlowCount(new Counter32(meterStats.getFlowCount()));
-        salMeterStats.setMeterId(new MeterId(meterStats.getMeterId()));
+        salMeterStats.setMeterId(new MeterId(meterStats.getMeterId().getValue()));
         salMeterStats.setPacketInCount(new Counter64(meterStats.getPacketInCount()));
         salMeterStats.setKey(new MeterStatsKey(salMeterStats.getMeterId()));
         
@@ -108,7 +108,7 @@ public class MeterStatsResponseConvertor {
         List<MeterConfigStats> listMeterConfigStats = new ArrayList<MeterConfigStats>();
         for( org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.meter.config.MeterConfig meterConfig : allMeterConfigs){
             MeterConfigStatsBuilder meterConfigStatsBuilder = new MeterConfigStatsBuilder();
-            meterConfigStatsBuilder.setMeterId(new MeterId(meterConfig.getMeterId()));
+            meterConfigStatsBuilder.setMeterId(new MeterId(meterConfig.getMeterId().getValue()));
             meterConfigStatsBuilder.setKey(new MeterConfigStatsKey(meterConfigStatsBuilder.getMeterId()));
             
             MeterBandHeadersBuilder meterBandHeadersBuilder = new MeterBandHeadersBuilder();

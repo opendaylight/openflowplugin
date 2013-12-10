@@ -81,7 +81,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.GetMeterStatisticsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.GetMeterStatisticsOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Group;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Meter;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartRequestFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.MatchEntries;
@@ -513,7 +515,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 
         // Create multipart request body for fetch all the group stats
         MultipartRequestGroupBuilder mprGroupBuild = new MultipartRequestGroupBuilder();
-        mprGroupBuild.setGroupId(BinContent.intToUnsignedLong(Group.OFPGALL.getIntValue()));
+        mprGroupBuild.setGroupId(new GroupId(BinContent.intToUnsignedLong(Group.OFPGALL.getIntValue())));
 
         //Set request body to main multipart request
         mprInput.setMultipartRequestBody(mprGroupBuild.build());
@@ -623,7 +625,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 
         // Create multipart request body for fetch all the group stats
         MultipartRequestGroupBuilder mprGroupBuild = new MultipartRequestGroupBuilder();
-        mprGroupBuild.setGroupId(input.getGroupId().getValue());
+        mprGroupBuild.setGroupId(new GroupId(input.getGroupId().getValue()));
 
         //Set request body to main multipart request
         mprInput.setMultipartRequestBody(mprGroupBuild.build());
@@ -661,7 +663,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 
         // Create multipart request body for fetch all the meter stats
         MultipartRequestMeterConfigBuilder mprMeterConfigBuild = new MultipartRequestMeterConfigBuilder();
-        mprMeterConfigBuild.setMeterId(BinContent.intToUnsignedLong(Meter.OFPMALL.getIntValue()));
+        mprMeterConfigBuild.setMeterId(new MeterId(BinContent.intToUnsignedLong(Meter.OFPMALL.getIntValue())));
 
         //Set request body to main multipart request
         mprInput.setMultipartRequestBody(mprMeterConfigBuild.build());
@@ -698,7 +700,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 
         // Create multipart request body for fetch all the meter stats
         MultipartRequestMeterBuilder mprMeterBuild = new MultipartRequestMeterBuilder();
-        mprMeterBuild.setMeterId(BinContent.intToUnsignedLong(Meter.OFPMALL.getIntValue()));
+        mprMeterBuild.setMeterId(new MeterId(BinContent.intToUnsignedLong(Meter.OFPMALL.getIntValue())));
 
         //Set request body to main multipart request
         mprInput.setMultipartRequestBody(mprMeterBuild.build());
@@ -770,7 +772,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         // Create multipart request body for fetch all the meter stats
         MultipartRequestMeterBuilder mprMeterBuild = new MultipartRequestMeterBuilder();
         //Select specific meter
-        mprMeterBuild.setMeterId(input.getMeterId().getValue());
+        mprMeterBuild.setMeterId(new MeterId(input.getMeterId().getValue()));
 
         //Set request body to main multipart request
         mprInput.setMultipartRequestBody(mprMeterBuild.build());

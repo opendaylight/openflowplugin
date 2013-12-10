@@ -63,7 +63,7 @@ public class GroupStatsResponseConvertor {
         time.setNanosecond(new Counter32(groupStats.getDurationNsec()));
         
         salGroupStats.setDuration(time.build());
-        salGroupStats.setGroupId(new GroupId(groupStats.getGroupId()));
+        salGroupStats.setGroupId(new GroupId(groupStats.getGroupId().getValue()));
         salGroupStats.setPacketCount(new Counter64(groupStats.getPacketCount()));
         salGroupStats.setRefCount(new Counter32(groupStats.getRefCount()));
         salGroupStats.setKey(new GroupStatsKey(salGroupStats.getGroupId()));
@@ -114,7 +114,7 @@ public class GroupStatsResponseConvertor {
         GroupDescStatsBuilder salGroupDescStats = new GroupDescStatsBuilder();
         
         salGroupDescStats.setBuckets(toSALBucketsDesc(groupDesc.getBucketsList()));
-        salGroupDescStats.setGroupId(new GroupId(groupDesc.getGroupId()));
+        salGroupDescStats.setGroupId(new GroupId(groupDesc.getGroupId().getValue()));
         salGroupDescStats.setGroupType(GroupTypes.forValue(groupDesc.getType().getIntValue()));
         salGroupDescStats.setKey(new GroupDescStatsKey(salGroupDescStats.getGroupId()));
         

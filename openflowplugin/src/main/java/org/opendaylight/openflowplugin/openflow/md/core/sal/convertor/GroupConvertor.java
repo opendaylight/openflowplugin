@@ -8,6 +8,7 @@ import org.opendaylight.openflowjava.protocol.api.util.BinContent;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.group.update.UpdatedGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.Buckets;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.ActionsList;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupModCommand;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumber;
@@ -71,7 +72,7 @@ public final class GroupConvertor {
         }
 
         
-        groupModInputBuilder.setGroupId(new Long(source.getGroupId().getValue()));
+        groupModInputBuilder.setGroupId(new GroupId(source.getGroupId().getValue()));
         // Only if the bucket is configured for the group then add it
         if (source.getBuckets().getBucket().size() != 0) {
             getbucketList(source.getBuckets(), bucketLists, version, source.getGroupType().getIntValue());
