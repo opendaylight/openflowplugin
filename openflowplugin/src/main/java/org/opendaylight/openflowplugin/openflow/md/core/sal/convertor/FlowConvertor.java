@@ -16,6 +16,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddF
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ClearActionsCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.GoToTableCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.MeterCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.WriteActionsCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.WriteMetadataCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.apply.actions._case.ApplyActions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.clear.actions._case.ClearActions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.go.to.table._case.GoToTable;
@@ -50,27 +56,27 @@ public class FlowConvertor {
     private static final Logger logger = LoggerFactory.getLogger(FlowConvertor.class);
 
     // Default values for when things are null
-    private static final  BigInteger DEFAULT_COOKIE = BigInteger.ZERO; // TODO: Someone check me, I have no idea if this is a good default - eaw@cisco.com
-    private static final BigInteger DEFAULT_COOKIE_MASK = BigInteger.ZERO; // TODO: Someone check me, I have no idea if this is a good default - eaw@cisco.com
-    private static final TableId DEFAULT_TABLE_ID = new TableId(new Long(0)); // TODO: Someone check me, I have no idea if this is a good default - eaw@cisco.com
-    private static final Integer DEFAULT_IDLE_TIMEOUT = new Integer(5*60); // TODO: Someone check me, I have no idea if this is a good default - eaw@cisco.com
-    private static final Integer DEFAULT_HARD_TIMEOUT = new Integer(10*60); // TODO: Someone check me, I have no idea if this is a good default - eaw@cisco.com
-    private static final Integer DEFAULT_PRIORITY = Integer.parseInt("8000", 16);  // TODO: Someone check me, I have no idea if this is a good default - eaw@cisco.com
-    private static final Long DEFAULT_BUFFER_ID = Long.parseLong("ffffffff", 16);  // TODO: Someone check me, I have no idea if this is a good default - eaw@cisco.com
+    private static final BigInteger DEFAULT_COOKIE = BigInteger.ZERO;
+    private static final BigInteger DEFAULT_COOKIE_MASK = BigInteger.ZERO;
+    private static final TableId DEFAULT_TABLE_ID = new TableId(new Long(0));
+    private static final Integer DEFAULT_IDLE_TIMEOUT = new Integer(5 * 60);
+    private static final Integer DEFAULT_HARD_TIMEOUT = new Integer(10 * 60);
+    private static final Integer DEFAULT_PRIORITY = Integer.parseInt("8000", 16);
+    private static final Long DEFAULT_BUFFER_ID = Long.parseLong("ffffffff", 16);
     private static final Long OFPP_ANY = Long.parseLong("ffffffff", 16);
-    private static final Long DEFAULT_OUT_PORT = OFPP_ANY; // TODO: Someone check me, I have no idea if this is a good default - eaw@cisco.com
+    private static final Long DEFAULT_OUT_PORT = OFPP_ANY;
     private static final Long OFPG_ANY = Long.parseLong("ffffffff", 16);
-    private static final Long DEFAULT_OUT_GROUP = OFPG_ANY; // TODO: Someone check me, I have no idea if this is a good default - eaw@cisco.com
-    private static final boolean DEFAULT_OFPFF_FLOW_REM = true; // TODO: Someone check me, I have no idea if this is a good default - eaw@cisco.com
-    private static final boolean DEFAULT_OFPFF_CHECK_OVERLAP = false; // TODO: Someone check me, I have no idea if this is a good default - eaw@cisco.com
-    private static final boolean DEFAULT_OFPFF_RESET_COUNTS = false; // TODO: Someone check me, I have no idea if this is a good default - eaw@cisco.com
-    private static final boolean DEFAULT_OFPFF_NO_PKT_COUNTS = false; // TODO: Someone check me, I have no idea if this is a good default - eaw@cisco.com
-    private static final boolean DEFAULT_OFPFF_NO_BYT_COUNTS = false; // TODO: Someone check me, I have no idea if this is a good default - eaw@cisco.com
+    private static final Long DEFAULT_OUT_GROUP = OFPG_ANY;
+    private static final boolean DEFAULT_OFPFF_FLOW_REM = true;
+    private static final boolean DEFAULT_OFPFF_CHECK_OVERLAP = false;
+    private static final boolean DEFAULT_OFPFF_RESET_COUNTS = false;
+    private static final boolean DEFAULT_OFPFF_NO_PKT_COUNTS = false;
+    private static final boolean DEFAULT_OFPFF_NO_BYT_COUNTS = false;
     private static final Class<? extends MatchTypeBase> DEFAULT_MATCH_TYPE = OxmMatchType.class;
 
     public static FlowModInput toFlowModInput(Flow flow, short version) {
         FlowModInputBuilder flowMod = new FlowModInputBuilder();
-        if(flow.getCookie() != null){
+        if (flow.getCookie() != null) {
             flowMod.setCookie(flow.getCookie());
         } else {
             flowMod.setCookie(DEFAULT_COOKIE);
@@ -103,22 +109,22 @@ public class FlowConvertor {
                 flowMod.setCommand(FlowModCommand.OFPFCMODIFY);
             }
         }
-        if(flow.getIdleTimeout() != null) {
+        if (flow.getIdleTimeout() != null) {
             flowMod.setIdleTimeout(flow.getIdleTimeout());
         } else {
             flowMod.setIdleTimeout(DEFAULT_IDLE_TIMEOUT);
         }
-        if(flow.getHardTimeout() != null) {
+        if (flow.getHardTimeout() != null) {
             flowMod.setHardTimeout(flow.getHardTimeout());
         } else {
             flowMod.setHardTimeout(DEFAULT_HARD_TIMEOUT);
         }
-        if(flow.getPriority() != null) {
+        if (flow.getPriority() != null) {
             flowMod.setPriority(flow.getPriority());
         } else {
             flowMod.setPriority(DEFAULT_PRIORITY);
         }
-        if(flow.getBufferId() != null ) {
+        if (flow.getBufferId() != null) {
             flowMod.setBufferId(flow.getBufferId());
         } else {
             flowMod.setBufferId(DEFAULT_BUFFER_ID);
@@ -129,7 +135,7 @@ public class FlowConvertor {
         } else {
             flowMod.setOutPort(new PortNumber(DEFAULT_OUT_PORT));
         }
-        if(flow.getOutGroup() != null) {
+        if (flow.getOutGroup() != null) {
             flowMod.setOutGroup(flow.getOutGroup());
         } else {
             flowMod.setOutGroup(DEFAULT_OUT_GROUP);
@@ -143,8 +149,8 @@ public class FlowConvertor {
                     flowModFlags.isRESETCOUNTS(), flowModFlags.isSENDFLOWREM());
         } else {
             ofFlowModFlags = new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowModFlags(
-                    DEFAULT_OFPFF_CHECK_OVERLAP,DEFAULT_OFPFF_NO_BYT_COUNTS,DEFAULT_OFPFF_NO_PKT_COUNTS,
-                    DEFAULT_OFPFF_RESET_COUNTS,DEFAULT_OFPFF_FLOW_REM);
+                    DEFAULT_OFPFF_CHECK_OVERLAP, DEFAULT_OFPFF_NO_BYT_COUNTS, DEFAULT_OFPFF_NO_PKT_COUNTS,
+                    DEFAULT_OFPFF_RESET_COUNTS, DEFAULT_OFPFF_FLOW_REM);
         }
         flowMod.setFlags(ofFlowModFlags);
 
@@ -172,8 +178,9 @@ public class FlowConvertor {
             InstructionsBuilder instructionBuilder = new InstructionsBuilder();
             org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction curInstruction = instruction
                     .getInstruction();
-            if (curInstruction instanceof GoToTable) {
-                GoToTable goToTable = (GoToTable) curInstruction;
+            if (curInstruction instanceof GoToTableCase) {
+                GoToTableCase goToTablecase = (GoToTableCase) curInstruction;
+                GoToTable goToTable = goToTablecase.getGoToTable();
                 instructionBuilder
                         .setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.GotoTable.class);
                 TableIdInstructionBuilder tableBuilder = new TableIdInstructionBuilder();
@@ -182,8 +189,9 @@ public class FlowConvertor {
                 instructionsList.add(instructionBuilder.build());
             }
 
-            else if (curInstruction instanceof WriteMetadata) {
-                WriteMetadata writeMetadata = (WriteMetadata) curInstruction;
+            else if (curInstruction instanceof WriteMetadataCase) {
+                WriteMetadataCase writeMetadatacase = (WriteMetadataCase) curInstruction;
+                WriteMetadata writeMetadata = writeMetadatacase.getWriteMetadata();
                 instructionBuilder
                         .setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.WriteMetadata.class);
                 MetadataInstructionBuilder metadataBuilder = new MetadataInstructionBuilder();
@@ -194,8 +202,9 @@ public class FlowConvertor {
                 instructionsList.add(instructionBuilder.build());
             }
 
-            else if (curInstruction instanceof WriteActions) {
-                WriteActions writeActions = (WriteActions) curInstruction;
+            else if (curInstruction instanceof WriteActionsCase) {
+                WriteActionsCase writeActionscase = (WriteActionsCase) curInstruction;
+                WriteActions writeActions = writeActionscase.getWriteActions();
                 instructionBuilder
                         .setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.WriteActions.class);
                 ActionsInstructionBuilder actionsInstructionBuilder = new ActionsInstructionBuilder();
@@ -205,8 +214,9 @@ public class FlowConvertor {
                 instructionsList.add(instructionBuilder.build());
             }
 
-            else if (curInstruction instanceof ApplyActions) {
-                ApplyActions applyActions = (ApplyActions) curInstruction;
+            else if (curInstruction instanceof ApplyActionsCase) {
+                ApplyActionsCase applyActionscase = (ApplyActionsCase) curInstruction;
+                ApplyActions applyActions = applyActionscase.getApplyActions();
                 instructionBuilder
                         .setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.ApplyActions.class);
                 ActionsInstructionBuilder actionsInstructionBuilder = new ActionsInstructionBuilder();
@@ -216,8 +226,9 @@ public class FlowConvertor {
                 instructionsList.add(instructionBuilder.build());
             }
 
-            else if (curInstruction instanceof ClearActions) {
-                ClearActions clearActions = (ClearActions) curInstruction;
+            else if (curInstruction instanceof ClearActionsCase) {
+                ClearActionsCase clearActionscase = (ClearActionsCase) curInstruction;
+                ClearActions clearActions = clearActionscase.getClearActions();
                 instructionBuilder
                         .setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.ClearActions.class);
                 ActionsInstructionBuilder actionsInstructionBuilder = new ActionsInstructionBuilder();
@@ -227,8 +238,9 @@ public class FlowConvertor {
                 instructionsList.add(instructionBuilder.build());
             }
 
-            else if (curInstruction instanceof Meter) {
-                Meter meter = (Meter) curInstruction;
+            else if (curInstruction instanceof MeterCase) {
+                MeterCase metercase = (MeterCase) curInstruction;
+                Meter meter = metercase.getMeter();
                 instructionBuilder
                         .setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.Meter.class);
                 MeterIdInstructionBuilder meterBuilder = new MeterIdInstructionBuilder();
