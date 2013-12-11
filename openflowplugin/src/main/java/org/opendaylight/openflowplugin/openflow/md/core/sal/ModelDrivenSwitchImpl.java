@@ -19,7 +19,9 @@ import org.opendaylight.openflowjava.protocol.api.util.BinContent;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.FlowConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.GroupConvertor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.MatchConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.MeterConvertor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.OpenflowEnumConstant;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.PortConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.TableFeaturesConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.session.IMessageDispatchService;
@@ -33,11 +35,36 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.Remo
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForAllFlowsInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAllFlowStatisticsFromFlowTableInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAllFlowStatisticsFromFlowTableOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAllFlowStatisticsFromFlowTableOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAllFlowStatisticsInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAllFlowStatisticsOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAllFlowsStatisticsFromAllFlowTablesInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAllFlowsStatisticsFromAllFlowTablesOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAllFlowsStatisticsFromAllFlowTablesOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAllNodeConnectorStatisticsInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAllNodeConnectorStatisticsOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetFlowStatisticsFromFlowTableInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetFlowStatisticsFromFlowTableOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetFlowStatisticsFromFlowTableOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetFlowStatisticsInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetFlowStatisticsOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetFlowTableStatisticsInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetFlowTableStatisticsOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetNodeConnectorStatisticsInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetNodeConnectorStatisticsOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev131103.TransactionId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.port.mod.port.Port;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupOutput;
@@ -80,12 +107,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.GetMeterStatisticsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.GetMeterStatisticsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.GetMeterStatisticsOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowWildcardsV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Group;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Meter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartRequestFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.OxmMatchType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.match.v10.grouping.MatchV10Builder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.MatchEntries;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
@@ -96,6 +126,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortModInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.match.grouping.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.match.grouping.MatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestAggregateCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestFlowCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestGroupCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestGroupDescCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestGroupFeaturesCaseBuilder;
@@ -103,11 +135,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestMeterConfigCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestMeterFeaturesCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestTableFeaturesCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.aggregate._case.MultipartRequestAggregateBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.flow._case.MultipartRequestFlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.group._case.MultipartRequestGroupBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.meter._case.MultipartRequestMeterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.meter.config._case.MultipartRequestMeterConfigBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.table.features._case.MultipartRequestTableFeaturesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.table.features._case.multipart.request.table.features.TableFeatures;
+//import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.table.features.TableFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.GetPortOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.UpdatePortInput;
@@ -812,82 +847,83 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 
     }
 
-	@Override
-	public Future<RpcResult<GetPortOutput>> getPort() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public Future<RpcResult<GetPortOutput>> getPort() {
+	// TODO Auto-generated method stub
+	return null;
+    }
+    
 
-	@Override
-	public Future<RpcResult<UpdatePortOutput>> updatePort(UpdatePortInput input) {
-		PortModInput ofPortModInput = null ;
-		RpcResult<UpdatePortOutput> rpcResultFromOFLib = null ;
+    @Override
+    public Future<RpcResult<UpdatePortOutput>> updatePort(UpdatePortInput input) {
+	PortModInput ofPortModInput = null ;
+	RpcResult<UpdatePortOutput> rpcResultFromOFLib = null ;
 		
 				
-		// For Flow provisioning, the SwitchConnectionDistinguisher is set to null so  
+	// For Flow provisioning, the SwitchConnectionDistinguisher is set to null so  
     	// the request can be routed through any connection to the switch
     	
     	SwitchConnectionDistinguisher cookie = null ;
     	
-		// NSF sends a list of port and the ModelDrivenSwitch will 
+	// NSF sends a list of port and the ModelDrivenSwitch will 
     	// send one port at a time towards the switch ( mutiple RPCs calls)
-		List<Port> inputPorts = input.getUpdatedPort().getPort().getPort() ;
+	List<Port> inputPorts = input.getUpdatedPort().getPort().getPort() ;
 		
-		// Get the Xid. The same Xid has to be sent in all the RPCs
-		Long Xid = sessionContext.getNextXid();
+	// Get the Xid. The same Xid has to be sent in all the RPCs
+	Long Xid = sessionContext.getNextXid();
 		
-		for( Port inputPort : inputPorts) {
+	for( Port inputPort : inputPorts) {
 		   
-			// Convert the UpdateGroupInput to GroupModInput 
-				ofPortModInput = PortConvertor.toPortModInput(inputPort, version) ;
+	    // Convert the UpdateGroupInput to GroupModInput 
+	    ofPortModInput = PortConvertor.toPortModInput(inputPort, version) ;
 					    	 	
-				// Insert the Xid ( transaction Id) before calling the RPC on the OFLibrary
+	    // Insert the Xid ( transaction Id) before calling the RPC on the OFLibrary
 		    	
-		        PortModInputBuilder mdInput = new PortModInputBuilder();
-		        mdInput.setXid(Xid);
-		        mdInput.setVersion(ofPortModInput.getVersion()) ;
-		        mdInput.setPortNo(ofPortModInput.getPortNo()) ;
-		        mdInput.setMaskV10(ofPortModInput.getMaskV10()) ;
-		        mdInput.setMask(ofPortModInput.getMask()) ;
-		        mdInput.setHwAddress(ofPortModInput.getHwAddress());
-		        mdInput.setConfigV10(ofPortModInput.getConfigV10()) ;
-		        mdInput.setConfig(ofPortModInput.getConfig()) ;
-		        mdInput.setAdvertiseV10(ofPortModInput.getAdvertiseV10()) ;
-		        mdInput.setAdvertise(ofPortModInput.getAdvertise()) ;
-		        
-		    	LOG.debug("Calling the PortMod RPC method on MessageDispatchService");
-		    	Future<RpcResult<UpdatePortOutput>> resultFromOFLib = messageService.portMod(ofPortModInput, cookie) ;
-				    	
-		    	try { 
-		    		rpcResultFromOFLib = resultFromOFLib.get();
-		    	} catch( Exception ex ) {
-		    		LOG.error( " Error while getting result for updatePort RPC" + ex.getMessage());
-		    	}
-		    	
-		    	// The Future response value for all the RPCs except the last one is ignored
-		    	
-		}
-		    	
-				//Extract the Xid only from the Future for the last RPC and
-				// send it back to the NSF
-		    	UpdatePortOutput updatePortOutputOFLib = rpcResultFromOFLib.getResult() ;
-		    	
-		    	UpdatePortOutputBuilder updatePortOutput = new UpdatePortOutputBuilder() ;
-		    	updatePortOutput.setTransactionId(updatePortOutputOFLib.getTransactionId()) ;
-		    	UpdatePortOutput result = updatePortOutput.build();
-		    	
-		    	Collection<RpcError> errors = rpcResultFromOFLib.getErrors() ;
-		        RpcResult<UpdatePortOutput> rpcResult = Rpcs.getRpcResult(true, result, errors); 
-		    	
-		        LOG.debug("Returning the Update Group RPC result to MD-SAL");
-		        return Futures.immediateFuture(rpcResult);
-	
+	    PortModInputBuilder mdInput = new PortModInputBuilder();
+	    mdInput.setXid(Xid);
+	    mdInput.setVersion(ofPortModInput.getVersion()) ;
+	    mdInput.setPortNo(ofPortModInput.getPortNo()) ;
+	    mdInput.setMaskV10(ofPortModInput.getMaskV10()) ;
+	    mdInput.setMask(ofPortModInput.getMask()) ;
+	    mdInput.setHwAddress(ofPortModInput.getHwAddress());
+	    mdInput.setConfigV10(ofPortModInput.getConfigV10()) ;
+	    mdInput.setConfig(ofPortModInput.getConfig()) ;
+	    mdInput.setAdvertiseV10(ofPortModInput.getAdvertiseV10()) ;
+	    mdInput.setAdvertise(ofPortModInput.getAdvertise()) ;
+
+	    LOG.debug("Calling the PortMod RPC method on MessageDispatchService");
+	    Future<RpcResult<UpdatePortOutput>> resultFromOFLib = messageService.portMod(ofPortModInput, cookie) ;
+
+	    try { 
+	        rpcResultFromOFLib = resultFromOFLib.get();
+	    } catch( Exception ex ) {
+	        LOG.error( " Error while getting result for updatePort RPC" + ex.getMessage());
+	    }
+
+	    // The Future response value for all the RPCs except the last one is ignored
+
 	}
-	@Override
-	public Future<RpcResult<UpdateTableOutput>> updateTable(
+	//Extract the Xid only from the Future for the last RPC and
+	// send it back to the NSF
+	UpdatePortOutput updatePortOutputOFLib = rpcResultFromOFLib.getResult() ;
+	
+	UpdatePortOutputBuilder updatePortOutput = new UpdatePortOutputBuilder() ;
+	updatePortOutput.setTransactionId(updatePortOutputOFLib.getTransactionId()) ;
+	UpdatePortOutput result = updatePortOutput.build();
+	
+	Collection<RpcError> errors = rpcResultFromOFLib.getErrors() ;
+	RpcResult<UpdatePortOutput> rpcResult = Rpcs.getRpcResult(true, result, errors); 
+	
+	LOG.debug("Returning the Update Group RPC result to MD-SAL");
+	return Futures.immediateFuture(rpcResult);
+
+    }
+    
+    @Override
+    public Future<RpcResult<UpdateTableOutput>> updateTable(
 			UpdateTableInput input) {
 
-		// Get the Xid. The same Xid has to be sent in all the Multipart requests
+        // Get the Xid. The same Xid has to be sent in all the Multipart requests
         Long xid = this.getSessionContext().getNextXid();
 
         LOG.debug("Prepare the Multipart Table Mod requests for Transaction Id {} ",xid);
@@ -905,7 +941,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         MultipartRequestTableFeaturesCaseBuilder caseRequest = new MultipartRequestTableFeaturesCaseBuilder();
         MultipartRequestTableFeaturesBuilder tableFeaturesRequest = new MultipartRequestTableFeaturesBuilder();
 
-         // Slice the multipart request based on the configuration parameter, which is the no. of TableFeatureList element
+        // Slice the multipart request based on the configuration parameter, which is the no. of TableFeatureList element
         // to be put in one multipart message. Default is 5
         // This parameter must be set based on switch's Buffer capacity
 
@@ -936,8 +972,9 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         index += noOfEntriesInMPR ;
 		tmpOfTableFeatureList = null ; // To avoid any corrupt data
         }
-      //Extract the Xid only from the Future for the last RPC and
-		// send it back to the NSF
+        
+        //Extract the Xid only from the Future for the last RPC and
+	// send it back to the NSF
         LOG.debug("Returning the result and transaction id to NSF");
         LOG.debug("Return results and transaction id back to caller");
         UpdateTableOutputBuilder output = new UpdateTableOutputBuilder();
@@ -947,5 +984,317 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         RpcResult<UpdateTableOutput> rpcResult = Rpcs.getRpcResult(true, output.build(), errors);
         return Futures.immediateFuture(rpcResult);
 
-	}
+    }
+
+    @Override
+    public Future<RpcResult<GetAllFlowStatisticsFromFlowTableOutput>> getAllFlowStatisticsFromFlowTable(
+            GetAllFlowStatisticsFromFlowTableInput arg0) {
+
+        //Generate xid to associate it with the request
+        Long xid = this.getSessionContext().getNextXid();
+
+        LOG.debug("Prepare statistics request to get flow stats for switch tables {} - Transaction id - {}"
+                ,arg0.getTableId().getValue(),xid);
+
+        // Create multipart request header
+        MultipartRequestInputBuilder mprInput = new MultipartRequestInputBuilder();
+        mprInput.setType(MultipartType.OFPMPFLOW);
+        mprInput.setVersion(version);
+        mprInput.setXid(xid);
+        mprInput.setFlags(new MultipartRequestFlags(false));
+
+        // Create multipart request body for fetch all the group stats
+        MultipartRequestFlowCaseBuilder multipartRequestFlowCaseBuilder  = new MultipartRequestFlowCaseBuilder (); 
+        MultipartRequestFlowBuilder mprFlowRequestBuilder = new MultipartRequestFlowBuilder();
+        mprFlowRequestBuilder.setTableId(arg0.getTableId().getValue());
+        mprFlowRequestBuilder.setOutPort(OpenflowEnumConstant.OFPP_ANY);
+        mprFlowRequestBuilder.setOutGroup(OpenflowEnumConstant.OFPG_ANY);
+        mprFlowRequestBuilder.setCookie(OpenflowEnumConstant.DEFAULT_COOKIE);
+        mprFlowRequestBuilder.setCookieMask(OpenflowEnumConstant.DEFAULT_COOKIE_MASK);
+        if(version == OpenflowEnumConstant.OPENFLOW_V10){
+            LOG.info("Target node is running openflow version 1.0");
+            FlowWildcardsV10 wildCard = new FlowWildcardsV10(true,false,false,false,false,false,false,false,false,false,false);
+            mprFlowRequestBuilder.setMatchV10(new MatchV10Builder().setWildcards(wildCard).build());
+        }
+        if(version == OpenflowEnumConstant.OPENFLOW_V13){
+            LOG.info("Target node is running openflow version 1.3+");
+            mprFlowRequestBuilder.setMatch(new MatchBuilder().setType(OxmMatchType.class).build());
+        }
+
+
+        //Set request body to main multipart request
+        multipartRequestFlowCaseBuilder.setMultipartRequestFlow(mprFlowRequestBuilder.build());
+        mprInput.setMultipartRequestBody(multipartRequestFlowCaseBuilder.build());
+
+        //Send the request, no cookies associated, use any connection
+        LOG.debug("Send flow statistics request to the switch :{}",mprFlowRequestBuilder);
+        this.messageService.multipartRequest(mprInput.build(), null);
+
+        // Prepare rpc return output. Set xid and send it back.
+        LOG.debug("Return results and transaction id back to caller");
+        GetAllFlowStatisticsFromFlowTableOutputBuilder output = 
+                new GetAllFlowStatisticsFromFlowTableOutputBuilder();
+        output.setTransactionId(generateTransactionId(xid));
+        output.setFlowAndStatisticsMapList(null);
+
+        Collection<RpcError> errors = Collections.emptyList();
+        RpcResult<GetAllFlowStatisticsFromFlowTableOutput> rpcResult = Rpcs.getRpcResult(true, output.build(), errors);
+        return Futures.immediateFuture(rpcResult);
+    }
+
+    @Override
+    public Future<RpcResult<GetAllFlowsStatisticsFromAllFlowTablesOutput>> getAllFlowsStatisticsFromAllFlowTables(
+            GetAllFlowsStatisticsFromAllFlowTablesInput arg0) {
+        
+        //Generate xid to associate it with the request
+        Long xid = this.getSessionContext().getNextXid();
+
+        LOG.info("Prepare statistics request to get flow stats of all switch tables - Transaction id - {}",xid);
+
+        // Create multipart request header
+        MultipartRequestInputBuilder mprInput = new MultipartRequestInputBuilder();
+        mprInput.setType(MultipartType.OFPMPFLOW);
+        mprInput.setVersion(version);
+        mprInput.setXid(xid);
+        mprInput.setFlags(new MultipartRequestFlags(false));
+
+        // Create multipart request body for fetch all the group stats
+        MultipartRequestFlowCaseBuilder  multipartRequestFlowCaseBuilder = new MultipartRequestFlowCaseBuilder();
+        MultipartRequestFlowBuilder mprFlowRequestBuilder = new MultipartRequestFlowBuilder();
+        mprFlowRequestBuilder.setTableId(OpenflowEnumConstant.OFPTT_ALL);
+        mprFlowRequestBuilder.setOutPort(OpenflowEnumConstant.OFPP_ANY);
+        mprFlowRequestBuilder.setOutGroup(OpenflowEnumConstant.OFPG_ANY);
+        mprFlowRequestBuilder.setCookie(OpenflowEnumConstant.DEFAULT_COOKIE);
+        mprFlowRequestBuilder.setCookieMask(OpenflowEnumConstant.DEFAULT_COOKIE_MASK);
+        mprFlowRequestBuilder.setCookieMask(OpenflowEnumConstant.DEFAULT_COOKIE_MASK);
+        
+        if(version == OpenflowEnumConstant.OPENFLOW_V10){
+            FlowWildcardsV10 wildCard = new FlowWildcardsV10(true,false,false,false,false,false,false,false,false,false,false);
+            mprFlowRequestBuilder.setMatchV10(new MatchV10Builder().setWildcards(wildCard).build());
+        }
+        if(version == OpenflowEnumConstant.OPENFLOW_V13){
+            mprFlowRequestBuilder.setMatch(new MatchBuilder().setType(OxmMatchType.class).build());
+        }
+        //Set request body to main multipart request
+        multipartRequestFlowCaseBuilder.setMultipartRequestFlow(mprFlowRequestBuilder.build());
+        mprInput.setMultipartRequestBody(multipartRequestFlowCaseBuilder.build());
+
+        //Send the request, no cookies associated, use any connection
+        LOG.debug("Send flow statistics request to the switch :{}",mprFlowRequestBuilder);
+        this.messageService.multipartRequest(mprInput.build(), null);
+
+        // Prepare rpc return output. Set xid and send it back.
+        GetAllFlowsStatisticsFromAllFlowTablesOutputBuilder output = 
+                new GetAllFlowsStatisticsFromAllFlowTablesOutputBuilder();
+        output.setTransactionId(generateTransactionId(xid));
+        output.setFlowAndStatisticsMapList(null);
+
+        Collection<RpcError> errors = Collections.emptyList();
+        RpcResult<GetAllFlowsStatisticsFromAllFlowTablesOutput> rpcResult = Rpcs.getRpcResult(true, output.build(), errors);
+        return Futures.immediateFuture(rpcResult);
+
+    }
+
+    @Override
+    public Future<RpcResult<GetFlowStatisticsFromFlowTableOutput>> getFlowStatisticsFromFlowTable(
+            GetFlowStatisticsFromFlowTableInput arg0) {
+        //Generate xid to associate it with the request
+        Long xid = this.getSessionContext().getNextXid();
+
+        LOG.debug("Prepare statistics request to get stats for flow {} for switch tables {} - Transaction id - {}"
+                ,arg0.getMatch().toString(),arg0.getTableId(),xid);
+
+        // Create multipart request header
+        MultipartRequestInputBuilder mprInput = new MultipartRequestInputBuilder();
+        mprInput.setType(MultipartType.OFPMPFLOW);
+        mprInput.setVersion(version);
+        mprInput.setXid(xid);
+        mprInput.setFlags(new MultipartRequestFlags(false));
+
+        // Create multipart request body for fetch all the group stats
+        MultipartRequestFlowCaseBuilder  multipartRequestFlowCaseBuilder = new MultipartRequestFlowCaseBuilder();
+        MultipartRequestFlowBuilder mprFlowRequestBuilder = new MultipartRequestFlowBuilder();
+        mprFlowRequestBuilder.setTableId(arg0.getTableId());
+        mprFlowRequestBuilder.setOutPort(arg0.getOutPort().longValue());
+        mprFlowRequestBuilder.setOutGroup(OpenflowEnumConstant.OFPG_ANY);
+        mprFlowRequestBuilder.setCookie(OpenflowEnumConstant.DEFAULT_COOKIE);
+        mprFlowRequestBuilder.setCookieMask(OpenflowEnumConstant.DEFAULT_COOKIE_MASK);
+
+
+        if(version == OpenflowEnumConstant.OPENFLOW_V10){
+            mprFlowRequestBuilder.setMatchV10(MatchConvertor.toMatchV10(arg0.getMatch()));
+        }
+        if(version == OpenflowEnumConstant.OPENFLOW_V13){
+            MatchBuilder matchBuilder = new MatchBuilder();
+            matchBuilder.setMatchEntries(MatchConvertor.toMatch(arg0.getMatch()));
+            matchBuilder.setType(OxmMatchType.class);
+            mprFlowRequestBuilder.setMatch(matchBuilder.build());
+        
+            mprFlowRequestBuilder.setCookie(arg0.getCookie());
+            mprFlowRequestBuilder.setCookieMask(arg0.getCookieMask());
+            mprFlowRequestBuilder.setOutGroup(arg0.getOutGroup());
+        }
+
+        //Set request body to main multipart request
+        multipartRequestFlowCaseBuilder.setMultipartRequestFlow(mprFlowRequestBuilder.build());
+        mprInput.setMultipartRequestBody(multipartRequestFlowCaseBuilder.build());
+
+        //Send the request, no cookies associated, use any connection
+        LOG.debug("Send flow statistics request to the switch :{}",mprFlowRequestBuilder);
+        this.messageService.multipartRequest(mprInput.build(), null);
+
+        // Prepare rpc return output. Set xid and send it back.
+        GetFlowStatisticsFromFlowTableOutputBuilder output = 
+                new GetFlowStatisticsFromFlowTableOutputBuilder();
+        output.setTransactionId(generateTransactionId(xid));
+        output.setFlowAndStatisticsMapList(null);
+
+        Collection<RpcError> errors = Collections.emptyList();
+        RpcResult<GetFlowStatisticsFromFlowTableOutput> rpcResult = Rpcs.getRpcResult(true, output.build(), errors);
+        return Futures.immediateFuture(rpcResult);
+    }
+
+    @Override
+    public Future<RpcResult<GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput>> getAggregateFlowStatisticsFromFlowTableForAllFlows(
+            GetAggregateFlowStatisticsFromFlowTableForAllFlowsInput arg0) {
+        //Generate xid to associate it with the request
+        Long xid = this.getSessionContext().getNextXid();
+
+        LOG.debug("Prepare aggregate flow statistics request to get aggregate flow stats for all the flow installed on switch table {} - Transaction id - {}"
+                ,arg0.getTableId().getValue(),xid);
+
+        // Create multipart request header
+        MultipartRequestInputBuilder mprInput = new MultipartRequestInputBuilder();
+        mprInput.setType(MultipartType.OFPMPAGGREGATE);
+        mprInput.setVersion(version);
+        mprInput.setXid(xid);
+        mprInput.setFlags(new MultipartRequestFlags(false));
+
+        // Create multipart request body for fetch all the group stats
+        MultipartRequestAggregateCaseBuilder multipartRequestAggregateCaseBuilder  = new MultipartRequestAggregateCaseBuilder (); 
+        MultipartRequestAggregateBuilder mprAggregateRequestBuilder = new MultipartRequestAggregateBuilder();
+        mprAggregateRequestBuilder.setTableId(arg0.getTableId().getValue());
+        mprAggregateRequestBuilder.setOutPort(OpenflowEnumConstant.OFPP_ANY);
+        mprAggregateRequestBuilder.setOutGroup(OpenflowEnumConstant.OFPG_ANY);
+        mprAggregateRequestBuilder.setCookie(OpenflowEnumConstant.DEFAULT_COOKIE);
+        mprAggregateRequestBuilder.setCookieMask(OpenflowEnumConstant.DEFAULT_COOKIE_MASK);
+        if(version == OpenflowEnumConstant.OPENFLOW_V10){
+            FlowWildcardsV10 wildCard = new FlowWildcardsV10(true,false,false,false,false,false,false,false,false,false,false);
+            mprAggregateRequestBuilder.setMatchV10(new MatchV10Builder().setWildcards(wildCard).build());
+        }
+        if(version == OpenflowEnumConstant.OPENFLOW_V13){
+            mprAggregateRequestBuilder.setMatch(new MatchBuilder().setType(OxmMatchType.class).build());
+        }
+
+
+        //Set request body to main multipart request
+        multipartRequestAggregateCaseBuilder.setMultipartRequestAggregate(mprAggregateRequestBuilder.build());
+        mprInput.setMultipartRequestBody(multipartRequestAggregateCaseBuilder.build());
+
+        //Send the request, no cookies associated, use any connection
+        LOG.debug("Send request to the switch :{}",multipartRequestAggregateCaseBuilder.build().toString());
+        this.messageService.multipartRequest(mprInput.build(), null);
+
+        // Prepare rpc return output. Set xid and send it back.
+        GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutputBuilder output = 
+                new GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutputBuilder();
+        output.setTransactionId(generateTransactionId(xid));
+
+        Collection<RpcError> errors = Collections.emptyList();
+        RpcResult<GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput> rpcResult = Rpcs.getRpcResult(true, output.build(), errors);
+        return Futures.immediateFuture(rpcResult);
+    }
+
+    @Override
+    public Future<RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>> getAggregateFlowStatisticsFromFlowTableForGivenMatch(
+            GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput arg0) {
+
+        //Generate xid to associate it with the request
+        Long xid = this.getSessionContext().getNextXid();
+
+        LOG.debug("Prepare agregate statistics request to get aggregate stats for flows matching {} and installed in flow tables {} - Transaction id - {}"
+                ,arg0.getMatch().toString(),arg0.getTableId(),xid);
+
+        // Create multipart request header
+        MultipartRequestInputBuilder mprInput = new MultipartRequestInputBuilder();
+        mprInput.setType(MultipartType.OFPMPAGGREGATE);
+        mprInput.setVersion(version);
+        mprInput.setXid(xid);
+        mprInput.setFlags(new MultipartRequestFlags(false));
+
+        // Create multipart request body for fetch all the group stats
+        MultipartRequestAggregateCaseBuilder multipartRequestAggregateCaseBuilder  = new MultipartRequestAggregateCaseBuilder (); 
+        MultipartRequestAggregateBuilder mprAggregateRequestBuilder = new MultipartRequestAggregateBuilder();
+        mprAggregateRequestBuilder.setTableId(arg0.getTableId());
+        mprAggregateRequestBuilder.setOutPort(arg0.getOutPort().longValue());
+        mprAggregateRequestBuilder.setOutGroup(OpenflowEnumConstant.OFPG_ANY);
+        mprAggregateRequestBuilder.setCookie(OpenflowEnumConstant.DEFAULT_COOKIE);
+        mprAggregateRequestBuilder.setCookieMask(OpenflowEnumConstant.DEFAULT_COOKIE_MASK);
+
+
+        if(version == OpenflowEnumConstant.OPENFLOW_V10){
+            mprAggregateRequestBuilder.setMatchV10(MatchConvertor.toMatchV10(arg0.getMatch()));
+        }
+        if(version == OpenflowEnumConstant.OPENFLOW_V13){
+            MatchBuilder matchBuilder = new MatchBuilder();
+            matchBuilder.setMatchEntries(MatchConvertor.toMatch(arg0.getMatch()));
+            matchBuilder.setType(OxmMatchType.class);
+            mprAggregateRequestBuilder.setMatch(matchBuilder.build());
+        
+            mprAggregateRequestBuilder.setCookie(arg0.getCookie());
+            mprAggregateRequestBuilder.setCookieMask(arg0.getCookieMask());
+            mprAggregateRequestBuilder.setOutGroup(arg0.getOutGroup());
+        }
+
+        //Set request body to main multipart request
+        multipartRequestAggregateCaseBuilder.setMultipartRequestAggregate(mprAggregateRequestBuilder.build());
+        mprInput.setMultipartRequestBody(multipartRequestAggregateCaseBuilder.build());
+
+        //Send the request, no cookies associated, use any connection
+        LOG.debug("Send request for to the switch :{}",multipartRequestAggregateCaseBuilder.build().toString());
+        this.messageService.multipartRequest(mprInput.build(), null);
+
+        // Prepare rpc return output. Set xid and send it back.
+        GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutputBuilder output = 
+                new GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutputBuilder();
+        output.setTransactionId(generateTransactionId(xid));
+
+        Collection<RpcError> errors = Collections.emptyList();
+        RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput> rpcResult = Rpcs.getRpcResult(true, output.build(), errors);
+        return Futures.immediateFuture(rpcResult);
+    }
+
+    @Override
+    public Future<RpcResult<GetAllFlowStatisticsOutput>> getAllFlowStatistics(GetAllFlowStatisticsInput arg0) {
+        //TODO: Depricated, need to clean it up. Sal-Compatibility layes is dependent on it.
+        // Once sal-compatibility layer is fixed this rpc call can be removed from yang file 
+        return null;
+    }
+
+    @Override
+    public Future<RpcResult<GetAllNodeConnectorStatisticsOutput>> getAllNodeConnectorStatistics(
+            GetAllNodeConnectorStatisticsInput arg0) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Future<RpcResult<GetFlowStatisticsOutput>> getFlowStatistics(GetFlowStatisticsInput arg0) {
+        //TODO: Depricated, need to clean it up. Sal-Compatibility layes is dependent on it.
+        // Once sal-compatibility layer is fixed this rpc call can be removed from yang file 
+        return null;
+    }
+
+    @Override
+    public Future<RpcResult<GetFlowTableStatisticsOutput>> getFlowTableStatistics(GetFlowTableStatisticsInput arg0) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Future<RpcResult<GetNodeConnectorStatisticsOutput>> getNodeConnectorStatistics(
+            GetNodeConnectorStatisticsInput arg0) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

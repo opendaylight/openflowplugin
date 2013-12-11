@@ -10,6 +10,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.Remo
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.OpendaylightFlowStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupInput;
@@ -51,6 +52,7 @@ public interface ModelDrivenSwitch extends //
         PacketProcessingService, //
         OpendaylightGroupStatisticsService, //
         OpendaylightMeterStatisticsService, //
+        OpendaylightFlowStatisticsService, //
         Identifiable<InstanceIdentifier<Node>> {
 
     CompositeObjectRegistration<ModelDrivenSwitch> register(ProviderContext ctx);

@@ -1,3 +1,10 @@
+/*
+ * Copyright IBM Corporation, 2013.  All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.opendaylight.openflowplugin.openflow.md.core.translator;
 
 import java.math.BigInteger;
@@ -7,10 +14,14 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.FlowStatsResponseConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.GroupStatsResponseConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.MeterStatsResponseConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.Counter32;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.Counter64;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.AggregateFlowStatisticsUpdateBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowsStatisticsUpdateBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev131103.TransactionId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GroupDescStatsUpdatedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GroupFeaturesUpdatedBuilder;
@@ -39,12 +50,16 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyAggregateCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyFlowCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyGroupCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyGroupDescCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyGroupFeaturesCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyMeterCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyMeterConfigCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyMeterFeaturesCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.aggregate._case.MultipartReplyAggregate;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.flow._case.MultipartReplyFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group._case.MultipartReplyGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group.desc._case.MultipartReplyGroupDesc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group.features._case.MultipartReplyGroupFeatures;
@@ -67,6 +82,7 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
     protected static final Logger logger = LoggerFactory
             .getLogger(MultipartReplyTranslator.class);
     
+    private static FlowStatsResponseConvertor flowStatsConvertor = new FlowStatsResponseConvertor();
     private static GroupStatsResponseConvertor groupStatsConvertor = new GroupStatsResponseConvertor();
     private static MeterStatsResponseConvertor meterStatsConvertor = new MeterStatsResponseConvertor();
 
@@ -79,6 +95,38 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
             MultipartReplyMessage mpReply = (MultipartReplyMessage)msg;
             NodeId node = this.nodeIdFromDatapathId(sc.getFeatures().getDatapathId());
             switch (mpReply.getType()){
+            case OFPMPFLOW: {
+                logger.info("Received flow statistics reponse from openflow {} switch",msg.getVersion()==1?"1.0":"1.3+");
+                FlowsStatisticsUpdateBuilder message = new FlowsStatisticsUpdateBuilder();
+                message.setId(node);
+                message.setMoreReplies(mpReply.getFlags().isOFPMPFREQMORE());
+                message.setTransactionId(generateTransactionId(mpReply.getXid()));
+                MultipartReplyFlowCase caseBody = (MultipartReplyFlowCase)mpReply.getMultipartReplyBody();
+                MultipartReplyFlow replyBody = caseBody.getMultipartReplyFlow();
+                message.setFlowAndStatisticsMapList(flowStatsConvertor.toSALFlowStatsList(replyBody.getFlowStats()));
+                
+                logger.info("Converted flow statistics : {}",message.build().toString());
+                listDataObject.add(message.build());
+                return listDataObject;
+            }
+            case OFPMPAGGREGATE: {
+                logger.info("Received aggregate flow statistics reponse from openflow {} switch",msg.getVersion()==1?"1.0":"1.3+");
+                AggregateFlowStatisticsUpdateBuilder message = new AggregateFlowStatisticsUpdateBuilder();
+                message.setId(node);
+                message.setMoreReplies(mpReply.getFlags().isOFPMPFREQMORE());
+                message.setTransactionId(generateTransactionId(mpReply.getXid()));
+                
+                MultipartReplyAggregateCase caseBody = (MultipartReplyAggregateCase)mpReply.getMultipartReplyBody();
+                MultipartReplyAggregate replyBody = caseBody.getMultipartReplyAggregate();
+                message.setByteCount(new Counter64(replyBody.getByteCount()));
+                message.setPacketCount(new Counter64(replyBody.getPacketCount()));
+                message.setFlowCount(new Counter32(replyBody.getFlowCount()));
+                
+                logger.info("Converted aggregate flow statistics : {}",message.build().toString());
+                listDataObject.add(message.build());
+                return listDataObject;
+                
+            }
             case OFPMPGROUP:{
                 logger.info("Received group statistics multipart reponse");
                 GroupStatisticsUpdatedBuilder message = new GroupStatisticsUpdatedBuilder();
@@ -88,6 +136,7 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                 MultipartReplyGroupCase caseBody = (MultipartReplyGroupCase)mpReply.getMultipartReplyBody();
                 MultipartReplyGroup replyBody = caseBody.getMultipartReplyGroup();
                 message.setGroupStats(groupStatsConvertor.toSALGroupStatsList(replyBody.getGroupStats()));
+                
                 logger.debug("Converted group statistics : {}",message.toString());
                 listDataObject.add(message.build());
                 return listDataObject;
@@ -101,7 +150,9 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                 message.setTransactionId(generateTransactionId(mpReply.getXid()));
                 MultipartReplyGroupDescCase caseBody = (MultipartReplyGroupDescCase)mpReply.getMultipartReplyBody();
                 MultipartReplyGroupDesc replyBody = caseBody.getMultipartReplyGroupDesc();
+
                 message.setGroupDescStats(groupStatsConvertor.toSALGroupDescStatsList(replyBody.getGroupDesc()));
+                
                 logger.debug("Converted group statistics : {}",message.toString());
                 listDataObject.add(message.build());
                 return listDataObject;
@@ -183,6 +234,7 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                 MultipartReplyMeterConfigCase caseBody = (MultipartReplyMeterConfigCase)mpReply.getMultipartReplyBody();
                 MultipartReplyMeterConfig replyBody = caseBody.getMultipartReplyMeterConfig();
                 message.setMeterConfigStats(meterStatsConvertor.toSALMeterConfigList(replyBody.getMeterConfig()));
+                
                 listDataObject.add(message.build());
                 return listDataObject;
             }
@@ -236,7 +288,6 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                 return listDataObject;
             }
             default:
-                logger.info(" Type : {}, not handled yet",mpReply.getType().name() );
                 return listDataObject;
             }
         }

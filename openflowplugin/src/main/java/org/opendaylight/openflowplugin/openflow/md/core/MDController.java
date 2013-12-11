@@ -36,6 +36,8 @@ import org.opendaylight.openflowplugin.openflow.md.queue.PopListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SwitchFlowRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.NodeErrorNotification;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.AggregateFlowStatisticsUpdate;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowsStatisticsUpdate;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GroupDescStatsUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GroupFeaturesUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GroupStatisticsUpdated;
@@ -101,6 +103,7 @@ public class MDController implements IMDController {
         addMessageTranslator(MultipartReplyMessage.class,OF13,new MultiPartReplyPortToNodeConnectorUpdatedTranslator());
         addMessageTranslator(MultipartReplyMessage.class,OF13, new MultiPartMessageDescToNodeUpdatedTranslator());
         addMessageTranslator(ExperimenterMessage.class, OF10, new ExperimenterTranslator());
+        addMessageTranslator(MultipartReplyMessage.class,OF10, new MultipartReplyTranslator());
         addMessageTranslator(MultipartReplyMessage.class,OF13, new MultipartReplyTranslator());
         addMessageTranslator(MultipartReplyMessage.class,OF13,new MultipartReplyTableFeaturesToTableUpdatedTranslator());
 
@@ -114,6 +117,9 @@ public class MDController implements IMDController {
 
         addMessagePopListener(SwitchFlowRemoved.class, notificationPopListener);
         addMessagePopListener(TableUpdated.class, notificationPopListener);
+        //Notification registration for flow statistics
+        addMessagePopListener(FlowsStatisticsUpdate.class, notificationPopListener);
+        addMessagePopListener(AggregateFlowStatisticsUpdate.class, notificationPopListener);
         //Notification registrations for group-statistics
         addMessagePopListener(GroupStatisticsUpdated.class, notificationPopListener);
         addMessagePopListener(GroupFeaturesUpdated.class, notificationPopListener);
