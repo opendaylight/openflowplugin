@@ -239,11 +239,9 @@ public final class ActionConvertor {
         ActionBuilder actionBuilder = new ActionBuilder();
         PushVlanActionCase pushVlanActionCase = (PushVlanActionCase) action;
         PushVlanAction pushVlanAction = pushVlanActionCase.getPushVlanAction();
-        VlanId vlanId = new VlanId(pushVlanAction.getVlanId());
-        Integer etherType = vlanId.getValue();
         actionBuilder.setType(PushVlan.class);
 
-        return SalToOFPushAction(etherType, actionBuilder, actionsListBuilder);
+        return SalToOFPushAction(pushVlanAction.getEthernetType(), actionBuilder, actionsListBuilder);
 
     }
 
