@@ -223,4 +223,8 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
 
         return new NodeRef(path);
     }
+    
+    private static void removeMeImFaick() {
+        
+    }
 }
