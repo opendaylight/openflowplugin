@@ -27,4 +27,5 @@ public class OFConstants {
     public static final Long OFPQ_ANY = ANY;
     public static final BigInteger DEFAULT_COOKIE = BigInteger.ZERO;
     public static final BigInteger DEFAULT_COOKIE_MASK = BigInteger.ZERO;
+    public static final Long OFP_NO_BUFFER = 0xffffffffL;
 }
