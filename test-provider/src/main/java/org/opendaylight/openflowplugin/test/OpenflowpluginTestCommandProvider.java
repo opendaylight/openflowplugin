@@ -511,6 +511,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         InstructionBuilder ib = new InstructionBuilder();
         ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
         ib.setKey(new InstructionKey(0));
+        ib.setOrder(0);
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
