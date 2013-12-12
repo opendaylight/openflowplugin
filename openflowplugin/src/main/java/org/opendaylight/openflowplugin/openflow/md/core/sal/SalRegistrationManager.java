@@ -21,6 +21,8 @@ import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionListener;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionManager;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeUpdated;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeUpdatedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRemoved;
@@ -50,6 +52,12 @@ public class SalRegistrationManager implements SessionListener, SwitchInventory 
     private NotificationProviderService publishService;
 
     private DataProviderService dataService;
+    
+    private SwitchFeaturesUtil swFeaturesUtil;
+    
+    public SalRegistrationManager() {
+        swFeaturesUtil = SwitchFeaturesUtil.getInstance();
+    }
 
     public NotificationProviderService getPublishService() {
         return publishService;
@@ -107,6 +115,11 @@ public class SalRegistrationManager implements SessionListener, SwitchInventory 
         NodeUpdatedBuilder builder = new NodeUpdatedBuilder();
         builder.setId(sw.getNodeId());
         builder.setNodeRef(nodeRef);
+        
+        FlowCapableNodeUpdatedBuilder builder2 = new FlowCapableNodeUpdatedBuilder();
+        builder2.setSwitchFeatures(swFeaturesUtil.buildSwitchFeatures(features));
+        builder.addAugmentation(FlowCapableNodeUpdated.class, builder2.build());
+        
         return builder.build();
     }
 
