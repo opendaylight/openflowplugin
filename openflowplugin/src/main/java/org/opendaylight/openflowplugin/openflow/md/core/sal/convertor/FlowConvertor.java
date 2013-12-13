@@ -44,6 +44,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.TableId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.OxmMatchType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.MatchEntries;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.match.grouping.MatchBuilder;
@@ -74,6 +75,7 @@ public class FlowConvertor {
     private static final boolean DEFAULT_OFPFF_NO_PKT_COUNTS = false;
     private static final boolean DEFAULT_OFPFF_NO_BYT_COUNTS = false;
     private static final Class<? extends MatchTypeBase> DEFAULT_MATCH_TYPE = OxmMatchType.class;
+    private static final List<MatchEntries> DEFAULT_MATCH_ENTRIES = new ArrayList<MatchEntries>();
 
     public static FlowModInput toFlowModInput(Flow flow, short version) {
         FlowModInputBuilder flowMod = new FlowModInputBuilder();
@@ -155,12 +157,14 @@ public class FlowConvertor {
         }
         flowMod.setFlags(ofFlowModFlags);
 
+        MatchBuilder matchBuilder = new MatchBuilder();
         if (flow.getMatch() != null) {
-            MatchBuilder matchBuilder = new MatchBuilder();
             matchBuilder.setMatchEntries(MatchConvertor.toMatch(flow.getMatch()));
-            matchBuilder.setType(DEFAULT_MATCH_TYPE);
-            flowMod.setMatch(matchBuilder.build());
+        } else {
+            matchBuilder.setMatchEntries(DEFAULT_MATCH_ENTRIES);
         }
+        matchBuilder.setType(DEFAULT_MATCH_TYPE);
+        flowMod.setMatch(matchBuilder.build());
 
         if (flow.getInstructions() != null) {
             flowMod.setInstructions(toInstructions(flow.getInstructions(), version));

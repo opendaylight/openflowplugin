@@ -148,6 +148,7 @@ import org.slf4j.LoggerFactory;
 public class MatchConvertor {
     private static final Logger logger = LoggerFactory.getLogger(MatchConvertor.class);
     private static final String PREFIX_SEPARATOR = "/";
+    private static final byte[] VLAN_VID_MASK = new byte[] { 16, 0 };
 
     public static List<MatchEntries> toMatch(
             org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match match) {
@@ -420,6 +421,7 @@ public class MatchConvertor {
 
     private static MatchEntries toOfIpv6ExtHeader(Ipv6ExtHeader ipv6ExtHeader) {
         MatchEntriesBuilder matchEntriesBuilder = new MatchEntriesBuilder();
+        boolean hasmask = false;
         matchEntriesBuilder.setOxmClass(OpenflowBasicClass.class);
         matchEntriesBuilder.setOxmMatchField(Ipv6Exthdr.class);
         PseudoFieldMatchEntryBuilder pseudoBuilder = new PseudoFieldMatchEntryBuilder();
@@ -436,9 +438,10 @@ public class MatchConvertor {
         pseudoBuilder.setPseudoField(new PseudoField(AUTH, DEST, ESP, FRAG, HOP, NONEXT, ROUTER, UNREP, UNSEQ));
         matchEntriesBuilder.addAugmentation(PseudoFieldMatchEntry.class, pseudoBuilder.build());
         if (ipv6ExtHeader.getIpv6ExthdrMask() != null) {
+            hasmask = true;
             addMaskAugmentation(matchEntriesBuilder, ipv6ExtHeader.getIpv6ExthdrMask());
         }
-        matchEntriesBuilder.setHasMask(false);
+        matchEntriesBuilder.setHasMask(hasmask);
         return matchEntriesBuilder.build();
     }
 
@@ -611,16 +614,23 @@ public class MatchConvertor {
         // TODO: verify
         MatchEntriesBuilder matchEntriesBuilder = new MatchEntriesBuilder();
         boolean hasmask = false;
+        boolean setCfiBit = false;
+        Integer vidEntryValue = 0;
         matchEntriesBuilder.setOxmClass(OpenflowBasicClass.class);
         matchEntriesBuilder.setOxmMatchField(VlanVid.class);
         VlanVidMatchEntryBuilder vlanVidBuilder = new VlanVidMatchEntryBuilder();
-        Integer vidEntryValue = vlanId.getVlanId().getValue();
-        vlanVidBuilder.setCfiBit(vidEntryValue != 0);
+        if (vlanId.isVlanIdPresent() == true) {
+            setCfiBit = true;
+            if (vlanId.getVlanId() != null) {
+                vidEntryValue = vlanId.getVlanId().getValue();
+            }
+            hasmask = (vidEntryValue == 0);
+        }
+        vlanVidBuilder.setCfiBit(setCfiBit);
         vlanVidBuilder.setVlanVid(vidEntryValue);
         matchEntriesBuilder.addAugmentation(VlanVidMatchEntry.class, vlanVidBuilder.build());
-        if (vlanId.getMask() != null) {
-            hasmask = true;
-            addMaskAugmentation(matchEntriesBuilder, vlanId.getMask());
+        if (hasmask) {
+            addMaskAugmentation(matchEntriesBuilder, VLAN_VID_MASK);
         }
         matchEntriesBuilder.setHasMask(hasmask);
         return matchEntriesBuilder.build();
