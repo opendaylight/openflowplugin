@@ -186,7 +186,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         pc = session;
         dataBrokerService = session.getSALService(DataBrokerService.class);
         ctx.registerService(CommandProvider.class.getName(), this, null);
-        createTestFlow(createTestNode(null), null);
+        createTestFlow(createTestNode(null), null, null);
     }
 
     private NodeBuilder createTestNode(String nodeId) {
@@ -205,7 +205,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return InstanceIdentifier.builder(Nodes.class).child(Node.class, node.getKey()).toInstance();
     }
 
-    private FlowBuilder createTestFlow(NodeBuilder nodeBuilder, String flowTypeArg) {
+    private FlowBuilder createTestFlow(NodeBuilder nodeBuilder, String flowTypeArg, String tableId) {
 
         FlowBuilder flow = new FlowBuilder();
         long id = 123;
@@ -461,6 +461,29 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
             flow.setMatch(createVlanMatch().build());
             flow.setInstructions(createMeterInstructions().build());
             break;
+        case "50":
+            id += 50;
+            flow.setMatch(createVlanMatch().build());
+            flow.setInstructions(createDropInstructions().build());
+            break;
+
+        case "51":
+            id += 51;
+            flow.setMatch(createIPMatch().build());
+            flow.setInstructions(createDropInstructions().build());
+            break;
+    
+        case "52":
+            id += 52;
+            flow.setMatch(createL4TCPMatch().build());
+            flow.setInstructions(createDropInstructions().build());
+            break;    
+            
+        case "53":
+            id += 53;
+            flow.setMatch(createL4UDPMatch().build());
+            flow.setInstructions(createDropInstructions().build());
+            break;
 
         default:
             LOG.warn("flow type not understood: {}", flowType);
@@ -479,7 +502,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         flow.setContainerName(null);
         flow.setFlags(new FlowModFlags(false, false, false, false, false));
         flow.setId(new FlowId(new Long(12)));
-        flow.setTableId((short) 2);
+        flow.setTableId(getTableId(tableId));
         flow.setOutGroup(new Long(2));
         flow.setOutPort(value);
 
@@ -488,6 +511,23 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         flow.setFlowName(originalFlowName + "X" + flowType);
         testFlow = flow;
         return flow;
+    }
+    
+    
+    private short getTableId(String tableId)
+    {
+         short table = 2;
+          try
+          {
+            table = Short.parseShort(tableId);
+          }
+          catch(Exception ex)
+          {
+             // ignore exception and continue with default value
+          }
+          
+          return table;
+        
     }
 
     /**
@@ -1907,7 +1947,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
     public void _removeMDFlow(CommandInterpreter ci) {
         DataModification<InstanceIdentifier<?>, DataObject> modification = dataBrokerService.beginTransaction();
         NodeBuilder tn = createTestNode(ci.nextArgument());
-        FlowBuilder tf = createTestFlow(tn, ci.nextArgument());
+        FlowBuilder tf = createTestFlow(tn, ci.nextArgument(), ci.nextArgument());
         InstanceIdentifier<Flow> path1 = InstanceIdentifier.builder(Nodes.class)
                 .child(Node.class, tn.getKey()).augmentation(FlowCapableNode.class)
                 .child(Table.class, new TableKey(tf.getTableId())).child(Flow.class, tf.getKey())
@@ -1933,7 +1973,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
     public void _addMDFlow(CommandInterpreter ci) {
         NodeBuilder tn = createTestNode(ci.nextArgument());
-        FlowBuilder tf = createTestFlow(tn, ci.nextArgument());
+        FlowBuilder tf = createTestFlow(tn, ci.nextArgument(), ci.nextArgument());
         writeFlow(ci, tf, tn);
     }
 
@@ -1964,7 +2004,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
     public void _modifyMDFlow(CommandInterpreter ci) {
         NodeBuilder tn = createTestNode(ci.nextArgument());
-        FlowBuilder tf = createTestFlow(tn, ci.nextArgument());
+        FlowBuilder tf = createTestFlow(tn, ci.nextArgument(), ci.nextArgument());
         tf.setFlowName(updatedFlowName);
         writeFlow(ci, tf, tn);
         tf.setFlowName(originalFlowName);
