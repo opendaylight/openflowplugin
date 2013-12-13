@@ -477,8 +477,8 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         BigInteger value = new BigInteger("10", 10);
         flow.setCookie(value);
         flow.setCookieMask(value);
-        flow.setHardTimeout(12);
-        flow.setIdleTimeout(34);
+        flow.setHardTimeout(0);
+        flow.setIdleTimeout(0);
         flow.setInstallHw(false);
         flow.setStrict(false);
         flow.setContainerName(null);
