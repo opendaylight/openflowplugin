@@ -122,6 +122,12 @@ public class InventoryDataServiceUtil {
         String current = datapathId.toString();
         return new NodeId(OF_URI_PREFIX + current);
     }
+    
+    public static Long dataPathIdFromNodeId(NodeId nodeId) {
+        String dpids = nodeId.getValue().replace(OF_URI_PREFIX, "");
+        Long dpid = Long.decode(dpids);
+        return dpid;
+    }
 
     public static NodeRef nodeRefFromNode(Node node) {
         return nodeRefFromNodeKey(node.getKey());
@@ -145,7 +151,9 @@ public class InventoryDataServiceUtil {
     
     public static Long portNumberfromNodeConnectorId(NodeConnectorId ncId) {
         String[] split = ncId.getValue().split(":");
-        return Long.getLong(split[split.length-1]);
+        String portNoString = split[split.length-1];
+        Long portNo = Long.decode(portNoString);
+        return portNo;
     }
 
 
