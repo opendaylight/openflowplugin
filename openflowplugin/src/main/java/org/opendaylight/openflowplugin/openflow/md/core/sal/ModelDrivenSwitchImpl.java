@@ -27,6 +27,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.TableFeatu
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchReactor;
 import org.opendaylight.openflowplugin.openflow.md.core.session.IMessageDispatchService;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
+import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutputBuilder;
@@ -62,6 +63,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.G
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetNodeConnectorStatisticsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetNodeConnectorStatisticsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.GetFlowTablesStatisticsInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.GetFlowTablesStatisticsOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.GetFlowTablesStatisticsOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev131103.TransactionId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.port.mod.port.Port;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow;
@@ -135,12 +139,16 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestMeterCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestMeterConfigCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestMeterFeaturesCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestPortStatsCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestTableCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestTableFeaturesCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.aggregate._case.MultipartRequestAggregateBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.flow._case.MultipartRequestFlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.group._case.MultipartRequestGroupBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.meter._case.MultipartRequestMeterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.meter.config._case.MultipartRequestMeterConfigBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.port.stats._case.MultipartRequestPortStatsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.table._case.MultipartRequestTableBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.table.features._case.MultipartRequestTableFeaturesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.table.features._case.multipart.request.table.features.TableFeatures;
 //import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.table.features.TableFeatures;
@@ -149,6 +157,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.GetP
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.UpdatePortInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.UpdatePortOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.UpdatePortOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.GetAllPortsStatisticsInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.GetAllPortsStatisticsOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.GetAllPortsStatisticsOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.GetPortStatisticsInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.GetPortStatisticsOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.GetPortStatisticsOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableOutputBuilder;
@@ -840,6 +854,83 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         RpcResult<GetMeterStatisticsOutput> rpcResult = Rpcs.getRpcResult(true, output.build(), errors);
         return Futures.immediateFuture(rpcResult);
     }
+    
+    @Override
+    public Future<RpcResult<GetAllPortsStatisticsOutput>> getAllPortsStatistics(GetAllPortsStatisticsInput arg0) {
+
+        //Generate xid to associate it with the request
+        Long xid = this.getSessionContext().getNextXid();
+
+        LOG.info("Prepare port statistics request for all ports of node {} - TrasactionId - {}",arg0.getNode().getValue(),xid);
+
+        // Create multipart request header
+        MultipartRequestInputBuilder mprInput = new MultipartRequestInputBuilder();
+        mprInput.setType(MultipartType.OFPMPPORTSTATS);
+        mprInput.setVersion(version);
+        mprInput.setXid(xid);
+        mprInput.setFlags(new MultipartRequestFlags(false));
+
+        // Create multipart request body to fetch stats for all the port of the node
+        MultipartRequestPortStatsCaseBuilder caseBuilder = new MultipartRequestPortStatsCaseBuilder();
+        MultipartRequestPortStatsBuilder mprPortStatsBuilder = new MultipartRequestPortStatsBuilder();
+        //Select all ports 
+        //TODO :need to change once i rebase on latest code.
+        mprPortStatsBuilder.setPortNo(OpenflowEnumConstant.OFPP_ANY);
+        caseBuilder.setMultipartRequestPortStats(mprPortStatsBuilder.build());
+        
+        //Set request body to main multipart request
+        mprInput.setMultipartRequestBody(caseBuilder.build());
+
+        //Send the request, no cookies associated, use any connection
+        LOG.debug("Send port statistics request :{}",mprPortStatsBuilder.build().toString());
+        this.messageService.multipartRequest(mprInput.build(), null);
+
+        // Prepare rpc return output. Set xid and send it back.
+        GetAllPortsStatisticsOutputBuilder output = new GetAllPortsStatisticsOutputBuilder();
+        output.setTransactionId(generateTransactionId(xid));
+
+        Collection<RpcError> errors = Collections.emptyList();
+        RpcResult<GetAllPortsStatisticsOutput> rpcResult = Rpcs.getRpcResult(true, output.build(), errors);
+        return Futures.immediateFuture(rpcResult);
+    }
+
+    @Override
+    public Future<RpcResult<GetPortStatisticsOutput>> getPortStatistics(GetPortStatisticsInput arg0) {
+        //Generate xid to associate it with the request
+        Long xid = this.getSessionContext().getNextXid();
+
+        LOG.info("Prepare port statistics request for port {} of node {} - TrasactionId - {}",arg0.getNodeConnectorId(), arg0.getNode().getValue(),xid);
+
+        // Create multipart request header
+        MultipartRequestInputBuilder mprInput = new MultipartRequestInputBuilder();
+        mprInput.setType(MultipartType.OFPMPPORTSTATS);
+        mprInput.setVersion(version);
+        mprInput.setXid(xid);
+        mprInput.setFlags(new MultipartRequestFlags(false));
+
+        // Create multipart request body to fetch stats for all the port of the node
+        MultipartRequestPortStatsCaseBuilder caseBuilder = new MultipartRequestPortStatsCaseBuilder();
+        MultipartRequestPortStatsBuilder mprPortStatsBuilder = new MultipartRequestPortStatsBuilder();
+
+        //Set specific port 
+        mprPortStatsBuilder.setPortNo(InventoryDataServiceUtil.portNumberfromNodeConnectorId(arg0.getNodeConnectorId()));
+        caseBuilder.setMultipartRequestPortStats(mprPortStatsBuilder.build());
+        
+        //Set request body to main multipart request
+        mprInput.setMultipartRequestBody(caseBuilder.build());
+
+        //Send the request, no cookies associated, use any connection
+        LOG.debug("Send port statistics request :{}",mprPortStatsBuilder.build().toString());
+        this.messageService.multipartRequest(mprInput.build(), null);
+
+        // Prepare rpc return output. Set xid and send it back.
+        GetPortStatisticsOutputBuilder output = new GetPortStatisticsOutputBuilder();
+        output.setTransactionId(generateTransactionId(xid));
+
+        Collection<RpcError> errors = Collections.emptyList();
+        RpcResult<GetPortStatisticsOutput> rpcResult = Rpcs.getRpcResult(true, output.build(), errors);
+        return Futures.immediateFuture(rpcResult);
+    }
 
     private TransactionId generateTransactionId(Long xid){
         String stringXid =xid.toString();
@@ -984,7 +1075,6 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         Collection<RpcError> errors = Collections.emptyList();
         RpcResult<UpdateTableOutput> rpcResult = Rpcs.getRpcResult(true, output.build(), errors);
         return Futures.immediateFuture(rpcResult);
-
     }
 
     @Override
@@ -1105,7 +1195,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         //Generate xid to associate it with the request
         Long xid = this.getSessionContext().getNextXid();
 
-        LOG.debug("Prepare statistics request to get stats for flow {} for switch tables {} - Transaction id - {}"
+        LOG.info("Prepare statistics request to get stats for flow {} for switch tables {} - Transaction id - {}"
                 ,arg0.getMatch().toString(),arg0.getTableId(),xid);
 
         // Create multipart request header
@@ -1166,7 +1256,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         //Generate xid to associate it with the request
         Long xid = this.getSessionContext().getNextXid();
 
-        LOG.debug("Prepare aggregate flow statistics request to get aggregate flow stats for all the flow installed on switch table {} - Transaction id - {}"
+        LOG.info("Prepare aggregate flow statistics request to get aggregate flow stats for all the flow installed on switch table {} - Transaction id - {}"
                 ,arg0.getTableId().getValue(),xid);
 
         // Create multipart request header
@@ -1261,7 +1351,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         mprInput.setMultipartRequestBody(multipartRequestAggregateCaseBuilder.build());
 
         //Send the request, no cookies associated, use any connection
-        LOG.debug("Send request for to the switch :{}",multipartRequestAggregateCaseBuilder.build().toString());
+        LOG.debug("Send request to the switch :{}",multipartRequestAggregateCaseBuilder.build().toString());
         this.messageService.multipartRequest(mprInput.build(), null);
 
         // Prepare rpc return output. Set xid and send it back.
@@ -1271,6 +1361,43 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 
         Collection<RpcError> errors = Collections.emptyList();
         RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput> rpcResult = Rpcs.getRpcResult(true, output.build(), errors);
+        return Futures.immediateFuture(rpcResult);
+    }
+
+    @Override
+    public Future<RpcResult<GetFlowTablesStatisticsOutput>> getFlowTablesStatistics(GetFlowTablesStatisticsInput arg0) {
+        //Generate xid to associate it with the request
+        Long xid = this.getSessionContext().getNextXid();
+
+        LOG.info("Prepare flow table statistics request to get flow table stats for all tables " +
+        		"from node {}- Transaction id - {}",arg0.getNode(),xid);
+
+        // Create multipart request header
+        MultipartRequestInputBuilder mprInput = new MultipartRequestInputBuilder();
+        mprInput.setType(MultipartType.OFPMPTABLE);
+        mprInput.setVersion(version);
+        mprInput.setXid(xid);
+        mprInput.setFlags(new MultipartRequestFlags(false));
+
+        // Create multipart request body for fetch all the group stats
+        MultipartRequestTableCaseBuilder multipartRequestTableCaseBuilder  = new MultipartRequestTableCaseBuilder (); 
+        MultipartRequestTableBuilder multipartRequestTableBuilder = new MultipartRequestTableBuilder();
+        multipartRequestTableBuilder.setEmpty(true);
+        multipartRequestTableCaseBuilder.setMultipartRequestTable(multipartRequestTableBuilder.build());
+        
+        //Set request body to main multipart request
+        mprInput.setMultipartRequestBody(multipartRequestTableCaseBuilder.build());
+
+        //Send the request, no cookies associated, use any connection
+        LOG.debug("Send request to the switch :{}",multipartRequestTableCaseBuilder.build().toString());
+        this.messageService.multipartRequest(mprInput.build(), null);
+
+        // Prepare rpc return output. Set xid and send it back.
+        GetFlowTablesStatisticsOutputBuilder output = new GetFlowTablesStatisticsOutputBuilder();
+        output.setTransactionId(generateTransactionId(xid));
+
+        Collection<RpcError> errors = Collections.emptyList();
+        RpcResult<GetFlowTablesStatisticsOutput> rpcResult = Rpcs.getRpcResult(true, output.build(), errors);
         return Futures.immediateFuture(rpcResult);
     }
 

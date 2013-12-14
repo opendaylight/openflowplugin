@@ -13,6 +13,7 @@ import org.opendaylight.openflowplugin.openflow.md.ModelDrivenSwitch;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.OpendaylightFlowStatisticsService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.OpendaylightFlowTableStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.SalGroupService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.OpendaylightGroupStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeContext;
@@ -20,6 +21,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.SalMeterService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.OpendaylightMeterStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.OpendaylightPortStatisticsService;
 import org.opendaylight.yangtools.concepts.CompositeObjectRegistration;
 import org.opendaylight.yangtools.concepts.CompositeObjectRegistration.CompositeObjectRegistrationBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -44,6 +46,10 @@ public abstract class AbstractModelDrivenSwitch implements ModelDrivenSwitch {
     private RoutedRpcRegistration<OpendaylightGroupStatisticsService> groupStatisticsRegistration;
 
     private RoutedRpcRegistration<OpendaylightMeterStatisticsService> meterStatisticsRegistration;
+
+    private RoutedRpcRegistration<OpendaylightPortStatisticsService> portStatisticsRegistration;
+
+    private RoutedRpcRegistration<OpendaylightFlowTableStatisticsService> flowTableStatisticsRegistration;
 
     protected final SessionContext sessionContext;
 
@@ -90,6 +96,14 @@ public abstract class AbstractModelDrivenSwitch implements ModelDrivenSwitch {
         meterStatisticsRegistration.registerPath(NodeContext.class, getIdentifier());
         builder.add(meterStatisticsRegistration);
 
+        portStatisticsRegistration = ctx.addRoutedRpcImplementation(OpendaylightPortStatisticsService.class, this);
+        portStatisticsRegistration.registerPath(NodeContext.class, getIdentifier());
+        builder.add(portStatisticsRegistration);
+
+        flowTableStatisticsRegistration = ctx.addRoutedRpcImplementation(OpendaylightFlowTableStatisticsService.class, this);
+        flowTableStatisticsRegistration.registerPath(NodeContext.class, getIdentifier());
+        builder.add(flowTableStatisticsRegistration);
+        
         return builder.toInstance();
     }
 

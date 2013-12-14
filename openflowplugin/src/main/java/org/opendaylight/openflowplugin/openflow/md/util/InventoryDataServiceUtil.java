@@ -142,6 +142,12 @@ public class InventoryDataServiceUtil {
     public static NodeConnectorId nodeConnectorIdfromDatapathPortNo(BigInteger datapathid, Long portNo) {
         return new NodeConnectorId(OF_URI_PREFIX + datapathid + ":" + portNo);
     }
+    
+    public static Long portNumberfromNodeConnectorId(NodeConnectorId ncId) {
+        String[] split = ncId.getValue().split(":");
+        return Long.getLong(split[split.length-1]);
+    }
+
 
     public static NodeConnectorRef nodeConnectorRefFromDatapathIdPortno(BigInteger datapathId, Long portNo) {
         return new NodeConnectorRef(nodeConnectorInstanceIdentifierFromDatapathIdPortno(datapathId, portNo));
