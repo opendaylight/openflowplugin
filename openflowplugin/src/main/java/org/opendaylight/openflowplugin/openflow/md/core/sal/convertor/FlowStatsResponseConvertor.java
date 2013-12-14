@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchConvertorImpl;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.Counter64;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.flow.and.statistics.map.list.FlowAndStatisticsMapList;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.flow.and.statistics.map.list.FlowAndStatisticsMapListBuilder;
@@ -74,10 +75,10 @@ public class FlowStatsResponseConvertor {
         salFlowStatsBuilder.setPriority(flowStats.getPriority());
         salFlowStatsBuilder.setTableId(flowStats.getTableId());
         if(flowStats.getMatchV10() != null){
-            salFlowStatsBuilder.setMatch(MatchConvertor.fromOFMatchV10ToSALMatch(flowStats.getMatchV10()));
+            salFlowStatsBuilder.setMatch(MatchConvertorImpl.fromOFMatchV10ToSALMatch(flowStats.getMatchV10()));
         }
         if(flowStats.getMatch() != null){
-            salFlowStatsBuilder.setMatch(MatchConvertor.fromOFMatchToSALMatch(flowStats.getMatch()));
+            salFlowStatsBuilder.setMatch(MatchConvertorImpl.fromOFMatchToSALMatch(flowStats.getMatch()));
         }
         if(flowStats.getInstructions()!= null){
             salFlowStatsBuilder.setInstructions(toSALInstruction(flowStats.getInstructions()));

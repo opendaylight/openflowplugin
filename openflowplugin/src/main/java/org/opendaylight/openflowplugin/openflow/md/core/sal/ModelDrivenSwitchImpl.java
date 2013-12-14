@@ -16,14 +16,15 @@ import java.util.concurrent.Future;
 
 import org.opendaylight.controller.sal.common.util.Rpcs;
 import org.opendaylight.openflowjava.protocol.api.util.BinContent;
+import org.opendaylight.openflowplugin.openflow.md.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.FlowConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.GroupConvertor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.MatchConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.MeterConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.OpenflowEnumConstant;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.PortConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.TableFeaturesConvertor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchReactor;
 import org.opendaylight.openflowplugin.openflow.md.core.session.IMessageDispatchService;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
@@ -1011,12 +1012,14 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         mprFlowRequestBuilder.setOutGroup(OpenflowEnumConstant.OFPG_ANY);
         mprFlowRequestBuilder.setCookie(OpenflowEnumConstant.DEFAULT_COOKIE);
         mprFlowRequestBuilder.setCookieMask(OpenflowEnumConstant.DEFAULT_COOKIE_MASK);
-        if(version == OpenflowEnumConstant.OPENFLOW_V10){
+        
+        //TODO: repeating code
+        if(version == OFConstants.OFP_VERSION_1_0){
             LOG.info("Target node is running openflow version 1.0");
             FlowWildcardsV10 wildCard = new FlowWildcardsV10(true,false,false,false,false,false,false,false,false,false,false);
             mprFlowRequestBuilder.setMatchV10(new MatchV10Builder().setWildcards(wildCard).build());
         }
-        if(version == OpenflowEnumConstant.OPENFLOW_V13){
+        if(version == OFConstants.OFP_VERSION_1_3){
             LOG.info("Target node is running openflow version 1.3+");
             mprFlowRequestBuilder.setMatch(new MatchBuilder().setType(OxmMatchType.class).build());
         }
@@ -1068,11 +1071,12 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         mprFlowRequestBuilder.setCookieMask(OpenflowEnumConstant.DEFAULT_COOKIE_MASK);
         mprFlowRequestBuilder.setCookieMask(OpenflowEnumConstant.DEFAULT_COOKIE_MASK);
         
-        if(version == OpenflowEnumConstant.OPENFLOW_V10){
+        //TODO: repeating code
+        if(version == OFConstants.OFP_VERSION_1_0){
             FlowWildcardsV10 wildCard = new FlowWildcardsV10(true,false,false,false,false,false,false,false,false,false,false);
             mprFlowRequestBuilder.setMatchV10(new MatchV10Builder().setWildcards(wildCard).build());
         }
-        if(version == OpenflowEnumConstant.OPENFLOW_V13){
+        if(version == OFConstants.OFP_VERSION_1_3){
             mprFlowRequestBuilder.setMatch(new MatchBuilder().setType(OxmMatchType.class).build());
         }
         //Set request body to main multipart request
@@ -1120,15 +1124,17 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         mprFlowRequestBuilder.setCookie(OpenflowEnumConstant.DEFAULT_COOKIE);
         mprFlowRequestBuilder.setCookieMask(OpenflowEnumConstant.DEFAULT_COOKIE_MASK);
 
-
-        if(version == OpenflowEnumConstant.OPENFLOW_V10){
-            mprFlowRequestBuilder.setMatchV10(MatchConvertor.toMatchV10(arg0.getMatch()));
-        }
-        if(version == OpenflowEnumConstant.OPENFLOW_V13){
-            MatchBuilder matchBuilder = new MatchBuilder();
-            matchBuilder.setMatchEntries(MatchConvertor.toMatch(arg0.getMatch()));
-            matchBuilder.setType(OxmMatchType.class);
-            mprFlowRequestBuilder.setMatch(matchBuilder.build());
+        // convert and inject match
+        MatchReactor.getInstance().convert(arg0.getMatch(), version, mprFlowRequestBuilder);
+//        if(version == OFConstants.OFP_VERSION_1_0){
+//            mprFlowRequestBuilder.setMatchV10(MatchConvertor.toMatchV10(arg0.getMatch()));
+//        }
+        //TODO: repeating code
+        if(version == OFConstants.OFP_VERSION_1_3){
+//            MatchBuilder matchBuilder = new MatchBuilder();
+//            matchBuilder.setMatchEntries(MatchConvertor.toMatch(arg0.getMatch()));
+//            matchBuilder.setType(OxmMatchType.class);
+//            mprFlowRequestBuilder.setMatch(matchBuilder.build());
         
             mprFlowRequestBuilder.setCookie(arg0.getCookie());
             mprFlowRequestBuilder.setCookieMask(arg0.getCookieMask());
@@ -1178,11 +1184,13 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         mprAggregateRequestBuilder.setOutGroup(OpenflowEnumConstant.OFPG_ANY);
         mprAggregateRequestBuilder.setCookie(OpenflowEnumConstant.DEFAULT_COOKIE);
         mprAggregateRequestBuilder.setCookieMask(OpenflowEnumConstant.DEFAULT_COOKIE_MASK);
-        if(version == OpenflowEnumConstant.OPENFLOW_V10){
+        
+        //TODO: repeating code
+        if(version == OFConstants.OFP_VERSION_1_0){
             FlowWildcardsV10 wildCard = new FlowWildcardsV10(true,false,false,false,false,false,false,false,false,false,false);
             mprAggregateRequestBuilder.setMatchV10(new MatchV10Builder().setWildcards(wildCard).build());
         }
-        if(version == OpenflowEnumConstant.OPENFLOW_V13){
+        if(version == OFConstants.OFP_VERSION_1_3){
             mprAggregateRequestBuilder.setMatch(new MatchBuilder().setType(OxmMatchType.class).build());
         }
 
@@ -1232,14 +1240,16 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         mprAggregateRequestBuilder.setCookieMask(OpenflowEnumConstant.DEFAULT_COOKIE_MASK);
 
 
-        if(version == OpenflowEnumConstant.OPENFLOW_V10){
-            mprAggregateRequestBuilder.setMatchV10(MatchConvertor.toMatchV10(arg0.getMatch()));
-        }
-        if(version == OpenflowEnumConstant.OPENFLOW_V13){
-            MatchBuilder matchBuilder = new MatchBuilder();
-            matchBuilder.setMatchEntries(MatchConvertor.toMatch(arg0.getMatch()));
-            matchBuilder.setType(OxmMatchType.class);
-            mprAggregateRequestBuilder.setMatch(matchBuilder.build());
+        MatchReactor.getInstance().convert(arg0.getMatch(), version, mprAggregateRequestBuilder);
+//        if(version == OFConstants.OFP_VERSION_1_0){
+//            mprAggregateRequestBuilder.setMatchV10(MatchConvertor.toMatchV10(arg0.getMatch()));
+//        }
+        //TODO: repeating code
+        if(version == OFConstants.OFP_VERSION_1_3){
+//            MatchBuilder matchBuilder = new MatchBuilder();
+//            matchBuilder.setMatchEntries(MatchConvertor.toMatch(arg0.getMatch()));
+//            matchBuilder.setType(OxmMatchType.class);
+//            mprAggregateRequestBuilder.setMatch(matchBuilder.build());
         
             mprAggregateRequestBuilder.setCookie(arg0.getCookie());
             mprAggregateRequestBuilder.setCookieMask(arg0.getCookieMask());

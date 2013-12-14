@@ -30,6 +30,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.Pa
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress
 import org.slf4j.LoggerFactory
+import java.math.BigInteger
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags
 
 class DropTestCommiter implements PacketProcessingListener {
     static val LOG = LoggerFactory.getLogger(DropTestProvider);
@@ -60,7 +62,6 @@ class DropTestCommiter implements PacketProcessingListener {
         ethSourceBuilder.setAddress(new MacAddress(DropTestUtils.macToString(srcMac)));
         ethernetMatch.setEthernetSource(ethSourceBuilder.build());
         match.setEthernetMatch(ethernetMatch.build());
-        
         val dab = new DropActionBuilder();
         val dropAction = dab.build();
         val ab = new ActionBuilder();
@@ -89,6 +90,19 @@ class DropTestCommiter implements PacketProcessingListener {
         fb.setMatch(match.build());
         fb.setInstructions(isb.build());
         fb.setId(new FlowId(new Long(fb.hashCode)));
+        fb.setPriority(4);
+        fb.setBufferId(0L);
+        val value = new BigInteger("10", 10);
+        fb.setCookie(value);
+        fb.setCookieMask(value);
+        fb.setHardTimeout(300);
+        fb.setIdleTimeout(240);
+        fb.setFlags(new FlowModFlags(false, false, false, false, false));
+//        fb.setTableId((short) 2);
+//        fb.setOutGroup(new Long(2));
+//        fb.setOutPort(value);
+//        fb.setKey(key);
+        
         // Construct the flow instance id
         val flowInstanceId = InstanceIdentifier.builder(Nodes) // File under nodes
             .child(Node,nodeKey) // A particular node indentified by nodeKey

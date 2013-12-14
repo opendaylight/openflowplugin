@@ -23,8 +23,6 @@ public class OpenflowEnumConstant {
     public static final Long OFPG_ANY = ANY;
     public static final BigInteger DEFAULT_COOKIE = BigInteger.ZERO;
     public static final BigInteger DEFAULT_COOKIE_MASK = BigInteger.ZERO;
-    public static short OPENFLOW_V10 = 0x01;
-    public static short OPENFLOW_V13 = 0x04;
 
 
 }

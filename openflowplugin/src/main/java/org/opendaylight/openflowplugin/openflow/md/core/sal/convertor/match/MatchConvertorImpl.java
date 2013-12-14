@@ -6,14 +6,14 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
+package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
+import org.opendaylight.openflowplugin.openflow.md.util.ByteUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Dscp;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
@@ -121,7 +121,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.VlanVidMatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.VlanVidMatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.EtherType;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowWildcardsV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.ArpOp;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.ArpSha;
@@ -166,7 +165,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.UdpS
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.VlanPcp;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.VlanVid;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.match.v10.grouping.MatchV10;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.match.v10.grouping.MatchV10Builder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.MatchEntries;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.MatchEntriesBuilder;
 import org.slf4j.Logger;
@@ -175,16 +173,15 @@ import org.slf4j.LoggerFactory;
 /**
  * Utility class for converting a MD-SAL Flow into the OF flow mod
  */
-public class MatchConvertor {
-    private static final Logger logger = LoggerFactory.getLogger(MatchConvertor.class);
-    private static final String PREFIX_SEPARATOR = "/";
+public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
+    private static final Logger logger = LoggerFactory.getLogger(MatchConvertorImpl.class);
+    static final String PREFIX_SEPARATOR = "/";
     private static final byte[] VLAN_VID_MASK = new byte[] { 16, 0 };
     private static final short PROTO_TCP = 6;
     private static final short PROTO_UDP = 17;
 
-    public static List<MatchEntries> toMatch(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match match) {
-
+    @Override
+    public List<MatchEntries> convert(org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match match) {
         List<MatchEntries> matchEntriesList = new ArrayList<>();
 
         if (match.getInPort() != null) {
@@ -395,110 +392,10 @@ public class MatchConvertor {
             matchEntriesList.add(toOfMetadata(TunnelId.class, tunnel.getTunnelId(), tunnel.getTunnelMask()));
         }
 
+        
         return matchEntriesList;
     }
     
-    /**
-     * Method builds openflow 1.0 specific match (MatchV10) from MD-SAL match.
-     * @param match MD-SAL match
-     * @return
-     * @author avishnoi@in.ibm.com
-     */
-    public static MatchV10 toMatchV10(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match match) {
-        
-        MatchV10Builder matchv10Builder = new MatchV10Builder();
-        if(match.getEthernetMatch()!= null){
-            matchv10Builder.setDlDst(match.getEthernetMatch().getEthernetDestination().getAddress());
-            matchv10Builder.setDlSrc(match.getEthernetMatch().getEthernetSource().getAddress());
-            matchv10Builder.setDlType(match.getEthernetMatch().getEthernetType().getType().getValue().intValue());
-        }
-        if(match.getVlanMatch()!= null){
-            matchv10Builder.setDlVlan(match.getVlanMatch().getVlanId().getVlanId().getValue());
-            matchv10Builder.setDlVlanPcp(match.getVlanMatch().getVlanPcp().getValue());
-        }
-        if(match.getInPort()!=null){
-            matchv10Builder.setInPort(match.getInPort().intValue());
-        }
-        Layer3Match l3Match = match.getLayer3Match();
-        if(l3Match != null){
-            if(l3Match instanceof Ipv4Match){
-                Ipv4Match ipv4 = (Ipv4Match)l3Match;
-                Ipv4Address ipv4Address = null;
-                String[] addressParts;
-                Integer prefix;
-                if(ipv4.getIpv4Source()!=null){
-                    addressParts = ipv4.getIpv4Source().getValue().split(PREFIX_SEPARATOR);
-                    prefix = null;
-                    if (addressParts.length < 2) {
-                        prefix = 0;
-                    } else {
-                        prefix = Integer.parseInt(addressParts[1]);
-                    }
-    
-                    ipv4Address = new Ipv4Address(addressParts[0]);
-                    matchv10Builder.setNwSrc(ipv4Address);
-                    matchv10Builder.setNwSrcMask(prefix.shortValue());
-                }
-
-                if(ipv4.getIpv4Destination()!=null){
-                    addressParts = ipv4.getIpv4Destination().getValue().split("/");
-                    prefix = null;
-                    if (addressParts.length < 2) {
-                        prefix = 0;
-                    } else {
-                        prefix = Integer.parseInt(addressParts[1]);
-                    }
-    
-                    ipv4Address = new Ipv4Address(addressParts[0]);
-                    matchv10Builder.setNwDst(ipv4Address);
-                    matchv10Builder.setNwDstMask(prefix.shortValue());
-                }
-            }
-        }
-        IpMatch ipMatch = match.getIpMatch();
-        if(ipMatch!=null){
-            matchv10Builder.setNwProto(ipMatch.getIpProtocol());
-            matchv10Builder.setNwTos(ipMatch.getIpDscp().getValue());
-        }
-        
-        Layer4Match layer4Match = match.getLayer4Match();
-        if (layer4Match != null) {
-            if (layer4Match instanceof TcpMatch) {
-                TcpMatch tcpMatch = (TcpMatch) layer4Match;
-                if (tcpMatch.getTcpSourcePort() != null) {
-                    matchv10Builder.setTpSrc(tcpMatch.getTcpSourcePort().getValue());                        
-                }
-
-                if (tcpMatch.getTcpDestinationPort() != null) {
-                    matchv10Builder.setTpDst(tcpMatch.getTcpDestinationPort().getValue());
-                }
-            } else if (layer4Match instanceof UdpMatch) {
-                UdpMatch udpMatch = (UdpMatch) layer4Match;
-                if (udpMatch.getUdpSourcePort() != null) {
-                    matchv10Builder.setTpSrc(udpMatch.getUdpSourcePort().getValue());                        
-                }
-
-                if (udpMatch.getUdpDestinationPort() != null) {
-                    matchv10Builder.setTpDst(udpMatch.getUdpDestinationPort().getValue());
-                }
-            }
-        }
-        matchv10Builder.setWildcards(new FlowWildcardsV10(true,
-                        matchv10Builder.getDlDst()!=null?true:false,
-                        matchv10Builder.getDlSrc()!=null?true:false,
-                        matchv10Builder.getDlType()!=null?true:false,
-                        matchv10Builder.getDlVlan()!=null?true:false,
-                        matchv10Builder.getDlVlanPcp()!=null?true:false,
-                        matchv10Builder.getInPort()!=null?true:false,
-                        matchv10Builder.getNwProto()!=null?true:false,
-                        matchv10Builder.getNwTos()!=null?true:false,
-                        matchv10Builder.getTpDst()!=null?true:false,
-                        matchv10Builder.getTpSrc()!=null?true:false));
-        
-        return matchv10Builder.build();
-    }
-
     /**
      * Method convert Openflow 1.0 specific flow match to MD-SAL format 
      * flow match
@@ -1294,28 +1191,8 @@ public class MatchConvertor {
 
     private static void addMetadataAugmentation(MatchEntriesBuilder builder, BigInteger metadata) {
         MetadataMatchEntryBuilder metadataMatchEntry = new MetadataMatchEntryBuilder();
-        metadataMatchEntry.setMetadata(convertBigIntegerTo64Bit(metadata));
+        metadataMatchEntry.setMetadata(ByteUtil.convertBigIntegerTo64Bit(metadata));
         builder.addAugmentation(MetadataMatchEntry.class, metadataMatchEntry.build());
-    }
-
-    /**
-     * Utility method to convert BigInteger to 8 element byte array
-     * @param bigInteger
-     * @return byte array containing 64 bits.
-     */
-    public static byte[] convertBigIntegerTo64Bit(BigInteger bigInteger) {
-        if (bigInteger == null) {
-            return null;
-        }
-        byte[] inputArray = bigInteger.toByteArray();
-        byte[] outputArray = new byte[8];
-        if (bigInteger.compareTo(BigInteger.ZERO) < 0) {
-            Arrays.fill(outputArray, (byte) -1);
-        } else {
-            Arrays.fill(outputArray, (byte) 0);
-        }
-        System.arraycopy(inputArray, 0, outputArray, outputArray.length - inputArray.length, inputArray.length);
-        return outputArray;
     }
 
     /**
@@ -1354,7 +1231,7 @@ public class MatchConvertor {
 
     /**
      * Method converts OF SetField Match to SAL SetFiled matches
-     *
+     * TODO: enable or delete
      * @param action
      * @return
      */
@@ -1774,5 +1651,4 @@ public class MatchConvertor {
          * setField.setMatch(match.build());
          */return setField.build();
     }
-
 }

@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.opendaylight.openflowjava.protocol.api.util.BinContent;
+import org.opendaylight.openflowplugin.openflow.md.OFConstants;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchConvertorImpl;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchReactor;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlInCase;
@@ -135,8 +138,6 @@ import org.slf4j.LoggerFactory;
 public final class ActionConvertor {
     private static final Logger logger = LoggerFactory.getLogger(ActionConvertor.class);
     private static final String PREFIX_SEPARATOR = "/";
-    final private static short OF10 = 1;
-    final private static short OF13 = 4;
 
     private ActionConvertor() {
         // NOOP
@@ -182,7 +183,7 @@ public final class ActionConvertor {
             else if (action instanceof DecNwTtlCase)
                 actionsList.add(SalToOFDecNwTtl(action, actionsListBuilder));
             else if (action instanceof SetFieldCase)
-                actionsList.add(SalToOFSetField(action, actionsListBuilder));
+                actionsList.add(SalToOFSetField(action, actionsListBuilder, version));
             else if (action instanceof PushPbbActionCase)
                 actionsList.add(SalToOFPushPbbAction(action, actionsListBuilder));
             else if (action instanceof PopPbbActionCase)
@@ -217,17 +218,15 @@ public final class ActionConvertor {
 
     private static ActionsList SalToOFSetField(
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
-            ActionsListBuilder actionsListBuilder) {
+            ActionsListBuilder actionsListBuilder, short version) {
 
         SetFieldCase setFieldCase = (SetFieldCase) action;
         org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match match = setFieldCase
                 .getSetField();
 
-        List<MatchEntries> matchEntries = MatchConvertor.toMatch(match);
-
         OxmFieldsActionBuilder oxmFieldsActionBuilder = new OxmFieldsActionBuilder();
-
-        oxmFieldsActionBuilder.setMatchEntries(matchEntries);
+        MatchReactor.getInstance().convert(match, version, oxmFieldsActionBuilder);
+        
         ActionBuilder actionBuilder = new ActionBuilder();
         actionBuilder
                 .setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.SetField.class);
@@ -363,7 +362,7 @@ public final class ActionConvertor {
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
             ActionsListBuilder actionsListBuilder, short version) {
 
-        if (version == OF10) {
+        if (version == OFConstants.OFP_VERSION_1_0) {
             ActionBuilder actionBuilder = new ActionBuilder();
             SetVlanIdActionCase setvlanidcase = (SetVlanIdActionCase) action;
             SetVlanIdAction setvlanidaction = setvlanidcase.getSetVlanIdAction();
@@ -386,7 +385,7 @@ public final class ActionConvertor {
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
             ActionsListBuilder actionsListBuilder, short version) {
 
-        if (version == OF10) {
+        if (version == OFConstants.OFP_VERSION_1_0) {
             ActionBuilder actionBuilder = new ActionBuilder();
             SetVlanPcpActionCase setvlanpcpcase = (SetVlanPcpActionCase) action;
             SetVlanPcpAction setvlanpcpaction = setvlanpcpcase.getSetVlanPcpAction();
@@ -409,7 +408,7 @@ public final class ActionConvertor {
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
             ActionsListBuilder actionsListBuilder, short version) {
 
-        if (version == OF10) {
+        if (version == OFConstants.OFP_VERSION_1_0) {
             ActionBuilder actionBuilder = new ActionBuilder();
             actionBuilder
                     .setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.StripVlan.class);
@@ -426,7 +425,7 @@ public final class ActionConvertor {
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
             ActionsListBuilder actionsListBuilder, short version) {
 
-        if (version == OF10) {
+        if (version == OFConstants.OFP_VERSION_1_0) {
             ActionBuilder actionBuilder = new ActionBuilder();
             SetDlSrcActionCase setdlsrccase = (SetDlSrcActionCase) action;
             SetDlSrcAction setdlsrcaction = setdlsrccase.getSetDlSrcAction();
@@ -449,7 +448,7 @@ public final class ActionConvertor {
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
             ActionsListBuilder actionsListBuilder, short version) {
 
-        if (version == OF10) {
+        if (version == OFConstants.OFP_VERSION_1_0) {
             ActionBuilder actionBuilder = new ActionBuilder();
             SetDlDstActionCase setdldstcase = (SetDlDstActionCase) action;
             SetDlDstAction setdldstaction = setdldstcase.getSetDlDstAction();
@@ -472,7 +471,7 @@ public final class ActionConvertor {
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
             ActionsListBuilder actionsListBuilder, short version) {
 
-        if (version == OF10) {
+        if (version == OFConstants.OFP_VERSION_1_0) {
             ActionBuilder actionBuilder = new ActionBuilder();
             SetNwSrcActionCase setnwsrccase = (SetNwSrcActionCase) action;
             SetNwSrcAction setnwsrcaction = setnwsrccase.getSetNwSrcAction();
@@ -497,7 +496,7 @@ public final class ActionConvertor {
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
             ActionsListBuilder actionsListBuilder, short version) {
 
-        if (version == OF10) {
+        if (version == OFConstants.OFP_VERSION_1_0) {
             ActionBuilder actionBuilder = new ActionBuilder();
             SetNwDstActionCase setnwdstcase = (SetNwDstActionCase) action;
             SetNwDstAction setnwdstaction = setnwdstcase.getSetNwDstAction();
@@ -523,7 +522,7 @@ public final class ActionConvertor {
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
             ActionsListBuilder actionsListBuilder, short version) {
 
-        if (version == OF10) {
+        if (version == OFConstants.OFP_VERSION_1_0) {
             ActionBuilder actionBuilder = new ActionBuilder();
             SetTpSrcActionCase settpsrccase = (SetTpSrcActionCase) action;
             SetTpSrcAction settpsrcaction = settpsrccase.getSetTpSrcAction();
@@ -548,7 +547,7 @@ public final class ActionConvertor {
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
             ActionsListBuilder actionsListBuilder, short version) {
 
-        if (version == OF10) {
+        if (version == OFConstants.OFP_VERSION_1_0) {
             ActionBuilder actionBuilder = new ActionBuilder();
 
             SetTpDstActionCase settpdstcase = (SetTpDstActionCase) action;
@@ -656,7 +655,7 @@ public final class ActionConvertor {
 
         Uri uri = outputAction.getOutputNodeConnector();
 
-        if (version >= OF13) {
+        if (version >= OFConstants.OFP_VERSION_1_3) {
             if (uri.getValue().equals(OutputPortValues.CONTROLLER.toString())) {
                 portAction.setPort(new PortNumber(BinContent.intToUnsignedLong(PortNumberValues.CONTROLLER
                         .getIntValue())));
@@ -691,7 +690,7 @@ public final class ActionConvertor {
             if (uri.getValue().equals(OutputPortValues.NONE.toString())) {
                 logger.error("Unknown Port Type for the Version");
             }
-        } else if (version == OF10) {
+        } else if (version == OFConstants.OFP_VERSION_1_0) {
 
             if (uri.getValue().equals(OutputPortValues.CONTROLLER.toString())) {
                 portAction.setPort(new PortNumber((long) PortNumberValuesV10.CONTROLLER.getIntValue()));
@@ -802,7 +801,7 @@ public final class ActionConvertor {
             } else if (action.getType().equals(
                     org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.SetField.class))
                 bucketActions
-                        .add(new SetFieldCaseBuilder().setSetField(MatchConvertor.ofToSALSetField(action)).build());
+                        .add(new SetFieldCaseBuilder().setSetField(MatchConvertorImpl.ofToSALSetField(action)).build());
 
             else if (action.getType().equals(
                     org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.PushPbb.class))
