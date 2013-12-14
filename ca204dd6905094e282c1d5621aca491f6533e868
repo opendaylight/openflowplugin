@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da6255ed_07979bed",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/ModelDrivenSwitchImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 1075,
+      "author": {
+        "id": 62
+      },
+      "writtenOn": "2013-12-14T22:11:33Z",
+      "side": 1,
+      "message": "Would it make more sense to change this to switch/case statement here for OF 1.0 or 1.3. That way it could be extended in the future with:\nswitch (version) {\n  case OFConstants.OFP_VERSION_1_0:\n     // 1.0 specific stuff;\n     break;\n  case OFConstants.OFP_VERSION_1_3:\n  case OFConstants.OFP_VERSION_1_4:\n  case OFConstants.OFP_VERSION_1_5:\n    // 1.3+ specific stuff\n    break;\n}",
+      "revId": "ca204dd6905094e282c1d5621aca491f6533e868",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da6255ed_e7992720",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/ModelDrivenSwitchImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 1189,
+      "author": {
+        "id": 62
+      },
+      "writtenOn": "2013-12-14T22:11:33Z",
+      "side": 1,
+      "message": "Same comment as the one before about switch/case statement here for OF 1.0 or 1.3.",
+      "revId": "ca204dd6905094e282c1d5621aca491f6533e868",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da6255ed_47ab531d",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/match/MatchReactorMappingFactory.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 62
+      },
+      "writtenOn": "2013-12-14T22:11:33Z",
+      "side": 1,
+      "message": "addMatchIjectors should be addMatchInjectors",
+      "revId": "ca204dd6905094e282c1d5621aca491f6533e868",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
