@@ -32,6 +32,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.translator.MultipartRepl
 import org.opendaylight.openflowplugin.openflow.md.core.translator.MultipartReplyTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.translator.PacketInTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.translator.PortStatusMessageToNodeConnectorUpdatedTranslator;
+import org.opendaylight.openflowplugin.openflow.md.lldp.LLDPSpeakerPopListener;
 import org.opendaylight.openflowplugin.openflow.md.queue.PopListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SwitchFlowRemoved;
@@ -144,6 +145,10 @@ public class MDController implements IMDController {
         //Notification registration for queue-statistics
         addMessagePopListener(QueueStatisticsUpdate.class, notificationPopListener);
 
+        //Notification for LLDPSpeaker
+        LLDPSpeakerPopListener<DataObject> lldpPopListener  = new LLDPSpeakerPopListener<DataObject>();
+        addMessagePopListener(NodeConnectorUpdated.class,lldpPopListener);
+        
         // Push the updated Listeners to Session Manager which will be then picked up by ConnectionConductor eventually
         OFSessionUtil.getSessionManager().setTranslatorMapping(messageTranslators);
         OFSessionUtil.getSessionManager().setPopListenerMapping(popListeners);

@@ -415,7 +415,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 
     @Override
     public Future<RpcResult<Void>> transmitPacket(TransmitPacketInput input) {
-        // TODO Auto-generated method stub
+        LOG.info("TransmitPacket - {}",input);
         return null;
     }
 
