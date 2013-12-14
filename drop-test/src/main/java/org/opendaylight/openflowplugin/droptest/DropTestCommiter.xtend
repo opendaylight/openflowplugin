@@ -98,10 +98,6 @@ class DropTestCommiter implements PacketProcessingListener {
         fb.setHardTimeout(300);
         fb.setIdleTimeout(240);
         fb.setFlags(new FlowModFlags(false, false, false, false, false));
-//        fb.setTableId((short) 2);
-//        fb.setOutGroup(new Long(2));
-//        fb.setOutPort(value);
-//        fb.setKey(key);
         
         // Construct the flow instance id
         val flowInstanceId = InstanceIdentifier.builder(Nodes) // File under nodes

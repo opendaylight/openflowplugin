@@ -1126,16 +1126,8 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 
         // convert and inject match
         MatchReactor.getInstance().convert(arg0.getMatch(), version, mprFlowRequestBuilder);
-//        if(version == OFConstants.OFP_VERSION_1_0){
-//            mprFlowRequestBuilder.setMatchV10(MatchConvertor.toMatchV10(arg0.getMatch()));
-//        }
         //TODO: repeating code
         if(version == OFConstants.OFP_VERSION_1_3){
-//            MatchBuilder matchBuilder = new MatchBuilder();
-//            matchBuilder.setMatchEntries(MatchConvertor.toMatch(arg0.getMatch()));
-//            matchBuilder.setType(OxmMatchType.class);
-//            mprFlowRequestBuilder.setMatch(matchBuilder.build());
-        
             mprFlowRequestBuilder.setCookie(arg0.getCookie());
             mprFlowRequestBuilder.setCookieMask(arg0.getCookieMask());
             mprFlowRequestBuilder.setOutGroup(arg0.getOutGroup());
@@ -1241,16 +1233,8 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 
 
         MatchReactor.getInstance().convert(arg0.getMatch(), version, mprAggregateRequestBuilder);
-//        if(version == OFConstants.OFP_VERSION_1_0){
-//            mprAggregateRequestBuilder.setMatchV10(MatchConvertor.toMatchV10(arg0.getMatch()));
-//        }
         //TODO: repeating code
         if(version == OFConstants.OFP_VERSION_1_3){
-//            MatchBuilder matchBuilder = new MatchBuilder();
-//            matchBuilder.setMatchEntries(MatchConvertor.toMatch(arg0.getMatch()));
-//            matchBuilder.setType(OxmMatchType.class);
-//            mprAggregateRequestBuilder.setMatch(matchBuilder.build());
-        
             mprAggregateRequestBuilder.setCookie(arg0.getCookie());
             mprAggregateRequestBuilder.setCookieMask(arg0.getCookieMask());
             mprAggregateRequestBuilder.setOutGroup(arg0.getOutGroup());
