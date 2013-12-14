@@ -21,6 +21,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionListener;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionManager;
+import org.opendaylight.openflowplugin.openflow.md.lldp.LLDPSpeaker;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeUpdatedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -91,6 +92,7 @@ public class SalRegistrationManager implements SessionListener, SwitchInventory 
         NodeRef nodeRef = new NodeRef(identifier);
         NodeId nodeId = nodeIdFromDatapathId(datapathId);
         ModelDrivenSwitchImpl ofSwitch = new ModelDrivenSwitchImpl(nodeId, identifier, context);
+        LLDPSpeaker.getInstance().addModelDrivenSwitch(identifier, ofSwitch);
         salSwitches.put(identifier, ofSwitch);
         ofSwitch.register(providerContext);
 
@@ -106,7 +108,7 @@ public class SalRegistrationManager implements SessionListener, SwitchInventory 
         InstanceIdentifier<Node> identifier = identifierFromDatapathId(datapathId);
         NodeRef nodeRef = new NodeRef(identifier);
         NodeRemoved nodeRemoved = nodeRemoved(nodeRef);
-
+        LLDPSpeaker.getInstance().removeModelDrivenSwitch(identifier);
         LOG.info("ModelDrivenSwitch for {} unregistred from MD-SAL.", datapathId.toString());
         publishService.publish(nodeRemoved);
     }
