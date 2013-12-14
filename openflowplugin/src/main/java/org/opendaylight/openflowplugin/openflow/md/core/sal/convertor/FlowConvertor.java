@@ -12,9 +12,11 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flowflag.FlowFlagReactor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchReactor;
+import org.opendaylight.openflowplugin.openflow.md.util.ByteUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.UpdatedFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCase;
@@ -47,7 +49,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.OxmM
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.MatchEntries;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.match.grouping.MatchBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,13 +70,22 @@ public class FlowConvertor {
     private static final Long DEFAULT_OUT_PORT = OFPP_ANY;
     private static final Long OFPG_ANY = Long.parseLong("ffffffff", 16);
     private static final Long DEFAULT_OUT_GROUP = OFPG_ANY;
-    private static final boolean DEFAULT_OFPFF_FLOW_REM = true;
-    private static final boolean DEFAULT_OFPFF_CHECK_OVERLAP = false;
-    private static final boolean DEFAULT_OFPFF_RESET_COUNTS = false;
-    private static final boolean DEFAULT_OFPFF_NO_PKT_COUNTS = false;
-    private static final boolean DEFAULT_OFPFF_NO_BYT_COUNTS = false;
-    private static final Class<? extends MatchTypeBase> DEFAULT_MATCH_TYPE = OxmMatchType.class;
-    private static final List<MatchEntries> DEFAULT_MATCH_ENTRIES = new ArrayList<MatchEntries>();
+    /** flow flag: remove */
+    public static final boolean DEFAULT_OFPFF_FLOW_REM = true;
+    /** flow flag: check overlap */
+    public static final boolean DEFAULT_OFPFF_CHECK_OVERLAP = false;
+    /** flow flag: reset counts */
+    public static final boolean DEFAULT_OFPFF_RESET_COUNTS = false;
+    /** flow flag: don't keep track of packet counts */
+    public static final boolean DEFAULT_OFPFF_NO_PKT_COUNTS = false;
+    /** flow flag: don't keep track of byte counts */
+    public static final boolean DEFAULT_OFPFF_NO_BYT_COUNTS = false;
+    /** flow flag: emergency [OFP-1.0] */
+    public static final boolean DEFAULT_OFPFF_EMERGENCY = false;
+    /** OxmMatch type */
+    public static final Class<? extends MatchTypeBase> DEFAULT_MATCH_TYPE = OxmMatchType.class;
+    /** default match entries - empty */
+    public static final List<MatchEntries> DEFAULT_MATCH_ENTRIES = new ArrayList<MatchEntries>();
 
     public static FlowModInput toFlowModInput(Flow flow, short version) {
         FlowModInputBuilder flowMod = new FlowModInputBuilder();
@@ -144,27 +154,12 @@ public class FlowConvertor {
             flowMod.setOutGroup(DEFAULT_OUT_GROUP);
         }
 
-        org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags flowModFlags = flow.getFlags();
-        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowModFlags ofFlowModFlags = null;
-        if (flowModFlags != null) {
-            ofFlowModFlags = new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowModFlags(
-                    flowModFlags.isCHECKOVERLAP(), flowModFlags.isNOBYTCOUNTS(), flowModFlags.isNOPKTCOUNTS(),
-                    flowModFlags.isRESETCOUNTS(), flowModFlags.isSENDFLOWREM());
-        } else {
-            ofFlowModFlags = new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowModFlags(
-                    DEFAULT_OFPFF_CHECK_OVERLAP, DEFAULT_OFPFF_NO_BYT_COUNTS, DEFAULT_OFPFF_NO_PKT_COUNTS,
-                    DEFAULT_OFPFF_RESET_COUNTS, DEFAULT_OFPFF_FLOW_REM);
-        }
-        flowMod.setFlags(ofFlowModFlags);
+        
+        // convert and inject flowFlags
+        FlowFlagReactor.getInstance().convert(flow.getFlags(), version, flowMod);
 
-        MatchBuilder matchBuilder = new MatchBuilder();
-        if (flow.getMatch() != null) {
-            matchBuilder.setMatchEntries(MatchConvertor.toMatch(flow.getMatch()));
-        } else {
-            matchBuilder.setMatchEntries(DEFAULT_MATCH_ENTRIES);
-        }
-        matchBuilder.setType(DEFAULT_MATCH_TYPE);
-        flowMod.setMatch(matchBuilder.build());
+        // convert and inject match
+        MatchReactor.getInstance().convert(flow.getMatch(), version, flowMod);
 
         if (flow.getInstructions() != null) {
             flowMod.setInstructions(toInstructions(flow.getInstructions(), version));
@@ -200,9 +195,9 @@ public class FlowConvertor {
                 instructionBuilder
                         .setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.WriteMetadata.class);
                 MetadataInstructionBuilder metadataBuilder = new MetadataInstructionBuilder();
-                metadataBuilder.setMetadata(MatchConvertor.convertBigIntegerTo64Bit(writeMetadata.getMetadata()));
+                metadataBuilder.setMetadata(ByteUtil.convertBigIntegerTo64Bit(writeMetadata.getMetadata()));
                 metadataBuilder
-                        .setMetadataMask(MatchConvertor.convertBigIntegerTo64Bit(writeMetadata.getMetadataMask()));
+                        .setMetadataMask(ByteUtil.convertBigIntegerTo64Bit(writeMetadata.getMetadataMask()));
                 instructionBuilder.addAugmentation(MetadataInstruction.class, metadataBuilder.build());
                 instructionsList.add(instructionBuilder.build());
             }
