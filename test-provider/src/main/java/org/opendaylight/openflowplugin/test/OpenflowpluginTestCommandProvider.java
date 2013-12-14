@@ -102,6 +102,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.sw.path.action._case.SwPathActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.address.address.Ipv4Builder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.config.rev130819.Flows;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
@@ -467,6 +468,11 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
             flow.setMatch(createPbbMatch().build());
             flow.setInstructions(createMeterInstructions().build());
             break;
+        case "f51":
+            id += 51;
+            flow.setMatch(new MatchBuilder().build());
+            flow.setInstructions(createSentToControllerInstructions().build());
+            break;
         default:
             LOG.warn("flow type not understood: {}", flowType);
         }
@@ -477,14 +483,14 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         BigInteger value = new BigInteger("10", 10);
         flow.setCookie(value);
         flow.setCookieMask(value);
-        flow.setHardTimeout(12);
-        flow.setIdleTimeout(34);
+        flow.setHardTimeout(0);
+        flow.setIdleTimeout(0);
         flow.setInstallHw(false);
         flow.setStrict(false);
         flow.setContainerName(null);
         flow.setFlags(new FlowModFlags(false, false, false, false, false));
         flow.setId(new FlowId(new Long(12)));
-        flow.setTableId((short) 2);
+        flow.setTableId((short) 0);
         flow.setOutGroup(new Long(2));
         flow.setOutPort(value);
 
@@ -646,6 +652,36 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         // Wrap our Apply Action in an Instruction
         InstructionBuilder ib = new InstructionBuilder();
         ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
+
+        // Put our Instruction in a list of Instructions
+        InstructionsBuilder isb = new InstructionsBuilder();
+        List<Instruction> instructions = new ArrayList<Instruction>();
+        instructions.add(ib.build());
+        isb.setInstruction(instructions);
+        return isb;
+    }
+    
+    private static InstructionsBuilder createSentToControllerInstructions() {
+        List<Action> actionList = new ArrayList<Action>();
+        ActionBuilder ab = new ActionBuilder();
+
+        OutputActionBuilder output = new OutputActionBuilder();
+        output.setMaxLength(56);
+        Uri value = new Uri("CONTROLLER");
+        output.setOutputNodeConnector(value);
+        ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
+        ab.setOrder(0);
+        ab.setKey(new ActionKey(0));
+        actionList.add(ab.build());
+        // Create an Apply Action
+        ApplyActionsBuilder aab = new ApplyActionsBuilder();
+        aab.setAction(actionList);
+
+        // Wrap our Apply Action in an Instruction
+        InstructionBuilder ib = new InstructionBuilder();
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
+        ib.setOrder(0);
+        ib.setKey(new InstructionKey(0));
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
@@ -1548,7 +1584,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         return match;
     }
-
+    
     private static MatchBuilder createInphyportMatch() {
         MatchBuilder match = new MatchBuilder();
         match.setInPort(202L);
@@ -1918,7 +1954,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return match;
 
     }
-
+    
     /**
      * @return
      */
