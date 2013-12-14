@@ -3,7 +3,6 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.opendaylight.controller.sal.core.NodeConnector.NodeConnectorIDType;
 import org.opendaylight.openflowjava.protocol.api.util.BinContent;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
@@ -76,6 +75,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.tp.src.action._case.SetTpSrcAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.vlan.id.action._case.SetVlanIdAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.vlan.pcp.action._case.SetVlanPcpAction;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.OutputPortValues;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.DlAddressAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.DlAddressActionBuilder;
@@ -655,51 +655,77 @@ public final class ActionConvertor {
         actionBuilder.addAugmentation(MaxLengthAction.class, maxLenActionBuilder.build());
 
         Uri uri = outputAction.getOutputNodeConnector();
-        if (uri.getValue() == NodeConnectorIDType.ALL) {
-            if (version >= OF13) {
-                portAction.setPort(new PortNumber(BinContent.intToUnsignedLong(PortNumberValues.ALL.getIntValue())));
 
-            } else if (version == OF10) {
-                portAction.setPort(new PortNumber((long) PortNumberValuesV10.ALL.getIntValue()));
+        if (version >= OF13) {
+            if (uri.getValue().equals(OutputPortValues.CONTROLLER.toString())) {
+                portAction.setPort(new PortNumber(BinContent.intToUnsignedLong(PortNumberValues.CONTROLLER
+                        .getIntValue())));
+            }
+            if (uri.getValue().equals(OutputPortValues.ALL.toString())) {
+                portAction.setPort(new PortNumber(BinContent.intToUnsignedLong(PortNumberValues.ALL.getIntValue())));
+            }
+            if (uri.getValue().equals(OutputPortValues.ANY.toString())) {
+                portAction.setPort(new PortNumber(BinContent.intToUnsignedLong(PortNumberValues.ANY.getIntValue())));
 
             }
-        }
-        if (uri.getValue() == NodeConnectorIDType.SWSTACK) {
-            if (version >= OF13) {
+            if (uri.getValue().equals(OutputPortValues.FLOOD.toString())) {
+                portAction.setPort(new PortNumber(BinContent.intToUnsignedLong(PortNumberValues.FLOOD.getIntValue())));
+
+            }
+            if (uri.getValue().equals(OutputPortValues.INPORT.toString())) {
+                portAction.setPort(new PortNumber(BinContent.intToUnsignedLong(PortNumberValues.INPORT.getIntValue())));
+
+            }
+            if (uri.getValue().equals(OutputPortValues.LOCAL.toString())) {
                 portAction.setPort(new PortNumber(BinContent.intToUnsignedLong(PortNumberValues.LOCAL.getIntValue())));
 
-            } else if (version == OF10) {
+            }
+            if (uri.getValue().equals(OutputPortValues.NORMAL.toString())) {
+                portAction.setPort(new PortNumber(BinContent.intToUnsignedLong(PortNumberValues.NORMAL.getIntValue())));
+
+            }
+            if (uri.getValue().equals(OutputPortValues.TABLE.toString())) {
+                portAction.setPort(new PortNumber(BinContent.intToUnsignedLong(PortNumberValues.TABLE.getIntValue())));
+
+            }
+            if (uri.getValue().equals(OutputPortValues.NONE.toString())) {
+                logger.error("Unknown Port Type for the Version");
+            }
+        } else if (version == OF10) {
+
+            if (uri.getValue().equals(OutputPortValues.CONTROLLER.toString())) {
+                portAction.setPort(new PortNumber((long) PortNumberValuesV10.CONTROLLER.getIntValue()));
+            }
+            if (uri.getValue().equals(OutputPortValues.ALL.toString())) {
+                portAction.setPort(new PortNumber((long) PortNumberValuesV10.ALL.getIntValue()));
+            }
+
+            if (uri.getValue().equals(OutputPortValues.FLOOD.toString())) {
+                portAction.setPort(new PortNumber((long) PortNumberValuesV10.FLOOD.getIntValue()));
+
+            }
+
+            if (uri.getValue().equals(OutputPortValues.INPORT.toString())) {
+                portAction.setPort(new PortNumber((long) PortNumberValuesV10.INPORT.getIntValue()));
+
+            }
+            if (uri.getValue().equals(OutputPortValues.LOCAL.toString())) {
                 portAction.setPort(new PortNumber((long) PortNumberValuesV10.LOCAL.getIntValue()));
 
             }
-        }
-
-        if ((uri.getValue() == NodeConnectorIDType.HWPATH) || (uri.getValue() == NodeConnectorIDType.ONEPK)
-                || (uri.getValue() == NodeConnectorIDType.ONEPK2OPENFLOW)
-                || (uri.getValue() == NodeConnectorIDType.ONEPK2PCEP)
-                || (uri.getValue() == NodeConnectorIDType.OPENFLOW)
-                || (uri.getValue() == NodeConnectorIDType.OPENFLOW2ONEPK)
-                || (uri.getValue() == NodeConnectorIDType.OPENFLOW2PCEP)
-                || (uri.getValue() == NodeConnectorIDType.PCEP) || (uri.getValue() == NodeConnectorIDType.PCEP2ONEPK)
-                || (uri.getValue() == NodeConnectorIDType.PCEP2OPENFLOW)
-                || (uri.getValue() == NodeConnectorIDType.PRODUCTION)) {
-            if (version >= OF13) {
-                portAction.setPort(new PortNumber(BinContent.intToUnsignedLong(PortNumberValues.NORMAL.getIntValue())));
-
-            } else if (version == OF10) {
+            if (uri.getValue().equals(OutputPortValues.NORMAL.toString())) {
                 portAction.setPort(new PortNumber((long) PortNumberValuesV10.NORMAL.getIntValue()));
+
             }
-        }
+            if (uri.getValue().equals(OutputPortValues.TABLE.toString())) {
+                portAction.setPort(new PortNumber((long) PortNumberValuesV10.TABLE.getIntValue()));
 
-        if (uri.getValue() == NodeConnectorIDType.CONTROLLER) {
-
-            if (version >= OF13) {
-                portAction.setPort(new PortNumber(BinContent.intToUnsignedLong(PortNumberValues.CONTROLLER
-                        .getIntValue())));
-
-            } else if (version == OF10) {
-                portAction.setPort(new PortNumber((long) PortNumberValuesV10.CONTROLLER.getIntValue()));
-
+            }
+            if (uri.getValue().equals(OutputPortValues.NONE.toString())) {
+                portAction.setPort(new PortNumber((long) PortNumberValuesV10.NONE.getIntValue()));
+            }
+            if (uri.getValue().equals(OutputPortValues.ANY.toString())) {
+                logger.error("Unknown Port Type for the Version");
             }
         }
 
@@ -708,6 +734,7 @@ public final class ActionConvertor {
         actionBuilder.addAugmentation(PortAction.class, portAction.build());
         actionsListBuilder.setAction(actionBuilder.build());
         return actionsListBuilder.build();
+
     }
 
     /**

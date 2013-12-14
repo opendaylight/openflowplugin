@@ -155,6 +155,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.SctpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.TcpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.UdpMatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.protocol.match.fields.PbbBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanIdBuilder;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -456,12 +457,16 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
             flow.setMatch(createTunnelIDMatch().build());
             flow.setInstructions(createGotoTableInstructions().build());
             break;
-        case "49":
+        case "f49":
             id += 49;
             flow.setMatch(createVlanMatch().build());
             flow.setInstructions(createMeterInstructions().build());
             break;
-
+        case "f50":
+            id += 50;
+            flow.setMatch(createPbbMatch().build());
+            flow.setInstructions(createMeterInstructions().build());
+            break;
         default:
             LOG.warn("flow type not understood: {}", flowType);
         }
@@ -1594,7 +1599,9 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         VlanId vlanId = new VlanId(10);
         VlanPcp vpcp = new VlanPcp((short) 3);
         vlanBuilder.setVlanPcp(vpcp);
-        vlanBuilder.setVlanId(vlanIdBuilder.setVlanId(vlanId).build());
+        vlanIdBuilder.setVlanId(vlanId);
+        vlanIdBuilder.setVlanIdPresent(true);
+        vlanBuilder.setVlanId(vlanIdBuilder.build());
         match.setVlanMatch(vlanBuilder.build());
         return match;
     }
@@ -1704,6 +1711,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         Ipv6LabelBuilder ipv6label = new Ipv6LabelBuilder();
         Ipv6FlowLabel label = new Ipv6FlowLabel(10028L);
         ipv6label.setIpv6Flabel(label);
+        ipv6label.setFlabelMask(new byte[] { 0, 1, -1, -1 });
 
         Icmpv6MatchBuilder icmpv6match = new Icmpv6MatchBuilder(); // icmpv6
                                                                    // match
@@ -1884,6 +1892,27 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         protomatch.setMplsLabel((long) 36008);
         protomatch.setMplsTc((short) 4);
         protomatch.setMplsBos((short) 1);
+        match.setProtocolMatchFields(protomatch.build());
+
+        return match;
+
+    }
+
+    /**
+     * @return
+     */
+    private static MatchBuilder createPbbMatch() {
+        MatchBuilder match = new MatchBuilder();
+
+        EthernetMatchBuilder eth = new EthernetMatchBuilder();
+        EthernetTypeBuilder ethTypeBuilder = new EthernetTypeBuilder();
+        ethTypeBuilder.setType(new EtherType(0x88E7L));
+        eth.setEthernetType(ethTypeBuilder.build());
+        match.setEthernetMatch(eth.build());
+
+        ProtocolMatchFieldsBuilder protomatch = new ProtocolMatchFieldsBuilder(); // mpls
+        // match
+        protomatch.setPbb(new PbbBuilder().setPbbIsid(4L).setPbbMask(new byte[] { 0, 1, 0, 0 }).build());
         match.setProtocolMatchFields(protomatch.build());
 
         return match;

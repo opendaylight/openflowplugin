@@ -219,15 +219,16 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
                     vlanMatch = new VlanMatchBuilder();
                 }
                 if (field.equals(VlanVid.class)) {
+                    boolean vlanIdPresent = false;
                     VlanIdBuilder vlanId = new VlanIdBuilder();
                     VlanVidMatchEntry vlanVid = entry.getAugmentation(VlanVidMatchEntry.class);
-                    int vlanVidValue = vlanVid.getVlanVid() << 1;
+                    Integer vlanVidValue = vlanVid.getVlanVid();
                     if (vlanVid.isCfiBit()) {
-                        vlanVidValue = vlanVidValue | 1;
+                        vlanIdPresent = true;
                     }
-                    vlanId.setVlanId(new VlanId(vlanVidValue));
-                    if (entry.isHasMask()) {
-                        vlanId.setMask(entry.getAugmentation(MaskMatchEntry.class).getMask());
+                    vlanId.setVlanIdPresent(vlanIdPresent);
+                    if (vlanVidValue != null) {
+                        vlanId.setVlanId(new VlanId(vlanVidValue));
                     }
                     vlanMatch.setVlanId(vlanId.build());
                 } else if (field.equals(VlanPcp.class)) {
