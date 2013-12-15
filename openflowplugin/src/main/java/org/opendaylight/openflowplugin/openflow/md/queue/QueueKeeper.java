@@ -21,6 +21,8 @@ import org.opendaylight.openflowplugin.openflow.md.core.TranslatorKey;
  * @param <OUT> result type
  */
 public interface QueueKeeper<IN, OUT> {
+    
+    public enum QueueType {DEFAULT, UNORDERED}
 
     /**
      * @param translatorMapping
@@ -32,6 +34,13 @@ public interface QueueKeeper<IN, OUT> {
      * @param conductor
      */
     void push(IN message, ConnectionConductor conductor);
+    
+    /**
+     * @param message
+     * @param conductor
+     * @param ordered - true if message order matters, false otherwise
+     */
+    void push(IN message, ConnectionConductor conductor, QueueType queueType);
 
     /**
      * @param popListenersMapping the popListenersMapping to set
