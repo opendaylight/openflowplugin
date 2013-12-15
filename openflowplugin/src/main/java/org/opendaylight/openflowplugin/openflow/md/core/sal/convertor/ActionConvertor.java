@@ -123,7 +123,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumberValues;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumberValuesV10;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.MatchEntries;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -226,7 +225,7 @@ public final class ActionConvertor {
 
         OxmFieldsActionBuilder oxmFieldsActionBuilder = new OxmFieldsActionBuilder();
         MatchReactor.getInstance().convert(match, version, oxmFieldsActionBuilder);
-        
+
         ActionBuilder actionBuilder = new ActionBuilder();
         actionBuilder
                 .setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.SetField.class);
@@ -305,7 +304,7 @@ public final class ActionConvertor {
         SetQueueAction setQueueAction = setQueueActionCase.getSetQueueAction();
 
         QueueIdActionBuilder queueIdActionBuilder = new QueueIdActionBuilder();
-        queueIdActionBuilder.setQueueId(Long.getLong(setQueueAction.getQueue()));
+        queueIdActionBuilder.setQueueId(setQueueAction.getQueueId());
         actionBuilder.setType(SetQueue.class);
         actionBuilder.addAugmentation(QueueIdAction.class, queueIdActionBuilder.build());
 
@@ -576,7 +575,7 @@ public final class ActionConvertor {
         GroupAction groupAction = groupActionCase.getGroupAction();
 
         GroupIdActionBuilder groupIdBuilder = new GroupIdActionBuilder();
-        groupIdBuilder.setGroupId(Long.getLong(groupAction.getGroup()));
+        groupIdBuilder.setGroupId(groupAction.getGroupId());
         ActionBuilder actionBuilder = new ActionBuilder();
         actionBuilder.setType(Group.class);
         actionBuilder.addAugmentation(GroupIdAction.class, groupIdBuilder.build());
@@ -800,8 +799,8 @@ public final class ActionConvertor {
                 bucketActions.add(new DecNwTtlCaseBuilder().setDecNwTtl(decNwTtl.build()).build());
             } else if (action.getType().equals(
                     org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.SetField.class))
-                bucketActions
-                        .add(new SetFieldCaseBuilder().setSetField(MatchConvertorImpl.ofToSALSetField(action)).build());
+                bucketActions.add(new SetFieldCaseBuilder().setSetField(MatchConvertorImpl.ofToSALSetField(action))
+                        .build());
 
             else if (action.getType().equals(
                     org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.PushPbb.class))
