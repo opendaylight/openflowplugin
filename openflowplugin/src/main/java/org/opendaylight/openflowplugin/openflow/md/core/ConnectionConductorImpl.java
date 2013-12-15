@@ -198,7 +198,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
 
     @Override
     public void onPacketInMessage(PacketInMessage message) {
-        queueKeeper.push(message, this);
+        queueKeeper.push(message, this, QueueKeeper.QueueType.UNORDERED);
     }
 
     @Override
