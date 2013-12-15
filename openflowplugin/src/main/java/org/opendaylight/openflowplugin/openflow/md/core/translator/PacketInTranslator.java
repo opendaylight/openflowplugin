@@ -27,7 +27,7 @@ public class PacketInTranslator implements IMDMessageTranslator<OfHeader, List<D
     @Override
     public List<DataObject> translate(SwitchConnectionDistinguisher cookie,
             SessionContext sc, OfHeader msg) {
-        if(msg instanceof PacketInMessage) {
+        if(sc !=null && msg instanceof PacketInMessage) {
             PacketInMessage message = (PacketInMessage)msg;
             List<DataObject> list = new CopyOnWriteArrayList<DataObject>();
             LOG.info("PacketIn: InPort: {} Cookie: {} Match.type: {}",
@@ -41,50 +41,52 @@ public class PacketInTranslator implements IMDMessageTranslator<OfHeader, List<D
 
            // get the DPID
            GetFeaturesOutput features = sc.getFeatures();
-           BigInteger dpid = features.getDatapathId();
-
-           // get the Cookie if it exists
-           if(message.getCookie() != null) {
-               pktInBuilder.setCookie(new Cookie(message.getCookie().longValue()));
-           }
-
-           // extract the port number
-           Long port = null;
-
-           if (message.getInPort() != null) {
-               // this doesn't work--at least for OF1.3
-               port = message.getInPort().longValue();
-           }
-
-           // this should work for OF1.3
-           if (message.getMatch() != null && message.getMatch().getMatchEntries() != null) {
-               List<MatchEntries> entries = message.getMatch().getMatchEntries();
-               for (MatchEntries entry : entries) {
-                   PortNumberMatchEntry tmp = entry.getAugmentation(PortNumberMatchEntry.class);
-                   if (tmp != null) {
-                       if (port == null) {
-                           port = tmp.getPortNumber().getValue();
-                       } else {
-                           LOG.warn("Multiple input ports (at least {} and {})",
-                                    port, tmp.getPortNumber().getValue());
+           // Make sure we actually have features, some naughty switches start sending packetIn before they send us the FeatureReply
+           if ( features != null) {
+               BigInteger dpid = features.getDatapathId();
+    
+               // get the Cookie if it exists
+               if(message.getCookie() != null) {
+                   pktInBuilder.setCookie(new Cookie(message.getCookie().longValue()));
+               }
+    
+               // extract the port number
+               Long port = null;
+    
+               if (message.getInPort() != null) {
+                   // this doesn't work--at least for OF1.3
+                   port = message.getInPort().longValue();
+               }
+    
+               // this should work for OF1.3
+               if (message.getMatch() != null && message.getMatch().getMatchEntries() != null) {
+                   List<MatchEntries> entries = message.getMatch().getMatchEntries();
+                   for (MatchEntries entry : entries) {
+                       PortNumberMatchEntry tmp = entry.getAugmentation(PortNumberMatchEntry.class);
+                       if (tmp != null) {
+                           if (port == null) {
+                               port = tmp.getPortNumber().getValue();
+                           } else {
+                               LOG.warn("Multiple input ports (at least {} and {})",
+                                        port, tmp.getPortNumber().getValue());
+                           }
                        }
                    }
                }
-           }
-
-           if (port == null) {
-               // no incoming port, so drop the event
-               LOG.warn("Received packet_in, but couldn't find an input port");
-               return null;
-           }else{
-               LOG.info("Receive packet_in from {} on port {}", dpid, port);
-           }
-           pktInBuilder.setIngress(InventoryDataServiceUtil.nodeConnectorRefFromDatapathIdPortno(dpid,port));
-           PacketReceived pktInEvent = pktInBuilder.build();
-           list.add(pktInEvent);
-            return list;
-        } else {
-            return null;
-        }
+    
+               if (port == null) {
+                   // no incoming port, so drop the event
+                   LOG.warn("Received packet_in, but couldn't find an input port");
+                   return null;
+               }else{
+                   LOG.info("Receive packet_in from {} on port {}", dpid, port);
+               }
+               pktInBuilder.setIngress(InventoryDataServiceUtil.nodeConnectorRefFromDatapathIdPortno(dpid,port));
+               PacketReceived pktInEvent = pktInBuilder.build();
+               list.add(pktInEvent);
+                return list;
+           } 
+        } 
+        return null;
     }
 }

@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.queue;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,7 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
+import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.openflow.md.core.TranslatorKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -83,14 +85,24 @@ public class QueueKeeperLightImpl implements QueueKeeper<OfHeader, DataObject> {
 
     @Override
     public void push(OfHeader message, ConnectionConductor conductor) {
-        TicketImpl<OfHeader, DataObject> ticket = new TicketImpl<>();
-        ticket.setConductor(conductor);
-        ticket.setMessage(message);
-        LOG.debug("ticket scheduling: {}, ticket: {}",
-                message.getImplementedInterface().getSimpleName(), System.identityHashCode(ticket));
-        //TODO: block if queue limit reached
-        processQueue.add(ticket);
-        scheduleTicket(ticket);
+        push(message,conductor,QueueKeeper.QueueType.DEFAULT);
+    }
+    
+    @Override
+    public void push(OfHeader message, ConnectionConductor conductor, QueueType queueType) {
+        if(queueType == QueueKeeper.QueueType.DEFAULT) {
+            TicketImpl<OfHeader, DataObject> ticket = new TicketImpl<>();
+            ticket.setConductor(conductor);
+            ticket.setMessage(message);
+            LOG.debug("ticket scheduling: {}, ticket: {}",
+                    message.getImplementedInterface().getSimpleName(), System.identityHashCode(ticket));
+            //TODO: block if queue limit reached
+            processQueue.add(ticket);
+            scheduleTicket(ticket);
+        } else if (queueType == QueueKeeper.QueueType.UNORDERED){
+            List<DataObject> processedMessages = translate(message,conductor);
+            pop(processedMessages,conductor);
+        }
     }
 
     /**
@@ -118,5 +130,53 @@ public class QueueKeeperLightImpl implements QueueKeeper<OfHeader, DataObject> {
     public void setPopListenersMapping(
             Map<Class<? extends DataObject>, Collection<PopListener<DataObject>>> popListenersMapping) {
         this.popListenersMapping = popListenersMapping;
+    }
+    
+    private List<DataObject> translate(OfHeader message, ConnectionConductor conductor) {
+        List<DataObject> result = new ArrayList<>();
+        Class<? extends OfHeader> messageType = registeredSrcTypeExtractor.extractRegisteredType(message);
+        Collection<IMDMessageTranslator<OfHeader, List<DataObject>>> translators = null;
+        LOG.debug("translating message: {}", messageType.getSimpleName());
+
+        Short version = versionExtractor.extractVersion(message);
+        if (version == null) {
+           throw new IllegalArgumentException("version is NULL");
+        }
+        TranslatorKey tKey = new TranslatorKey(version, messageType.getName());
+        translators = translatorMapping.get(tKey);
+
+        LOG.debug("translatorKey: {} + {}", version, messageType.getName());
+
+        if (translators != null) {
+            for (IMDMessageTranslator<OfHeader, List<DataObject>> translator : translators) {
+                SwitchConnectionDistinguisher cookie = null;
+                // Pass cookie only for PACKT_IN
+                if (messageType.equals("PacketInMessage.class")) {
+                    cookie = conductor.getAuxiliaryKey();
+                }
+                List<DataObject> translatorOutput = translator.translate(cookie, conductor.getSessionContext(), message);
+                if(translatorOutput != null) {
+                    result.addAll(translator.translate(cookie, conductor.getSessionContext(), message));
+                }
+            }
+        } else {
+            LOG.warn("No translators for this message Type: {}", messageType);
+        }
+        return result;
+    }
+    
+    private void pop(List<DataObject> processedMessages,ConnectionConductor conductor) {
+        for (DataObject msg : processedMessages) {
+            Class<? extends Object> registeredType = 
+                    registeredOutTypeExtractor.extractRegisteredType(msg);
+            Collection<PopListener<DataObject>> popListeners = popListenersMapping.get(registeredType);
+            if (popListeners == null) {
+                LOG.warn("no popListener registered for type {}"+registeredType);
+            } else {
+                for (PopListener<DataObject> consumer : popListeners) {
+                    consumer.onPop(msg);
+                }
+            }
+        }
     }
 }
