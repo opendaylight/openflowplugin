@@ -137,6 +137,8 @@ import org.slf4j.LoggerFactory;
 public final class ActionConvertor {
     private static final Logger logger = LoggerFactory.getLogger(ActionConvertor.class);
     private static final String PREFIX_SEPARATOR = "/";
+    final private static Long MAXPortOF13 = new Long(4294967040L); // 0xffffff00
+    final private static Long MAXPortOF10 = new Long(0xff00);
 
     private ActionConvertor() {
         // NOOP
@@ -686,6 +688,9 @@ public final class ActionConvertor {
                 portAction.setPort(new PortNumber(BinContent.intToUnsignedLong(PortNumberValues.TABLE.getIntValue())));
 
             }
+            if (Long.parseLong(uri.getValue()) > 0 && Long.parseLong(uri.getValue()) < MAXPortOF13) {
+                portAction.setPort(new PortNumber(BinContent.intToUnsignedLong(Integer.parseInt(uri.getValue()))));
+            }
             if (uri.getValue().equals(OutputPortValues.NONE.toString())) {
                 logger.error("Unknown Port Type for the Version");
             }
@@ -721,6 +726,9 @@ public final class ActionConvertor {
             }
             if (uri.getValue().equals(OutputPortValues.NONE.toString())) {
                 portAction.setPort(new PortNumber((long) PortNumberValuesV10.NONE.getIntValue()));
+            }
+            if (Long.parseLong(uri.getValue()) > 0 && Long.parseLong(uri.getValue()) < MAXPortOF10) {
+                portAction.setPort(new PortNumber((long) Integer.parseInt(uri.getValue())));
             }
             if (uri.getValue().equals(OutputPortValues.ANY.toString())) {
                 logger.error("Unknown Port Type for the Version");
