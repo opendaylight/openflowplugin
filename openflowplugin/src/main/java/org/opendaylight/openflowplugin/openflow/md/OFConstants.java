@@ -1,5 +1,7 @@
 package org.opendaylight.openflowplugin.openflow.md;
 
+import java.math.BigInteger;
+
 /**
  * OFP related constants
  */
@@ -17,6 +19,12 @@ public class OFConstants {
     public static final short OFP_VERSION_1_0 = 0x01;
     /** openflow protocol 1.3 - version identifier */
     public static final short OFP_VERSION_1_3 = 0x04;
-
-
+    
+    public static final Short OFPTT_ALL = 0xff;
+    public static final Long ANY = Long.parseLong("ffffffff", 16);
+    public static final Long OFPP_ANY = ANY;
+    public static final Long OFPG_ANY = ANY;
+    public static final Long OFPQ_ANY = ANY;
+    public static final BigInteger DEFAULT_COOKIE = BigInteger.ZERO;
+    public static final BigInteger DEFAULT_COOKIE_MASK = BigInteger.ZERO;
 }

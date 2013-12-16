@@ -27,6 +27,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.flow.table.and.statistics.map.FlowTableAndStatisticsMap;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.flow.table.and.statistics.map.FlowTableAndStatisticsMapBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev131103.TransactionId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.queue.rev130925.QueueId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GroupDescStatsUpdatedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GroupFeaturesUpdatedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GroupStatisticsUpdatedBuilder;
@@ -52,8 +53,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterKbps;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterPktps;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterStats;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.statistics.types.rev130925.duration.DurationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.statistics.types.rev130925.node.connector.statistics.BytesBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.statistics.types.rev130925.node.connector.statistics.DurationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.statistics.types.rev130925.node.connector.statistics.PacketsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
@@ -65,8 +66,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyMeterCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyMeterConfigCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyMeterFeaturesCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyQueueCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyTableCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyTableCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.aggregate._case.MultipartReplyAggregate;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.flow._case.MultipartReplyFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyPortStatsCase;
@@ -78,12 +79,17 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.meter.features._case.MultipartReplyMeterFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.port.stats._case.MultipartReplyPortStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.port.stats._case.multipart.reply.port.stats.PortStats;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.queue._case.MultipartReplyQueue;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.queue._case.multipart.reply.queue.QueueStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.table._case.MultipartReplyTable;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.table._case.multipart.reply.table.TableStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.PortStatisticsUpdateBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.node.connector.statistics.and.port.number.map.NodeConnectorStatisticsAndPortNumberMap;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.node.connector.statistics.and.port.number.map.NodeConnectorStatisticsAndPortNumberMapBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.node.connector.statistics.and.port.number.map.NodeConnectorStatisticsAndPortNumberMapKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.QueueStatisticsUpdateBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.queue.id.and.statistics.map.QueueIdAndStatisticsMap;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.queue.id.and.statistics.map.QueueIdAndStatisticsMapBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableId;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
@@ -115,7 +121,7 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
             NodeId node = this.nodeIdFromDatapathId(sc.getFeatures().getDatapathId());
             switch (mpReply.getType()){
             case OFPMPFLOW: {
-                logger.info("Received flow statistics reponse from openflow {} switch",msg.getVersion()==1?"1.0":"1.3+");
+                logger.debug("Received flow statistics reponse from openflow {} switch",msg.getVersion()==1?"1.0":"1.3+");
                 FlowsStatisticsUpdateBuilder message = new FlowsStatisticsUpdateBuilder();
                 message.setId(node);
                 message.setMoreReplies(mpReply.getFlags().isOFPMPFREQMORE());
@@ -129,7 +135,7 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                 return listDataObject;
             }
             case OFPMPAGGREGATE: {
-                logger.info("Received aggregate flow statistics reponse from openflow {} switch",msg.getVersion()==1?"1.0":"1.3+");
+                logger.debug("Received aggregate flow statistics reponse from openflow {} switch",msg.getVersion()==1?"1.0":"1.3+");
                 AggregateFlowStatisticsUpdateBuilder message = new AggregateFlowStatisticsUpdateBuilder();
                 message.setId(node);
                 message.setMoreReplies(mpReply.getFlags().isOFPMPFREQMORE());
@@ -147,7 +153,7 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
             }
             case OFPMPPORTSTATS: {
 
-                logger.info("Received port statistics multipart response");
+                logger.debug("Received port statistics multipart response");
                 
                 PortStatisticsUpdateBuilder message = new PortStatisticsUpdateBuilder();
                 message.setId(node);
@@ -195,13 +201,13 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                 }
                 message.setNodeConnectorStatisticsAndPortNumberMap(statsMap);
 
-                logger.debug("Converted ports statistics : {}",message.build().toString());
+                logger.info("Converted ports statistics : {}",message.build().toString());
 
                 listDataObject.add(message.build());
                 return listDataObject;
             }
             case OFPMPGROUP:{
-                logger.info("Received group statistics multipart reponse");
+                logger.debug("Received group statistics multipart reponse");
                 GroupStatisticsUpdatedBuilder message = new GroupStatisticsUpdatedBuilder();
                 message.setId(node);
                 message.setMoreReplies(mpReply.getFlags().isOFPMPFREQMORE());
@@ -210,12 +216,12 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                 MultipartReplyGroup replyBody = caseBody.getMultipartReplyGroup();
                 message.setGroupStats(groupStatsConvertor.toSALGroupStatsList(replyBody.getGroupStats()));
                 
-                logger.debug("Converted group statistics : {}",message.toString());
+                logger.info("Converted group statistics : {}",message.toString());
                 listDataObject.add(message.build());
                 return listDataObject;
             }
             case OFPMPGROUPDESC:{
-                logger.info("Received group description statistics multipart reponse");
+                logger.debug("Received group description statistics multipart reponse");
                 
                 GroupDescStatsUpdatedBuilder message = new GroupDescStatsUpdatedBuilder();
                 message.setId(node);
@@ -226,7 +232,7 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
 
                 message.setGroupDescStats(groupStatsConvertor.toSALGroupDescStatsList(replyBody.getGroupDesc()));
                 
-                logger.debug("Converted group statistics : {}",message.toString());
+                logger.info("Converted group statistics : {}",message.toString());
                 listDataObject.add(message.build());
                 return listDataObject;
             }
@@ -277,9 +283,6 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                 message.setActions(getGroupActionsSupportBitmap(replyBody.getActionsBitmap()));
                 listDataObject.add(message.build());
 
-                //augmentGroupFeaturesToNode(message);
-                
-                //Send update notification to all the listeners 
                 return listDataObject;
             }
             case OFPMPMETER: {
@@ -312,7 +315,7 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                 return listDataObject;
             }
             case OFPMPMETERFEATURES:{
-                logger.info("Received meter features multipart reponse");
+                logger.debug("Received meter features multipart reponse");
                 //Convert OF message and send it to SAL listener
                 MeterFeaturesUpdatedBuilder message = new MeterFeaturesUpdatedBuilder();
                 message.setId(node);
@@ -361,7 +364,7 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                 return listDataObject;
             }
             case OFPMPTABLE: {
-                logger.info("Received flow table statistics reponse from openflow {} switch",msg.getVersion()==1?"1.0":"1.3+");
+                logger.debug("Received flow table statistics reponse from openflow {} switch",msg.getVersion()==1?"1.0":"1.3+");
                 
                 FlowTableStatisticsUpdateBuilder message = new FlowTableStatisticsUpdateBuilder();
                 message.setId(node);
@@ -385,7 +388,48 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                 
                 message.setFlowTableAndStatisticsMap(salFlowStats);
                 
-                logger.info("Converted flow table statistics : {}",message.build().toString());
+                logger.debug("Converted flow table statistics : {}",message.build().toString());
+                listDataObject.add(message.build());
+                return listDataObject;
+            }
+            case OFPMPQUEUE: {
+                logger.info("Received queue statistics multipart response");
+                
+                QueueStatisticsUpdateBuilder message = new QueueStatisticsUpdateBuilder();
+                message.setId(node);
+                message.setMoreReplies(mpReply.getFlags().isOFPMPFREQMORE());
+                message.setTransactionId(generateTransactionId(mpReply.getXid()));
+
+                MultipartReplyQueueCase caseBody = (MultipartReplyQueueCase)mpReply.getMultipartReplyBody();
+                MultipartReplyQueue replyBody = caseBody.getMultipartReplyQueue();
+                
+                List<QueueIdAndStatisticsMap> statsMap = 
+                        new ArrayList<QueueIdAndStatisticsMap>();
+                
+                for (QueueStats queueStats: replyBody.getQueueStats()){
+                    
+                    QueueIdAndStatisticsMapBuilder statsBuilder = 
+                            new QueueIdAndStatisticsMapBuilder();
+                    statsBuilder.setNodeConnectorId(
+                            InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(sc.getFeatures().getDatapathId(),
+                                    queueStats.getPortNo()));
+                    statsBuilder.setTransmissionErrors(new Counter64(queueStats.getTxErrors()));
+                    statsBuilder.setTransmittedBytes(new Counter64(queueStats.getTxBytes()));
+                    statsBuilder.setTransmittedPackets(new Counter64(queueStats.getTxPackets()));
+                    
+                    DurationBuilder durationBuilder = new DurationBuilder();
+                    durationBuilder.setSecond(new Counter32(queueStats.getDurationSec()));
+                    durationBuilder.setNanosecond(new Counter32(queueStats.getDurationNsec()));
+                    statsBuilder.setDuration(durationBuilder.build());
+                    
+                    statsBuilder.setQueueId(new QueueId(queueStats.getQueueId()));
+                    statsBuilder.setNodeConnectorId(InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(sc.getFeatures().getDatapathId(), queueStats.getPortNo()));
+                    
+                    statsMap.add(statsBuilder.build());
+                }
+                message.setQueueIdAndStatisticsMap(statsMap);
+
+                logger.info("Converted queue statistics : {}",message.build().toString());
                 listDataObject.add(message.build());
                 return listDataObject;
             }

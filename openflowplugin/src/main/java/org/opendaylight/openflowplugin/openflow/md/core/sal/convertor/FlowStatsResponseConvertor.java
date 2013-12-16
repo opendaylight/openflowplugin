@@ -1,10 +1,10 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchConvertorImpl;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.Counter32;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.Counter64;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.flow.and.statistics.map.list.FlowAndStatisticsMapList;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.flow.and.statistics.map.list.FlowAndStatisticsMapListBuilder;
@@ -18,7 +18,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.WriteMetadataCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.statistics.types.rev130925.generic.statistics.DurationBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.statistics.types.rev130925.duration.DurationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.flow._case.multipart.reply.flow.FlowStats;
 
 /**
@@ -58,8 +58,8 @@ public class FlowStatsResponseConvertor {
         salFlowStatsBuilder.setCookie(flowStats.getCookie());
 
         DurationBuilder time = new DurationBuilder();
-        time.setSecond(new Counter64(new BigInteger(flowStats.getDurationSec().toString())));
-        time.setNanosecond(new Counter64(new BigInteger(flowStats.getDurationNsec().toString())));
+        time.setSecond(new Counter32(flowStats.getDurationSec()));
+        time.setNanosecond(new Counter32(flowStats.getDurationNsec()));
         salFlowStatsBuilder.setDuration(time.build());
         
         salFlowStatsBuilder.setFlags(

@@ -56,6 +56,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.PortStatisticsUpdate;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.QueueStatisticsUpdate;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.TableUpdated;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
@@ -140,6 +141,9 @@ public class MDController implements IMDController {
         //Notification registration for flow-table statistics
         addMessagePopListener(FlowTableStatisticsUpdate.class, notificationPopListener);
         
+        //Notification registration for queue-statistics
+        addMessagePopListener(QueueStatisticsUpdate.class, notificationPopListener);
+
         // Push the updated Listeners to Session Manager which will be then picked up by ConnectionConductor eventually
         OFSessionUtil.getSessionManager().setTranslatorMapping(messageTranslators);
         OFSessionUtil.getSessionManager().setPopListenerMapping(popListeners);
