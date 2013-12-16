@@ -21,6 +21,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionListener;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionManager;
+import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeUpdatedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -147,7 +148,7 @@ public class SalRegistrationManager implements SessionListener, SwitchInventory 
     public static NodeId nodeIdFromDatapathId(BigInteger datapathId) {
         // FIXME: Convert to textual representation of datapathID
         String current = datapathId.toString();
-        return new NodeId("openflow:" + current);
+        return new NodeId(InventoryDataServiceUtil.OF_URI_PREFIX + current);
     }
 
     public SessionManager getSessionManager() {

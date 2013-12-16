@@ -1,5 +1,6 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
+import org.opendaylight.openflowplugin.openflow.md.util.PortTranslatorUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortFeatures;
@@ -9,6 +10,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortModInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.port.desc._case.multipart.reply.port.desc.Ports;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.port.desc._case.multipart.reply.port.desc.PortsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.UpdatePortInput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,26 +29,28 @@ public final class PortConvertor {
     /**
      * This method is used by PORT_MOD_MESSAGE
      *
-     * @param source
+     * @param input
      * @return
      */
 
     public static PortModInput toPortModInput(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.port.mod.port.Port source,
+            UpdatePortInput input,
             short version) {
 
 
         PortConfig config = null;
+        PortConfig mask = null;
 
         PortModInputBuilder portModInputBuilder = new PortModInputBuilder();
-        portModInputBuilder.setAdvertise(getPortFeatures(source.getAdvertisedFeatures()));
-        portModInputBuilder.setPortNo(new PortNumber(source.getPortNumber()));
-        maskPortConfigFields(source.getConfiguration(), config);
-        portModInputBuilder.setConfig(config);
-        portModInputBuilder.setHwAddress(new MacAddress(source.getHardwareAddress()));
-        config = null;
-        maskPortConfigFields(source.getMask(), config);
-        portModInputBuilder.setMask(config);
+        /* 
+         * PortMod advertised features should be zeroed out per
+         * OF 1.3 spec section 7.3.4.3 page 70
+         */
+        portModInputBuilder.setAdvertise(new PortFeatures(false, false, false, false, false, false, false,
+                false, false, false, false, false, false, false, false, false)); 
+        portModInputBuilder.setPortNo(PortTranslatorUtil.nodeConnectorRefToPortNumber(input.getNodeConnectorRef()));
+        maskPortConfigFields(input, portModInputBuilder);
+        portModInputBuilder.setHwAddress(input.getHardwareAddress());
         portModInputBuilder.setVersion(version);
         return portModInputBuilder.build();
 
@@ -54,21 +58,33 @@ public final class PortConvertor {
 
     private static void maskPortConfigFields(
             org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortConfig configData,
-            PortConfig config) {
+            PortModInputBuilder portModInputBuilder) {
         Boolean portDown = false;
         Boolean noRecv = false;
         Boolean noFwd = false;
         Boolean noPacketIn = false;
-        if (configData.isNOFWD())
-            noFwd = true;
-        if (configData.isNOPACKETIN())
-            noPacketIn = true;
-        if (configData.isNORECV())
-            noRecv = true;
-        if (configData.isPORTDOWN())
+        Boolean portDownMask = false;
+        Boolean noRecvMask = false;
+        Boolean noFwdMask = false;
+        Boolean noPacketInMask = false;
+        if (configData.isPortNoFwd() != null) {
+            noFwd = configData.isPortNoFwd();
+            noFwdMask = true;
+        }
+        if (configData.isPortNoPacketIn()!= null) {
+            noPacketIn = configData.isPortNoPacketIn();
+            noPacketInMask = true;
+        }
+        if (configData.isPortNoRecv() != null) {
+            noRecv = configData.isPortNoRecv();
+            noRecvMask = true;
+        }
+        if (configData.isPortDown() != null) {
+            portDown = configData.isPortDown();
             portDown = true;
-
-        config = new PortConfig(noFwd, noPacketIn, noRecv, portDown);
+        }
+        portModInputBuilder.setConfig(new PortConfig(noFwd, noPacketIn, noRecv, portDown));
+        portModInputBuilder.setMask(new PortConfig(noFwdMask, noPacketInMask, noRecvMask, portDownMask));
 
     }
 
@@ -104,7 +120,7 @@ public final class PortConvertor {
         OFPortDescDataBuilder.setHwAddr(source.getHardwareAddress());
         OFPortDescDataBuilder.setName(source.getName());
 
-        maskPortConfigFields(source.getConfiguration(), config);
+        // maskPortConfigFields(source.getConfiguration(), config);
 
         OFPortDescDataBuilder.setConfig(config);
 

@@ -400,7 +400,7 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
     
     private NodeId nodeIdFromDatapathId(BigInteger datapathId) {
         String current = datapathId.toString();
-        return new NodeId("openflow:" + current);
+        return new NodeId(InventoryDataServiceUtil.OF_URI_PREFIX + current);
     }
     
     private TransactionId generateTransactionId(Long xid){
