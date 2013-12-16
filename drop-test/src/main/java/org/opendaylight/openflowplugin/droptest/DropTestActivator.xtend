@@ -12,14 +12,18 @@ import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderCo
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService
 import org.opendaylight.controller.sal.binding.api.data.DataProviderService
 import org.osgi.framework.BundleContext
+import org.slf4j.LoggerFactory
 
 class DropTestActivator extends AbstractBindingAwareProvider {
+
+    static val LOG = LoggerFactory.getLogger(DropTestActivator);
 
     static var DropTestProvider provider = new DropTestProvider();
     
     static var DropTestCommandProvider cmdProvider
 
     override onSessionInitiated(ProviderContext session) {
+        LOG.info("droptest-onSessionInitiated") 
         provider.dataService = session.getSALService(DataProviderService)
         provider.notificationService = session.getSALService(NotificationProviderService)
         cmdProvider.onSessionInitiated(session);
