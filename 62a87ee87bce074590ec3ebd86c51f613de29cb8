@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da6255ed_18fffaab",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/ActionConvertor.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 690,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2013-12-16T13:08:33Z",
+      "side": 1,
+      "message": "if you use the if-else structure - you will save up to 7 if-checks, because there can be only one value (one if) correct at one time\n\n+ if you use the max check as first (which will probably be the most used value), the probability of saving more ifs is higher",
+      "revId": "62a87ee87bce074590ec3ebd86c51f613de29cb8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da6255ed_f82d4647",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/ActionConvertor.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 729,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2013-12-16T13:08:33Z",
+      "side": 1,
+      "message": "same as above",
+      "revId": "62a87ee87bce074590ec3ebd86c51f613de29cb8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
