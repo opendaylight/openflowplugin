@@ -487,7 +487,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
             flow.setInstructions(createDropInstructions().build());
             break;
         case "f54":
-            id += 51;
+            id += 54;
             flow.setMatch(new MatchBuilder().build());
             flow.setInstructions(createSentToControllerInstructions().build());
             break;
@@ -2023,11 +2023,9 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
             ci.println("Status of Flow Data Loaded Transaction: " + status);
 
         } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.error(e.getMessage(), e);
         } catch (ExecutionException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.error(e.getMessage(), e);
         }
     }
 
@@ -2054,11 +2052,9 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
             ci.println("Status of Flow Data Loaded Transaction: " + status);
 
         } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.error(e.getMessage(), e);
         } catch (ExecutionException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.error(e.getMessage(), e);
         }
     }
 

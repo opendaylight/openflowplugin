@@ -20,27 +20,57 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @author mirehak
- *
+ * @param <IN>
+ * @param <OUT>
  */
-public abstract class TicketProcessorFactory {
+public class TicketProcessorFactory<IN, OUT> {
 
     protected static final Logger LOG = LoggerFactory
             .getLogger(TicketProcessorFactory.class);
+    
+    protected VersionExtractor<IN> versionExtractor;
+    protected RegisteredTypeExtractor<IN> registeredTypeExtractor;
+    protected Map<TranslatorKey, Collection<IMDMessageTranslator<IN, List<OUT>>>> translatorMapping;
+    protected MessageSpy<IN, OUT> spy;
+    
+    /**
+     * @param versionExtractor the versionExtractor to set
+     */
+    public void setVersionExtractor(VersionExtractor<IN> versionExtractor) {
+        this.versionExtractor = versionExtractor;
+    }
+
+    /**
+     * @param registeredTypeExtractor the registeredTypeExtractor to set
+     */
+    public void setRegisteredTypeExtractor(
+            RegisteredTypeExtractor<IN> registeredTypeExtractor) {
+        this.registeredTypeExtractor = registeredTypeExtractor;
+    }
+
+    /**
+     * @param translatorMapping the translatorMapping to set
+     */
+    public void setTranslatorMapping(
+            Map<TranslatorKey, Collection<IMDMessageTranslator<IN, List<OUT>>>> translatorMapping) {
+        this.translatorMapping = translatorMapping;
+    }
+
+    /**
+     * @param spy the spy to set
+     */
+    public void setSpy(MessageSpy<IN, OUT> spy) {
+        this.spy = spy;
+    }
+
 
     /**
      * @param ticket
-     * @param versionExtractor
-     * @param registeredTypeExtractor
-     * @param translatorMapping
      * @return runnable ticket processor
      */
-    public static <IN, OUT> Runnable createProcessor(
-            final Ticket<IN, OUT> ticket,
-            final VersionExtractor<IN> versionExtractor,
-            final RegisteredTypeExtractor<IN> registeredTypeExtractor,
-            final Map<TranslatorKey, Collection<IMDMessageTranslator<IN, List<OUT>>>> translatorMapping) {
-        return new Runnable() {
+    public Runnable createProcessor(final Ticket<IN, OUT> ticket) {
+        
+        Runnable ticketProcessor = new Runnable() {
             @Override
             public void run() {
                 LOG.debug("message received, type: {}", registeredTypeExtractor.extractRegisteredType(
@@ -49,6 +79,11 @@ public abstract class TicketProcessorFactory {
                 try {
                     translate = translate();
                     ticket.getResult().set(translate);
+                    // spying on result
+                    if (spy != null) {
+                        spy.spyIn(ticket.getMessage());
+                        spy.spyOut(ticket.getResult().get());
+                    }
                 } catch (Exception e) {
                     LOG.error("translation problem: {}", e.getMessage());
                     ticket.getResult().setException(e);
@@ -72,7 +107,7 @@ public abstract class TicketProcessorFactory {
 
                 Short version = versionExtractor.extractVersion(message);
                 if (version == null) {
-                   throw new IllegalArgumentException("version is NULL");
+                    throw new IllegalArgumentException("version is NULL");
                 }
                 TranslatorKey tKey = new TranslatorKey(version, messageType.getName());
                 translators = translatorMapping.get(tKey);
@@ -97,5 +132,7 @@ public abstract class TicketProcessorFactory {
                 return result;
             }
         };
+
+        return ticketProcessor;
     }
 }

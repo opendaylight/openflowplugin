@@ -17,8 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @author mirehak
- * @param <IN> source type
  * @param <OUT> result type
  *
  */

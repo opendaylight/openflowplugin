@@ -9,32 +9,49 @@
 package org.opendaylight.openflowplugin.openflow.md.core;
 
 import java.net.InetAddress;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.SwitchConnectionHandler;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
+import org.opendaylight.openflowplugin.openflow.md.queue.MessageSpy;
+import org.opendaylight.openflowplugin.openflow.md.queue.MessageSpyCounterImpl;
 import org.opendaylight.openflowplugin.openflow.md.queue.QueueKeeperLightImpl;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
+import org.opendaylight.yangtools.yang.binding.DataObject;
 
 /**
  * @author mirehak
  *
  */
 public class SwitchConnectionHandlerImpl implements SwitchConnectionHandler {
+    
+    private ScheduledThreadPoolExecutor spyPool; 
 
     private QueueKeeperLightImpl queueKeeper;
     private ErrorHandler errorHandler;
+    private MessageSpy<OfHeader, DataObject> messageSpy;
+    private int spyRate = 10;
 
     /**
      *
      */
     public SwitchConnectionHandlerImpl() {
+        messageSpy = new MessageSpyCounterImpl();
         queueKeeper = new QueueKeeperLightImpl();
         queueKeeper.setTranslatorMapping(OFSessionUtil.getTranslatorMap());
         queueKeeper.setPopListenersMapping(OFSessionUtil.getPopListenerMapping());
+        queueKeeper.setMessageSpy(messageSpy);
+        
         queueKeeper.init();
 
         errorHandler = new ErrorHandlerQueueImpl();
         new Thread(errorHandler).start();
+        
+        //TODO: implement shutdown invocation upon service stop event
+        spyPool = new ScheduledThreadPoolExecutor(1);
+        spyPool.scheduleAtFixedRate(messageSpy, spyRate, spyRate, TimeUnit.SECONDS);
     }
 
     @Override

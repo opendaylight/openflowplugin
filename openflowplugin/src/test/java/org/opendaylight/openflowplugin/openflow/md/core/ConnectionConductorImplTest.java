@@ -131,7 +131,6 @@ public class ConnectionConductorImplTest {
         popListener = new PopListenerCountingImpl<>();
 
         queueKeeper = new QueueKeeperLightImpl();
-        queueKeeper.init();
 
         connectionConductor = new ConnectionConductorImpl(adapter);
         connectionConductor.setQueueKeeper(queueKeeper);
@@ -149,6 +148,7 @@ public class ConnectionConductorImplTest {
 
         controller.getMessageTranslators().putAll(assembleTranslatorMapping());
         queueKeeper.setPopListenersMapping(assemblePopListenerMapping());
+        queueKeeper.init();
     }
 
     /**

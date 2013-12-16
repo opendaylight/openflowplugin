@@ -37,6 +37,8 @@ public class QueueKeeperLightImpl implements QueueKeeper<OfHeader, DataObject> {
     private ScheduledThreadPoolExecutor pool;
     private int poolSize = 10;
     private Map<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, List<DataObject>>>> translatorMapping;
+    private TicketProcessorFactory<OfHeader, DataObject> ticketProcessorFactory;
+    private MessageSpy<OfHeader, DataObject> messageSpy;
 
     private VersionExtractor<OfHeader> versionExtractor = new VersionExtractor<OfHeader>() {
         @Override
@@ -71,6 +73,13 @@ public class QueueKeeperLightImpl implements QueueKeeper<OfHeader, DataObject> {
     public void init() {
         processQueue = new LinkedBlockingQueue<>(100);
         pool = new ScheduledThreadPoolExecutor(poolSize);
+        
+        ticketProcessorFactory = new TicketProcessorFactory<>();
+        ticketProcessorFactory.setRegisteredTypeExtractor(registeredSrcTypeExtractor);
+        ticketProcessorFactory.setTranslatorMapping(translatorMapping);
+        ticketProcessorFactory.setVersionExtractor(versionExtractor);
+        ticketProcessorFactory.setSpy(messageSpy);
+        
         TicketFinisher<DataObject> finisher = new TicketFinisher<>(
                 processQueue, popListenersMapping, registeredOutTypeExtractor);
         new Thread(finisher).start();
@@ -109,8 +118,8 @@ public class QueueKeeperLightImpl implements QueueKeeper<OfHeader, DataObject> {
      * @param ticket
      */
     private void scheduleTicket(Ticket<OfHeader, DataObject> ticket) {
-        pool.execute(TicketProcessorFactory.createProcessor(ticket, versionExtractor,
-                registeredSrcTypeExtractor, translatorMapping));
+        Runnable ticketProcessor = ticketProcessorFactory.createProcessor(ticket);
+        pool.execute(ticketProcessor);
     }
 
     /**
@@ -130,6 +139,13 @@ public class QueueKeeperLightImpl implements QueueKeeper<OfHeader, DataObject> {
     public void setPopListenersMapping(
             Map<Class<? extends DataObject>, Collection<PopListener<DataObject>>> popListenersMapping) {
         this.popListenersMapping = popListenersMapping;
+    }
+    
+    /**
+     * @param messageSpy the messageSpy to set
+     */
+    public void setMessageSpy(MessageSpy<OfHeader, DataObject> messageSpy) {
+        this.messageSpy = messageSpy;
     }
     
     private List<DataObject> translate(OfHeader message, ConnectionConductor conductor) {
@@ -158,6 +174,10 @@ public class QueueKeeperLightImpl implements QueueKeeper<OfHeader, DataObject> {
                 if(translatorOutput != null) {
                     result.addAll(translator.translate(cookie, conductor.getSessionContext(), message));
                 }
+            }
+            if (messageSpy != null) {
+                messageSpy.spyIn(message);
+                messageSpy.spyOut(result);
             }
         } else {
             LOG.warn("No translators for this message Type: {}", messageType);
