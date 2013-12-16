@@ -137,6 +137,8 @@ import org.slf4j.LoggerFactory;
 public final class ActionConvertor {
     private static final Logger logger = LoggerFactory.getLogger(ActionConvertor.class);
     private static final String PREFIX_SEPARATOR = "/";
+    final private static Long MAXPortOF13 = new Long(4294967040L); // 0xffffff00
+    final private static Long MAXPortOF10 = new Long(0xff00);
 
     private ActionConvertor() {
         // NOOP
@@ -658,72 +660,57 @@ public final class ActionConvertor {
             if (uri.getValue().equals(OutputPortValues.CONTROLLER.toString())) {
                 portAction.setPort(new PortNumber(BinContent.intToUnsignedLong(PortNumberValues.CONTROLLER
                         .getIntValue())));
-            }
-            if (uri.getValue().equals(OutputPortValues.ALL.toString())) {
+            } else if (uri.getValue().equals(OutputPortValues.ALL.toString())) {
                 portAction.setPort(new PortNumber(BinContent.intToUnsignedLong(PortNumberValues.ALL.getIntValue())));
-            }
-            if (uri.getValue().equals(OutputPortValues.ANY.toString())) {
+            } else if (uri.getValue().equals(OutputPortValues.ANY.toString())) {
                 portAction.setPort(new PortNumber(BinContent.intToUnsignedLong(PortNumberValues.ANY.getIntValue())));
 
-            }
-            if (uri.getValue().equals(OutputPortValues.FLOOD.toString())) {
+            } else if (uri.getValue().equals(OutputPortValues.FLOOD.toString())) {
                 portAction.setPort(new PortNumber(BinContent.intToUnsignedLong(PortNumberValues.FLOOD.getIntValue())));
 
-            }
-            if (uri.getValue().equals(OutputPortValues.INPORT.toString())) {
+            } else if (uri.getValue().equals(OutputPortValues.INPORT.toString())) {
                 portAction.setPort(new PortNumber(BinContent.intToUnsignedLong(PortNumberValues.INPORT.getIntValue())));
 
-            }
-            if (uri.getValue().equals(OutputPortValues.LOCAL.toString())) {
+            } else if (uri.getValue().equals(OutputPortValues.LOCAL.toString())) {
                 portAction.setPort(new PortNumber(BinContent.intToUnsignedLong(PortNumberValues.LOCAL.getIntValue())));
 
-            }
-            if (uri.getValue().equals(OutputPortValues.NORMAL.toString())) {
+            } else if (uri.getValue().equals(OutputPortValues.NORMAL.toString())) {
                 portAction.setPort(new PortNumber(BinContent.intToUnsignedLong(PortNumberValues.NORMAL.getIntValue())));
 
-            }
-            if (uri.getValue().equals(OutputPortValues.TABLE.toString())) {
+            } else if (uri.getValue().equals(OutputPortValues.TABLE.toString())) {
                 portAction.setPort(new PortNumber(BinContent.intToUnsignedLong(PortNumberValues.TABLE.getIntValue())));
 
-            }
-            if (uri.getValue().equals(OutputPortValues.NONE.toString())) {
+            } else if (uri.getValue().equals(OutputPortValues.NONE.toString())) {
                 logger.error("Unknown Port Type for the Version");
+            } else if (Long.parseLong(uri.getValue()) > 0 && Long.parseLong(uri.getValue()) < MAXPortOF13) {
+                portAction.setPort(new PortNumber(BinContent.intToUnsignedLong(Integer.parseInt(uri.getValue()))));
+            } else {
+                logger.error("Invalid Port for Output Action");
             }
         } else if (version == OFConstants.OFP_VERSION_1_0) {
 
             if (uri.getValue().equals(OutputPortValues.CONTROLLER.toString())) {
                 portAction.setPort(new PortNumber((long) PortNumberValuesV10.CONTROLLER.getIntValue()));
-            }
-            if (uri.getValue().equals(OutputPortValues.ALL.toString())) {
+            } else if (uri.getValue().equals(OutputPortValues.ALL.toString())) {
                 portAction.setPort(new PortNumber((long) PortNumberValuesV10.ALL.getIntValue()));
-            }
-
-            if (uri.getValue().equals(OutputPortValues.FLOOD.toString())) {
+            } else if (uri.getValue().equals(OutputPortValues.FLOOD.toString())) {
                 portAction.setPort(new PortNumber((long) PortNumberValuesV10.FLOOD.getIntValue()));
-
-            }
-
-            if (uri.getValue().equals(OutputPortValues.INPORT.toString())) {
+            } else if (uri.getValue().equals(OutputPortValues.INPORT.toString())) {
                 portAction.setPort(new PortNumber((long) PortNumberValuesV10.INPORT.getIntValue()));
-
-            }
-            if (uri.getValue().equals(OutputPortValues.LOCAL.toString())) {
+            } else if (uri.getValue().equals(OutputPortValues.LOCAL.toString())) {
                 portAction.setPort(new PortNumber((long) PortNumberValuesV10.LOCAL.getIntValue()));
-
-            }
-            if (uri.getValue().equals(OutputPortValues.NORMAL.toString())) {
+            } else if (uri.getValue().equals(OutputPortValues.NORMAL.toString())) {
                 portAction.setPort(new PortNumber((long) PortNumberValuesV10.NORMAL.getIntValue()));
-
-            }
-            if (uri.getValue().equals(OutputPortValues.TABLE.toString())) {
+            } else if (uri.getValue().equals(OutputPortValues.TABLE.toString())) {
                 portAction.setPort(new PortNumber((long) PortNumberValuesV10.TABLE.getIntValue()));
-
-            }
-            if (uri.getValue().equals(OutputPortValues.NONE.toString())) {
+            } else if (uri.getValue().equals(OutputPortValues.NONE.toString())) {
                 portAction.setPort(new PortNumber((long) PortNumberValuesV10.NONE.getIntValue()));
-            }
-            if (uri.getValue().equals(OutputPortValues.ANY.toString())) {
+            } else if (uri.getValue().equals(OutputPortValues.ANY.toString())) {
                 logger.error("Unknown Port Type for the Version");
+            } else if (Long.parseLong(uri.getValue()) > 0 && Long.parseLong(uri.getValue()) < MAXPortOF10) {
+                portAction.setPort(new PortNumber((long) Integer.parseInt(uri.getValue())));
+            } else {
+                logger.error("Invalid Port for Output Action");
             }
         }
 

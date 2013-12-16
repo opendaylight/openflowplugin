@@ -45,6 +45,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.queue.action._case.SetQueueActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.OutputPortValues;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.EthertypeAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.GroupIdAction;
@@ -303,7 +304,7 @@ public class ActionConvertorTest {
     private void OutputActionData() {        
         OutputActionBuilder outputB = new OutputActionBuilder();
         outputB.setMaxLength(10);
-        Uri uri = new Uri(NodeConnectorIDType.CONTROLLER);
+        Uri uri = new Uri(OutputPortValues.CONTROLLER.toString());
         outputB.setOutputNodeConnector(uri);
 
         ActionBuilder AB = new ActionBuilder();
