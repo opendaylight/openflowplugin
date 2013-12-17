@@ -6,6 +6,7 @@ import java.util.List;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.Counter32;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.Counter64;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.BandId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterBandType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.band.type.band.type.DropBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.band.type.band.type.DscpRemarkBuilder;
@@ -17,6 +18,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.MeterBandHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.MeterBandHeaderBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.MeterBandHeaderKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.meter.band.header.MeterBandTypesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.statistics.DurationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.statistics.MeterBandStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.statistics.meter.band.stats.BandStat;
@@ -118,8 +120,8 @@ public class MeterStatsResponseConvertor {
             List<Bands> bands = meterConfig.getBands();
             
             List<MeterBandHeader> listBandHeaders = new ArrayList<MeterBandHeader>();
-            for(Bands band : bands){
             int bandKey=0;
+            for(Bands band : bands){
                 MeterBandHeaderBuilder meterBandHeaderBuilder = new MeterBandHeaderBuilder();
                 if(band.getMeterBand() instanceof MeterBandDropCase){
                     MeterBandDropCase dropCaseBand = (MeterBandDropCase)band.getMeterBand();
@@ -134,6 +136,11 @@ public class MeterStatsResponseConvertor {
                     BandId bandId = new BandId((long)bandKey);
                     meterBandHeaderBuilder.setKey(new MeterBandHeaderKey(bandId));
                     meterBandHeaderBuilder.setBandId(bandId);
+                    
+                    MeterBandTypesBuilder meterBandTypesBuilder = new MeterBandTypesBuilder();
+                    meterBandTypesBuilder.setFlags(new MeterBandType(true,false,false));
+                    meterBandHeaderBuilder.setMeterBandTypes(meterBandTypesBuilder.build());
+                    
                     listBandHeaders.add(meterBandHeaderBuilder.build());
                 }else if (band.getMeterBand() instanceof MeterBandDscpRemarkCase){
                     MeterBandDscpRemarkCase dscpRemarkCaseBand = (MeterBandDscpRemarkCase)band.getMeterBand();
@@ -148,6 +155,11 @@ public class MeterStatsResponseConvertor {
                     BandId bandId = new BandId((long)bandKey);
                     meterBandHeaderBuilder.setKey(new MeterBandHeaderKey(bandId));
                     meterBandHeaderBuilder.setBandId(bandId);
+                    
+                    MeterBandTypesBuilder meterBandTypesBuilder = new MeterBandTypesBuilder();
+                    meterBandTypesBuilder.setFlags(new MeterBandType(false,true,false));
+                    meterBandHeaderBuilder.setMeterBandTypes(meterBandTypesBuilder.build());
+                    
                     listBandHeaders.add(meterBandHeaderBuilder.build());
                     
                 }else if (band.getMeterBand() instanceof MeterBandExperimenterCase){
@@ -163,6 +175,11 @@ public class MeterStatsResponseConvertor {
                     BandId bandId = new BandId((long)bandKey);
                     meterBandHeaderBuilder.setKey(new MeterBandHeaderKey(bandId));
                     meterBandHeaderBuilder.setBandId(bandId);
+                    
+                    MeterBandTypesBuilder meterBandTypesBuilder = new MeterBandTypesBuilder();
+                    meterBandTypesBuilder.setFlags(new MeterBandType(false,false,true));
+                    meterBandHeaderBuilder.setMeterBandTypes(meterBandTypesBuilder.build());
+
                     listBandHeaders.add(meterBandHeaderBuilder.build());
                     
                 }
