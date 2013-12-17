@@ -23,6 +23,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.OpendaylightPortStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.OpendaylightQueueStatisticsService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.SalTableService;
 import org.opendaylight.yangtools.concepts.CompositeObjectRegistration;
 import org.opendaylight.yangtools.concepts.CompositeObjectRegistration.CompositeObjectRegistrationBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -37,6 +38,8 @@ public abstract class AbstractModelDrivenSwitch implements ModelDrivenSwitch {
     private RoutedRpcRegistration<SalFlowService> flowRegistration;
 
     private RoutedRpcRegistration<SalGroupService> groupRegistration;
+    
+    private RoutedRpcRegistration<SalTableService> tableRegistration;
 
     private RoutedRpcRegistration<SalMeterService> meterRegistration;
 
@@ -82,6 +85,10 @@ public abstract class AbstractModelDrivenSwitch implements ModelDrivenSwitch {
         groupRegistration = ctx.addRoutedRpcImplementation(SalGroupService.class, this);
         groupRegistration.registerPath(NodeContext.class, getIdentifier());
         builder.add(groupRegistration);
+        
+        tableRegistration = ctx.addRoutedRpcImplementation(SalTableService.class, this);
+        tableRegistration.registerPath(NodeContext.class, getIdentifier());
+        builder.add(tableRegistration);
 
         packetRegistration = ctx.addRoutedRpcImplementation(PacketProcessingService.class, this);
         packetRegistration.registerPath(NodeContext.class, getIdentifier());

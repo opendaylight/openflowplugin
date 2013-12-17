@@ -13,7 +13,6 @@ import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderCo
 import org.opendaylight.controller.sal.binding.api.data.DataBrokerService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeBuilder;
@@ -24,7 +23,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
 
-import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.osgi.framework.BundleContext;
@@ -48,8 +46,8 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
         pc = session;
         dataBrokerService = session.getSALService(DataBrokerService.class);
         ctx.registerService(CommandProvider.class.getName(), this, null);
-        createTestNode();
-        createTestTable();
+       // createTestNode();
+       // createTestTable();
     }
 
     private void createUserNode(String nodeRef) {        
@@ -95,7 +93,8 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
         DataModification modification = dataBrokerService.beginTransaction();
                
         InstanceIdentifier<Table> path1 = InstanceIdentifier.builder(Nodes.class)
-                .child(Node.class, testNode.getKey()).augmentation(FlowCapableNode.class).child(Table.class, new TableKey(table.getId())).build() ;
+                .child(Node.class, testNode.getKey()).augmentation(FlowCapableNode.class).
+                child(Table.class, new TableKey(table.getId())).build() ;
                 
                         
         modification.putOperationalData(nodeToInstanceId(testNode), testNode);
