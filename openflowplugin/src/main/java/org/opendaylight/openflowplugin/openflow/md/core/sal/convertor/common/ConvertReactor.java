@@ -41,9 +41,6 @@ public abstract class ConvertReactor<FROM> {
      */
     @SuppressWarnings("unchecked")
     public <RESULT, TARGET> void convert(FROM source, short version, TARGET target) {
-        if (source == null) {
-            return;
-        }
         
         //lookup converter
         Convertor<FROM, RESULT> convertor = (Convertor<FROM, RESULT>) conversionMapping.get(version);
