@@ -1114,7 +1114,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         
         if(version == OFConstants.OFP_VERSION_1_0){
             LOG.info("Target node is running openflow version 1.0");
-            FlowWildcardsV10 wildCard = new FlowWildcardsV10(true,false,false,false,false,false,false,false,false,false,false);
+            FlowWildcardsV10 wildCard = new FlowWildcardsV10(true,true,true,true,true,true,true,true,true,true);
             mprFlowRequestBuilder.setMatchV10(new MatchV10Builder().setWildcards(wildCard).build());
         }
         if(version == OFConstants.OFP_VERSION_1_3){
@@ -1171,7 +1171,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         
         //TODO: repeating code
         if(version == OFConstants.OFP_VERSION_1_0){
-            FlowWildcardsV10 wildCard = new FlowWildcardsV10(true,false,false,false,false,false,false,false,false,false,false);
+            FlowWildcardsV10 wildCard = new FlowWildcardsV10(true,true,true,true,true,true,true,true,true,true);
             mprFlowRequestBuilder.setMatchV10(new MatchV10Builder().setWildcards(wildCard).build());
         }
         if(version == OFConstants.OFP_VERSION_1_3){
@@ -1277,7 +1277,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         
         //TODO: repeating code
         if(version == OFConstants.OFP_VERSION_1_0){
-            FlowWildcardsV10 wildCard = new FlowWildcardsV10(true,false,false,false,false,false,false,false,false,false,false);
+            FlowWildcardsV10 wildCard = new FlowWildcardsV10(true,true,true,true,true,true,true,true,true,true);
             mprAggregateRequestBuilder.setMatchV10(new MatchV10Builder().setWildcards(wildCard).build());
         }
         if(version == OFConstants.OFP_VERSION_1_3){
