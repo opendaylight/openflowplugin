@@ -121,6 +121,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.OxmMatchType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.match.v10.grouping.MatchV10Builder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.MatchEntries;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GroupModInput;
@@ -206,11 +209,16 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     public Future<RpcResult<AddFlowOutput>> addFlow(AddFlowInput input) {
     	// Convert the AddFlowInput to FlowModInput
         FlowModInput ofFlowModInput = FlowConvertor.toFlowModInput(input, version);
+        BarrierInputBuilder barrierInput = new BarrierInputBuilder();
+        barrierInput.setVersion(version);
 
     	// For Flow provisioning, the SwitchConnectionDistinguisher is set to null so
     	// the request can be routed through any connection to the switch
 
     	SwitchConnectionDistinguisher cookie = null ;
+    	if (input.isBarrier()) {
+    	    Future<RpcResult<BarrierOutput>> barrierOFLib = messageService.barrier(barrierInput.build(), cookie);
+    	}    	
 
     	LOG.debug("Calling the FlowMod RPC method on MessageDispatchService");
        	Future<RpcResult<UpdateFlowOutput>> resultFromOFLib = messageService.flowMod(ofFlowModInput, cookie) ;
@@ -310,13 +318,17 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     public Future<RpcResult<RemoveFlowOutput>> removeFlow(RemoveFlowInput input) {
     	// Convert the RemoveFlowInput to FlowModInput
         FlowModInput ofFlowModInput = FlowConvertor.toFlowModInput(input, version);
-
+        BarrierInputBuilder barrierInput = new BarrierInputBuilder();
+        barrierInput.setVersion(version);
 
     	// For Flow provisioning, the SwitchConnectionDistinguisher is set to null so
     	// the request can be routed through any connection to the switch
 
     	SwitchConnectionDistinguisher cookie = null ;
-
+        if (input.isBarrier()) {
+    	    Future<RpcResult<BarrierOutput>> barrierOFLib = messageService.barrier(barrierInput.build(), cookie);
+    	}
+        
     	LOG.debug("Calling the FlowMod RPC method on MessageDispatchService");
        	Future<RpcResult<UpdateFlowOutput>> resultFromOFLib = messageService.flowMod(ofFlowModInput, cookie) ;
 
@@ -449,14 +461,18 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     public Future<RpcResult<UpdateFlowOutput>> updateFlow(UpdateFlowInput input) {
     	// Convert the UpdateFlowInput to FlowModInput
         FlowModInput ofFlowModInput = FlowConvertor.toFlowModInput(input.getUpdatedFlow(), version);
-
+        BarrierInputBuilder barrierInput = new BarrierInputBuilder();
+        barrierInput.setVersion(version);
     	// Call the RPC method on MessageDispatchService
 
     	// For Flow provisioning, the SwitchConnectionDistinguisher is set to null so
     	// the request can be routed through any connection to the switch
 
     	SwitchConnectionDistinguisher cookie = null ;
-
+        if (input.getUpdatedFlow().isBarrier()) {
+    	    Future<RpcResult<BarrierOutput>> barrierOFLib = messageService.barrier(barrierInput.build(), cookie);
+    	}
+        
     	LOG.debug("Calling the FlowMod RPC method on MessageDispatchService");
        	Future<RpcResult<UpdateFlowOutput>> resultFromOFLib = messageService.flowMod(ofFlowModInput, cookie) ;
 
