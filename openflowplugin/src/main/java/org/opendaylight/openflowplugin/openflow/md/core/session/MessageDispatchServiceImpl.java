@@ -17,6 +17,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.Upd
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeterOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeterOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInput;
@@ -105,7 +106,10 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
 
     @Override
     public Future<RpcResult<BarrierOutput>> barrier(BarrierInput input, SwitchConnectionDistinguisher cookie) {
-        return getConnectionAdapter(cookie).barrier(input);
+        Long Xid = session.getNextXid();
+        BarrierInputBuilder inputBuilder = new BarrierInputBuilder(input);        
+        inputBuilder.setXid(Xid);
+        return getConnectionAdapter(cookie).barrier(inputBuilder.build());
     }
 
     @Override
