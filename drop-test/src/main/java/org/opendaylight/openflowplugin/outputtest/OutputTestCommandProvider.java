@@ -58,108 +58,115 @@ import org.slf4j.LoggerFactory;
 
 public class OutputTestCommandProvider implements CommandProvider {
 
-	private PacketProcessingService packetProcessingService;
-	private ProviderContext pc;
-	private BundleContext ctx;
-	private boolean sessionInitiated = false;
-	private static Logger LOG = LoggerFactory
-			.getLogger(OutputTestCommandProvider.class);
+    private PacketProcessingService packetProcessingService;
+//    DataPacketServiceAdapter
+    private ProviderContext pc;
+    private BundleContext ctx;
+    private boolean sessionInitiated = false;
+    private static Logger LOG = LoggerFactory.getLogger(OutputTestCommandProvider.class);
 
-	public OutputTestCommandProvider(BundleContext ctx) {
-		this.ctx = ctx;
-	}
+    public OutputTestCommandProvider(BundleContext ctx) {
+        this.ctx = ctx;
+    }
 
-	public void onSessionInitiated(ProviderContext session) {
-		pc = session;
-		packetProcessingService = session.getRpcService(PacketProcessingService.class);
-		ctx.registerService(CommandProvider.class.getName(), this, null);
-		this.sessionInitiated = true;
-	}
+    public void onSessionInitiated(ProviderContext session) {
+        pc = session;
+        packetProcessingService = session
+                .getRpcService(PacketProcessingService.class);
+        ctx.registerService(CommandProvider.class.getName(), this, null);
+        this.sessionInitiated = true;
+    }
 
-	public void _sendOutputMsg(CommandInterpreter ci) {
-		/* Sending package OUT */
-		LOG.info("SendOutMsg");
-		if (sessionInitiated) {
-			String inNodeKey = ci.nextArgument();
-//			NodeBuilder nodeBuilder = createNodeBuilder(inNodeKey);
-//			FlowBuilder flowBuilder = flowBuilder(nodeBuilder);
-//			
-//			DataBrokerService dataBrokerService = pc.getSALService(DataBrokerService.class);
-//			DataModification<InstanceIdentifier<?>, DataObject> modif = dataBrokerService.beginTransaction();
-//			
-//	        InstanceIdentifier<Flow> path1 = InstanceIdentifier.builder(Nodes.class)
-//	                .child(Node.class, nodeBuilder.getKey()).augmentation(FlowCapableNode.class)
-//	                .child(Table.class, new TableKey(flowBuilder.getTableId())).child(Flow.class, flowBuilder.getKey())
-//	                .build();
-//	        modif.putConfigurationData(path1, flowBuilder.build());
-//	        Future<RpcResult<TransactionStatus>> commitFuture = modif.commit();
-//	        try {
-//	            RpcResult<TransactionStatus> result = commitFuture.get();
-//	            TransactionStatus status = result.getResult();
-//	            ci.println("Status of Flow Data Loaded Transaction: " + status);
+    public void _sendOutputMsg(CommandInterpreter ci) {
+        /* Sending package OUT */
+        LOG.info("SendOutMsg");
+        if (sessionInitiated) {
+            String inNodeKey = ci.nextArgument();
+//            NodeBuilder nodeBuilder = createNodeBuilder(inNodeKey);
+//            FlowBuilder flowBuilder = flowBuilder();
 //
-//	        } catch (InterruptedException e) {
-//	            // TODO Auto-generated catch block
-//	            e.printStackTrace();
-//	        } catch (ExecutionException e) {
-//	            // TODO Auto-generated catch block
-//	            e.printStackTrace();
-//	        }
-	        
-			NodeRef ref = createNodeRef(inNodeKey);
-			TransmitPacketInputBuilder transPack = new TransmitPacketInputBuilder();
-			transPack.setPayload(new String("BRM").getBytes());
-			transPack.setNode(ref);
-			transPack.setCookie(null);
-			NodeConnectorRef nConRef = new NodeConnectorRef(createNodeConectorRef(inNodeKey,"0xfffffffd"));
-			transPack.setEgress(nConRef);
-			
-			TransmitPacketInput input = transPack.build();
-			
-			packetProcessingService.transmitPacket(input);
-		} else {
-			ci.println("Session not initiated, try again in a few seconds");
-		}
-	}
+//            DataBrokerService dataBrokerService = pc
+//                    .getSALService(DataBrokerService.class);
+//            DataModification<InstanceIdentifier<?>, DataObject> modif = dataBrokerService
+//                    .beginTransaction();
+//
+//            InstanceIdentifier<Flow> path1 = InstanceIdentifier
+//                    .builder(Nodes.class)
+//                    .child(Node.class, nodeBuilder.getKey())
+//                    .augmentation(FlowCapableNode.class)
+//                    .child(Table.class, new TableKey(flowBuilder.getTableId()))
+//                    .child(Flow.class, flowBuilder.getKey()).build();
+//            modif.putConfigurationData(path1, flowBuilder.build());
+//            Future<RpcResult<TransactionStatus>> commitFuture = modif.commit();
+//            try {
+//                RpcResult<TransactionStatus> result = commitFuture.get();
+//                TransactionStatus status = result.getResult();
+//                ci.println("Status of Flow Data Loaded Transaction: " + status);
+//
+//            } catch (InterruptedException e) {
+//                // TODO Auto-generated catch block
+//                e.printStackTrace();
+//            } catch (ExecutionException e) {
+//                // TODO Auto-generated catch block
+//                e.printStackTrace();
+//            }
 
-	@Override
-	public String getHelp() {
-		StringBuilder strBuf = new StringBuilder(
-				"-------------- OUT Package ----------\n")
-				.append(" sendOutputMsg command + nodeId as param sends empty package out \n ");
-		return strBuf.toString();
-	}
-	
-	private NodeRef createNodeRef(String nodeId) {
+            NodeRef ref = createNodeRef(inNodeKey);
+            TransmitPacketInputBuilder transPack = new TransmitPacketInputBuilder();
+            transPack.setPayload(new String("BRM").getBytes());
+            transPack.setNode(ref);
+            transPack.setCookie(null);
+            NodeConnectorRef nEgressConRef = new NodeConnectorRef(
+                    createNodeConectorRef(inNodeKey, "0xfffffffd"));
+            transPack.setEgress(nEgressConRef);
+            NodeConnectorRef nIngressConRef = new NodeConnectorRef(
+                    createNodeConectorRef(inNodeKey, ""));
+            transPack.setIngress(nIngressConRef);
+            
+            TransmitPacketInput input = transPack.build();
+
+            packetProcessingService.transmitPacket(input);
+        } else {
+            ci.println("Session not initiated, try again in a few seconds");
+        }
+    }
+
+    @Override
+    public String getHelp() {
+        StringBuilder strBuf = new StringBuilder("-------------- OUT Package ----------\n")
+                .append(" sendOutputMsg command + nodeId as param sends empty package out \n ");
+        return strBuf.toString();
+    }
+
+    private NodeRef createNodeRef(String nodeId) {
         NodeKey key = new NodeKey(new NodeId(nodeId));
-        InstanceIdentifier<Node> path =
-                InstanceIdentifier.builder(Nodes.class).child(Node.class, key).toInstance();
-        
-        
+        InstanceIdentifier<Node> path = InstanceIdentifier.builder(Nodes.class)
+                .child(Node.class, key).toInstance();
+
         return new NodeRef(path);
     }
-	
-	private NodeConnectorRef createNodeConectorRef(String nodeId, String port) {
-		NodeConnectorKey nConKey = new NodeConnectorKey(new NodeConnectorId(nodeId + ":" + port));
-        InstanceIdentifier<NodeConnector> path =
-                InstanceIdentifier.builder(Nodes.class)
-                				.child(Node.class, new NodeKey(new NodeId(nodeId)))
-                				.child(NodeConnector.class, nConKey).toInstance();
+
+    private NodeConnectorRef createNodeConectorRef(String nodeId, String port) {
+        NodeConnectorKey nConKey = new NodeConnectorKey(new NodeConnectorId(
+                nodeId + ":" + port));
+        InstanceIdentifier<NodeConnector> path = InstanceIdentifier
+                .builder(Nodes.class)
+                .child(Node.class, new NodeKey(new NodeId(nodeId)))
+                .child(NodeConnector.class, nConKey).toInstance();
         return new NodeConnectorRef(path);
     }
-	
-	private NodeBuilder createNodeBuilder(String nodeId) {
-        NodeRef nodeOne = createNodeRef(nodeId);
+
+    private NodeBuilder createNodeBuilder(String nodeId) {
         NodeBuilder builder = new NodeBuilder();
         builder.setId(new NodeId(nodeId));
         builder.setKey(new NodeKey(builder.getId()));
         return builder;
     }
-	
-	private FlowBuilder flowBuilder (NodeBuilder nodeBuilder) {
-		FlowBuilder flowBuilder = new FlowBuilder();
+
+    private FlowBuilder flowBuilder() {
+        FlowBuilder flowBuilder = new FlowBuilder();
         flowBuilder.setMatch(new MatchBuilder().build());
-        
+
         List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
 
@@ -167,7 +174,8 @@ public class OutputTestCommandProvider implements CommandProvider {
         output.setMaxLength(56);
         Uri value = new Uri("CONTROLLER");
         output.setOutputNodeConnector(value);
-        ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
+        ab.setAction(new OutputActionCaseBuilder().setOutputAction(
+                output.build()).build());
         ab.setOrder(0);
         ab.setKey(new ActionKey(0));
         actionList.add(ab.build());
@@ -177,7 +185,8 @@ public class OutputTestCommandProvider implements CommandProvider {
 
         // Wrap our Apply Action in an Instruction
         InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(
+                aab.build()).build());
         ib.setOrder(0);
         ib.setKey(new InstructionKey(0));
 
@@ -186,8 +195,8 @@ public class OutputTestCommandProvider implements CommandProvider {
         List<Instruction> instructions = new ArrayList<Instruction>();
         instructions.add(ib.build());
         isb.setInstruction(instructions);
-        
+
         flowBuilder.setInstructions(isb.build());
         return flowBuilder;
-	}
+    }
 }

@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Future;
 
+import org.opendaylight.controller.sal.common.util.Arguments;
 import org.opendaylight.controller.sal.common.util.Rpcs;
 import org.opendaylight.openflowjava.protocol.api.util.BinContent;
 import org.opendaylight.openflowplugin.openflow.md.OFConstants;
@@ -98,7 +99,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetGroupStatisticsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetGroupStatisticsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetGroupStatisticsOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterOutput;
@@ -199,6 +202,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.Upd
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableOutputBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier.PathArgument;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
@@ -438,17 +442,35 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     @Override
     public Future<RpcResult<Void>> transmitPacket(TransmitPacketInput input) {
     	// Convert TransmitPacket to PacketOutInput
-    	// TODO VD create PacketConvertor and move convert logic there    	
+        
+    	// TODO VD create PacketConvertor and move convert logic there
+        
+        // Build Port ID from TransmitPacketInput.Egress
+        PortNumber portNr = null;
+        
+        List<PathArgument> args = input.getEgress().getValue().getPath();
+        if (args.size() >= 3) {
+            InstanceIdentifier.IdentifiableItem item = Arguments.checkInstanceOf(args.get(2), InstanceIdentifier.IdentifiableItem.class);
+            NodeConnectorKey key = Arguments.<NodeConnectorKey>checkInstanceOf(item.getKey(), NodeConnectorKey.class);
+            String[] split = key.getId().getValue().split(":");
+            Long port = Long.decode(split[split.length-1]);
+            portNr = new PortNumber(port);
+        } else {
+            // TODO Ed could by in this way or Exception or something else ?
+            portNr = new PortNumber(0xfffffffdL);
+        }
+        
+        // Build Buffer ID from TransmitPacketInput.Ingress
+        NodeConnectorRef inRef = input.getIngress();
+        List<PathArgument> args2 = inRef.getValue().getPathArguments();
+        
     	PacketOutInputBuilder builder = new PacketOutInputBuilder();    	
-    	
     	builder.setData(input.getPayload());
         builder.setVersion(version);
         builder.setXid(sessionContext.getNextXid());
-//        builder.setBufferId(56L);
+        builder.setInPort(portNr);
         builder.setBufferId(OFConstants.OFP_NO_BUFFER);
-        PortNumber portNr = new PortNumber(0xfffffffdL);
-		builder.setInPort(portNr);
-
+        
         PacketOutInput message = builder.build();
     	
     	// TODO VD NULL for yet  - find how to translate cookie from TransmitPacketInput
