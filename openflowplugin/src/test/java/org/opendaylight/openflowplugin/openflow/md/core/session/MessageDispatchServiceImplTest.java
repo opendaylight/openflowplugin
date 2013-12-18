@@ -20,6 +20,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.ErrorHandler;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.openflow.md.queue.QueueKeeper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoOutput;
@@ -82,7 +83,10 @@ public class MessageDispatchServiceImplTest {
      */
     @Test
     public void testBarrierMessageForPrimary() throws Exception {
-        session.getMessageDispatchService().barrier(null, null);
+        MockConnectionConductor conductor = new MockConnectionConductor(1);
+        SwitchConnectionDistinguisher cookie = conductor.getAuxiliaryKey();       
+        BarrierInputBuilder barrierMsg = new BarrierInputBuilder();
+        session.getMessageDispatchService().barrier(barrierMsg.build(), cookie);
         Assert.assertEquals(MessageType.BARRIER, session.getPrimaryConductor().getMessageType());
     }
 
