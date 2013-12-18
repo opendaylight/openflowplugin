@@ -463,25 +463,23 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
             flow.setMatch(createVlanMatch().build());
             flow.setInstructions(createMeterInstructions().build());
             break;
-
         case "f50":
             id += 50;
             flow.setMatch(createPbbMatch().build());
             flow.setInstructions(createMeterInstructions().build());
             break;
-        case "51":
+        case "f51":
             id += 51;
-            flow.setMatch(createIPMatch().build());
+            flow.setMatch(createVlanMatch().build());
             flow.setInstructions(createDropInstructions().build());
             break;
-    
-        case "52":
+        case "f52":
             id += 52;
             flow.setMatch(createL4TCPMatch().build());
             flow.setInstructions(createDropInstructions().build());
             break;    
             
-        case "53":
+        case "f53":
             id += 53;
             flow.setMatch(createL4UDPMatch().build());
             flow.setInstructions(createDropInstructions().build());
@@ -491,6 +489,13 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
             flow.setMatch(new MatchBuilder().build());
             flow.setInstructions(createSentToControllerInstructions().build());
             break;
+        case "f55":
+            id += 55;
+            flow.setMatch(createToSMatch().build());
+            flow.setInstructions(createDropInstructions().build());
+            break;
+ 
+        
         default:
             LOG.warn("flow type not understood: {}", flowType);
         }
@@ -1852,6 +1857,26 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         return match;
     }
+    
+    /**
+     * @return
+     */
+    private static MatchBuilder createToSMatch() {
+        MatchBuilder match = new MatchBuilder();
+        EthernetMatchBuilder ethmatch = new EthernetMatchBuilder();
+        EthernetTypeBuilder ethtype = new EthernetTypeBuilder();
+        EtherType type = new EtherType(0x0800L);
+        ethmatch.setEthernetType(ethtype.setType(type).build());
+        match.setEthernetMatch(ethmatch.build());
+
+        IpMatchBuilder ipmatch = new IpMatchBuilder(); // ipv4 version
+        ipmatch.setIpProtocol((short) 6);
+        Dscp dscp = new Dscp((short) 8);
+        ipmatch.setIpDscp(dscp);
+        match.setIpMatch(ipmatch.build());
+        return match;
+    }
+
 
     /**
      * @return

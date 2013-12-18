@@ -15,6 +15,7 @@ import java.util.List;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flowflag.FlowFlagReactor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchReactor;
 import org.opendaylight.openflowplugin.openflow.md.util.ByteUtil;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.ActionList;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.UpdatedFlow;
@@ -39,6 +40,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.MeterIdInstructionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.TableIdInstruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.TableIdInstructionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.ActionsList;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.Instructions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.InstructionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowModCommand;
@@ -163,8 +165,10 @@ public class FlowConvertor {
 
         if (flow.getInstructions() != null) {
             flowMod.setInstructions(toInstructions(flow.getInstructions(), version));
+            flowMod.setActionsList(getActionsList(flow.getInstructions(), version));
         }
         flowMod.setVersion(version);
+        
         return flowMod.build();
     }
 
@@ -251,5 +255,24 @@ public class FlowConvertor {
             }
         }
         return instructionsList;
+    }
+    
+    private static List<ActionsList> getActionsList(
+            org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Instructions instructions,
+            short version) {
+
+        for (org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction instruction : instructions
+                .getInstruction()) {
+            org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction curInstruction = instruction
+                    .getInstruction();
+
+            if (curInstruction instanceof ApplyActionsCase) {
+                ApplyActionsCase applyActionscase = (ApplyActionsCase) curInstruction;
+                ApplyActions applyActions = applyActionscase.getApplyActions();
+                return ActionConvertor.getActionList(applyActions.getAction(), version);
+            }
+
+        }
+        return null;
     }
 }
