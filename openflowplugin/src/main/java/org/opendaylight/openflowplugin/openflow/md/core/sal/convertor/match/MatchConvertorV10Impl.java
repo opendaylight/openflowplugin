@@ -177,9 +177,9 @@ public class MatchConvertorV10Impl implements MatchConvertor<MatchV10> {
             TcpMatch tcpMatch) {
         if (tcpMatch.getTcpSourcePort() != null) {
             matchBuilder.setTpSrc(tcpMatch.getTcpSourcePort().getValue());
-            return true;
+            return false;
         }
-        return false;
+        return true;
     }
 
     /**
@@ -191,9 +191,9 @@ public class MatchConvertorV10Impl implements MatchConvertor<MatchV10> {
             IpMatch ipMatch) {
         if (ipMatch.getIpDscp() != null) {
             matchBuilder.setNwTos(ipMatch.getIpDscp().getValue());
-            return true;
+            return false;
         }
-        return false;
+        return true;
     }
 
     /**
