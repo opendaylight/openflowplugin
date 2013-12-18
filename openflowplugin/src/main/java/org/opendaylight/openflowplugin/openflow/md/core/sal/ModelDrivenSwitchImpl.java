@@ -121,6 +121,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.OxmMatchType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.match.v10.grouping.MatchV10Builder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.MatchEntries;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GroupModInput;
@@ -202,15 +205,21 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         version = context.getPrimaryConductor().getVersion();
     }
 
+    
     @Override
     public Future<RpcResult<AddFlowOutput>> addFlow(AddFlowInput input) {
     	// Convert the AddFlowInput to FlowModInput
         FlowModInput ofFlowModInput = FlowConvertor.toFlowModInput(input, version);
+        BarrierInputBuilder barrierInput = new BarrierInputBuilder();
+        barrierInput.setVersion(version);
 
     	// For Flow provisioning, the SwitchConnectionDistinguisher is set to null so
     	// the request can be routed through any connection to the switch
-
+              
     	SwitchConnectionDistinguisher cookie = null ;
+    	if (input.isBarrier()) {
+    	    Future<RpcResult<BarrierOutput>> barrierOFLib = messageService.barrier(barrierInput.build(), cookie);
+    	}    	
 
     	LOG.debug("Calling the FlowMod RPC method on MessageDispatchService");
        	Future<RpcResult<UpdateFlowOutput>> resultFromOFLib = messageService.flowMod(ofFlowModInput, cookie) ;
@@ -1022,7 +1031,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     
     @Override
     public Future<RpcResult<UpdateTableOutput>> updateTable(
-			UpdateTableInput input) {
+                        UpdateTableInput input) {
 
         // Get the Xid. The same Xid has to be sent in all the Multipart requests
         Long xid = this.getSessionContext().getNextXid();
@@ -1037,45 +1046,26 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 
         //Convert the list of all MD-SAL table feature object into OF library object
         List<TableFeatures> ofTableFeatureList = TableFeaturesConvertor.toTableFeaturesRequest(input.getUpdatedTable()) ;
-        int totalNoOfTableFeatureEntry = ofTableFeatureList.size();
+        
 
         MultipartRequestTableFeaturesCaseBuilder caseRequest = new MultipartRequestTableFeaturesCaseBuilder();
         MultipartRequestTableFeaturesBuilder tableFeaturesRequest = new MultipartRequestTableFeaturesBuilder();
 
-        // Slice the multipart request based on the configuration parameter, which is the no. of TableFeatureList element
-        // to be put in one multipart message. Default is 5
-        // This parameter must be set based on switch's Buffer capacity
-
-        List<TableFeatures> tmpOfTableFeatureList = null ;
-        String tableFeatureListCount = System.getProperty( "of.tableFeaturesCountPerMultipart", "5") ;
-        int noOfEntriesInMPR = Integer.parseInt(tableFeatureListCount) ;
-
-        int index = 0 ;
-        while(totalNoOfTableFeatureEntry-index > 0 ) {
-        	if( (totalNoOfTableFeatureEntry-index) > noOfEntriesInMPR ) {
-        		mprInput.setFlags(new MultipartRequestFlags(true));
-        		tmpOfTableFeatureList = ofTableFeatureList.subList(index, index + noOfEntriesInMPR);
-        	}
-        	else {
-        		// Last multipart request
-        		mprInput.setFlags(new MultipartRequestFlags(false));
-        		tmpOfTableFeatureList = ofTableFeatureList.subList(index, totalNoOfTableFeatureEntry );
-        	}
-
-        tableFeaturesRequest.setTableFeatures(tmpOfTableFeatureList) ;
+        mprInput.setFlags(new MultipartRequestFlags(true));
+        
+        tableFeaturesRequest.setTableFeatures(ofTableFeatureList) ;
+        
         //Set request body to main multipart request
         caseRequest.setMultipartRequestTableFeatures(tableFeaturesRequest.build());
         mprInput.setMultipartRequestBody(caseRequest.build());
 
         //Send the request, no cookies associated, use any connection
-        LOG.debug("Send Table Feature request :{}",tmpOfTableFeatureList);
+        LOG.debug("Send Table Feature request :{}",ofTableFeatureList);
         this.messageService.multipartRequest(mprInput.build(), null);
-        index += noOfEntriesInMPR ;
-		tmpOfTableFeatureList = null ; // To avoid any corrupt data
-        }
+        
         
         //Extract the Xid only from the Future for the last RPC and
-	// send it back to the NSF
+        // send it back to the NSF
         LOG.debug("Returning the result and transaction id to NSF");
         LOG.debug("Return results and transaction id back to caller");
         UpdateTableOutputBuilder output = new UpdateTableOutputBuilder();
