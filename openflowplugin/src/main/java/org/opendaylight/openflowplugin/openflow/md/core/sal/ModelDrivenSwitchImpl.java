@@ -200,6 +200,7 @@ import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 
+import com.google.common.base.Objects;
 import com.google.common.util.concurrent.Futures;
 
 /**
@@ -233,7 +234,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     	// the request can be routed through any connection to the switch
 
     	SwitchConnectionDistinguisher cookie = null ;
-    	if (input.isBarrier()) {
+    	if (Objects.firstNonNull(input.isBarrier(), Boolean.FALSE)) {
     	    Future<RpcResult<BarrierOutput>> barrierOFLib = messageService.barrier(barrierInput.build(), cookie);
     	}    	
 
@@ -341,7 +342,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     	// the request can be routed through any connection to the switch
 
     	SwitchConnectionDistinguisher cookie = null ;
-        if (input.isBarrier()) {
+        if (Objects.firstNonNull(input.isBarrier(), Boolean.FALSE)) {
     	    Future<RpcResult<BarrierOutput>> barrierOFLib = messageService.barrier(barrierInput.build(), cookie);
     	}
         
@@ -553,7 +554,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     	// the request can be routed through any connection to the switch
 
     	SwitchConnectionDistinguisher cookie = null ;
-        if (input.getUpdatedFlow().isBarrier()) {
+        if (Objects.firstNonNull(input.getUpdatedFlow().isBarrier(), Boolean.FALSE)) {
     	    Future<RpcResult<BarrierOutput>> barrierOFLib = messageService.barrier(barrierInput.build(), cookie);
     	}
         

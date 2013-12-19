@@ -54,6 +54,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Objects;
+
 /**
  * Utility class for converting a MD-SAL Flow into the OF flow mod
  */
@@ -112,13 +114,13 @@ public class FlowConvertor {
         if (flow instanceof AddFlowInput) {
             flowMod.setCommand(FlowModCommand.OFPFCADD);
         } else if (flow instanceof RemoveFlowInput) {
-            if (flow.isStrict() != null && flow.isStrict()) {
+            if (Objects.firstNonNull(flow.isStrict(), Boolean.FALSE)) {
                 flowMod.setCommand(FlowModCommand.OFPFCDELETESTRICT);
             } else {
                 flowMod.setCommand(FlowModCommand.OFPFCDELETE);
             }
         } else if (flow instanceof UpdatedFlow) {
-            if (flow.isStrict() != null && flow.isStrict()) {
+            if (Objects.firstNonNull(flow.isStrict(), Boolean.FALSE)) {
                 flowMod.setCommand(FlowModCommand.OFPFCMODIFYSTRICT);
             } else {
                 flowMod.setCommand(FlowModCommand.OFPFCMODIFY);
