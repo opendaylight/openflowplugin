@@ -62,6 +62,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetVlanCfiActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetVlanIdActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetVlanPcpActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.StripVlanActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SwPathActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.controller.action._case.ControllerActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.copy.ttl.in._case.CopyTtlInBuilder;
@@ -99,6 +100,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.vlan.cfi.action._case.SetVlanCfiActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.vlan.id.action._case.SetVlanIdActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.vlan.pcp.action._case.SetVlanPcpActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.strip.vlan.action._case.StripVlanActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.sw.path.action._case.SwPathActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
@@ -111,6 +113,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.OutputPortValues;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.InstructionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCaseBuilder;
@@ -134,6 +137,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.EtherTyp
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanPcp;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.band.type.band.type.ExperimenterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.arp.match.fields.ArpSourceHardwareAddressBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.arp.match.fields.ArpTargetHardwareAddressBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetDestinationBuilder;
@@ -494,8 +498,46 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
             flow.setMatch(createToSMatch().build());
             flow.setInstructions(createDropInstructions().build());
             break;
- 
-        
+        case "f56":
+            id += 56;
+            flow.setMatch(createToSMatch().build());
+            flow.setInstructions(createOutputInstructions("INPORT", 10).build());
+            break;
+        case "f57":
+            id += 57;
+            flow.setMatch(createToSMatch().build());
+            flow.setInstructions(createOutputInstructions("FLOOD", 20).build());
+            break;
+        case "f58":
+            id += 58;
+            flow.setMatch(createToSMatch().build());
+            flow.setInstructions(createOutputInstructions("ALL", 30).build());
+            break;
+        case "f59":
+            id += 59;
+            flow.setMatch(createToSMatch().build());
+            flow.setInstructions(createOutputInstructions("NORMAL" , 40).build());
+            break;
+        case "f60":
+            id += 60;
+            flow.setMatch(createToSMatch().build());
+            flow.setInstructions(createOutputInstructions("LOCAL" , 50).build());
+            break;
+        case "f61":
+            id += 61;
+            flow.setMatch(createToSMatch().build());
+            flow.setInstructions(createOutputInstructions("TABLE", 60).build());
+            break;
+        case "f62":
+            id += 62;
+            flow.setMatch(createToSMatch().build());
+            flow.setInstructions(createOutputInstructions("NONE" , 70).build());
+            break;
+        case "f63":
+            id += 63;
+            flow.setMatch(createToSMatch().build());
+            flow.setInstructions(createStripVlanInstructions().build());
+            break;
         default:
             LOG.warn("flow type not understood: {}", flowType);
         }
@@ -504,6 +546,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         flow.setBarrier(false);
         // flow.setBufferId(new Long(12));
         BigInteger value = new BigInteger("10", 10);
+        BigInteger outputPort = new BigInteger("65535", 10);
         flow.setCookie(value);
         flow.setCookieMask(value);
         flow.setHardTimeout(0);
@@ -515,7 +558,8 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         flow.setId(new FlowId(new Long(12)));
         flow.setTableId(getTableId(tableId));
         flow.setOutGroup(new Long(2));
-        flow.setOutPort(value);
+        // set outport to OFPP_NONE (65535) to disable remove restriction for flow
+        flow.setOutPort(outputPort);  
 
         flow.setKey(key);
         flow.setPriority(2);
@@ -731,6 +775,65 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return isb;
     }
 
+    
+    private static InstructionsBuilder createOutputInstructions(String outputType, int outputValue) {
+        List<Action> actionList = new ArrayList<Action>();
+        ActionBuilder ab = new ActionBuilder();
+
+        OutputActionBuilder output = new OutputActionBuilder();
+        output.setMaxLength(outputValue);
+        Uri value = new Uri(outputType);
+        output.setOutputNodeConnector(value);
+        ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
+        ab.setOrder(0);
+        ab.setKey(new ActionKey(0));
+        actionList.add(ab.build());
+        // Create an Apply Action
+        ApplyActionsBuilder aab = new ApplyActionsBuilder();
+        aab.setAction(actionList);
+
+        // Wrap our Apply Action in an Instruction
+        InstructionBuilder ib = new InstructionBuilder();
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
+        ib.setOrder(0);
+        ib.setKey(new InstructionKey(0));
+
+        // Put our Instruction in a list of Instructions
+        InstructionsBuilder isb = new InstructionsBuilder();
+        List<Instruction> instructions = new ArrayList<Instruction>();
+        instructions.add(ib.build());
+        isb.setInstruction(instructions);
+        return isb;
+    }
+    
+    private static InstructionsBuilder createStripVlanInstructions() {
+        List<Action> actionList = new ArrayList<Action>();
+        ActionBuilder ab = new ActionBuilder();
+
+        StripVlanActionBuilder stripActionBuilder = new StripVlanActionBuilder();
+        ab.setAction(new StripVlanActionCaseBuilder().setStripVlanAction(stripActionBuilder.build()).build());
+        ab.setOrder(0);
+        ab.setKey(new ActionKey(0));
+        actionList.add(ab.build());
+        // Create an Apply Action
+        ApplyActionsBuilder aab = new ApplyActionsBuilder();
+        aab.setAction(actionList);
+
+        // Wrap our Apply Action in an Instruction
+        InstructionBuilder ib = new InstructionBuilder();
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
+        ib.setOrder(0);
+        ib.setKey(new InstructionKey(0));
+
+        // Put our Instruction in a list of Instructions
+        InstructionsBuilder isb = new InstructionsBuilder();
+        List<Instruction> instructions = new ArrayList<Instruction>();
+        instructions.add(ib.build());
+        isb.setInstruction(instructions);
+        return isb;
+    }
+        
+    
     private static InstructionsBuilder createAppyActionInstruction2() {
 
         List<Action> actionList = new ArrayList<Action>();
@@ -1400,7 +1503,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         ActionBuilder ab = new ActionBuilder();
 
         SetNwTosActionBuilder setNwTosActionBuilder = new SetNwTosActionBuilder();
-        setNwTosActionBuilder.setTos(1);
+        setNwTosActionBuilder.setTos(8);
         ab.setAction(new SetNwTosActionCaseBuilder().setSetNwTosAction(setNwTosActionBuilder.build()).build());
         actionList.add(ab.build());
         // Create an Apply Action
@@ -1592,6 +1695,41 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return match;
     }
 
+    /**
+     * @return
+     */
+    private static MatchBuilder createIPv4DstMatch() {
+        MatchBuilder match = new MatchBuilder();
+        Ipv4MatchBuilder ipv4Match = new Ipv4MatchBuilder();
+        Ipv4Prefix prefix = new Ipv4Prefix("10.0.0.1/24");
+        ipv4Match.setIpv4Destination(prefix);
+        Ipv4Match i4m = ipv4Match.build();
+        match.setLayer3Match(i4m);
+
+        return match;
+    }
+
+    /**
+     * @return
+     */
+    private static MatchBuilder createIPv4SrcMatch() {
+        MatchBuilder match = new MatchBuilder();
+        Ipv4MatchBuilder ipv4Match = new Ipv4MatchBuilder();
+        Ipv4Prefix prefix = new Ipv4Prefix("10.20.30.40/24");
+        ipv4Match.setIpv4Source(prefix);
+        Ipv4Match i4m = ipv4Match.build();
+        match.setLayer3Match(i4m);
+
+        EthernetMatchBuilder eth = new EthernetMatchBuilder();
+        EthernetTypeBuilder ethTypeBuilder = new EthernetTypeBuilder();
+        ethTypeBuilder.setType(new EtherType(0x0800L));
+        eth.setEthernetType(ethTypeBuilder.build());
+        match.setEthernetMatch(eth.build());
+        return match;
+    }
+
+    
+    
     /**
      * @return
      */
