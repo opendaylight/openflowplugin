@@ -42,7 +42,6 @@ public class MatchConvertorV10Impl implements MatchConvertor<MatchV10> {
     @Override
     public MatchV10 convert(Match match) {
         MatchV10Builder matchBuilder = new MatchV10Builder();
-        boolean _aLL = true; // NO MATCHING (all match items are wildcarded) by default
         boolean _dLDST = true;
         boolean _dLSRC = true;
         boolean _dLTYPE = true;
@@ -71,25 +70,21 @@ public class MatchConvertorV10Impl implements MatchConvertor<MatchV10> {
         
         EthernetMatch ethernetMatch = match.getEthernetMatch();
         if(ethernetMatch!= null){
-            _aLL = false;
             _dLDST = convertEthernetDlDst(matchBuilder, ethernetMatch);
             _dLSRC = convertEthernetDlSrc(matchBuilder, ethernetMatch);
             _dLTYPE = convertEthernetDlType(matchBuilder, ethernetMatch);
         }
         VlanMatch vlanMatch = match.getVlanMatch();
         if(vlanMatch!= null){
-            _aLL = false;
             _dLVLAN = convertDlVlan(matchBuilder, vlanMatch);
             _dLVLANPCP = convertDlVlanPcp(matchBuilder, vlanMatch);
         }
         Long inPort = match.getInPort();
         if(inPort!=null){
-            _aLL = false;
             _iNPORT = convertInPortMatch(matchBuilder, inPort);
         }
         Layer3Match l3Match = match.getLayer3Match();
         if(l3Match != null){
-            _aLL = false;
             if(l3Match instanceof Ipv4Match){
                 Ipv4Match ipv4 = (Ipv4Match)l3Match;
                 _tPSRC = convertL3Ipv4SrcMatch(matchBuilder, ipv4);
@@ -98,13 +93,11 @@ public class MatchConvertorV10Impl implements MatchConvertor<MatchV10> {
         }
         IpMatch ipMatch = match.getIpMatch();
         if(ipMatch!=null){
-            _aLL = false;
             _nWPROTO = convertNwProto(matchBuilder, ipMatch);
             _nWTOS = convertNwTos(matchBuilder, ipMatch);
         }
         Layer4Match layer4Match = match.getLayer4Match();
         if (layer4Match != null) {
-            _aLL = false;
             if (layer4Match instanceof TcpMatch) {
                 TcpMatch tcpMatch = (TcpMatch) layer4Match;
                 _tPSRC = convertL4TpSrcMatch(matchBuilder, tcpMatch);
@@ -116,11 +109,9 @@ public class MatchConvertorV10Impl implements MatchConvertor<MatchV10> {
             }
         }
         
-        
         FlowWildcardsV10 wildCards = new FlowWildcardsV10(
-                _aLL, _dLDST, _dLSRC, _dLTYPE, _dLVLAN, 
+                _dLDST, _dLSRC, _dLTYPE, _dLVLAN, 
                 _dLVLANPCP, _iNPORT, _nWPROTO, _nWTOS, _tPDST, _tPSRC);
-        checkWildCards(wildCards);
         matchBuilder.setWildcards(wildCards);
         
         return matchBuilder.build();
@@ -338,38 +329,6 @@ public class MatchConvertorV10Impl implements MatchConvertor<MatchV10> {
             return false;
         }
         return true;
-    }
-
-    /**
-     * checks consistency between flag ALL and other flags (true = wildcard is on; false = use match value):
-     * <ul>
-     *   <li>if wc.ALL == true then all other flags must be set to true</li>
-     *   <li>if wc.ALL == false then at least one of other flags must be set to false</li>
-     * </ul>
-     * @param wildCards [wc]
-     */
-    private static void checkWildCards(FlowWildcardsV10 wc) {
-        boolean atLeastOneNonWildCard = false
-                || ! wc.isINPORT()
-                || ! wc.isDLVLAN()
-                || ! wc.isDLSRC()
-                || ! wc.isDLDST()
-                || ! wc.isDLTYPE()
-                || ! wc.isNWPROTO()
-                || ! wc.isTPSRC()
-                || ! wc.isTPDST()
-                || ! wc.isDLVLANPCP()
-                || ! wc.isNWTOS();
-        
-        if (atLeastOneNonWildCard && wc.isALL()) {
-            throw new IllegalStateException(
-                    "[wildcard.all == true] conflicts with at least one non wildcard flag: "+wc);
-        }
-        
-        if (!atLeastOneNonWildCard && !wc.isALL()) {
-            throw new IllegalStateException(
-                    "[wildcard.all == false] conflicts with all set to wildcard flags: "+wc);
-        }
     }
 
 }
