@@ -7,6 +7,10 @@
  */
 package org.opendaylight.openflowplugin.outputtest;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
@@ -42,12 +46,12 @@ public class OutputTestCommandProvider implements CommandProvider {
         if (sessionInitiated) {
             String inNodeKey = ci.nextArgument();
             
-//            String resultOfPingFlow = OutputTestUtil.makePingFlowForNode(inNodeKey, pc);
-//            ci.println(resultOfPingFlow);
+//          String resultOfPingFlow = OutputTestUtil.makePingFlowForNode(inNodeKey, pc);
+//          ci.println(resultOfPingFlow);
             
             TransmitPacketInput input = OutputTestUtil.buildTransmitInputPacket(
                                 inNodeKey, 
-                                new String("BRM").getBytes(), 
+                                new String("sendOutputMsg_TEST").getBytes(),
                                 "0xfffffffd", // port
                                 "0");
 
