@@ -73,7 +73,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.nw.dst.action._case.SetNwDstAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.nw.src.action._case.SetNwSrcAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.nw.tos.action._case.SetNwTosAction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.nw.tos.action._case.SetNwTosActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.nw.ttl.action._case.SetNwTtlActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.queue.action._case.SetQueueAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.queue.action._case.SetQueueActionBuilder;
@@ -81,6 +80,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.tp.src.action._case.SetTpSrcAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.vlan.id.action._case.SetVlanIdAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.vlan.pcp.action._case.SetVlanPcpAction;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.address.address.Ipv4;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.OutputPortValues;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.DlAddressAction;
@@ -196,7 +196,7 @@ public final class ActionConvertor {
                 actionsList.add(SalToOFPopPBB(action, actionsListBuilder));
             else if (action instanceof ExperimenterAction)
                 actionsList.add(SalToOFExperimenter(action, actionsListBuilder));
-   
+
             // 1.0 Actions
             else if (action instanceof SetVlanIdActionCase)
                 actionsList.add(SalToOFSetVlanId(action, actionsListBuilder, version));
@@ -485,7 +485,9 @@ public final class ActionConvertor {
             SetNwSrcAction setnwsrcaction = setnwsrccase.getSetNwSrcAction();
 
             IpAddressActionBuilder ipvaddress = new IpAddressActionBuilder();
-            ipvaddress.setIpAddress((Ipv4Address) setnwsrcaction.getAddress());
+            Ipv4 address_ipv4 = (Ipv4) setnwsrcaction.getAddress();
+            Ipv4Address address = new Ipv4Address(address_ipv4.getIpv4Address().getValue());
+            ipvaddress.setIpAddress(address);
             actionBuilder
                     .setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.SetNwSrc.class);
             actionBuilder.addAugmentation(
@@ -510,7 +512,9 @@ public final class ActionConvertor {
             SetNwDstAction setnwdstaction = setnwdstcase.getSetNwDstAction();
 
             IpAddressActionBuilder ipvaddress = new IpAddressActionBuilder();
-            ipvaddress.setIpAddress((Ipv4Address) setnwdstaction.getAddress());
+            Ipv4 address_ipv4 = (Ipv4) setnwdstaction.getAddress();
+            Ipv4Address address = new Ipv4Address(address_ipv4.getIpv4Address().getValue());
+            ipvaddress.setIpAddress(address);
             actionBuilder
                     .setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.SetNwDst.class);
             actionBuilder.addAugmentation(
@@ -534,12 +538,12 @@ public final class ActionConvertor {
             ActionBuilder actionBuilder = new ActionBuilder();
             SetNwTosActionCase setnwtoscase = (SetNwTosActionCase) action;
             SetNwTosAction setnwtosaction = setnwtoscase.getSetNwTosAction();
-            
+
             NwTosActionBuilder tosBuilder = new NwTosActionBuilder();
             tosBuilder.setNwTos(setnwtosaction.getTos().shortValue());
             actionBuilder.addAugmentation(NwTosAction.class, tosBuilder.build());
             actionBuilder.setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.SetNwTos.class);
-            
+
             actionsListBuilder.setAction(actionBuilder.build());
             return actionsListBuilder.build();
 
@@ -550,7 +554,7 @@ public final class ActionConvertor {
 
     }
 
-    
+
     private static ActionsList SalToOFSetTpSrc(
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
             ActionsListBuilder actionsListBuilder, short version) {
