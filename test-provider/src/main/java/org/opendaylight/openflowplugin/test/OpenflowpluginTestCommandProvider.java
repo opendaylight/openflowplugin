@@ -537,13 +537,17 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
             id += 63;
             flow.setMatch(createToSMatch().build());
             flow.setInstructions(createStripVlanInstructions().build());
+            flow.setBarrier(Boolean.TRUE);
             break;
         default:
             LOG.warn("flow type not understood: {}", flowType);
         }
 
         FlowKey key = new FlowKey(new FlowId(id));
-        flow.setBarrier(false);
+        if(null == flow.isBarrier())
+        {
+            flow.setBarrier(Boolean.FALSE);
+        }
         // flow.setBufferId(new Long(12));
         BigInteger value = new BigInteger("10", 10);
         BigInteger outputPort = new BigInteger("65535", 10);
