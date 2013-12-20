@@ -61,6 +61,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetTpSrcActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetVlanCfiActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetVlanIdActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetFieldCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetVlanPcpActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.StripVlanActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SwPathActionCaseBuilder;
@@ -481,8 +482,8 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
             id += 52;
             flow.setMatch(createL4TCPMatch().build());
             flow.setInstructions(createDropInstructions().build());
-            break;    
-            
+            break;
+
         case "f53":
             id += 53;
             flow.setMatch(createL4UDPMatch().build());
@@ -516,12 +517,12 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         case "f59":
             id += 59;
             flow.setMatch(createToSMatch().build());
-            flow.setInstructions(createOutputInstructions("NORMAL" , 40).build());
+            flow.setInstructions(createOutputInstructions("NORMAL", 40).build());
             break;
         case "f60":
             id += 60;
             flow.setMatch(createToSMatch().build());
-            flow.setInstructions(createOutputInstructions("LOCAL" , 50).build());
+            flow.setInstructions(createOutputInstructions("LOCAL", 50).build());
             break;
         case "f61":
             id += 61;
@@ -531,7 +532,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         case "f62":
             id += 62;
             flow.setMatch(createToSMatch().build());
-            flow.setInstructions(createOutputInstructions("NONE" , 70).build());
+            flow.setInstructions(createOutputInstructions("NONE", 70).build());
             break;
         case "f63":
             id += 63;
@@ -539,13 +540,82 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
             flow.setInstructions(createStripVlanInstructions().build());
             flow.setBarrier(Boolean.TRUE);
             break;
+        case "f64":
+            id += 64;
+            flow.setMatch(createMatch1().build());
+            flow.setInstructions(createAppyActionInstruction35().build());
+            break;
+        case "f65":
+            id += 65;
+            flow.setMatch(createMatch1().build());
+            flow.setInstructions(createAppyActionInstruction36().build());
+            break;
+        case "f66":
+            id += 66;
+            flow.setMatch(createMatch1().build());
+            flow.setInstructions(createAppyActionInstruction37().build());
+            break;
+        case "f67":
+            id += 67;
+            flow.setMatch(createMatch1().build());
+            flow.setInstructions(createAppyActionInstruction38().build());
+            break;
+        case "f68":
+            id += 68;
+            flow.setMatch(createL4TCPMatch().build());
+            flow.setInstructions(createAppyActionInstruction39().build());
+            break;
+        case "f69":
+            id += 69;
+            flow.setMatch(createL4UDPMatch().build());
+            flow.setInstructions(createAppyActionInstruction40().build());
+            break;
+        case "f70":
+            id += 70;
+            flow.setMatch(createL4SCTPMatch().build());
+            flow.setInstructions(createAppyActionInstruction41().build());
+            break;
+        case "f71":
+            id += 71;
+            flow.setMatch(createICMPv4Match().build());
+            flow.setInstructions(createAppyActionInstruction42().build());
+            break;
+        case "f72":
+            id += 72;
+            flow.setMatch(createArpMatch().build());
+            flow.setInstructions(createAppyActionInstruction43().build());
+            break;
+        case "f73":
+            id += 73;
+            flow.setMatch(createL3IPv6Match().build());
+            flow.setInstructions(createAppyActionInstruction44().build());
+            break;
+        case "f74":
+            id += 74;
+            flow.setMatch(createICMPv6Match().build());
+            flow.setInstructions(createAppyActionInstruction45().build());
+            break;
+        case "f75":
+            id += 75;
+            flow.setMatch(createMplsMatch().build());
+            flow.setInstructions(createAppyActionInstruction46().build());
+            break;
+        case "f76":
+            id += 76;
+            flow.setMatch(createPbbMatch().build());
+            flow.setInstructions(createAppyActionInstruction47().build());
+            break;
+        case "f77":
+            id += 77;
+            flow.setMatch(createTunnelIDMatch().build());
+            flow.setInstructions(createAppyActionInstruction48().build());
+            break;
         default:
             LOG.warn("flow type not understood: {}", flowType);
         }
 
         FlowKey key = new FlowKey(new FlowId(id));
-        if(null == flow.isBarrier())
-        {
+        if (null == flow.isBarrier()) {
             flow.setBarrier(Boolean.FALSE);
         }
         // flow.setBufferId(new Long(12));
@@ -562,8 +632,9 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         flow.setId(new FlowId(new Long(12)));
         flow.setTableId(getTableId(tableId));
         flow.setOutGroup(new Long(2));
-        // set outport to OFPP_NONE (65535) to disable remove restriction for flow
-        flow.setOutPort(outputPort);  
+        // set outport to OFPP_NONE (65535) to disable remove restriction for
+        // flow
+        flow.setOutPort(outputPort);
 
         flow.setKey(key);
         flow.setPriority(2);
@@ -571,22 +642,17 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         testFlow = flow;
         return flow;
     }
-    
-    
-    private short getTableId(String tableId)
-    {
-         short table = 2;
-          try
-          {
+
+    private short getTableId(String tableId) {
+        short table = 2;
+        try {
             table = Short.parseShort(tableId);
-          }
-          catch(Exception ex)
-          {
-             // ignore exception and continue with default value
-          }
-          
-          return table;
-        
+        } catch (Exception ex) {
+            // ignore exception and continue with default value
+        }
+
+        return table;
+
     }
 
     /**
@@ -748,7 +814,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         isb.setInstruction(instructions);
         return isb;
     }
-    
+
     private static InstructionsBuilder createSentToControllerInstructions() {
         List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
@@ -779,7 +845,6 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return isb;
     }
 
-    
     private static InstructionsBuilder createOutputInstructions(String outputType, int outputValue) {
         List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
@@ -809,7 +874,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         isb.setInstruction(instructions);
         return isb;
     }
-    
+
     private static InstructionsBuilder createStripVlanInstructions() {
         List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
@@ -836,8 +901,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         isb.setInstruction(instructions);
         return isb;
     }
-        
-    
+
     private static InstructionsBuilder createAppyActionInstruction2() {
 
         List<Action> actionList = new ArrayList<Action>();
@@ -1023,7 +1087,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         ActionBuilder ab = new ActionBuilder();
 
         CopyTtlInBuilder ttlin = new CopyTtlInBuilder();
-        ab.setAction(new  CopyTtlInCaseBuilder().setCopyTtlIn(ttlin.build()).build());
+        ab.setAction(new CopyTtlInCaseBuilder().setCopyTtlIn(ttlin.build()).build());
         actionList.add(ab.build());
         // Create an Apply Action
         ApplyActionsBuilder aab = new ApplyActionsBuilder();
@@ -1559,7 +1623,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         SetQueueActionBuilder setQueueActionBuilder = new SetQueueActionBuilder();
         setQueueActionBuilder.setQueueId(1L);
-        ab.setAction(new  SetQueueActionCaseBuilder().setSetQueueAction(setQueueActionBuilder.build()).build());
+        ab.setAction(new SetQueueActionCaseBuilder().setSetQueueAction(setQueueActionBuilder.build()).build());
         actionList.add(ab.build());
         // Create an Apply Action
         ApplyActionsBuilder aab = new ApplyActionsBuilder();
@@ -1680,6 +1744,605 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return isb;
     }
 
+    private static InstructionsBuilder createAppyActionInstruction35() {
+
+        List<Action> actionList = new ArrayList<Action>();
+        ActionBuilder ab = new ActionBuilder();
+        ActionBuilder ab1 = new ActionBuilder();
+        ActionBuilder ab2 = new ActionBuilder();
+
+        SetFieldBuilder setFieldBuilder = new SetFieldBuilder();
+        SetFieldBuilder setFieldBuilder1 = new SetFieldBuilder();
+        SetFieldBuilder setFieldBuilder2 = new SetFieldBuilder();
+
+        // Ethernet
+        EthernetMatchBuilder ethernetMatch = new EthernetMatchBuilder();
+        EthernetSourceBuilder ethSourceBuilder = new EthernetSourceBuilder();
+        ethSourceBuilder.setAddress(new MacAddress("00:00:00:00:00:01"));
+        EthernetMatchBuilder ethernetMatch1 = new EthernetMatchBuilder();
+        EthernetDestinationBuilder ethDestBuilder = new EthernetDestinationBuilder();
+        ethDestBuilder.setAddress(new MacAddress("00:00:00:00:00:02"));
+        EthernetMatchBuilder ethernetMatch2 = new EthernetMatchBuilder();
+        EthernetTypeBuilder ethTypeBuilder = new EthernetTypeBuilder();
+        ethTypeBuilder.setType(new EtherType(0x86ddL));
+
+        ethernetMatch.setEthernetSource(ethSourceBuilder.build());
+        ethernetMatch1.setEthernetDestination(ethDestBuilder.build());
+        ethernetMatch2.setEthernetType(ethTypeBuilder.build());
+        setFieldBuilder.setEthernetMatch(ethernetMatch.build());
+        setFieldBuilder1.setEthernetMatch(ethernetMatch1.build());
+        setFieldBuilder2.setEthernetMatch(ethernetMatch2.build());
+        ab.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder.build()).build());
+        ab.setKey(new ActionKey(0));
+        actionList.add(ab.build());
+
+        ab1.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder1.build()).build());
+        ab1.setKey(new ActionKey(1));
+        actionList.add(ab1.build());
+
+        ab2.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder2.build()).build());
+        ab2.setKey(new ActionKey(2));
+        actionList.add(ab2.build());
+
+        ApplyActionsBuilder aab = new ApplyActionsBuilder();
+        aab.setAction(actionList);
+
+        InstructionBuilder ib = new InstructionBuilder();
+        ib.setKey(new InstructionKey(0));
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
+
+        // Put our Instruction in a list of Instructions
+        InstructionsBuilder isb = new InstructionsBuilder();
+        List<Instruction> instructions = new ArrayList<Instruction>();
+        instructions.add(ib.build());
+        isb.setInstruction(instructions);
+        return isb;
+    }
+
+    private static InstructionsBuilder createAppyActionInstruction36() {
+
+        List<Action> actionList = new ArrayList<Action>();
+        ActionBuilder ab = new ActionBuilder();
+        ActionBuilder ab1 = new ActionBuilder();
+
+        SetFieldBuilder setFieldBuilder = new SetFieldBuilder();
+        SetFieldBuilder setFieldBuilder1 = new SetFieldBuilder();
+
+        // Vlan
+        VlanMatchBuilder vlanBuilder = new VlanMatchBuilder();
+        VlanMatchBuilder vlanBuilder1 = new VlanMatchBuilder();
+        VlanIdBuilder vlanIdBuilder = new VlanIdBuilder();
+        VlanId vlanId = new VlanId(10);
+        VlanPcp vpcp = new VlanPcp((short) 3);
+        vlanBuilder.setVlanPcp(vpcp);
+        vlanBuilder1.setVlanId(vlanIdBuilder.setVlanId(vlanId).setVlanIdPresent(true).build());
+        setFieldBuilder.setVlanMatch(vlanBuilder.build());
+        setFieldBuilder1.setVlanMatch(vlanBuilder1.build());
+        ab.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder.build()).build());
+        ab.setKey(new ActionKey(0));
+        actionList.add(ab.build());
+        ab1.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder1.build()).build());
+        ab1.setKey(new ActionKey(1));
+        actionList.add(ab1.build());
+
+        ApplyActionsBuilder aab = new ApplyActionsBuilder();
+        aab.setAction(actionList);
+
+        InstructionBuilder ib = new InstructionBuilder();
+        ib.setKey(new InstructionKey(0));
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
+
+        // Put our Instruction in a list of Instructions
+        InstructionsBuilder isb = new InstructionsBuilder();
+        List<Instruction> instructions = new ArrayList<Instruction>();
+        instructions.add(ib.build());
+        isb.setInstruction(instructions);
+        return isb;
+    }
+
+    private static InstructionsBuilder createAppyActionInstruction37() {
+
+        List<Action> actionList = new ArrayList<Action>();
+        ActionBuilder ab = new ActionBuilder();
+        ActionBuilder ab1 = new ActionBuilder();
+        ActionBuilder ab2 = new ActionBuilder();
+
+        SetFieldBuilder setFieldBuilder = new SetFieldBuilder();
+        SetFieldBuilder setFieldBuilder1 = new SetFieldBuilder();
+        SetFieldBuilder setFieldBuilder2 = new SetFieldBuilder();
+        // Ip
+        IpMatchBuilder ipmatch = new IpMatchBuilder();
+        IpMatchBuilder ipmatch1 = new IpMatchBuilder();
+        IpMatchBuilder ipmatch2 = new IpMatchBuilder();
+        Dscp dscp = new Dscp((short) 3);
+        ipmatch.setIpDscp(dscp);
+        ipmatch1.setIpEcn((short) 2);
+        ipmatch2.setIpProtocol((short) 120);
+        setFieldBuilder.setIpMatch(ipmatch.build());
+        ab.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder.build()).build());
+        ab.setKey(new ActionKey(0));
+        actionList.add(ab.build());
+
+        setFieldBuilder1.setIpMatch(ipmatch1.build());
+        ab1.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder1.build()).build());
+        ab1.setKey(new ActionKey(1));
+        actionList.add(ab1.build());
+
+        setFieldBuilder2.setIpMatch(ipmatch2.build());
+        ab2.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder2.build()).build());
+        ab2.setKey(new ActionKey(2));
+        actionList.add(ab2.build());
+
+        ApplyActionsBuilder aab = new ApplyActionsBuilder();
+        aab.setAction(actionList);
+
+        InstructionBuilder ib = new InstructionBuilder();
+        ib.setKey(new InstructionKey(0));
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
+
+        // Put our Instruction in a list of Instructions
+        InstructionsBuilder isb = new InstructionsBuilder();
+        List<Instruction> instructions = new ArrayList<Instruction>();
+        instructions.add(ib.build());
+        isb.setInstruction(instructions);
+        return isb;
+    }
+
+    private static InstructionsBuilder createAppyActionInstruction38() {
+
+        List<Action> actionList = new ArrayList<Action>();
+        ActionBuilder ab = new ActionBuilder();
+        ActionBuilder ab1 = new ActionBuilder();
+
+        SetFieldBuilder setFieldBuilder = new SetFieldBuilder();
+        SetFieldBuilder setFieldBuilder1 = new SetFieldBuilder();
+        // IPv4
+        Ipv4MatchBuilder ipv4Match = new Ipv4MatchBuilder();
+        Ipv4MatchBuilder ipv4Match1 = new Ipv4MatchBuilder();
+        Ipv4Prefix dstip = new Ipv4Prefix("200.71.9.5210");
+        Ipv4Prefix srcip = new Ipv4Prefix("100.1.1.1");
+        ipv4Match1.setIpv4Destination(dstip);
+        ipv4Match.setIpv4Source(srcip);
+        setFieldBuilder.setLayer3Match(ipv4Match.build());
+        ab.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder.build()).build());
+        ab.setKey(new ActionKey(0));
+        actionList.add(ab.build());
+
+        setFieldBuilder1.setLayer3Match(ipv4Match1.build());
+        ab1.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder1.build()).build());
+        ab1.setKey(new ActionKey(1));
+        actionList.add(ab1.build());
+
+        ApplyActionsBuilder aab = new ApplyActionsBuilder();
+        aab.setAction(actionList);
+
+        InstructionBuilder ib = new InstructionBuilder();
+        ib.setKey(new InstructionKey(0));
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
+
+        // Put our Instruction in a list of Instructions
+        InstructionsBuilder isb = new InstructionsBuilder();
+        List<Instruction> instructions = new ArrayList<Instruction>();
+        instructions.add(ib.build());
+        isb.setInstruction(instructions);
+        return isb;
+    }
+
+    private static InstructionsBuilder createAppyActionInstruction39() {
+
+        List<Action> actionList = new ArrayList<Action>();
+        ActionBuilder ab = new ActionBuilder();
+        ActionBuilder ab1 = new ActionBuilder();
+
+        SetFieldBuilder setFieldBuilder = new SetFieldBuilder();
+        SetFieldBuilder setFieldBuilder1 = new SetFieldBuilder();
+
+        // Tcp
+        PortNumber tcpsrcport = new PortNumber(1213);
+        PortNumber tcpdstport = new PortNumber(646);
+        TcpMatchBuilder tcpmatch = new TcpMatchBuilder();
+        TcpMatchBuilder tcpmatch1 = new TcpMatchBuilder();
+        tcpmatch.setTcpSourcePort(tcpsrcport);
+        tcpmatch1.setTcpDestinationPort(tcpdstport);
+        setFieldBuilder.setLayer4Match(tcpmatch.build());
+        ab.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder.build()).build());
+        ab.setKey(new ActionKey(0));
+        actionList.add(ab.build());
+
+        setFieldBuilder1.setLayer4Match(tcpmatch1.build());
+        ab1.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder1.build()).build());
+        ab1.setKey(new ActionKey(1));
+        actionList.add(ab.build());
+
+        ApplyActionsBuilder aab = new ApplyActionsBuilder();
+        aab.setAction(actionList);
+
+        InstructionBuilder ib = new InstructionBuilder();
+        ib.setKey(new InstructionKey(0));
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
+
+        // Put our Instruction in a list of Instructions
+        InstructionsBuilder isb = new InstructionsBuilder();
+        List<Instruction> instructions = new ArrayList<Instruction>();
+        instructions.add(ib.build());
+        isb.setInstruction(instructions);
+        return isb;
+    }
+
+    private static InstructionsBuilder createAppyActionInstruction40() {
+
+        List<Action> actionList = new ArrayList<Action>();
+        ActionBuilder ab = new ActionBuilder();
+        ActionBuilder ab1 = new ActionBuilder();
+
+        SetFieldBuilder setFieldBuilder = new SetFieldBuilder();
+        SetFieldBuilder setFieldBuilder1 = new SetFieldBuilder();
+
+        // Udp
+        PortNumber udpsrcport = new PortNumber(1325);
+        PortNumber udpdstport = new PortNumber(42);
+        UdpMatchBuilder udpmatch = new UdpMatchBuilder();
+        UdpMatchBuilder udpmatch1 = new UdpMatchBuilder();
+        udpmatch.setUdpDestinationPort(udpdstport);
+        udpmatch1.setUdpSourcePort(udpsrcport);
+        setFieldBuilder.setLayer4Match(udpmatch.build());
+        ab.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder.build()).build());
+        ab.setKey(new ActionKey(0));
+        actionList.add(ab.build());
+
+        setFieldBuilder1.setLayer4Match(udpmatch1.build());
+        ab1.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder1.build()).build());
+        ab1.setKey(new ActionKey(1));
+        actionList.add(ab1.build());
+
+        ApplyActionsBuilder aab = new ApplyActionsBuilder();
+        aab.setAction(actionList);
+
+        InstructionBuilder ib = new InstructionBuilder();
+        ib.setKey(new InstructionKey(0));
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
+
+        // Put our Instruction in a list of Instructions
+        InstructionsBuilder isb = new InstructionsBuilder();
+        List<Instruction> instructions = new ArrayList<Instruction>();
+        instructions.add(ib.build());
+        isb.setInstruction(instructions);
+        return isb;
+    }
+
+    private static InstructionsBuilder createAppyActionInstruction41() {
+
+        List<Action> actionList = new ArrayList<Action>();
+        ActionBuilder ab = new ActionBuilder();
+        ActionBuilder ab1 = new ActionBuilder();
+
+        SetFieldBuilder setFieldBuilder = new SetFieldBuilder();
+        SetFieldBuilder setFieldBuilder1 = new SetFieldBuilder();
+
+        // Sctp
+        SctpMatchBuilder sctpmatch = new SctpMatchBuilder();
+        SctpMatchBuilder sctpmatch1 = new SctpMatchBuilder();
+        PortNumber srcport = new PortNumber(1435);
+        PortNumber dstport = new PortNumber(22);
+        sctpmatch.setSctpSourcePort(srcport);
+        sctpmatch1.setSctpDestinationPort(dstport);
+        setFieldBuilder.setLayer4Match(sctpmatch.build());
+        ab.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder.build()).build());
+        ab.setKey(new ActionKey(0));
+        actionList.add(ab.build());
+
+        setFieldBuilder1.setLayer4Match(sctpmatch1.build());
+        ab1.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder1.build()).build());
+        ab1.setKey(new ActionKey(1));
+        actionList.add(ab1.build());
+
+        ApplyActionsBuilder aab = new ApplyActionsBuilder();
+        aab.setAction(actionList);
+
+        InstructionBuilder ib = new InstructionBuilder();
+        ib.setKey(new InstructionKey(0));
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
+
+        // Put our Instruction in a list of Instructions
+        InstructionsBuilder isb = new InstructionsBuilder();
+        List<Instruction> instructions = new ArrayList<Instruction>();
+        instructions.add(ib.build());
+        isb.setInstruction(instructions);
+        return isb;
+    }
+
+    private static InstructionsBuilder createAppyActionInstruction42() {
+
+        List<Action> actionList = new ArrayList<Action>();
+        ActionBuilder ab = new ActionBuilder();
+        ActionBuilder ab1 = new ActionBuilder();
+        SetFieldBuilder setFieldBuilder = new SetFieldBuilder();
+        SetFieldBuilder setFieldBuilder1 = new SetFieldBuilder();
+
+        // Icmpv4
+        Icmpv4MatchBuilder icmpv4match = new Icmpv4MatchBuilder();
+        Icmpv4MatchBuilder icmpv4match1 = new Icmpv4MatchBuilder();
+        icmpv4match.setIcmpv4Type((short) 8);
+        icmpv4match1.setIcmpv4Code((short) 0);
+        setFieldBuilder.setIcmpv4Match(icmpv4match.build());
+        ab.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder.build()).build());
+        ab.setKey(new ActionKey(0));
+        actionList.add(ab.build());
+
+        setFieldBuilder1.setIcmpv4Match(icmpv4match1.build());
+        ab1.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder1.build()).build());
+        ab1.setKey(new ActionKey(1));
+        actionList.add(ab1.build());
+
+        ApplyActionsBuilder aab = new ApplyActionsBuilder();
+        aab.setAction(actionList);
+
+        InstructionBuilder ib = new InstructionBuilder();
+        ib.setKey(new InstructionKey(0));
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
+
+        // Put our Instruction in a list of Instructions
+        InstructionsBuilder isb = new InstructionsBuilder();
+        List<Instruction> instructions = new ArrayList<Instruction>();
+        instructions.add(ib.build());
+        isb.setInstruction(instructions);
+        return isb;
+    }
+
+    private static InstructionsBuilder createAppyActionInstruction43() {
+
+        List<Action> actionList = new ArrayList<Action>();
+        ActionBuilder ab = new ActionBuilder();
+        ActionBuilder ab1 = new ActionBuilder();
+        ActionBuilder ab2 = new ActionBuilder();
+        ActionBuilder ab3 = new ActionBuilder();
+        ActionBuilder ab4 = new ActionBuilder();
+
+        SetFieldBuilder setFieldBuilder = new SetFieldBuilder();
+        SetFieldBuilder setFieldBuilder1 = new SetFieldBuilder();
+        SetFieldBuilder setFieldBuilder2 = new SetFieldBuilder();
+        SetFieldBuilder setFieldBuilder3 = new SetFieldBuilder();
+        SetFieldBuilder setFieldBuilder4 = new SetFieldBuilder();
+
+        // setting the values of ARP
+        MacAddress macdest = new MacAddress("ff:ff:ff:ff:ff:ff");
+        MacAddress macsrc = new MacAddress("00:00:00:00:23:ae");
+        Ipv4Prefix dstiparp = new Ipv4Prefix("200.71.9.52/10");
+        Ipv4Prefix srciparp = new Ipv4Prefix("100.1.1.1/8");
+        // create ARP match action
+        ArpMatchBuilder arpmatch = new ArpMatchBuilder();
+        ArpMatchBuilder arpmatch1 = new ArpMatchBuilder();
+        ArpMatchBuilder arpmatch2 = new ArpMatchBuilder();
+        ArpMatchBuilder arpmatch3 = new ArpMatchBuilder();
+        ArpMatchBuilder arpmatch4 = new ArpMatchBuilder();
+        ArpSourceHardwareAddressBuilder arpsrc = new ArpSourceHardwareAddressBuilder();
+        arpsrc.setAddress(macsrc);
+        ArpTargetHardwareAddressBuilder arpdst = new ArpTargetHardwareAddressBuilder();
+        arpdst.setAddress(macdest);
+        arpmatch.setArpOp(2);
+        arpmatch1.setArpSourceHardwareAddress(arpsrc.build());
+        arpmatch2.setArpTargetHardwareAddress(arpdst.build());
+        arpmatch3.setArpSourceTransportAddress(srciparp);
+        arpmatch4.setArpTargetTransportAddress(dstiparp);
+        setFieldBuilder.setLayer3Match(arpmatch.build());
+        ab.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder.build()).build());
+        ab.setKey(new ActionKey(0));
+        actionList.add(ab.build());
+
+        setFieldBuilder1.setLayer3Match(arpmatch1.build());
+        ab1.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder1.build()).build());
+        ab1.setKey(new ActionKey(1));
+        actionList.add(ab1.build());
+
+        setFieldBuilder2.setLayer3Match(arpmatch2.build());
+        ab2.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder2.build()).build());
+        ab2.setKey(new ActionKey(2));
+        actionList.add(ab2.build());
+
+        setFieldBuilder3.setLayer3Match(arpmatch3.build());
+        ab3.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder3.build()).build());
+        ab3.setKey(new ActionKey(3));
+        actionList.add(ab3.build());
+
+        setFieldBuilder4.setLayer3Match(arpmatch4.build());
+        ab4.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder4.build()).build());
+        ab4.setKey(new ActionKey(4));
+        actionList.add(ab4.build());
+
+        ApplyActionsBuilder aab = new ApplyActionsBuilder();
+        aab.setAction(actionList);
+
+        InstructionBuilder ib = new InstructionBuilder();
+        ib.setKey(new InstructionKey(0));
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
+
+        // Put our Instruction in a list of Instructions
+        InstructionsBuilder isb = new InstructionsBuilder();
+        List<Instruction> instructions = new ArrayList<Instruction>();
+        instructions.add(ib.build());
+        isb.setInstruction(instructions);
+        return isb;
+    }
+
+    private static InstructionsBuilder createAppyActionInstruction44() {
+
+        List<Action> actionList = new ArrayList<Action>();
+        ActionBuilder ab = new ActionBuilder();
+        SetFieldBuilder setFieldBuilder = new SetFieldBuilder();
+        ActionBuilder ab1 = new ActionBuilder();
+        SetFieldBuilder setFieldBuilder1 = new SetFieldBuilder();
+
+        // IPv6
+        Ipv6MatchBuilder ipv6Builder = new Ipv6MatchBuilder();
+        Ipv6MatchBuilder ipv6Builder1 = new Ipv6MatchBuilder();
+        Ipv6Prefix dstip6 = new Ipv6Prefix("2002::2");
+        Ipv6Prefix srcip6 = new Ipv6Prefix("2001:0:0:0:0:0:0:1");
+        ipv6Builder1.setIpv6Destination(dstip6);
+        ipv6Builder.setIpv6Source(srcip6);
+        setFieldBuilder.setLayer3Match(ipv6Builder.build());
+        ab.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder.build()).build());
+        ab.setKey(new ActionKey(0));
+        actionList.add(ab.build());
+
+        setFieldBuilder1.setLayer3Match(ipv6Builder1.build());
+        ab1.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder1.build()).build());
+        ab1.setKey(new ActionKey(1));
+        actionList.add(ab1.build());
+
+        ApplyActionsBuilder aab = new ApplyActionsBuilder();
+        aab.setAction(actionList);
+
+        InstructionBuilder ib = new InstructionBuilder();
+        ib.setKey(new InstructionKey(0));
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
+
+        // Put our Instruction in a list of Instructions
+        InstructionsBuilder isb = new InstructionsBuilder();
+        List<Instruction> instructions = new ArrayList<Instruction>();
+        instructions.add(ib.build());
+        isb.setInstruction(instructions);
+        return isb;
+    }
+
+    private static InstructionsBuilder createAppyActionInstruction45() {
+
+        List<Action> actionList = new ArrayList<Action>();
+        ActionBuilder ab = new ActionBuilder();
+        SetFieldBuilder setFieldBuilder = new SetFieldBuilder();
+        ActionBuilder ab1 = new ActionBuilder();
+        SetFieldBuilder setFieldBuilder1 = new SetFieldBuilder();
+
+        // Icmpv6
+        Icmpv6MatchBuilder icmpv6match = new Icmpv6MatchBuilder();
+        Icmpv6MatchBuilder icmpv6match1 = new Icmpv6MatchBuilder();
+        icmpv6match.setIcmpv6Type((short) 135);
+        icmpv6match1.setIcmpv6Code((short) 0);
+        setFieldBuilder.setIcmpv6Match(icmpv6match.build());
+        ab.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder.build()).build());
+        ab.setKey(new ActionKey(0));
+        actionList.add(ab.build());
+
+        setFieldBuilder1.setIcmpv6Match(icmpv6match1.build());
+        ab1.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder1.build()).build());
+        ab1.setKey(new ActionKey(1));
+        actionList.add(ab1.build());
+
+        ApplyActionsBuilder aab = new ApplyActionsBuilder();
+        aab.setAction(actionList);
+
+        InstructionBuilder ib = new InstructionBuilder();
+        ib.setKey(new InstructionKey(0));
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
+
+        // Put our Instruction in a list of Instructions
+        InstructionsBuilder isb = new InstructionsBuilder();
+        List<Instruction> instructions = new ArrayList<Instruction>();
+        instructions.add(ib.build());
+        isb.setInstruction(instructions);
+        return isb;
+    }
+
+    private static InstructionsBuilder createAppyActionInstruction46() {
+
+        List<Action> actionList = new ArrayList<Action>();
+        ActionBuilder ab = new ActionBuilder();
+        SetFieldBuilder setFieldBuilder = new SetFieldBuilder();
+        ActionBuilder ab1 = new ActionBuilder();
+        SetFieldBuilder setFieldBuilder1 = new SetFieldBuilder();
+        ActionBuilder ab2 = new ActionBuilder();
+        SetFieldBuilder setFieldBuilder2 = new SetFieldBuilder();
+
+        // MPLS
+        ProtocolMatchFieldsBuilder protomatch = new ProtocolMatchFieldsBuilder();
+        ProtocolMatchFieldsBuilder protomatch1 = new ProtocolMatchFieldsBuilder();
+        ProtocolMatchFieldsBuilder protomatch2 = new ProtocolMatchFieldsBuilder();
+        protomatch.setMplsLabel((long) 36008);
+        protomatch1.setMplsTc((short) 4);
+        protomatch2.setMplsBos((short) 1);
+        setFieldBuilder.setProtocolMatchFields(protomatch.build());
+        ab.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder.build()).build());
+        ab.setKey(new ActionKey(0));
+        actionList.add(ab.build());
+
+        setFieldBuilder1.setProtocolMatchFields(protomatch1.build());
+        ab1.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder1.build()).build());
+        ab1.setKey(new ActionKey(1));
+        actionList.add(ab1.build());
+
+        setFieldBuilder2.setProtocolMatchFields(protomatch2.build());
+        ab2.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder2.build()).build());
+        ab2.setKey(new ActionKey(2));
+        actionList.add(ab2.build());
+
+        ApplyActionsBuilder aab = new ApplyActionsBuilder();
+        aab.setAction(actionList);
+
+        InstructionBuilder ib = new InstructionBuilder();
+        ib.setKey(new InstructionKey(0));
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
+
+        // Put our Instruction in a list of Instructions
+        InstructionsBuilder isb = new InstructionsBuilder();
+        List<Instruction> instructions = new ArrayList<Instruction>();
+        instructions.add(ib.build());
+        isb.setInstruction(instructions);
+        return isb;
+    }
+
+    private static InstructionsBuilder createAppyActionInstruction47() {
+
+        List<Action> actionList = new ArrayList<Action>();
+        ActionBuilder ab = new ActionBuilder();
+        SetFieldBuilder setFieldBuilder = new SetFieldBuilder();
+        // PBB
+        ProtocolMatchFieldsBuilder protomatch = new ProtocolMatchFieldsBuilder();
+        protomatch.setPbb(new PbbBuilder().setPbbIsid(4L).setPbbMask(new byte[] { 0, 1, 0, 0 }).build());
+        setFieldBuilder.setProtocolMatchFields(protomatch.build());
+        ab.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder.build()).build());
+        actionList.add(ab.build());
+
+        ApplyActionsBuilder aab = new ApplyActionsBuilder();
+        aab.setAction(actionList);
+
+        InstructionBuilder ib = new InstructionBuilder();
+        ib.setKey(new InstructionKey(0));
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
+
+        // Put our Instruction in a list of Instructions
+        InstructionsBuilder isb = new InstructionsBuilder();
+        List<Instruction> instructions = new ArrayList<Instruction>();
+        instructions.add(ib.build());
+        isb.setInstruction(instructions);
+        return isb;
+    }
+
+    private static InstructionsBuilder createAppyActionInstruction48() {
+
+        List<Action> actionList = new ArrayList<Action>();
+        ActionBuilder ab = new ActionBuilder();
+        SetFieldBuilder setFieldBuilder = new SetFieldBuilder();
+        // Tunnel
+        TunnelBuilder tunnel = new TunnelBuilder();
+        tunnel.setTunnelId(BigInteger.valueOf(10668));
+        setFieldBuilder.setTunnel(tunnel.build());
+        ab.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder.build()).build());
+        actionList.add(ab.build());
+
+        ApplyActionsBuilder aab = new ApplyActionsBuilder();
+        aab.setAction(actionList);
+
+        InstructionBuilder ib = new InstructionBuilder();
+        ib.setKey(new InstructionKey(0));
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
+
+        // Put our Instruction in a list of Instructions
+        InstructionsBuilder isb = new InstructionsBuilder();
+        List<Instruction> instructions = new ArrayList<Instruction>();
+        instructions.add(ib.build());
+        isb.setInstruction(instructions);
+        return isb;
+    }
+
     /**
      * @return
      */
@@ -1732,8 +2395,6 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return match;
     }
 
-    
-    
     /**
      * @return
      */
@@ -1766,7 +2427,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         return match;
     }
-    
+
     private static MatchBuilder createInphyportMatch() {
         MatchBuilder match = new MatchBuilder();
         match.setInPort(202L);
@@ -1999,7 +2660,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         return match;
     }
-    
+
     /**
      * @return
      */
@@ -2018,7 +2679,6 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         match.setIpMatch(ipmatch.build());
         return match;
     }
-
 
     /**
      * @return
@@ -2156,7 +2816,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return match;
 
     }
-    
+
     /**
      * @return
      */
@@ -2175,10 +2835,9 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         DataModification<InstanceIdentifier<?>, DataObject> modification = dataBrokerService.beginTransaction();
         NodeBuilder tn = createTestNode(ci.nextArgument());
         FlowBuilder tf = createTestFlow(tn, ci.nextArgument(), ci.nextArgument());
-        InstanceIdentifier<Flow> path1 = InstanceIdentifier.builder(Nodes.class)
-                .child(Node.class, tn.getKey()).augmentation(FlowCapableNode.class)
-                .child(Table.class, new TableKey(tf.getTableId())).child(Flow.class, tf.getKey())
-                .build();
+        InstanceIdentifier<Flow> path1 = InstanceIdentifier.builder(Nodes.class).child(Node.class, tn.getKey())
+                .augmentation(FlowCapableNode.class).child(Table.class, new TableKey(tf.getTableId()))
+                .child(Flow.class, tf.getKey()).build();
         modification.removeOperationalData(nodeBuilderToInstanceId(tn));
         modification.removeOperationalData(path1);
         modification.removeConfigurationData(nodeBuilderToInstanceId(tn));
@@ -2206,8 +2865,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         DataModification<InstanceIdentifier<?>, DataObject> modification = dataBrokerService.beginTransaction();
         InstanceIdentifier<Flow> path1 = InstanceIdentifier.builder(Nodes.class)
                 .child(Node.class, nodeBuilder.getKey()).augmentation(FlowCapableNode.class)
-                .child(Table.class, new TableKey(flow.getTableId())).child(Flow.class, flow.getKey())
-                .build();
+                .child(Table.class, new TableKey(flow.getTableId())).child(Flow.class, flow.getKey()).build();
         modification.putOperationalData(nodeBuilderToInstanceId(nodeBuilder), nodeBuilder.build());
         modification.putOperationalData(path1, flow.build());
         modification.putConfigurationData(nodeBuilderToInstanceId(nodeBuilder), nodeBuilder.build());
