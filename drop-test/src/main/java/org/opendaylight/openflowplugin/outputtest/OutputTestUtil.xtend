@@ -38,6 +38,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier
 import org.opendaylight.controller.sal.binding.api.data.DataBrokerService
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext
 import java.util.concurrent.ExecutionException
+import org.apache.commons.lang.ArrayUtils
 
 class OutputTestUtil {
     
@@ -46,11 +47,24 @@ class OutputTestUtil {
     }
     
     public static def buildTransmitInputPacket(String nodeId, byte[] packValue, String outPort, String inPort) {
+        
+        var list = new ArrayList<Byte>(40);
+        var msg = (new String("sendOutputMsg_TEST")).getBytes();
+        var index =0;
+        for (byte b : msg) {
+            list.add(b);
+            if(index < 7) {index = index+1} else {index = 0}
+        }
+        while(index < 8) {
+            list.add(new Byte("0"));
+            index = index+1;
+        }
+        
         var ref = createNodeRef(nodeId);
         var nEgressConfRef = new NodeConnectorRef(createNodeConnRef(nodeId, outPort));
         var nIngressConRef = new NodeConnectorRef(createNodeConnRef(nodeId, inPort));
         var tPackBuilder = new TransmitPacketInputBuilder
-        tPackBuilder.setPayload(packValue);
+        tPackBuilder.setPayload(ArrayUtils.toPrimitive(list));
         tPackBuilder.setNode(ref);
         // TODO VD P2 missing cookies in Test
         tPackBuilder.setCookie(null);
