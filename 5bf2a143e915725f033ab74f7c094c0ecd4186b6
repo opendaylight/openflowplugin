@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da6255ed_391e3fbc",
+        "filename": "test-provider/src/main/java/org/opendaylight/openflowplugin/test/OpenflowpluginTestCommandProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 547,
+      "author": {
+        "id": 62
+      },
+      "writtenOn": "2013-12-20T14:25:25Z",
+      "side": 1,
+      "message": "Should this be not done just before the switch/case?",
+      "revId": "5bf2a143e915725f033ab74f7c094c0ecd4186b6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
