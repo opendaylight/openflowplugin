@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionReadyListener;
+import org.opendaylight.openflowplugin.openflow.md.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.session.PortFeaturesUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
@@ -380,8 +381,10 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         OFSessionUtil.registerSession(this, featureOutput, negotiatedVersion);
         requestDesc();
         requestPorts();
-        requestGroupFeatures();
-        requestMeterFeatures();
+        if(version == OFConstants.OFP_VERSION_1_3){
+            requestGroupFeatures();
+            requestMeterFeatures();
+        }
     }
 
     /*

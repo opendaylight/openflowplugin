@@ -1,3 +1,10 @@
+/*
+ * Copyright IBM Corporation, 2013.  All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
 import java.util.ArrayList;
@@ -9,15 +16,6 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.flow.and.statistics.map.list.FlowAndStatisticsMapList;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.flow.and.statistics.map.list.FlowAndStatisticsMapListBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Instructions;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.InstructionsBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ClearActionsCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.GoToTableCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.WriteActionsCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.WriteMetadataCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.statistics.types.rev130925.duration.DurationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.flow._case.multipart.reply.flow.FlowStats;
 
@@ -81,53 +79,10 @@ public class FlowStatsResponseConvertor {
             salFlowStatsBuilder.setMatch(MatchConvertorImpl.fromOFMatchToSALMatch(flowStats.getMatch()));
         }
         if(flowStats.getInstructions()!= null){
-            salFlowStatsBuilder.setInstructions(toSALInstruction(flowStats.getInstructions()));
+            salFlowStatsBuilder.setInstructions(OFToMDSalFlowConvertor.toSALInstruction(flowStats.getInstructions()));
         }
         
         return salFlowStatsBuilder.build();
         
-    }
-    
-    /**
-     * Method convert Openflow 1.3+ specific instructions to MD-SAL format
-     * flow instruction
-     * Note: MD-SAL won't augment this data directly to the data store, 
-     * so key setting is not required. If user wants to augment this data
-     * directly to the data store, key setting is required for each instructions. 
-     * @param instructions
-     * @return
-     */
-    public Instructions toSALInstruction(
-            List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.Instructions> instructions) {
-        
-        InstructionsBuilder instructionsBuilder = new InstructionsBuilder();
-        
-        List<Instruction> salInstructionList = new ArrayList<Instruction>();
-        
-        for(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.Instructions switchInst : instructions){
-            if(switchInst instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.ApplyActions){
-                InstructionBuilder instBuilder = new InstructionBuilder();
-                instBuilder.setInstruction(new ApplyActionsCaseBuilder().build());
-                salInstructionList.add(instBuilder.build());
-            }else if(switchInst instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.ClearActions){
-                InstructionBuilder instBuilder = new InstructionBuilder();
-                instBuilder.setInstruction(new ClearActionsCaseBuilder().build());
-                salInstructionList.add(instBuilder.build());
-            }else if(switchInst instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.GotoTable){
-                InstructionBuilder instBuilder = new InstructionBuilder();
-                instBuilder.setInstruction(new GoToTableCaseBuilder().build());
-                salInstructionList.add(instBuilder.build());
-            }else if(switchInst instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.WriteActions){
-                InstructionBuilder instBuilder = new InstructionBuilder();
-                instBuilder.setInstruction(new WriteActionsCaseBuilder().build());
-                salInstructionList.add(instBuilder.build());
-            }else if(switchInst instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.WriteMetadata){
-                InstructionBuilder instBuilder = new InstructionBuilder();
-                instBuilder.setInstruction(new WriteMetadataCaseBuilder().build());
-                salInstructionList.add(instBuilder.build());
-            }
-        }
-        instructionsBuilder.setInstruction(salInstructionList);
-        return instructionsBuilder.build();
     }
 }

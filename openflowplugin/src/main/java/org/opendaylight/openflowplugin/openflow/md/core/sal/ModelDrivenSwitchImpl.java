@@ -46,22 +46,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.G
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAllFlowStatisticsFromFlowTableInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAllFlowStatisticsFromFlowTableOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAllFlowStatisticsFromFlowTableOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAllFlowStatisticsInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAllFlowStatisticsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAllFlowsStatisticsFromAllFlowTablesInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAllFlowsStatisticsFromAllFlowTablesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAllFlowsStatisticsFromAllFlowTablesOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAllNodeConnectorStatisticsInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAllNodeConnectorStatisticsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetFlowStatisticsFromFlowTableInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetFlowStatisticsFromFlowTableOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetFlowStatisticsFromFlowTableOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetFlowStatisticsInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetFlowStatisticsOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetFlowTableStatisticsInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetFlowTableStatisticsOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetNodeConnectorStatisticsInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetNodeConnectorStatisticsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.GetFlowTablesStatisticsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.GetFlowTablesStatisticsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.GetFlowTablesStatisticsOutputBuilder;
@@ -161,12 +151,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.GetP
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.UpdatePortInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.UpdatePortOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.UpdatePortOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.GetAllPortsStatisticsInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.GetAllPortsStatisticsOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.GetAllPortsStatisticsOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.GetPortStatisticsInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.GetPortStatisticsOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.GetPortStatisticsOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.GetAllNodeConnectorsStatisticsInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.GetAllNodeConnectorsStatisticsOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.GetAllNodeConnectorsStatisticsOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.GetNodeConnectorStatisticsInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.GetNodeConnectorStatisticsOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.GetNodeConnectorStatisticsOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.GetAllQueuesStatisticsFromAllPortsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.GetAllQueuesStatisticsFromAllPortsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.GetAllQueuesStatisticsFromAllPortsOutputBuilder;
@@ -891,7 +881,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     }
     
     @Override
-    public Future<RpcResult<GetAllPortsStatisticsOutput>> getAllPortsStatistics(GetAllPortsStatisticsInput arg0) {
+    public Future<RpcResult<GetAllNodeConnectorsStatisticsOutput>> getAllNodeConnectorsStatistics(GetAllNodeConnectorsStatisticsInput arg0) {
 
         //Generate xid to associate it with the request
         Long xid = this.getSessionContext().getNextXid();
@@ -920,16 +910,16 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         this.messageService.multipartRequest(mprInput.build(), null);
 
         // Prepare rpc return output. Set xid and send it back.
-        GetAllPortsStatisticsOutputBuilder output = new GetAllPortsStatisticsOutputBuilder();
+        GetAllNodeConnectorsStatisticsOutputBuilder output = new GetAllNodeConnectorsStatisticsOutputBuilder();
         output.setTransactionId(generateTransactionId(xid));
 
         Collection<RpcError> errors = Collections.emptyList();
-        RpcResult<GetAllPortsStatisticsOutput> rpcResult = Rpcs.getRpcResult(true, output.build(), errors);
+        RpcResult<GetAllNodeConnectorsStatisticsOutput> rpcResult = Rpcs.getRpcResult(true, output.build(), errors);
         return Futures.immediateFuture(rpcResult);
     }
 
     @Override
-    public Future<RpcResult<GetPortStatisticsOutput>> getPortStatistics(GetPortStatisticsInput arg0) {
+    public Future<RpcResult<GetNodeConnectorStatisticsOutput>> getNodeConnectorStatistics(GetNodeConnectorStatisticsInput arg0) {
         //Generate xid to associate it with the request
         Long xid = this.getSessionContext().getNextXid();
 
@@ -958,11 +948,11 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         this.messageService.multipartRequest(mprInput.build(), null);
 
         // Prepare rpc return output. Set xid and send it back.
-        GetPortStatisticsOutputBuilder output = new GetPortStatisticsOutputBuilder();
+        GetNodeConnectorStatisticsOutputBuilder output = new GetNodeConnectorStatisticsOutputBuilder();
         output.setTransactionId(generateTransactionId(xid));
 
         Collection<RpcError> errors = Collections.emptyList();
-        RpcResult<GetPortStatisticsOutput> rpcResult = Rpcs.getRpcResult(true, output.build(), errors);
+        RpcResult<GetNodeConnectorStatisticsOutput> rpcResult = Rpcs.getRpcResult(true, output.build(), errors);
         return Futures.immediateFuture(rpcResult);
     }
 
@@ -1316,7 +1306,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         //Generate xid to associate it with the request
         Long xid = this.getSessionContext().getNextXid();
 
-        LOG.debug("Prepare agregate statistics request to get aggregate stats for flows matching {} and installed in flow tables {} - Transaction id - {}"
+        LOG.debug("Prepare aggregate statistics request to get aggregate stats for flows matching {} and installed in flow tables {} - Transaction id - {}"
                 ,arg0.getMatch().toString(),arg0.getTableId(),xid);
 
         // Create multipart request header
@@ -1525,40 +1515,6 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         Collection<RpcError> errors = Collections.emptyList();
         RpcResult<GetQueueStatisticsFromGivenPortOutput> rpcResult = Rpcs.getRpcResult(true, output.build(), errors);
         return Futures.immediateFuture(rpcResult);
-    }
-
-    @Override
-    public Future<RpcResult<GetAllFlowStatisticsOutput>> getAllFlowStatistics(GetAllFlowStatisticsInput arg0) {
-        //TODO: Depricated, need to clean it up. Sal-Compatibility layes is dependent on it.
-        // Once sal-compatibility layer is fixed this rpc call can be removed from yang file 
-        return null;
-    }
-
-    @Override
-    public Future<RpcResult<GetAllNodeConnectorStatisticsOutput>> getAllNodeConnectorStatistics(
-            GetAllNodeConnectorStatisticsInput arg0) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public Future<RpcResult<GetFlowStatisticsOutput>> getFlowStatistics(GetFlowStatisticsInput arg0) {
-        //TODO: Depricated, need to clean it up. Sal-Compatibility layes is dependent on it.
-        // Once sal-compatibility layer is fixed this rpc call can be removed from yang file 
-        return null;
-    }
-
-    @Override
-    public Future<RpcResult<GetFlowTableStatisticsOutput>> getFlowTableStatistics(GetFlowTableStatisticsInput arg0) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public Future<RpcResult<GetNodeConnectorStatisticsOutput>> getNodeConnectorStatistics(
-            GetNodeConnectorStatisticsInput arg0) {
-        // TODO Auto-generated method stub
-        return null;
     }
 
 }

@@ -56,7 +56,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.PortStatisticsUpdate;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.NodeConnectorStatisticsUpdate;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.QueueStatisticsUpdate;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.TableUpdated;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -137,7 +137,7 @@ public class MDController implements IMDController {
         addMessagePopListener(MeterFeaturesUpdated.class, notificationPopListener);
 
         //Notification registration for port-statistics
-        addMessagePopListener(PortStatisticsUpdate.class, notificationPopListener);
+        addMessagePopListener(NodeConnectorStatisticsUpdate.class, notificationPopListener);
         
         //Notification registration for flow-table statistics
         addMessagePopListener(FlowTableStatisticsUpdate.class, notificationPopListener);

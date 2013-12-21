@@ -83,7 +83,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.queue._case.multipart.reply.queue.QueueStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.table._case.MultipartReplyTable;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.table._case.multipart.reply.table.TableStats;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.PortStatisticsUpdateBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.NodeConnectorStatisticsUpdateBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.node.connector.statistics.and.port.number.map.NodeConnectorStatisticsAndPortNumberMap;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.node.connector.statistics.and.port.number.map.NodeConnectorStatisticsAndPortNumberMapBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.node.connector.statistics.and.port.number.map.NodeConnectorStatisticsAndPortNumberMapKey;
@@ -121,7 +121,7 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
             NodeId node = this.nodeIdFromDatapathId(sc.getFeatures().getDatapathId());
             switch (mpReply.getType()){
             case OFPMPFLOW: {
-                logger.debug("Received flow statistics reponse from openflow {} switch",msg.getVersion()==1?"1.0":"1.3+");
+                logger.info("Received flow statistics reponse from openflow {} switch",msg.getVersion()==1?"1.0":"1.3+");
                 FlowsStatisticsUpdateBuilder message = new FlowsStatisticsUpdateBuilder();
                 message.setId(node);
                 message.setMoreReplies(mpReply.getFlags().isOFPMPFREQMORE());
@@ -153,9 +153,9 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
             }
             case OFPMPPORTSTATS: {
 
-                logger.debug("Received port statistics multipart response");
+                logger.info("Received port statistics multipart response");
                 
-                PortStatisticsUpdateBuilder message = new PortStatisticsUpdateBuilder();
+                NodeConnectorStatisticsUpdateBuilder message = new NodeConnectorStatisticsUpdateBuilder();
                 message.setId(node);
                 message.setMoreReplies(mpReply.getFlags().isOFPMPFREQMORE());
                 message.setTransactionId(generateTransactionId(mpReply.getXid()));
