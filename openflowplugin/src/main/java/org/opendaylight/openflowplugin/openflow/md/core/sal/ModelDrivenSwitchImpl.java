@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Future;
 
+import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.controller.sal.common.util.Rpcs;
 import org.opendaylight.openflowjava.protocol.api.util.BinContent;
 import org.opendaylight.openflowplugin.openflow.md.OFConstants;
@@ -26,11 +27,15 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.PortConver
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.TableFeaturesConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchReactor;
 import org.opendaylight.openflowplugin.openflow.md.core.session.IMessageDispatchService;
+import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowAddedBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowRemovedBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowUpdatedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowOutputBuilder;
@@ -197,6 +202,8 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     private final NodeId nodeId;
     private final IMessageDispatchService messageService ;
     private short version = 0;
+    private SessionContext session;
+    NotificationProviderService rpcNotificationProviderService;
 
     protected ModelDrivenSwitchImpl(NodeId nodeId,
             InstanceIdentifier<Node> identifier, SessionContext context) {
@@ -204,27 +211,41 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         this.nodeId = nodeId;
         messageService = sessionContext.getMessageDispatchService() ;
         version = context.getPrimaryConductor().getVersion();
+        this.session = context;
+        rpcNotificationProviderService = OFSessionUtil.getSessionManager().getNotificationProviderService();
     }
 
     
     @Override
     public Future<RpcResult<AddFlowOutput>> addFlow(AddFlowInput input) {
-    	// Convert the AddFlowInput to FlowModInput
-        FlowModInput ofFlowModInput = FlowConvertor.toFlowModInput(input, version);
-        BarrierInputBuilder barrierInput = new BarrierInputBuilder();
-        barrierInput.setVersion(version);
-
+    	LOG.debug("Calling the FlowMod RPC method on MessageDispatchService");
+        Long xId  = null;
     	// For Flow provisioning, the SwitchConnectionDistinguisher is set to null so
     	// the request can be routed through any connection to the switch
 
     	SwitchConnectionDistinguisher cookie = null ;
     	if (Objects.firstNonNull(input.isBarrier(), Boolean.FALSE)) {
-    	    Future<RpcResult<BarrierOutput>> barrierOFLib = messageService.barrier(barrierInput.build(), cookie);
-    	}    	
-
-    	LOG.debug("Calling the FlowMod RPC method on MessageDispatchService");
-       	Future<RpcResult<UpdateFlowOutput>> resultFromOFLib = messageService.flowMod(ofFlowModInput, cookie) ;
-
+    	    xId = session.getNextXid();
+    	    BarrierInputBuilder barrierInput = new BarrierInputBuilder();
+    	    barrierInput.setVersion(version);
+    	    barrierInput.setXid(xId);    	  
+            @SuppressWarnings("unused")
+            Future<RpcResult<BarrierOutput>> barrierOFLib = messageService.barrier(barrierInput.build(), cookie);
+    	} 
+    	
+    	// Convert the AddFlowInput to FlowModInput
+    	FlowModInputBuilder ofFlowModInput = FlowConvertor.toFlowModInput(input, version);
+    	xId = session.getNextXid();
+        ofFlowModInput.setXid(xId);
+        
+    	if (null != rpcNotificationProviderService) {    	 
+        	FlowAddedBuilder newFlow = new FlowAddedBuilder();        	
+        	newFlow.setTransactionId(new TransactionId(BigInteger.valueOf(xId.intValue())));
+        	newFlow.setFlowRef(input.getFlowRef());
+        	rpcNotificationProviderService.publish(newFlow.build());
+    	}
+    	
+       	Future<RpcResult<UpdateFlowOutput>> resultFromOFLib = messageService.flowMod(ofFlowModInput.build(), cookie) ;
        	RpcResult<UpdateFlowOutput> rpcResultFromOFLib = null ;
 
     	try {
@@ -316,22 +337,35 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     }
 
     @Override
-    public Future<RpcResult<RemoveFlowOutput>> removeFlow(RemoveFlowInput input) {
-    	// Convert the RemoveFlowInput to FlowModInput
-        FlowModInput ofFlowModInput = FlowConvertor.toFlowModInput(input, version);
-        BarrierInputBuilder barrierInput = new BarrierInputBuilder();
-        barrierInput.setVersion(version);
-
+    public Future<RpcResult<RemoveFlowOutput>> removeFlow(RemoveFlowInput input) { 
+        LOG.debug("Calling the removeFlow RPC method on MessageDispatchService");
+        Long xId  = null;
     	// For Flow provisioning, the SwitchConnectionDistinguisher is set to null so
     	// the request can be routed through any connection to the switch
 
     	SwitchConnectionDistinguisher cookie = null ;
         if (Objects.firstNonNull(input.isBarrier(), Boolean.FALSE)) {
-    	    Future<RpcResult<BarrierOutput>> barrierOFLib = messageService.barrier(barrierInput.build(), cookie);
+            BarrierInputBuilder barrierInput = new BarrierInputBuilder();
+            xId = session.getNextXid();
+            barrierInput.setXid(xId);
+            barrierInput.setVersion(version);
+    	    @SuppressWarnings("unused")
+            Future<RpcResult<BarrierOutput>> barrierOFLib = messageService.barrier(barrierInput.build(), cookie);
     	}
         
-    	LOG.debug("Calling the FlowMod RPC method on MessageDispatchService");
-       	Future<RpcResult<UpdateFlowOutput>> resultFromOFLib = messageService.flowMod(ofFlowModInput, cookie) ;
+        // Convert the RemoveFlowInput to FlowModInput
+        FlowModInputBuilder ofFlowModInput = FlowConvertor.toFlowModInput(input, version);        
+        xId = session.getNextXid();
+        ofFlowModInput.setXid(xId);
+        
+        if (null != rpcNotificationProviderService) {        
+            FlowRemovedBuilder removeFlow = new FlowRemovedBuilder();          
+            removeFlow.setTransactionId(new TransactionId(BigInteger.valueOf(xId.intValue())));
+            removeFlow.setFlowRef(input.getFlowRef());
+            rpcNotificationProviderService.publish(removeFlow.build());
+        }
+    	
+       	Future<RpcResult<UpdateFlowOutput>> resultFromOFLib = messageService.flowMod(ofFlowModInput.build(), cookie) ;
 
        	RpcResult<UpdateFlowOutput> rpcResultFromOFLib = null ;
 
@@ -468,10 +502,8 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 
     @Override
     public Future<RpcResult<UpdateFlowOutput>> updateFlow(UpdateFlowInput input) {
-    	// Convert the UpdateFlowInput to FlowModInput
-        FlowModInput ofFlowModInput = FlowConvertor.toFlowModInput(input.getUpdatedFlow(), version);
-        BarrierInputBuilder barrierInput = new BarrierInputBuilder();
-        barrierInput.setVersion(version);
+        LOG.debug("Calling the updateFlow RPC method on MessageDispatchService");
+        Long xId  = null;
     	// Call the RPC method on MessageDispatchService
 
     	// For Flow provisioning, the SwitchConnectionDistinguisher is set to null so
@@ -479,11 +511,26 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 
     	SwitchConnectionDistinguisher cookie = null ;
         if (Objects.firstNonNull(input.getUpdatedFlow().isBarrier(), Boolean.FALSE)) {
+            BarrierInputBuilder barrierInput = new BarrierInputBuilder();
+            xId = session.getNextXid();
+            barrierInput.setVersion(version);
+            barrierInput.setXid(xId);
     	    Future<RpcResult<BarrierOutput>> barrierOFLib = messageService.barrier(barrierInput.build(), cookie);
     	}
+    	
+    	// Convert the UpdateFlowInput to FlowModInput
+        FlowModInputBuilder ofFlowModInput = FlowConvertor.toFlowModInput(input.getUpdatedFlow(), version);
+        xId = session.getNextXid();
+        ofFlowModInput.setXid(xId);
         
-    	LOG.debug("Calling the FlowMod RPC method on MessageDispatchService");
-       	Future<RpcResult<UpdateFlowOutput>> resultFromOFLib = messageService.flowMod(ofFlowModInput, cookie) ;
+        if (null != rpcNotificationProviderService) {        
+            FlowUpdatedBuilder updateFlow = new FlowUpdatedBuilder();          
+            updateFlow.setTransactionId(new TransactionId(BigInteger.valueOf(xId.intValue())));
+            updateFlow.setFlowRef(input.getFlowRef());
+            rpcNotificationProviderService.publish(updateFlow.build());
+        }
+        
+       	Future<RpcResult<UpdateFlowOutput>> resultFromOFLib = messageService.flowMod(ofFlowModInput.build(), cookie) ;
 
        	RpcResult<UpdateFlowOutput> rpcResultFromOFLib = null ;
 
