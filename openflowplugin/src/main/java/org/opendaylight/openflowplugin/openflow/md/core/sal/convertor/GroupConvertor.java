@@ -42,7 +42,7 @@ public final class GroupConvertor {
 
     }
 
-    public static GroupModInput toGroupModInput(
+    public static GroupModInputBuilder toGroupModInput(
 
     org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group source, short version) {
         List<BucketsList> bucketLists = null;
@@ -80,7 +80,7 @@ public final class GroupConvertor {
             groupModInputBuilder.setBucketsList(bucketLists);
         }
         groupModInputBuilder.setVersion(version);
-        return groupModInputBuilder.build();
+        return groupModInputBuilder;
 
     }
 

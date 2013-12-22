@@ -23,6 +23,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.meter.band.header.MeterBandTypesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterModCommand;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MeterModInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MeterModInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.MeterBand;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.meter.band.MeterBandDropCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.meter.band.MeterBandDscpRemarkCase;
@@ -110,7 +111,7 @@ public class MeterConvertorTest {
         addMeterFromSAL.setFlags(flagV);
 
         AddMeterInput meterInputCommand = addMeterFromSAL.build();
-        MeterModInput outMeterModInput = MeterConvertor.toMeterModInput(meterInputCommand, (short) 0X4);
+        MeterModInputBuilder outMeterModInput = MeterConvertor.toMeterModInput(meterInputCommand, (short) 0X4);
 
         Assert.assertEquals(MeterModCommand.OFPMCADD, outMeterModInput.getCommand());
         Assert.assertTrue(outMeterModInput.getFlags().isOFPMFBURST());
@@ -229,7 +230,7 @@ public class MeterConvertorTest {
 
 
         AddMeterInput meterInputCommand = addMeterFromSAL.build();
-        MeterModInput outMeterModInput = MeterConvertor.toMeterModInput(meterInputCommand, (short) 0X4);
+        MeterModInputBuilder outMeterModInput = MeterConvertor.toMeterModInput(meterInputCommand, (short) 0X4);
 
         Assert.assertEquals(MeterModCommand.OFPMCADD, outMeterModInput.getCommand());
         Assert.assertFalse(outMeterModInput.getFlags().isOFPMFBURST());
@@ -290,7 +291,7 @@ public class MeterConvertorTest {
         addMeterFromSAL.setFlags(flagV);
 
         AddMeterInput meterInputCommand = addMeterFromSAL.build();
-        MeterModInput outMeterModInput = MeterConvertor.toMeterModInput(meterInputCommand, (short) 0X4);
+        MeterModInputBuilder outMeterModInput = MeterConvertor.toMeterModInput(meterInputCommand, (short) 0X4);
 
         Assert.assertEquals(MeterModCommand.OFPMCADD, outMeterModInput.getCommand());
         Assert.assertTrue(outMeterModInput.getFlags().isOFPMFBURST());
@@ -371,7 +372,7 @@ public class MeterConvertorTest {
         addMeterFromSAL.setFlags(flagV);
 
         AddMeterInput meterInputCommand = addMeterFromSAL.build();
-        MeterModInput outMeterModInput = MeterConvertor.toMeterModInput(meterInputCommand, (short) 0X4);
+        MeterModInputBuilder outMeterModInput = MeterConvertor.toMeterModInput(meterInputCommand, (short) 0X4);
 
         Assert.assertEquals(MeterModCommand.OFPMCADD, outMeterModInput.getCommand());
         Assert.assertTrue(outMeterModInput.getFlags().isOFPMFBURST());
