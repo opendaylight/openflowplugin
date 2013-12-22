@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da6255ed_dfe4a3e2",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/ModelDrivenSwitchImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 242,
+      "author": {
+        "id": 9
+      },
+      "writtenOn": "2013-12-22T16:51:51Z",
+      "side": 1,
+      "message": "You might want to just use the FlowAddedBuilder(Flow) constructor here... I think both the AddFlowInput and FlowAdded meet the Flow interface, and thus there should be a constructor where you can \n\nnew FlowAddedBuilder(input) \n\nto get started.",
+      "revId": "d0c2fd72a22a979c2d24d924ce506b7616380773",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da6255ed_9feaabaa",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/ModelDrivenSwitchImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 244,
+      "author": {
+        "id": 9
+      },
+      "writtenOn": "2013-12-22T16:51:51Z",
+      "side": 1,
+      "message": "Don\u0027t forget to pass the flow data into the update... I think the constructor will do that is used as suggested above.",
+      "revId": "d0c2fd72a22a979c2d24d924ce506b7616380773",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da6255ed_bfe56fdd",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/ModelDrivenSwitchImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 363,
+      "author": {
+        "id": 9
+      },
+      "writtenOn": "2013-12-22T16:51:51Z",
+      "side": 1,
+      "message": "Just as above, consider using the FlowRemovedBuilder(Flow) constructor (I\u0027m pretty sure it exists).",
+      "revId": "d0c2fd72a22a979c2d24d924ce506b7616380773",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
