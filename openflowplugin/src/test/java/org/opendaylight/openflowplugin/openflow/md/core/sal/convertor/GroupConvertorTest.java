@@ -27,6 +27,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupModCommand;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GroupModInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GroupModInputBuilder;
 
 public class GroupConvertorTest {
 
@@ -109,7 +110,7 @@ public class GroupConvertorTest {
 
         addGroupBuilder.setBuckets(buckets);
 
-        GroupModInput outAddGroupInput = GroupConvertor.toGroupModInput(addGroupBuilder.build(), (short) 0X4);
+        GroupModInputBuilder outAddGroupInput = GroupConvertor.toGroupModInput(addGroupBuilder.build(), (short) 0X4);
 
         Assert.assertEquals(GroupModCommand.OFPGCADD, outAddGroupInput.getCommand());
         Assert.assertEquals(GroupType.OFPGTALL, outAddGroupInput.getType());
@@ -159,7 +160,7 @@ public class GroupConvertorTest {
 
         addGroupBuilder.setGroupType(GroupTypes.GroupAll);
 
-        GroupModInput outAddGroupInput = GroupConvertor.toGroupModInput(addGroupBuilder.build(), (short) 0X4);
+        GroupModInputBuilder outAddGroupInput = GroupConvertor.toGroupModInput(addGroupBuilder.build(), (short) 0X4);
 
         Assert.assertEquals(GroupModCommand.OFPGCADD, outAddGroupInput.getCommand());
         Assert.assertEquals(GroupType.OFPGTALL, outAddGroupInput.getType());
@@ -215,7 +216,7 @@ public class GroupConvertorTest {
 
         addGroupBuilder.setBuckets(buckets);
 
-        GroupModInput outAddGroupInput = GroupConvertor.toGroupModInput(addGroupBuilder.build(), (short) 0X4);
+        GroupModInputBuilder outAddGroupInput = GroupConvertor.toGroupModInput(addGroupBuilder.build(), (short) 0X4);
 
         Assert.assertEquals(GroupModCommand.OFPGCADD, outAddGroupInput.getCommand());
         Assert.assertEquals(GroupType.OFPGTFF, outAddGroupInput.getType());
@@ -328,7 +329,7 @@ public class GroupConvertorTest {
 
         addGroupBuilder.setBuckets(buckets);
 
-        GroupModInput outAddGroupInput = GroupConvertor.toGroupModInput(addGroupBuilder.build(), (short) 0X4);
+        GroupModInputBuilder outAddGroupInput = GroupConvertor.toGroupModInput(addGroupBuilder.build(), (short) 0X4);
 
         Assert.assertEquals(GroupModCommand.OFPGCADD, outAddGroupInput.getCommand());
         Assert.assertEquals(GroupType.OFPGTALL, outAddGroupInput.getType());
