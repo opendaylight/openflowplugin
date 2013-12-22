@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Future;
 
+import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.controller.sal.common.util.Rpcs;
 import org.opendaylight.openflowjava.protocol.api.util.BinContent;
 import org.opendaylight.openflowplugin.openflow.md.OFConstants;
@@ -26,12 +27,16 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.PortConver
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.TableFeaturesConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchReactor;
 import org.opendaylight.openflowplugin.openflow.md.core.session.IMessageDispatchService;
+import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.openflow.md.util.FlowCreatorUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowAddedBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowRemovedBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowUpdatedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowOutputBuilder;
@@ -62,6 +67,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.GroupAddedBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.GroupRemovedBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.GroupUpdatedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupOutputBuilder;
@@ -85,6 +93,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.MeterAddedBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.MeterRemovedBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.MeterUpdatedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterOutputBuilder;
@@ -119,7 +130,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GroupModInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GroupModInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MeterModInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MeterModInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOutInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortModInput;
@@ -189,6 +202,8 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     private final NodeId nodeId;
     private final IMessageDispatchService messageService ;
     private short version = 0;
+    private SessionContext session;
+    NotificationProviderService rpcNotificationProviderService;
 
     protected ModelDrivenSwitchImpl(NodeId nodeId,
             InstanceIdentifier<Node> identifier, SessionContext context) {
@@ -196,27 +211,41 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         this.nodeId = nodeId;
         messageService = sessionContext.getMessageDispatchService() ;
         version = context.getPrimaryConductor().getVersion();
+        this.session = context;
+        rpcNotificationProviderService = OFSessionUtil.getSessionManager().getNotificationProviderService();
     }
 
     
     @Override
     public Future<RpcResult<AddFlowOutput>> addFlow(AddFlowInput input) {
-    	// Convert the AddFlowInput to FlowModInput
-        FlowModInput ofFlowModInput = FlowConvertor.toFlowModInput(input, version);
-        BarrierInputBuilder barrierInput = new BarrierInputBuilder();
-        barrierInput.setVersion(version);
-
+    	LOG.debug("Calling the FlowMod RPC method on MessageDispatchService");
+        Long xId  = null;
     	// For Flow provisioning, the SwitchConnectionDistinguisher is set to null so
     	// the request can be routed through any connection to the switch
 
     	SwitchConnectionDistinguisher cookie = null ;
     	if (Objects.firstNonNull(input.isBarrier(), Boolean.FALSE)) {
-    	    Future<RpcResult<BarrierOutput>> barrierOFLib = messageService.barrier(barrierInput.build(), cookie);
-    	}    	
-
-    	LOG.debug("Calling the FlowMod RPC method on MessageDispatchService");
-       	Future<RpcResult<UpdateFlowOutput>> resultFromOFLib = messageService.flowMod(ofFlowModInput, cookie) ;
-
+    	    xId = session.getNextXid();
+    	    BarrierInputBuilder barrierInput = new BarrierInputBuilder();
+    	    barrierInput.setVersion(version);
+    	    barrierInput.setXid(xId);    	  
+            @SuppressWarnings("unused")
+            Future<RpcResult<BarrierOutput>> barrierOFLib = messageService.barrier(barrierInput.build(), cookie);
+    	} 
+    	
+    	// Convert the AddFlowInput to FlowModInput
+    	FlowModInputBuilder ofFlowModInput = FlowConvertor.toFlowModInput(input, version);
+    	xId = session.getNextXid();
+        ofFlowModInput.setXid(xId);
+        
+    	if (null != rpcNotificationProviderService) {    	 
+        	FlowAddedBuilder newFlow = new FlowAddedBuilder((org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow)input);        	
+        	newFlow.setTransactionId(new TransactionId(BigInteger.valueOf(xId.intValue())));
+        	newFlow.setFlowRef(input.getFlowRef());
+        	rpcNotificationProviderService.publish(newFlow.build());
+    	}
+    	
+       	Future<RpcResult<UpdateFlowOutput>> resultFromOFLib = messageService.flowMod(ofFlowModInput.build(), cookie) ;
        	RpcResult<UpdateFlowOutput> rpcResultFromOFLib = null ;
 
     	try {
@@ -240,18 +269,35 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 
     @Override
     public Future<RpcResult<AddGroupOutput>> addGroup(AddGroupInput input) {
-    	// Convert the AddGroupInput to GroupModInput
-        GroupModInput ofGroupModInput = GroupConvertor.toGroupModInput(input, version);
-
+        LOG.debug("Calling the GroupMod RPC method on MessageDispatchService");
+        Long xId  = null;
 
     	// For Flow provisioning, the SwitchConnectionDistinguisher is set to null so
     	// the request can be routed through any connection to the switch
 
     	SwitchConnectionDistinguisher cookie = null ;
-
-    	LOG.debug("Calling the GroupMod RPC method on MessageDispatchService");
-    	Future<RpcResult<UpdateGroupOutput>> resultFromOFLib = messageService.groupMod(ofGroupModInput, cookie) ;
-
+    	if (Objects.firstNonNull(input.isBarrier(), Boolean.FALSE)) {
+            xId = session.getNextXid();
+            BarrierInputBuilder barrierInput = new BarrierInputBuilder();
+            barrierInput.setVersion(version);
+            barrierInput.setXid(xId);         
+            @SuppressWarnings("unused")
+            Future<RpcResult<BarrierOutput>> barrierOFLib = messageService.barrier(barrierInput.build(), cookie);
+        } 
+    	
+    	// Convert the AddGroupInput to GroupModInput
+        GroupModInputBuilder ofGroupModInput = GroupConvertor.toGroupModInput(input, version);
+        xId = session.getNextXid();
+        ofGroupModInput.setXid(xId);
+        
+        if (null != rpcNotificationProviderService) {        
+            GroupAddedBuilder groupMod = new GroupAddedBuilder((org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group)input);            
+            groupMod.setTransactionId(new TransactionId(BigInteger.valueOf(xId.intValue())));
+            groupMod.setGroupRef(input.getGroupRef());
+            rpcNotificationProviderService.publish(groupMod.build());
+        }
+        
+    	Future<RpcResult<UpdateGroupOutput>> resultFromOFLib = messageService.groupMod(ofGroupModInput.build(), cookie) ;
     	RpcResult<UpdateGroupOutput> rpcResultFromOFLib = null ;
 
     	try {
@@ -275,16 +321,34 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 
     @Override
     public Future<RpcResult<AddMeterOutput>> addMeter(AddMeterInput input) {
-    	// Convert the AddMeterInput to MeterModInput
-        MeterModInput ofMeterModInput = MeterConvertor.toMeterModInput(input, version);
-
+        LOG.debug("Calling the MeterMod RPC method on MessageDispatchService");
+        Long xId  = null;
     	// For Meter provisioning, the SwitchConnectionDistinguisher is set to null so
     	// the request can be routed through any connection to the switch
 
     	SwitchConnectionDistinguisher cookie = null ;
-
-    	LOG.debug("Calling the MeterMod RPC method on MessageDispatchService");
-    	Future<RpcResult<UpdateMeterOutput>> resultFromOFLib = messageService.meterMod(ofMeterModInput, cookie) ;
+    	if (Objects.firstNonNull(input.isBarrier(), Boolean.FALSE)) {
+            xId = session.getNextXid();
+            BarrierInputBuilder barrierInput = new BarrierInputBuilder();
+            barrierInput.setVersion(version);
+            barrierInput.setXid(xId);         
+            @SuppressWarnings("unused")
+            Future<RpcResult<BarrierOutput>> barrierOFLib = messageService.barrier(barrierInput.build(), cookie);
+        } 
+   
+    	// Convert the AddMeterInput to MeterModInput
+        MeterModInputBuilder ofMeterModInput = MeterConvertor.toMeterModInput(input, version);
+        xId = session.getNextXid();
+        ofMeterModInput.setXid(xId);
+        
+        if (null != rpcNotificationProviderService) {        
+            MeterAddedBuilder meterMod = new MeterAddedBuilder((org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter)input);            
+            meterMod.setTransactionId(new TransactionId(BigInteger.valueOf(xId.intValue())));
+            meterMod.setMeterRef(input.getMeterRef());
+            rpcNotificationProviderService.publish(meterMod.build());
+        }
+        
+    	Future<RpcResult<UpdateMeterOutput>> resultFromOFLib = messageService.meterMod(ofMeterModInput.build(), cookie) ;
 
     	RpcResult<UpdateMeterOutput> rpcResultFromOFLib = null ;
 
@@ -308,22 +372,35 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     }
 
     @Override
-    public Future<RpcResult<RemoveFlowOutput>> removeFlow(RemoveFlowInput input) {
-    	// Convert the RemoveFlowInput to FlowModInput
-        FlowModInput ofFlowModInput = FlowConvertor.toFlowModInput(input, version);
-        BarrierInputBuilder barrierInput = new BarrierInputBuilder();
-        barrierInput.setVersion(version);
-
+    public Future<RpcResult<RemoveFlowOutput>> removeFlow(RemoveFlowInput input) { 
+        LOG.debug("Calling the removeFlow RPC method on MessageDispatchService");
+        Long xId  = null;
     	// For Flow provisioning, the SwitchConnectionDistinguisher is set to null so
     	// the request can be routed through any connection to the switch
 
     	SwitchConnectionDistinguisher cookie = null ;
         if (Objects.firstNonNull(input.isBarrier(), Boolean.FALSE)) {
-    	    Future<RpcResult<BarrierOutput>> barrierOFLib = messageService.barrier(barrierInput.build(), cookie);
+            BarrierInputBuilder barrierInput = new BarrierInputBuilder();
+            xId = session.getNextXid();
+            barrierInput.setXid(xId);
+            barrierInput.setVersion(version);
+    	    @SuppressWarnings("unused")
+            Future<RpcResult<BarrierOutput>> barrierOFLib = messageService.barrier(barrierInput.build(), cookie);
     	}
         
-    	LOG.debug("Calling the FlowMod RPC method on MessageDispatchService");
-       	Future<RpcResult<UpdateFlowOutput>> resultFromOFLib = messageService.flowMod(ofFlowModInput, cookie) ;
+        // Convert the RemoveFlowInput to FlowModInput
+        FlowModInputBuilder ofFlowModInput = FlowConvertor.toFlowModInput(input, version);        
+        xId = session.getNextXid();
+        ofFlowModInput.setXid(xId);
+        
+        if (null != rpcNotificationProviderService) {        
+            FlowRemovedBuilder removeFlow = new FlowRemovedBuilder((org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow)input);        
+            removeFlow.setTransactionId(new TransactionId(BigInteger.valueOf(xId.intValue())));
+            removeFlow.setFlowRef(input.getFlowRef());
+            rpcNotificationProviderService.publish(removeFlow.build());
+        }
+    	
+       	Future<RpcResult<UpdateFlowOutput>> resultFromOFLib = messageService.flowMod(ofFlowModInput.build(), cookie) ;
 
        	RpcResult<UpdateFlowOutput> rpcResultFromOFLib = null ;
 
@@ -349,17 +426,35 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     @Override
     public Future<RpcResult<RemoveGroupOutput>> removeGroup(
             RemoveGroupInput input) {
-    	// Convert the RemoveGroupInput to GroupModInput
-        GroupModInput ofGroupModInput = GroupConvertor.toGroupModInput(input, version);
-
+        LOG.debug("Calling the Remove Group RPC method on MessageDispatchService");
+        Long xId  = null;
 
     	// For Flow provisioning, the SwitchConnectionDistinguisher is set to null so
     	// the request can be routed through any connection to the switch
 
     	SwitchConnectionDistinguisher cookie = null ;
-
-    	LOG.debug("Calling the GroupMod RPC method on MessageDispatchService");
-    	Future<RpcResult<UpdateGroupOutput>> resultFromOFLib = messageService.groupMod(ofGroupModInput, cookie) ;
+    	if (Objects.firstNonNull(input.isBarrier(), Boolean.FALSE)) {
+            xId = session.getNextXid();
+            BarrierInputBuilder barrierInput = new BarrierInputBuilder();
+            barrierInput.setVersion(version);
+            barrierInput.setXid(xId);         
+            @SuppressWarnings("unused")
+            Future<RpcResult<BarrierOutput>> barrierOFLib = messageService.barrier(barrierInput.build(), cookie);
+        } 
+    	
+    	// Convert the RemoveGroupInput to GroupModInput
+        GroupModInputBuilder ofGroupModInput = GroupConvertor.toGroupModInput(input, version);
+        xId = session.getNextXid();
+        ofGroupModInput.setXid(xId);
+        
+        if (null != rpcNotificationProviderService) {        
+            GroupRemovedBuilder groupMod = new GroupRemovedBuilder((org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group)input);            
+            groupMod.setTransactionId(new TransactionId(BigInteger.valueOf(xId.intValue())));
+            groupMod.setGroupRef(input.getGroupRef());
+            rpcNotificationProviderService.publish(groupMod.build());
+        }
+        
+    	Future<RpcResult<UpdateGroupOutput>> resultFromOFLib = messageService.groupMod(ofGroupModInput.build(), cookie) ;
 
     	RpcResult<UpdateGroupOutput> rpcResultFromOFLib = null ;
 
@@ -385,17 +480,34 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     @Override
     public Future<RpcResult<RemoveMeterOutput>> removeMeter(
             RemoveMeterInput input) {
-    	// Convert the RemoveMeterInput to MeterModInput
-        MeterModInput ofMeterModInput = MeterConvertor.toMeterModInput(input, version);
-
-
+        LOG.debug("Calling the Remove MeterMod RPC method on MessageDispatchService");
+        Long xId  = null;
+        
     	// For Meter provisioning, the SwitchConnectionDistinguisher is set to null so
     	// the request can be routed through any connection to the switch
-
     	SwitchConnectionDistinguisher cookie = null ;
-
-    	LOG.debug("Calling the MeterMod RPC method on MessageDispatchService");
-    	Future<RpcResult<UpdateMeterOutput>> resultFromOFLib = messageService.meterMod(ofMeterModInput, cookie) ;
+    	if (Objects.firstNonNull(input.isBarrier(), Boolean.FALSE)) {
+            xId = session.getNextXid();
+            BarrierInputBuilder barrierInput = new BarrierInputBuilder();
+            barrierInput.setVersion(version);
+            barrierInput.setXid(xId);         
+            @SuppressWarnings("unused")
+            Future<RpcResult<BarrierOutput>> barrierOFLib = messageService.barrier(barrierInput.build(), cookie);
+        } 
+    	
+    	// Convert the RemoveMeterInput to MeterModInput
+        MeterModInputBuilder ofMeterModInput = MeterConvertor.toMeterModInput(input, version);
+        xId = session.getNextXid();
+        ofMeterModInput.setXid(xId);
+        
+        if (null != rpcNotificationProviderService) {        
+            MeterRemovedBuilder meterMod = new MeterRemovedBuilder((org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter)input);            
+            meterMod.setTransactionId(new TransactionId(BigInteger.valueOf(xId.intValue())));
+            meterMod.setMeterRef(input.getMeterRef());
+            rpcNotificationProviderService.publish(meterMod.build());
+        }
+        
+    	Future<RpcResult<UpdateMeterOutput>> resultFromOFLib = messageService.meterMod(ofMeterModInput.build(), cookie) ;
 
     	RpcResult<UpdateMeterOutput> rpcResultFromOFLib = null ;
 
@@ -460,10 +572,8 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 
     @Override
     public Future<RpcResult<UpdateFlowOutput>> updateFlow(UpdateFlowInput input) {
-    	// Convert the UpdateFlowInput to FlowModInput
-        FlowModInput ofFlowModInput = FlowConvertor.toFlowModInput(input.getUpdatedFlow(), version);
-        BarrierInputBuilder barrierInput = new BarrierInputBuilder();
-        barrierInput.setVersion(version);
+        LOG.debug("Calling the updateFlow RPC method on MessageDispatchService");
+        Long xId  = null;
     	// Call the RPC method on MessageDispatchService
 
     	// For Flow provisioning, the SwitchConnectionDistinguisher is set to null so
@@ -471,11 +581,27 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 
     	SwitchConnectionDistinguisher cookie = null ;
         if (Objects.firstNonNull(input.getUpdatedFlow().isBarrier(), Boolean.FALSE)) {
+            BarrierInputBuilder barrierInput = new BarrierInputBuilder();
+            xId = session.getNextXid();
+            barrierInput.setVersion(version);
+            barrierInput.setXid(xId);
     	    Future<RpcResult<BarrierOutput>> barrierOFLib = messageService.barrier(barrierInput.build(), cookie);
     	}
+    	
+    	// Convert the UpdateFlowInput to FlowModInput
+        FlowModInputBuilder ofFlowModInput = FlowConvertor.toFlowModInput(input.getUpdatedFlow(), version);
+        xId = session.getNextXid();
+        ofFlowModInput.setXid(xId);
         
-    	LOG.debug("Calling the FlowMod RPC method on MessageDispatchService");
-       	Future<RpcResult<UpdateFlowOutput>> resultFromOFLib = messageService.flowMod(ofFlowModInput, cookie) ;
+        if (null != rpcNotificationProviderService) {        
+            FlowUpdatedBuilder updateFlow = 
+               new FlowUpdatedBuilder((org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow)input.getUpdatedFlow());          
+            updateFlow.setTransactionId(new TransactionId(BigInteger.valueOf(xId.intValue())));
+            updateFlow.setFlowRef(input.getFlowRef());
+            rpcNotificationProviderService.publish(updateFlow.build());
+        }
+        
+       	Future<RpcResult<UpdateFlowOutput>> resultFromOFLib = messageService.flowMod(ofFlowModInput.build(), cookie) ;
 
        	RpcResult<UpdateFlowOutput> rpcResultFromOFLib = null ;
 
@@ -501,17 +627,36 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     @Override
     public Future<RpcResult<UpdateGroupOutput>> updateGroup(
             UpdateGroupInput input) {
-    	// Convert the UpdateGroupInput to GroupModInput
-        GroupModInput ofGroupModInput = GroupConvertor.toGroupModInput(input.getUpdatedGroup(), version);
-
+        LOG.debug("Calling the update Group Mod RPC method on MessageDispatchService");
+        Long xId  = null;
 
     	// For Flow provisioning, the SwitchConnectionDistinguisher is set to null so
     	// the request can be routed through any connection to the switch
 
     	SwitchConnectionDistinguisher cookie = null ;
-
-    	LOG.debug("Calling the GroupMod RPC method on MessageDispatchService");
-    	Future<RpcResult<UpdateGroupOutput>> resultFromOFLib = messageService.groupMod(ofGroupModInput, cookie) ;
+    	if (Objects.firstNonNull(input.getUpdatedGroup().isBarrier(), Boolean.FALSE)) {
+            xId = session.getNextXid();
+            BarrierInputBuilder barrierInput = new BarrierInputBuilder();
+            barrierInput.setVersion(version);
+            barrierInput.setXid(xId);         
+            @SuppressWarnings("unused")
+            Future<RpcResult<BarrierOutput>> barrierOFLib = messageService.barrier(barrierInput.build(), cookie);
+        } 
+    	
+    	// Convert the UpdateGroupInput to GroupModInput
+        GroupModInputBuilder ofGroupModInput = GroupConvertor.toGroupModInput(input.getUpdatedGroup(), version);
+        xId = session.getNextXid();
+        ofGroupModInput.setXid(xId);
+        
+        if (null != rpcNotificationProviderService) {        
+            GroupUpdatedBuilder groupMod = 
+               new GroupUpdatedBuilder((org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group)input.getUpdatedGroup());            
+            groupMod.setTransactionId(new TransactionId(BigInteger.valueOf(xId.intValue())));
+            groupMod.setGroupRef(input.getGroupRef());
+            rpcNotificationProviderService.publish(groupMod.build());
+        }
+        
+    	Future<RpcResult<UpdateGroupOutput>> resultFromOFLib = messageService.groupMod(ofGroupModInput.build(), cookie) ;
 
     	RpcResult<UpdateGroupOutput> rpcResultFromOFLib = null ;
 
@@ -537,17 +682,34 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     @Override
     public Future<RpcResult<UpdateMeterOutput>> updateMeter(
             UpdateMeterInput input) {
-    	// Convert the UpdateMeterInput to MeterModInput
-        MeterModInput ofMeterModInput = MeterConvertor.toMeterModInput(input.getUpdatedMeter(), version);
-
-
+        LOG.debug("Calling the MeterMod RPC method on MessageDispatchService");
+        Long xId  = null;
+        
     	// For Meter provisioning, the SwitchConnectionDistinguisher is set to null so
     	// the request can be routed through any connection to the switch
-
     	SwitchConnectionDistinguisher cookie = null ;
-
-    	LOG.debug("Calling the MeterMod RPC method on MessageDispatchService");
-    	Future<RpcResult<UpdateMeterOutput>> resultFromOFLib = messageService.meterMod(ofMeterModInput, cookie) ;
+    	if (Objects.firstNonNull(input.getUpdatedMeter().isBarrier(), Boolean.FALSE)) {
+            xId = session.getNextXid();
+            BarrierInputBuilder barrierInput = new BarrierInputBuilder();
+            barrierInput.setVersion(version);
+            barrierInput.setXid(xId);         
+            @SuppressWarnings("unused")
+            Future<RpcResult<BarrierOutput>> barrierOFLib = messageService.barrier(barrierInput.build(), cookie);
+        } 
+    	
+    	// Convert the UpdateMeterInput to MeterModInput
+        MeterModInputBuilder ofMeterModInput = MeterConvertor.toMeterModInput(input.getUpdatedMeter(), version);
+        xId = session.getNextXid();
+        ofMeterModInput.setXid(xId);
+        
+        if (null != rpcNotificationProviderService) {        
+            MeterUpdatedBuilder meterMod = new MeterUpdatedBuilder((org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter)input.getUpdatedMeter());            
+            meterMod.setTransactionId(new TransactionId(BigInteger.valueOf(xId.intValue())));
+            meterMod.setMeterRef(input.getMeterRef());
+            rpcNotificationProviderService.publish(meterMod.build());
+        }
+        
+    	Future<RpcResult<UpdateMeterOutput>> resultFromOFLib = messageService.meterMod(ofMeterModInput.build(), cookie) ;
 
     	RpcResult<UpdateMeterOutput> rpcResultFromOFLib = null ;
 

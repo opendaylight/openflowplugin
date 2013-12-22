@@ -120,7 +120,6 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         BucketBuilder bucket = new BucketBuilder();
         bucket.setBucketId(new BucketId((long) 12));
         group.setKey(key);
-        group.setInstall(false);
         group.setGroupId(new GroupId(id));
         PopVlanActionBuilder vlanAction = new PopVlanActionBuilder();
         ActionBuilder action = new ActionBuilder();

@@ -49,7 +49,7 @@ public final class MeterConvertor {
      *            Data source
      * @return MeterModInput required by OF Library
      */
-    public static MeterModInput toMeterModInput(
+    public static MeterModInputBuilder toMeterModInput(
             org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter source, short version) {
 
         MeterModInputBuilder meterModInputBuilder = new MeterModInputBuilder();
@@ -88,7 +88,7 @@ public final class MeterConvertor {
         }
         
         meterModInputBuilder.setVersion(version);
-        return meterModInputBuilder.build();
+        return meterModInputBuilder;
     }
 
     private static void getBandsFromSAL(MeterBandHeaders meterBandHeaders, List<Bands> bands) {
