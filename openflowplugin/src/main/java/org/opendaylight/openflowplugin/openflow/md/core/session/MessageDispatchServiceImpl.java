@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.Future;
 
+import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
  import org.opendaylight.controller.sal.common.util.Rpcs;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
@@ -61,7 +62,7 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
 
     private static final Logger LOG = LoggerFactory.getLogger(MessageDispatchServiceImpl.class);
 
-    private SessionContext session;
+    private SessionContext session;    
 
     /**
      * constructor
@@ -70,7 +71,7 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
      *            - MessageDispatchService for this session
      */
     public MessageDispatchServiceImpl(SessionContext session) {
-        this.session = session;
+        this.session = session;        
     }
 
     /**
@@ -105,11 +106,8 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
     }
 
     @Override
-    public Future<RpcResult<BarrierOutput>> barrier(BarrierInput input, SwitchConnectionDistinguisher cookie) {
-        Long Xid = session.getNextXid();
-        BarrierInputBuilder inputBuilder = new BarrierInputBuilder(input);        
-        inputBuilder.setXid(Xid);
-        return getConnectionAdapter(cookie).barrier(inputBuilder.build());
+    public Future<RpcResult<BarrierOutput>> barrier(BarrierInput input, SwitchConnectionDistinguisher cookie) {  
+        return getConnectionAdapter(cookie).barrier(input);
     }
 
     @Override
@@ -119,19 +117,12 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
 
     @Override
     public Future<RpcResult<UpdateFlowOutput>> flowMod(FlowModInput input, SwitchConnectionDistinguisher cookie) {
-
-        // Set Xid before invoking RPC on OFLibrary
-        // TODO : let caller set xid, in that case it will not be required to create FlowModInput again here to set xid 
-        Long Xid = session.getNextXid();
-        FlowModInputBuilder mdInput = new FlowModInputBuilder(input);
-        mdInput.setXid(Xid);
         LOG.debug("Calling OFLibrary flowMod");
-        Future<RpcResult<Void>> response = getConnectionAdapter(cookie).flowMod(mdInput.build());
+        Future<RpcResult<Void>> response = getConnectionAdapter(cookie).flowMod(input);
 
         // Send the same Xid back to caller - MessageDrivenSwitch
-        UpdateFlowOutputBuilder flowModOutput = new UpdateFlowOutputBuilder();
-        String stringXid =Xid.toString();
-        BigInteger bigIntXid = new BigInteger( stringXid );
+        UpdateFlowOutputBuilder flowModOutput = new UpdateFlowOutputBuilder();        
+        BigInteger bigIntXid = BigInteger.valueOf(input.getXid()) ;
         flowModOutput.setTransactionId(new TransactionId(bigIntXid));
 
         UpdateFlowOutput result = flowModOutput.build();
