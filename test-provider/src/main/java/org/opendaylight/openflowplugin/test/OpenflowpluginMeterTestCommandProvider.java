@@ -9,12 +9,14 @@ import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
 import org.opendaylight.controller.md.sal.common.api.TransactionStatus;
 import org.opendaylight.controller.md.sal.common.api.data.DataModification;
+import org.opendaylight.controller.sal.binding.api.NotificationService;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.data.DataBrokerService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.MeterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.MeterKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.SalGroupListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -22,6 +24,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.config.rev131024.Meters;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.MeterAdded;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.MeterRemoved;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.MeterUpdated;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.SalMeterListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.BandId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.BandType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterBandType;
@@ -33,6 +39,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.MeterBandHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.MeterBandHeaderBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.meter.band.header.MeterBandTypesBuilder;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -47,6 +54,9 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
     private Node testNode;
     private final String originalMeterName = "Foo";
     private final String updatedMeterName = "Bar";
+    private MeterEventListener meterEventListener = new MeterEventListener();
+    private static NotificationService notificationService;
+    private Registration<org.opendaylight.yangtools.yang.binding.NotificationListener> listener1Reg;
 
     public OpenflowpluginMeterTestCommandProvider(BundleContext ctx) {
         this.ctx = ctx;
@@ -56,6 +66,10 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
         pc = session;
         dataBrokerService = session.getSALService(DataBrokerService.class);
         ctx.registerService(CommandProvider.class.getName(), this, null);
+        notificationService = session.getSALService(NotificationService.class);
+        // For switch events
+        listener1Reg = notificationService.registerNotificationListener(meterEventListener);
+        
         createTestNode();
         createTestMeter();
     }
@@ -78,6 +92,31 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
         return InstanceIdentifier.builder(Nodes.class).child(Node.class, node.getKey()).toInstance();
     }
 
+    final class MeterEventListener implements SalMeterListener {
+
+        @Override
+        public void onMeterAdded(MeterAdded notification) {
+            System.out.println("Meter to be added.........................."+notification.toString());
+            System.out.println("Meter  Xid........................."+notification.getTransactionId().getValue());
+            System.out.println("-----------------------------------------------------------------------------------");            
+        }
+
+        @Override
+        public void onMeterRemoved(MeterRemoved notification) {
+            System.out.println("Meter to be removed.........................."+notification.toString());
+            System.out.println("Meter  Xid........................."+notification.getTransactionId().getValue());
+            System.out.println("-----------------------------------------------------------------------------------");            
+        }
+
+        @Override
+        public void onMeterUpdated(MeterUpdated notification) {
+            System.out.println("Meter to be updated.........................."+notification.toString());
+            System.out.println("Meter  Xid........................."+notification.getTransactionId().getValue());
+            System.out.println("-----------------------------------------------------------------------------------");            
+        }
+        
+    }
+    
     private MeterBuilder createTestMeter() {
         // Sample data , committing to DataStore
         DataModification modification = dataBrokerService.beginTransaction();
