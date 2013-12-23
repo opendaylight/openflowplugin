@@ -27,6 +27,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.TableFeatu
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchReactor;
 import org.opendaylight.openflowplugin.openflow.md.core.session.IMessageDispatchService;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
+import org.opendaylight.openflowplugin.openflow.md.util.FlowCreatorUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
@@ -110,6 +111,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartRequestFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.OxmMatchType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.match.v10.grouping.MatchV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.match.v10.grouping.MatchV10Builder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.MatchEntries;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInputBuilder;
@@ -1107,17 +1109,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         mprFlowRequestBuilder.setOutGroup(OFConstants.OFPG_ANY);
         mprFlowRequestBuilder.setCookie(OFConstants.DEFAULT_COOKIE);
         mprFlowRequestBuilder.setCookieMask(OFConstants.DEFAULT_COOKIE_MASK);
-        
-        if(version == OFConstants.OFP_VERSION_1_0){
-            LOG.info("Target node is running openflow version 1.0");
-            FlowWildcardsV10 wildCard = new FlowWildcardsV10(true,true,true,true,true,true,true,true,true,true);
-            mprFlowRequestBuilder.setMatchV10(new MatchV10Builder().setWildcards(wildCard).build());
-        }
-        if(version == OFConstants.OFP_VERSION_1_3){
-            LOG.info("Target node is running openflow version 1.3+");
-            mprFlowRequestBuilder.setMatch(new MatchBuilder().setType(OxmMatchType.class).build());
-        }
-
+        FlowCreatorUtil.setWildcardedFlowMatch(version, mprFlowRequestBuilder);
 
         //Set request body to main multipart request
         multipartRequestFlowCaseBuilder.setMultipartRequestFlow(mprFlowRequestBuilder.build());
@@ -1165,14 +1157,8 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         mprFlowRequestBuilder.setCookieMask(OFConstants.DEFAULT_COOKIE_MASK);
         mprFlowRequestBuilder.setCookieMask(OFConstants.DEFAULT_COOKIE_MASK);
         
-        //TODO: repeating code
-        if(version == OFConstants.OFP_VERSION_1_0){
-            FlowWildcardsV10 wildCard = new FlowWildcardsV10(true,true,true,true,true,true,true,true,true,true);
-            mprFlowRequestBuilder.setMatchV10(new MatchV10Builder().setWildcards(wildCard).build());
-        }
-        if(version == OFConstants.OFP_VERSION_1_3){
-            mprFlowRequestBuilder.setMatch(new MatchBuilder().setType(OxmMatchType.class).build());
-        }
+        FlowCreatorUtil.setWildcardedFlowMatch(version, mprFlowRequestBuilder);
+
         //Set request body to main multipart request
         multipartRequestFlowCaseBuilder.setMultipartRequestFlow(mprFlowRequestBuilder.build());
         mprInput.setMultipartRequestBody(multipartRequestFlowCaseBuilder.build());
@@ -1271,14 +1257,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         mprAggregateRequestBuilder.setCookie(OFConstants.DEFAULT_COOKIE);
         mprAggregateRequestBuilder.setCookieMask(OFConstants.DEFAULT_COOKIE_MASK);
         
-        //TODO: repeating code
-        if(version == OFConstants.OFP_VERSION_1_0){
-            FlowWildcardsV10 wildCard = new FlowWildcardsV10(true,true,true,true,true,true,true,true,true,true);
-            mprAggregateRequestBuilder.setMatchV10(new MatchV10Builder().setWildcards(wildCard).build());
-        }
-        if(version == OFConstants.OFP_VERSION_1_3){
-            mprAggregateRequestBuilder.setMatch(new MatchBuilder().setType(OxmMatchType.class).build());
-        }
+        FlowCreatorUtil.setWildcardedFlowMatch(version, mprAggregateRequestBuilder);
 
 
         //Set request body to main multipart request
