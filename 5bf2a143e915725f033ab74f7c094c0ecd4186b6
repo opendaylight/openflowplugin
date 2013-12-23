@@ -16,6 +16,24 @@
       "revId": "5bf2a143e915725f033ab74f7c094c0ecd4186b6",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da6255ed_4201f8ad",
+        "filename": "test-provider/src/main/java/org/opendaylight/openflowplugin/test/OpenflowpluginTestCommandProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 547,
+      "author": {
+        "id": 918
+      },
+      "writtenOn": "2013-12-23T04:50:59Z",
+      "side": 1,
+      "message": "Only case \"f63\" is setting the barrier, so it will not be null in case of \"f63\", but in all other cases it will be null. Whenever barrier is null, we are setting it false to not to send the barrier message.",
+      "parentUuid": "da6255ed_391e3fbc",
+      "revId": "5bf2a143e915725f033ab74f7c094c0ecd4186b6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
