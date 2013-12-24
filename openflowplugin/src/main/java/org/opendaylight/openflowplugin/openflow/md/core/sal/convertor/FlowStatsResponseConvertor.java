@@ -60,13 +60,6 @@ public class FlowStatsResponseConvertor {
         time.setNanosecond(new Counter32(flowStats.getDurationNsec()));
         salFlowStatsBuilder.setDuration(time.build());
         
-        salFlowStatsBuilder.setFlags(
-                new FlowModFlags(flowStats.getFlags().isOFPFFCHECKOVERLAP(),
-                        flowStats.getFlags().isOFPFFRESETCOUNTS(),
-                        flowStats.getFlags().isOFPFFNOPKTCOUNTS(),
-                        flowStats.getFlags().isOFPFFNOBYTCOUNTS(),
-                        flowStats.getFlags().isOFPFFSENDFLOWREM()));
-        
         salFlowStatsBuilder.setHardTimeout(flowStats.getHardTimeout());
         salFlowStatsBuilder.setIdleTimeout(flowStats.getIdleTimeout());
         salFlowStatsBuilder.setPacketCount(new Counter64(flowStats.getPacketCount()));
@@ -77,6 +70,12 @@ public class FlowStatsResponseConvertor {
         }
         if(flowStats.getMatch() != null){
             salFlowStatsBuilder.setMatch(MatchConvertorImpl.fromOFMatchToSALMatch(flowStats.getMatch()));
+            salFlowStatsBuilder.setFlags(
+                    new FlowModFlags(flowStats.getFlags().isOFPFFCHECKOVERLAP(),
+                            flowStats.getFlags().isOFPFFRESETCOUNTS(),
+                            flowStats.getFlags().isOFPFFNOPKTCOUNTS(),
+                            flowStats.getFlags().isOFPFFNOBYTCOUNTS(),
+                            flowStats.getFlags().isOFPFFSENDFLOWREM()));
         }
         if(flowStats.getInstructions()!= null){
             salFlowStatsBuilder.setInstructions(OFToMDSalFlowConvertor.toSALInstruction(flowStats.getInstructions()));
