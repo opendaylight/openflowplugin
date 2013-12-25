@@ -43,16 +43,18 @@ public class PacketOutConvertor {
      // Build Port ID from TransmitPacketInput.Ingress
         PortNumber inPortNr = null;
         
-        List<PathArgument> inArgs = inputPacket.getIngress().getValue().getPath();
-        if (inArgs.size() >= 3) {
+        List<PathArgument> inArgs = null;
+        if (inputPacket.getIngress() != null) {
+            inArgs = inputPacket.getIngress().getValue().getPath();
+        }
+        if (inArgs != null && inArgs.size() >= 3) {
             inPortNr = getPortNumber(inArgs.get(2));
         } else {
-            // TODO Ed could by in this way or Exception or something else ?
+            // The packetOut originated from the controller
             inPortNr = new PortNumber(0xfffffffdL);
         }
         
-        // Build Buffer ID from TransmitPacketInput.Ingress
-        // TODO VD P! find how to fix PacketIn to add BufferID to augmetation
+        // Build Buffer ID to be NO_OFP_NO_BUFFER
         Long bufferId = OFConstants.OFP_NO_BUFFER;
         
         PortNumber outPort = null;

@@ -116,8 +116,7 @@ public class LLDPSpeaker {
         portIdTlv.setType(LLDPTLV.TLVType.PortID.getValue());
 
         // Create LLDP Custom TLV
-        NodeConnectorRef ncref = new NodeConnectorRef(nodeConnectorInstanceId);
-        byte[] customValue = LLDPTLV.createCustomTLVValue(ncref.toString());
+        byte[] customValue = LLDPTLV.createCustomTLVValue(nodeConnectorId.getValue());
         LLDPTLV customTlv = new LLDPTLV();
         customTlv.setType(LLDPTLV.TLVType.Custom.getValue()).setLength((short) customValue.length)
                 .setValue(customValue);
