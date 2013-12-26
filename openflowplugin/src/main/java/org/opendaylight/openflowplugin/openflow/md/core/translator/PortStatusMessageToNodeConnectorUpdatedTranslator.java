@@ -1,6 +1,7 @@
 package org.opendaylight.openflowplugin.openflow.md.core.translator;
 
 import java.math.BigInteger;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -51,7 +52,7 @@ public class PortStatusMessageToNodeConnectorUpdatedTranslator implements IMDMes
             return list;
         } else {
             // TODO - Do something smarter than returning null if translation fails... what Exception should we throw here?
-            return null;
+            return Collections.emptyList();
         }
     }
 }

@@ -1,6 +1,7 @@
 package org.opendaylight.openflowplugin.openflow.md.core.translator;
 
 import java.math.BigInteger;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -52,7 +53,7 @@ public class ExperimenterTranslator implements IMDMessageTranslator<OfHeader, Li
 			return list;
 		}else {
 			LOG.error( "Message is not of Experimenter Error Message " ) ;
-			return null;
+			return Collections.emptyList();
 		}
 	}
 

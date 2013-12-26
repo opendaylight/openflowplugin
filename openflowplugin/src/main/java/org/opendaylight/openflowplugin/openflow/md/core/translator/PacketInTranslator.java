@@ -1,6 +1,7 @@
 package org.opendaylight.openflowplugin.openflow.md.core.translator;
 
 import java.math.BigInteger;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -87,6 +88,6 @@ public class PacketInTranslator implements IMDMessageTranslator<OfHeader, List<D
                 return list;
            } 
         } 
-        return null;
+        return Collections.emptyList();
     }
 }
