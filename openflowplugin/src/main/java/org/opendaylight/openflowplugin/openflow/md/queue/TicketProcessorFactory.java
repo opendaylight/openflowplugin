@@ -122,8 +122,8 @@ public class TicketProcessorFactory<IN, OUT> {
                             cookie = conductor.getAuxiliaryKey();
                         }
                         List<OUT> translatorOutput = translator.translate(cookie, conductor.getSessionContext(), message);
-                        if(translatorOutput != null) {
-                            result.addAll(translator.translate(cookie, conductor.getSessionContext(), message));
+                        if(translatorOutput != null && !translatorOutput.isEmpty()) {
+                            result.addAll(translatorOutput);
                         }
                     }
                 } else {

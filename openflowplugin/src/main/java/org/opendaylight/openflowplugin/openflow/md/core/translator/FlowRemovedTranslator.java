@@ -1,6 +1,7 @@
 package org.opendaylight.openflowplugin.openflow.md.core.translator;
 
 import java.math.BigInteger;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -155,7 +156,7 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
             return list;
         } else {
             LOG.error("Message is not a flow removed message ");
-            return null;
+            return Collections.emptyList();
         }
     }
 
