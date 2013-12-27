@@ -686,7 +686,11 @@ public final class ActionConvertor {
         OutputAction outputAction = outputActionCase.getOutputAction();
         PortActionBuilder portAction = new PortActionBuilder();
         MaxLengthActionBuilder maxLenActionBuilder = new MaxLengthActionBuilder();
-        maxLenActionBuilder.setMaxLength(outputAction.getMaxLength());
+        if (outputAction.getMaxLength() != null) {
+            maxLenActionBuilder.setMaxLength(outputAction.getMaxLength());
+        } else {
+            maxLenActionBuilder.setMaxLength(new Integer(0));
+        }
         ActionBuilder actionBuilder = new ActionBuilder();
         actionBuilder.addAugmentation(MaxLengthAction.class, maxLenActionBuilder.build());
 
