@@ -19,7 +19,6 @@ import org.eclipse.osgi.framework.console.CommandProvider;
 import org.opendaylight.controller.md.sal.common.api.TransactionStatus;
 import org.opendaylight.controller.md.sal.common.api.data.DataModification;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
-import org.opendaylight.controller.sal.binding.api.NotificationListener;
 import org.opendaylight.controller.sal.binding.api.NotificationService;
 import org.opendaylight.controller.sal.binding.api.data.DataBrokerService;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Dscp;
@@ -52,6 +51,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetDlDstActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetDlSrcActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetDlTypeActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetFieldCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetMplsTtlActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetNextHopActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetNwDstActionCaseBuilder;
@@ -63,7 +63,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetTpSrcActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetVlanCfiActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetVlanIdActionCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetFieldCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetVlanPcpActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.StripVlanActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SwPathActionCaseBuilder;
@@ -109,12 +108,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.address.address.Ipv4Builder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.config.rev130819.Flows;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowAdded;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowUpdated;
@@ -123,7 +123,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.Node
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SwitchFlowRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.OutputPortValues;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.InstructionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCaseBuilder;
@@ -137,9 +136,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRemoved;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRemoved;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.OpendaylightInventoryListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
@@ -147,7 +151,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.EtherTyp
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanPcp;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.band.type.band.type.ExperimenterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.arp.match.fields.ArpSourceHardwareAddressBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.arp.match.fields.ArpTargetHardwareAddressBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetDestinationBuilder;
@@ -175,13 +178,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier.InstanceIdentifierBuilder;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
 
 public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
@@ -194,9 +194,11 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
     private NodeBuilder testNode;
     private final String originalFlowName = "Foo";
     private final String updatedFlowName = "Bar";
-    private FlowEventListener flowEventListener = new FlowEventListener();
+    private final FlowEventListener flowEventListener = new FlowEventListener();
+    private final PortEventListener portEventListener = new PortEventListener();
     private static NotificationService notificationService;
     private Registration<org.opendaylight.yangtools.yang.binding.NotificationListener> listener1Reg;
+    private Registration<org.opendaylight.yangtools.yang.binding.NotificationListener> listener2Reg;
 
     public OpenflowpluginTestCommandProvider(BundleContext ctx) {
         this.ctx = ctx;
@@ -205,8 +207,9 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
     public void onSessionInitiated(ProviderContext session) {
         pc = session;
         notificationService = session.getSALService(NotificationService.class);
-     // For switch events
+        // For switch events
         listener1Reg = notificationService.registerNotificationListener(flowEventListener);
+        listener2Reg = notificationService.registerNotificationListener(portEventListener);
         dataBrokerService = session.getSALService(DataBrokerService.class);
         ctx.registerService(CommandProvider.class.getName(), this, null);
         createTestFlow(createTestNode(null), null, null);
@@ -225,19 +228,19 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
     }
 
     final class FlowEventListener implements SalFlowListener {
-        
+
         List<FlowAdded> addedFlows = new ArrayList<>();
         List<FlowRemoved> removedFlows = new ArrayList<>();
         List<FlowUpdated> updatedFlows = new ArrayList<>();
-    
+
         @Override
         public void onFlowAdded(FlowAdded notification) {
-            System.out.println("flow to be added.........................."+notification.toString());
-            System.out.println("added flow Xid........................."+notification.getTransactionId().getValue());
+            System.out.println("flow to be added.........................." + notification.toString());
+            System.out.println("added flow Xid........................." + notification.getTransactionId().getValue());
             System.out.println("-----------------------------------------------------------------------------------");
             addedFlows.add(notification);
         }
-    
+
         @Override
         public void onFlowRemoved(FlowRemoved notification) {
             System.out.println("removed flow.........................." + notification.toString());
@@ -245,36 +248,70 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
             System.out.println("-----------------------------------------------------------------------------------");
             removedFlows.add(notification);
         };
-    
+
         @Override
         public void onFlowUpdated(FlowUpdated notification) {
             System.out.println("updated flow.........................." + notification.toString());
-            System.out.println("updated flow Xid........................." + notification.getTransactionId().getValue());
+            System.out
+                    .println("updated flow Xid........................." + notification.getTransactionId().getValue());
             System.out.println("-----------------------------------------------------------------------------------");
             updatedFlows.add(notification);
         }
 
         @Override
         public void onNodeErrorNotification(NodeErrorNotification notification) {
-            System.out.println("Error notification  flow Xid........................." + notification.getTransactionId().getValue());
+            System.out.println("Error notification  flow Xid........................."
+                    + notification.getTransactionId().getValue());
             System.out.println("-----------------------------------------------------------------------------------");
         }
 
         @Override
         public void onNodeExperimenterErrorNotification(NodeExperimenterErrorNotification notification) {
             // TODO Auto-generated method stub
-            
+
         }
 
         @Override
         public void onSwitchFlowRemoved(SwitchFlowRemoved notification) {
-            System.out.println("Switch flow removed flow..........................");
-            // TODO Auto-generated method stub
-            
+            System.out
+                    .println("Switch flow removed : Cookies..................." + notification.getCookie().toString());
+            System.out.println("-----------------------------------------------------------------------------------");
         }
-    
+
     }
-    
+
+    final class PortEventListener implements OpendaylightInventoryListener {
+
+        @Override
+        public void onNodeConnectorRemoved(NodeConnectorRemoved notification) {
+            System.out.println("PortStatusMessage: NodeConnectorRemoved ...................");
+            System.out.println(notification.getNodeConnectorRef());
+            System.out.println("----------------------------------------------------------------------");
+        }
+
+        @Override
+        public void onNodeConnectorUpdated(NodeConnectorUpdated notification) {
+            System.out.println("PortStatusMessage: NodeConnectorUpdated ...................");
+            System.out.println(notification.getNodeConnectorRef());
+            System.out.println("----------------------------------------------------------------------");
+        }
+
+        @Override
+        public void onNodeRemoved(NodeRemoved notification) {
+            System.out.println("PortStatusMessage: NodeConnectorUpdated ...................");
+            System.out.println(notification.getNodeRef());
+            System.out.println("----------------------------------------------------------------------");
+        }
+
+        @Override
+        public void onNodeUpdated(NodeUpdated notification) {
+            System.out.println("PortStatusMessage: NodeConnectorUpdated ...................");
+            System.out.println(notification.getNodeRef());
+            System.out.println("----------------------------------------------------------------------");
+        }
+
+    }
+
     private InstanceIdentifier<Node> nodeBuilderToInstanceId(NodeBuilder node) {
         return InstanceIdentifier.builder(Nodes.class).child(Node.class, node.getKey()).toInstance();
     }
@@ -695,7 +732,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         flow.setInstallHw(false);
         flow.setStrict(false);
         flow.setContainerName(null);
-        flow.setFlags(new FlowModFlags(false, false, false, false, false));
+        flow.setFlags(new FlowModFlags(false, false, false, false, true));
         flow.setId(new FlowId(new Long(12)));
         flow.setTableId(getTableId(tableId));
         flow.setOutGroup(new Long(2));
