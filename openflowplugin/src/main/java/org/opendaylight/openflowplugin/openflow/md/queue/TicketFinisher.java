@@ -63,7 +63,7 @@ public class TicketFinisher<OUT> implements Runnable {
                         }
                     }
                 }
-            } catch (ExecutionException | InterruptedException e) {
+            } catch (Exception e) {
                 LOG.error(e.getMessage(), e);
             }
         }
