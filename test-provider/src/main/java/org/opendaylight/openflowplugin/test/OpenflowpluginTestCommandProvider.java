@@ -282,34 +282,42 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
     final class PortEventListener implements OpendaylightInventoryListener {
 
+        List<NodeUpdated> nodeUpdated = new ArrayList<>();
+        List<NodeRemoved> nodeRemoved = new ArrayList<>();
+        List<NodeConnectorUpdated> nodeConnectorUpdated = new ArrayList<>();
+        List<NodeConnectorRemoved> nodeConnectorRemoved = new ArrayList<>();
+
         @Override
         public void onNodeConnectorRemoved(NodeConnectorRemoved notification) {
-            System.out.println("PortStatusMessage: NodeConnectorRemoved ...................");
+            System.out.println("NodeConnectorRemoved Notification ...................");
             System.out.println(notification.getNodeConnectorRef());
             System.out.println("----------------------------------------------------------------------");
+            nodeConnectorRemoved.add(notification);
         }
 
         @Override
         public void onNodeConnectorUpdated(NodeConnectorUpdated notification) {
-            System.out.println("PortStatusMessage: NodeConnectorUpdated ...................");
+            System.out.println("NodeConnectorUpdated Notification...................");
             System.out.println(notification.getNodeConnectorRef());
             System.out.println("----------------------------------------------------------------------");
+            nodeConnectorUpdated.add(notification);
         }
 
         @Override
         public void onNodeRemoved(NodeRemoved notification) {
-            System.out.println("PortStatusMessage: NodeConnectorUpdated ...................");
+            System.out.println("NodeConnectorUpdated Notification ...................");
             System.out.println(notification.getNodeRef());
             System.out.println("----------------------------------------------------------------------");
+            nodeRemoved.add(notification);
         }
 
         @Override
         public void onNodeUpdated(NodeUpdated notification) {
-            System.out.println("PortStatusMessage: NodeConnectorUpdated ...................");
+            System.out.println("NodeConnectorUpdated Notification ...................");
             System.out.println(notification.getNodeRef());
             System.out.println("----------------------------------------------------------------------");
+            nodeUpdated.add(notification);
         }
-
     }
 
     private InstanceIdentifier<Node> nodeBuilderToInstanceId(NodeBuilder node) {
