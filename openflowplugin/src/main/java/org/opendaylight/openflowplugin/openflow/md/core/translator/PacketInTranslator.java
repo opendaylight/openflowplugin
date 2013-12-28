@@ -40,6 +40,14 @@ public class PacketInTranslator implements IMDMessageTranslator<OfHeader, List<D
            PacketReceivedBuilder pktInBuilder = new PacketReceivedBuilder();
            pktInBuilder.setPayload(message.getData());
 
+           org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match match = 
+        		   (org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match)
+        		   MatchConvertorImpl.fromOFMatchToSALMatch(message.getMatch());
+           pktInBuilder.setMatch((org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match)match);
+           pktInBuilder.setBufferId(message.getBufferId());
+           pktInBuilder.setPacketInReason((short)message.getReason().ordinal());
+           pktInBuilder.setTableId(message.getTableId().getValue().shortValue());
+
            // get the DPID
            GetFeaturesOutput features = sc.getFeatures();
            // Make sure we actually have features, some naughty switches start sending packetIn before they send us the FeatureReply
