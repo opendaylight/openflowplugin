@@ -21,6 +21,8 @@ import org.opendaylight.controller.md.sal.common.api.data.DataModification;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.NotificationService;
 import org.opendaylight.controller.sal.binding.api.data.DataBrokerService;
+import org.opendaylight.controller.sal.binding.api.data.DataModificationTransaction;
+import org.opendaylight.controller.sal.common.util.Arguments;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Dscp;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Address;
@@ -109,6 +111,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.address.address.Ipv4Builder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
@@ -136,6 +139,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -144,6 +149,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRem
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.OpendaylightInventoryListener;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
@@ -175,13 +181,22 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.UdpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.protocol.match.fields.PbbBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanIdBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.statistics.types.rev130925.NodeConnectorStatistics;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.FlowCapableNodeConnectorStatistics;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.FlowCapableNodeConnectorStatisticsData;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.GetAllNodeConnectorsStatisticsInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.GetAllNodeConnectorsStatisticsInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.OpendaylightPortStatisticsService;
 import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier.InstanceIdentifierBuilder;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Objects;
 
 public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
@@ -225,6 +240,10 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         builder.setKey(new NodeKey(builder.getId()));
         testNode = builder;
         return builder;
+    }
+    
+    protected DataModificationTransaction startChange() {
+        return dataBrokerService.beginTransaction();
     }
 
     final class FlowEventListener implements SalFlowListener {
@@ -721,6 +740,14 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
             id += 77;
             flow.setMatch(createTunnelIDMatch().build());
             flow.setInstructions(createAppyActionInstruction48().build());
+            break;
+        case "f78":
+            id += 78;
+            System.out.println("---------------------------------------------");
+            System.out.println("---------------------------------------------");
+            readAugmentFlowCapableNodeConnector(nodeBuilder);
+            System.out.println("---------------------------------------------");
+            System.out.println("---------------------------------------------");
             break;
         default:
             LOG.warn("flow type not understood: {}", flowType);
@@ -2455,6 +2482,63 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return isb;
     }
 
+    public void readAugmentFlowCapableNodeConnector(final NodeBuilder nodeBuilder) {
+        InstanceIdentifierBuilder<Nodes> _builder = InstanceIdentifier.<Nodes> builder(Nodes.class);
+        NodeKey _nodeKey = nodeBuilder.getKey();
+        InstanceIdentifierBuilder<org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node> _child = _builder
+                .<org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node, NodeKey> child(
+                        org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node.class, _nodeKey);
+        final InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node> nodeRef = _child
+                .toInstance();
+        final DataModificationTransaction provider = this.startChange();
+        DataObject _readConfigurationData = provider.readOperationalData(nodeRef);
+        System.out.println("After readConfigurationData(nodeRef)");
+        System.out.println(_readConfigurationData);
+        final org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node dsNode = ((org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node) _readConfigurationData);
+        boolean _notEquals = (!Objects.equal(dsNode, null));
+        if (_notEquals) {
+            List<org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector> _nodeConnector = dsNode
+                    .getNodeConnector();
+            System.out.println("List of NodeConnector");
+            System.out.println(_nodeConnector);
+            for (final org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector dsNodeConnector : _nodeConnector) {
+                {
+                    InstanceIdentifierBuilder<Nodes> _builder_1 = InstanceIdentifier.<Nodes> builder(Nodes.class);
+                    NodeKey _nodeKey_1 = nodeBuilder.getKey();
+                    InstanceIdentifierBuilder<org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node> _child_1 = _builder_1
+                            .<org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node, NodeKey> child(
+                                    org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node.class,
+                                    _nodeKey_1);
+                    NodeConnectorKey _key = dsNodeConnector.getKey();
+                    InstanceIdentifierBuilder<org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector> _child_2 = _child_1
+                            .<org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector, NodeConnectorKey> child(
+                                    org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector.class,
+                                    _key);
+                    final InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector> nodeConnectorRef = _child_2
+                            .toInstance();
+                    System.out.println("------------------------------------------------");
+                    System.out.println("------------------------------------------------");
+                    System.out.println("Printing readFlowCapableNodeConnector");
+                    System.out.println("Port state");
+                    System.out.println(readFlowCapableNodeConnector(new NodeConnectorRef(nodeConnectorRef)).getState());
+                    System.out.println("Current Features");
+                    System.out.println(readFlowCapableNodeConnector(new NodeConnectorRef(nodeConnectorRef)).getCurrentFeature());
+                    System.out.println("------------------------------------------------");
+                    System.out.println("------------------------------------------------");
+                    }
+                }
+            }
+        }
+
+    private FlowCapableNodeConnector readFlowCapableNodeConnector(final NodeConnectorRef ref) {
+        DataBrokerService _dataService = dataBrokerService;
+        InstanceIdentifier<? extends Object> _value = ref.getValue();
+        final DataObject dataObject = _dataService.readOperationalData(((InstanceIdentifier<? extends DataObject>) _value));
+        final org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector node = Arguments.<org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector>checkInstanceOf(dataObject, 
+          org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector.class);
+        return node.<FlowCapableNodeConnector>getAugmentation(FlowCapableNodeConnector.class);
+      }
+    
     /**
      * @return
      */
