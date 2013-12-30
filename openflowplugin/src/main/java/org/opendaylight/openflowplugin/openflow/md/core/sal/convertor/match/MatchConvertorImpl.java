@@ -479,7 +479,12 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
             matchBuilder.setLayer4Match(udpMatchBuilder.build());
         }
         if(swMatch.getNwTos()!=null){
-            ipMatchBuilder.setIpDscp(new Dscp(swMatch.getNwTos()));
+            //DSCP default value is 0 from the library but controller side it is null.
+            // look if there better solution 
+            if(0 != swMatch.getNwTos()) 
+            {
+               ipMatchBuilder.setIpDscp(new Dscp(swMatch.getNwTos()));
+            }
             matchBuilder.setIpMatch(ipMatchBuilder.build());
         }
         
