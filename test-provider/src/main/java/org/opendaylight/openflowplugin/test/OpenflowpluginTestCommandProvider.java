@@ -1256,8 +1256,10 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         // Wrap our Apply Action in an Instruction
         InstructionBuilder ib = new InstructionBuilder();
         ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
+        ib.setKey(new InstructionKey(0));
+        ib.setOrder(0);
 
-        // Put our Instruction in a list of Instructions
+        // Put our Instruction in a list of Instruction
         InstructionsBuilder isb = new InstructionsBuilder();
         List<Instruction> instructions = new ArrayList<Instruction>();
         instructions.add(ib.build());
@@ -2219,8 +2221,8 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         // setting the values of ARP
         MacAddress macdest = new MacAddress("ff:ff:ff:ff:ff:ff");
         MacAddress macsrc = new MacAddress("00:00:00:00:23:ae");
-        Ipv4Prefix dstiparp = new Ipv4Prefix("200.71.9.52/10");
-        Ipv4Prefix srciparp = new Ipv4Prefix("100.1.1.1/8");
+        Ipv4Prefix dstiparp = new Ipv4Prefix("200.71.9.52");
+        Ipv4Prefix srciparp = new Ipv4Prefix("100.1.1.1");
         // create ARP match action
         ArpMatchBuilder arpmatch = new ArpMatchBuilder();
         ArpMatchBuilder arpmatch1 = new ArpMatchBuilder();
@@ -2278,31 +2280,87 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
     private static InstructionsBuilder createAppyActionInstruction44() {
 
-        List<Action> actionList = new ArrayList<Action>();
+        List<Action> actionLists = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
         SetFieldBuilder setFieldBuilder = new SetFieldBuilder();
         ActionBuilder ab1 = new ActionBuilder();
         SetFieldBuilder setFieldBuilder1 = new SetFieldBuilder();
+    /*    ActionBuilder ab2 = new ActionBuilder();
+        SetFieldBuilder setFieldBuilder2 = new SetFieldBuilder();
+        ActionBuilder ab3 = new ActionBuilder();
+        SetFieldBuilder setFieldBuilder3 = new SetFieldBuilder();
+        ActionBuilder ab4 = new ActionBuilder();
+        SetFieldBuilder setFieldBuilder4 = new SetFieldBuilder();   */
+        ActionBuilder ab5 = new ActionBuilder();
+        SetFieldBuilder setFieldBuilder5 = new SetFieldBuilder();
+        ActionBuilder ab6 = new ActionBuilder();
+        SetFieldBuilder setFieldBuilder6 = new SetFieldBuilder();
 
         // IPv6
         Ipv6MatchBuilder ipv6Builder = new Ipv6MatchBuilder();
         Ipv6MatchBuilder ipv6Builder1 = new Ipv6MatchBuilder();
+     //   Ipv6MatchBuilder ipv6Builder2 = new Ipv6MatchBuilder();
+      //  Ipv6MatchBuilder ipv6Builder3 = new Ipv6MatchBuilder();
+       // Ipv6MatchBuilder ipv6Builder4 = new Ipv6MatchBuilder();
+        Ipv6MatchBuilder ipv6Builder5 = new Ipv6MatchBuilder();
+        Ipv6MatchBuilder ipv6Builder6 = new Ipv6MatchBuilder();
+
         Ipv6Prefix dstip6 = new Ipv6Prefix("2002::2");
         Ipv6Prefix srcip6 = new Ipv6Prefix("2001:0:0:0:0:0:0:1");
-        ipv6Builder1.setIpv6Destination(dstip6);
+      //  Ipv6Address ndtarget = new Ipv6Address("2001:db8:0:1:fd97:f9f0:a810:782e");
+      //  MacAddress ndsll = new MacAddress("c2:00:54:f5:00:00");
+       // MacAddress ndtll = new MacAddress("00:0c:29:0e:4c:67");
+        Ipv6ExtHeaderBuilder nextheader = new Ipv6ExtHeaderBuilder();
+        nextheader.setIpv6Exthdr(58);
+        Ipv6LabelBuilder ipv6label = new Ipv6LabelBuilder();
+        Ipv6FlowLabel label = new Ipv6FlowLabel(10028L);
+        ipv6label.setIpv6Flabel(label);
+
         ipv6Builder.setIpv6Source(srcip6);
+        ipv6Builder1.setIpv6Destination(dstip6);
+     //   ipv6Builder2.setIpv6NdTarget(ndtarget);
+      //  ipv6Builder3.setIpv6NdSll(ndsll);
+       // ipv6Builder4.setIpv6NdTll(ndtll);
+        ipv6Builder5.setIpv6ExtHeader(nextheader.build());
+        ipv6Builder6.setIpv6Label(ipv6label.build());
+
         setFieldBuilder.setLayer3Match(ipv6Builder.build());
         ab.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder.build()).build());
         ab.setKey(new ActionKey(0));
-        actionList.add(ab.build());
+        actionLists.add(ab.build());
 
         setFieldBuilder1.setLayer3Match(ipv6Builder1.build());
         ab1.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder1.build()).build());
         ab1.setKey(new ActionKey(1));
-        actionList.add(ab1.build());
+        actionLists.add(ab1.build());
+
+    /*  setFieldBuilder2.setLayer3Match(ipv6Builder2.build());
+        ab2.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder2.build()).build());
+        ab2.setKey(new ActionKey(2));
+        actionLists.add(ab2.build());
+
+        setFieldBuilder3.setLayer3Match(ipv6Builder3.build());
+        ab3.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder3.build()).build());
+        ab3.setKey(new ActionKey(3));
+        actionLists.add(ab3.build());
+
+        setFieldBuilder4.setLayer3Match(ipv6Builder4.build());
+        ab4.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder4.build()).build());
+        ab4.setKey(new ActionKey(4));
+        actionLists.add(ab4.build());
+*/
+        setFieldBuilder5.setLayer3Match(ipv6Builder5.build());
+        ab5.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder5.build()).build());
+        ab5.setKey(new ActionKey(5));
+        actionLists.add(ab5.build());
+
+        setFieldBuilder6.setLayer3Match(ipv6Builder6.build());
+        ab6.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder6.build()).build());
+        ab6.setKey(new ActionKey(6));
+        actionLists.add(ab6.build());
 
         ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
+        aab.setAction(actionLists);
 
         InstructionBuilder ib = new InstructionBuilder();
         ib.setKey(new InstructionKey(0));
@@ -2315,6 +2373,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         isb.setInstruction(instructions);
         return isb;
     }
+
 
     private static InstructionsBuilder createAppyActionInstruction45() {
 
