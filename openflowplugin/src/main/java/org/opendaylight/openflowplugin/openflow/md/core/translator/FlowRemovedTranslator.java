@@ -10,12 +10,14 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchConvertorImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SwitchFlowRemovedBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.RemovedReasonFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.mod.removed.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.mod.removed.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
@@ -68,6 +70,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.TcMatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.VlanPcpMatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.VlanVidMatchEntry;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowRemovedReason;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Ipv6ExthdrFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.ArpOp;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.ArpSha;
@@ -145,10 +148,23 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
             salFlowRemoved.setHardTimeout(ofFlow.getHardTimeout());
             salFlowRemoved.setPacketCount(ofFlow.getPacketCount());
             salFlowRemoved.setByteCount(ofFlow.getByteCount());
+            RemovedReasonFlags removeReasonFlag = new RemovedReasonFlags(
+                    FlowRemovedReason.OFPRRDELETE.equals(ofFlow.getReason()),
+                    FlowRemovedReason.OFPRRGROUPDELETE.equals(ofFlow.getReason()),
+                    FlowRemovedReason.OFPRRHARDTIMEOUT.equals(ofFlow.getReason()),
+                    FlowRemovedReason.OFPRRIDLETIMEOUT.equals(ofFlow.getReason())
+                    );
+            
+            salFlowRemoved.setRemovedReason(removeReasonFlag);
+            
             org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.match.grouping.Match ofMatch = ofFlow
                     .getMatch();
             if (ofMatch != null) {
                 salFlowRemoved.setMatch(fromMatch(ofMatch));
+            }
+            else if(ofFlow.getMatchV10() != null){
+                MatchBuilder matchBuilder = new MatchBuilder(MatchConvertorImpl.fromOFMatchV10ToSALMatch(ofFlow.getMatchV10()));
+                salFlowRemoved.setMatch(matchBuilder.build());
             }
             salFlowRemoved.setNode(new NodeRef(InventoryDataServiceUtil.identifierFromDatapathId(sc.getFeatures()
                     .getDatapathId())));
@@ -159,7 +175,8 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
             return Collections.emptyList();
         }
     }
-
+    
+    
     public Match fromMatch(
             org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.match.grouping.Match ofMatch) {
         MatchBuilder matchBuilder = new MatchBuilder();
