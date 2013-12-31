@@ -99,6 +99,7 @@ public class MDController implements IMDController {
         //TODO: move registration to factory
         addMessageTranslator(ErrorMessage.class, OF10, new ErrorTranslator());
         addMessageTranslator(ErrorMessage.class, OF13, new ErrorTranslator());
+        addMessageTranslator(FlowRemovedMessage.class, OF10, new FlowRemovedTranslator());
         addMessageTranslator(FlowRemovedMessage.class, OF13, new FlowRemovedTranslator());
         addMessageTranslator(PacketInMessage.class,OF10, new PacketInTranslator());
         addMessageTranslator(PacketInMessage.class,OF13, new PacketInTranslator());
