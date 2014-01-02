@@ -104,12 +104,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.address.address.Ipv4Builder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.config.rev130819.Flows;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.InstructionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
@@ -160,13 +161,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanIdBuilder;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier.InstanceIdentifierBuilder;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
 
 public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
@@ -474,13 +472,13 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
             flow.setMatch(createIPMatch().build());
             flow.setInstructions(createDropInstructions().build());
             break;
-    
+
         case "52":
             id += 52;
             flow.setMatch(createL4TCPMatch().build());
             flow.setInstructions(createDropInstructions().build());
-            break;    
-            
+            break;
+
         case "53":
             id += 53;
             flow.setMatch(createL4UDPMatch().build());
@@ -490,6 +488,21 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
             id += 51;
             flow.setMatch(new MatchBuilder().build());
             flow.setInstructions(createSentToControllerInstructions().build());
+            break;
+        case "f55":
+            id += 55;
+            flow.setMatch(createMatch33().build());
+            flow.setInstructions(createDropInstructions().build());
+            break;
+        case "f56":
+            id += 56;
+            flow.setMatch(createICMPv6Match1().build());
+            flow.setInstructions(createDecNwTtlInstructions().build());
+            break;
+        case "f57":
+            id += 57;
+            flow.setMatch(createMatch1().build());
+            flow.setInstructions(createAppyActionInstruction88().build());
             break;
         default:
             LOG.warn("flow type not understood: {}", flowType);
@@ -518,8 +531,8 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         testFlow = flow;
         return flow;
     }
-    
-    
+
+
     private short getTableId(String tableId)
     {
          short table = 2;
@@ -531,9 +544,9 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
           {
              // ignore exception and continue with default value
           }
-          
+
           return table;
-        
+
     }
 
     /**
@@ -695,7 +708,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         isb.setInstruction(instructions);
         return isb;
     }
-    
+
     private static InstructionsBuilder createSentToControllerInstructions() {
         List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
@@ -886,6 +899,32 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         SetVlanPcpActionBuilder pcp = new SetVlanPcpActionBuilder();
         VlanPcp pcp1 = new VlanPcp((short) 2);
+        pcp.setVlanPcp(pcp1);
+        ab.setAction(new SetVlanPcpActionCaseBuilder().setSetVlanPcpAction(pcp.build()).build());
+        actionList.add(ab.build());
+        // Create an Apply Action
+        ApplyActionsBuilder aab = new ApplyActionsBuilder();
+        aab.setAction(actionList);
+
+        // Wrap our Apply Action in an Instruction
+        InstructionBuilder ib = new InstructionBuilder();
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
+
+        // Put our Instruction in a list of Instructions
+        InstructionsBuilder isb = new InstructionsBuilder();
+        List<Instruction> instructions = new ArrayList<Instruction>();
+        instructions.add(ib.build());
+        isb.setInstruction(instructions);
+        return isb;
+    }
+
+    private static InstructionsBuilder createAppyActionInstruction88() {
+
+        List<Action> actionList = new ArrayList<Action>();
+        ActionBuilder ab = new ActionBuilder();
+
+        SetVlanPcpActionBuilder pcp = new SetVlanPcpActionBuilder();
+        VlanPcp pcp1 = new VlanPcp((short) 9);
         pcp.setVlanPcp(pcp1);
         ab.setAction(new SetVlanPcpActionCaseBuilder().setSetVlanPcpAction(pcp.build()).build());
         actionList.add(ab.build());
@@ -1619,7 +1658,24 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         return match;
     }
-    
+
+    private static MatchBuilder createMatch33() {
+
+        MatchBuilder match = new MatchBuilder();
+        Ipv4MatchBuilder ipv4Match = new Ipv4MatchBuilder();
+        Ipv4Prefix prefix = new Ipv4Prefix("10.0.0.10");
+        ipv4Match.setIpv4Source(prefix);
+        Ipv4Match i4m = ipv4Match.build();
+        match.setLayer3Match(i4m);
+
+        EthernetMatchBuilder eth = new EthernetMatchBuilder();
+        EthernetTypeBuilder ethTypeBuilder = new EthernetTypeBuilder();
+        ethTypeBuilder.setType(new EtherType(0xfffeL));
+        eth.setEthernetType(ethTypeBuilder.build());
+        match.setEthernetMatch(eth.build());
+        return match;
+    }
+
     private static MatchBuilder createInphyportMatch() {
         MatchBuilder match = new MatchBuilder();
         match.setInPort(202L);
@@ -1856,6 +1912,31 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
     /**
      * @return
      */
+    private static MatchBuilder createICMPv6Match1() {
+
+        MatchBuilder match = new MatchBuilder();
+        EthernetMatchBuilder eth = new EthernetMatchBuilder();
+        EthernetTypeBuilder ethTypeBuilder = new EthernetTypeBuilder();
+        ethTypeBuilder.setType(new EtherType(0x86ddL));
+        eth.setEthernetType(ethTypeBuilder.build());
+        match.setEthernetMatch(eth.build());
+
+        IpMatchBuilder ipmatch = new IpMatchBuilder(); // ipv4 version
+        ipmatch.setIpProtocol((short) 256);
+        match.setIpMatch(ipmatch.build());
+
+        Icmpv6MatchBuilder icmpv6match = new Icmpv6MatchBuilder(); // icmpv6
+                                                                   // match
+        icmpv6match.setIcmpv6Type((short) 135);
+        icmpv6match.setIcmpv6Code((short) 1);
+        match.setIcmpv6Match(icmpv6match.build());
+
+        return match;
+    }
+
+    /**
+     * @return
+     */
 
     private static MatchBuilder createL4TCPMatch() {
         MatchBuilder match = new MatchBuilder();
@@ -1989,7 +2070,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return match;
 
     }
-    
+
     /**
      * @return
      */
