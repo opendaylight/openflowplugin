@@ -722,6 +722,21 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
             flow.setMatch(createTunnelIDMatch().build());
             flow.setInstructions(createAppyActionInstruction48().build());
             break;
+        case "f78":
+            id += 78;
+            flow.setMatch(createMatch33().build());
+            flow.setInstructions(createDropInstructions().build());
+            break;
+        case "f79":
+            id += 79;
+            flow.setMatch(createICMPv6Match1().build());
+            flow.setInstructions(createDecNwTtlInstructions().build());
+            break;
+        case "f80":
+            id += 80;
+            flow.setMatch(createMatch1().build());
+            flow.setInstructions(createAppyActionInstruction88().build());
+            break;
         default:
             LOG.warn("flow type not understood: {}", flowType);
         }
@@ -1192,6 +1207,33 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         isb.setInstruction(instructions);
         return isb;
     }
+
+    private static InstructionsBuilder createAppyActionInstruction88() {
+
+        List<Action> actionList = new ArrayList<Action>();
+        ActionBuilder ab = new ActionBuilder();
+
+        SetVlanPcpActionBuilder pcp = new SetVlanPcpActionBuilder();
+        VlanPcp pcp1 = new VlanPcp((short) 9);
+        pcp.setVlanPcp(pcp1);
+        ab.setAction(new SetVlanPcpActionCaseBuilder().setSetVlanPcpAction(pcp.build()).build());
+        actionList.add(ab.build());
+        // Create an Apply Action
+        ApplyActionsBuilder aab = new ApplyActionsBuilder();
+        aab.setAction(actionList);
+
+        // Wrap our Apply Action in an Instruction
+        InstructionBuilder ib = new InstructionBuilder();
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
+
+        // Put our Instruction in a list of Instructions
+        InstructionsBuilder isb = new InstructionsBuilder();
+        List<Instruction> instructions = new ArrayList<Instruction>();
+        instructions.add(ib.build());
+        isb.setInstruction(instructions);
+        return isb;
+    }	
+	
 
     private static InstructionsBuilder createAppyActionInstruction9() {
 
@@ -1806,7 +1848,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         isb.setInstruction(instructions);
         return isb;
     }
-
+	
     private static InstructionsBuilder createAppyActionInstruction33() {
 
         List<Action> actionList = new ArrayList<Action>();
@@ -2598,6 +2640,48 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         return match;
     }
+	
+    /**
+     * @return
+     */
+    private static MatchBuilder createICMPv6Match1() {
+
+        MatchBuilder match = new MatchBuilder();
+        EthernetMatchBuilder eth = new EthernetMatchBuilder();
+        EthernetTypeBuilder ethTypeBuilder = new EthernetTypeBuilder();
+        ethTypeBuilder.setType(new EtherType(0x86ddL));
+        eth.setEthernetType(ethTypeBuilder.build());
+        match.setEthernetMatch(eth.build());
+
+        IpMatchBuilder ipmatch = new IpMatchBuilder(); // ipv4 version
+        ipmatch.setIpProtocol((short) 256);
+        match.setIpMatch(ipmatch.build());
+
+        Icmpv6MatchBuilder icmpv6match = new Icmpv6MatchBuilder(); // icmpv6
+                                                                   // match
+        icmpv6match.setIcmpv6Type((short) 135);
+        icmpv6match.setIcmpv6Code((short) 1);
+        match.setIcmpv6Match(icmpv6match.build());
+
+        return match;
+    }	
+	
+    private static MatchBuilder createMatch33() {
+
+        MatchBuilder match = new MatchBuilder();
+        Ipv4MatchBuilder ipv4Match = new Ipv4MatchBuilder();
+        Ipv4Prefix prefix = new Ipv4Prefix("10.0.0.10");
+        ipv4Match.setIpv4Source(prefix);
+        Ipv4Match i4m = ipv4Match.build();
+        match.setLayer3Match(i4m);
+
+        EthernetMatchBuilder eth = new EthernetMatchBuilder();
+        EthernetTypeBuilder ethTypeBuilder = new EthernetTypeBuilder();
+        ethTypeBuilder.setType(new EtherType(0xfffeL));
+        eth.setEthernetType(ethTypeBuilder.build());
+        match.setEthernetMatch(eth.build());
+        return match;
+    }	
 
     private static MatchBuilder createInphyportMatch() {
         MatchBuilder match = new MatchBuilder();
