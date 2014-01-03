@@ -1,12 +1,10 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.opendaylight.openflowjava.protocol.api.util.BinContent;
 import org.opendaylight.openflowplugin.openflow.md.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchConvertorImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchReactor;
+import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlInCase;
@@ -131,6 +129,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yangtools.yang.binding.Augmentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author usha@ericsson Action List:This class takes data from SAL layer and
@@ -697,6 +698,7 @@ public final class ActionConvertor {
         Uri uri = outputAction.getOutputNodeConnector();
 
         if (version >= OFConstants.OFP_VERSION_1_3) {
+
             if (uri.getValue().equals(OutputPortValues.CONTROLLER.toString())) {
                 portAction.setPort(new PortNumber(BinContent.intToUnsignedLong(PortNumberValues.CONTROLLER
                         .getIntValue())));
@@ -722,8 +724,8 @@ public final class ActionConvertor {
 
             } else if (uri.getValue().equals(OutputPortValues.NONE.toString())) {
                 logger.error("Unknown Port Type for the Version");
-            } else if (Long.parseLong(uri.getValue()) > 0 && Long.parseLong(uri.getValue()) < MAXPortOF13) {
-                portAction.setPort(new PortNumber(BinContent.intToUnsignedLong(Integer.parseInt(uri.getValue()))));
+            } else if (InventoryDataServiceUtil.portNumberfromNodeConnectorId(outputAction.getOutputNodeConnector().getValue()) < MAXPortOF13) {
+                portAction.setPort(new PortNumber(InventoryDataServiceUtil.portNumberfromNodeConnectorId(outputAction.getOutputNodeConnector().getValue())));
             } else {
                 logger.error("Invalid Port for Output Action");
             }
