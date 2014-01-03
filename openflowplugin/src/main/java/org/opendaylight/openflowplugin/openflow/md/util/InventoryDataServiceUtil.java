@@ -1,8 +1,5 @@
 package org.opendaylight.openflowplugin.openflow.md.util;
 
-import java.math.BigInteger;
-import java.util.List;
-
 import org.opendaylight.controller.sal.binding.api.data.DataModificationTransaction;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
@@ -20,6 +17,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.math.BigInteger;
+import java.util.List;
 
 public class InventoryDataServiceUtil {
     private final static Logger LOG = LoggerFactory.getLogger(InventoryDataServiceUtil.class);
@@ -150,11 +150,22 @@ public class InventoryDataServiceUtil {
     }
     
     public static Long portNumberfromNodeConnectorId(NodeConnectorId ncId) {
-        String[] split = ncId.getValue().split(":");
+        return portNumberfromNodeConnectorId(ncId.getValue());
+    }
+
+    public static Long portNumberfromNodeConnectorId(String ncId){
+        String[] split = ncId.split(":");
+
+        // If the length is just one then this cannot be the new MD-SAL style node connector Id which
+        // is of the form openflow:1:3.
+        if(split.length == 1){
+            return Long.decode(ncId);
+        }
         String portNoString = split[split.length-1];
         Long portNo = Long.decode(portNoString);
         return portNo;
     }
+
 
 
     public static NodeConnectorRef nodeConnectorRefFromDatapathIdPortno(BigInteger datapathId, Long portNo) {
