@@ -26,7 +26,7 @@ public class LLDPSpeakerPopListener<T> implements PopListener<T> {
 	        	ncb.addAugmentation(FlowCapableNodeConnector.class, fcncb.build());
 	        	PortState portState = flowConnector.getState();
 	        	PortConfig portConfig = flowConnector.getConfiguration();
-	        	if((portState ==null || !portState.equals(PortState.LinkDown)) && (portConfig == null || !portConfig.isPORTDOWN())) {
+	        	if((portState ==null || !portState.isLinkDown()) && (portConfig == null || !portConfig.isPORTDOWN())) {
 	        		LLDPSpeaker.getInstance().addNodeConnector(nodeConnectorInstanceId,ncb.build());
 	        	} else {
 	        		LLDPSpeaker.getInstance().removeNodeConnector(nodeConnectorInstanceId,ncb.build());

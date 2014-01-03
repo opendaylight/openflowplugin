@@ -128,11 +128,11 @@ public final class PortConvertor {
         boolean isBlocked = false; // (1),
         boolean isLive = false; // (2);
 
-        if (state.getIntValue() == 0) {
+        if (state.isLinkDown()) {
             isLinkDown = true;
-        } else if (state.getIntValue() == 1) {
+        } else if (state.isBlocked()) {
             isBlocked = true;
-        } else if (state.getIntValue() == 2) {
+        } else if (state.isLive()) {
             isLive = true;
         }
         portState = new PortState(isLinkDown, isBlocked, isLive);
