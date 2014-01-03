@@ -129,7 +129,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yangtools.yang.binding.Augmentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
