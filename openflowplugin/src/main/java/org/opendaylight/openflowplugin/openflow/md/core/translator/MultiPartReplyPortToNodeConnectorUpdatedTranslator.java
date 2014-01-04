@@ -38,23 +38,7 @@ public class MultiPartReplyPortToNodeConnectorUpdatedTranslator implements IMDMe
             List<DataObject> list = new CopyOnWriteArrayList<DataObject>();
             for ( Ports port : body.getPorts() ) {
                 LOG.info("Port: " + port);
-                port.getPortNo();
-                NodeConnectorUpdatedBuilder builder = InventoryDataServiceUtil
-                .nodeConnectorUpdatedBuilderFromDatapathIdPortNo(datapathId,port.getPortNo());
-                FlowCapableNodeConnectorUpdatedBuilder fcncub = new FlowCapableNodeConnectorUpdatedBuilder();
-                fcncub.setAdvertisedFeatures(PortTranslatorUtil.translatePortFeatures(port.getAdvertisedFeatures()));
-                fcncub.setConfiguration(PortTranslatorUtil.translatePortConfig(port.getConfig()));
-                fcncub.setCurrentFeature(PortTranslatorUtil.translatePortFeatures(port.getCurrentFeatures()));
-                fcncub.setCurrentSpeed(port.getCurrSpeed());
-                fcncub.setHardwareAddress(port.getHwAddr());
-                fcncub.setMaximumSpeed(port.getMaxSpeed());
-                fcncub.setName(port.getName());
-                fcncub.setPeerFeatures(PortTranslatorUtil.translatePortFeatures(port.getPeerFeatures()));
-                fcncub.setPortNumber(port.getPortNo());
-                fcncub.setState(PortTranslatorUtil.translatePortState(port.getState()));
-                fcncub.setSupported(PortTranslatorUtil.translatePortFeatures(port.getSupportedFeatures()));
-                builder.addAugmentation(FlowCapableNodeConnectorUpdated.class, fcncub.build());
-                list.add(builder.build());
+                list.add(PortTranslatorUtil.translatePort(msg.getVersion(), datapathId, port.getPortNo(), port));
             }
             return list;
         } else {

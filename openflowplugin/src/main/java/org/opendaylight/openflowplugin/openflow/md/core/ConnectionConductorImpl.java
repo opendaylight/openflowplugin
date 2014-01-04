@@ -384,6 +384,11 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         if(version == OFConstants.OFP_VERSION_1_3){
             requestGroupFeatures();
             requestMeterFeatures();
+        } else if (version == OFConstants.OFP_VERSION_1_0) {
+            //  Because the GetFeaturesOutput contains information about the port
+            //  in OF1.0 (that we would otherwise get from the PortDesc) we have to pass
+            //  it up for parsing to convert into a NodeConnectorUpdate
+            queueKeeper.push(featureOutput, this);
         }
     }
 
