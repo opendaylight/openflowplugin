@@ -1,5 +1,6 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -44,7 +45,7 @@ public final class GroupConvertor {
 
     public static GroupModInputBuilder toGroupModInput(
 
-    org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group source, short version) {
+    org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group source, short version,BigInteger datapathid) {
         List<BucketsList> bucketLists = null;
         GroupModInputBuilder groupModInputBuilder = new GroupModInputBuilder();
         if (source instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput) {
@@ -76,7 +77,7 @@ public final class GroupConvertor {
         if ((source.getBuckets() != null) && (source.getBuckets().getBucket().size() != 0)) {
 
             bucketLists = new ArrayList<BucketsList>();
-            getbucketList(source.getBuckets(), bucketLists, version, source.getGroupType().getIntValue());
+            getbucketList(source.getBuckets(), bucketLists, version, source.getGroupType().getIntValue(),datapathid);
             groupModInputBuilder.setBucketsList(bucketLists);
         }
         groupModInputBuilder.setVersion(version);
@@ -84,7 +85,7 @@ public final class GroupConvertor {
 
     }
 
-    private static void getbucketList(Buckets buckets, List<BucketsList> bucketLists, short version, int groupType) {
+    private static void getbucketList(Buckets buckets, List<BucketsList> bucketLists, short version, int groupType,BigInteger datapathid) {
 
         Iterator<org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.Bucket> groupBucketIterator = buckets
                 .getBucket().iterator();
@@ -130,7 +131,7 @@ public final class GroupConvertor {
                 bucketBuilder.setWatchPort(new PortNumber(BinContent.intToUnsignedLong(DEFAULT_WATCH_PORT.intValue())));
             }
 
-            List<ActionsList> bucketActionList = ActionConvertor.getActionList(groupBucket.getAction(), version);
+            List<ActionsList> bucketActionList = ActionConvertor.getActionList(groupBucket.getAction(), version,datapathid);
             bucketBuilder.setActionsList(bucketActionList);
             BucketsList bucket = bucketBuilder.build();
             bucketLists.add(bucket);

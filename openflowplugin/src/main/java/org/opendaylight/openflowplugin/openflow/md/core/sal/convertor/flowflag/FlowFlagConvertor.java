@@ -8,6 +8,8 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flowflag;
 
+import java.math.BigInteger;
+
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags;
 
@@ -22,5 +24,5 @@ public interface FlowFlagConvertor<E> extends Convertor<FlowModFlags, E> {
      * @return converted match (into OF-API model)
      */
     @Override
-    E convert(FlowModFlags source);
+    E convert(FlowModFlags source,BigInteger datapathid);
 }
