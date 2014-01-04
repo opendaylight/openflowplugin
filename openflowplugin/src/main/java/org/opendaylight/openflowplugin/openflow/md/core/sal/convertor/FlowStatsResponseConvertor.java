@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,12 +34,12 @@ public class FlowStatsResponseConvertor {
      * @param allFlowStats
      * @return
      */
-    public List<FlowAndStatisticsMapList> toSALFlowStatsList(List<FlowStats> allFlowStats){
+    public List<FlowAndStatisticsMapList> toSALFlowStatsList(List<FlowStats> allFlowStats,BigInteger datapathid){
         
         List<FlowAndStatisticsMapList> convertedSALFlowStats = new ArrayList<FlowAndStatisticsMapList>();
         
         for(FlowStats flowStats : allFlowStats){
-            convertedSALFlowStats.add(toSALFlowStats(flowStats));
+            convertedSALFlowStats.add(toSALFlowStats(flowStats, datapathid));
         }
         
         return convertedSALFlowStats;
@@ -50,7 +51,7 @@ public class FlowStatsResponseConvertor {
      * @param flowStats
      * @return
      */
-    public FlowAndStatisticsMapList toSALFlowStats(FlowStats flowStats){
+    public FlowAndStatisticsMapList toSALFlowStats(FlowStats flowStats,BigInteger datapathid){
         FlowAndStatisticsMapListBuilder salFlowStatsBuilder = new FlowAndStatisticsMapListBuilder();
         salFlowStatsBuilder.setByteCount(new Counter64(flowStats.getByteCount()));
         salFlowStatsBuilder.setCookie(flowStats.getCookie());
@@ -66,10 +67,10 @@ public class FlowStatsResponseConvertor {
         salFlowStatsBuilder.setPriority(flowStats.getPriority());
         salFlowStatsBuilder.setTableId(flowStats.getTableId());
         if(flowStats.getMatchV10() != null){
-            salFlowStatsBuilder.setMatch(MatchConvertorImpl.fromOFMatchV10ToSALMatch(flowStats.getMatchV10()));
+            salFlowStatsBuilder.setMatch(MatchConvertorImpl.fromOFMatchV10ToSALMatch(flowStats.getMatchV10(),datapathid));
         }
         if(flowStats.getMatch() != null){
-            salFlowStatsBuilder.setMatch(MatchConvertorImpl.fromOFMatchToSALMatch(flowStats.getMatch()));
+            salFlowStatsBuilder.setMatch(MatchConvertorImpl.fromOFMatchToSALMatch(flowStats.getMatch(),datapathid));
             salFlowStatsBuilder.setFlags(
                     new FlowModFlags(flowStats.getFlags().isOFPFFCHECKOVERLAP(),
                             flowStats.getFlags().isOFPFFRESETCOUNTS(),

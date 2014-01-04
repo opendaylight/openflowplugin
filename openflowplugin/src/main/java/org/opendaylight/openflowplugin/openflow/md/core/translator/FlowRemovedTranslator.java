@@ -160,10 +160,10 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
             org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.match.grouping.Match ofMatch = ofFlow
                     .getMatch();
             if (ofMatch != null) {
-                salFlowRemoved.setMatch(fromMatch(ofMatch));
+                salFlowRemoved.setMatch(fromMatch(ofMatch,sc.getFeatures().getDatapathId()));
             }
             else if(ofFlow.getMatchV10() != null){
-                MatchBuilder matchBuilder = new MatchBuilder(MatchConvertorImpl.fromOFMatchV10ToSALMatch(ofFlow.getMatchV10()));
+                MatchBuilder matchBuilder = new MatchBuilder(MatchConvertorImpl.fromOFMatchV10ToSALMatch(ofFlow.getMatchV10(),sc.getFeatures().getDatapathId()));
                 salFlowRemoved.setMatch(matchBuilder.build());
             }
             salFlowRemoved.setNode(new NodeRef(InventoryDataServiceUtil.identifierFromDatapathId(sc.getFeatures()
@@ -178,7 +178,7 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
     
     
     public Match fromMatch(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.match.grouping.Match ofMatch) {
+            org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.match.grouping.Match ofMatch,BigInteger datapathid) {
         MatchBuilder matchBuilder = new MatchBuilder();
         EthernetMatchBuilder ethernetMatch = null;
         VlanMatchBuilder vlanMatch = null;
@@ -196,11 +196,11 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
         for (MatchEntries entry : ofMatch.getMatchEntries()) {
             Class<? extends MatchField> field = entry.getOxmMatchField();
             if (field.equals(InPort.class)) {
-                matchBuilder.setInPort(entry.getAugmentation(PortNumberMatchEntry.class).getPortNumber().getValue()
-                        .longValue());
+                matchBuilder.setInPort(InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(datapathid,entry.getAugmentation(PortNumberMatchEntry.class).getPortNumber().getValue()
+                        .longValue()));
             } else if (field.equals(InPhyPort.class)) {
-                matchBuilder.setInPhyPort(entry.getAugmentation(PortNumberMatchEntry.class).getPortNumber().getValue()
-                        .longValue());
+                matchBuilder.setInPhyPort(InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(datapathid,entry.getAugmentation(PortNumberMatchEntry.class).getPortNumber().getValue()
+                        .longValue()));
             } else if (field.equals(Metadata.class)) {
                 MetadataBuilder metadata = new MetadataBuilder();
                 metadata.setMetadata(new BigInteger(entry.getAugmentation(MetadataMatchEntry.class).getMetadata()));

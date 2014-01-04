@@ -5,37 +5,33 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.opendaylight.openflowplugin.openflow.md.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
-import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.PortTranslatorUtil;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnectorUpdated;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnectorUpdatedBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorUpdatedBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortConfig;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.features.reply.PhyPort;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class PortStatusMessageToNodeConnectorUpdatedTranslator implements IMDMessageTranslator<OfHeader, List<DataObject>> {
+public class FeaturesV10ToNodeConnectorUpdatedTranslator implements IMDMessageTranslator<OfHeader, List<DataObject>> {
     protected static final Logger LOG = LoggerFactory
-            .getLogger(PortStatusMessageToNodeConnectorUpdatedTranslator.class);
+            .getLogger(FeaturesV10ToNodeConnectorUpdatedTranslator.class);
 
     @Override
     public List<DataObject> translate(SwitchConnectionDistinguisher cookie,
             SessionContext sc, OfHeader msg) {
-        if(msg instanceof PortStatusMessage) {
-            PortStatusMessage port = (PortStatusMessage)msg;
+        if(msg instanceof GetFeaturesOutput) {        
+            GetFeaturesOutput features = (GetFeaturesOutput) msg;
             List<DataObject> list = new CopyOnWriteArrayList<DataObject>();
             BigInteger datapathId = sc.getFeatures().getDatapathId();
-            Long portNo = port.getPortNo();
-            Short version = port.getVersion();
-            LOG.error("PortStatusMessage: version {}  dataPathId {} portNo {}",version, datapathId,portNo);
-            list.add(PortTranslatorUtil.translatePort(version, datapathId, portNo, port));
+            if( features.getPhyPort() != null ) {
+                for (PhyPort port : features.getPhyPort()) {
+                    list.add(PortTranslatorUtil.translatePort(msg.getVersion(), datapathId, port.getPortNo(), port));
+                }
+            }
             return list;
         } else {
             // TODO - Do something smarter than returning null if translation fails... what Exception should we throw here?

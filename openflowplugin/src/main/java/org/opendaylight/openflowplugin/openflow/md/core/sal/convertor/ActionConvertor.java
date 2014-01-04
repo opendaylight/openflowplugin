@@ -1,12 +1,10 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.opendaylight.openflowjava.protocol.api.util.BinContent;
 import org.opendaylight.openflowplugin.openflow.md.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchConvertorImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchReactor;
+import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlInCase;
@@ -132,6 +130,10 @@ import org.opendaylight.yangtools.yang.binding.Augmentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author usha@ericsson Action List:This class takes data from SAL layer and
  *         converts into OF Data
@@ -151,7 +153,7 @@ public final class ActionConvertor {
 
     public static List<ActionsList> getActionList(
             List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> actions,
-            short version)
+            short version,BigInteger datapathid)
 
     {
         ActionsListBuilder actionsListBuilder = new ActionsListBuilder();
@@ -189,7 +191,7 @@ public final class ActionConvertor {
             else if (action instanceof DecNwTtlCase)
                 actionsList.add(SalToOFDecNwTtl(action, actionsListBuilder));
             else if (action instanceof SetFieldCase)
-                actionsList.add(SalToOFSetField(action, actionsListBuilder, version));
+                actionsList.add(SalToOFSetField(action, actionsListBuilder, version,datapathid));
             else if (action instanceof PushPbbActionCase)
                 actionsList.add(SalToOFPushPbbAction(action, actionsListBuilder));
             else if (action instanceof PopPbbActionCase)
@@ -226,14 +228,14 @@ public final class ActionConvertor {
 
     private static ActionsList SalToOFSetField(
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
-            ActionsListBuilder actionsListBuilder, short version) {
+            ActionsListBuilder actionsListBuilder, short version,BigInteger datapathid) {
 
         SetFieldCase setFieldCase = (SetFieldCase) action;
         org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match match = setFieldCase
                 .getSetField();
 
         OxmFieldsActionBuilder oxmFieldsActionBuilder = new OxmFieldsActionBuilder();
-        MatchReactor.getInstance().convert(match, version, oxmFieldsActionBuilder);
+        MatchReactor.getInstance().convert(match, version, oxmFieldsActionBuilder,datapathid);
 
         ActionBuilder actionBuilder = new ActionBuilder();
         actionBuilder
@@ -697,6 +699,7 @@ public final class ActionConvertor {
         Uri uri = outputAction.getOutputNodeConnector();
 
         if (version >= OFConstants.OFP_VERSION_1_3) {
+
             if (uri.getValue().equals(OutputPortValues.CONTROLLER.toString())) {
                 portAction.setPort(new PortNumber(BinContent.intToUnsignedLong(PortNumberValues.CONTROLLER
                         .getIntValue())));
@@ -722,8 +725,8 @@ public final class ActionConvertor {
 
             } else if (uri.getValue().equals(OutputPortValues.NONE.toString())) {
                 logger.error("Unknown Port Type for the Version");
-            } else if (Long.parseLong(uri.getValue()) > 0 && Long.parseLong(uri.getValue()) < MAXPortOF13) {
-                portAction.setPort(new PortNumber(BinContent.intToUnsignedLong(Integer.parseInt(uri.getValue()))));
+            } else if (InventoryDataServiceUtil.portNumberfromNodeConnectorId(outputAction.getOutputNodeConnector().getValue()) < MAXPortOF13) {
+                portAction.setPort(new PortNumber(InventoryDataServiceUtil.portNumberfromNodeConnectorId(outputAction.getOutputNodeConnector().getValue())));
             } else {
                 logger.error("Invalid Port for Output Action");
             }
@@ -747,8 +750,8 @@ public final class ActionConvertor {
                 portAction.setPort(new PortNumber((long) PortNumberValuesV10.NONE.getIntValue()));
             } else if (uri.getValue().equals(OutputPortValues.ANY.toString())) {
                 logger.error("Unknown Port Type for the Version");
-            } else if (Long.parseLong(uri.getValue()) > 0 && Long.parseLong(uri.getValue()) < MAXPortOF10) {
-                portAction.setPort(new PortNumber((long) Integer.parseInt(uri.getValue())));
+            } else if (InventoryDataServiceUtil.portNumberfromNodeConnectorId(outputAction.getOutputNodeConnector().getValue()) < MAXPortOF10) {
+                portAction.setPort(new PortNumber(InventoryDataServiceUtil.portNumberfromNodeConnectorId(outputAction.getOutputNodeConnector().getValue())));
             } else {
                 logger.error("Invalid Port for Output Action");
             }
