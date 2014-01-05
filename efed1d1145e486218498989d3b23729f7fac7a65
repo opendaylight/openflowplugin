@@ -1,0 +1,123 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da6255ed_71e3a3a4",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 739
+      },
+      "writtenOn": "2014-01-05T11:08:10Z",
+      "side": 1,
+      "message": "consolodated--\u003econsolidated",
+      "revId": "efed1d1145e486218498989d3b23729f7fac7a65",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da6255ed_b18b5bc2",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/translator/FeaturesV10ToNodeConnectorUpdatedTranslator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 739
+      },
+      "writtenOn": "2014-01-05T11:08:10Z",
+      "side": 1,
+      "message": "Why is there a need to use  CopyOnWriteArrayList? \n\nAre you aware that on every add operation (and not only add) a fresh new copy of the array is made? It\u0027s expensive, I don\u0027t understand why it\u0027s needed here. Please explain.",
+      "revId": "efed1d1145e486218498989d3b23729f7fac7a65",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da6255ed_918857c6",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/translator/FeaturesV10ToNodeConnectorUpdatedTranslator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 739
+      },
+      "writtenOn": "2014-01-05T11:08:10Z",
+      "side": 1,
+      "message": "logging?",
+      "revId": "efed1d1145e486218498989d3b23729f7fac7a65",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da6255ed_31988b1b",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/translator/MultiPartReplyPortToNodeConnectorUpdatedTranslator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 739
+      },
+      "writtenOn": "2014-01-05T11:08:10Z",
+      "side": 1,
+      "message": "Is this necessary to log it in info level? Aren\u0027t there going to be thousands of those? The log will be completely unreadable.\nPlease consider writing this statement in debug level. or if I am missing something, please explain :)",
+      "revId": "efed1d1145e486218498989d3b23729f7fac7a65",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da6255ed_71fa8344",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/translator/PortStatusMessageToNodeConnectorUpdatedTranslator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 739
+      },
+      "writtenOn": "2014-01-05T11:08:10Z",
+      "side": 1,
+      "message": "why is this written in error level? is there any exception/problem at this point of the code?",
+      "revId": "efed1d1145e486218498989d3b23729f7fac7a65",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da6255ed_51f77f59",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/translator/PortStatusMessageToNodeConnectorUpdatedTranslator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 739
+      },
+      "writtenOn": "2014-01-05T11:08:10Z",
+      "side": 1,
+      "message": "if there\u0027s a problem in the flow at this point, why not log it in error level?",
+      "revId": "efed1d1145e486218498989d3b23729f7fac7a65",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da6255ed_9101773a",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/util/PortTranslatorUtil.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 739
+      },
+      "writtenOn": "2014-01-05T11:08:10Z",
+      "side": 1,
+      "message": "Is this revision rev130925 going to change? It means that the method signature is going to change every time and cause multiple refactorings because of its return value.",
+      "revId": "efed1d1145e486218498989d3b23729f7fac7a65",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
