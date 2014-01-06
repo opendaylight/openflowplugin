@@ -8,6 +8,8 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common;
 
+import java.math.BigInteger;
+
 
 /**
  * converting from MD-SAL model into appropriate OF-API model
@@ -20,5 +22,5 @@ public interface Convertor<FROM, TO> {
      * @param source
      * @return converted match (into OF-API model)
      */
-    TO convert(FROM source);
+    TO convert(FROM source,BigInteger datapathid);
 }
