@@ -234,7 +234,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     	} 
     	
     	// Convert the AddFlowInput to FlowModInput
-    	FlowModInputBuilder ofFlowModInput = FlowConvertor.toFlowModInput(input, version);
+    	FlowModInputBuilder ofFlowModInput = FlowConvertor.toFlowModInput(input, version,this.getSessionContext().getFeatures().getDatapathId());
     	xId = session.getNextXid();
         ofFlowModInput.setXid(xId);
         
@@ -286,7 +286,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         } 
     	
     	// Convert the AddGroupInput to GroupModInput
-        GroupModInputBuilder ofGroupModInput = GroupConvertor.toGroupModInput(input, version);
+        GroupModInputBuilder ofGroupModInput = GroupConvertor.toGroupModInput(input, version,this.getSessionContext().getFeatures().getDatapathId());
         xId = session.getNextXid();
         ofGroupModInput.setXid(xId);
         
@@ -389,7 +389,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     	}
         
         // Convert the RemoveFlowInput to FlowModInput
-        FlowModInputBuilder ofFlowModInput = FlowConvertor.toFlowModInput(input, version);        
+        FlowModInputBuilder ofFlowModInput = FlowConvertor.toFlowModInput(input, version,this.getSessionContext().getFeatures().getDatapathId());        
         xId = session.getNextXid();
         ofFlowModInput.setXid(xId);
         
@@ -443,7 +443,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         } 
     	
     	// Convert the RemoveGroupInput to GroupModInput
-        GroupModInputBuilder ofGroupModInput = GroupConvertor.toGroupModInput(input, version);
+        GroupModInputBuilder ofGroupModInput = GroupConvertor.toGroupModInput(input, version,this.getSessionContext().getFeatures().getDatapathId());
         xId = session.getNextXid();
         ofGroupModInput.setXid(xId);
         
@@ -589,7 +589,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     	}
     	
     	// Convert the UpdateFlowInput to FlowModInput
-        FlowModInputBuilder ofFlowModInput = FlowConvertor.toFlowModInput(input.getUpdatedFlow(), version);
+        FlowModInputBuilder ofFlowModInput = FlowConvertor.toFlowModInput(input.getUpdatedFlow(), version,this.getSessionContext().getFeatures().getDatapathId());
         xId = session.getNextXid();
         ofFlowModInput.setXid(xId);
         
@@ -644,7 +644,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         } 
     	
     	// Convert the UpdateGroupInput to GroupModInput
-        GroupModInputBuilder ofGroupModInput = GroupConvertor.toGroupModInput(input.getUpdatedGroup(), version);
+        GroupModInputBuilder ofGroupModInput = GroupConvertor.toGroupModInput(input.getUpdatedGroup(), version,this.getSessionContext().getFeatures().getDatapathId());
         xId = session.getNextXid();
         ofGroupModInput.setXid(xId);
         
@@ -1367,7 +1367,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         mprFlowRequestBuilder.setCookieMask(OFConstants.DEFAULT_COOKIE_MASK);
 
         // convert and inject match
-        MatchReactor.getInstance().convert(arg0.getMatch(), version, mprFlowRequestBuilder);
+        MatchReactor.getInstance().convert(arg0.getMatch(), version, mprFlowRequestBuilder,this.getSessionContext().getFeatures().getDatapathId());
         //TODO: repeating code
         if(version == OFConstants.OFP_VERSION_1_3){
             mprFlowRequestBuilder.setCookie(arg0.getCookie());
@@ -1467,7 +1467,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         mprAggregateRequestBuilder.setCookieMask(OFConstants.DEFAULT_COOKIE_MASK);
 
 
-        MatchReactor.getInstance().convert(arg0.getMatch(), version, mprAggregateRequestBuilder);
+        MatchReactor.getInstance().convert(arg0.getMatch(), version, mprAggregateRequestBuilder,this.getSessionContext().getFeatures().getDatapathId());
         //TODO: repeating code
         if(version == OFConstants.OFP_VERSION_1_3){
             mprAggregateRequestBuilder.setCookie(arg0.getCookie());

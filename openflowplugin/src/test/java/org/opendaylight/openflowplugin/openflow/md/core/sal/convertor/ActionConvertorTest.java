@@ -1,5 +1,6 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,6 +47,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.OutputPortValues;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.EthertypeAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.GroupIdAction;
@@ -87,7 +89,7 @@ public class ActionConvertorTest {
         pbbActionData();
         setFieldData();
         setExperimenterData();
-        List<ActionsList> OFActionsList = ActionConvertor.getActionList(actions, (short) 0X4);
+        List<ActionsList> OFActionsList = ActionConvertor.getActionList(actions, (short) 0X4,BigInteger.valueOf(1));
 
        // OutputActions(OFActionsList);
 
@@ -105,7 +107,7 @@ public class ActionConvertorTest {
 
         SetFieldBuilder matchBuilder = setFA;
 
-        matchBuilder.setInPort(2125L);
+        matchBuilder.setInPort(new NodeConnectorId("openflow:1:2125"));
 
         SetFieldBuilder setFB = new SetFieldBuilder();
 

@@ -136,6 +136,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -488,7 +489,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         case "f31":
             id += 31;
             flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction23().build());
+            flow.setInstructions(createAppyActionInstruction23(nodeBuilder.getId()).build());
             break;
         case "f32":
             id += 32;
@@ -552,7 +553,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
             break;
         case "f44":
             id += 44;
-            flow.setMatch(createInphyportMatch().build());
+            flow.setMatch(createInphyportMatch(nodeBuilder.getId()).build());
             flow.setInstructions(createDropInstructions().build());
             break;
         case "f45":
@@ -1583,13 +1584,13 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return isb;
     }
 
-    private static InstructionsBuilder createAppyActionInstruction23() {
+    private static InstructionsBuilder createAppyActionInstruction23(NodeId nodeId) {
 
         List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
 
         SetFieldBuilder setFieldBuilder = new SetFieldBuilder();
-        setFieldBuilder.setInPort(new Long(2));
+        setFieldBuilder.setInPort(new NodeConnectorId(nodeId + ":2"));
         actionList.add(ab.build());
 
         // Create an Apply Action
@@ -2683,10 +2684,10 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return match;
     }	
 
-    private static MatchBuilder createInphyportMatch() {
+    private static MatchBuilder createInphyportMatch(NodeId nodeId) {
         MatchBuilder match = new MatchBuilder();
-        match.setInPort(202L);
-        match.setInPhyPort(10122L);
+        match.setInPort(new NodeConnectorId(nodeId+":202"));
+        match.setInPhyPort(new NodeConnectorId(nodeId+":10122"));
         return match;
     }
 

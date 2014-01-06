@@ -130,6 +130,7 @@ import org.opendaylight.yangtools.yang.binding.Augmentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -152,7 +153,7 @@ public final class ActionConvertor {
 
     public static List<ActionsList> getActionList(
             List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> actions,
-            short version)
+            short version,BigInteger datapathid)
 
     {
         ActionsListBuilder actionsListBuilder = new ActionsListBuilder();
@@ -190,7 +191,7 @@ public final class ActionConvertor {
             else if (action instanceof DecNwTtlCase)
                 actionsList.add(SalToOFDecNwTtl(action, actionsListBuilder));
             else if (action instanceof SetFieldCase)
-                actionsList.add(SalToOFSetField(action, actionsListBuilder, version));
+                actionsList.add(SalToOFSetField(action, actionsListBuilder, version,datapathid));
             else if (action instanceof PushPbbActionCase)
                 actionsList.add(SalToOFPushPbbAction(action, actionsListBuilder));
             else if (action instanceof PopPbbActionCase)
@@ -227,14 +228,14 @@ public final class ActionConvertor {
 
     private static ActionsList SalToOFSetField(
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
-            ActionsListBuilder actionsListBuilder, short version) {
+            ActionsListBuilder actionsListBuilder, short version,BigInteger datapathid) {
 
         SetFieldCase setFieldCase = (SetFieldCase) action;
         org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match match = setFieldCase
                 .getSetField();
 
         OxmFieldsActionBuilder oxmFieldsActionBuilder = new OxmFieldsActionBuilder();
-        MatchReactor.getInstance().convert(match, version, oxmFieldsActionBuilder);
+        MatchReactor.getInstance().convert(match, version, oxmFieldsActionBuilder,datapathid);
 
         ActionBuilder actionBuilder = new ActionBuilder();
         actionBuilder
