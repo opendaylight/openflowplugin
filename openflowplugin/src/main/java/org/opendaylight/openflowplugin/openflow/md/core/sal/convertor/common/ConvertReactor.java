@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common;
 
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,14 +41,14 @@ public abstract class ConvertReactor<FROM> {
      * @param target 
      */
     @SuppressWarnings("unchecked")
-    public <RESULT, TARGET> void convert(FROM source, short version, TARGET target) {
+    public <RESULT, TARGET> void convert(FROM source, short version, TARGET target,BigInteger datapathid) {
         
         //lookup converter
         Convertor<FROM, RESULT> convertor = (Convertor<FROM, RESULT>) conversionMapping.get(version);
         if (convertor == null) {
             throw new IllegalArgumentException("convertor for given version ["+version+"] not found");
         }
-        RESULT convertedItem = convertor.convert(source);
+        RESULT convertedItem = convertor.convert(source,datapathid);
         
         //lookup injection
         InjectionKey key = new InjectionKey(version, target.getClass().getName());

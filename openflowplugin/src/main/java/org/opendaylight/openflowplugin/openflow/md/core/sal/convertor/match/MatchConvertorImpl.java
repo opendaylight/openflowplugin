@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.opendaylight.openflowplugin.openflow.md.util.ByteUtil;
+import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Dscp;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
@@ -181,15 +182,15 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
     private static final short PROTO_UDP = 17;
 
     @Override
-    public List<MatchEntries> convert(org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match match) {
+    public List<MatchEntries> convert(org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match match,BigInteger datapathid) {
         List<MatchEntries> matchEntriesList = new ArrayList<>();
 
         if (match.getInPort() != null) {
-            matchEntriesList.add(toOfPort(InPort.class, match.getInPort()));
+            matchEntriesList.add(toOfPort(InPort.class, InventoryDataServiceUtil.portNumberfromNodeConnectorId(match.getInPort())));
         }
 
         if (match.getInPhyPort() != null) {
-            matchEntriesList.add(toOfPort(InPhyPort.class, match.getInPhyPort()));
+            matchEntriesList.add(toOfPort(InPhyPort.class, InventoryDataServiceUtil.portNumberfromNodeConnectorId(match.getInPhyPort())));
         }
 
         org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Metadata metadata = match
@@ -403,7 +404,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
      * @return
      * @author avishnoi@in.ibm.com
      */
-    public static Match fromOFMatchV10ToSALMatch(MatchV10 swMatch){
+    public static Match fromOFMatchV10ToSALMatch(MatchV10 swMatch,BigInteger datapathid){
         MatchBuilder matchBuilder = new MatchBuilder();
         EthernetMatchBuilder ethMatchBuilder =  new EthernetMatchBuilder();
         VlanMatchBuilder vlanMatchBuilder = new VlanMatchBuilder();
@@ -411,7 +412,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
         IpMatchBuilder ipMatchBuilder = new IpMatchBuilder();
        
         if(swMatch.getInPort() != null){
-            matchBuilder.setInPort((long)swMatch.getInPort());
+            matchBuilder.setInPort(InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(datapathid,(long)swMatch.getInPort()));
         }
         
         if(swMatch.getDlSrc()!= null){
@@ -499,7 +500,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
      * @author avishnoi@in.ibm.com
      */
     public static Match fromOFMatchToSALMatch(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.match.grouping.Match swMatch) {
+            org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.match.grouping.Match swMatch,BigInteger datapathid) {
         
         MatchBuilder matchBuilder = new MatchBuilder();
         EthernetMatchBuilder ethMatchBuilder = new EthernetMatchBuilder();
@@ -521,10 +522,10 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
             
             if(ofMatch.getOxmMatchField().equals(InPort.class)){
                 PortNumberMatchEntry portNumber = ofMatch.getAugmentation(PortNumberMatchEntry.class);
-                matchBuilder.setInPort(portNumber.getPortNumber().getValue());
+                matchBuilder.setInPort(InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(datapathid, portNumber.getPortNumber().getValue()));
             }else if (ofMatch.getOxmMatchField().equals(InPhyPort.class)){
                 PortNumberMatchEntry portNumber = ofMatch.getAugmentation(PortNumberMatchEntry.class);
-                matchBuilder.setInPhyPort(portNumber.getPortNumber().getValue());
+                matchBuilder.setInPhyPort(InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(datapathid,portNumber.getPortNumber().getValue()));
             }else if(ofMatch.getOxmMatchField().equals(Metadata.class)){
                 MetadataBuilder metadataBuilder = new MetadataBuilder();
                 MetadataMatchEntry metadataMatchEntry = ofMatch.getAugmentation(MetadataMatchEntry.class);

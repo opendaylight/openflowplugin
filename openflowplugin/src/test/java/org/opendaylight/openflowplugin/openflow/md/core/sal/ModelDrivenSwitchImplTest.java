@@ -35,6 +35,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev131103.TransactionId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
@@ -53,6 +54,8 @@ public class ModelDrivenSwitchImplTest {
     private ConnectionConductor conductor;
     @Mock
     private IMessageDispatchService messageDispatchService;
+    @Mock
+    private GetFeaturesOutput features;
 
     /**
      * @throws java.lang.Exception
@@ -64,6 +67,9 @@ public class ModelDrivenSwitchImplTest {
         Mockito.when(conductor.getVersion())
             .thenReturn(OFConstants.OFP_VERSION_1_0)
             .thenReturn(OFConstants.OFP_VERSION_1_3);
+        Mockito.when(context.getFeatures()).thenReturn(features);
+        Mockito.when(features.getDatapathId()).thenReturn(BigInteger.valueOf(1));
+
         mdSwitchOF10 = new ModelDrivenSwitchImpl(null, null, context);
         mdSwitchOF13 = new ModelDrivenSwitchImpl(null, null, context);
     }
