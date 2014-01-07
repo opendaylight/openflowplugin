@@ -47,7 +47,11 @@ public abstract class ByteUtil {
         } else {
             Arrays.fill(outputArray, (byte) 0);
         }
-        System.arraycopy(inputArray, 0, outputArray, outputArray.length - inputArray.length, inputArray.length);
+        System.arraycopy(inputArray,
+                         Math.max(0, inputArray.length - outputArray.length),
+                         outputArray,
+                         Math.max(0, outputArray.length - inputArray.length),
+                         Math.min(outputArray.length, inputArray.length));
         return outputArray;
     }
 }
