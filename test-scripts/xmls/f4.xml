@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<flow xmlns="urn:opendaylight:flow:inventory">
+    <strict>false</strict>
+    <instructions>
+        <instruction>
+            <order>0</order>
+            <apply-actions>
+                <action>
+                    <order>0</order>
+                    <dec-mpls-ttl/>
+                </action>
+            </apply-actions>
+        </instruction>
+    </instructions>
+    <table_id>2</table_id>
+    <id>127</id>
+    <cookie_mask>255</cookie_mask>
+    <installHw>false</installHw>
+    <match>
+        <ethernet-match>
+            <ethernet-type>
+                <type>45</type>
+            </ethernet-type>
+            <ethernet-destination>
+                <address>ff:ff:ff:ff:ff:ff</address>
+            </ethernet-destination>
+            <ethernet-source>
+                <address>00:00:00:00:23:ae</address>
+            </ethernet-source>
+        </ethernet-match>
+    </match>
+    <hard-timeout>12</hard-timeout>
+    <flags>FlowModFlags [_cHECKOVERLAP=false, _rESETCOUNTS=false, _nOPKTCOUNTS=false, _nOBYTCOUNTS=false, _sENDFLOWREM=false]</flags>
+    <cookie>4</cookie>
+    <idle-timeout>34</idle-timeout>
+    <flow-name>FooXf4</flow-name>
+    <priority>2</priority>
+    <barrier>false</barrier>
+</flow>

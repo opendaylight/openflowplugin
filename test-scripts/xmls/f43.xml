@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<flow xmlns="urn:opendaylight:flow:inventory">
+    <strict>false</strict>
+    <instructions>
+        <instruction>
+            <order>0</order>
+            <apply-actions>
+                <action>
+                    <order>0</order>
+                    <dec-nw-ttl/>
+                </action>
+            </apply-actions>
+        </instruction>
+    </instructions>
+    <table_id>2</table_id>
+    <id>166</id>
+    <cookie_mask>10</cookie_mask>
+    <out_port>10</out_port>
+    <installHw>false</installHw>
+    <out_group>2</out_group>
+    <match>
+        <ethernet-match>
+            <ethernet-type>
+                <type>34525</type>
+            </ethernet-type>
+        </ethernet-match>
+        <icmpv6-match>
+            <icmpv6-type>135</icmpv6-type>
+            <icmpv6-code>1</icmpv6-code>
+        </icmpv6-match>
+        <ip-match>
+            <ip-protocol>58</ip-protocol>
+        </ip-match>
+    </match>
+    <hard-timeout>12</hard-timeout>
+    <flags>FlowModFlags [_cHECKOVERLAP=false, _rESETCOUNTS=false, _nOPKTCOUNTS=false, _nOBYTCOUNTS=false, _sENDFLOWREM=false]</flags>
+    <cookie>10</cookie>
+    <idle-timeout>34</idle-timeout>
+    <flow-name>FooXf43</flow-name>
+    <priority>2</priority>
+    <barrier>false</barrier>
+</flow>

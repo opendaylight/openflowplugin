@@ -1,0 +1,15 @@
+cookie;cookie
+duration;duration
+exit;exit
+idle-timeout;idle_timeout
+in_port;in_port
+instructions;instructions
+hard-timeout;hard_timeout
+out_port;out_port
+match;matches
+n_packets;n_packets
+n_bytes;n_bytes
+priority;priority
+reg;reg
+table;table
+table_id;table
