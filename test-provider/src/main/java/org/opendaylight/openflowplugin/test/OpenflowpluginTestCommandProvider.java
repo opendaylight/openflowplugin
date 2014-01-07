@@ -741,7 +741,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
             LOG.warn("flow type not understood: {}", flowType);
         }
 
-        FlowKey key = new FlowKey(new FlowId(id));
+        FlowKey key = new FlowKey(new FlowId(Long.toString(id)));
         if (null == flow.isBarrier()) {
             flow.setBarrier(Boolean.FALSE);
         }
@@ -756,7 +756,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         flow.setStrict(false);
         flow.setContainerName(null);
         flow.setFlags(new FlowModFlags(false, false, false, false, true));
-        flow.setId(new FlowId(new Long(12)));
+        flow.setId(new FlowId("12"));
         flow.setTableId(getTableId(tableId));
         flow.setOutGroup(new Long(2));
         // set outport to OFPP_NONE (65535) to disable remove restriction for
