@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "da6255ed_1c8a336a",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 9
+      },
+      "writtenOn": "2014-01-07T21:49:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "da6255ed_71e3a3a4",
+      "revId": "efed1d1145e486218498989d3b23729f7fac7a65",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da6255ed_b18b5bc2",
         "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/translator/FeaturesV10ToNodeConnectorUpdatedTranslator.java",
         "patchSetId": 1
@@ -30,6 +48,24 @@
       "writtenOn": "2014-01-05T11:08:10Z",
       "side": 1,
       "message": "Why is there a need to use  CopyOnWriteArrayList? \n\nAre you aware that on every add operation (and not only add) a fresh new copy of the array is made? It\u0027s expensive, I don\u0027t understand why it\u0027s needed here. Please explain.",
+      "revId": "efed1d1145e486218498989d3b23729f7fac7a65",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da6255ed_fc7abf75",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/translator/FeaturesV10ToNodeConnectorUpdatedTranslator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 9
+      },
+      "writtenOn": "2014-01-07T21:49:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "da6255ed_b18b5bc2",
       "revId": "efed1d1145e486218498989d3b23729f7fac7a65",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "da6255ed_5c2f8b88",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/translator/FeaturesV10ToNodeConnectorUpdatedTranslator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 9
+      },
+      "writtenOn": "2014-01-07T21:49:39Z",
+      "side": 1,
+      "message": "Actually, the comment was spurious (from copy and paste :( ).  Returning an emptyList here really is the right thing to do in this circumstance.",
+      "parentUuid": "da6255ed_918857c6",
+      "revId": "efed1d1145e486218498989d3b23729f7fac7a65",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da6255ed_31988b1b",
         "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/translator/MultiPartReplyPortToNodeConnectorUpdatedTranslator.java",
         "patchSetId": 1
@@ -64,6 +118,24 @@
       "writtenOn": "2014-01-05T11:08:10Z",
       "side": 1,
       "message": "Is this necessary to log it in info level? Aren\u0027t there going to be thousands of those? The log will be completely unreadable.\nPlease consider writing this statement in debug level. or if I am missing something, please explain :)",
+      "revId": "efed1d1145e486218498989d3b23729f7fac7a65",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da6255ed_dc7ffb64",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/translator/MultiPartReplyPortToNodeConnectorUpdatedTranslator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 9
+      },
+      "writtenOn": "2014-01-07T21:49:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "da6255ed_31988b1b",
       "revId": "efed1d1145e486218498989d3b23729f7fac7a65",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -87,6 +159,24 @@
     },
     {
       "key": {
+        "uuid": "da6255ed_bc98c7c0",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/translator/PortStatusMessageToNodeConnectorUpdatedTranslator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 9
+      },
+      "writtenOn": "2014-01-07T21:49:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "da6255ed_71fa8344",
+      "revId": "efed1d1145e486218498989d3b23729f7fac7a65",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da6255ed_51f77f59",
         "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/translator/PortStatusMessageToNodeConnectorUpdatedTranslator.java",
         "patchSetId": 1
@@ -104,6 +194,24 @@
     },
     {
       "key": {
+        "uuid": "da6255ed_dc713ba9",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/translator/PortStatusMessageToNodeConnectorUpdatedTranslator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 9
+      },
+      "writtenOn": "2014-01-07T21:49:39Z",
+      "side": 1,
+      "message": "The comment was a spurious artifact of copy and paste.  Returning an emptyList is in fact the right thing to do in this situation.",
+      "parentUuid": "da6255ed_51f77f59",
+      "revId": "efed1d1145e486218498989d3b23729f7fac7a65",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da6255ed_9101773a",
         "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/util/PortTranslatorUtil.java",
         "patchSetId": 1
@@ -115,6 +223,24 @@
       "writtenOn": "2014-01-05T11:08:10Z",
       "side": 1,
       "message": "Is this revision rev130925 going to change? It means that the method signature is going to change every time and cause multiple refactorings because of its return value.",
+      "revId": "efed1d1145e486218498989d3b23729f7fac7a65",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da6255ed_ea155549",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/util/PortTranslatorUtil.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 9
+      },
+      "writtenOn": "2014-01-07T21:49:39Z",
+      "side": 1,
+      "message": "Alissa, the rev130925 is tracking the API version as declared by the model.",
+      "parentUuid": "da6255ed_9101773a",
       "revId": "efed1d1145e486218498989d3b23729f7fac7a65",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
