@@ -89,7 +89,7 @@ class DropTestCommiter implements PacketProcessingListener {
         val fb = new FlowBuilder();
         fb.setMatch(match.build());
         fb.setInstructions(isb.build());
-        fb.setId(new FlowId(new Long(fb.hashCode)));
+        fb.setId(new FlowId(Long.toString(fb.hashCode)));
         fb.setPriority(4);
         fb.setBufferId(0L);
         val value = new BigInteger("10", 10);
