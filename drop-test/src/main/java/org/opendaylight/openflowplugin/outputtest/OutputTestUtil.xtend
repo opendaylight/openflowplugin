@@ -132,7 +132,7 @@ class OutputTestUtil {
         fBuild.setMatch(new MatchBuilder().build)
         fBuild.setInstructions(createPingInstructionsBuilder().build)
         
-        var key = new FlowKey(new FlowId(flowId));
+        var key = new FlowKey(new FlowId(Long.toString(flowId)));
         fBuild.setBarrier(false);
         // flow.setBufferId(new Long(12));
         var value = new BigInteger("10", 10);
@@ -144,7 +144,7 @@ class OutputTestUtil {
         fBuild.setStrict(false);
         fBuild.setContainerName(null);
         fBuild.setFlags(new FlowModFlags(false, false, false, false, false));
-        fBuild.setId(new FlowId(new Long(12)));
+        fBuild.setId(new FlowId("12"));
         fBuild.setTableId(checkTableId(tableId));
         fBuild.setOutGroup(new Long(2));
         fBuild.setOutPort(value);
