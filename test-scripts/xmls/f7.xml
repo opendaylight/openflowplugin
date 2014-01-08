@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<flow xmlns="urn:opendaylight:flow:inventory">
+    <strict>false</strict>
+    <instructions>
+        <instruction>
+            <order>0</order>
+            <apply-actions>
+                <action>
+                    <order>0</order>
+                    <dec-mpls-ttl/>
+                </action>
+            </apply-actions>
+        </instruction>
+    </instructions>
+    <table_id>2</table_id>
+    <id>130</id>
+    <cookie_mask>255</cookie_mask>
+    <match>
+        <ethernet-match>
+            <ethernet-type>
+                <type>2048</type>
+            </ethernet-type>
+            <ethernet-destination>
+                <address>ff:ff:ff:ff:ff:aa</address>
+            </ethernet-destination>
+            <ethernet-source>
+                <address>00:00:00:11:23:ae</address>
+            </ethernet-source>
+        </ethernet-match>
+        <ipv4-source>10.1.2.3/24</ipv4-source>
+        <ipv4-destination>20.4.5.6/16</ipv4-destination>
+        <ip-match>
+            <ip-protocol>56</ip-protocol>
+            <ip-dscp>15</ip-dscp>
+            <ip-ecn>1</ip-ecn>
+        </ip-match>
+        <in-port>0</in-port>
+    </match>
+    <hard-timeout>12000</hard-timeout>
+    <flags>FlowModFlags [_cHECKOVERLAP=false, _rESETCOUNTS=false, _nOPKTCOUNTS=false, _nOBYTCOUNTS=false, _sENDFLOWREM=false]</flags>
+    <cookie>7</cookie>
+    <idle-timeout>12000</idle-timeout>
+    <flow-name>FooXf7</flow-name>
+    <priority>2</priority>
+    <barrier>false</barrier>
+</flow>

@@ -1,0 +1,1 @@
+ cookie=0xa, duration=45.249s, table=2, n_packets=0, n_bytes=0, priority=2,tun_id=0x100/0xffffff0000000101 actions=goto_table:2

@@ -1,0 +1,518 @@
+import os
+import sys
+import time
+import logging
+import argparse
+import unittest
+import requests
+import xml.dom.minidom as md
+from xml.etree import ElementTree as ET
+from netaddr import IPNetwork
+from string import lower
+
+import mininet.node
+import mininet.topo
+import mininet.net
+import mininet.util
+
+from mininet.node import RemoteController
+from mininet.node import OVSKernelSwitch
+
+def create_network(controller_ip, controller_port):
+    """Create topology and mininet network."""
+    topo = mininet.topo.Topo()
+
+    topo.addSwitch('s1')
+    topo.addHost('h1')
+    topo.addHost('h2')
+
+    topo.addLink('h1', 's1')
+    topo.addLink('h2', 's1')
+
+    switch=mininet.util.customConstructor(
+        {'ovsk':OVSKernelSwitch}, 'ovsk,protocols=OpenFlow13')
+
+    controller=mininet.util.customConstructor(
+        {'remote': RemoteController}, 'remote,ip=%s:%s' % (controller_ip,
+                                                           controller_port))
+
+
+    net = mininet.net.Mininet(topo=topo, switch=switch, controller=controller)
+
+    return net
+
+
+def get_flows(net):
+    """Get list of flows from network's first switch.
+
+    Return list of all flows on switch, sorted by duration (newest first)
+    One flow is a dictionary with all flow's attribute:value pairs. Matches
+    are stored under 'matches' key as another dictionary.
+    Example:
+
+        {
+            'actions': 'drop',
+            'cookie': '0xa,',
+            'duration': '3.434s,',
+            'hard_timeout': '12,',
+            'idle_timeout': '34,',
+            'matches': {
+                'ip': None,
+                'nw_dst': '10.0.0.0/24'
+            },
+            'n_bytes': '0,',
+            'n_packets': '0,',
+            'priority': '2',
+            'table': '1,'
+        }
+
+    """
+    log = logging.getLogger(__name__)
+    def parse_matches(flow, matches):
+        flow['matches'] = {}
+
+        for match in matches:
+            split_match = match.split('=', 1)
+            if len(split_match) == 1:
+                flow['matches'][split_match[0]] = None
+            else:
+                flow['matches'][split_match[0]] = split_match[1].rstrip(',')
+
+    switch = net.switches[0]
+    output = switch.cmdPrint(
+        'ovs-ofctl -O OpenFlow13 dump-flows %s' % switch.name)
+#    output = switch.cmdPrint(
+#        'ovs-ofctl -F openflow10 dump-flows %s' % switch.name)
+
+    log.debug('switch flow table: {}'.format(output))
+
+    flows = []
+
+    for line in output.splitlines()[1:]:
+        flow = {}
+        for word in line.split():
+            word.rstrip(',')
+            try:
+                key, value = word.split('=', 1)
+            except ValueError:
+                #TODO: need to figure out what to do here?
+                continue
+
+            if key == 'priority':
+                values = value.split(',')
+                flow[key] = values[0]
+                parse_matches(flow, values[1:])
+            else:
+                flow[key] = value.rstrip(',')
+
+        flows.append(flow)
+
+    # sort by duration 
+    return sorted(flows, key=lambda x: x['duration'].rstrip('s'))
+
+
+def translate_to_flow(flow, name, dictionary):
+    switch_flow_name = dictionary[name]
+
+    key_err = '{} needs to be present in flow definition. Flow definition ' \
+              'was: {}.'.format(switch_flow_name, flow)
+    assert switch_flow_name in flow, key_err
+    return switch_flow_name
+
+
+def get_text_value(element):
+    return element.childNodes[0].nodeValue
+
+
+def fallback_comparator(xml_element, switch_flow, kw):
+    # print 'fallback_comparator-xml_element', xml_element.toxml()
+    # print 'fallback_comparator: switch_flow', switch_flow
+    # print 'fallback_comparator: kw', kws
+
+    name = translate_to_flow(switch_flow, xml_element.nodeName, kw)
+
+    actual = switch_flow[name]
+    expected = xml_element.childNodes[0].nodeValue
+
+    data = xml_element.toxml(), name, actual
+    # print 'fallback_comparator: data', data
+
+    assert expected == actual, 'xml part: %s && switch %s=%s' % data
+
+
+def default_comparator(xml_element, switch_flow):
+    fallback_comparator(xml_element, switch_flow, keywords)
+
+
+def cookie_comparator(cookie, switch_flow):
+    name = translate_to_flow(switch_flow, cookie.nodeName, keywords)
+
+    actual = int(switch_flow[name], 0)
+    expected = int(cookie.childNodes[0].nodeValue)
+    data = cookie.toxml(), name, actual
+
+    assert expected == actual, 'xml part: %s && switch %s=%s' % data
+
+
+def ethernet_address_comparator(child, actual_match, kw):
+    expected_address = child.getElementsByTagName("address")[0].childNodes[0].data
+    actual_address = actual_match[kw.get(child.nodeName)]
+
+    data = child.toxml(), kw.get(child.nodeName), actual_address
+
+    assert lower(expected_address) == lower(actual_address), \
+        'xml address: %s && actual address %s=%s' % data
+
+
+def ethernet_match_comparator(expected_match, actual_match, kw):
+    def compare_etype(child, actual_match, kw):
+        expected_etype = int(child.getElementsByTagName("type")[0].childNodes[0].data)
+        name = kw.get(child.nodeName)
+        data = child.toxml(), name, actual_match
+
+        if expected_etype == 2048: # IP
+            assert ((actual_match.get('ip', 'IP Not-present') is None) or \
+                    (actual_match.get('tcp', 'TCP Not-present') is None) or \
+                    (actual_match.get('sctp', 'SCTP Not-present') is None) or \
+                    (actual_match.get('udp', 'UDP Not-present') is None)), \
+                     'Expected etype %s && actual etype %s=%s' % data
+ 
+        elif expected_etype == 2054: #ARP
+            assert actual_match.get('arp', 'ARP Not-present') is None, \
+                     'Expected etype %s && actual etype %s=%s' % data
+
+        else:
+            actual_etype = int(actual_match[name], 16)
+
+            assert expected_etype == actual_etype, 'xml etype: %s && actual etype %s=%s' % data
+
+
+    ETH_COMPARATORS = {
+        'ethernet-type': compare_etype, 
+        'ethernet-source': ethernet_address_comparator,
+        'ethernet-destination': ethernet_address_comparator,
+    }    
+
+    # print 'ethernet_match_comparator-expected_match:', expected_match.toxml()
+    # print 'ethernet_match_comparator-actual_match:', actual_match
+    # print 'ethernet_match_comparator-keywords:', keywords
+
+    for child in expected_match.childNodes:
+        if child.nodeType is expected_match.TEXT_NODE:
+            continue
+      
+        comparator = ETH_COMPARATORS.get(child.nodeName)
+        comparator(child, actual_match, kw)
+            
+
+def ip_v4_comparator(expected_match, actual_match, kw):
+    # print 'ip_v4_comparator:', expected_match.toxml(), actual_match
+    # print 'ip_v4_comparator-actual_match:', actual_match
+
+    expected_value = expected_match.childNodes[0].data
+    actual_value = actual_match[kw.get(expected_match.nodeName)]
+
+    data = expected_match.toxml(), kw.get(expected_match.nodeName), actual_value
+
+    assert IPNetwork(expected_value) == IPNetwork(actual_value), 'xml part: %s && address %s=%s' % data
+
+
+def ip_match_comparator(expected_match, actual_match, kw):
+    def compare_proto(child, actual_match, kw):
+        print 'compare_proto:', child.toxml(), actual_match
+        expected_proto = int(child.childNodes[0].data)
+
+        name = child.nodeName
+        data = expected_match.toxml(), name, actual_match
+
+        if expected_proto == 6: # TCP
+            assert actual_match.get('tcp', 'TCP Not-present') is None, \
+                   'ip protocol type: expected %s, actual %s=%s' % data
+
+        elif expected_proto == 17: #UDP
+            assert actual_match.get('udp', 'UDP Not-present') is None, \
+                   'ip protocol type: expected %s, actual %s=%s' % data
+
+        elif expected_proto == 132: #SCTP
+            assert actual_match.get('sctp', 'SCTP Not-present') is None, \
+                   'ip protocol type: expected %s, actual %s=%s' % data
+
+        else:
+            fallback_comparator(child, actual_match, kw)
+
+
+    def compare_dscp(child, actual_match, kw):
+        # print 'compare_dscp:', child.toxml(), actual_match
+
+        expected_dscp = int(child.childNodes[0].data)
+        name = kw.get(child.nodeName)
+        actual_dscp = int(actual_match[name])
+        
+        data = child.toxml(), name, actual_match
+
+        assert (expected_dscp * 4) == actual_dscp, 'dscp: expected %s, actual %s=%s' % data
+
+
+    IP_MATCH_COMPARATORS = {
+        'ip-protocol': compare_proto, 
+        'ip-dscp': compare_dscp,
+        'ip-ecn': fallback_comparator,
+    }    
+
+    # print 'ip_match_comparator:', expected_match.toxml(), actual_match
+
+    for child in expected_match.childNodes:
+        if child.nodeType is expected_match.TEXT_NODE:
+            continue
+      
+        comparator = IP_MATCH_COMPARATORS.get(child.nodeName)
+        comparator(child, actual_match, kw)
+
+
+def match_comparator(expected_match, switch_flow):
+    MATCH_COMPARATORS = {
+        'arp-source-hardware-address': ethernet_address_comparator,
+        'arp-target-hardware-address': ethernet_address_comparator,
+        'ethernet-match': ethernet_match_comparator,
+        'ip-match': ip_match_comparator,
+        'ipv4-destination': ip_v4_comparator,
+        'ipv4-source': ip_v4_comparator,
+        'default': fallback_comparator,
+    }
+
+    actual_match = switch_flow['matches']
+
+    # print 'match_comparator-expected_match:', expected_match.toxml()
+    # print 'match_comparator-actual_match:', actual_match
+    # print 'match_comparator: keywords', keywords
+
+    for child in expected_match.childNodes:
+        if child.nodeType is expected_match.TEXT_NODE:
+            continue
+        
+        comparator = MATCH_COMPARATORS.get(child.nodeName,
+                                           MATCH_COMPARATORS['default'])
+        comparator(child, actual_match, match_keywords)
+
+
+def actions_comparator(actions, switch_flow):
+    # print 'actions_comparator:', actions, switch_flow
+
+    actual_actions = switch_flow['actions'].split(",")
+    # print 'actions_comparator:', actual_actions
+
+    for action in actions.childNodes:
+        if action.nodeType is actions.TEXT_NODE:
+            continue
+
+        action_name = action.childNodes[3].nodeName
+        expected_action = action_keywords.get(action_name)
+
+        data = action.toxml(), expected_action
+        # print 'actions_comparator:', data
+
+        assert expected_action in actual_actions, 'xml part:\n%s\n expected action: %s' % data
+
+
+def null_comparator(element, switch_flow):
+    pass
+
+
+def instructions_comparator(instructions_element, switch_flow):
+    INSTRUCTION_COMPARATORS = {
+        'apply-actions': actions_comparator,
+        'default': null_comparator,
+    }
+    # print 'instructions_comparator:', instructions_element, switch_flow
+
+    instructions = instructions_element.childNodes
+
+    for instruction in instructions_element.childNodes:
+        if instruction.nodeType is instructions_element.TEXT_NODE:
+            continue
+        
+        for itype in instruction.childNodes:
+            if itype.nodeType is itype.TEXT_NODE:
+                continue
+
+            comparator = INSTRUCTION_COMPARATORS.get(itype.nodeName,
+                                                     INSTRUCTION_COMPARATORS['default'])
+            comparator(itype, switch_flow)
+
+
+COMPARATORS = {
+    'cookie': cookie_comparator,
+    'instructions': instructions_comparator,
+    'match': match_comparator,
+    'default': default_comparator,
+}
+
+def all_nodes(xml_root):
+    """
+    Generates every non-text nodes.
+    """
+    current_nodes = [xml_root]
+    next_nodes = []
+
+    while len(current_nodes) > 0:
+        for node in current_nodes:
+            if node.nodeType != xml_root.TEXT_NODE:
+                yield node
+                next_nodes.extend(node.childNodes)
+
+        current_nodes, next_nodes = next_nodes, []
+
+
+def check_elements(xmlstr, keywords):
+    # namespace = 'urn:opendaylight:flow:inventory'
+    tree = md.parseString(xmlstr)
+
+    for element in all_nodes(tree.documentElement):
+        # switch flow object contains only some data from xml
+        if element.nodeName not in keywords:
+            # print 'check_elements: element.nodeName', element.nodeName, 'NOT in keywords'
+            continue
+
+        yield element
+
+    raise StopIteration()
+
+
+class TestOpenFlowXMLs(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.net = create_network(cls.host, cls.mn_port)
+        cls.net.start()
+        time.sleep(15)
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.net.stop()
+
+
+def get_values(node, *tags):
+    result = {tag: None for tag in tags}
+    for node in all_nodes(node):
+        if node.nodeName in result and len(node.childNodes) > 0:
+            result[node.nodeName] = node.childNodes[0].nodeValue
+    return result
+
+
+def generate_tests_from_xmls(path, xmls=None):
+    # generate test function from path to request xml
+    def generate_test(path_to_xml):
+        xml_string = ''
+        with open(path_to_xml) as f:
+            xml_string = f.read()
+
+        tree = md.parseString(xml_string)
+        ids = get_values(tree.documentElement, 'table_id', 'id')
+
+        def new_test(self):
+            log = logging.getLogger(__name__)
+            # send request throught RESTCONF
+            data = (self.host, self.port, ids['table_id'], ids['id'])
+            url = 'http://%s:%d/restconf/config/opendaylight-inventory:nodes' \
+                  '/node/openflow:1/table/%s/flow/%s' % data
+            headers = {
+                'Content-Type': 'application/xml',
+                'Accept': 'application/xml',
+            }
+            log.info('sending request to url: {}'.format(url))
+            rsp = requests.put(url, auth=('admin', 'admin'), data=xml_string,
+                               headers=headers)
+            log.info('received status code: {}'.format(rsp.status_code))
+            log.debug('received content: {}'.format(rsp.text))
+            assert rsp.status_code == 204 or rsp.status_code == 200, 'Status' \
+                    ' code returned %d' % rsp.status_code
+
+            # check request content against restconf's datastore
+            response = requests.get(url, auth=('admin', 'admin'),
+                                    headers={'Accept': 'application/xml'})
+            assert response.status_code == 200
+            req = ET.tostring(ET.fromstring(xml_string))
+            res = ET.tostring(ET.fromstring(response.text))
+            assert req == res, 'uploaded and stored xml, are not the same\n' \
+                'uploaded: %s\nstored:%s' % (req, res)
+
+            # collect flow table state on switch
+            switch_flows = get_flows(self.net)
+            assert len(switch_flows) > 0
+
+            # compare requested object and flow table state
+            for important_element in check_elements(xml_string, keywords):
+                # log.info('important element: {}'.format(important_element.nodeName))
+                comparator = COMPARATORS.get(important_element.nodeName,
+                                             COMPARATORS['default'])
+
+                comparator(important_element, switch_flows[0])
+
+        return new_test
+
+    # generate list of available xml requests
+    xmlfiles = None
+    if xmls is not None:
+        xmlfiles = ('f%d.xml' % fid for fid in xmls)
+    else:
+        xmlfiles = (xml for xml in os.listdir(path) if xml.endswith('.xml'))
+
+    # define key getter for sorting
+    def get_test_number(test_name):
+        return int(test_name[1:-4])
+
+    for xmlfile in xmlfiles:
+        test_name = 'test_xml_%04d' % get_test_number(xmlfile)
+        setattr(TestOpenFlowXMLs,
+                test_name,
+                generate_test(os.path.join(path, xmlfile)))
+
+
+if __name__ == '__main__':
+    # set up logging
+    logging.basicConfig(level=logging.DEBUG)
+
+    # parse cmdline arguments
+    parser = argparse.ArgumentParser(description='Run switch <-> ODL tests '
+                                     'defined by xmls.')
+    parser.add_argument('--odlhost', default='127.0.0.1', help='host where '
+                        'odl controller is running')
+    parser.add_argument('--odlport', type=int, default=8080, help='port on '
+                        'which odl\'s RESTCONF is listening')
+    parser.add_argument('--mnport', type=int, default=6653, help='port on '
+                        'which odl\'s controller is listening')
+    parser.add_argument('--xmls', default=None, help='generete tests only '
+                        'from some xmls (i.e. 1,3,34) ')
+    args = parser.parse_args()
+
+    # set host and port of ODL controller for test cases
+    TestOpenFlowXMLs.port = args.odlport
+    TestOpenFlowXMLs.host = args.odlhost
+    TestOpenFlowXMLs.mn_port = args.mnport
+
+    keywords = None
+    with open('keywords.csv') as f:
+        keywords = dict(line.strip().split(';') for line in f
+                        if not line.startswith('#'))
+
+    match_keywords = None
+    with open('match-keywords.csv') as f:
+        match_keywords = dict(line.strip().split(';') for line in f
+                              if not line.startswith('#'))
+
+    action_keywords = None
+    with open('action-keywords.csv') as f:
+        action_keywords = dict(line.strip().split(';') for line in f
+                                    if not line.startswith('#'))
+
+    # fix arguments for unittest
+    del sys.argv[1:]
+
+    # generate tests for TestOpenFlowXMLs
+    if args.xmls is not None:
+        xmls = map(int, args.xmls.split(','))
+        generate_tests_from_xmls('xmls', xmls)
+    else:
+        generate_tests_from_xmls('xmls')
+
+    # run all tests
+    unittest.main()

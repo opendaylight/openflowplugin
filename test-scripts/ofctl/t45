@@ -1,0 +1,1 @@
+ cookie=0xa, duration=19.913s, table=2, n_packets=0, n_bytes=0, priority=2,metadata=0x100/0xffffff0000000101 actions=drop
