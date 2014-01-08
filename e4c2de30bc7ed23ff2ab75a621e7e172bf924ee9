@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da6255ed_7c324ff3",
+        "filename": "test-scripts/keywords.csv",
+        "patchSetId": 1
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 62
+      },
+      "writtenOn": "2014-01-08T07:02:28Z",
+      "side": 1,
+      "message": "Just curious - any reason why some of these are hyphen on the first keyword + underscore on the next - and others are underscore on both keywords? e.g. \"idle-timeout; idle_timeout\" vs \"in_port; in_port\".",
+      "revId": "e4c2de30bc7ed23ff2ab75a621e7e172bf924ee9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
