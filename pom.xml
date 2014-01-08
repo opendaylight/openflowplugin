@@ -246,9 +246,9 @@
         </releases>
       </repository>
       <repository>
-        <id>thirdparty</id>
-        <name>thirdparty</name>
-        <url>${nexusproxy}/repositories/thirdparty/</url>
+        <id>public</id>
+        <name>public</name>
+        <url>${nexusproxy}/groups/public/</url>
         <snapshots>
           <enabled>false</enabled>
         </snapshots>
@@ -260,7 +260,7 @@
       <pluginRepository>
         <id>opendaylight-central</id>
         <name>opendaylight-central</name>
-        <url>${nexusproxy}/repositories/central/</url>
+        <url>${nexusproxy}/repositories/public/</url>
         <snapshots>
           <enabled>false</enabled>
         </snapshots>
