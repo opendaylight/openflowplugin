@@ -108,6 +108,7 @@ public class MDController implements IMDController {
         addMessageTranslator(PortStatusMessage.class,OF10, new PortStatusMessageToNodeConnectorUpdatedTranslator());
         addMessageTranslator(PortStatusMessage.class,OF13, new PortStatusMessageToNodeConnectorUpdatedTranslator());
         addMessageTranslator(MultipartReplyMessage.class,OF13,new MultiPartReplyPortToNodeConnectorUpdatedTranslator());
+        addMessageTranslator(MultipartReplyMessage.class,OF10, new MultiPartMessageDescToNodeUpdatedTranslator());
         addMessageTranslator(MultipartReplyMessage.class,OF13, new MultiPartMessageDescToNodeUpdatedTranslator());
         addMessageTranslator(ExperimenterMessage.class, OF10, new ExperimenterTranslator());
         addMessageTranslator(MultipartReplyMessage.class,OF10, new MultipartReplyTranslator());
