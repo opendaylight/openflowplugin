@@ -124,6 +124,15 @@ def get_text_value(element):
     return element.childNodes[0].nodeValue
 
 
+def compare_elements(expected_match, actual_match, kw, comparators, default):
+    for child in expected_match.childNodes:
+        if child.nodeType is expected_match.TEXT_NODE:
+            continue
+      
+        comparator = comparators.get(child.nodeName, default)
+        comparator(child, actual_match, kw)
+
+
 def fallback_comparator(xml_element, switch_flow, kw):
     # print 'fallback_comparator-xml_element', xml_element.toxml()
     # print 'fallback_comparator: switch_flow', switch_flow
@@ -144,14 +153,19 @@ def default_comparator(xml_element, switch_flow):
     fallback_comparator(xml_element, switch_flow, keywords)
 
 
+def integer_comparator(expected, actual, kw, base):
+    expected_value = int(expected.childNodes[0].data)
+
+    name = kw.get(expected.nodeName)
+    actual_value = int(actual[name], base)
+
+    data = expected.toxml(), name, actual
+    assert expected_value == actual_value, \
+        'xml value: %s && actual value %s=%s' % data
+
+
 def cookie_comparator(cookie, switch_flow):
-    name = translate_to_flow(switch_flow, cookie.nodeName, keywords)
-
-    actual = int(switch_flow[name], 0)
-    expected = int(cookie.childNodes[0].nodeValue)
-    data = cookie.toxml(), name, actual
-
-    assert expected == actual, 'xml part: %s && switch %s=%s' % data
+    integer_comparator(cookie, switch_flow, keywords, 16)
 
 
 def ethernet_address_comparator(child, actual_match, kw):
@@ -162,6 +176,42 @@ def ethernet_address_comparator(child, actual_match, kw):
 
     assert lower(expected_address) == lower(actual_address), \
         'xml address: %s && actual address %s=%s' % data
+
+
+def proto_match_comparator(expected_match, actual_match, kw):
+
+    def compare_base10_integer(expected_match, actual_match, kw):
+        integer_comparator(expected_match, actual_match, kw, 10)
+
+    def compare_vlan_id(expected_match, actual_match, kw):
+        integer_comparator(expected_match.getElementsByTagName('vlan-id')[0], \
+                           actual_match, kw, 10)
+
+    PROTO_COMPARATORS = {
+        'vlan-id': compare_vlan_id,
+    }    
+
+    # print 'ethernet_match_comparator-expected_match:', expected_match.toxml()
+    # print 'ethernet_match_comparator-actual_match:', actual_match
+
+    compare_elements(expected_match, actual_match, kw, \
+                     PROTO_COMPARATORS, compare_base10_integer)
+
+
+def metadata_match_comparator(child, actual_match, kw):
+    emd = int(child.getElementsByTagName("metadata")[0].childNodes[0].data)
+
+    name = kw.get(child.nodeName)
+    data = child.toxml(), name, actual_match
+
+    amd = int(actual_match[kw.get(name)], 16)
+
+    emasks = child.getElementsByTagName("metadata-mask")
+    if len(emasks) != 0:
+        print 'metadata-mask present'
+
+    assert emd == amd, 'metadata: expected %s && actual %s=%s' % data
+
 
 
 def ethernet_match_comparator(expected_match, actual_match, kw):
@@ -177,14 +227,18 @@ def ethernet_match_comparator(expected_match, actual_match, kw):
                     (actual_match.get('udp', 'UDP Not-present') is None)), \
                      'Expected etype %s && actual etype %s=%s' % data
  
-        elif expected_etype == 2054: #ARP
+        elif expected_etype == 2054: # ARP
             assert actual_match.get('arp', 'ARP Not-present') is None, \
                      'Expected etype %s && actual etype %s=%s' % data
 
+        elif expected_etype == 34887: # MPLS
+            assert actual_match.get('mpls', 'MPLS Not-present') is None, \
+                     'Expected etype %s && actual etype %s=%s' % data
         else:
             actual_etype = int(actual_match[name], 16)
 
-            assert expected_etype == actual_etype, 'xml etype: %s && actual etype %s=%s' % data
+            assert expected_etype == actual_etype, \
+                'xml etype: %s && actual etype %s=%s' % data
 
 
     ETH_COMPARATORS = {
@@ -195,17 +249,12 @@ def ethernet_match_comparator(expected_match, actual_match, kw):
 
     # print 'ethernet_match_comparator-expected_match:', expected_match.toxml()
     # print 'ethernet_match_comparator-actual_match:', actual_match
-    # print 'ethernet_match_comparator-keywords:', keywords
 
-    for child in expected_match.childNodes:
-        if child.nodeType is expected_match.TEXT_NODE:
-            continue
-      
-        comparator = ETH_COMPARATORS.get(child.nodeName)
-        comparator(child, actual_match, kw)
+    compare_elements(expected_match, actual_match, kw, \
+                     ETH_COMPARATORS, fallback_comparator)
             
 
-def ip_v4_comparator(expected_match, actual_match, kw):
+def ipv4_comparator(expected_match, actual_match, kw):
     # print 'ip_v4_comparator:', expected_match.toxml(), actual_match
     # print 'ip_v4_comparator-actual_match:', actual_match
 
@@ -214,7 +263,8 @@ def ip_v4_comparator(expected_match, actual_match, kw):
 
     data = expected_match.toxml(), kw.get(expected_match.nodeName), actual_value
 
-    assert IPNetwork(expected_value) == IPNetwork(actual_value), 'xml part: %s && address %s=%s' % data
+    assert IPNetwork(expected_value) == IPNetwork(actual_value),\
+        'xml part: %s && address %s=%s' % data
 
 
 def ip_match_comparator(expected_match, actual_match, kw):
@@ -256,28 +306,24 @@ def ip_match_comparator(expected_match, actual_match, kw):
     IP_MATCH_COMPARATORS = {
         'ip-protocol': compare_proto, 
         'ip-dscp': compare_dscp,
-        'ip-ecn': fallback_comparator,
     }    
 
     # print 'ip_match_comparator:', expected_match.toxml(), actual_match
-
-    for child in expected_match.childNodes:
-        if child.nodeType is expected_match.TEXT_NODE:
-            continue
-      
-        comparator = IP_MATCH_COMPARATORS.get(child.nodeName)
-        comparator(child, actual_match, kw)
+    compare_elements(expected_match, actual_match, kw, \
+                     IP_MATCH_COMPARATORS, fallback_comparator)
 
 
 def match_comparator(expected_match, switch_flow):
     MATCH_COMPARATORS = {
         'arp-source-hardware-address': ethernet_address_comparator,
         'arp-target-hardware-address': ethernet_address_comparator,
+        'protocol-match-fields': proto_match_comparator,
+        'metadata': metadata_match_comparator,
+        'vlan-match': proto_match_comparator,
         'ethernet-match': ethernet_match_comparator,
         'ip-match': ip_match_comparator,
-        'ipv4-destination': ip_v4_comparator,
-        'ipv4-source': ip_v4_comparator,
-        'default': fallback_comparator,
+        'ipv4-destination': ipv4_comparator,
+        'ipv4-source': ipv4_comparator,
     }
 
     actual_match = switch_flow['matches']
@@ -286,13 +332,8 @@ def match_comparator(expected_match, switch_flow):
     # print 'match_comparator-actual_match:', actual_match
     # print 'match_comparator: keywords', keywords
 
-    for child in expected_match.childNodes:
-        if child.nodeType is expected_match.TEXT_NODE:
-            continue
-        
-        comparator = MATCH_COMPARATORS.get(child.nodeName,
-                                           MATCH_COMPARATORS['default'])
-        comparator(child, actual_match, match_keywords)
+    compare_elements(expected_match, actual_match, match_keywords, \
+                     MATCH_COMPARATORS, fallback_comparator)
 
 
 def actions_comparator(actions, switch_flow):

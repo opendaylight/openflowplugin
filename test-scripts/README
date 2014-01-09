@@ -1,0 +1,37 @@
+How to Install
+==============
+
+1. Unzip odl_tests.tar.zip file on a mininet machine. This will create 
+   an odl_tests directory.
+
+2. Install pip, which will be required to install missing python libraries: 
+   (For details, see http://www.pip-installer.org/en/latest/installing.html).
+   
+   2.1. Pip requires setuptools and it has to be installed first, 
+        before pip can run. Install setuptools:
+ 
+        > wget https://bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py
+        > sudo python ez_setup.py
+
+   2.2. Install pip itself:
+
+        > wget https://raw.github.com/pypa/pip/master/contrib/get-pip.py
+        > sudo python get-pip.py
+
+3. Install python libraries required by the ODL testing script:
+   > sudo pip install netaddr
+
+
+
+
+How to Run
+==========
+
+1. > cd odl_testing/
+
+2. > sudo python odl_tests.py --odlhost 172.16.4.212 --xmls 1,2
+   This runs tests f1 and f2 aginast ODL running on specified IP.
+ 
+   To run with all XMLs, omit the '--xmls' option. 
+
+   For more options, type 'sudo python odl_tests.py --help'
