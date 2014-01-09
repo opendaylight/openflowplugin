@@ -153,14 +153,19 @@ def default_comparator(xml_element, switch_flow):
     fallback_comparator(xml_element, switch_flow, keywords)
 
 
+def integer_comparator(expected, actual, kw, base):
+    expected_value = int(expected.childNodes[0].data)
+
+    name = kw.get(expected.nodeName)
+    actual_value = int(actual[name], base)
+
+    data = expected.toxml(), name, actual
+    assert expected_value == actual_value, \
+        'xml value: %s && actual value %s=%s' % data
+
+
 def cookie_comparator(cookie, switch_flow):
-    name = translate_to_flow(switch_flow, cookie.nodeName, keywords)
-
-    actual = int(switch_flow[name], 0)
-    expected = int(cookie.childNodes[0].nodeValue)
-    data = cookie.toxml(), name, actual
-
-    assert expected == actual, 'xml part: %s && switch %s=%s' % data
+    integer_comparator(cookie, switch_flow, keywords, 16)
 
 
 def ethernet_address_comparator(child, actual_match, kw):
@@ -173,46 +178,72 @@ def ethernet_address_comparator(child, actual_match, kw):
         'xml address: %s && actual address %s=%s' % data
 
 
-def integer_comparator(expected_match, actual_match, kw):
-    expected_value = int(expected_match.childNodes[0].data)
+def proto_match_comparator(expected_match, actual_match, kw):
 
-    name = kw.get(child.nodeName)
-    actual_value = int(actual_match[name])
+    def compare_base10_integer(expected_match, actual_match, kw):
+        integer_comparator(expected_match, actual_match, kw, 10)
 
-    data = child.toxml(), name, actual_match
-    assert expected_value == actual_value, \
-        'xml value: %s && actual value %s=%s' % data
+    def compare_vlan_id(expected_match, actual_match, kw):
+        integer_comparator(expected_match.getElementsByTagName('vlan-id')[0], \
+                           actual_match, kw, 10)
 
-
-
-def vlan_match_comparator(expected_match, actual_match, kw):
-    VLAN_COMPARATORS = {
-        'vlan-pcp': integer_comparator, 
-        'vlan-id': fallback_comparator,
+    PROTO_COMPARATORS = {
+        'vlan-id': compare_vlan_id,
     }    
 
     # print 'ethernet_match_comparator-expected_match:', expected_match.toxml()
     # print 'ethernet_match_comparator-actual_match:', actual_match
 
-    compare_elements(expected_match, actual_match, kw, VLAN_COMPARATORS, fallback_comparator)
+    compare_elements(expected_match, actual_match, kw, \
+                     PROTO_COMPARATORS, compare_base10_integer)
+
+
+def masked_value_hex_comparator(child, actual_match, kw):
+    emd = int(child.getElementsByTagName("metadata")[0].childNodes[0].data)
+
+    name = kw.get(child.nodeName)
+    data = child.toxml(), name, actual_match
+
+    amd = int(actual_match[kw.get(name)], 16)
+
+    emasks = child.getElementsByTagName("metadata-mask")
+    if len(emasks) != 0:
+        print 'mask present'
+
+    assert emd == amd, 'metadata: expected %s && actual %s=%s' % data
+
 
 
 def ethernet_match_comparator(expected_match, actual_match, kw):
     def compare_etype(child, actual_match, kw):
-        expected_etype = int(child.getElementsByTagName("type")[0].childNodes[0].data)
+        expected_etype = \
+            int(child.getElementsByTagName("type")[0].childNodes[0].data)
         name = kw.get(child.nodeName)
         data = child.toxml(), name, actual_match
 
-        if expected_etype == 2048: # IP
-            assert ((actual_match.get('ip', 'IP Not-present') is None) or \
-                    (actual_match.get('tcp', 'TCP Not-present') is None) or \
-                    (actual_match.get('sctp', 'SCTP Not-present') is None) or \
-                    (actual_match.get('udp', 'UDP Not-present') is None)), \
-                     'Expected etype %s && actual etype %s=%s' % data
+        if expected_etype == 2048: # IPv4
+            assert((actual_match.get('ip', 'IP Not-present') is None) or \
+                   (actual_match.get('tcp', 'TCP Not-present') is None) or \
+                   (actual_match.get('icmp', 'ICMP Not-present') is None) or \
+                   (actual_match.get('sctp', 'SCTP Not-present') is None) or \
+                   (actual_match.get('udp', 'UDP Not-present') is None)), \
+                'Expected etype %s && actual etype %s=%s' % data
  
-        elif expected_etype == 2054: #ARP
+        elif expected_etype == 2054: # ARP
             assert actual_match.get('arp', 'ARP Not-present') is None, \
                      'Expected etype %s && actual etype %s=%s' % data
+
+        elif expected_etype == 34887: # MPLS
+            assert actual_match.get('mpls', 'MPLS Not-present') is None, \
+                     'Expected etype %s && actual etype %s=%s' % data
+
+        elif expected_etype == 34525: # IPv6
+            assert((actual_match.get('ipv6', 'IPv6 Not-present') is None) or \
+                   (actual_match.get('tcp6', 'TCP6 Not-present') is None) or \
+                   (actual_match.get('icmp6', 'ICMP6 Not-present') is None) or \
+                   (actual_match.get('sctp6', 'SCTP6 Not-present') is None) or \
+                   (actual_match.get('udp6', 'UDP6 Not-present') is None)), \
+                'Expected etype %s && actual etype %s=%s' % data
 
         else:
             actual_etype = int(actual_match[name], 16)
@@ -234,9 +265,9 @@ def ethernet_match_comparator(expected_match, actual_match, kw):
                      ETH_COMPARATORS, fallback_comparator)
             
 
-def ipv4_comparator(expected_match, actual_match, kw):
-    # print 'ip_v4_comparator:', expected_match.toxml(), actual_match
-    # print 'ip_v4_comparator-actual_match:', actual_match
+def ip_subnet_comparator(expected_match, actual_match, kw):
+    # print 'ip_comparator:', expected_match.toxml(), actual_match
+    # print 'ip_comparator-actual_match:', actual_match
 
     expected_value = expected_match.childNodes[0].data
     actual_value = actual_match[kw.get(expected_match.nodeName)]
@@ -255,17 +286,25 @@ def ip_match_comparator(expected_match, actual_match, kw):
         name = child.nodeName
         data = expected_match.toxml(), name, actual_match
 
-        if expected_proto == 6: # TCP
-            assert actual_match.get('tcp', 'TCP Not-present') is None, \
-                   'ip protocol type: expected %s, actual %s=%s' % data
+        if expected_proto == 1: # ICMP
+            assert ((actual_match.get('icmp', 'ICMP Not-present') is None) or \
+                    (actual_match.get('icmp6', 'ICMP6 Not-present') is None)), \
+                'ip protocol type: expected %s, actual %s=%s' % data
+
+        elif expected_proto == 6: # TCP
+            assert ((actual_match.get('tcp', 'TCP Not-present') is None) or \
+                    (actual_match.get('tcp6', 'TCP6 Not-present') is None)), \
+                'ip protocol type: expected %s, actual %s=%s' % data
 
         elif expected_proto == 17: #UDP
-            assert actual_match.get('udp', 'UDP Not-present') is None, \
-                   'ip protocol type: expected %s, actual %s=%s' % data
+            assert ((actual_match.get('udp', 'UDP Not-present') is None) or \
+                    (actual_match.get('udp6', 'UDP6 Not-present') is None)), \
+                'ip protocol type: expected %s, actual %s=%s' % data
 
         elif expected_proto == 132: #SCTP
-            assert actual_match.get('sctp', 'SCTP Not-present') is None, \
-                   'ip protocol type: expected %s, actual %s=%s' % data
+            assert ((actual_match.get('sctp', 'SCTP Not-present') is None) or \
+                    (actual_match.get('sctp6', 'SCTP6 Not-present') is None)), \
+                'ip protocol type: expected %s, actual %s=%s' % data
 
         else:
             fallback_comparator(child, actual_match, kw)
@@ -280,7 +319,8 @@ def ip_match_comparator(expected_match, actual_match, kw):
         
         data = child.toxml(), name, actual_match
 
-        assert (expected_dscp * 4) == actual_dscp, 'dscp: expected %s, actual %s=%s' % data
+        assert (expected_dscp * 4) == actual_dscp, \
+            'dscp: expected %s, actual %s=%s' % data
 
 
     IP_MATCH_COMPARATORS = {
@@ -297,11 +337,17 @@ def match_comparator(expected_match, switch_flow):
     MATCH_COMPARATORS = {
         'arp-source-hardware-address': ethernet_address_comparator,
         'arp-target-hardware-address': ethernet_address_comparator,
-        'vlan-match': vlan_match_comparator,
+        'metadata': masked_value_hex_comparator,
+        'ipv6-label': masked_value_hex_comparator,
+        'protocol-match-fields': proto_match_comparator,
+        'vlan-match': proto_match_comparator,
         'ethernet-match': ethernet_match_comparator,
         'ip-match': ip_match_comparator,
-        'ipv4-destination': ipv4_comparator,
-        'ipv4-source': ipv4_comparator,
+        'icmpv4-match': ip_match_comparator,
+        'ipv4-destination': ip_subnet_comparator,
+        'ipv4-source': ip_subnet_comparator,
+        'ipv6-destination': ip_subnet_comparator,
+        'ipv6-source': ip_subnet_comparator,
     }
 
     actual_match = switch_flow['matches']
