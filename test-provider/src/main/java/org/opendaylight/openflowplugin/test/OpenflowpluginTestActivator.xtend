@@ -19,10 +19,12 @@ class OpenflowpluginTestActivator extends AbstractBindingAwareProvider {
     static var OpenflowpluginGroupTestServiceProvider groupProvider = new OpenflowpluginGroupTestServiceProvider();
     static var OpenflowpluginMeterTestServiceProvider meterProvider = new OpenflowpluginMeterTestServiceProvider();
     static var OpenflowpluginTableFeaturesTestServiceProvider tableProvider = new OpenflowpluginTableFeaturesTestServiceProvider();
+     static var OpenflowpluginPortTestServiceProvider portProvider = new OpenflowpluginPortTestServiceProvider();
     var OpenflowpluginTestCommandProvider cmdProvider;
     var OpenflowpluginGroupTestCommandProvider cmdGroupProvider;
     var OpenflowpluginMeterTestCommandProvider cmdMeterProvider;
     var OpenflowpluginTableFeaturesTestCommandProvider cmdTableProvider;
+    var OpenflowpluginPortTestCommandProvider cmdPortProvider;
     public static final String NODE_ID =  "foo:node:1";
 
     override onSessionInitiated(ProviderContext session) {
@@ -33,10 +35,12 @@ class OpenflowpluginTestActivator extends AbstractBindingAwareProvider {
         groupProvider.register(session);
         meterProvider.register(session);
         tableProvider.register(session);
+        portProvider.register(session);
         cmdProvider.onSessionInitiated(session);
         cmdGroupProvider.onSessionInitiated(session);
         cmdMeterProvider.onSessionInitiated(session);
         cmdTableProvider.onSessionInitiated(session);
+        cmdPortProvider.onSessionInitiated(session);
     }
     
     override startImpl(BundleContext ctx) {
@@ -45,6 +49,7 @@ class OpenflowpluginTestActivator extends AbstractBindingAwareProvider {
         cmdGroupProvider = new OpenflowpluginGroupTestCommandProvider(ctx);
         cmdMeterProvider = new OpenflowpluginMeterTestCommandProvider(ctx);
         cmdTableProvider = new OpenflowpluginTableFeaturesTestCommandProvider(ctx);
+        cmdPortProvider = new OpenflowpluginPortTestCommandProvider(ctx);
     }
 
     override protected stopImpl(BundleContext context) {

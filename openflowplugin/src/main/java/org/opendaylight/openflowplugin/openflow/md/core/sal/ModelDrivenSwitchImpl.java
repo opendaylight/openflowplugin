@@ -62,7 +62,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.GetFlowTablesStatisticsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.GetFlowTablesStatisticsOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev131103.TransactionId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.port.mod.port.Port;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.port.mod.Port;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
@@ -1147,15 +1147,14 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     	
 	// NSF sends a list of port and the ModelDrivenSwitch will 
     	// send one port at a time towards the switch ( mutiple RPCs calls)
-	List<Port> inputPorts = input.getUpdatedPort().getPort().getPort() ;
+	//List<Port> inputPorts = input.getUpdatedPort().getPort().getPort() ;
 		
 	// Get the Xid. The same Xid has to be sent in all the RPCs
 	Long Xid = sessionContext.getNextXid();
 		
-	for( Port inputPort : inputPorts) {
 		   
 	    // Convert the UpdateGroupInput to GroupModInput 
-	    ofPortModInput = PortConvertor.toPortModInput(inputPort, version) ;
+	    ofPortModInput = PortConvertor.toPortModInput(input, version) ;
 					    	 	
 	    // Insert the Xid ( transaction Id) before calling the RPC on the OFLibrary
 		    	
@@ -1172,7 +1171,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 	    mdInput.setAdvertise(ofPortModInput.getAdvertise()) ;
 
 	    LOG.debug("Calling the PortMod RPC method on MessageDispatchService");
-	    Future<RpcResult<UpdatePortOutput>> resultFromOFLib = messageService.portMod(ofPortModInput, cookie) ;
+	    Future<RpcResult<UpdatePortOutput>> resultFromOFLib = messageService.portMod(mdInput.build(), cookie) ;
 
 	    try { 
 	        rpcResultFromOFLib = resultFromOFLib.get();
@@ -1182,7 +1181,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 
 	    // The Future response value for all the RPCs except the last one is ignored
 
-	}
+	
 	//Extract the Xid only from the Future for the last RPC and
 	// send it back to the NSF
 	UpdatePortOutput updatePortOutputOFLib = rpcResultFromOFLib.getResult() ;
