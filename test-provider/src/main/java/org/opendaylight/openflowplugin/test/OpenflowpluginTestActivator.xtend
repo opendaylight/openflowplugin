@@ -23,6 +23,7 @@ class OpenflowpluginTestActivator extends AbstractBindingAwareProvider {
     var OpenflowpluginGroupTestCommandProvider cmdGroupProvider;
     var OpenflowpluginMeterTestCommandProvider cmdMeterProvider;
     var OpenflowpluginTableFeaturesTestCommandProvider cmdTableProvider;
+    var OpenflowpluginStatsTestCommandProvider cmdStatsProvider;
     public static final String NODE_ID =  "foo:node:1";
 
     override onSessionInitiated(ProviderContext session) {
@@ -37,6 +38,8 @@ class OpenflowpluginTestActivator extends AbstractBindingAwareProvider {
         cmdGroupProvider.onSessionInitiated(session);
         cmdMeterProvider.onSessionInitiated(session);
         cmdTableProvider.onSessionInitiated(session);
+        cmdStatsProvider.onSessionInitiated(session);
+        
     }
     
     override startImpl(BundleContext ctx) {
@@ -45,6 +48,8 @@ class OpenflowpluginTestActivator extends AbstractBindingAwareProvider {
         cmdGroupProvider = new OpenflowpluginGroupTestCommandProvider(ctx);
         cmdMeterProvider = new OpenflowpluginMeterTestCommandProvider(ctx);
         cmdTableProvider = new OpenflowpluginTableFeaturesTestCommandProvider(ctx);
+        cmdStatsProvider = new OpenflowpluginStatsTestCommandProvider(ctx);
+    
     }
 
     override protected stopImpl(BundleContext context) {
