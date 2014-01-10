@@ -1,34 +1,50 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <flow xmlns="urn:opendaylight:flow:inventory">
     <strict>false</strict>
+    <flow-name>FooXf27</flow-name>
+    <id>150</id>
+    <cookie_mask>255</cookie_mask>
+    <cookie>27</cookie>
+    <table_id>2</table_id>
+    <priority>2</priority>
+    <hard-timeout>1200</hard-timeout>
+    <idle-timeout>3400</idle-timeout>
+    <installHw>false</installHw>
     <instructions>
         <instruction>
+            <order>0</order>
+            <apply-actions>
+                <action>
                     <order>0</order>
-            <write-metadata>
-                <metadata-mask>12</metadata-mask>
-                <metadata>10</metadata>
-            </write-metadata>
+                    <dec-nw-ttl/>
+                </action>
+            </apply-actions>
         </instruction>
     </instructions>
-    <table_id>2</table_id>
-    <id>150</id>
-    <cookie_mask>10</cookie_mask>
-    <out_port>10</out_port>
-    <installHw>false</installHw>
-    <out_group>2</out_group>
     <match>
         <ethernet-match>
             <ethernet-type>
-                <type>2048</type>
+                <type>34525</type>
             </ethernet-type>
         </ethernet-match>
-        <ipv4-destination>10.0.0.1/24</ipv4-destination>
+        <ipv6-source>1234:5678:9ABC:DEF0:FDCD:A987:6543:210F/76</ipv6-source>
+        <ipv6-destination>fe80:2acf:e9ff:fe21::6431/94</ipv6-destination>
+        <metadata>
+            <metadata>12345</metadata>
+        </metadata>
+        <ipv6-label>
+            <ipv6-flabel>33</ipv6-flabel>
+        </ipv6-label>
+        <ipv6-ext-header>
+            <ipv6-exthdr>0</ipv6-exthdr>
+        </ipv6-ext-header>
+        <ip-match>
+            <ip-protocol>6</ip-protocol>
+            <ip-dscp>60</ip-dscp>
+            <ip-ecn>3</ip-ecn>
+        </ip-match>
+        <tcp-source-port>183</tcp-source-port>
+        <tcp-destination-port>8080</tcp-destination-port>
     </match>
-    <hard-timeout>12</hard-timeout>
-    <flags>FlowModFlags [_cHECKOVERLAP=false, _rESETCOUNTS=false, _nOPKTCOUNTS=false, _nOBYTCOUNTS=false, _sENDFLOWREM=false]</flags>
-    <cookie>10</cookie>
-    <idle-timeout>34</idle-timeout>
-    <flow-name>FooXf27</flow-name>
-    <priority>2</priority>
-    <barrier>false</barrier>
 </flow>
+

@@ -178,6 +178,27 @@ def ethernet_address_comparator(child, actual_match, kw):
         'xml address: %s && actual address %s=%s' % data
 
 
+def masked_value_hex_comparator(child, actual_match, kw, vname, kname):
+    print 'masked_value_hex_comparator', child.toxml(), actual_match, \
+        vname, kname, child.nodeName
+
+    emd = int(child.getElementsByTagName(vname)[0].childNodes[0].data)
+
+    name = kw.get(vname)
+    data = child.toxml(), name, actual_match
+    print 'masked_value_hex_comparator', name
+
+    amd = int(actual_match[name], 16)
+
+    emasks = child.getElementsByTagName(kname)
+    if len(emasks) != 0:
+        print 'masked_value_hex_comparator - mask present:', \
+            emasks[0].childNodes[0].data
+
+    assert emd == amd, 'metadata: expected %s && actual %s=%s' % data
+
+
+
 def proto_match_comparator(expected_match, actual_match, kw):
 
     def compare_base10_integer(expected_match, actual_match, kw):
@@ -187,8 +208,13 @@ def proto_match_comparator(expected_match, actual_match, kw):
         integer_comparator(expected_match.getElementsByTagName('vlan-id')[0], \
                            actual_match, kw, 10)
 
+    def compare_pbb(expected, actual, kw):
+        masked_value_hex_comparator(expected, actual, kw, \
+                                    'pbb-isid', 'pbb-mask')
+
     PROTO_COMPARATORS = {
         'vlan-id': compare_vlan_id,
+        'pbb': compare_pbb
     }    
 
     # print 'ethernet_match_comparator-expected_match:', expected_match.toxml()
@@ -301,6 +327,10 @@ def ip_match_comparator(expected_match, actual_match, kw):
                     (actual_match.get('udp6', 'UDP6 Not-present') is None)), \
                 'ip protocol type: expected %s, actual %s=%s' % data
 
+        elif expected_proto == 58: # ICMP
+            assert actual_match.get('icmp6', 'ICMP6 Not-present') is None, \
+                'ip protocol type: expected %s, actual %s=%s' % data
+
         elif expected_proto == 132: #SCTP
             assert ((actual_match.get('sctp', 'SCTP Not-present') is None) or \
                     (actual_match.get('sctp6', 'SCTP6 Not-present') is None)), \
@@ -334,16 +364,40 @@ def ip_match_comparator(expected_match, actual_match, kw):
 
 
 def match_comparator(expected_match, switch_flow):
+
+    def compare_metadata(expected, actual, kw):
+        masked_value_hex_comparator(expected, actual, kw, \
+                                    'metadata', 'metadata-mask')
+
+    def compare_ipv6_label(expected, actual, kw):
+        print 'compare_ipv6_label', expected.toxml(), actual
+        masked_value_hex_comparator(expected, actual, kw, \
+                                    'ipv6-flabel', 'flabel-mask')
+
+
+    def compare_tunnel_id(expected, actual, kw):
+        masked_value_hex_comparator(expected, actual, kw, \
+                                    'tunnel-id', 'tunnel-mask')
+
+
+    def compare_ipv6_ext_header(expected, actual, kw):
+        masked_value_hex_comparator(expected, actual, kw, \
+                                    'ipv6-exthdr', 'ipv6-exthdr-mask')
+
+
     MATCH_COMPARATORS = {
         'arp-source-hardware-address': ethernet_address_comparator,
         'arp-target-hardware-address': ethernet_address_comparator,
-        'metadata': masked_value_hex_comparator,
-        'ipv6-label': masked_value_hex_comparator,
+        'metadata': compare_metadata,
+        'ipv6-label': compare_ipv6_label,
+        'ipv6-ext-header': compare_ipv6_ext_header,
+        'tunnel': compare_tunnel_id,
         'protocol-match-fields': proto_match_comparator,
         'vlan-match': proto_match_comparator,
         'ethernet-match': ethernet_match_comparator,
         'ip-match': ip_match_comparator,
         'icmpv4-match': ip_match_comparator,
+        'icmpv6-match': ip_match_comparator,
         'ipv4-destination': ip_subnet_comparator,
         'ipv4-source': ip_subnet_comparator,
         'ipv6-destination': ip_subnet_comparator,
@@ -376,7 +430,8 @@ def actions_comparator(actions, switch_flow):
         data = action.toxml(), expected_action
         # print 'actions_comparator:', data
 
-        assert expected_action in actual_actions, 'xml part:\n%s\n expected action: %s' % data
+        assert expected_action in actual_actions, \
+            'xml part:\n%s\n expected action: %s' % data
 
 
 def null_comparator(element, switch_flow):
@@ -401,7 +456,7 @@ def instructions_comparator(instructions_element, switch_flow):
                 continue
 
             comparator = INSTRUCTION_COMPARATORS.get(itype.nodeName,
-                                                     INSTRUCTION_COMPARATORS['default'])
+                                        INSTRUCTION_COMPARATORS['default'])
             comparator(itype, switch_flow)
 
 

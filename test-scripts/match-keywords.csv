@@ -8,6 +8,8 @@ ethernet-destination;dl_dst
 ethernet-type;dl_type
 icmpv4-type;icmp_type
 icmpv4-code;icmp_code
+icmpv6-type;icmp_type
+icmpv6-code;icmp_code
 in-port;in_port
 in-phy-port;in_phy_port
 ip-dscp;nw_tos
@@ -26,6 +28,7 @@ sctp-destination-port;tp_dst
 sctp-source-port;tp_src
 tcp-destination-port;tp_dst
 tcp-source-port;tp_src
+tunnel-id;tun_id
 udp-destination-port;tp_dst
 udp-source-port;tp_src
 vlan-id;dl_vlan

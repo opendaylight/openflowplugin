@@ -1,36 +1,43 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <flow xmlns="urn:opendaylight:flow:inventory">
+    <flow-name>FooXf28</flow-name>
+    <id>151</id>
+    <cookie_mask>255</cookie_mask>
+    <cookie>28</cookie>
+    <hard-timeout>1200</hard-timeout>
+    <idle-timeout>3400</idle-timeout>
+    <priority>2</priority>
+    <table_id>2</table_id>
     <strict>false</strict>
     <instructions>
         <instruction>
-                    <order>0</order>
+            <order>0</order>
             <apply-actions>
                 <action>
                     <order>0</order>
-                    <pop-pbb-action/>
+                    <dec-nw-ttl/>
                 </action>
             </apply-actions>
         </instruction>
     </instructions>
-    <table_id>2</table_id>
-    <id>151</id>
-    <cookie_mask>10</cookie_mask>
-    <out_port>10</out_port>
-    <installHw>false</installHw>
-    <out_group>2</out_group>
     <match>
         <ethernet-match>
             <ethernet-type>
-                <type>2048</type>
+                <type>34887</type>
             </ethernet-type>
+            <ethernet-destination>
+                <address>ff:ff:29:01:19:61</address>
+            </ethernet-destination>
+            <ethernet-source>
+                <address>00:00:00:11:23:ae</address>
+            </ethernet-source>
         </ethernet-match>
-        <ipv4-destination>10.0.0.1/24</ipv4-destination>
+        <protocol-match-fields>
+            <pbb>
+                <pbb-isid>45</pbb-isid>
+            </pbb>
+        </protocol-match-fields>
     </match>
-    <hard-timeout>12</hard-timeout>
     <flags>FlowModFlags [_cHECKOVERLAP=false, _rESETCOUNTS=false, _nOPKTCOUNTS=false, _nOBYTCOUNTS=false, _sENDFLOWREM=false]</flags>
-    <cookie>10</cookie>
-    <idle-timeout>34</idle-timeout>
-    <flow-name>FooXf28</flow-name>
-    <priority>2</priority>
-    <barrier>false</barrier>
 </flow>
+
