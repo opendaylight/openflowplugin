@@ -38,7 +38,7 @@
 
     <properties>
       <project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
-      <slf4j.version>1.7.2</slf4j.version>
+      <slf4j.version>1.7.5</slf4j.version>
       <logback.version>1.0.9</logback.version>
       <nexusproxy>http://nexus.opendaylight.org/content</nexusproxy>
       <openflowjava.version>0.1-SNAPSHOT</openflowjava.version>
@@ -90,6 +90,11 @@
         </dependency>
         <dependency>
           <groupId>org.opendaylight.controller.model</groupId>
+          <artifactId>model-flow-management</artifactId>
+          <version>${controller.model.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.opendaylight.controller.model</groupId>
           <artifactId>model-flow-service</artifactId>
           <version>${controller.model.version}</version>
         </dependency>
@@ -107,6 +112,21 @@
           <groupId>org.opendaylight.controller</groupId>
           <artifactId>sal-binding-api</artifactId>
           <version>${controller.model.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.controller</groupId>
+            <artifactId>sal</artifactId>
+            <version>0.7.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.controller</groupId>
+            <artifactId>sal.connection</artifactId>
+            <version>0.1.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.controller</groupId>
+            <artifactId>sal-common-util</artifactId>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
 
         <dependency>
@@ -141,6 +161,12 @@
             <artifactId>xtend-lib-osgi</artifactId>
             <version>2.4.3</version>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.6</version>
         </dependency>
 
         <dependency>

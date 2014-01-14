@@ -12,11 +12,6 @@
     <artifactId>openflowplugin</artifactId>
     <packaging>bundle</packaging>
 
-    <properties>
-        <yang.prototype.version>1.0-SNAPSHOT</yang.prototype.version>
-        <yang.version>0.5.9-SNAPSHOT</yang.version>
-    </properties>
-
     <build>
         <plugins>
             <plugin>
@@ -42,12 +37,10 @@
         <dependency>
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>sal</artifactId>
-            <version>0.7.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>sal.connection</artifactId>
-            <version>0.1.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.controller.model</groupId>
@@ -111,7 +104,6 @@
         <dependency>
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>sal-common-util</artifactId>
-            <version>${yang.prototype.version}</version>
         </dependency>
     </dependencies>
 </project>
