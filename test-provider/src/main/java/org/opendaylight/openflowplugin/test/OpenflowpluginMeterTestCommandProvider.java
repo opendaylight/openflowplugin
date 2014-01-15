@@ -44,9 +44,12 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.osgi.framework.BundleContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
 
+    private static final Logger LOG = LoggerFactory.getLogger(OpenflowpluginMeterTestCommandProvider.class);
     private DataBrokerService dataBrokerService;
     private ProviderContext pc;
     private final BundleContext ctx;
@@ -96,23 +99,23 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
 
         @Override
         public void onMeterAdded(MeterAdded notification) {
-            System.out.println("Meter to be added.........................."+notification.toString());
-            System.out.println("Meter  Xid........................."+notification.getTransactionId().getValue());
-            System.out.println("-----------------------------------------------------------------------------------");            
+            LOG.info("Meter to be added.........................."+notification.toString());
+            LOG.info("Meter  Xid........................."+notification.getTransactionId().getValue());
+            LOG.info("-----------------------------------------------------------------------------------");            
         }
 
         @Override
         public void onMeterRemoved(MeterRemoved notification) {
-            System.out.println("Meter to be removed.........................."+notification.toString());
-            System.out.println("Meter  Xid........................."+notification.getTransactionId().getValue());
-            System.out.println("-----------------------------------------------------------------------------------");            
+            LOG.info("Meter to be removed.........................."+notification.toString());
+            LOG.info("Meter  Xid........................."+notification.getTransactionId().getValue());
+            LOG.info("-----------------------------------------------------------------------------------");            
         }
 
         @Override
         public void onMeterUpdated(MeterUpdated notification) {
-            System.out.println("Meter to be updated.........................."+notification.toString());
-            System.out.println("Meter  Xid........................."+notification.getTransactionId().getValue());
-            System.out.println("-----------------------------------------------------------------------------------");            
+            LOG.info("Meter to be updated.........................."+notification.toString());
+            LOG.info("Meter  Xid........................."+notification.getTransactionId().getValue());
+            LOG.info("-----------------------------------------------------------------------------------");            
         }
         
     }

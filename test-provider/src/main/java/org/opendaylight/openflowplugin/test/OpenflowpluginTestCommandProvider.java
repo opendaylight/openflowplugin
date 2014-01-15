@@ -236,34 +236,33 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         @Override
         public void onFlowAdded(FlowAdded notification) {
-            System.out.println("flow to be added.........................." + notification.toString());
-            System.out.println("added flow Xid........................." + notification.getTransactionId().getValue());
-            System.out.println("-----------------------------------------------------------------------------------");
+            LOG.info("flow to be added.........................." + notification.toString());
+            LOG.info("added flow Xid........................." + notification.getTransactionId().getValue());
+            LOG.info("-----------------------------------------------------------------------------------");
             addedFlows.add(notification);
         }
 
         @Override
         public void onFlowRemoved(FlowRemoved notification) {
-            System.out.println("removed flow.........................." + notification.toString());
-            System.out.println("remove flow Xid........................." + notification.getTransactionId().getValue());
-            System.out.println("-----------------------------------------------------------------------------------");
+            LOG.info("removed flow.........................." + notification.toString());
+            LOG.info("remove flow Xid........................." + notification.getTransactionId().getValue());
+            LOG.info("-----------------------------------------------------------------------------------");
             removedFlows.add(notification);
         };
 
         @Override
         public void onFlowUpdated(FlowUpdated notification) {
-            System.out.println("updated flow.........................." + notification.toString());
-            System.out
-                    .println("updated flow Xid........................." + notification.getTransactionId().getValue());
-            System.out.println("-----------------------------------------------------------------------------------");
+            LOG.info("updated flow.........................." + notification.toString());
+            LOG.info("updated flow Xid........................." + notification.getTransactionId().getValue());
+            LOG.info("-----------------------------------------------------------------------------------");
             updatedFlows.add(notification);
         }
 
         @Override
         public void onNodeErrorNotification(NodeErrorNotification notification) {
-            System.out.println("Error notification  flow Xid........................."
+            LOG.info("Error notification  flow Xid........................."
                     + notification.getTransactionId().getValue());
-            System.out.println("-----------------------------------------------------------------------------------");
+            LOG.info("-----------------------------------------------------------------------------------");
         }
 
         @Override
@@ -274,9 +273,8 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         @Override
         public void onSwitchFlowRemoved(SwitchFlowRemoved notification) {
-            System.out
-                    .println("Switch flow removed : Cookies..................." + notification.getCookie().toString());
-            System.out.println("-----------------------------------------------------------------------------------");
+            LOG.info("Switch flow removed : Cookies..................." + notification.getCookie().toString());
+            LOG.info("-----------------------------------------------------------------------------------");
         }
 
     }
@@ -290,33 +288,33 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         @Override
         public void onNodeConnectorRemoved(NodeConnectorRemoved notification) {
-            System.out.println("NodeConnectorRemoved Notification ...................");
-            System.out.println(notification.getNodeConnectorRef());
-            System.out.println("----------------------------------------------------------------------");
+            LOG.info("NodeConnectorRemoved Notification ...................");
+            LOG.info(notification.getNodeConnectorRef().toString());
+            LOG.info("----------------------------------------------------------------------");
             nodeConnectorRemoved.add(notification);
         }
 
         @Override
         public void onNodeConnectorUpdated(NodeConnectorUpdated notification) {
-            System.out.println("NodeConnectorUpdated Notification...................");
-            System.out.println(notification.getNodeConnectorRef());
-            System.out.println("----------------------------------------------------------------------");
+            LOG.info("NodeConnectorUpdated Notification...................");
+            LOG.info(notification.getNodeConnectorRef().toString());
+            LOG.info("----------------------------------------------------------------------");
             nodeConnectorUpdated.add(notification);
         }
 
         @Override
         public void onNodeRemoved(NodeRemoved notification) {
-            System.out.println("NodeConnectorUpdated Notification ...................");
-            System.out.println(notification.getNodeRef());
-            System.out.println("----------------------------------------------------------------------");
+            LOG.info("NodeConnectorUpdated Notification ...................");
+            LOG.info(notification.getNodeRef().toString());
+            LOG.info("----------------------------------------------------------------------");
             nodeRemoved.add(notification);
         }
 
         @Override
         public void onNodeUpdated(NodeUpdated notification) {
-            System.out.println("NodeConnectorUpdated Notification ...................");
-            System.out.println(notification.getNodeRef());
-            System.out.println("----------------------------------------------------------------------");
+            LOG.info("NodeConnectorUpdated Notification ...................");
+            LOG.info(notification.getNodeRef().toString());
+            LOG.info("----------------------------------------------------------------------");
             nodeUpdated.add(notification);
         }
     }
