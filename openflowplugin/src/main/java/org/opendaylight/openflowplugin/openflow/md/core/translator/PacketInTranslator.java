@@ -1,10 +1,5 @@
 package org.opendaylight.openflowplugin.openflow.md.core.translator;
 
-import java.math.BigInteger;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchConvertorImpl;
@@ -16,15 +11,20 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.Cookie;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.InvalidTtl;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.NoMatch;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketInReason;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceivedBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketInReason;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.NoMatch;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.InvalidTtl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.SendToController;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.math.BigInteger;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class PacketInTranslator implements IMDMessageTranslator<OfHeader, List<DataObject>> {
 
@@ -90,7 +90,17 @@ public class PacketInTranslator implements IMDMessageTranslator<OfHeader, List<D
                org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match match = 
             		   (org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match)
             		   MatchConvertorImpl.fromOFMatchToSALMatch(message.getMatch(),dpid);
-               pktInBuilder.setMatch((org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match)match);
+
+               // The following setMatch is completely wrong and will never work (you will always get a ClassCastException)
+               // because org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match and
+               // org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match are
+               // unrelated types
+               // To fix this properly it may be neccessary to implement a new converter method on MatchConvertor
+               // which returns org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match
+               // and then pass it to setMatch
+
+               //pktInBuilder.setMatch((org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match)match);
+
                pktInBuilder.setPacketInReason(getPacketInReason(message.getReason()));
                pktInBuilder.setTableId(new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableId(message.getTableId().getValue().shortValue()));
                pktInBuilder.setIngress(InventoryDataServiceUtil.nodeConnectorRefFromDatapathIdPortno(dpid,port));
