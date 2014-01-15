@@ -16,14 +16,12 @@ import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.SwitchConnectionHandler;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.queue.MessageSpy;
-import org.opendaylight.openflowplugin.openflow.md.queue.MessageSpyCounterImpl;
 import org.opendaylight.openflowplugin.openflow.md.queue.QueueKeeperLightImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 
 /**
- * @author mirehak
- *
+ * basic interconnecting piece between plugin and library 
  */
 public class SwitchConnectionHandlerImpl implements SwitchConnectionHandler {
     
@@ -38,19 +36,26 @@ public class SwitchConnectionHandlerImpl implements SwitchConnectionHandler {
      *
      */
     public SwitchConnectionHandlerImpl() {
-        messageSpy = new MessageSpyCounterImpl();
         queueKeeper = new QueueKeeperLightImpl();
+        
+        errorHandler = new ErrorHandlerQueueImpl();
+        //TODO: implement shutdown invocation upon service stop event
+        new Thread(errorHandler).start();
+        
+        //TODO: implement shutdown invocation upon service stop event
+        spyPool = new ScheduledThreadPoolExecutor(1);
+    }
+
+    /**
+     * wire all up
+     */
+    public void init() {
         queueKeeper.setTranslatorMapping(OFSessionUtil.getTranslatorMap());
         queueKeeper.setPopListenersMapping(OFSessionUtil.getPopListenerMapping());
         queueKeeper.setMessageSpy(messageSpy);
         
         queueKeeper.init();
-
-        errorHandler = new ErrorHandlerQueueImpl();
-        new Thread(errorHandler).start();
         
-        //TODO: implement shutdown invocation upon service stop event
-        spyPool = new ScheduledThreadPoolExecutor(1);
         spyPool.scheduleAtFixedRate(messageSpy, spyRate, spyRate, TimeUnit.SECONDS);
     }
 
@@ -65,6 +70,13 @@ public class SwitchConnectionHandlerImpl implements SwitchConnectionHandler {
         ConnectionConductor conductor = ConnectionConductorFactory.createConductor(
                 connectionAdapter, queueKeeper);
         conductor.setErrorHandler(errorHandler);
+    }
+    
+    /**
+     * @param messageSpy the messageSpy to set
+     */
+    public void setMessageSpy(MessageSpy<OfHeader, DataObject> messageSpy) {
+        this.messageSpy = messageSpy;
     }
 
 }

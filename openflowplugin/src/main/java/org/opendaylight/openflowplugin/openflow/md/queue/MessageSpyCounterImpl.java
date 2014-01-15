@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.openflow.md.queue;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -23,7 +24,7 @@ import org.slf4j.LoggerFactory;
 /**
  * message counter (by type)
  */
-public class MessageSpyCounterImpl implements MessageSpy<OfHeader, DataObject> {
+public class MessageSpyCounterImpl implements MessageObservatory<OfHeader, DataObject> {
     
     private static final Logger LOG = LoggerFactory
             .getLogger(MessageSpyCounterImpl.class);
@@ -54,11 +55,21 @@ public class MessageSpyCounterImpl implements MessageSpy<OfHeader, DataObject> {
     public void run() {
         // log current counters and cleans it
         if (LOG.isDebugEnabled()) {
-            for (Entry<Class<? extends DataContainer>, AtomicLong[]> statEntry : inputStats.entrySet()) {
-                long amountPerInterval = statEntry.getValue()[0].getAndSet(0);
-                long cumulativeAmount = statEntry.getValue()[1].addAndGet(amountPerInterval);
-                LOG.debug("MSG[{}] -> +{} | {}", statEntry.getKey().getSimpleName(), amountPerInterval, cumulativeAmount);
+            for (String counterItem : dumpMessageCounts()) {
+                LOG.debug(counterItem);
             }
         }
+    }
+
+    @Override
+    public List<String> dumpMessageCounts() {
+        List<String> dump = new ArrayList<>();
+        for (Entry<Class<? extends DataContainer>, AtomicLong[]> statEntry : inputStats.entrySet()) {
+            long amountPerInterval = statEntry.getValue()[0].getAndSet(0);
+            long cumulativeAmount = statEntry.getValue()[1].addAndGet(amountPerInterval);
+            dump.add(String.format("MSG[%s] -> +%d | %d", 
+                    statEntry.getKey().getSimpleName(), amountPerInterval, cumulativeAmount));
+        }
+        return dump;
     }
 }

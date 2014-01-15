@@ -530,7 +530,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
                 MetadataBuilder metadataBuilder = new MetadataBuilder();
                 MetadataMatchEntry metadataMatchEntry = ofMatch.getAugmentation(MetadataMatchEntry.class);
                 if(metadataMatchEntry != null){
-                    metadataBuilder.setMetadata(new BigInteger(metadataMatchEntry.getMetadata()));
+                    metadataBuilder.setMetadata(new BigInteger(1, metadataMatchEntry.getMetadata()));
                     MaskMatchEntry maskMatchEntry = ofMatch.getAugmentation(MaskMatchEntry.class);
                     if(maskMatchEntry != null){
                         metadataBuilder.setMetadataMask(maskMatchEntry.getMask());
@@ -824,7 +824,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
                 TunnelBuilder tunnelBuilder = new TunnelBuilder();
                 MetadataMatchEntry metadataMatchEntry = ofMatch.getAugmentation(MetadataMatchEntry.class);
                 if(metadataMatchEntry != null){
-                    tunnelBuilder.setTunnelId(new BigInteger(metadataMatchEntry.getMetadata()));
+                    tunnelBuilder.setTunnelId(new BigInteger(1, metadataMatchEntry.getMetadata()));
                     MaskMatchEntry maskMatchEntry = ofMatch.getAugmentation(MaskMatchEntry.class);
                     if(maskMatchEntry != null){
                         tunnelBuilder.setTunnelMask(maskMatchEntry.getMask());
