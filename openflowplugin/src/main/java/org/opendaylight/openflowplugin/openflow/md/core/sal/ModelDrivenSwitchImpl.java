@@ -1221,7 +1221,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         MultipartRequestTableFeaturesCaseBuilder caseRequest = new MultipartRequestTableFeaturesCaseBuilder();
         MultipartRequestTableFeaturesBuilder tableFeaturesRequest = new MultipartRequestTableFeaturesBuilder();
 
-        mprInput.setFlags(new MultipartRequestFlags(true));
+        mprInput.setFlags(new MultipartRequestFlags(false));
         
         tableFeaturesRequest.setTableFeatures(ofTableFeatureList) ;
         
