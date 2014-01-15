@@ -123,6 +123,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.Node
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SwitchFlowRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.OutputPortValues;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.InstructionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCaseBuilder;
@@ -137,14 +138,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRemoved;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRemoved;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.OpendaylightInventoryListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
@@ -196,10 +192,8 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
     private final String originalFlowName = "Foo";
     private final String updatedFlowName = "Bar";
     private final FlowEventListener flowEventListener = new FlowEventListener();
-    private final PortEventListener portEventListener = new PortEventListener();
     private static NotificationService notificationService;
     private Registration<org.opendaylight.yangtools.yang.binding.NotificationListener> listener1Reg;
-    private Registration<org.opendaylight.yangtools.yang.binding.NotificationListener> listener2Reg;
 
     public OpenflowpluginTestCommandProvider(BundleContext ctx) {
         this.ctx = ctx;
@@ -210,7 +204,6 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         notificationService = session.getSALService(NotificationService.class);
         // For switch events
         listener1Reg = notificationService.registerNotificationListener(flowEventListener);
-        listener2Reg = notificationService.registerNotificationListener(portEventListener);
         dataBrokerService = session.getSALService(DataBrokerService.class);
         ctx.registerService(CommandProvider.class.getName(), this, null);
         createTestFlow(createTestNode(null), null, null);
@@ -236,34 +229,33 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         @Override
         public void onFlowAdded(FlowAdded notification) {
-            System.out.println("flow to be added.........................." + notification.toString());
-            System.out.println("added flow Xid........................." + notification.getTransactionId().getValue());
-            System.out.println("-----------------------------------------------------------------------------------");
+            LOG.debug("flow to be added.........................." + notification.toString());
+            LOG.debug("added flow Xid........................." + notification.getTransactionId().getValue());
+            LOG.debug("-----------------------------------------------------------------------------------");
             addedFlows.add(notification);
         }
 
         @Override
         public void onFlowRemoved(FlowRemoved notification) {
-            System.out.println("removed flow.........................." + notification.toString());
-            System.out.println("remove flow Xid........................." + notification.getTransactionId().getValue());
-            System.out.println("-----------------------------------------------------------------------------------");
+            LOG.debug("removed flow.........................." + notification.toString());
+            LOG.debug("remove flow Xid........................." + notification.getTransactionId().getValue());
+            LOG.debug("-----------------------------------------------------------------------------------");
             removedFlows.add(notification);
         };
 
         @Override
         public void onFlowUpdated(FlowUpdated notification) {
-            System.out.println("updated flow.........................." + notification.toString());
-            System.out
-                    .println("updated flow Xid........................." + notification.getTransactionId().getValue());
-            System.out.println("-----------------------------------------------------------------------------------");
+            LOG.debug("updated flow.........................." + notification.toString());
+            LOG.debug("updated flow Xid........................." + notification.getTransactionId().getValue());
+            LOG.debug("-----------------------------------------------------------------------------------");
             updatedFlows.add(notification);
         }
 
         @Override
         public void onNodeErrorNotification(NodeErrorNotification notification) {
-            System.out.println("Error notification  flow Xid........................."
+            LOG.error("Error notification  flow Xid........................."
                     + notification.getTransactionId().getValue());
-            System.out.println("-----------------------------------------------------------------------------------");
+            LOG.debug("-----------------------------------------------------------------------------------");
         }
 
         @Override
@@ -274,51 +266,10 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         @Override
         public void onSwitchFlowRemoved(SwitchFlowRemoved notification) {
-            System.out
-                    .println("Switch flow removed : Cookies..................." + notification.getCookie().toString());
-            System.out.println("-----------------------------------------------------------------------------------");
+            LOG.debug("Switch flow removed : Cookies..................." + notification.getCookie().toString());
+            LOG.debug("-----------------------------------------------------------------------------------");
         }
 
-    }
-
-    final class PortEventListener implements OpendaylightInventoryListener {
-
-        List<NodeUpdated> nodeUpdated = new ArrayList<>();
-        List<NodeRemoved> nodeRemoved = new ArrayList<>();
-        List<NodeConnectorUpdated> nodeConnectorUpdated = new ArrayList<>();
-        List<NodeConnectorRemoved> nodeConnectorRemoved = new ArrayList<>();
-
-        @Override
-        public void onNodeConnectorRemoved(NodeConnectorRemoved notification) {
-            System.out.println("NodeConnectorRemoved Notification ...................");
-            System.out.println(notification.getNodeConnectorRef());
-            System.out.println("----------------------------------------------------------------------");
-            nodeConnectorRemoved.add(notification);
-        }
-
-        @Override
-        public void onNodeConnectorUpdated(NodeConnectorUpdated notification) {
-            System.out.println("NodeConnectorUpdated Notification...................");
-            System.out.println(notification.getNodeConnectorRef());
-            System.out.println("----------------------------------------------------------------------");
-            nodeConnectorUpdated.add(notification);
-        }
-
-        @Override
-        public void onNodeRemoved(NodeRemoved notification) {
-            System.out.println("NodeConnectorUpdated Notification ...................");
-            System.out.println(notification.getNodeRef());
-            System.out.println("----------------------------------------------------------------------");
-            nodeRemoved.add(notification);
-        }
-
-        @Override
-        public void onNodeUpdated(NodeUpdated notification) {
-            System.out.println("NodeConnectorUpdated Notification ...................");
-            System.out.println(notification.getNodeRef());
-            System.out.println("----------------------------------------------------------------------");
-            nodeUpdated.add(notification);
-        }
     }
 
     private InstanceIdentifier<Node> nodeBuilderToInstanceId(NodeBuilder node) {
@@ -448,6 +399,8 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
             break;
         case "f23":
             id += 23;
+            // f23 can be used as test-case for generating error notification
+            // if the particular group is not configured - tested
             flow.setMatch(createMatch1().build());
             flow.setInstructions(createAppyActionInstruction16().build());
             break;
@@ -771,6 +724,20 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return flow;
     }
 
+    private FlowBuilder createtablemiss(NodeBuilder nodeBuilder, String flowTypeArg, String tableId) {
+        FlowBuilder flow = new FlowBuilder();
+        long id = 456;
+        MatchBuilder matchBuilder = new MatchBuilder();
+        flow.setMatch(matchBuilder.build());
+        flow.setInstructions(createSentToControllerInstructions().build());
+        flow.setPriority(0);
+        flow.setTableId((short) 0);
+        FlowKey key = new FlowKey(new FlowId(Long.toString(id)));
+        flow.setKey(key);
+        testFlow = flow;
+        return flow;
+    }
+
     private short getTableId(String tableId) {
         short table = 2;
         try {
@@ -948,8 +915,8 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         ActionBuilder ab = new ActionBuilder();
 
         OutputActionBuilder output = new OutputActionBuilder();
-        output.setMaxLength(56);
-        Uri value = new Uri("CONTROLLER");
+        output.setMaxLength(new Integer(0xffff));
+        Uri value = new Uri(OutputPortValues.CONTROLLER.toString());
         output.setOutputNodeConnector(value);
         ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
         ab.setOrder(0);
@@ -1233,8 +1200,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         return isb;
-    }	
-	
+    }
 
     private static InstructionsBuilder createAppyActionInstruction9() {
 
@@ -1849,7 +1815,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         isb.setInstruction(instructions);
         return isb;
     }
-	
+
     private static InstructionsBuilder createAppyActionInstruction33() {
 
         List<Action> actionList = new ArrayList<Action>();
@@ -2328,12 +2294,13 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         SetFieldBuilder setFieldBuilder = new SetFieldBuilder();
         ActionBuilder ab1 = new ActionBuilder();
         SetFieldBuilder setFieldBuilder1 = new SetFieldBuilder();
-    /*    ActionBuilder ab2 = new ActionBuilder();
-        SetFieldBuilder setFieldBuilder2 = new SetFieldBuilder();
-        ActionBuilder ab3 = new ActionBuilder();
-        SetFieldBuilder setFieldBuilder3 = new SetFieldBuilder();
-        ActionBuilder ab4 = new ActionBuilder();
-        SetFieldBuilder setFieldBuilder4 = new SetFieldBuilder();   */
+        /*
+         * ActionBuilder ab2 = new ActionBuilder(); SetFieldBuilder
+         * setFieldBuilder2 = new SetFieldBuilder(); ActionBuilder ab3 = new
+         * ActionBuilder(); SetFieldBuilder setFieldBuilder3 = new
+         * SetFieldBuilder(); ActionBuilder ab4 = new ActionBuilder();
+         * SetFieldBuilder setFieldBuilder4 = new SetFieldBuilder();
+         */
         ActionBuilder ab5 = new ActionBuilder();
         SetFieldBuilder setFieldBuilder5 = new SetFieldBuilder();
         ActionBuilder ab6 = new ActionBuilder();
@@ -2342,17 +2309,18 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         // IPv6
         Ipv6MatchBuilder ipv6Builder = new Ipv6MatchBuilder();
         Ipv6MatchBuilder ipv6Builder1 = new Ipv6MatchBuilder();
-     //   Ipv6MatchBuilder ipv6Builder2 = new Ipv6MatchBuilder();
-      //  Ipv6MatchBuilder ipv6Builder3 = new Ipv6MatchBuilder();
-       // Ipv6MatchBuilder ipv6Builder4 = new Ipv6MatchBuilder();
+        // Ipv6MatchBuilder ipv6Builder2 = new Ipv6MatchBuilder();
+        // Ipv6MatchBuilder ipv6Builder3 = new Ipv6MatchBuilder();
+        // Ipv6MatchBuilder ipv6Builder4 = new Ipv6MatchBuilder();
         Ipv6MatchBuilder ipv6Builder5 = new Ipv6MatchBuilder();
         Ipv6MatchBuilder ipv6Builder6 = new Ipv6MatchBuilder();
 
         Ipv6Prefix dstip6 = new Ipv6Prefix("2002::2");
         Ipv6Prefix srcip6 = new Ipv6Prefix("2001:0:0:0:0:0:0:1");
-      //  Ipv6Address ndtarget = new Ipv6Address("2001:db8:0:1:fd97:f9f0:a810:782e");
-      //  MacAddress ndsll = new MacAddress("c2:00:54:f5:00:00");
-       // MacAddress ndtll = new MacAddress("00:0c:29:0e:4c:67");
+        // Ipv6Address ndtarget = new
+        // Ipv6Address("2001:db8:0:1:fd97:f9f0:a810:782e");
+        // MacAddress ndsll = new MacAddress("c2:00:54:f5:00:00");
+        // MacAddress ndtll = new MacAddress("00:0c:29:0e:4c:67");
         Ipv6ExtHeaderBuilder nextheader = new Ipv6ExtHeaderBuilder();
         nextheader.setIpv6Exthdr(58);
         Ipv6LabelBuilder ipv6label = new Ipv6LabelBuilder();
@@ -2361,9 +2329,9 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         ipv6Builder.setIpv6Source(srcip6);
         ipv6Builder1.setIpv6Destination(dstip6);
-     //   ipv6Builder2.setIpv6NdTarget(ndtarget);
-      //  ipv6Builder3.setIpv6NdSll(ndsll);
-       // ipv6Builder4.setIpv6NdTll(ndtll);
+        // ipv6Builder2.setIpv6NdTarget(ndtarget);
+        // ipv6Builder3.setIpv6NdSll(ndsll);
+        // ipv6Builder4.setIpv6NdTll(ndtll);
         ipv6Builder5.setIpv6ExtHeader(nextheader.build());
         ipv6Builder6.setIpv6Label(ipv6label.build());
 
@@ -2377,21 +2345,22 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         ab1.setKey(new ActionKey(1));
         actionLists.add(ab1.build());
 
-    /*  setFieldBuilder2.setLayer3Match(ipv6Builder2.build());
-        ab2.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder2.build()).build());
-        ab2.setKey(new ActionKey(2));
-        actionLists.add(ab2.build());
-
-        setFieldBuilder3.setLayer3Match(ipv6Builder3.build());
-        ab3.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder3.build()).build());
-        ab3.setKey(new ActionKey(3));
-        actionLists.add(ab3.build());
-
-        setFieldBuilder4.setLayer3Match(ipv6Builder4.build());
-        ab4.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder4.build()).build());
-        ab4.setKey(new ActionKey(4));
-        actionLists.add(ab4.build());
-*/
+        /*
+         * setFieldBuilder2.setLayer3Match(ipv6Builder2.build());
+         * ab2.setAction(new
+         * SetFieldCaseBuilder().setSetField(setFieldBuilder2.build()).build());
+         * ab2.setKey(new ActionKey(2)); actionLists.add(ab2.build());
+         *
+         * setFieldBuilder3.setLayer3Match(ipv6Builder3.build());
+         * ab3.setAction(new
+         * SetFieldCaseBuilder().setSetField(setFieldBuilder3.build()).build());
+         * ab3.setKey(new ActionKey(3)); actionLists.add(ab3.build());
+         *
+         * setFieldBuilder4.setLayer3Match(ipv6Builder4.build());
+         * ab4.setAction(new
+         * SetFieldCaseBuilder().setSetField(setFieldBuilder4.build()).build());
+         * ab4.setKey(new ActionKey(4)); actionLists.add(ab4.build());
+         */
         setFieldBuilder5.setLayer3Match(ipv6Builder5.build());
         ab5.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder5.build()).build());
         ab5.setKey(new ActionKey(5));
@@ -2416,7 +2385,6 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         isb.setInstruction(instructions);
         return isb;
     }
-
 
     private static InstructionsBuilder createAppyActionInstruction45() {
 
@@ -2641,7 +2609,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         return match;
     }
-	
+
     /**
      * @return
      */
@@ -2665,8 +2633,8 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         match.setIcmpv6Match(icmpv6match.build());
 
         return match;
-    }	
-	
+    }
+
     private static MatchBuilder createMatch33() {
 
         MatchBuilder match = new MatchBuilder();
@@ -2682,12 +2650,12 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         eth.setEthernetType(ethTypeBuilder.build());
         match.setEthernetMatch(eth.build());
         return match;
-    }	
+    }
 
     private static MatchBuilder createInphyportMatch(NodeId nodeId) {
         MatchBuilder match = new MatchBuilder();
-        match.setInPort(new NodeConnectorId(nodeId+":202"));
-        match.setInPhyPort(new NodeConnectorId(nodeId+":10122"));
+        match.setInPort(new NodeConnectorId(nodeId + ":202"));
+        match.setInPhyPort(new NodeConnectorId(nodeId + ":10122"));
         return match;
     }
 
@@ -3090,7 +3058,13 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
     public void _removeMDFlow(CommandInterpreter ci) {
         DataModification<InstanceIdentifier<?>, DataObject> modification = dataBrokerService.beginTransaction();
         NodeBuilder tn = createTestNode(ci.nextArgument());
-        FlowBuilder tf = createTestFlow(tn, ci.nextArgument(), ci.nextArgument());
+        String flowtype = ci.nextArgument();
+        FlowBuilder tf;
+        if (flowtype.equals("fTM")) {
+            tf = createtablemiss(tn, flowtype, ci.nextArgument());
+        } else {
+            tf = createTestFlow(tn, ci.nextArgument(), ci.nextArgument());
+        }
         InstanceIdentifier<Flow> path1 = InstanceIdentifier.builder(Nodes.class).child(Node.class, tn.getKey())
                 .augmentation(FlowCapableNode.class).child(Table.class, new TableKey(tf.getTableId()))
                 .child(Flow.class, tf.getKey()).build();
@@ -3113,7 +3087,13 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
     public void _addMDFlow(CommandInterpreter ci) {
         NodeBuilder tn = createTestNode(ci.nextArgument());
-        FlowBuilder tf = createTestFlow(tn, ci.nextArgument(), ci.nextArgument());
+        String flowtype = ci.nextArgument();
+        FlowBuilder tf;
+        if (flowtype.equals("fTM")) {
+            tf = createtablemiss(tn, flowtype, ci.nextArgument());
+        } else {
+            tf = createTestFlow(tn, flowtype, ci.nextArgument());
+        }
         writeFlow(ci, tf, tn);
     }
 
