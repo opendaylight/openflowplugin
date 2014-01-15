@@ -103,6 +103,10 @@ public class PacketInTranslator implements IMDMessageTranslator<OfHeader, List<D
     }
     
     private Class <?extends PacketInReason> getPacketInReason(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PacketInReason reason) {
+    	
+    	if (null == reason) {
+    		return PacketInReason.class;
+    	}
     
     	if (reason.equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PacketInReason.OFPRNOMATCH)) {
     		return NoMatch.class;
