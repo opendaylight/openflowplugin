@@ -14,9 +14,6 @@ import org.opendaylight.openflowjava.protocol.impl.clients.SendEvent;
 import org.opendaylight.openflowjava.protocol.impl.clients.WaitForMessageEvent;
 import org.opendaylight.openflowjava.protocol.impl.util.ByteBufUtils;
 
-/**
- * @author mirehak
- */
 public abstract class ScenarioFactory {
     
     /** version bitmap hex-string containing version 1.3 */
