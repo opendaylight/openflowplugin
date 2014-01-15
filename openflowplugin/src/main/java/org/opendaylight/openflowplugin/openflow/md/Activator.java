@@ -91,6 +91,7 @@ public class Activator extends ComponentActivatorAbstractBase {
      *         Object
      */
     public Object[] getGlobalImplementations() {
+        //TODO:: is MDController still needed here?
         Object[] res = { MDController.class, pluginProvider };
         return res;
     }

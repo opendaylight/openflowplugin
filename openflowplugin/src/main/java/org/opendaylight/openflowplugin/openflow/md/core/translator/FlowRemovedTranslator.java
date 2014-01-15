@@ -203,7 +203,7 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
                         .longValue()));
             } else if (field.equals(Metadata.class)) {
                 MetadataBuilder metadata = new MetadataBuilder();
-                metadata.setMetadata(new BigInteger(entry.getAugmentation(MetadataMatchEntry.class).getMetadata()));
+                metadata.setMetadata(new BigInteger(1, entry.getAugmentation(MetadataMatchEntry.class).getMetadata()));
                 if (entry.isHasMask()) {
                     metadata.setMetadataMask(entry.getAugmentation(MaskMatchEntry.class).getMask());
                 }
@@ -417,7 +417,7 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
                 }
             } else if (field.equals(TunnelId.class)) {
                 TunnelBuilder tunnel = new TunnelBuilder();
-                tunnel.setTunnelId(new BigInteger(entry.getAugmentation(MetadataMatchEntry.class).getMetadata()));
+                tunnel.setTunnelId(new BigInteger(1, entry.getAugmentation(MetadataMatchEntry.class).getMetadata()));
                 if (entry.isHasMask()) {
                     tunnel.setTunnelMask(entry.getAugmentation(MaskMatchEntry.class).getMask());
                 }
