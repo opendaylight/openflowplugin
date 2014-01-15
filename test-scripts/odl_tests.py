@@ -4,19 +4,20 @@ import time
 import logging
 import argparse
 import unittest
-import requests
 import xml.dom.minidom as md
 from xml.etree import ElementTree as ET
-from netaddr import IPNetwork
 from string import lower
 
+import requests
+from netaddr import IPNetwork
 import mininet.node
 import mininet.topo
 import mininet.net
 import mininet.util
-
 from mininet.node import RemoteController
 from mininet.node import OVSKernelSwitch
+
+import xmltodict
 
 def create_network(controller_ip, controller_port):
     """Create topology and mininet network."""
@@ -33,7 +34,7 @@ def create_network(controller_ip, controller_port):
         {'ovsk':OVSKernelSwitch}, 'ovsk,protocols=OpenFlow13')
 
     controller=mininet.util.customConstructor(
-        {'remote': RemoteController}, 'remote,ip=%s:%s' % (controller_ip,
+        {'remote': RemoteController}, 'remote,ip=%s,port=%s' % (controller_ip,
                                                            controller_port))
 
 
@@ -224,19 +225,19 @@ def proto_match_comparator(expected_match, actual_match, kw):
                      PROTO_COMPARATORS, compare_base10_integer)
 
 
-def masked_value_hex_comparator(child, actual_match, kw):
-    emd = int(child.getElementsByTagName("metadata")[0].childNodes[0].data)
-
-    name = kw.get(child.nodeName)
-    data = child.toxml(), name, actual_match
-
-    amd = int(actual_match[kw.get(name)], 16)
-
-    emasks = child.getElementsByTagName("metadata-mask")
-    if len(emasks) != 0:
-        print 'mask present'
-
-    assert emd == amd, 'metadata: expected %s && actual %s=%s' % data
+#def masked_value_hex_comparator(child, actual_match, kw):
+#    emd = int(child.getElementsByTagName("metadata")[0].childNodes[0].data)
+#
+#    name = kw.get(child.nodeName)
+#    data = child.toxml(), name, actual_match
+#
+#    amd = int(actual_match[kw.get(name)], 16)
+#
+#    emasks = child.getElementsByTagName("metadata-mask")
+#    if len(emasks) != 0:
+#        print 'mask present'
+#
+#    assert emd == amd, 'metadata: expected %s && actual %s=%s' % data
 
 
 
@@ -550,8 +551,8 @@ def generate_tests_from_xmls(path, xmls=None):
             response = requests.get(url, auth=('admin', 'admin'),
                                     headers={'Accept': 'application/xml'})
             assert response.status_code == 200
-            req = ET.tostring(ET.fromstring(xml_string))
-            res = ET.tostring(ET.fromstring(response.text))
+            req = xmltodict.parse(ET.tostring(ET.fromstring(xml_string)))
+            res = xmltodict.parse(ET.tostring(ET.fromstring(response.text)))
             assert req == res, 'uploaded and stored xml, are not the same\n' \
                 'uploaded: %s\nstored:%s' % (req, res)
 
