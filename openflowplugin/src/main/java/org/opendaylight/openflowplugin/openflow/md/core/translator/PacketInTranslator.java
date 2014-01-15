@@ -78,6 +78,12 @@ public class PacketInTranslator implements IMDMessageTranslator<OfHeader, List<D
                            }
                        }
                    }
+                   org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match match = 
+                           (org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match)
+                           MatchConvertorImpl.fromOFMatchToSALMatch(message.getMatch(),dpid);
+                   // FIXME: ClassCastException
+                   //pktInBuilder.setMatch((org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match)match);
+                   pktInBuilder.setTableId(new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableId(message.getTableId().getValue().shortValue()));
                }
     
                if (port == null) {
@@ -87,12 +93,7 @@ public class PacketInTranslator implements IMDMessageTranslator<OfHeader, List<D
                }else{
                    LOG.info("Receive packet_in from {} on port {}", dpid, port);
                }
-               org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match match = 
-            		   (org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match)
-            		   MatchConvertorImpl.fromOFMatchToSALMatch(message.getMatch(),dpid);
-               pktInBuilder.setMatch((org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match)match);
                pktInBuilder.setPacketInReason(getPacketInReason(message.getReason()));
-               pktInBuilder.setTableId(new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableId(message.getTableId().getValue().shortValue()));
                pktInBuilder.setIngress(InventoryDataServiceUtil.nodeConnectorRefFromDatapathIdPortno(dpid,port));
                PacketReceived pktInEvent = pktInBuilder.build();
                list.add(pktInEvent);

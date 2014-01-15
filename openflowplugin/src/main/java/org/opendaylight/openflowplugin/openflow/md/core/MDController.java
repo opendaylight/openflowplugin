@@ -20,7 +20,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionConfiguration;
-import org.opendaylight.openflowjava.protocol.api.connection.SwitchConnectionHandler;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.translator.ErrorTranslator;
@@ -34,16 +33,17 @@ import org.opendaylight.openflowplugin.openflow.md.core.translator.MultipartRepl
 import org.opendaylight.openflowplugin.openflow.md.core.translator.PacketInTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.translator.PortStatusMessageToNodeConnectorUpdatedTranslator;
 import org.opendaylight.openflowplugin.openflow.md.lldp.LLDPSpeakerPopListener;
+import org.opendaylight.openflowplugin.openflow.md.queue.MessageSpy;
 import org.opendaylight.openflowplugin.openflow.md.queue.PopListener;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorUpdated;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SwitchFlowRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.NodeErrorNotification;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SwitchFlowRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.AggregateFlowStatisticsUpdate;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowsStatisticsUpdate;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.FlowTableStatisticsUpdate;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GroupDescStatsUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GroupFeaturesUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GroupStatisticsUpdated;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.MeterConfigStatsUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.MeterFeaturesUpdated;
@@ -79,6 +79,7 @@ public class MDController implements IMDController {
 
     private ConcurrentMap<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, List<DataObject>>>> messageTranslators;
     private Map<Class<? extends DataObject>, Collection<PopListener<DataObject>>> popListeners;
+    private MessageSpy<OfHeader, DataObject> messageSpyCounter; 
 
     final private int OF10 = 1;
     final private int OF13 = 4;
@@ -186,8 +187,12 @@ public class MDController implements IMDController {
         LOG.debug("starting ..");
         LOG.debug("switchConnectionProvider: " + switchConnectionProvider);
         // setup handler
-        SwitchConnectionHandler switchConnectionHandler = new SwitchConnectionHandlerImpl();
+        SwitchConnectionHandlerImpl switchConnectionHandler = new SwitchConnectionHandlerImpl();
+        switchConnectionHandler.setMessageSpy(messageSpyCounter);
+        switchConnectionHandler.init();
+        
         switchConnectionProvider.setSwitchConnectionHandler(switchConnectionHandler);
+
         // configure and startup library servers
         switchConnectionProvider.configure(getConnectionConfiguration());
         Future<List<Boolean>> srvStarted = switchConnectionProvider.startup();
@@ -278,5 +283,12 @@ public class MDController implements IMDController {
          }
     }
 
+    /**
+     * @param messageSpyCounter the messageSpyCounter to set
+     */
+    public void setMessageSpyCounter(
+            MessageSpy<OfHeader, DataObject> messageSpyCounter) {
+        this.messageSpyCounter = messageSpyCounter;
+    }
 
 }

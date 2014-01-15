@@ -126,8 +126,8 @@ public class OFToMDSalFlowConvertor {
                 
                 WriteMetadataCaseBuilder writeMetadataCaseBuilder = new WriteMetadataCaseBuilder();
                 WriteMetadataBuilder writeMetadataBuilder = new WriteMetadataBuilder();
-                writeMetadataBuilder.setMetadata(new BigInteger(metadataInstruction.getMetadata()));
-                writeMetadataBuilder.setMetadataMask(new BigInteger(metadataInstruction.getMetadataMask()));
+                writeMetadataBuilder.setMetadata(new BigInteger(1, metadataInstruction.getMetadata()));
+                writeMetadataBuilder.setMetadataMask(new BigInteger(1, metadataInstruction.getMetadataMask()));
                 writeMetadataCaseBuilder.setWriteMetadata(writeMetadataBuilder.build());
                 
                 InstructionBuilder instBuilder = new InstructionBuilder();
