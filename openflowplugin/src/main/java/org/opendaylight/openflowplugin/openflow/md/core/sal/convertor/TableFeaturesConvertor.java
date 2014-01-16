@@ -135,7 +135,7 @@ public class TableFeaturesConvertor {
             ofTableFeatures.setName(salTableFeatures.getName());
             ofTableFeatures.setMetadataMatch(salTableFeatures.getMetadataMatch());
             ofTableFeatures.setMetadataWrite(salTableFeatures.getMetadataWrite());
-            ofTableFeatures.setMaxEntries(new Long(0)); 
+            ofTableFeatures.setMaxEntries(salTableFeatures.getMaxEntries()); 
             if (salTableFeatures.getConfig() != null) {
                 ofTableFeatures.setConfig(new TableConfig(salTableFeatures.getConfig().isDEPRECATEDMASK()));
             }
@@ -152,6 +152,7 @@ public class TableFeaturesConvertor {
         }
         List<TableFeatureProperties> ofTablePropertiesList = new ArrayList<>();
         
+
         for (org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeatureProperties property : tableProperties
                 .getTableFeatureProperties()) {
         	TableFeaturePropertiesBuilder propBuilder = new TableFeaturePropertiesBuilder();
