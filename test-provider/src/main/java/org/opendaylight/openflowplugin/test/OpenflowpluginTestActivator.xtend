@@ -24,6 +24,8 @@ class OpenflowpluginTestActivator extends AbstractBindingAwareProvider {
     var OpenflowpluginMeterTestCommandProvider cmdMeterProvider;
     var OpenflowpluginTableFeaturesTestCommandProvider cmdTableProvider;
     var OpenflowpluginStatsTestCommandProvider cmdStatsProvider;
+    var OpenflowpluginTestNodeConnectorNotification cmdNodeConnectorNotification;
+    var OpenflowpluginTestTopologyNotification cmdTopologyNotification;
     public static final String NODE_ID =  "foo:node:1";
 
     override onSessionInitiated(ProviderContext session) {
@@ -38,8 +40,9 @@ class OpenflowpluginTestActivator extends AbstractBindingAwareProvider {
         cmdGroupProvider.onSessionInitiated(session);
         cmdMeterProvider.onSessionInitiated(session);
         cmdTableProvider.onSessionInitiated(session);
-        cmdStatsProvider.onSessionInitiated(session);
-        
+        cmdStatsProvider.onSessionInitiated(session);      
+        cmdNodeConnectorNotification.onSessionInitiated(session);
+        cmdTopologyNotification.onSessionInitiated(session);
     }
     
     override startImpl(BundleContext ctx) {
@@ -49,7 +52,8 @@ class OpenflowpluginTestActivator extends AbstractBindingAwareProvider {
         cmdMeterProvider = new OpenflowpluginMeterTestCommandProvider(ctx);
         cmdTableProvider = new OpenflowpluginTableFeaturesTestCommandProvider(ctx);
         cmdStatsProvider = new OpenflowpluginStatsTestCommandProvider(ctx);
-    
+        cmdNodeConnectorNotification = new OpenflowpluginTestNodeConnectorNotification(ctx);
+    	cmdTopologyNotification = new OpenflowpluginTestTopologyNotification(ctx);
     }
 
     override protected stopImpl(BundleContext context) {
