@@ -35,6 +35,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.MetadataInstruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.MeterIdInstruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.TableIdInstruction;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.ActionsList;
 
 public class OFToMDSalFlowConvertor {
     
@@ -71,7 +72,7 @@ public class OFToMDSalFlowConvertor {
                 applyActionsCaseBuilder.setApplyActions(applyActionsBuilder.build());
                 
                 InstructionBuilder instBuilder = new InstructionBuilder();
-                instBuilder.setInstruction(new ApplyActionsCaseBuilder().build());
+                instBuilder.setInstruction(applyActionsCaseBuilder.build());
                 salInstructionList.add(instBuilder.build());
             }else if(switchInst instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.ClearActions){
                 InstructionBuilder instBuilder = new InstructionBuilder();
@@ -160,5 +161,32 @@ public class OFToMDSalFlowConvertor {
         return actions;
     }
 
+    /**
+     * Method wraps openflow 1.0 actions list to Apply Action Instructions
+     */
+    
+    public static Instructions wrapOF10ActionsToInstruction(List<ActionsList> actionsList) {
+        InstructionsBuilder instructionsBuilder = new InstructionsBuilder();
+        
+        List<Instruction> salInstructionList = new ArrayList<Instruction>();
+        
+        ApplyActionsCaseBuilder applyActionsCaseBuilder = new ApplyActionsCaseBuilder();
+        ApplyActionsBuilder applyActionsBuilder = new ApplyActionsBuilder();
 
+        applyActionsBuilder.setAction(
+                    wrapActionList(
+                                ActionConvertor.toMDSalActions(actionsList
+                                        )
+                            ));
+                
+        applyActionsCaseBuilder.setApplyActions(applyActionsBuilder.build());
+                
+        InstructionBuilder instBuilder = new InstructionBuilder();
+        instBuilder.setInstruction(applyActionsCaseBuilder.build());
+        salInstructionList.add(instBuilder.build());
+        
+        instructionsBuilder.setInstruction(salInstructionList);
+        return instructionsBuilder.build();
+    }
+    
 }

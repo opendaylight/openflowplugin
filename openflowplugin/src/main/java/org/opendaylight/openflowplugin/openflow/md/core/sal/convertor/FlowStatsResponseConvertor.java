@@ -68,6 +68,9 @@ public class FlowStatsResponseConvertor {
         salFlowStatsBuilder.setTableId(flowStats.getTableId());
         if(flowStats.getMatchV10() != null){
             salFlowStatsBuilder.setMatch(MatchConvertorImpl.fromOFMatchV10ToSALMatch(flowStats.getMatchV10(),datapathid));
+            if(flowStats.getActionsList().size()!=0){
+                salFlowStatsBuilder.setInstructions(OFToMDSalFlowConvertor.wrapOF10ActionsToInstruction(flowStats.getActionsList()));
+            }
         }
         if(flowStats.getMatch() != null){
             salFlowStatsBuilder.setMatch(MatchConvertorImpl.fromOFMatchToSALMatch(flowStats.getMatch(),datapathid));
@@ -83,6 +86,5 @@ public class FlowStatsResponseConvertor {
         }
         
         return salFlowStatsBuilder.build();
-        
     }
 }
