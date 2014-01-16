@@ -180,6 +180,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
     private static final byte[] VLAN_VID_MASK = new byte[] { 16, 0 };
     private static final short PROTO_TCP = 6;
     private static final short PROTO_UDP = 17;
+    private static final String noIp = "0.0.0.0/0";
 
     @Override
     public List<MatchEntries> convert(org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match match,BigInteger datapathid) {
@@ -410,76 +411,83 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
         VlanMatchBuilder vlanMatchBuilder = new VlanMatchBuilder();
         Ipv4MatchBuilder ipv4MatchBuilder = new Ipv4MatchBuilder();
         IpMatchBuilder ipMatchBuilder = new IpMatchBuilder();
-       
-        if(swMatch.getInPort() != null){
+        if(!swMatch.getWildcards().isINPORT().booleanValue()&& swMatch.getInPort() != null){
             matchBuilder.setInPort(InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(datapathid,(long)swMatch.getInPort()));
         }
         
-        if(swMatch.getDlSrc()!= null){
+        if(!swMatch.getWildcards().isDLSRC().booleanValue() && swMatch.getDlSrc()!= null){
             EthernetSourceBuilder ethSrcBuilder = new EthernetSourceBuilder();
             ethSrcBuilder.setAddress(swMatch.getDlSrc());
             ethMatchBuilder.setEthernetSource(ethSrcBuilder.build());
             matchBuilder.setEthernetMatch(ethMatchBuilder.build());
         }
-        if(swMatch.getDlDst()!= null){
+        if(!swMatch.getWildcards().isDLDST().booleanValue() && swMatch.getDlDst()!= null){
             EthernetDestinationBuilder ethDstBuilder = new EthernetDestinationBuilder();
             ethDstBuilder.setAddress(swMatch.getDlDst());
             ethMatchBuilder.setEthernetDestination(ethDstBuilder.build());
             matchBuilder.setEthernetMatch(ethMatchBuilder.build());
         }
-        if(swMatch.getDlType()!= null){
+        if(!swMatch.getWildcards().isDLTYPE().booleanValue() && swMatch.getDlType()!= null){
             EthernetTypeBuilder ethTypeBuilder = new EthernetTypeBuilder();
             ethTypeBuilder.setType(new org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.EtherType((long)swMatch.getDlType()));
             ethMatchBuilder.setEthernetType(ethTypeBuilder.build());
             matchBuilder.setEthernetMatch(ethMatchBuilder.build());
         }
-        if(swMatch.getDlVlan()!=null){
+        if(!swMatch.getWildcards().isDLVLAN().booleanValue() && swMatch.getDlVlan()!=null){
             VlanIdBuilder vlanIdBuilder = new VlanIdBuilder();
             vlanIdBuilder.setVlanId(new org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId(swMatch.getDlVlan()));
             vlanMatchBuilder.setVlanId(vlanIdBuilder.build());
             matchBuilder.setVlanMatch(vlanMatchBuilder.build());
         }
-        if(swMatch.getDlVlanPcp()!= null){
+        if(!swMatch.getWildcards().isDLVLANPCP().booleanValue() && swMatch.getDlVlanPcp()!= null){
             vlanMatchBuilder.setVlanPcp(new org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanPcp(swMatch.getDlVlanPcp()));
             matchBuilder.setVlanMatch(vlanMatchBuilder.build());
         }
-        if(swMatch.getNwSrc() !=null){
+        if(!swMatch.getWildcards().isNWPROTO().booleanValue() && swMatch.getNwSrc() !=null){
             String ipv4PrefixStr = swMatch.getNwSrc().getValue();
             if(swMatch.getNwSrcMask()!= null){
                 ipv4PrefixStr +=PREFIX_SEPARATOR+swMatch.getNwSrcMask();
             }
-            ipv4MatchBuilder.setIpv4Source(new Ipv4Prefix(ipv4PrefixStr));
-            matchBuilder.setLayer3Match(ipv4MatchBuilder.build());
+            if(!ipv4PrefixStr.equals(noIp)){
+                ipv4MatchBuilder.setIpv4Source(new Ipv4Prefix(ipv4PrefixStr));
+                matchBuilder.setLayer3Match(ipv4MatchBuilder.build());
+            }
         }
-        if(swMatch.getNwDst() !=null){
+        if(!swMatch.getWildcards().isNWPROTO().booleanValue() && swMatch.getNwDst() !=null){
             String ipv4PrefixStr = swMatch.getNwDst().getValue();
             if(swMatch.getNwDstMask()!= null){
                 ipv4PrefixStr +=PREFIX_SEPARATOR+swMatch.getNwDstMask();
             }
-            ipv4MatchBuilder.setIpv4Destination(new Ipv4Prefix(ipv4PrefixStr));
-            matchBuilder.setLayer3Match(ipv4MatchBuilder.build());
+            if(!ipv4PrefixStr.equals(noIp)){
+                ipv4MatchBuilder.setIpv4Destination(new Ipv4Prefix(ipv4PrefixStr));
+                matchBuilder.setLayer3Match(ipv4MatchBuilder.build());
+            }
         }
-        if(swMatch.getNwProto()!= null ){
+        if(!swMatch.getWildcards().isNWPROTO().booleanValue() && swMatch.getNwProto()!= null ){
             ipMatchBuilder.setIpProtocol(swMatch.getNwProto());
             matchBuilder.setIpMatch(ipMatchBuilder.build());
         }
-        if(swMatch.getNwProto() == PROTO_TCP){
+        if(!swMatch.getWildcards().isNWPROTO().booleanValue() && swMatch.getNwProto() == PROTO_TCP){
             TcpMatchBuilder tcpMatchBuilder = new TcpMatchBuilder();
-            if(swMatch.getTpSrc()!= null)
+            if(!swMatch.getWildcards().isTPSRC().booleanValue() && swMatch.getTpSrc()!= null)
                 tcpMatchBuilder.setTcpSourcePort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber(swMatch.getTpSrc()));
-            if(swMatch.getTpDst()!= null)
+            if(!swMatch.getWildcards().isTPDST().booleanValue() && swMatch.getTpDst()!= null)
                 tcpMatchBuilder.setTcpDestinationPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber(swMatch.getTpDst()));
-            matchBuilder.setLayer4Match(tcpMatchBuilder.build());
+            
+            if(!swMatch.getWildcards().isTPSRC().booleanValue() || !swMatch.getWildcards().isTPDST().booleanValue())
+                matchBuilder.setLayer4Match(tcpMatchBuilder.build());
         }
-        if(swMatch.getNwProto() == PROTO_UDP){
+        if(!swMatch.getWildcards().isNWPROTO().booleanValue() && swMatch.getNwProto() == PROTO_UDP){
             UdpMatchBuilder udpMatchBuilder = new UdpMatchBuilder();
-            if(swMatch.getTpSrc()!= null)
+            if(!swMatch.getWildcards().isTPSRC().booleanValue() && swMatch.getTpSrc()!= null)
                 udpMatchBuilder.setUdpSourcePort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber(swMatch.getTpSrc()));
-            if(swMatch.getTpDst()!= null)
+            if(!swMatch.getWildcards().isTPDST().booleanValue() && swMatch.getTpDst()!= null)
                 udpMatchBuilder.setUdpDestinationPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber(swMatch.getTpDst()));
-            matchBuilder.setLayer4Match(udpMatchBuilder.build());
+            
+            if(!swMatch.getWildcards().isTPSRC().booleanValue() || !swMatch.getWildcards().isTPDST().booleanValue())
+                matchBuilder.setLayer4Match(udpMatchBuilder.build());
         }
-        if(swMatch.getNwTos()!=null){
+        if(!swMatch.getWildcards().isNWTOS().booleanValue() && swMatch.getNwTos()!=null){
             //DSCP default value is 0 from the library but controller side it is null.
             // look if there better solution 
             if(0 != swMatch.getNwTos()) 
