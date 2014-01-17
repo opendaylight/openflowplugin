@@ -690,6 +690,11 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
             flow.setMatch(createMatch1().build());
             flow.setInstructions(createAppyActionInstruction88().build());
             break;
+        case "f81":
+            id += 81;
+            flow.setMatch(createLLDPMatch().build());
+            flow.setInstructions(createSentToControllerInstructions().build());
+            break;
         default:
             LOG.warn("flow type not understood: {}", flowType);
         }
@@ -2522,6 +2527,16 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         return isb;
+    }
+
+    private static MatchBuilder createLLDPMatch() {
+        MatchBuilder match = new MatchBuilder();
+        EthernetMatchBuilder eth = new EthernetMatchBuilder();
+        EthernetTypeBuilder ethTypeBuilder = new EthernetTypeBuilder();
+        ethTypeBuilder.setType(new EtherType(0x88ccL));
+        eth.setEthernetType(ethTypeBuilder.build());
+        match.setEthernetMatch(eth.build());
+        return match;
     }
 
     /**
