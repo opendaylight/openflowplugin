@@ -254,26 +254,31 @@ def generate_tests_from_xmls(path, xmls=None):
             log.debug('received content: {}'.format(rsp.text))
             assert rsp.status_code == 204 or rsp.status_code == 200, 'Status' \
                     ' code returned %d' % rsp.status_code
+            try:
+                # check request content against restconf's datastore
+                response = requests.get(url, auth=('admin', 'admin'),
+                                        headers={'Accept': 'application/xml'})
+                assert response.status_code == 200
+                req = (xmltodict.parse(ET.tostring(ET.fromstring(xml_string))))
+                res = (xmltodict.parse(ET.tostring(ET.fromstring(response.text))))
+                assert req == res, 'uploaded and stored xml, are not the same\n' \
+                    'uploaded: %s\nstored:%s' % (req, res)
 
-            # check request content against restconf's datastore
-            response = requests.get(url, auth=('admin', 'admin'),
+                # collect flow table state on switch
+                switch_flows = MininetTools.get_flows(self.net)
+                assert len(switch_flows) > 0
+
+                # compare requested object and flow table state
+                if mn_string is not None:
+                    #log.info('running tests')
+                    Comparator.compare_results(switch_flows[0], ParseTools.dump_string_to_dict(mn_string))
+                else:
+                    log.error('cannot find test results - comparison skipped')
+            finally:    
+                response = requests.delete(url, auth=('admin', 'admin'),
                                     headers={'Accept': 'application/xml'})
-            assert response.status_code == 200
-            req = (xmltodict.parse(ET.tostring(ET.fromstring(xml_string))))
-            res = (xmltodict.parse(ET.tostring(ET.fromstring(response.text))))
-            assert req == res, 'uploaded and stored xml, are not the same\n' \
-                'uploaded: %s\nstored:%s' % (req, res)
-
-            # collect flow table state on switch
-            switch_flows = MininetTools.get_flows(self.net)
-            assert len(switch_flows) > 0
-
-            # compare requested object and flow table state
-            if mn_string is not None:
-                #log.info('running tests')
-                Comparator.compare_results(switch_flows[0], ParseTools.dump_string_to_dict(mn_string))
-            else:
-                log.error('cannot find test results - comparison skipped')
+                assert response.status_code == 200
+                print '\n\n\n'    
 
         return new_test
 

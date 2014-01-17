@@ -517,6 +517,13 @@ def get_values(node, *tags):
         if node.nodeName in result and len(node.childNodes) > 0:
             result[node.nodeName] = node.childNodes[0].nodeValue
     return result
+    
+    
+class BadResponseCodeError(Exception):
+    def __init__(self, value):
+        self.value = value
+    def __str__(self):
+        return repr('BadResponseCodeError: %s' % self.value)    
 
 
 def generate_tests_from_xmls(path, xmls=None):
@@ -541,33 +548,41 @@ def generate_tests_from_xmls(path, xmls=None):
             }
             log.info('sending request to url: {}'.format(url))
             rsp = requests.put(url, auth=('admin', 'admin'), data=xml_string,
-                               headers=headers)
+                               headers=headers)                               
             log.info('received status code: {}'.format(rsp.status_code))
             log.debug('received content: {}'.format(rsp.text))
             assert rsp.status_code == 204 or rsp.status_code == 200, 'Status' \
                     ' code returned %d' % rsp.status_code
 
-            # check request content against restconf's datastore
-            response = requests.get(url, auth=('admin', 'admin'),
+            try:        
+                # check request content against restconf's datastore
+                response = requests.get(url, auth=('admin', 'admin'),
+                                        headers={'Accept': 'application/xml'})
+                if response.status_code != 200:
+                    raise BadResponseCodeError('response: {}'.format(response))
+                    
+                req = xmltodict.parse(ET.tostring(ET.fromstring(xml_string)))
+                res = xmltodict.parse(ET.tostring(ET.fromstring(response.text)))
+                assert req == res, 'uploaded and stored xml, are not the same\n' \
+                    'uploaded: %s\nstored:%s' % (req, res)
+
+                # collect flow table state on switch
+                switch_flows = get_flows(self.net)
+                assert len(switch_flows) > 0
+
+                # compare requested object and flow table state
+                for important_element in check_elements(xml_string, keywords):
+                    # log.info('important element: {}'.format(important_element.nodeName))
+                    comparator = COMPARATORS.get(important_element.nodeName,
+                                                 COMPARATORS['default'])
+
+                    comparator(important_element, switch_flows[0])                    
+            finally:    
+                response = requests.delete(url, auth=('admin', 'admin'),
                                     headers={'Accept': 'application/xml'})
-            assert response.status_code == 200
-            req = xmltodict.parse(ET.tostring(ET.fromstring(xml_string)))
-            res = xmltodict.parse(ET.tostring(ET.fromstring(response.text)))
-            assert req == res, 'uploaded and stored xml, are not the same\n' \
-                'uploaded: %s\nstored:%s' % (req, res)
-
-            # collect flow table state on switch
-            switch_flows = get_flows(self.net)
-            assert len(switch_flows) > 0
-
-            # compare requested object and flow table state
-            for important_element in check_elements(xml_string, keywords):
-                # log.info('important element: {}'.format(important_element.nodeName))
-                comparator = COMPARATORS.get(important_element.nodeName,
-                                             COMPARATORS['default'])
-
-                comparator(important_element, switch_flows[0])
-
+                assert response.status_code == 200
+                print '\n\n\n'
+                
         return new_test
 
     # generate list of available xml requests
