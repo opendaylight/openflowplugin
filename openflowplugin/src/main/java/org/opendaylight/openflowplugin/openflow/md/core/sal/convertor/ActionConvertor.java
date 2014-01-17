@@ -158,67 +158,74 @@ public final class ActionConvertor {
         ActionsListBuilder actionsListBuilder = new ActionsListBuilder();
         List<ActionsList> actionsList = new ArrayList<ActionsList>();
 
+
         for (int actionItem = 0; actionItem < actions.size(); actionItem++) {
+
+            ActionsList  list = null;
 
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action = actions.get(
                     actionItem).getAction();
 
             if (action instanceof OutputActionCase)
-                actionsList.add(salToOFOutputAction(action, actionsListBuilder, version));
+                list = salToOFOutputAction(action, actionsListBuilder, version);
             else if (action instanceof GroupActionCase)
-                actionsList.add(SalToOFGroupAction(action, actionsListBuilder));
+                list = SalToOFGroupAction(action, actionsListBuilder);
             else if (action instanceof CopyTtlOutCase)
-                actionsList.add(SalToOFCopyTTLIOut(actionsListBuilder));
+                list = SalToOFCopyTTLIOut(actionsListBuilder);
             else if (action instanceof CopyTtlInCase)
-                actionsList.add(SalToOFCopyTTLIIn(actionsListBuilder));
+                list = SalToOFCopyTTLIIn(actionsListBuilder);
             else if (action instanceof SetMplsTtlActionCase)
-                actionsList.add(SalToOFSetMplsTtl(action, actionsListBuilder));
+                list = SalToOFSetMplsTtl(action, actionsListBuilder);
             else if (action instanceof DecMplsTtlCase)
-                actionsList.add(SalToOFDecMplsTtl(actionsListBuilder));
+                list = SalToOFDecMplsTtl(actionsListBuilder);
             else if (action instanceof PushVlanActionCase)
-                actionsList.add(SalToOFPushVlanAction(action, actionsListBuilder));
+                list = SalToOFPushVlanAction(action, actionsListBuilder);
             else if (action instanceof PopVlanActionCase)
-                actionsList.add(SalToOFPopVlan(action, actionsListBuilder));
+                list = SalToOFPopVlan(action, actionsListBuilder);
             else if (action instanceof PushMplsActionCase)
-                actionsList.add(SalToOFPushMplsAction(action, actionsListBuilder));
+                list = SalToOFPushMplsAction(action, actionsListBuilder);
             else if (action instanceof PopMplsActionCase)
-                actionsList.add(SalToOFPopMpls(action, actionsListBuilder));
+                list = SalToOFPopMpls(action, actionsListBuilder);
             else if (action instanceof SetQueueActionCase)
-                actionsList.add(SalToOFSetQueue(action, actionsListBuilder));
+                list = SalToOFSetQueue(action, actionsListBuilder);
             else if (action instanceof SetNwTtlActionCase)
-                actionsList.add(SalToOFSetNwTtl(action, actionsListBuilder));
+                list = SalToOFSetNwTtl(action, actionsListBuilder);
             else if (action instanceof DecNwTtlCase)
-                actionsList.add(SalToOFDecNwTtl(action, actionsListBuilder));
+                list = SalToOFDecNwTtl(action, actionsListBuilder);
             else if (action instanceof SetFieldCase)
-                actionsList.add(SalToOFSetField(action, actionsListBuilder, version,datapathid));
+                list = SalToOFSetField(action, actionsListBuilder, version,datapathid);
             else if (action instanceof PushPbbActionCase)
-                actionsList.add(SalToOFPushPbbAction(action, actionsListBuilder));
+                list = SalToOFPushPbbAction(action, actionsListBuilder);
             else if (action instanceof PopPbbActionCase)
-                actionsList.add(SalToOFPopPBB(action, actionsListBuilder));
+                list = SalToOFPopPBB(action, actionsListBuilder);
             else if (action instanceof ExperimenterAction)
-                actionsList.add(SalToOFExperimenter(action, actionsListBuilder));
+                list = SalToOFExperimenter(action, actionsListBuilder);
 
             // 1.0 Actions
             else if (action instanceof SetVlanIdActionCase)
-                actionsList.add(SalToOFSetVlanId(action, actionsListBuilder, version));
+                list = SalToOFSetVlanId(action, actionsListBuilder, version);
             else if (action instanceof SetVlanPcpActionCase)
-                actionsList.add(SalToOFSetVlanpcp(action, actionsListBuilder, version));
+                list = SalToOFSetVlanpcp(action, actionsListBuilder, version);
             else if (action instanceof StripVlanActionCase)
-                actionsList.add(SalToOFStripVlan(action, actionsListBuilder, version));
+                list = SalToOFStripVlan(action, actionsListBuilder, version);
             else if (action instanceof SetDlSrcActionCase)
-                actionsList.add(SalToOFSetDlSrc(action, actionsListBuilder, version));
+                list = SalToOFSetDlSrc(action, actionsListBuilder, version);
             else if (action instanceof SetDlDstActionCase)
-                actionsList.add(SalToOFSetDlDst(action, actionsListBuilder, version));
+                list = SalToOFSetDlDst(action, actionsListBuilder, version);
             else if (action instanceof SetNwSrcActionCase)
-                actionsList.add(SalToOFSetNwSrc(action, actionsListBuilder, version));
+                list = SalToOFSetNwSrc(action, actionsListBuilder, version);
             else if (action instanceof SetNwDstActionCase)
-                actionsList.add(SalToOFSetNwDst(action, actionsListBuilder, version));
+                list = SalToOFSetNwDst(action, actionsListBuilder, version);
             else if (action instanceof SetTpSrcActionCase)
-                actionsList.add(SalToOFSetTpSrc(action, actionsListBuilder, version));
+                list = SalToOFSetTpSrc(action, actionsListBuilder, version);
             else if (action instanceof SetTpDstActionCase)
-                actionsList.add(SalToOFSetTpDst(action, actionsListBuilder, version));
+                list = SalToOFSetTpDst(action, actionsListBuilder, version);
             else if (action instanceof SetNwTosActionCase)
-                actionsList.add(SalToOFSetNwTos(action, actionsListBuilder, version));
+                list = SalToOFSetNwTos(action, actionsListBuilder, version);
+
+            if(list != null){
+                actionsList.add(list);
+            }
 
         }
         return actionsList;
