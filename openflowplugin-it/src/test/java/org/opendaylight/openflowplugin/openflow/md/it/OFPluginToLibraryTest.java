@@ -35,7 +35,7 @@ import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@RunWith(PaxExam.class)
+//@RunWith(PaxExam.class)
 public class OFPluginToLibraryTest {
 
     private static final Logger LOG = LoggerFactory
@@ -83,7 +83,7 @@ public class OFPluginToLibraryTest {
      * test basic integration with OFLib running the handshake
      * @throws Exception
      */
-    @Test
+    //@Test
     public void handshakeOk1() throws Exception {
         LOG.debug("handshake integration test");
         LOG.debug("switchConnectionProvider: "+switchConnectionProvider);
@@ -110,7 +110,7 @@ public class OFPluginToLibraryTest {
      * test basic integration with OFLib running the handshake (with version bitmap)
      * @throws Exception
      */
-    @Test
+    //@Test
     public void handshakeOk2() throws Exception {
         LOG.debug("handshake integration test");
         LOG.debug("switchConnectionProvider: "+switchConnectionProvider);
@@ -137,7 +137,7 @@ public class OFPluginToLibraryTest {
      * test basic integration with OFLib running the handshake
      * @throws Exception
      */
-    @Test
+    //@Test
     public void handshakeFail1() throws Exception {
         LOG.debug("handshake integration test");
         LOG.debug("switchConnectionProvider: "+switchConnectionProvider);
@@ -164,7 +164,7 @@ public class OFPluginToLibraryTest {
      * test basic integration with OFLib running the handshake
      * @throws Exception
      */
-    @Test
+    //@Test
     public void handshakeFail2() throws Exception {
         LOG.debug("handshake integration test");
         LOG.debug("switchConnectionProvider: "+switchConnectionProvider);
