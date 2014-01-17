@@ -22,6 +22,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.Pa
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.NoMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.InvalidTtl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.SendToController;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.MatchBuilder;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,7 +91,8 @@ public class PacketInTranslator implements IMDMessageTranslator<OfHeader, List<D
                org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match match = 
             		   (org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match)
             		   MatchConvertorImpl.fromOFMatchToSALMatch(message.getMatch(),dpid);
-               pktInBuilder.setMatch((org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match)match);
+               MatchBuilder matchBuilder = new MatchBuilder(match);
+               pktInBuilder.setMatch(matchBuilder.build());
                pktInBuilder.setPacketInReason(getPacketInReason(message.getReason()));
                pktInBuilder.setTableId(new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableId(message.getTableId().getValue().shortValue()));
                pktInBuilder.setIngress(InventoryDataServiceUtil.nodeConnectorRefFromDatapathIdPortno(dpid,port));
@@ -103,10 +105,9 @@ public class PacketInTranslator implements IMDMessageTranslator<OfHeader, List<D
     }
     
     private Class <?extends PacketInReason> getPacketInReason(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PacketInReason reason) {
-    	
-    	if (null == reason) {
-    		return PacketInReason.class;
-    	}
+        if (null == reason) {
+            return PacketInReason.class;
+        }
     
     	if (reason.equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PacketInReason.OFPRNOMATCH)) {
     		return NoMatch.class;
