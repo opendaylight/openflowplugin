@@ -7,33 +7,96 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.opendaylight.openflowplugin.openflow.md.core.plan.ConnectionAdapterStackImpl;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Matchers;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
+import org.opendaylight.controller.sal.common.util.Futures;
+import org.opendaylight.controller.sal.common.util.Rpcs;
+import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
+import org.opendaylight.openflowplugin.openflow.md.OFConstants;
+import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.HelloElementType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.hello.Elements;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.hello.ElementsBuilder;
+import org.opendaylight.yangtools.yang.common.RpcError;
+import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 
 /**
- * @author mirehak
- *
+ * testing handshake
  */
+@RunWith(MockitoJUnitRunner.class)
 public class HandshakeManagerImplTest {
     
+    private static final Logger LOG = LoggerFactory
+            .getLogger(HandshakeManagerImplTest.class);
+    
     private HandshakeManagerImpl handshakeManager;
-    protected ConnectionAdapterStackImpl adapter;
+    @Mock
+    private ConnectionAdapter adapter;
+    @Mock
+    private ErrorHandler errorHandler;
+    @Mock
+    private HandshakeListener handshakeListener;
+
+    private RpcResult<GetFeaturesOutput> resultFeatures;
+
+    private long helloXid = 42L;
+
+    private int expectedErrors = 0;
     
     /**
      * invoked before every test method
      */
     @Before
     public void setUp() {
-        adapter = new ConnectionAdapterStackImpl();
-        handshakeManager = new HandshakeManagerImpl(adapter, (short) 4, ConnectionConductor.versionOrder);
+        handshakeManager = new HandshakeManagerImpl(adapter, OFConstants.OFP_VERSION_1_3, 
+                ConnectionConductor.versionOrder);
+        handshakeManager.setErrorHandler(errorHandler);
+        handshakeManager.setHandshakeListener(handshakeListener);
+        handshakeManager.setUseVersionBitmap(false);
+        
+        resultFeatures = createRpcResult(true, new GetFeaturesOutputBuilder().build(), null);
+        
+        Mockito.when(adapter.hello(Matchers.any(HelloInput.class)))
+            .thenReturn(Futures.immediateFuture(createRpcResult(true, (Void) null, null)));
+    }
+    
+    /**
+     * invoked after each test method
+     */
+    @After
+    public void teardown() {
+        // logging errors if occurred
+        ArgumentCaptor<Throwable> errorCaptor = ArgumentCaptor.forClass(Throwable.class);
+        Mockito.verify(errorHandler, Mockito.atMost(1)).handleException(
+                errorCaptor.capture(), Matchers.any(SessionContext.class));
+        for (Throwable problem : errorCaptor.getAllValues()) {
+            LOG.warn(problem.getMessage(), problem);
+        }
+        
+        Mockito.verify(errorHandler, Mockito.times(expectedErrors)).handleException(
+                Matchers.any(Throwable.class), Matchers.any(SessionContext.class));
     }
 
     /**
@@ -80,6 +143,472 @@ public class HandshakeManagerImplTest {
         } catch (Exception e) {
             // expected
         }
+    }
+
+    //////// Version Negotiation Tests //////////////
+    
+    /**
+     * Test of version negotiation Where switch version = 1.0
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testVersionNegotiation10() throws Exception {
+        LOG.debug("testVersionNegotiation10");
+        Short version = OFConstants.OFP_VERSION_1_0;
+        
+        Mockito.when(adapter.getFeatures(Matchers.any(GetFeaturesInput.class)))
+            .thenReturn(Futures.immediateFuture(resultFeatures));
+        
+        handshakeManager.shake();
+        
+        handshakeManager.setReceivedHello(createHelloMessage(version, helloXid).build());
+        handshakeManager.shake();
+        
+        Mockito.verify(handshakeListener).onHandshakeSuccessfull(resultFeatures.getResult(), version);
+    }
+    
+    /**
+     * Test of version negotiation Where switch version = 1.0
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testVersionNegotiation10SwitchStarts() throws Exception {
+        LOG.debug("testVersionNegotiation10-ss");
+        Short version = OFConstants.OFP_VERSION_1_0;
+        
+        Mockito.when(adapter.getFeatures(Matchers.any(GetFeaturesInput.class)))
+            .thenReturn(Futures.immediateFuture(resultFeatures));
+        
+        handshakeManager.setReceivedHello(createHelloMessage(version, helloXid).build());
+        handshakeManager.shake();
+        
+        Mockito.verify(handshakeListener).onHandshakeSuccessfull(resultFeatures.getResult(), version);
+    }
+
+    /**
+     * Test of version negotiation Where switch version < 1.0
+     * Switch delivers first helloMessage with version 0x00 = negotiation unsuccessful 
+     * @throws Exception
+     */
+    @Test
+    public void testVersionNegotiation00() throws Exception {
+        LOG.debug("testVersionNegotiation00");
+        expectedErrors = 1;
+        Short version = (short) 0x00;
+        
+        handshakeManager.setReceivedHello(createHelloMessage(version, helloXid).build());
+        handshakeManager.shake();
+        
+        Mockito.verify(handshakeListener, Mockito.never()).onHandshakeSuccessfull(
+                Matchers.any(GetFeaturesOutput.class), Matchers.anyShort());
+    }
+    
+    /**
+     * Test of version negotiation Where switch version < 1.0
+     * Switch delivers first helloMessage with version 0x00 = negotiation unsuccessful 
+     * @throws Exception
+     */
+    @Test
+    public void testVersionNegotiation00SwitchStarts() throws Exception {
+        LOG.debug("testVersionNegotiation00-ss");
+        expectedErrors = 1;
+        Short version = (short) 0x00;
+        
+        handshakeManager.shake();
+        
+        handshakeManager.setReceivedHello(createHelloMessage(version, helloXid).build());
+        handshakeManager.shake();
+        
+        Mockito.verify(handshakeListener, Mockito.never()).onHandshakeSuccessfull(
+                Matchers.any(GetFeaturesOutput.class), Matchers.anyShort());
+    }
+
+    /**
+     * Test of version negotiation Where 1.0 < switch version < 1.3
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testVersionNegotiation11() throws Exception {
+        LOG.debug("testVersionNegotiation11");
+        Short version = (short) 0x02;
+        Short expVersion = (short) 0x01;
+    
+        Mockito.when(adapter.getFeatures(Matchers.any(GetFeaturesInput.class)))
+            .thenReturn(Futures.immediateFuture(resultFeatures));
+        
+        handshakeManager.setReceivedHello(createHelloMessage(version, helloXid).build());
+        handshakeManager.shake();
+        
+        handshakeManager.setReceivedHello(createHelloMessage(expVersion, helloXid).build());
+        handshakeManager.shake();
+        
+        Mockito.verify(handshakeListener).onHandshakeSuccessfull(
+                resultFeatures.getResult(), expVersion);
+    }
+    
+    /**
+     * Test of version negotiation Where 1.0 < switch version < 1.3
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testVersionNegotiation11SwitchStarts() throws Exception {
+        LOG.debug("testVersionNegotiation11-ss");
+        Short version = (short) 0x02;
+        Short expVersion = (short) 0x01;
+    
+        Mockito.when(adapter.getFeatures(Matchers.any(GetFeaturesInput.class)))
+            .thenReturn(Futures.immediateFuture(resultFeatures));
+        
+        handshakeManager.shake();
+        
+        handshakeManager.setReceivedHello(createHelloMessage(version, helloXid).build());
+        handshakeManager.shake();
+        
+        handshakeManager.setReceivedHello(createHelloMessage(expVersion, helloXid).build());
+        handshakeManager.shake();
+        
+        Mockito.verify(handshakeListener).onHandshakeSuccessfull(
+                resultFeatures.getResult(), expVersion);
+    }
+
+    /**
+     * Test of version negotiation Where switch version = 1.3
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testVersionNegotiation13() throws Exception {
+        LOG.debug("testVersionNegotiation13");
+        Short version = OFConstants.OFP_VERSION_1_3;
+        
+        Mockito.when(adapter.getFeatures(Matchers.any(GetFeaturesInput.class)))
+            .thenReturn(Futures.immediateFuture(resultFeatures));
+        
+        handshakeManager.setReceivedHello(createHelloMessage(version, helloXid).build());
+        handshakeManager.shake();
+        
+        Mockito.verify(handshakeListener).onHandshakeSuccessfull(
+                resultFeatures.getResult(), version);
+    }
+    
+    /**
+     * Test of version negotiation Where switch version = 1.3
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testVersionNegotiation13SwitchStarts() throws Exception {
+        LOG.debug("testVersionNegotiation13-ss");
+        Short version = OFConstants.OFP_VERSION_1_3;
+        
+        Mockito.when(adapter.getFeatures(Matchers.any(GetFeaturesInput.class)))
+            .thenReturn(Futures.immediateFuture(resultFeatures));
+        
+        handshakeManager.shake();
+        
+        handshakeManager.setReceivedHello(createHelloMessage(version, helloXid).build());
+        handshakeManager.shake();
+    
+        Mockito.verify(handshakeListener).onHandshakeSuccessfull(
+                resultFeatures.getResult(), version);
+    }
+
+    /**
+     * Test of version negotiation Where switch version >= 1.3
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testVersionNegotiation15() throws Exception {
+        LOG.debug("testVersionNegotiation15");
+        Short version = (short) 0x06;
+        Short expVersion =  OFConstants.OFP_VERSION_1_3;
+        
+        Mockito.when(adapter.getFeatures(Matchers.any(GetFeaturesInput.class)))
+            .thenReturn(Futures.immediateFuture(resultFeatures));
+    
+        handshakeManager.setReceivedHello(createHelloMessage(version, helloXid).build());
+        handshakeManager.shake();
+        
+        handshakeManager.setReceivedHello(createHelloMessage(expVersion, helloXid).build());
+        handshakeManager.shake();
+        
+        Mockito.verify(handshakeListener).onHandshakeSuccessfull(
+                resultFeatures.getResult(), expVersion);
+    }
+    
+    /**
+     * Test of version negotiation Where switch version >= 1.3
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testVersionNegotiation15SwitchStart() throws Exception {
+        LOG.debug("testVersionNegotiation15-ss");
+        Short version = (short) 0x06;
+        Short expVersion =  OFConstants.OFP_VERSION_1_3;
+        
+        Mockito.when(adapter.getFeatures(Matchers.any(GetFeaturesInput.class)))
+            .thenReturn(Futures.immediateFuture(resultFeatures));
+    
+        handshakeManager.setReceivedHello(createHelloMessage(version, helloXid).build());
+        handshakeManager.shake();
+        
+        handshakeManager.setReceivedHello(createHelloMessage(expVersion, helloXid).build());
+        handshakeManager.shake();
+        
+        Mockito.verify(handshakeListener).onHandshakeSuccessfull(
+                resultFeatures.getResult(), expVersion);
+    }
+
+    /**
+     * Test of version negotiation Where switch version > 1.3
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testVersionNegotiation15_MultipleCall() throws Exception {
+        LOG.debug("testVersionNegotiation15_MultipleCall");
+        Short version = (short) 0x06;
+        expectedErrors = 1;
+    
+        handshakeManager.setReceivedHello(createHelloMessage(version, helloXid).build());
+        handshakeManager.shake();
+        
+        handshakeManager.setReceivedHello(createHelloMessage(version, helloXid).build());
+        handshakeManager.shake();
+        
+        Mockito.verify(handshakeListener, Mockito.never()).onHandshakeSuccessfull(
+                Matchers.any(GetFeaturesOutput.class), Matchers.anyShort());
+    }
+    
+    /**
+     * Test of version negotiation Where switch version > 1.3
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testVersionNegotiation15_MultipleCallSwitchStarts() throws Exception {
+        LOG.debug("testVersionNegotiation15_MultipleCall-ss");
+        Short version = (short) 0x06;
+        expectedErrors = 1;
+    
+        handshakeManager.shake();
+        
+        handshakeManager.setReceivedHello(createHelloMessage(version, helloXid).build());
+        handshakeManager.shake();
+        
+        handshakeManager.setReceivedHello(createHelloMessage(version, helloXid).build());
+        handshakeManager.shake();
+        
+        Mockito.verify(handshakeListener, Mockito.never()).onHandshakeSuccessfull(
+                Matchers.any(GetFeaturesOutput.class), Matchers.anyShort());
+    }
+
+    /**
+     * Test of version negotiation Where bitmap version {0x05,0x01}
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testVersionNegotiation10InBitmap() throws Exception {
+        LOG.debug("testVersionNegotiation10InBitmap");
+        Short version = OFConstants.OFP_VERSION_1_0;
+        handshakeManager.setUseVersionBitmap(true);
+
+        HelloMessageBuilder helloMessage = createHelloMessage(version, helloXid);
+        addVersionBitmap(Lists.newArrayList((short) 0x05, OFConstants.OFP_VERSION_1_0), helloMessage);
+    
+        Mockito.when(adapter.getFeatures(Matchers.any(GetFeaturesInput.class)))
+            .thenReturn(Futures.immediateFuture(resultFeatures));
+        
+        handshakeManager.setReceivedHello(helloMessage.build());
+        handshakeManager.shake();
+        
+        Mockito.verify(handshakeListener).onHandshakeSuccessfull(
+                resultFeatures.getResult(), version);
+    }
+    
+    /**
+     * Test of version negotiation Where bitmap version {0x05,0x01}
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testVersionNegotiation10InBitmapSwitchStarts() throws Exception {
+        LOG.debug("testVersionNegotiation10InBitmap-ss");
+        Short version = OFConstants.OFP_VERSION_1_0;
+        handshakeManager.setUseVersionBitmap(true);
+
+        HelloMessageBuilder helloMessage = createHelloMessage(version, helloXid);
+        addVersionBitmap(Lists.newArrayList((short) 0x05, OFConstants.OFP_VERSION_1_0), helloMessage);
+    
+        Mockito.when(adapter.getFeatures(Matchers.any(GetFeaturesInput.class)))
+            .thenReturn(Futures.immediateFuture(resultFeatures));
+        
+        handshakeManager.shake();
+        
+        handshakeManager.setReceivedHello(helloMessage.build());
+        handshakeManager.shake();
+        
+        Mockito.verify(handshakeListener).onHandshakeSuccessfull(
+                resultFeatures.getResult(), version);
+    }
+
+    /**
+     * Test of version negotiation Where bitmap version {0x05,0x04}
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testVersionNegotiation13InBitmap() throws Exception {
+        LOG.debug("testVersionNegotiation13InBitmap");
+        Short version = OFConstants.OFP_VERSION_1_3;
+        handshakeManager.setUseVersionBitmap(true);
+
+        HelloMessageBuilder helloMessage = createHelloMessage(version, helloXid);
+        addVersionBitmap(Lists.newArrayList((short) 0x05, OFConstants.OFP_VERSION_1_3), helloMessage);
+    
+        Mockito.when(adapter.getFeatures(Matchers.any(GetFeaturesInput.class)))
+            .thenReturn(Futures.immediateFuture(resultFeatures));
+    
+        handshakeManager.setReceivedHello(helloMessage.build());
+        handshakeManager.shake();
+    
+        Mockito.verify(handshakeListener).onHandshakeSuccessfull(
+                resultFeatures.getResult(), version);
+    }
+    
+    /**
+     * Test of version negotiation Where bitmap version {0x05,0x04}
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testVersionNegotiation13InBitmapSwitchFirst() throws Exception {
+        LOG.debug("testVersionNegotiation13InBitmap-ss");
+        Short version = OFConstants.OFP_VERSION_1_3;
+        handshakeManager.setUseVersionBitmap(true);
+
+        HelloMessageBuilder helloMessage = createHelloMessage(version, helloXid);
+        addVersionBitmap(Lists.newArrayList((short) 0x05, OFConstants.OFP_VERSION_1_3), helloMessage);
+    
+        Mockito.when(adapter.getFeatures(Matchers.any(GetFeaturesInput.class)))
+            .thenReturn(Futures.immediateFuture(resultFeatures));
+    
+        handshakeManager.shake();
+        
+        handshakeManager.setReceivedHello(helloMessage.build());
+        handshakeManager.shake();
+    
+        Mockito.verify(handshakeListener).onHandshakeSuccessfull(
+                resultFeatures.getResult(), version);
+    }
+
+    /**
+     * Test of version negotiation Where bitmap version {0x05,0x02}
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testVersionNegotiationNoCommonVersionInBitmap() throws Exception {
+        LOG.debug("testVersionNegotiationNoCommonVersionInBitmap");
+        Short version = (short) 0x05;
+        expectedErrors = 1;
+        handshakeManager.setUseVersionBitmap(true);
+        
+        HelloMessageBuilder helloMessage = createHelloMessage(version, helloXid);
+        addVersionBitmap(Lists.newArrayList((short) 0x05, (short) 0x02), helloMessage);
+        
+        handshakeManager.setReceivedHello(helloMessage.build());
+        handshakeManager.shake();
+        
+        Mockito.verify(handshakeListener, Mockito.never()).onHandshakeSuccessfull(
+                Matchers.any(GetFeaturesOutput.class), Matchers.anyShort());
+    }
+    
+    /**
+     * Test of version negotiation Where bitmap version {0x05,0x02}
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testVersionNegotiationNoCommonVersionInBitmapSwitchStarts() throws Exception {
+        LOG.debug("testVersionNegotiationNoCommonVersionInBitmap-ss");
+        Short version = (short) 0x05;
+        expectedErrors = 1;
+        handshakeManager.setUseVersionBitmap(true);
+        
+        HelloMessageBuilder helloMessage = createHelloMessage(version, helloXid);
+        addVersionBitmap(Lists.newArrayList((short) 0x05, (short) 0x02), helloMessage);
+        
+        handshakeManager.shake();
+        
+        handshakeManager.setReceivedHello(helloMessage.build());
+        handshakeManager.shake();
+        
+        Mockito.verify(handshakeListener, Mockito.never()).onHandshakeSuccessfull(
+                Matchers.any(GetFeaturesOutput.class), Matchers.anyShort());
+    }
+
+    /**
+     * @param success
+     * @param result
+     * @param errors
+     * @return
+     */
+    private static <T> RpcResult<T> createRpcResult(boolean success, T result, Collection<RpcError> errorsArg) {
+        Collection<RpcError> errors = errorsArg;
+        if (errors == null) {
+            errors = Collections.emptyList();
+        }
+        return Rpcs.getRpcResult(success, result, errors);
+    }
+
+    /**
+     * @param ofpVersion10
+     * @param helloXid
+     * @return
+     */
+    private static HelloMessageBuilder createHelloMessage(short ofpVersion10, long helloXid) {
+        return new HelloMessageBuilder().setVersion(ofpVersion10).setXid(helloXid);
+    }
+    
+    /**
+     * @param versionOrder
+     * @param helloBuilder
+     * @return
+     */
+    private static HelloMessageBuilder addVersionBitmap(List<Short> versionOrder, 
+            HelloMessageBuilder helloBuilder) {
+        short highestVersion = versionOrder.get(0);
+        int elementsCount = highestVersion / Integer.SIZE;
+        ElementsBuilder elementsBuilder = new ElementsBuilder();
+
+        List<Elements> elementList = new ArrayList<>();
+        int orderIndex = versionOrder.size();
+        int value = versionOrder.get(--orderIndex);
+        for (int index = 0; index <= elementsCount; index++) {
+            List<Boolean> booleanList = new ArrayList<>();
+            for (int i = 0; i < Integer.SIZE; i++) {
+                if (value == ((index * Integer.SIZE) + i)) {
+                    booleanList.add(true);
+                    value = (orderIndex == 0) ? highestVersion : versionOrder.get(--orderIndex);
+                } else {
+                    booleanList.add(false);
+                }
+            }
+            elementsBuilder.setType(HelloElementType.forValue(1));
+            elementsBuilder.setVersionBitmap(booleanList);
+            elementList.add(elementsBuilder.build());
+        }
+
+        helloBuilder.setElements(elementList);
+        return helloBuilder;
     }
 
 }

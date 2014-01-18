@@ -116,6 +116,14 @@ public class HandshakeManagerImpl implements HandshakeManager {
     private void handleStepByStepVersionNegotiation(Short remoteVersion) throws Throwable {
         LOG.debug("remoteVersion:{} lastProposedVersion:{}, highestVersion:{}", 
                 remoteVersion, lastProposedVersion, highestVersion);
+        
+        if (lastProposedVersion == null) {
+            // first hello has not been sent yet, send it and either wait for next remote 
+            // version or proceed
+            lastProposedVersion = proposeNextVersion(remoteVersion);
+            sendHelloMessage(lastProposedVersion, getNextXid());
+        }
+        
         if (remoteVersion == lastProposedVersion) {
             postHandshake(lastProposedVersion, getNextXid());
             LOG.debug("ret - OK - switch answered with lastProposedVersion");
@@ -158,6 +166,10 @@ public class HandshakeManagerImpl implements HandshakeManager {
     private void handleVersionBitmapNegotiation(List<Elements> elements) throws Throwable {
         Short proposedVersion;
         proposedVersion = proposeCommonBitmapVersion(elements);
+        if (lastProposedVersion == null) {
+            // first hello has not been sent yet
+            sendHelloMessage(proposedVersion, getNextXid());
+        }
         postHandshake(proposedVersion, getNextXid());
         LOG.debug("ret - OK - versionBitmap");
     }
@@ -185,6 +197,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
         if (lastReceivedVersion != null && lastReceivedVersion.equals(remoteVersion)) {
             throw new IllegalStateException("version negotiation stalled: version = "+remoteVersion);
         }
+        lastReceivedVersion = remoteVersion;
     }
 
     @Override
@@ -256,7 +269,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
         //final Long helloXid = 21L;
         HelloInput helloInput = MessageFactory.createHelloInput(helloVersion, helloXid, versionOrder);
         
-        LOG.debug("sending first hello message: version{}, xid={}, version bitmap={}", 
+        LOG.debug("sending hello message: version{}, xid={}, version bitmap={}", 
                 helloVersion, helloXid, MessageFactory.digVersions(helloInput.getElements()));
         
         try {

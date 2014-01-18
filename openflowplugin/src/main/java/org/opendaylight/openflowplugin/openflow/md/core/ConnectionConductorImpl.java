@@ -376,11 +376,9 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     @Override
     public void onHandshakeSuccessfull(GetFeaturesOutput featureOutput,
             Short negotiatedVersion) {
-        version = negotiatedVersion;
-        conductorState = CONDUCTOR_STATE.WORKING;
-        OFSessionUtil.registerSession(this, featureOutput, negotiatedVersion);
-        requestDesc();
-        requestPorts();
+        postHandshakeBasic(featureOutput, negotiatedVersion);
+        
+        // post-handshake actions
         if(version == OFConstants.OFP_VERSION_1_3){
             requestGroupFeatures();
             requestMeterFeatures();
@@ -390,6 +388,21 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
             //  it up for parsing to convert into a NodeConnectorUpdate
             queueKeeper.push(featureOutput, this);
         }
+        
+        requestDesc();
+        requestPorts();
+    }
+
+    /**
+     * used by tests
+     * @param featureOutput
+     * @param negotiatedVersion
+     */
+    protected void postHandshakeBasic(GetFeaturesOutput featureOutput,
+            Short negotiatedVersion) {
+        version = negotiatedVersion;
+        conductorState = CONDUCTOR_STATE.WORKING;
+        OFSessionUtil.registerSession(this, featureOutput, negotiatedVersion);
     }
 
     /*

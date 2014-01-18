@@ -22,16 +22,21 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Matchers;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
+import org.opendaylight.openflowplugin.openflow.md.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.plan.ConnectionAdapterStackImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.plan.EventFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.plan.SwitchTestEvent;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
-import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContextOFImpl;
 import org.opendaylight.openflowplugin.openflow.md.queue.PopListener;
 import org.opendaylight.openflowplugin.openflow.md.queue.QueueKeeperLightImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Capabilities;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ErrorType;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.HelloElementType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortFeaturesV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortReason;
@@ -45,22 +50,18 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemovedMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloMessageBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessageBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.hello.Elements;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.hello.ElementsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group.features._case.MultipartReplyGroupFeaturesBuilder;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Lists;
-
-/**
- * @author mirehak
- */
+@RunWith(MockitoJUnitRunner.class)
 public class ConnectionConductorImplTest {
 
     protected static final Logger LOG = LoggerFactory
@@ -90,7 +91,10 @@ public class ConnectionConductorImplTest {
     private int portstatusModifyMessageCounter;
     private int errorMessageCounter;
 
+    @Mock
     private ErrorHandlerQueueImpl errorHandler;
+
+    private int expectedErrors = 0;
 
     public void incrExperimenterMessageCounter() {
         this.experimenterMessageCounter++;
@@ -135,7 +139,6 @@ public class ConnectionConductorImplTest {
         connectionConductor = new ConnectionConductorImpl(adapter);
         connectionConductor.setQueueKeeper(queueKeeper);
         connectionConductor.init();
-        errorHandler = new ErrorHandlerQueueImpl();
         pool.execute(errorHandler);
         connectionConductor.setErrorHandler(errorHandler);
         controller = new MDController();
@@ -191,7 +194,17 @@ public class ConnectionConductorImplTest {
         Assert.assertTrue("plan is not finished", eventPlan.isEmpty());
         eventPlan = null;
         controller = null;
-        errorHandler = null;
+        
+        // logging errors if occurred
+        ArgumentCaptor<Throwable> errorCaptor = ArgumentCaptor.forClass(Throwable.class);
+        Mockito.verify(errorHandler, Mockito.atMost(1)).handleException(
+                errorCaptor.capture(), Matchers.any(SessionContext.class));
+        for (Throwable problem : errorCaptor.getAllValues()) {
+            LOG.warn(problem.getMessage(), problem);
+        }
+        
+        Mockito.verify(errorHandler, Mockito.times(expectedErrors )).handleException(
+                Matchers.any(Throwable.class), Matchers.any(SessionContext.class));
     }
 
     /**
@@ -202,6 +215,8 @@ public class ConnectionConductorImplTest {
      */
     @Test
     public void testOnEchoRequestMessage() throws Exception {
+        simulateV13PostHandshakeState(connectionConductor);
+        
         eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L,
                 EventFactory.DEFAULT_VERSION, new EchoRequestMessageBuilder()));
         eventPlan.add(0,
@@ -210,19 +225,51 @@ public class ConnectionConductorImplTest {
     }
 
     /**
-     * Test of handshake, covering version negotiation and features .
+     * Test of handshake, covering version negotiation and features.
+     * Switch delivers first helloMessage with default version.
      * @throws Exception
      */
     @Test
     public void testHandshake1() throws Exception {
-        eventPlan.add(0, EventFactory.createConnectionReadyCallback(connectionConductor));
         eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L,
                 EventFactory.DEFAULT_VERSION, new HelloMessageBuilder()));
         eventPlan.add(0, EventFactory.createDefaultWaitForAllEvent(
-                EventFactory.createDefaultWaitForRpcEvent(21, "helloReply"),
-                EventFactory.createDefaultWaitForRpcEvent(43, "getFeatures")));
+                EventFactory.createDefaultWaitForRpcEvent(43, "helloReply"),
+                EventFactory.createDefaultWaitForRpcEvent(44, "getFeatures")));
+        eventPlan.add(0, EventFactory.createDefaultRpcResponseEvent(44,
+                EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
+        
+        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(1, "multipartRequestInput"));
+        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(2, "multipartRequestInput"));
+        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(3, "multipartRequestInput"));
+        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(4, "multipartRequestInput"));
+        executeNow();
+
+        Assert.assertEquals(ConnectionConductor.CONDUCTOR_STATE.WORKING,
+                connectionConductor.getConductorState());
+        Assert.assertEquals((short) 0x04, connectionConductor.getVersion()
+                .shortValue());
+    }
+    
+    /**
+     * Test of handshake, covering version negotiation and features.
+     * Controller sends first helloMessage with default version 
+     * @throws Exception
+     */
+    @Test
+    public void testHandshake1SwitchStarts() throws Exception {
+        eventPlan.add(0, EventFactory.createConnectionReadyCallback(connectionConductor));
+        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(21, "helloReply"));
+        eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L,
+                EventFactory.DEFAULT_VERSION, new HelloMessageBuilder()));
+        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(43, "getFeatures"));
         eventPlan.add(0, EventFactory.createDefaultRpcResponseEvent(43,
                 EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
+        
+        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(1, "multipartRequestInput"));
+        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(2, "multipartRequestInput"));
+        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(3, "multipartRequestInput"));
+        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(4, "multipartRequestInput"));
 
         executeNow();
 
@@ -233,17 +280,18 @@ public class ConnectionConductorImplTest {
     }
 
     /**
-     * Test of handshake, covering version negotiation and features .
+     * Test of handshake, covering version negotiation and features.
+     * Switch delivers first helloMessage with version 0x05 
+     * and negotiates following versions: 0x03, 0x01 
      * @throws Exception
      */
     @Test
     public void testHandshake2() throws Exception {
         connectionConductor.setBitmapNegotiationEnable(false);
-        eventPlan.add(0, EventFactory.createConnectionReadyCallback(connectionConductor));
         eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L,
                 (short) 0x05, new HelloMessageBuilder()));
         eventPlan.add(0,
-                EventFactory.createDefaultWaitForRpcEvent(21, "helloReply"));
+                EventFactory.createDefaultWaitForRpcEvent(43, "helloReply"));
         eventPlan.add(0, EventFactory.createDefaultNotificationEvent(43L,
                 (short) 0x03, new HelloMessageBuilder()));
         eventPlan.add(0,
@@ -255,6 +303,46 @@ public class ConnectionConductorImplTest {
 
         eventPlan.add(0, EventFactory.createDefaultRpcResponseEvent(45,
                 EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
+        
+        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(1, "multipartRequestInput"));
+        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(2, "multipartRequestInput"));
+
+        executeNow();
+
+        Assert.assertEquals(ConnectionConductor.CONDUCTOR_STATE.WORKING,
+                connectionConductor.getConductorState());
+        Assert.assertEquals((short) 0x01, connectionConductor.getVersion()
+                .shortValue());
+    }
+    
+    /**
+     * Test of handshake, covering version negotiation and features.
+     * Controller sends first helloMessage with default version 
+     * and switch negotiates following versions: 0x05, 0x03, 0x01 
+     * @throws Exception
+     */
+    @Test
+    public void testHandshake2SwitchStarts() throws Exception {
+        connectionConductor.setBitmapNegotiationEnable(false);
+        eventPlan.add(0, EventFactory.createConnectionReadyCallback(connectionConductor));
+        eventPlan.add(0,
+                EventFactory.createDefaultWaitForRpcEvent(21, "helloReply"));
+        eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L,
+                (short) 0x05, new HelloMessageBuilder()));
+        eventPlan.add(0, EventFactory.createDefaultNotificationEvent(43L,
+                (short) 0x03, new HelloMessageBuilder()));
+        eventPlan.add(0,
+                EventFactory.createDefaultWaitForRpcEvent(44, "helloReply"));
+        eventPlan.add(0, EventFactory.createDefaultNotificationEvent(44L,
+                (short) 0x01, new HelloMessageBuilder()));
+        eventPlan.add(0,
+                EventFactory.createDefaultWaitForRpcEvent(45, "getFeatures"));
+
+        eventPlan.add(0, EventFactory.createDefaultRpcResponseEvent(45,
+                EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
+        
+        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(1, "multipartRequestInput"));
+        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(2, "multipartRequestInput"));
 
         executeNow();
 
@@ -265,21 +353,6 @@ public class ConnectionConductorImplTest {
     }
 
     /**
-     * Test of handshake, covering version negotiation and features .
-     * @throws Exception
-     */
-    @Test
-    public void testHandshake3() throws Exception {
-        eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L,
-                (short) 0x00, new HelloMessageBuilder()));
-
-        executeNow();
-        Assert.assertEquals(ConnectionConductor.CONDUCTOR_STATE.HANDSHAKING,
-                connectionConductor.getConductorState());
-        Assert.assertNull(connectionConductor.getVersion());
-    }
-
-    /**
      * Test method for
      * {@link org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductorImpl#onExperimenterMessage(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterMessage)}
      * .
@@ -287,6 +360,8 @@ public class ConnectionConductorImplTest {
      */
     @Test
     public void testOnExperimenterMessage1() throws InterruptedException {
+        simulateV13PostHandshakeState(connectionConductor);
+        
         eventPlan.add(0,
                 EventFactory.createDefaultWaitForRpcEvent(42, "experimenter"));
         ExperimenterMessageBuilder builder1 = new ExperimenterMessageBuilder();
@@ -318,6 +393,8 @@ public class ConnectionConductorImplTest {
      */
     @Test
     public void testOnExperimenterMessage2() throws InterruptedException {
+        simulateV13PostHandshakeState(connectionConductor);
+        
         eventPlan.add(0,
                 EventFactory.createDefaultWaitForRpcEvent(42, "experimenter"));
         ErrorMessageBuilder builder1 = new ErrorMessageBuilder();
@@ -354,16 +431,7 @@ public class ConnectionConductorImplTest {
         IMDMessageTranslator<OfHeader, List<DataObject>> objFms = new FlowRemovedMessageService() ;
         controller.addMessageTranslator(FlowRemovedMessage.class, 4, objFms);
 
-        // Complete HandShake
-        eventPlan.add(0, EventFactory.createConnectionReadyCallback(connectionConductor));
-        eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L,
-                EventFactory.DEFAULT_VERSION, new HelloMessageBuilder()));
-        eventPlan.add(0, EventFactory.createDefaultWaitForAllEvent(
-                EventFactory.createDefaultWaitForRpcEvent(21, "helloReply"),
-                EventFactory.createDefaultWaitForRpcEvent(43, "getFeatures")));
-        eventPlan.add(0, EventFactory.createDefaultRpcResponseEvent(43,
-          EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
-        execute(true);
+        simulateV13PostHandshakeState(connectionConductor);
 
         // Now send Flow Removed messages
         FlowRemovedMessageBuilder builder1 = new FlowRemovedMessageBuilder();
@@ -396,17 +464,6 @@ public class ConnectionConductorImplTest {
 
     /**
      * Test method for
-     * {@link org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductorImpl#onMultipartRequestMessage(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestMessage)}
-     * .
-     */
-    @Test
-    public void testOnMultipartRequestMessage() {
-        // fail("Not yet implemented");
-        // TODO:: add test
-    }
-
-    /**
-     * Test method for
      * {@link org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductorImpl#onPacketInMessage(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage)}
      * .
      * @throws InterruptedException
@@ -416,16 +473,7 @@ public class ConnectionConductorImplTest {
         IMDMessageTranslator<OfHeader, List<DataObject>> objPms = new PacketInMessageService() ;
         controller.addMessageTranslator(PacketInMessage.class, 4, objPms);
 
-        // Complete HandShake
-        eventPlan.add(0, EventFactory.createConnectionReadyCallback(connectionConductor));
-        eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L,
-        EventFactory.DEFAULT_VERSION, new HelloMessageBuilder()));
-        eventPlan.add(0, EventFactory.createDefaultWaitForAllEvent(
-                EventFactory.createDefaultWaitForRpcEvent(21, "helloReply"),
-                EventFactory.createDefaultWaitForRpcEvent(43, "getFeatures")));
-        eventPlan.add(0, EventFactory.createDefaultRpcResponseEvent(43,
-          EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
-        execute(true);
+        simulateV13PostHandshakeState(connectionConductor);
 
         // Now send PacketIn
         PacketInMessageBuilder builder1 = new PacketInMessageBuilder();
@@ -452,20 +500,10 @@ public class ConnectionConductorImplTest {
      */
     @Test
     public void testOnPortStatusMessage() throws InterruptedException {
-
         IMDMessageTranslator<OfHeader, List<DataObject>> objPSms = new PortStatusMessageService() ;
         controller.addMessageTranslator(PortStatusMessage.class, 4, objPSms);
 
-        // Complete HandShake
-        eventPlan.add(0, EventFactory.createConnectionReadyCallback(connectionConductor));
-        eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L,
-        EventFactory.DEFAULT_VERSION, new HelloMessageBuilder()));
-        eventPlan.add(0, EventFactory.createDefaultWaitForAllEvent(
-                EventFactory.createDefaultWaitForRpcEvent(21, "helloReply"),
-                EventFactory.createDefaultWaitForRpcEvent(43, "getFeatures")));
-        eventPlan.add(0, EventFactory.createDefaultRpcResponseEvent(43,
-          EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
-        execute(true);
+        simulateV13PostHandshakeState(connectionConductor);
 
         // Send Port Status messages
         PortStatusMessageBuilder builder1 = new PortStatusMessageBuilder();
@@ -517,233 +555,7 @@ public class ConnectionConductorImplTest {
         }
     }
 
-    //////// Start - Version Negotiation Test //////////////
-
-    /**
-     * Test of version negotiation Where switch version = 1.0
-     *
-     * @throws Exception
-     */
-    @Test
-    public void testVersionNegotiation10() throws Exception {
-        LOG.debug("testVersionNegotiation10");
-        Short version = (short) 0x01;
-        eventPlan.add(0, EventFactory.createConnectionReadyCallback(connectionConductor));
-        eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42, version, new HelloMessageBuilder()));
-        eventPlan.add(0, EventFactory.createDefaultWaitForAllEvent(
-                EventFactory.createDefaultWaitForRpcEvent(21, "helloReply"),
-                EventFactory.createDefaultWaitForRpcEvent(43, "helloReply")));
-        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(44, "getFeatures"));
-        eventPlan.add(0,
-                EventFactory.createDefaultRpcResponseEvent(44, EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
-
-        executeNow();
-        Assert.assertEquals(version, connectionConductor.getVersion());
-    }
-
-    /**
-     * Test of version negotiation Where switch version < 1.0
-     *
-     * @throws Exception
-     */
-    @Test
-    public void testVersionNegotiation00() throws Exception {
-        Short version = (short) 0x00;
-        eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L, version, new HelloMessageBuilder()));
-        executeNow();
-        Assert.assertNull(connectionConductor.getVersion());
-    }
-
-    /**
-     * Test of version negotiation Where 1.0 < switch version < 1.3
-     *
-     * @throws Exception
-     */
-    @Test
-    public void testVersionNegotiation11() throws Exception {
-        LOG.debug("testVersionNegotiation11");
-        connectionConductor.setBitmapNegotiationEnable(false);
-        Short version = (short) 0x02;
-        Short expVersion = (short) 0x01;
-        Assert.assertNull(connectionConductor.getVersion());
-
-        eventPlan.add(0, EventFactory.createConnectionReadyCallback(connectionConductor));
-        eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L, version, new HelloMessageBuilder()));
-        eventPlan.add(0, EventFactory.createDefaultWaitForAllEvent(
-                EventFactory.createDefaultWaitForRpcEvent(21, "helloReply"),
-                EventFactory.createDefaultWaitForRpcEvent(43, "helloReply")));
-        eventPlan.add(0, EventFactory.createDefaultNotificationEvent(44, expVersion, new HelloMessageBuilder()));
-        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(45, "getFeatures"));
-        eventPlan.add(0,
-                EventFactory.createDefaultRpcResponseEvent(45, EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
-        executeNow();
-        Assert.assertEquals(expVersion, connectionConductor.getVersion());
-
-    }
-
-    /**
-     * Test of version negotiation Where switch version = 1.3
-     *
-     * @throws Exception
-     */
-    @Test
-    public void testVersionNegotiation13() throws Exception {
-        LOG.debug("testVersionNegotiation13");
-        Short version = (short) 0x04;
-        eventPlan.add(0, EventFactory.createConnectionReadyCallback(connectionConductor));
-        eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L, version, new HelloMessageBuilder()));
-        eventPlan.add(0, EventFactory.createDefaultWaitForAllEvent(
-                EventFactory.createDefaultWaitForRpcEvent(21, "helloReply"),
-                EventFactory.createDefaultWaitForRpcEvent(43, "getFeatures")));
-        eventPlan.add(0,
-                EventFactory.createDefaultRpcResponseEvent(43, EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
-
-        executeNow();
-        Assert.assertEquals(version, connectionConductor.getVersion());
-    }
-
-    /**
-     * Test of version negotiation Where switch version >= 1.3
-     *
-     * @throws Exception
-     */
-    @Test
-    public void testVersionNegotiation15() throws Exception {
-        LOG.debug("testVersionNegotiation15");
-        connectionConductor.setBitmapNegotiationEnable(false);
-        Short version = (short) 0x06;
-        Short expVersion = (short) 0x04;
-        Assert.assertNull(connectionConductor.getVersion());
-
-        eventPlan.add(0, EventFactory.createConnectionReadyCallback(connectionConductor));
-        eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L, version, new HelloMessageBuilder()));
-        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(21, "helloReply"));
-        eventPlan.add(0, EventFactory.createDefaultNotificationEvent(44, expVersion, new HelloMessageBuilder()));
-        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(45, "getFeatures"));
-        eventPlan.add(0,
-                EventFactory.createDefaultRpcResponseEvent(45, EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
-        executeNow();
-        Assert.assertEquals(expVersion, connectionConductor.getVersion());
-    }
-
-    /**
-     * Test of version negotiation Where switch version > 1.3
-     *
-     * @throws Exception
-     */
-    @Test
-    public void testVersionNegotiation15_MultipleCall() throws Exception {
-        LOG.debug("testVersionNegotiation15_MultipleCall");
-        connectionConductor.setBitmapNegotiationEnable(false);
-        Short version = (short) 0x06;
-        Assert.assertNull(connectionConductor.getVersion());
-
-        eventPlan.add(0, EventFactory.createConnectionReadyCallback(connectionConductor));
-        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(21, "helloReply"));
-        eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42, version, new HelloMessageBuilder()));
-        eventPlan.add(0, EventFactory.createDefaultNotificationEvent(44, version, new HelloMessageBuilder()));
-        executeNow();
-        // TODO : check for connection termination
-        Assert.assertNull(connectionConductor.getVersion());
-    }
-
-    /**
-     * Test of version negotiation Where bitmap version {0x05,0x01}
-     *
-     * @throws Exception
-     */
-    @Test
-    public void testVersionNegotiation10InBitmap() throws Exception {
-        LOG.debug("testVersionNegotiation10InBitmap");
-        Short version = (short) 0x01;
-
-        eventPlan.add(0, EventFactory.createConnectionReadyCallback(connectionConductor));
-        eventPlan.add(
-                0,
-                EventFactory.createDefaultNotificationEvent(42L, (short) 0x05,
-                        getHelloBitmapMessage(Lists.newArrayList((short) 0x05, (short) 0x01))));
-        eventPlan.add(0, EventFactory.createDefaultWaitForAllEvent(
-                EventFactory.createDefaultWaitForRpcEvent(21, "helloReply"),
-                EventFactory.createDefaultWaitForRpcEvent(43, "getFeatures")));
-        eventPlan.add(0,
-                EventFactory.createDefaultRpcResponseEvent(43, EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
-
-        executeNow();
-        Assert.assertEquals(version, connectionConductor.getVersion());
-    }
-
-    /**
-     * Test of version negotiation Where bitmap version {0x05,0x04}
-     *
-     * @throws Exception
-     */
-    @Test
-    public void testVersionNegotiation13InBitmap() throws Exception {
-        LOG.debug("testVersionNegotiation13InBitmap");
-        Short version = (short) 0x04;
-
-        eventPlan.add(0, EventFactory.createConnectionReadyCallback(connectionConductor));
-        eventPlan.add(
-                0,
-                EventFactory.createDefaultNotificationEvent(42L, (short) 0x05,
-                        getHelloBitmapMessage(Lists.newArrayList((short) 0x05, (short) 0x04))));
-        eventPlan.add(0, EventFactory.createDefaultWaitForAllEvent(
-                EventFactory.createDefaultWaitForRpcEvent(21, "helloReply"),
-                EventFactory.createDefaultWaitForRpcEvent(43, "getFeatures")));
-        eventPlan.add(0,
-                EventFactory.createDefaultRpcResponseEvent(43, EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
-
-        executeNow();
-        Assert.assertEquals(version, connectionConductor.getVersion());
-    }
-
-    /**
-     * Test of version negotiation Where bitmap version {0x05,0x02}
-     *
-     * @throws Exception
-     */
-    @Test
-    public void testVersionNegotiationNoCommonVersionInBitmap() throws Exception {
-        eventPlan.add(
-                0,
-                EventFactory.createDefaultNotificationEvent(42L, (short) 0x05,
-                        getHelloBitmapMessage(Lists.newArrayList((short) 0x05, (short) 0x02))));
-        executeNow();
-        Assert.assertNull(connectionConductor.getVersion());
-    }
-
-    private HelloMessageBuilder getHelloBitmapMessage(List<Short> versionOrder) {
-        short highestVersion = versionOrder.get(0);
-        int elementsCount = highestVersion / Integer.SIZE;
-        ElementsBuilder elementsBuilder = new ElementsBuilder();
-
-        List<Elements> elementList = new ArrayList<>();
-        int orderIndex = versionOrder.size();
-        int value = versionOrder.get(--orderIndex);
-        for (int index = 0; index <= elementsCount; index++) {
-            List<Boolean> booleanList = new ArrayList<>();
-            for (int i = 0; i < Integer.SIZE; i++) {
-                if (value == ((index * Integer.SIZE) + i)) {
-                    booleanList.add(true);
-                    value = (orderIndex == 0) ? highestVersion : versionOrder.get(--orderIndex);
-                } else {
-                    booleanList.add(false);
-                }
-            }
-            elementsBuilder.setType(HelloElementType.forValue(1));
-            elementsBuilder.setVersionBitmap(booleanList);
-            elementList.add(elementsBuilder.build());
-        }
-
-        HelloMessageBuilder builder = new HelloMessageBuilder();
-        builder.setXid(10L);
-        builder.setVersion(highestVersion);
-        builder.setElements(elementList);
-        return builder;
-
-    }
-
-    private GetFeaturesOutputBuilder getFeatureResponseMsg() {
+    private static GetFeaturesOutputBuilder getFeatureResponseMsg() {
         GetFeaturesOutputBuilder getFeaturesOutputBuilder = new GetFeaturesOutputBuilder();
         getFeaturesOutputBuilder.setDatapathId(new BigInteger("102030405060"));
         getFeaturesOutputBuilder.setAuxiliaryId((short) 0);
@@ -830,6 +642,8 @@ public class ConnectionConductorImplTest {
      */
     @Test
     public void testOnExperimenterMessage() throws InterruptedException {
+        simulateV13PostHandshakeState(connectionConductor);
+        
         ExperimenterMessageBuilder builder1 = new ExperimenterMessageBuilder();
         builder1.setVersion((short) 4);
         builder1.setExperimenter(84L).setExpType(4L);
@@ -855,6 +669,8 @@ public class ConnectionConductorImplTest {
      */
     @Test
     public void testOnErrorMessage() throws InterruptedException {
+        simulateV13PostHandshakeState(connectionConductor);
+        
         ErrorMessageBuilder builder1 = new ErrorMessageBuilder();
         builder1.setVersion((short) 4);
         builder1.setCode(100);
@@ -910,10 +726,9 @@ public class ConnectionConductorImplTest {
      * 
      */
     @Test
-    public void testProcessPortStatusMsg()  {
-		SessionContextOFImpl ctx = new SessionContextOFImpl();
-		connectionConductor.setSessionContext(ctx);
-		
+    public void testProcessPortStatusMsg() {
+        simulateV13PostHandshakeState(connectionConductor);
+        
 		long portNumber = 90L;
 		long portNumberV10 = 91L;
 		PortStatusMessage msg;
@@ -954,5 +769,10 @@ public class ConnectionConductorImplTest {
 		connectionConductor.processPortStatusMsg(builder.build());
 		Assert.assertTrue(connectionConductor.getSessionContext().getPortBandwidth(portNumberV10));
 		Assert.assertEquals(connectionConductor.getSessionContext().getPhysicalPort(portNumberV10), msg);
+    }
+    
+    private void simulateV13PostHandshakeState(ConnectionConductorImpl conductor) {
+        GetFeaturesOutputBuilder featureOutput = getFeatureResponseMsg();
+        conductor.postHandshakeBasic(featureOutput.build(), OFConstants.OFP_VERSION_1_3);
     }
 }
