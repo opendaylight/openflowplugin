@@ -98,7 +98,7 @@ http://maven.apache.org/maven-v4_0_0.xsd">
             <phase>generate-resources</phase>
             <configuration>
              <outputDirectory>${project.build.directory}/generated-resources</outputDirectory>
-             <includeArtifacIds>distribution.opendaylight</includeArtifacIds>
+             <includeArtifactIds>distribution.opendaylight</includeArtifactIds>
              <includeGroupIds>org.opendaylight.controller</includeGroupIds>
              <excludeTransitive>true</excludeTransitive>
              <ignorePermissions>false</ignorePermissions>
