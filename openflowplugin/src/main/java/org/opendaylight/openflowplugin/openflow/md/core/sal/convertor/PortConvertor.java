@@ -75,10 +75,10 @@ public final class PortConvertor {
     private static PortFeatures getPortFeatures(
             org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures salPortFeatures) {
 
-        return new PortFeatures(salPortFeatures.is_100gbFd(), salPortFeatures.is_100mbFd(),
-                salPortFeatures.is_100mbHd(), salPortFeatures.is_10gbFd(), salPortFeatures.is_10mbFd(),
-                salPortFeatures.is_10mbHd(), salPortFeatures.is_1gbFd(), salPortFeatures.is_1gbHd(),
-                salPortFeatures.is_1tbFd(), salPortFeatures.is_40gbFd(), salPortFeatures.isAutoeng(),
+        return new PortFeatures(salPortFeatures.isHundredGbFd(), salPortFeatures.isHundredMbFd(),
+                salPortFeatures.isHundredMbHd(), salPortFeatures.isTenGbFd(), salPortFeatures.isTenMbFd(),
+                salPortFeatures.isTenMbHd(), salPortFeatures.isOneGbFd(), salPortFeatures.isOneGbHd(),
+                salPortFeatures.isOneTbFd(), salPortFeatures.isFortyGbFd(), salPortFeatures.isAutoeng(),
                 salPortFeatures.isCopper(), salPortFeatures.isFiber(), salPortFeatures.isOther(),
                 salPortFeatures.isPause(), salPortFeatures.isPauseAsym());
     }
