@@ -27,12 +27,12 @@ public class TicketProcessorFactory<IN, OUT> {
 
     protected static final Logger LOG = LoggerFactory
             .getLogger(TicketProcessorFactory.class);
-    
+
     protected VersionExtractor<IN> versionExtractor;
     protected RegisteredTypeExtractor<IN> registeredTypeExtractor;
     protected Map<TranslatorKey, Collection<IMDMessageTranslator<IN, List<OUT>>>> translatorMapping;
     protected MessageSpy<IN, OUT> spy;
-    
+
     /**
      * @param versionExtractor the versionExtractor to set
      */
@@ -69,7 +69,7 @@ public class TicketProcessorFactory<IN, OUT> {
      * @return runnable ticket processor
      */
     public Runnable createProcessor(final Ticket<IN, OUT> ticket) {
-        
+
         Runnable ticketProcessor = new Runnable() {
             @Override
             public void run() {
@@ -121,7 +121,10 @@ public class TicketProcessorFactory<IN, OUT> {
                         if (messageType.equals("PacketInMessage.class")) {
                             cookie = conductor.getAuxiliaryKey();
                         }
+                        long start = System.nanoTime();
                         List<OUT> translatorOutput = translator.translate(cookie, conductor.getSessionContext(), message);
+                        long end = System.nanoTime();
+                        LOG.debug("translator: {} elapsed time {} ns",translator,end-start);
                         if(translatorOutput != null && !translatorOutput.isEmpty()) {
                             result.addAll(translatorOutput);
                         }
