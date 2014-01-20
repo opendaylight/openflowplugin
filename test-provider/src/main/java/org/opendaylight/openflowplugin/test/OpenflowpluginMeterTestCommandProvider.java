@@ -135,12 +135,12 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
         MeterBandHeadersBuilder bandHeaders = new MeterBandHeadersBuilder();
         List<MeterBandHeader> bandHdr = new ArrayList<MeterBandHeader>();
         MeterBandHeaderBuilder bandHeader = new MeterBandHeaderBuilder();
-        bandHeader.setRate((long) 234);
-        bandHeader.setBurstSize((long) 444);
+        bandHeader.setBandRate((long) 234);
+        bandHeader.setBandBurstSize((long) 444);
         DscpRemarkBuilder dscpRemark = new DscpRemarkBuilder();
-        dscpRemark.setBurstSize((long) 5);
+        dscpRemark.setDscpRemarkBurstSize((long) 5);
         dscpRemark.setPercLevel((short) 1);
-        dscpRemark.setRate((long) 12);
+        dscpRemark.setDscpRemarkRate((long) 12);
         bandHeader.setBandType(dscpRemark.build());
         MeterBandTypesBuilder bandTypes = new MeterBandTypesBuilder();
         MeterBandType bandType = new MeterBandType(false, true, false);
