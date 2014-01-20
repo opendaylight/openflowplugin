@@ -42,8 +42,8 @@ public class MeterConvertorTest {
         MeterBandType bandFlag = new MeterBandType(true, false, false);
         meterBandTypesB.setFlags(bandFlag);// _ofpmbtDrop
         DropBuilder drop = new DropBuilder();
-        drop.setBurstSize(10L);
-        drop.setRate(20L);
+        drop.setDropBurstSize(10L);
+        drop.setDropRate(20L);
         Drop drp = drop.build();
         meterBandHeaderBuilder.setBandType(drp);
         meterBandHeaderBuilder.setMeterBandTypes(meterBandTypesB.build());
@@ -57,8 +57,8 @@ public class MeterConvertorTest {
 
         meterBandTypesB1.setFlags(bandFlag1);
         DscpRemarkBuilder dscp = new DscpRemarkBuilder();
-        dscp.setBurstSize(11L);
-        dscp.setRate(21L);
+        dscp.setDscpRemarkBurstSize(11L);
+        dscp.setDscpRemarkRate(21L);
         dscp.setPercLevel((short) 1);
         DscpRemark dscpRemark = dscp.build();
         meterBandHeaderBuilder1.setBandType(dscpRemark);
@@ -74,8 +74,8 @@ public class MeterConvertorTest {
         meterBandTypesB2.setFlags(bandFlag2);
 
         ExperimenterBuilder exp = new ExperimenterBuilder();
-        exp.setBurstSize(12L);
-        exp.setRate(22L);
+        exp.setExperimenterBurstSize(12L);
+        exp.setExperimenterRate(22L);
         exp.setExperimenter(23L);
         Experimenter experimenter = exp.build();
         meterBandHeaderBuilder2.setBandType(experimenter);
@@ -162,8 +162,8 @@ public class MeterConvertorTest {
         MeterBandType bandFlag = new MeterBandType(true, false, false);
         meterBandTypesB.setFlags(bandFlag);// _ofpmbtDrop
         DropBuilder drop = new DropBuilder();
-        drop.setBurstSize(10L);
-        drop.setRate(20L);
+        drop.setDropBurstSize(10L);
+        drop.setDropRate(20L);
         Drop drp = drop.build();
         meterBandHeaderBuilder.setBandType(drp);
         meterBandHeaderBuilder.setMeterBandTypes(meterBandTypesB.build());
@@ -177,8 +177,8 @@ public class MeterConvertorTest {
 
         meterBandTypesB1.setFlags(bandFlag1);
         DscpRemarkBuilder dscp = new DscpRemarkBuilder();
-        dscp.setBurstSize(11L);
-        dscp.setRate(21L);
+        dscp.setDscpRemarkBurstSize(11L);
+        dscp.setDscpRemarkRate(21L);
         dscp.setPercLevel((short) 1);
         DscpRemark dscpRemark = dscp.build();
         meterBandHeaderBuilder1.setBandType(dscpRemark);
@@ -194,8 +194,8 @@ public class MeterConvertorTest {
         meterBandTypesB2.setFlags(bandFlag2);
 
         ExperimenterBuilder exp = new ExperimenterBuilder();
-        exp.setBurstSize(12L);
-        exp.setRate(22L);
+        exp.setExperimenterBurstSize(12L);
+        exp.setExperimenterRate(22L);
         exp.setExperimenter(23L);
         Experimenter experimenter = exp.build();
         meterBandHeaderBuilder2.setBandType(experimenter);
@@ -319,8 +319,8 @@ public class MeterConvertorTest {
 
         meterBandTypesB1.setFlags(bandFlag1);
         DscpRemarkBuilder dscp = new DscpRemarkBuilder();
-        dscp.setBurstSize(11L);
-        dscp.setRate(21L);
+        dscp.setDscpRemarkBurstSize(11L);
+        dscp.setDscpRemarkRate(21L);
         dscp.setPercLevel((short) 1);
         DscpRemark dscpRemark = dscp.build();
         meterBandHeaderBuilder1.setBandType(dscpRemark);
@@ -335,8 +335,8 @@ public class MeterConvertorTest {
 
 
         ExperimenterBuilder exp = new ExperimenterBuilder();
-        exp.setBurstSize(12L);
-        exp.setRate(22L);
+        exp.setExperimenterBurstSize(12L);
+        exp.setExperimenterRate(22L);
         exp.setExperimenter(23L);
         Experimenter experimenter = exp.build();
         meterBandHeaderBuilder2.setBandType(experimenter);

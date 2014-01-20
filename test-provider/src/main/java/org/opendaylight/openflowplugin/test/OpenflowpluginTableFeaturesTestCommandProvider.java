@@ -57,7 +57,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeatureProperties;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeaturePropertiesKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.instructions.Instructions;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.match.MatchSetfieldBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.next.table.TablesBuilder ;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.next.table.miss.TablesMissBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.wildcards.WildcardSetfieldBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
@@ -300,7 +303,7 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
     	List<Short> nextTblMissIds = Arrays.asList( new Short[] { 23, 24, 25, 27, 28, 29 , 30 } );
    		NextTableMissBuilder nextTblMissBld = new NextTableMissBuilder() ;
    		
-   		nextTblMissBld.setTables(new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.next.table.miss.TablesBuilder().setTableIds(nextTblMissIds).build()) ;
+   		nextTblMissBld.setTablesMiss(new TablesMissBuilder().setTableIds(nextTblMissIds).build()) ;
    		tableFeatureProperty.setTableFeaturePropType(nextTblMissBld.build() ) ;
     	
     	TableFeaturePropertiesKey keyValue = new TableFeaturePropertiesKey(0) ;
@@ -424,7 +427,9 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
     	
     	setFieldMatch.add(setFieldMatchBld.build()) ;
     	MatchBuilder matchBld = new MatchBuilder() ;
-    	matchBld.setSetFieldMatch(setFieldMatch) ;
+    	MatchSetfieldBuilder matchSetfieldBld = new MatchSetfieldBuilder();
+    	matchSetfieldBld.setSetFieldMatch(setFieldMatch);
+    	matchBld.setMatchSetfield(matchSetfieldBld.build()) ;
     	
     	tableFeatureProperty.setTableFeaturePropType(matchBld.build()) ;
     	TableFeaturePropertiesKey keyValue = new TableFeaturePropertiesKey(0) ;
@@ -457,7 +462,11 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
     	setFieldMatch.add(setFieldMatchBld3.build()) ;
     	
     	WriteSetfieldBuilder writeSetfieldBld = new WriteSetfieldBuilder() ;
-     	writeSetfieldBld.setSetFieldMatch(setFieldMatch) ;
+    	org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.write.setfield.WriteSetfieldBuilder writeSetfieldBuilder = 
+    	        new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.write.setfield.WriteSetfieldBuilder();
+    	writeSetfieldBuilder.setSetFieldMatch(setFieldMatch);
+     	writeSetfieldBld.setWriteSetfield(writeSetfieldBuilder.build());
+     	
     	
     	tableFeatureProperty.setTableFeaturePropType(writeSetfieldBld.build()) ;
     	TableFeaturePropertiesKey keyValue = new TableFeaturePropertiesKey(0) ;
@@ -489,7 +498,10 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
     	setFieldMatch.add(setFieldMatchBld3.build()) ;
     	
     	WriteSetfieldMissBuilder writeSetfieldBld = new WriteSetfieldMissBuilder() ;
-    	writeSetfieldBld.setSetFieldMatch(setFieldMatch) ;
+    	org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.write.setfield.miss.WriteSetfieldMissBuilder writeSetfieldMissBuilder = 
+    	        new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.write.setfield.miss.WriteSetfieldMissBuilder();
+    	writeSetfieldMissBuilder.setSetFieldMatch(setFieldMatch);
+    	writeSetfieldBld.setWriteSetfieldMiss(writeSetfieldMissBuilder.build()) ;
     	
     	tableFeatureProperty.setTableFeaturePropType(writeSetfieldBld.build()) ;
     	TableFeaturePropertiesKey keyValue = new TableFeaturePropertiesKey(0) ;
@@ -520,8 +532,11 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
     	setFieldMatch.add(setFieldMatchBld2.build()) ;
     	setFieldMatch.add(setFieldMatchBld3.build()) ;
     	
-    	ApplySetfieldBuilder applySetfieldBld = new ApplySetfieldBuilder() ;
-    	applySetfieldBld.setSetFieldMatch(setFieldMatch) ;
+    	ApplySetfieldBuilder applySetfieldBld = new ApplySetfieldBuilder();
+    	org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.apply.setfield.ApplySetfieldBuilder  applySetfieldBuilder = 
+    	           new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.apply.setfield.ApplySetfieldBuilder();
+    	applySetfieldBuilder.setSetFieldMatch(setFieldMatch);
+    	applySetfieldBld.setApplySetfield(applySetfieldBuilder.build()) ;
     	
     	tableFeatureProperty.setTableFeaturePropType(applySetfieldBld.build()) ;
     	TableFeaturePropertiesKey keyValue = new TableFeaturePropertiesKey(0) ;
@@ -553,7 +568,10 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
     	setFieldMatch.add(setFieldMatchBld3.build()) ;
     	
     	ApplySetfieldMissBuilder applySetfieldMissBld = new ApplySetfieldMissBuilder() ;
-    	applySetfieldMissBld.setSetFieldMatch(setFieldMatch) ;
+    	org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.apply.setfield.miss.ApplySetfieldMissBuilder applySetfieldMissBuilder = 
+    	        new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.apply.setfield.miss.ApplySetfieldMissBuilder();
+    	applySetfieldMissBuilder.setSetFieldMatch(setFieldMatch);
+    	applySetfieldMissBld.setApplySetfieldMiss(applySetfieldMissBuilder.build()) ;
     	
     	tableFeatureProperty.setTableFeaturePropType(applySetfieldMissBld.build()) ;
     	TableFeaturePropertiesKey keyValue = new TableFeaturePropertiesKey(0) ;
@@ -581,7 +599,10 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
     	setFieldMatch.add(setFieldMatchBld2.build()) ;
     	
     	WildcardsBuilder wildCardsBld = new WildcardsBuilder() ;
-    	wildCardsBld.setSetFieldMatch(setFieldMatch) ;
+    	WildcardSetfieldBuilder wildcardsBuilder = 
+    	        new WildcardSetfieldBuilder();
+    	wildcardsBuilder.setSetFieldMatch(setFieldMatch);
+    	wildCardsBld.setWildcardSetfield(wildcardsBuilder.build()) ;
     	
     	tableFeatureProperty.setTableFeaturePropType(wildCardsBld.build()) ;
     	TableFeaturePropertiesKey keyValue = new TableFeaturePropertiesKey(0) ;
