@@ -111,8 +111,8 @@ public final class MeterConvertor {
                         MeterBandDropBuilder meterBandDropBuilder = new MeterBandDropBuilder();
                         meterBandDropBuilder.setType(MeterBandType.OFPMBTDROP);
                         Drop drop = (Drop) meterBandHeader.getBandType();
-                        meterBandDropBuilder.setBurstSize(drop.getRate());
-                        meterBandDropBuilder.setRate(drop.getBurstSize());
+                        meterBandDropBuilder.setBurstSize(drop.getDropRate());
+                        meterBandDropBuilder.setRate(drop.getDropBurstSize());
                         dropCaseBuilder.setMeterBandDrop(meterBandDropBuilder.build());
                         meterBandItem = dropCaseBuilder.build();
                         bandsB = new BandsBuilder();
@@ -128,8 +128,8 @@ public final class MeterConvertor {
                         MeterBandDscpRemarkBuilder meterBandDscpRemarkBuilder = new MeterBandDscpRemarkBuilder();
                         meterBandDscpRemarkBuilder.setType(MeterBandType.OFPMBTDSCPREMARK);
                         DscpRemark dscpRemark = (DscpRemark) meterBandHeader.getBandType();
-                        meterBandDscpRemarkBuilder.setBurstSize(dscpRemark.getBurstSize());
-                        meterBandDscpRemarkBuilder.setRate(dscpRemark.getRate());
+                        meterBandDscpRemarkBuilder.setBurstSize(dscpRemark.getDscpRemarkBurstSize());
+                        meterBandDscpRemarkBuilder.setRate(dscpRemark.getDscpRemarkRate());
                         meterBandDscpRemarkBuilder.setPrecLevel(dscpRemark.getPercLevel());
                         dscpCaseBuilder.setMeterBandDscpRemark(meterBandDscpRemarkBuilder.build());
                         meterBandItem = dscpCaseBuilder.build();
@@ -146,8 +146,8 @@ public final class MeterConvertor {
                         MeterBandExperimenterBuilder meterBandExperimenterBuilder = new MeterBandExperimenterBuilder();
                         meterBandExperimenterBuilder.setType(MeterBandType.OFPMBTEXPERIMENTER);
                         Experimenter experimenter = (Experimenter) meterBandHeader.getBandType();
-                        meterBandExperimenterBuilder.setBurstSize(experimenter.getBurstSize());
-                        meterBandExperimenterBuilder.setRate(experimenter.getRate());
+                        meterBandExperimenterBuilder.setBurstSize(experimenter.getExperimenterBurstSize());
+                        meterBandExperimenterBuilder.setRate(experimenter.getExperimenterRate());
                         meterBandExperimenterBuilder.setExperimenter(experimenter.getExperimenter());
                         experimenterCaseBuilder.setMeterBandExperimenter(meterBandExperimenterBuilder.build());
                         meterBandItem = experimenterCaseBuilder.build();

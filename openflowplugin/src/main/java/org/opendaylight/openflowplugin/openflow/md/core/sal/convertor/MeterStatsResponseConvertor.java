@@ -135,12 +135,12 @@ public class MeterStatsResponseConvertor {
                     MeterBandDropCase dropCaseBand = (MeterBandDropCase)band.getMeterBand();
                     MeterBandDrop dropBand = dropCaseBand.getMeterBandDrop();
                     DropBuilder dropBuilder = new DropBuilder();
-                    dropBuilder.setBurstSize(dropBand.getBurstSize());
-                    dropBuilder.setRate(dropBand.getRate());
+                    dropBuilder.setDropBurstSize(dropBand.getBurstSize());
+                    dropBuilder.setDropRate(dropBand.getRate());
                     meterBandHeaderBuilder.setBandType(dropBuilder.build());
                     
-                    meterBandHeaderBuilder.setBurstSize(dropBand.getBurstSize());
-                    meterBandHeaderBuilder.setRate(dropBand.getRate());
+                    meterBandHeaderBuilder.setBandBurstSize(dropBand.getBurstSize());
+                    meterBandHeaderBuilder.setBandRate(dropBand.getRate());
                     BandId bandId = new BandId((long)bandKey);
                     meterBandHeaderBuilder.setKey(new MeterBandHeaderKey(bandId));
                     meterBandHeaderBuilder.setBandId(bandId);
@@ -154,12 +154,12 @@ public class MeterStatsResponseConvertor {
                     MeterBandDscpRemarkCase dscpRemarkCaseBand = (MeterBandDscpRemarkCase)band.getMeterBand();
                     MeterBandDscpRemark dscpRemarkBand = dscpRemarkCaseBand.getMeterBandDscpRemark();
                     DscpRemarkBuilder dscpRemarkBuilder = new DscpRemarkBuilder();
-                    dscpRemarkBuilder.setBurstSize(dscpRemarkBand.getBurstSize());
-                    dscpRemarkBuilder.setRate(dscpRemarkBand.getRate());
+                    dscpRemarkBuilder.setDscpRemarkBurstSize(dscpRemarkBand.getBurstSize());
+                    dscpRemarkBuilder.setDscpRemarkRate(dscpRemarkBand.getRate());
                     meterBandHeaderBuilder.setBandType(dscpRemarkBuilder.build());
                     
-                    meterBandHeaderBuilder.setBurstSize(dscpRemarkBand.getBurstSize());
-                    meterBandHeaderBuilder.setRate(dscpRemarkBand.getRate());
+                    meterBandHeaderBuilder.setBandBurstSize(dscpRemarkBand.getBurstSize());
+                    meterBandHeaderBuilder.setBandRate(dscpRemarkBand.getRate());
                     BandId bandId = new BandId((long)bandKey);
                     meterBandHeaderBuilder.setKey(new MeterBandHeaderKey(bandId));
                     meterBandHeaderBuilder.setBandId(bandId);
@@ -174,12 +174,12 @@ public class MeterStatsResponseConvertor {
                     MeterBandExperimenterCase experimenterCaseBand = (MeterBandExperimenterCase)band.getMeterBand();
                     MeterBandExperimenter experimenterBand = experimenterCaseBand.getMeterBandExperimenter();
                     ExperimenterBuilder experimenterBuilder = new ExperimenterBuilder();
-                    experimenterBuilder.setBurstSize(experimenterBand.getBurstSize());
-                    experimenterBuilder.setRate(experimenterBand.getRate());
+                    experimenterBuilder.setExperimenterBurstSize(experimenterBand.getBurstSize());
+                    experimenterBuilder.setExperimenterRate(experimenterBand.getRate());
                     meterBandHeaderBuilder.setBandType(experimenterBuilder.build());
                     
-                    meterBandHeaderBuilder.setBurstSize(experimenterBand.getBurstSize());
-                    meterBandHeaderBuilder.setRate(experimenterBand.getRate());
+                    meterBandHeaderBuilder.setBandBurstSize(experimenterBand.getBurstSize());
+                    meterBandHeaderBuilder.setBandRate(experimenterBand.getRate());
                     BandId bandId = new BandId((long)bandKey);
                     meterBandHeaderBuilder.setKey(new MeterBandHeaderKey(bandId));
                     meterBandHeaderBuilder.setBandId(bandId);
