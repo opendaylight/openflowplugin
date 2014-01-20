@@ -1,3 +1,5 @@
 dec-nw-ttl;dec_ttl
 dec-mpls-ttl;dec_mpls_ttl
 drop-action;drop
+output-action;output
+push-vlan-action;push_vlan

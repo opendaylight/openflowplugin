@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import os
 import sys
 import time
@@ -133,7 +135,9 @@ def compare_elements(expected_match, actual_match, kw, comparators, default):
         comparator = comparators.get(child.nodeName, default)
         comparator(child, actual_match, kw)
 
-
+#
+# A comparator for simple strings. Used when no special handling is required.
+#
 def fallback_comparator(xml_element, switch_flow, kw):
     # print 'fallback_comparator-xml_element', xml_element.toxml()
     # print 'fallback_comparator: switch_flow', switch_flow
@@ -149,11 +153,19 @@ def fallback_comparator(xml_element, switch_flow, kw):
 
     assert expected == actual, 'xml part: %s && switch %s=%s' % data
 
-
+#
+# The comparatorA parametrized comparator for simple strings - uses  the 
+# top level keyword set.
+#
 def default_comparator(xml_element, switch_flow):
     fallback_comparator(xml_element, switch_flow, keywords)
 
 
+#
+# Comparator for integers in different formats; in xml, integers are always
+# decimal, but OVS displays number either as decimal or as hexadecimal.
+# This is a generic comparator that can use either base.
+#
 def integer_comparator(expected, actual, kw, base):
     expected_value = int(expected.childNodes[0].data)
 
@@ -164,11 +176,16 @@ def integer_comparator(expected, actual, kw, base):
     assert expected_value == actual_value, \
         'xml value: %s && actual value %s=%s' % data
 
-
+#
+# Compare cookie values. Cookies are displays in hex in OVS
+#
 def cookie_comparator(cookie, switch_flow):
     integer_comparator(cookie, switch_flow, keywords, 16)
 
 
+#
+# Compare ethernet addresses.
+#
 def ethernet_address_comparator(child, actual_match, kw):
     expected_address = child.getElementsByTagName("address")[0].childNodes[0].data
     actual_address = actual_match[kw.get(child.nodeName)]
@@ -178,7 +195,10 @@ def ethernet_address_comparator(child, actual_match, kw):
     assert lower(expected_address) == lower(actual_address), \
         'xml address: %s && actual address %s=%s' % data
 
-
+#
+# Generic function to compar value-mask pairs that occur quite often in XML
+# TODO: finish mask parsing and processing.
+#
 def masked_value_hex_comparator(child, actual_match, kw, vname, kname):
     print 'masked_value_hex_comparator', child.toxml(), actual_match, \
         vname, kname, child.nodeName
@@ -240,7 +260,6 @@ def proto_match_comparator(expected_match, actual_match, kw):
 #    assert emd == amd, 'metadata: expected %s && actual %s=%s' % data
 
 
-
 def ethernet_match_comparator(expected_match, actual_match, kw):
     def compare_etype(child, actual_match, kw):
         expected_etype = \
@@ -291,7 +310,10 @@ def ethernet_match_comparator(expected_match, actual_match, kw):
     compare_elements(expected_match, actual_match, kw, \
                      ETH_COMPARATORS, fallback_comparator)
             
-
+#
+# Compare IP addresses; OVS applies the address mask, so we need to compare 
+# subnet as opposed to strings.
+#
 def ip_subnet_comparator(expected_match, actual_match, kw):
     # print 'ip_comparator:', expected_match.toxml(), actual_match
     # print 'ip_comparator-actual_match:', actual_match
@@ -364,6 +386,9 @@ def ip_match_comparator(expected_match, actual_match, kw):
                      IP_MATCH_COMPARATORS, fallback_comparator)
 
 
+#
+# The main function to compare flow matches
+#
 def match_comparator(expected_match, switch_flow):
 
     def compare_metadata(expected, actual, kw):
@@ -386,6 +411,7 @@ def match_comparator(expected_match, switch_flow):
                                     'ipv6-exthdr', 'ipv6-exthdr-mask')
 
 
+    # The list of special cases
     MATCH_COMPARATORS = {
         'arp-source-hardware-address': ethernet_address_comparator,
         'arp-target-hardware-address': ethernet_address_comparator,
@@ -415,22 +441,84 @@ def match_comparator(expected_match, switch_flow):
                      MATCH_COMPARATORS, fallback_comparator)
 
 
+#
+# The main function to compare actions
+#
 def actions_comparator(actions, switch_flow):
-    # print 'actions_comparator:', actions, switch_flow
+    
+    def process_action(name, node):
+
+        def process_vlan_output(output, node):
+            print str(output)
+            print str(node)
+            """
+               take push_vlan(output), extract the ethernet type in hex
+               join them with a ':' and retrun
+            """
+            ether_type = node.getElementsByTagName("ethernet-type")[0].childNodes[0].data
+            action = output + ":" + hex(int(ether_type))
+            print "ACTION: ", action
+            return action
+        
+        def process_output_port(output, node):
+
+            def hasNumbers(inputString):
+                return any(char.isdigit() for char in inputString)
+
+
+            output_port = node.getElementsByTagName("output-node-connector")[0].childNodes[0].data
+            
+            if hasNumbers(output_port) is True:
+                # TODO: proper parsing of the input port. For now we just 
+                # assume that the port_number string is a number.
+                action = "%s:%s" % (output, output_port)
+                print 'name: ', action
+
+            elif output_port == 'INPORT':
+                action = 'IN_PORT'
+
+            elif output_port == 'CONTROLLER':
+                max_length = node.getElementsByTagName("max-length")[0].childNodes[0].data
+                action = "%s:%s" % (output_port, max_length)
+
+            else:
+                action = output_port
+
+            return action
+
+
+        def passthrough(name, node):
+            return name
+
+
+        NAME_PROCESSORS = {
+            'output': process_output_port,
+            'push_vlan': process_vlan_output
+        }
+
+        return NAME_PROCESSORS.get(name, passthrough)(name, node) 
+
 
     actual_actions = switch_flow['actions'].split(",")
-    # print 'actions_comparator:', actual_actions
+
+    print 'actions_comparator:', actions.toxml(), actual_actions
 
     for action in actions.childNodes:
         if action.nodeType is actions.TEXT_NODE:
             continue
 
-        action_name = action.childNodes[3].nodeName
-        expected_action = action_keywords.get(action_name)
+        name = action.childNodes[3].nodeName
+        
+        print 'actions_comparator:', name
+        
+        expected_action = action_keywords.get(name)
+        print 'actions_comparator expected_action:', expected_action
+        expected_action = process_action(expected_action, \
+                                         action.childNodes[3])
+        print 'actions_comparator processed expected_action:', expected_action
 
         data = action.toxml(), expected_action
-        # print 'actions_comparator:', data
-
+        
         assert expected_action in actual_actions, \
             'xml part:\n%s\n expected action: %s' % data
 
@@ -542,17 +630,19 @@ def generate_tests_from_xmls(path, xmls=None):
             data = (self.host, self.port, ids['table_id'], ids['id'])
             url = 'http://%s:%d/restconf/config/opendaylight-inventory:nodes' \
                   '/node/openflow:1/table/%s/flow/%s' % data
+            print "URL: ", url
             headers = {
                 'Content-Type': 'application/xml',
                 'Accept': 'application/xml',
             }
             log.info('sending request to url: {}'.format(url))
             rsp = requests.put(url, auth=('admin', 'admin'), data=xml_string,
-                               headers=headers)                               
+                               headers=headers)
             log.info('received status code: {}'.format(rsp.status_code))
             log.debug('received content: {}'.format(rsp.text))
             assert rsp.status_code == 204 or rsp.status_code == 200, 'Status' \
                     ' code returned %d' % rsp.status_code
+            print "PUT SUCCESS!!"
 
             try:        
                 # check request content against restconf's datastore
@@ -565,11 +655,13 @@ def generate_tests_from_xmls(path, xmls=None):
                 res = xmltodict.parse(ET.tostring(ET.fromstring(response.text)))
                 assert req == res, 'uploaded and stored xml, are not the same\n' \
                     'uploaded: %s\nstored:%s' % (req, res)
+                print "GET SUCCESS!!"
 
                 # collect flow table state on switch
                 switch_flows = get_flows(self.net)
                 assert len(switch_flows) > 0
-
+                print str(switch_flows)
+                
                 # compare requested object and flow table state
                 for important_element in check_elements(xml_string, keywords):
                     # log.info('important element: {}'.format(important_element.nodeName))
