@@ -1,10 +1,3 @@
-/**
- * Copyright IBM Corporation, 2013.  All rights reserved.
- *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 which accompanies this distribution,
- * and is available at http://www.eclipse.org/legal/epl-v10.html
- */
 package org.opendaylight.openflowplugin.test;
 
 import java.util.Iterator;
@@ -24,7 +17,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.AggregateFlowStatisticsData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowStatisticsData;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetFlowStatisticsFromFlowTableInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetFlowStatisticsFromFlowTableInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.OpendaylightFlowStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.FlowTableStatisticsData;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.NodeGroupDescStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.NodeGroupStatistics;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.group.statistics.GroupStatistics;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
@@ -34,6 +31,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.No
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.NodeMeterConfigStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.NodeMeterStatistics;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.FlowCapableNodeConnectorStatisticsData;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -43,6 +41,7 @@ public class OpenflowpluginStatsTestCommandProvider implements CommandProvider {
 
     private DataProviderService dataProviderService;
     private final BundleContext ctx;
+    private OpendaylightFlowStatisticsService statFlowService ;
 
     public OpenflowpluginStatsTestCommandProvider(BundleContext ctx) {
         this.ctx = ctx;
@@ -52,7 +51,7 @@ public class OpenflowpluginStatsTestCommandProvider implements CommandProvider {
     public void onSessionInitiated(ProviderContext session) {
         dataProviderService = session.getSALService(DataProviderService.class);
         ctx.registerService(CommandProvider.class.getName(), this, null);
-        
+      
     }
 
     public void _portStats(CommandInterpreter ci) {
@@ -151,6 +150,8 @@ public class OpenflowpluginStatsTestCommandProvider implements CommandProvider {
                         if(null != data)
                         {
                             flowStatsCount++;
+                            ci.println("--------------------------------------------");
+                            ci.print(data);
                         }
                     }                    
                 }
@@ -169,6 +170,7 @@ public class OpenflowpluginStatsTestCommandProvider implements CommandProvider {
        }
 
    
+ 
 
     public void _tableStats(CommandInterpreter ci) {
         int tableCount = 0;
@@ -208,6 +210,7 @@ public class OpenflowpluginStatsTestCommandProvider implements CommandProvider {
     public void _groupStats(CommandInterpreter ci) {
         int groupCount = 0;
         int groupStatsCount = 0;
+        NodeGroupStatistics data = null;
             List<Node> nodes = getNodes();
             for (Iterator<Node> iterator = nodes.iterator(); iterator.hasNext();) {
                 NodeKey nodeKey =  iterator.next().getKey();
@@ -220,7 +223,7 @@ public class OpenflowpluginStatsTestCommandProvider implements CommandProvider {
                     GroupKey groupKey = iterator2.next().getKey();
                     InstanceIdentifier<Group> groupRef = InstanceIdentifier.builder(Nodes.class).child(Node.class, nodeKey).augmentation(FlowCapableNode.class).child(Group.class, groupKey).toInstance();
                     Group group = (Group)dataProviderService.readOperationalData(groupRef);
-                    NodeGroupStatistics data = group.getAugmentation(NodeGroupStatistics.class);
+                    data = group.getAugmentation(NodeGroupStatistics.class);
                     if(null != data)
                     {
                         groupStatsCount++;
@@ -231,6 +234,7 @@ public class OpenflowpluginStatsTestCommandProvider implements CommandProvider {
             if(groupCount == groupStatsCount)
             {
                 ci.println("---------------------groupStats - Success-------------------------------");
+                ci.print(data);
             }
             else
             {
@@ -239,9 +243,46 @@ public class OpenflowpluginStatsTestCommandProvider implements CommandProvider {
             }                        
        }
     
+    public void _groupDescStats(CommandInterpreter ci) {
+        int groupCount = 0;
+        int groupDescStatsCount = 0;
+        NodeGroupDescStats data = null;
+            List<Node> nodes = getNodes();
+            for (Iterator<Node> iterator = nodes.iterator(); iterator.hasNext();) {
+                NodeKey nodeKey =  iterator.next().getKey();
+                InstanceIdentifier<FlowCapableNode> nodeRef = InstanceIdentifier.builder(Nodes.class).child(Node.class, nodeKey).augmentation(FlowCapableNode.class).toInstance();
+                FlowCapableNode node = (FlowCapableNode)dataProviderService.readOperationalData(nodeRef);
+
+               List<Group> groups =  node.getGroup();
+                for (Iterator<Group> iterator2 = groups.iterator(); iterator2.hasNext();) {
+                    groupCount++;
+                    GroupKey groupKey = iterator2.next().getKey();
+                    InstanceIdentifier<Group> groupRef = InstanceIdentifier.builder(Nodes.class).child(Node.class, nodeKey).augmentation(FlowCapableNode.class).child(Group.class, groupKey).toInstance();
+                    Group group = (Group)dataProviderService.readOperationalData(groupRef);
+                    data = group.getAugmentation(NodeGroupDescStats.class);
+                    if(null != data)
+                    {
+                        groupDescStatsCount++;
+                    }
+                }
+            }
+            
+            if(groupCount == groupDescStatsCount)
+            {
+                ci.println("---------------------groupDescStats - Success-------------------------------");
+                ci.println(data);
+            }
+            else
+            {
+                ci.println("------------------------------groupDescStats - Failed--------------------------");
+                ci.println("System fetchs stats data in 50 seconds interval, so pls wait and try again.");
+            }                        
+       }
+    
     public void _meterStats(CommandInterpreter ci) {
         int meterCount = 0;
         int meterStatsCount = 0;
+        NodeMeterStatistics data = null;
             List<Node> nodes = getNodes();
             for (Iterator<Node> iterator = nodes.iterator(); iterator.hasNext();) {
                 NodeKey nodeKey =  iterator.next().getKey();
@@ -254,7 +295,7 @@ public class OpenflowpluginStatsTestCommandProvider implements CommandProvider {
                     MeterKey meterKey = iterator2.next().getKey();
                     InstanceIdentifier<Meter> meterRef = InstanceIdentifier.builder(Nodes.class).child(Node.class, nodeKey).augmentation(FlowCapableNode.class).child(Meter.class, meterKey).toInstance();
                     Meter meter = (Meter)dataProviderService.readOperationalData(meterRef);
-                    NodeMeterStatistics data = meter.getAugmentation(NodeMeterStatistics.class);
+                    data = meter.getAugmentation(NodeMeterStatistics.class);
                     if(null != data)
                     {
                         meterStatsCount++;
@@ -265,6 +306,7 @@ public class OpenflowpluginStatsTestCommandProvider implements CommandProvider {
             if(meterCount == meterStatsCount)
             {
                 ci.println("---------------------------meterStats - Success-------------------------------------");
+                ci.println(data);
             }
             else
             {
@@ -272,7 +314,43 @@ public class OpenflowpluginStatsTestCommandProvider implements CommandProvider {
                 ci.println("System fetchs stats data in 50 seconds interval, so pls wait and try again.");
             }                        
        }
-    
+ 
+    public void _meterConfigStats(CommandInterpreter ci) {
+        int meterCount = 0;
+        int meterConfigStatsCount = 0;
+        NodeMeterConfigStats data = null;
+            List<Node> nodes = getNodes();
+            for (Iterator<Node> iterator = nodes.iterator(); iterator.hasNext();) {
+                NodeKey nodeKey =  iterator.next().getKey();
+                InstanceIdentifier<FlowCapableNode> nodeRef = InstanceIdentifier.builder(Nodes.class).child(Node.class, nodeKey).augmentation(FlowCapableNode.class).toInstance();
+                FlowCapableNode node = (FlowCapableNode)dataProviderService.readOperationalData(nodeRef);
+
+               List<Meter> meters =  node.getMeter();
+                for (Iterator<Meter> iterator2 = meters.iterator(); iterator2.hasNext();) {
+                    meterCount++;
+                    MeterKey meterKey = iterator2.next().getKey();
+                    InstanceIdentifier<Meter> meterRef = InstanceIdentifier.builder(Nodes.class).child(Node.class, nodeKey).augmentation(FlowCapableNode.class).child(Meter.class, meterKey).toInstance();
+                    Meter meter = (Meter)dataProviderService.readOperationalData(meterRef);
+                    data = meter.getAugmentation(NodeMeterConfigStats.class);
+                    if(null != data)
+                    {
+                        meterConfigStatsCount++;
+                    }
+                }
+            }
+            
+            if(meterCount == meterConfigStatsCount)
+            {
+                ci.println("---------------------------meterConfigStats - Success-------------------------------------");
+                ci.print(data);
+            }
+            else
+            {
+                ci.println("----------------------------meterConfigStats - Failed-------------------------------------");
+                ci.println("System fetchs stats data in 50 seconds interval, so pls wait and try again.");
+            }                        
+       }
+ 
     
     public void _aggregateStats(CommandInterpreter ci) {
         int aggregateFlowCount = 0;
