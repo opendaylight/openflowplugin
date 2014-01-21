@@ -1,0 +1,11 @@
+n_packets;n_packets
+n_bytes;n_bytes
+arp;arp
+duration;duration
+barrier;barrier
+strict;strict
+flow-name;flow-name
+flags;flags
+id;id
+cookie_mask;cookie_mask
+dl_type;dl_type
