@@ -1361,20 +1361,31 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         MultipartRequestFlowCaseBuilder  multipartRequestFlowCaseBuilder = new MultipartRequestFlowCaseBuilder();
         MultipartRequestFlowBuilder mprFlowRequestBuilder = new MultipartRequestFlowBuilder();
         mprFlowRequestBuilder.setTableId(arg0.getTableId());
-        mprFlowRequestBuilder.setOutPort(arg0.getOutPort().longValue());
-        mprFlowRequestBuilder.setOutGroup(OFConstants.OFPG_ANY);
-        mprFlowRequestBuilder.setCookie(OFConstants.DEFAULT_COOKIE);
-        mprFlowRequestBuilder.setCookieMask(OFConstants.DEFAULT_COOKIE_MASK);
+         
+	if(arg0.getOutPort() != null)
+        	mprFlowRequestBuilder.setOutPort(arg0.getOutPort().longValue());
+        else 
+        	mprFlowRequestBuilder.setOutPort(OFConstants.OFPP_ANY);
+        
+        if(arg0.getOutGroup() != null)
+        	 mprFlowRequestBuilder.setOutGroup(arg0.getOutGroup());
+        else
+        	mprFlowRequestBuilder.setOutGroup(OFConstants.OFPG_ANY);
+        
+        if(arg0.getCookie() != null)
+        	mprFlowRequestBuilder.setCookie(arg0.getCookie());
+        else
+        	mprFlowRequestBuilder.setCookie(OFConstants.DEFAULT_COOKIE);
+        
+        if(arg0.getCookieMask() != null)
+        	 mprFlowRequestBuilder.setCookieMask(arg0.getCookieMask());
+        else
+        	mprFlowRequestBuilder.setCookieMask(OFConstants.DEFAULT_COOKIE_MASK);
+
 
         // convert and inject match
         MatchReactor.getInstance().convert(arg0.getMatch(), version, mprFlowRequestBuilder,this.getSessionContext().getFeatures().getDatapathId());
-        //TODO: repeating code
-        if(version == OFConstants.OFP_VERSION_1_3){
-            mprFlowRequestBuilder.setCookie(arg0.getCookie());
-            mprFlowRequestBuilder.setCookieMask(arg0.getCookieMask());
-            mprFlowRequestBuilder.setOutGroup(arg0.getOutGroup());
-        }
-
+       
         //Set request body to main multipart request
         multipartRequestFlowCaseBuilder.setMultipartRequestFlow(mprFlowRequestBuilder.build());
         mprInput.setMultipartRequestBody(multipartRequestFlowCaseBuilder.build());
