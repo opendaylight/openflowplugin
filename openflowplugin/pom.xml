@@ -33,7 +33,7 @@
             </plugin>
         </plugins>
     </build>
-    <dependencies>
+    <dependencies>	
         <dependency>
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>sal</artifactId>
@@ -70,7 +70,11 @@
             <groupId>org.opendaylight.openflowjava</groupId>
             <artifactId>openflow-protocol-spi</artifactId>
         </dependency>
-
+<dependency>
+	<groupId>org.jboss.netty</groupId>
+	<artifactId>netty</artifactId>
+	<version>3.2.0.Final</version>
+</dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
@@ -96,7 +100,6 @@
             <artifactId>mockito-all</artifactId>
             <scope>test</scope>
         </dependency>
-        
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
