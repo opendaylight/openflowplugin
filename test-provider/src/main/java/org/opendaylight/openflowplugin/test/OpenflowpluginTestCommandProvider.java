@@ -695,6 +695,11 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
             flow.setMatch(createLLDPMatch().build());
             flow.setInstructions(createSentToControllerInstructions().build());
             break;
+        case "f82":
+            id += 82;
+            flow.setMatch(createToSMatch().build());
+            flow.setInstructions(createOutputInstructions().build());
+            break;
         default:
             LOG.warn("flow type not understood: {}", flowType);
         }
@@ -705,7 +710,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         }
         // flow.setBufferId(new Long(12));
         BigInteger value = new BigInteger("10", 10);
-        BigInteger outputPort = new BigInteger("65535", 10);
+        // BigInteger outputPort = new BigInteger("65535", 10);
         flow.setCookie(value);
         flow.setCookieMask(value);
         flow.setHardTimeout(0);
@@ -716,10 +721,13 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         flow.setFlags(new FlowModFlags(false, false, false, false, true));
         flow.setId(new FlowId("12"));
         flow.setTableId(getTableId(tableId));
-        flow.setOutGroup(new Long(2));
+        // commenting setOutGroup and setOutPort, as by default
+        // OFPG_ANY is send
+        // enable setOutGroup and setOutPort to enable output filtering
+        // flow.setOutGroup(new Long(2));
         // set outport to OFPP_NONE (65535) to disable remove restriction for
         // flow
-        flow.setOutPort(outputPort);
+        // flow.setOutPort(outputPort);
 
         flow.setKey(key);
         flow.setPriority(2);
@@ -905,6 +913,39 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         // Wrap our Apply Action in an Instruction
         InstructionBuilder ib = new InstructionBuilder();
         ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
+
+        // Put our Instruction in a list of Instructions
+        InstructionsBuilder isb = new InstructionsBuilder();
+        List<Instruction> instructions = new ArrayList<Instruction>();
+        instructions.add(ib.build());
+        isb.setInstruction(instructions);
+        return isb;
+    }
+
+    private static InstructionsBuilder createOutputInstructions() {
+
+        // test case for Output Port works if the particular port exists
+        // this particular test-case is for Port : 1
+        // tested as (addMDFlow openflow:<dpid> f82)
+        List<Action> actionList = new ArrayList<Action>();
+        ActionBuilder ab = new ActionBuilder();
+        OutputActionBuilder output = new OutputActionBuilder();
+
+        Uri value = new Uri("1");
+        output.setOutputNodeConnector(value);
+        ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
+        ab.setOrder(0);
+        ab.setKey(new ActionKey(0));
+        actionList.add(ab.build());
+        // Create an Apply Action
+        ApplyActionsBuilder aab = new ApplyActionsBuilder();
+        aab.setAction(actionList);
+
+        // Wrap our Apply Action in an Instruction
+        InstructionBuilder ib = new InstructionBuilder();
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
+        ib.setOrder(0);
+        ib.setKey(new InstructionKey(0));
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
@@ -3077,7 +3118,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         if (flowtype.equals("fTM")) {
             tf = createtablemiss(tn, flowtype, ci.nextArgument());
         } else {
-            tf = createTestFlow(tn, ci.nextArgument(), ci.nextArgument());
+            tf = createTestFlow(tn, flowtype, ci.nextArgument());
         }
         InstanceIdentifier<Flow> path1 = InstanceIdentifier.builder(Nodes.class).child(Node.class, tn.getKey())
                 .augmentation(FlowCapableNode.class).child(Table.class, new TableKey(tf.getTableId()))
