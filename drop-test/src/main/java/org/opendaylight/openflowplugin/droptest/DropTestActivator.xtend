@@ -15,12 +15,14 @@ import org.opendaylight.openflowplugin.outputtest.OutputTestCommandProvider
 import org.osgi.framework.BundleContext
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService
 
 class DropTestActivator extends AbstractBindingAwareProvider {
 
     static Logger LOG = LoggerFactory.getLogger(DropTestActivator);
 
     static var DropTestProvider provider = new DropTestProvider();
+    static var DropTestRpcProvider rpcProvider = new DropTestRpcProvider();
     
     static var DropTestCommandProvider cmdProvider
     static var OutputTestCommandProvider outCmdProvider
@@ -31,6 +33,9 @@ class DropTestActivator extends AbstractBindingAwareProvider {
         provider.notificationService = session.getSALService(NotificationProviderService)
         cmdProvider.onSessionInitiated(session);
         
+        rpcProvider.notificationService = session.getSALService(NotificationProviderService)
+        rpcProvider.flowService = session.getRpcService(SalFlowService)
+        
         outCmdProvider.onSessionInitiated(session);
         LOG.debug("Activator DropAllPack END")
     }
@@ -38,7 +43,7 @@ class DropTestActivator extends AbstractBindingAwareProvider {
     override startImpl(BundleContext ctx) {
         super.startImpl(ctx);
 //        LOG.info("-------------------------------------    DROP ALL PACK TEST INITIATED ------------------------ ")
-        cmdProvider = new DropTestCommandProvider(ctx,provider);
+        cmdProvider = new DropTestCommandProvider(ctx,provider,rpcProvider);
         outCmdProvider = new OutputTestCommandProvider(ctx);
     }
 
