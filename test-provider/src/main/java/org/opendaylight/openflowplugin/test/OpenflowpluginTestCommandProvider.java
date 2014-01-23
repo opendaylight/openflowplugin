@@ -223,16 +223,11 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
     final class FlowEventListener implements SalFlowListener {
 
-        List<FlowAdded> addedFlows = new ArrayList<>();
-        List<FlowRemoved> removedFlows = new ArrayList<>();
-        List<FlowUpdated> updatedFlows = new ArrayList<>();
-
         @Override
         public void onFlowAdded(FlowAdded notification) {
             LOG.info("flow to be added.........................." + notification.toString());
             LOG.info("added flow Xid........................." + notification.getTransactionId().getValue());
             LOG.info("-----------------------------------------------------------------------------------");
-            addedFlows.add(notification);
         }
 
         @Override
@@ -240,15 +235,13 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
             LOG.debug("removed flow.........................." + notification.toString());
             LOG.debug("remove flow Xid........................." + notification.getTransactionId().getValue());
             LOG.debug("-----------------------------------------------------------------------------------");
-            removedFlows.add(notification);
-        };
+        }
 
         @Override
         public void onFlowUpdated(FlowUpdated notification) {
             LOG.debug("updated flow.........................." + notification.toString());
             LOG.debug("updated flow Xid........................." + notification.getTransactionId().getValue());
             LOG.debug("-----------------------------------------------------------------------------------");
-            updatedFlows.add(notification);
         }
 
         @Override

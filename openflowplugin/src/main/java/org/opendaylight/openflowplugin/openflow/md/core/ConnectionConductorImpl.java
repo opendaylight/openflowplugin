@@ -75,9 +75,9 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     private ConnectionConductor.CONDUCTOR_STATE conductorState;
     private Short version;
 
-    private SwitchConnectionDistinguisher auxiliaryKey;
+    protected SwitchConnectionDistinguisher auxiliaryKey;
 
-    private SessionContext sessionContext;
+    protected SessionContext sessionContext;
 
     private QueueKeeper<OfHeader, DataObject> queueKeeper;
     private ExecutorService hsPool;
@@ -248,7 +248,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
                     disconnect();
                     OFSessionUtil.getSessionManager().invalidateOnDisconnect(ConnectionConductorImpl.this);
                 } else {
-                    LOG.debug("first idle state occured");
+                    LOG.debug("first idle state occured, sessionCtx={}|auxId={}", sessionContext, auxiliaryKey);
                     EchoInputBuilder builder = new EchoInputBuilder();
                     builder.setVersion(getVersion());
                     builder.setXid(getSessionContext().getNextXid());
@@ -322,7 +322,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
 
     @Override
     public Future<Boolean> disconnect() {
-        LOG.info("disconnecting: sessionCtx="+sessionContext+"|auxId="+auxiliaryKey);
+        LOG.info("disconnecting: sessionCtx={}|auxId={}", sessionContext, auxiliaryKey);
 
         Future<Boolean> result = null;
         if (connectionAdapter.isAlive()) {

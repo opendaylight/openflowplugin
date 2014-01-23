@@ -27,7 +27,7 @@ import org.osgi.framework.BundleContext;
 /**
  * OFPlugin provider implementation
  */
-public class OpenflowPluginProvider implements BindingAwareProvider {
+public class OpenflowPluginProvider implements BindingAwareProvider, AutoCloseable {
 
     private BindingAwareBroker broker;
 
@@ -73,6 +73,11 @@ public class OpenflowPluginProvider implements BindingAwareProvider {
         mdController.start();
         messageCountCommandProvider = new MessageCountCommandProvider(context, messageCountProvider);
         messageCountCommandProvider.onSessionInitiated(session);
+    }
+    
+    @Override
+    public void close() {
+        mdController.stop();
     }
 
     @Override
