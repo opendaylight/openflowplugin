@@ -9,3 +9,5 @@ flags;flags
 id;id
 cookie_mask;cookie_mask
 dl_type;dl_type
+ip;ip
+installHw;installHw

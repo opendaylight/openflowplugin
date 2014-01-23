@@ -21,7 +21,7 @@
                 <type>2048</type>
             </ethernet-type>
         </ethernet-match>
-        <ipv4-destination>10.0.0.1/24</ipv4-destination>
+        <ipv4-destination>10.0.0.0/24</ipv4-destination>
     </match>
     <hard-timeout>12</hard-timeout>
     <flags>FlowModFlags [_cHECKOVERLAP=false, _rESETCOUNTS=false, _nOPKTCOUNTS=false, _nOBYTCOUNTS=false, _sENDFLOWREM=false]</flags>
