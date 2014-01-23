@@ -2523,7 +2523,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         SetFieldBuilder setFieldBuilder = new SetFieldBuilder();
         // PBB
         ProtocolMatchFieldsBuilder protomatch = new ProtocolMatchFieldsBuilder();
-        protomatch.setPbb(new PbbBuilder().setPbbIsid(4L).setPbbMask(new byte[] { 0, 1, 0, 0 }).build());
+        protomatch.setPbb(new PbbBuilder().setPbbIsid(4L).setPbbMask((new BigInteger(new byte[] { 0, 1, 0, 0 }).longValue())).build());
         setFieldBuilder.setProtocolMatchFields(protomatch.build());
         ab.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder.build()).build());
         actionList.add(ab.build());
@@ -2731,14 +2731,14 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
                                                                                // match
         MacAddress macdest = new MacAddress("ff:ff:ff:ff:ff:ff");
         ethdest.setAddress(macdest);
-        ethdest.setMask(mask1);
+        ethdest.setMask(new BigInteger(1, mask1));
 
         ethmatch.setEthernetDestination(ethdest.build());
 
         EthernetSourceBuilder ethsrc = new EthernetSourceBuilder();
         MacAddress macsrc = new MacAddress("00:00:00:00:23:ae");
         ethsrc.setAddress(macsrc);
-        ethsrc.setMask(mask2);
+        ethsrc.setMask(new BigInteger(1, mask2));
 
         ethmatch.setEthernetSource(ethsrc.build());
         match.setEthernetMatch(ethmatch.build());
@@ -2787,10 +2787,10 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         ArpMatchBuilder arpmatch = new ArpMatchBuilder(); // arp match
         ArpSourceHardwareAddressBuilder arpsrc = new ArpSourceHardwareAddressBuilder();
         arpsrc.setAddress(macsrc);
-        arpsrc.setMask(mask);
+        arpsrc.setMask(new BigInteger(mask));
         ArpTargetHardwareAddressBuilder arpdst = new ArpTargetHardwareAddressBuilder();
         arpdst.setAddress(macdest);
-        arpdst.setMask(mask2);
+        arpdst.setMask(new BigInteger(mask2));
         arpmatch.setArpOp(2);
         arpmatch.setArpSourceHardwareAddress(arpsrc.build());
         arpmatch.setArpTargetHardwareAddress(arpdst.build());
@@ -2869,7 +2869,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         Ipv6LabelBuilder ipv6label = new Ipv6LabelBuilder();
         Ipv6FlowLabel label = new Ipv6FlowLabel(10028L);
         ipv6label.setIpv6Flabel(label);
-        ipv6label.setFlabelMask(new byte[] { 0, 1, -1, -1 });
+        ipv6label.setFlabelMask(new BigInteger(new byte[] { 0, 1, -1, -1 }).longValue());
 
         Icmpv6MatchBuilder icmpv6match = new Icmpv6MatchBuilder(); // icmpv6
                                                                    // match
@@ -3046,7 +3046,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         byte[] metamask = new byte[] { (byte) -1, (byte) -1, (byte) -1, 0, 0, 0, (byte) 1, (byte) 1 };
         MetadataBuilder metadata = new MetadataBuilder(); // metadata match
         metadata.setMetadata(BigInteger.valueOf(500L));
-        metadata.setMetadataMask(metamask);
+        metadata.setMetadataMask(new BigInteger(metamask));
         match.setMetadata(metadata.build());
 
         return match;
@@ -3089,7 +3089,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         ProtocolMatchFieldsBuilder protomatch = new ProtocolMatchFieldsBuilder(); // mpls
         // match
-        protomatch.setPbb(new PbbBuilder().setPbbIsid(4L).setPbbMask(new byte[] { 0, 1, 0, 0 }).build());
+        protomatch.setPbb(new PbbBuilder().setPbbIsid(4L).setPbbMask(new BigInteger(new byte[] { 0, 1, 0, 0 }).longValue()).build());
         match.setProtocolMatchFields(protomatch.build());
 
         return match;
@@ -3104,7 +3104,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         TunnelBuilder tunnel = new TunnelBuilder(); // tunnel id match
         tunnel.setTunnelId(BigInteger.valueOf(10668));
         byte[] mask = new byte[] { (byte) -1, (byte) -1, (byte) -1, 0, 0, 0, (byte) 1, (byte) 1 };
-        tunnel.setTunnelMask(mask);
+        tunnel.setTunnelMask(new BigInteger(mask));
         match.setTunnel(tunnel.build());
 
         return match;

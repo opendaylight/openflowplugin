@@ -12,6 +12,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opendaylight.openflowplugin.openflow.md.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flowflag.FlowFlagReactor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchReactor;
 import org.opendaylight.openflowplugin.openflow.md.util.ByteUtil;
@@ -199,9 +200,11 @@ public class FlowConvertor {
                 instructionBuilder
                         .setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.WriteMetadata.class);
                 MetadataInstructionBuilder metadataBuilder = new MetadataInstructionBuilder();
-                metadataBuilder.setMetadata(ByteUtil.convertBigIntegerTo64Bit(writeMetadata.getMetadata()));
+                metadataBuilder.setMetadata(ByteUtil.convertBigIntegerToNBytes(writeMetadata.getMetadata(),
+                                                                               OFConstants.SIZE_OF_LONG_IN_BYTES));
                 metadataBuilder
-                        .setMetadataMask(ByteUtil.convertBigIntegerTo64Bit(writeMetadata.getMetadataMask()));
+                        .setMetadataMask(ByteUtil.convertBigIntegerToNBytes(writeMetadata.getMetadataMask(),
+                                                                            OFConstants.SIZE_OF_LONG_IN_BYTES));
                 instructionBuilder.addAugmentation(MetadataInstruction.class, metadataBuilder.build());
                 instructionsList.add(instructionBuilder.build());
             }

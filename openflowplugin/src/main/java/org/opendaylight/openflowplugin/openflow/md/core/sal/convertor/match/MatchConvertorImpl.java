@@ -13,6 +13,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opendaylight.openflowplugin.openflow.md.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.util.ByteUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Dscp;
@@ -449,9 +450,9 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
                 ipv4PrefixStr +=PREFIX_SEPARATOR+swMatch.getNwSrcMask();
             }
             if(!ipv4PrefixStr.equals(noIp)){
-                ipv4MatchBuilder.setIpv4Source(new Ipv4Prefix(ipv4PrefixStr));
-                matchBuilder.setLayer3Match(ipv4MatchBuilder.build());
-            }
+            ipv4MatchBuilder.setIpv4Source(new Ipv4Prefix(ipv4PrefixStr));
+            matchBuilder.setLayer3Match(ipv4MatchBuilder.build());
+        }
         }
         if(!swMatch.getWildcards().isNWPROTO().booleanValue() && swMatch.getNwDst() !=null){
             String ipv4PrefixStr = swMatch.getNwDst().getValue();
@@ -459,9 +460,9 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
                 ipv4PrefixStr +=PREFIX_SEPARATOR+swMatch.getNwDstMask();
             }
             if(!ipv4PrefixStr.equals(noIp)){
-                ipv4MatchBuilder.setIpv4Destination(new Ipv4Prefix(ipv4PrefixStr));
-                matchBuilder.setLayer3Match(ipv4MatchBuilder.build());
-            }
+            ipv4MatchBuilder.setIpv4Destination(new Ipv4Prefix(ipv4PrefixStr));
+            matchBuilder.setLayer3Match(ipv4MatchBuilder.build());
+        }
         }
         if(!swMatch.getWildcards().isNWPROTO().booleanValue() && swMatch.getNwProto()!= null ){
             ipMatchBuilder.setIpProtocol(swMatch.getNwProto());
@@ -475,7 +476,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
                 tcpMatchBuilder.setTcpDestinationPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber(swMatch.getTpDst()));
             
             if(!swMatch.getWildcards().isTPSRC().booleanValue() || !swMatch.getWildcards().isTPDST().booleanValue())
-                matchBuilder.setLayer4Match(tcpMatchBuilder.build());
+            matchBuilder.setLayer4Match(tcpMatchBuilder.build());
         }
         if(!swMatch.getWildcards().isNWPROTO().booleanValue() && swMatch.getNwProto() == PROTO_UDP){
             UdpMatchBuilder udpMatchBuilder = new UdpMatchBuilder();
@@ -541,7 +542,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
                     metadataBuilder.setMetadata(new BigInteger(1, metadataMatchEntry.getMetadata()));
                     MaskMatchEntry maskMatchEntry = ofMatch.getAugmentation(MaskMatchEntry.class);
                     if(maskMatchEntry != null){
-                        metadataBuilder.setMetadataMask(maskMatchEntry.getMask());
+                        metadataBuilder.setMetadataMask(new BigInteger(OFConstants.SIGNUM_UNSIGNED, maskMatchEntry.getMask()));
                     }
                     matchBuilder.setMetadata(metadataBuilder.build());
                 }
@@ -710,7 +711,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
                         arpSourceHardwareAddressBuilder.setAddress(macAddressMatchEntry.getMacAddress());
                         MaskMatchEntry maskMatchEntry = ofMatch.getAugmentation(MaskMatchEntry.class);
                         if(maskMatchEntry != null){
-                            arpSourceHardwareAddressBuilder.setMask(maskMatchEntry.getMask());
+                            arpSourceHardwareAddressBuilder.setMask(new BigInteger(OFConstants.SIGNUM_UNSIGNED, maskMatchEntry.getMask()));
                         }
                         arpMatchBuilder.setArpSourceHardwareAddress(arpSourceHardwareAddressBuilder.build());
                         matchBuilder.setLayer3Match(arpMatchBuilder.build());
@@ -720,7 +721,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
                         arpTargetHardwareAddressBuilder.setAddress(macAddressMatchEntry.getMacAddress());
                         MaskMatchEntry maskMatchEntry = ofMatch.getAugmentation(MaskMatchEntry.class);
                         if(maskMatchEntry != null){
-                            arpTargetHardwareAddressBuilder.setMask(maskMatchEntry.getMask());
+                            arpTargetHardwareAddressBuilder.setMask(new BigInteger(OFConstants.SIGNUM_UNSIGNED, maskMatchEntry.getMask()));
                         }
                         arpMatchBuilder.setArpTargetHardwareAddress(arpTargetHardwareAddressBuilder.build());
                         matchBuilder.setLayer3Match(arpMatchBuilder.build());
@@ -750,7 +751,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
                     ipv6LabelBuilder.setIpv6Flabel(new Ipv6FlowLabel(ipv6FlabelMatchEntry.getIpv6Flabel()));
                     MaskMatchEntry maskMatchEntry = ofMatch.getAugmentation(MaskMatchEntry.class);
                     if(maskMatchEntry != null){
-                        ipv6LabelBuilder.setFlabelMask(maskMatchEntry.getMask());
+                        ipv6LabelBuilder.setFlabelMask(ByteUtil.bytesToUnsignedInt(maskMatchEntry.getMask()));
                     }
                     ipv6MatchBuilder.setIpv6Label(ipv6LabelBuilder.build());
                     matchBuilder.setLayer3Match(ipv6MatchBuilder.build());
@@ -793,7 +794,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
                     ipv6ExtHeaderBuilder.setIpv6Exthdr(bitmap);
                     MaskMatchEntry maskMatchEntry = ofMatch.getAugmentation(MaskMatchEntry.class);
                     if(maskMatchEntry != null){
-                        ipv6ExtHeaderBuilder.setIpv6ExthdrMask(maskMatchEntry.getMask());
+                        ipv6ExtHeaderBuilder.setIpv6ExthdrMask(ByteUtil.bytesToUnsignedShort(maskMatchEntry.getMask()));
                     }
                     ipv6MatchBuilder.setIpv6ExtHeader(ipv6ExtHeaderBuilder.build());
                     matchBuilder.setLayer3Match(ipv6MatchBuilder.build());
@@ -823,7 +824,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
                     pbbBuilder.setPbbIsid(isidMatchEntry.getIsid());
                     MaskMatchEntry maskMatchEntry = ofMatch.getAugmentation(MaskMatchEntry.class);
                     if(maskMatchEntry != null){
-                        pbbBuilder.setPbbMask(maskMatchEntry.getMask());
+                        pbbBuilder.setPbbMask(ByteUtil.bytesToUnsignedInt(maskMatchEntry.getMask()));
                     }
                     protocolMatchFieldsBuilder.setPbb(pbbBuilder.build());
                     matchBuilder.setProtocolMatchFields(protocolMatchFieldsBuilder.build());
@@ -835,7 +836,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
                     tunnelBuilder.setTunnelId(new BigInteger(1, metadataMatchEntry.getMetadata()));
                     MaskMatchEntry maskMatchEntry = ofMatch.getAugmentation(MaskMatchEntry.class);
                     if(maskMatchEntry != null){
-                        tunnelBuilder.setTunnelMask(maskMatchEntry.getMask());
+                        tunnelBuilder.setTunnelMask(new BigInteger(OFConstants.SIGNUM_UNSIGNED, maskMatchEntry.getMask()));
                     }
                     matchBuilder.setTunnel(tunnelBuilder.build());
                 }
@@ -855,7 +856,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
         matchEntriesBuilder.addAugmentation(IsidMatchEntry.class, isidBuilder.build());
         if (pbb.getPbbMask() != null) {
             hasmask = true;
-            addMaskAugmentation(matchEntriesBuilder, pbb.getPbbMask());
+            addMaskAugmentation(matchEntriesBuilder, ByteUtil.unsignedIntToBytes(pbb.getPbbMask()));
         }
         matchEntriesBuilder.setHasMask(hasmask);
         return matchEntriesBuilder.build();
@@ -918,7 +919,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
         matchEntriesBuilder.addAugmentation(PseudoFieldMatchEntry.class, pseudoBuilder.build());
         if (ipv6ExtHeader.getIpv6ExthdrMask() != null) {
             hasmask = true;
-            addMaskAugmentation(matchEntriesBuilder, ipv6ExtHeader.getIpv6ExthdrMask());
+            addMaskAugmentation(matchEntriesBuilder, ByteUtil.unsignedShortToBytes(ipv6ExtHeader.getIpv6ExthdrMask()));
         }
         matchEntriesBuilder.setHasMask(hasmask);
         return matchEntriesBuilder.build();
@@ -934,7 +935,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
         matchEntriesBuilder.addAugmentation(Ipv6FlabelMatchEntry.class, ipv6FlabelBuilder.build());
         if (ipv6Label.getFlabelMask() != null) {
             hasmask = true;
-            addMaskAugmentation(matchEntriesBuilder, ipv6Label.getFlabelMask());
+            addMaskAugmentation(matchEntriesBuilder, ByteUtil.unsignedIntToBytes(ipv6Label.getFlabelMask()));
         }
         matchEntriesBuilder.setHasMask(hasmask);
         return matchEntriesBuilder.build();
@@ -951,7 +952,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
         return matchEntriesBuilder.build();
     }
 
-    private static MatchEntries toOfMetadata(Class<? extends MatchField> field, BigInteger metadata, byte[] metadataMask) {
+    private static MatchEntries toOfMetadata(Class<? extends MatchField> field, BigInteger metadata, BigInteger metadataMask) {
         MatchEntriesBuilder matchEntriesBuilder = new MatchEntriesBuilder();
         boolean hasmask = false;
         matchEntriesBuilder.setOxmClass(OpenflowBasicClass.class);
@@ -959,7 +960,8 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
         addMetadataAugmentation(matchEntriesBuilder, metadata);
         if (metadataMask != null) {
             hasmask = true;
-            addMaskAugmentation(matchEntriesBuilder, metadataMask);
+            addMaskAugmentation(matchEntriesBuilder, ByteUtil.convertBigIntegerToNBytes(metadataMask,
+                                                                                       OFConstants.SIZE_OF_LONG_IN_BYTES));
         }
         matchEntriesBuilder.setHasMask(hasmask);
         return matchEntriesBuilder.build();
@@ -967,7 +969,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
 
     private static MatchEntries toOfMacAddress(Class<? extends MatchField> field,
             org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress macAddress,
-            byte[] mask) {
+            BigInteger mask) {
         MatchEntriesBuilder matchEntriesBuilder = new MatchEntriesBuilder();
         boolean hasmask = false;
         matchEntriesBuilder.setOxmClass(OpenflowBasicClass.class);
@@ -975,7 +977,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
         addMacAddressAugmentation(matchEntriesBuilder, macAddress);
         if (mask != null) {
             hasmask = true;
-            addMaskAugmentation(matchEntriesBuilder, mask);
+            addMaskAugmentation(matchEntriesBuilder, ByteUtil.convertBigIntegerToNBytes(mask, OFConstants.MAC_ADDRESS_LENGTH));
         }
         matchEntriesBuilder.setHasMask(hasmask);
         return matchEntriesBuilder.build();
@@ -1205,7 +1207,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
 
     private static void addMetadataAugmentation(MatchEntriesBuilder builder, BigInteger metadata) {
         MetadataMatchEntryBuilder metadataMatchEntry = new MetadataMatchEntryBuilder();
-        metadataMatchEntry.setMetadata(ByteUtil.convertBigIntegerTo64Bit(metadata));
+        metadataMatchEntry.setMetadata(ByteUtil.convertBigIntegerToNBytes(metadata, OFConstants.SIZE_OF_LONG_IN_BYTES));
         builder.addAugmentation(MetadataMatchEntry.class, metadataMatchEntry.build());
     }
 

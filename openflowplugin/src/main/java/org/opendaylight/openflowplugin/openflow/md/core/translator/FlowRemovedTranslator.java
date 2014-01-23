@@ -17,10 +17,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.opendaylight.openflowplugin.openflow.md.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchConvertorImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
+import org.opendaylight.openflowplugin.openflow.md.util.ByteUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Prefix;
@@ -214,7 +216,7 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
                 MetadataBuilder metadata = new MetadataBuilder();
                 metadata.setMetadata(new BigInteger(1, entry.getAugmentation(MetadataMatchEntry.class).getMetadata()));
                 if (entry.isHasMask()) {
-                    metadata.setMetadataMask(entry.getAugmentation(MaskMatchEntry.class).getMask());
+                    metadata.setMetadataMask(new BigInteger(OFConstants.SIGNUM_UNSIGNED, entry.getAugmentation(MaskMatchEntry.class).getMask()));
                 }
                 matchBuilder.setMetadata(metadata.build());
             } else if (field.equals(EthDst.class) || field.equals(EthSrc.class) || field.equals(EthType.class)) {
@@ -225,14 +227,14 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
                     EthernetDestinationBuilder ethDst = new EthernetDestinationBuilder();
                     ethDst.setAddress(entry.getAugmentation(MacAddressMatchEntry.class).getMacAddress());
                     if (entry.isHasMask()) {
-                        ethDst.setMask(entry.getAugmentation(MaskMatchEntry.class).getMask());
+                        ethDst.setMask(new BigInteger(OFConstants.SIGNUM_UNSIGNED, entry.getAugmentation(MaskMatchEntry.class).getMask()));
                     }
                     ethernetMatch.setEthernetDestination(ethDst.build());
                 } else if (field.equals(EthSrc.class)) {
                     EthernetSourceBuilder ethSrc = new EthernetSourceBuilder();
                     ethSrc.setAddress(entry.getAugmentation(MacAddressMatchEntry.class).getMacAddress());
                     if (entry.isHasMask()) {
-                        ethSrc.setMask(entry.getAugmentation(MaskMatchEntry.class).getMask());
+                        ethSrc.setMask(new BigInteger(OFConstants.SIGNUM_UNSIGNED, entry.getAugmentation(MaskMatchEntry.class).getMask()));
                     }
                     ethernetMatch.setEthernetSource(ethSrc.build());
                 } else if (field.equals(EthType.class)) {
@@ -349,14 +351,14 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
                     ArpSourceHardwareAddressBuilder arpSha = new ArpSourceHardwareAddressBuilder();
                     arpSha.setAddress(entry.getAugmentation(MacAddressMatchEntry.class).getMacAddress());
                     if (entry.isHasMask()) {
-                        arpSha.setMask(entry.getAugmentation(MaskMatchEntry.class).getMask());
+                        arpSha.setMask(new BigInteger(OFConstants.SIGNUM_UNSIGNED, entry.getAugmentation(MaskMatchEntry.class).getMask()));
                     }
                     arpMatch.setArpSourceHardwareAddress(arpSha.build());
                 } else if (field.equals(ArpTha.class)) {
                     ArpTargetHardwareAddressBuilder arpTha = new ArpTargetHardwareAddressBuilder();
                     arpTha.setAddress(entry.getAugmentation(MacAddressMatchEntry.class).getMacAddress());
                     if (entry.isHasMask()) {
-                        arpTha.setMask(entry.getAugmentation(MaskMatchEntry.class).getMask());
+                        arpTha.setMask(new BigInteger(OFConstants.SIGNUM_UNSIGNED, entry.getAugmentation(MaskMatchEntry.class).getMask()));
                     }
                     arpMatch.setArpTargetHardwareAddress(arpTha.build());
                 }
@@ -374,7 +376,8 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
                     Ipv6LabelBuilder ipv6Label = new Ipv6LabelBuilder();
                     ipv6Label.setIpv6Flabel(entry.getAugmentation(Ipv6FlabelMatchEntry.class).getIpv6Flabel());
                     if (entry.isHasMask()) {
-                        ipv6Label.setFlabelMask(entry.getAugmentation(MaskMatchEntry.class).getMask());
+                        ipv6Label.setFlabelMask(
+                            ByteUtil.bytesToUnsignedInt(entry.getAugmentation(MaskMatchEntry.class).getMask()));
                     }
                     ipv6Match.setIpv6Label(ipv6Label.build());
                 } else if (field.equals(Ipv6NdTarget.class)) {
@@ -400,7 +403,8 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
                     int bitmap = fillBitMaskFromMap(map);
                     ipv6ExtHeaderBuilder.setIpv6Exthdr(bitmap);
                     if (entry.isHasMask()) {
-                        ipv6ExtHeaderBuilder.setIpv6ExthdrMask(entry.getAugmentation(MaskMatchEntry.class).getMask());
+                        ipv6ExtHeaderBuilder.setIpv6ExthdrMask(
+                            ByteUtil.bytesToUnsignedShort(entry.getAugmentation(MaskMatchEntry.class).getMask()));
                     }
                     ipv6Match.setIpv6ExtHeader(ipv6ExtHeaderBuilder.build());
                 }
@@ -420,7 +424,7 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
                     PbbBuilder pbb = new PbbBuilder();
                     pbb.setPbbIsid(entry.getAugmentation(IsidMatchEntry.class).getIsid());
                     if (entry.isHasMask()) {
-                        pbb.setPbbMask(entry.getAugmentation(MaskMatchEntry.class).getMask());
+                        pbb.setPbbMask(ByteUtil.bytesToUnsignedInt(entry.getAugmentation(MaskMatchEntry.class).getMask()));
                     }
                     protocolMatchFields.setPbb(pbb.build());
                 }
@@ -428,7 +432,7 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
                 TunnelBuilder tunnel = new TunnelBuilder();
                 tunnel.setTunnelId(new BigInteger(1, entry.getAugmentation(MetadataMatchEntry.class).getMetadata()));
                 if (entry.isHasMask()) {
-                    tunnel.setTunnelMask(entry.getAugmentation(MaskMatchEntry.class).getMask());
+                    tunnel.setTunnelMask(new BigInteger(OFConstants.SIGNUM_UNSIGNED, entry.getAugmentation(MaskMatchEntry.class).getMask()));
                 }
                 matchBuilder.setTunnel(tunnel.build());
             }
