@@ -136,7 +136,20 @@ class XMLValidator():
                 raise StandardError
 
     def ipv4_check(self, a):
+        IP_MASK_COMPARE_PATTERNS = {
+                '24' : '.0',
+                '16' : '.0.0',
+                '8' : '.0.0.0'
+        }
         XMLValidator.log.debug('validating ipv4 address: {}'.format(a))
+        ip_arr = a.split('/')
+        if (len(ip_arr) > 1) :
+            m_patt = IP_MASK_COMPARE_PATTERNS.get(ip_arr[1], None)
+            if (m_patt is None) :
+                raise StandardError('{} is not valid ipv4 mask'.format(ip_arr[1]))
+            if (ip_arr[0].endswith(m_patt) != True) :
+                raise StandardError('ipv4 address mask has to *{}/{}'.format(m_patt, ip_arr[1]))
+
         mask_pos = a.find('/')
         if mask_pos > 0:
             a = a[:mask_pos]

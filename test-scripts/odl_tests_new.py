@@ -21,14 +21,32 @@ from mininet.node import OVSKernelSwitch
 import xmltodict
 from xmlvalidator import XMLValidator
 
+# Delay time value is important for slow machines 
+# value mean nr. of seconds for waiting for controller
+TEST_TIME_DELAY = 0
+
 class TestOpenFlowXml_Base(unittest.TestCase):
+    """
+    Base TEST class extends unittest.TestCase and
+    it provides possibilty to add parameters for 
+    all subclasses by call a static constructor:
+    
+    TestOpenFlowXml_Base.load_file_name(sub_class_name, param)
+    """
     
     def __init__(self, methodName='runTest', path_to_xml=None):
+        """
+        private defalut constructor
+        """
         super(TestOpenFlowXml_Base, self).__init__(methodName)
         self.path_to_xml = path_to_xml
         
     @staticmethod
     def load_file_name(clazz, path_to_xml=None):
+        """
+        static constructor for all subclasses with param
+        param -> path_to_xml (default None)
+        """
         testloader = unittest.TestLoader()
         testnames = testloader.getTestCaseNames(clazz)
         suite = unittest.TestSuite()
@@ -38,15 +56,26 @@ class TestOpenFlowXml_Base(unittest.TestCase):
 
 
 class ConvertorTools():
-    
+    """
+    Tool class contains static conversion method
+    for the value conversions
+    """
     CONVERTORS = {
         'cookie': hex, 
+        'metadata': hex
     }  
     
     @staticmethod
     def base_tag_values_conversion(key, value):
-        convertor = ConvertorTools.CONVERTORS.get(key, None)
-        return convertor(int(value)) if convertor > None else value
+        """
+        Check a need to conversion and convert if need
+        """
+        if value is None : return ''
+        else:
+            convertor = ConvertorTools.CONVERTORS.get(key, None)
+            if convertor is None : return value
+            else :
+                return convertor(int(value))
 
 
 class ParseTools(): 
@@ -58,13 +87,14 @@ class ParseTools():
     @staticmethod
     def sort_ordered_dict_to_array(x_dict=None):
         if (x_dict > None):
-            out_put = None
+            out_put = []
             for val in map(lambda val: x_dict.get(val), sorted(x_dict.keys())) : 
-                if (out_put > None) :
-                    out_put += ', %s' %val
-                else :
-                    out_put = val
-            return out_put
+                out_put.append(val)
+#                 if (out_put > None) :
+#                     out_put += ', %s' %val
+#                 else :
+#                     out_put = val
+            return ', '.join(out_put)
         return
 
     @staticmethod
@@ -142,15 +172,16 @@ class ParseTools():
                         ParseTools.__parse_tags_from_xml(child, flow_dict, key_dict, ikwd=ignore_key_dict) 
 
         return flow_dict
-
-    @staticmethod
-    def get_switchflow_dict(switch_dict, ignore_key_dict=None):
-        x_dict={}
-        for sw_key in switch_dict.keys() :
-            if (ignore_key_dict.get(sw_key,None) is None):
-                x_dict[sw_key] = switch_dict.get(sw_key)
-            
-        return x_dict
+        
+        # TODO VD remove this method
+#     @staticmethod
+#     def get_switchflow_dict(switch_dict, ignore_key_dict=None):
+#         x_dict={}
+#         for sw_key in switch_dict.keys() :
+#             if (ignore_key_dict.get(sw_key,None) is None):
+#                 x_dict[sw_key] = switch_dict.get(sw_key)
+#             
+#         return x_dict
     
     @staticmethod
     def all_nodes(xml_root):
@@ -202,7 +233,10 @@ class ParseTools():
 
 
 class MininetTools():
-
+    """
+    Tool class provides static method for Open_vswitch
+    mininet out of box controls 
+    """
     @staticmethod
     def create_network(controller_ip, controller_port):
         """Create topology and mininet network."""
@@ -225,6 +259,15 @@ class MininetTools():
         net = mininet.net.Mininet(topo=topo, switch=switch, controller=controller)
 
         return net
+    
+#     @staticmethod #TODO VD finish it
+#     def __mininet_parse_response(resp_str='', x_dict={}, ikwd={}):
+#         for elm in resp_str.split(',') :
+#             if len(elm.split('=')) > 1 :
+#                 x_key = elm.split('=')[0]
+#                 x_val = elm.split
+#                 x_dict[elm] = MininetTools.__mininet_parse_response(elm.split('='), x_dict, ikwd)
+            
     
     @staticmethod
     def get_flows(net, ikwd={}):
@@ -260,29 +303,33 @@ class MininetTools():
 
         log.debug('switch flow table: {}'.format(output))
 
+        # dictionary for return
         flows = {}
 
         for line in output.splitlines()[1:] :
             output = line;
         
-        action = re.split('actions=',output,1)[1]
+        if (len(re.split('actions=', output, 1)) > 0) :
+            try :
+                action_str = re.split('actions=',output,1)[1]
+                flows['actions'] = ', '.join((action_str.split(','))) if (len(action_str.split(',')) > 0) else action_str.strip()
+                # TODO: VD look at actions with own param (xml24) __mininet_parse_resp
+            except Exception, e :
+                log.error(e)
+            
+        else :
+            flows['actions'] = ''
+
         output= re.split('actions=',output,1)[0]
 
-        for elem in output.split(',') :
-            elm_d = elem.split('=')
-            a_key = (elm_d[0]).strip()
+        for e in output.split(',') :
+            elem = e.split('=')
+            a_key = (elem[0]).strip()
             if (ikwd.get(a_key, None) is None) :
-                a_value = elm_d[1] if (len(elm_d) > 1) else None
+                a_value = elem[1] if (len(elem) > 1) else None
                 flows[a_key] = a_value.strip() if isinstance(a_value,str) else (str(a_value)).strip()
-        
-        flows['actions'] = action.split(',')
-        
+
         return flows
-#         for line in output.splitlines()[1:]:
-#             flows.append(ParseTools.dump_string_to_dict(line))
-# 
-#          # sort by duration
-#         return sorted(flows, key=lambda x: x['duration'].rstrip('s'))
 
 
 class FileLoaderTools():
@@ -369,7 +416,6 @@ class TestOpenFlowXml(TestOpenFlowXml_Base):
                                                            action_key_dict = action_keywords, 
                                                            match_key_dict = match_keywords,
                                                            ignore_key_dict = ignore_keywords)
-        print (switch_etalon)
         ids = ParseTools.get_values(tree.documentElement, 'table_id', 'id')
         
         
@@ -388,6 +434,8 @@ class TestOpenFlowXml(TestOpenFlowXml_Base):
         log.debug('received content: {}'.format(rsp.text))
         assert rsp.status_code == 204 or rsp.status_code == 200, 'Status' \
                             ' code returned %d' % rsp.status_code
+        time.sleep(TEST_TIME_DELAY)
+        
         try:
             # check request content against restconf's datastore
             response = requests.get(url, auth=('admin', 'admin'),
@@ -405,6 +453,7 @@ class TestOpenFlowXml(TestOpenFlowXml_Base):
             assert switch_etalon == switch_flows, 'expected and stored switch settings are not the same \n'\
                 'expected: %s\nstored: %s' %(switch_etalon,switch_flows)
 
+            # TODO VD remove dead code
             # compare requested object and flow table state
             ## TODO look at action parsing separatly from a flow
 #             switch_flow_dict = ParseTools.get_switchflow_dict(switch_flows[0], ignore_keywords)
@@ -415,16 +464,24 @@ class TestOpenFlowXml(TestOpenFlowXml_Base):
 #             Comparator.compare_results(switch_flows[0], ParseTools.dump_string_to_dict(mn_string))
 #         else:
 #             log.error('cannot find test results - comparison skipped')
+        except Exception, e :
+            log.error(e)
+            print '\n'
+            raise e
+
         finally:
             response = requests.delete(url, auth=('admin', 'admin'),
                                 headers={'Accept': 'application/xml'})
             assert response.status_code == 200
             print '\n\n\n'    
+            time.sleep(TEST_TIME_DELAY)
 
 def suite(path='xmls', test_class='TestOpenFlowXml_Base') :
     suite = unittest.TestSuite()
     if args.xmls is not None:
         xmls = map(int, args.xmls.split(','))
+    else :
+        xmls = None
     
     xmlfiles = None
     if xmls is not None:
