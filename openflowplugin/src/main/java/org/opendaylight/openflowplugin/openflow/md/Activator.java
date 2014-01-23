@@ -40,6 +40,8 @@ public class Activator extends ComponentActivatorAbstractBase {
      *
      */
     public void destroy() {
+        pluginProvider.close();
+        super.destroy();
     }
 
     @Override

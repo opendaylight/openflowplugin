@@ -52,7 +52,7 @@ public abstract class ConnectionConfigurationFactory {
 
             @Override
             public long getSwitchIdleTimeout() {
-                return 5000;
+                return 15000;
             }
 
             @Override
@@ -92,7 +92,7 @@ public abstract class ConnectionConfigurationFactory {
 
             @Override
             public long getSwitchIdleTimeout() {
-                return 5000;
+                return 15000;
             }
 
             @Override
