@@ -135,38 +135,42 @@ class XMLValidator():
                 XMLValidator.log.error('octet: {} in ethernet address: {} larger than: {}'.format(n, a, max_range))
                 raise StandardError
 
+    def mask_check(self, address, mask, base=16, part_len=16, delimiter=':'):
+        if (int(mask) % part_len) != 0:
+            raise StandardError('{} is not valid mask, should be multiples of {}'.format(mask, part_len))
+
+        part_count = int(mask) / part_len
+
+        for part in address.split(delimiter):
+            part_value = int(part, base) if part != '' else 0
+            part_count -= 1
+
+            if part_count < 0 and part_value != 0:
+                raise StandardError('address part {} should be 0'.format(part))
+
     def ipv4_check(self, a):
-        IP_MASK_COMPARE_PATTERNS = {
-                '24' : '.0',
-                '16' : '.0.0',
-                '8' : '.0.0.0'
-        }
         XMLValidator.log.debug('validating ipv4 address: {}'.format(a))
-        ip_arr = a.split('/')
-        if (len(ip_arr) > 1) :
-            m_patt = IP_MASK_COMPARE_PATTERNS.get(ip_arr[1], None)
-            if (m_patt is None) :
-                raise StandardError('{} is not valid ipv4 mask'.format(ip_arr[1]))
-            if (ip_arr[0].endswith(m_patt) != True) :
-                raise StandardError('ipv4 address mask has to *{}/{}'.format(m_patt, ip_arr[1]))
 
         mask_pos = a.find('/')
         if mask_pos > 0:
+            a_mask = a[mask_pos + 1:]
             a = a[:mask_pos]
+            self.mask_check(a, a_mask, 10, 8, '.')
 
         numbers = a.split('.')
         max_range = (2**8) - 1
 
         for n in numbers:
             if int(n) > max_range:
-                XMLValidator.log.error('octet: {} in ipv4 address: {} larger than: {}'.format(n, a, max_range))
-                raise StandardError
+                raise StandardError('octet: {} in ipv4 address: {} larger than: {}'.format(n, a, max_range))
 
     def ipv6_check(self, a):
         XMLValidator.log.debug('validating ipv6 address: {}'.format(a))
         mask_pos = a.find('/')
         if mask_pos > 0:
+            a_mask = a[mask_pos + 1:]
             a = a[:mask_pos]
+            self.mask_check(a, a_mask)
 
         numbers = a.split(':')
         max_range = (2**16) - 1
@@ -174,8 +178,7 @@ class XMLValidator():
         for n in numbers:
             #if n == '' then the number is 0000 which is always smaller than max_range
             if n != '' and int(n, 16) > max_range:
-                XMLValidator.log.error('number: {} in ipv6 address: {} larger than: {}'.format(n, a, max_range))
-                raise StandardError
+                raise StandardError('number: {} in ipv6 address: {} larger than: {}'.format(n, a, max_range))
 
     def check_size(self, value, bits, value_type, convert_from=10):
         XMLValidator.log.debug('checking value: {}, size should be {} bits'.format(value, bits))
@@ -207,8 +210,8 @@ class XMLValidator():
             XMLValidator.log.error('problem converting value: {}, TypeError'.format(value))
             self.xml_ok = False
 
-        except StandardError:
-            XMLValidator.log.error('problem checking size for value: {}'.format(value))
+        except StandardError as e:
+            XMLValidator.log.error('problem checking size for value: {}, reason: {}'.format(value, str(e)))
             self.xml_ok = False
 
 
