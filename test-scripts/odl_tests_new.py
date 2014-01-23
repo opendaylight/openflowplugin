@@ -48,7 +48,7 @@ class TestOpenFlowXml_Base(unittest.TestCase):
         param -> path_to_xml (default None)
         """
         testloader = unittest.TestLoader()
-        testnames = testloader.getTestCaseNames(clazz)
+        testnames = testloader.getTestCaseNames(clazz)        
         suite = unittest.TestSuite()
         for name in testnames:
             suite.addTest(clazz(name, path_to_xml=path_to_xml))
