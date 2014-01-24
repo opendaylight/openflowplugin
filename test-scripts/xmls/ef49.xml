@@ -4,7 +4,7 @@
     <strict>false</strict>
     <instructions>
         <instruction>
-	    <order>0</order>
+	    <!-- order tag is required -->
             <meter>
                 <meter-id>1</meter-id>
             </meter>

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <flow xmlns="urn:opendaylight:flow:inventory">
     <strict>false</strict>
-    <flow-name>FooXf27</flow-name>
-    <id>150</id>
+    <flow-name>FooXf26</flow-name>
+    <id>149</id>
     <cookie_mask>255</cookie_mask>
-    <cookie>27</cookie>
+    <cookie>26</cookie>
     <table_id>2</table_id>
     <priority>2</priority>
     <hard-timeout>1200</hard-timeout>
@@ -27,28 +27,24 @@
                 <type>34525</type>
             </ethernet-type>
         </ethernet-match>
-        <ipv6-source>1234:5678:9ABC:DEF0:FDCD:A987:6543:210F/76</ipv6-source>
-        <ipv6-destination>fe80:2acf:e9ff:fe21::6431/94</ipv6-destination>
+        <ipv6-source>1234:5678:9ABC:DEF0:FDCD:A987:6543:0/76</ipv6-source>
+        <ipv6-destination>fe80:2acf:e9ff:fe21::0/94</ipv6-destination>
+	<!-- 1. err - missing prereq. definition for icmpv6-much-type -->
+	<!-- 2. err - conflict -> nd-sll needs 135 and nd-ttl needs 136 for icmpv6-much-type, so only one could be presented -->
+        <ipv6-nd-target>fe80:3456:789A:fe21::6431</ipv6-nd-target>
+        <ipv6-nd-sll>12:34:56:78:9A:BC</ipv6-nd-sll>
+        <ipv6-nd-tll>FE:DC:BA:98:76:54</ipv6-nd-tll>
         <metadata>
             <metadata>12345</metadata>
         </metadata>
-        <ipv6-label>
-            <ipv6-flabel>33</ipv6-flabel>
-        </ipv6-label>
-	<!-- It looks like Extra Header OVS bug, because the switch has
-	return ned BAD_FIELD. I have no idea why, because it has same
-	preconditions as ipv6-label.
-	<ipv6-ext-header>
-            <ipv6-exthdr>0</ipv6-exthdr>
-        </ipv6-ext-header>
-	-->
         <ip-match>
+	    <!-- 3. err - ip-protocol tcp ? for nd ? No we need icmpIPv6 -> 58  -->
             <ip-protocol>6</ip-protocol>
             <ip-dscp>60</ip-dscp>
             <ip-ecn>3</ip-ecn>
         </ip-match>
-	<tcp-source-port>183</tcp-source-port>
+	<!-- 4. err - tcp for icmp is not correct, both values need to be removed -->
+        <tcp-source-port>183</tcp-source-port>
         <tcp-destination-port>8080</tcp-destination-port>
     </match>
 </flow>
-

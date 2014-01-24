@@ -1,12 +1,11 @@
 import logging
-import requests
 import re
+import requests
 import time
-
-import xml.dom.minidom as md
 from xml.etree import ElementTree as ET
 
-from openvswitch.flow_tools import TO_GET, WAIT_TIME, OPERATIONAL_DELAY, FLOWS_PER_SECOND
+from openvswitch.flow_tools import TO_GET, OPERATIONAL_DELAY, FLOWS_PER_SECOND
+
 
 class GetFlowsComponent():
 
@@ -26,23 +25,23 @@ class CheckSwitchDump():
     log = logging.getLogger('CheckSwitchDump')
 
     def get_id_by_entry(self, dump_flow, id_map):
-        id = None
+        flow_id = None
         
         try:
            cookie_regexp = re.compile("cookie=0x[0-9,a-f,A-F]+")
            cookie_match = re.search(cookie_regexp, dump_flow)
            if cookie_match is not None:
                cookie_id = cookie_match.group(0)[7:-1]
-               id = id_map[cookie_id]
+               flow_id = id_map[cookie_id]
            else:
                CheckSwitchDump.log.info('skipping parsing dump entry: {0} '.format(dump_flow))
 
         except KeyError as e:
            CheckSwitchDump.log.error('cookie: {0} is not contained in stored flows'.format(cookie_id))
         except StandardError as e:
-           CheckSwitchDump.log.error('problem getting stored flow id from cookie from flow dump:{0} reason:{1}'.format(dump_flow, str(e)))
+           CheckSwitchDump.log.error('problem getting stored flow flow_id from cookie from flow dump:{0} reason:{1}'.format(dump_flow, str(e)))
 
-        return id
+        return flow_id
 
             
 class CheckConfigFlowsComponent(): 

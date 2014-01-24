@@ -1,35 +1,33 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<flow 
-    xmlns="urn:opendaylight:flow:inventory">
+<flow xmlns="urn:opendaylight:flow:inventory">
     <strict>false</strict>
     <instructions>
         <instruction>
-	    <order>0</order>
-            <meter>
-                <meter-id>1</meter-id>
-            </meter>
+                    <order>0</order>
+            <go-to-table>
+                <table_id>2</table_id>
+            </go-to-table>
         </instruction>
     </instructions>
     <table_id>2</table_id>
-    <id>172</id>
+    <id>171</id>
     <cookie_mask>10</cookie_mask>
     <out_port>10</out_port>
     <installHw>false</installHw>
     <out_group>2</out_group>
     <match>
-        <vlan-match>
-            <vlan-id>
-                <vlan-id>10</vlan-id>
-                <vlan-id-present>true</vlan-id-present>
-            </vlan-id>
-            <vlan-pcp>3</vlan-pcp>
-        </vlan-match>
+        <tunnel>
+	    <!-- incorect metadata-mask -> expect int 
+		(dec, hexadec [prefix 0x], ocatal [prefix 0] -->
+            <tunnel-mask>[B@f7d120c</tunnel-mask>
+            <tunnel-id>10668</tunnel-id>
+        </tunnel>
     </match>
-    <hard-timeout>0</hard-timeout>
+    <hard-timeout>12</hard-timeout>
     <flags>FlowModFlags [_cHECKOVERLAP=false, _rESETCOUNTS=false, _nOPKTCOUNTS=false, _nOBYTCOUNTS=false, _sENDFLOWREM=false]</flags>
     <cookie>10</cookie>
-    <idle-timeout>0</idle-timeout>
-    <flow-name>FooXf49</flow-name>
+    <idle-timeout>34</idle-timeout>
+    <flow-name>FooXf48</flow-name>
     <priority>2</priority>
     <barrier>false</barrier>
 </flow>

@@ -5,10 +5,11 @@
         <instruction>
             <order>0</order>
             <apply-actions>
-                <action>
-                    <order>0</order>
-                    <drop-action/>
-                </action>
+<!-- empty action ?
+from OF specification (1.3.0, 1.3.2
+Drop -    There  is  no  explicit  action  to  represent  drops.    Instead,  packets  whose  action sets have no output actions should be dropped.  This result could come from empty instruction sets or empty action buckets in the processing pipeline, or after executing a Clear-Actions instruction.
+-->
+                <action/>
             </apply-actions>
         </instruction>
     </instructions>
