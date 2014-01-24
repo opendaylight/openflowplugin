@@ -1,11 +1,10 @@
-import requests
 import logging
-import time
-import xml.dom.minidom as md
+import requests
 import threading
-from xml.etree import ElementTree as ET
 
 from openvswitch.parser_tools import ParseTools
+import xml.dom.minidom as md
+
 
 TO_GET = 30
 TO_PUT = 10
@@ -53,7 +52,7 @@ class FlowAdderThread(threading.Thread):
     """
 
     def __init__(self, test_class, thread_id, host, port, net, flows_ids_from=0, flows_ids_to=1):
-	"""
+        """
         test_class: should be type of TestClassAdd
         thread_id: id of thread
         host: controller's ip address
@@ -70,7 +69,7 @@ class FlowAdderThread(threading.Thread):
         self.flows_ids_from = flows_ids_from
         self.flows_ids_to = flows_ids_to
 
-	self.test_class = test_class
+        self.test_class = test_class
         self.net = net
         self.host = host
         self.port = port
@@ -87,8 +86,8 @@ class FlowAdderThread(threading.Thread):
 
         self.log.info('created new FlowAdderThread->id:{0}, flows id: {1} -> {2}'.format(self.thread_id, self.flows_ids_from, self.flows_ids_to))
 
-    def make_cookie_marker(self, input, number=0):
-        return '0x' + "{0:x}".format(int(''.join("{0:x}".format(ord(c)) for c in (input)), 16) + number)
+    def make_cookie_marker(self, val_input, number=0):
+        return '0x' + "{0:x}".format(int(''.join("{0:x}".format(ord(c)) for c in (val_input)), 16) + number)
 
     def make_ipv4_address(self, number, octet_count=4, octet_size=255):
         mask = 24
@@ -148,7 +147,7 @@ class FlowAdderThread(threading.Thread):
     def run(self):
         self.flows, self.errors = 0, 0
         self.log.info('adding flows {0} to {1}'.format(self.flows_ids_from, self.flows_ids_to))
-        for i in range(self.flows_ids_from, self.flows_ids_to):
+        for i in range(self.flows_ids_from, self.flows_ids_to + 1):
             self.__add_flows(i)
 
         self.log.info('finished, added {0} flows, {1} errors'.format(self.flows,self.errors))
@@ -164,19 +163,19 @@ class FlowRemoverThread(threading.Thread):
 
 
     def __init__(self, test_class, thread_id, host, port, net, flows_to_delete=[]):
-	"""
+        """
         test_class: should be type of TestClassDelete
         thread_id: id of thread
         host: controller's ip address
         port: controller's port
-	net: mininet instance
+        net: mininet instance
         flows_to_delete: dictionary of flows to delete with items to match method delete_flows_from_map(value, key)
         """
 
         threading.Thread.__init__(self)
         self.thread_id = thread_id
         self.flows_to_delete = flows_to_delete
-	self.test_class = test_class
+        self.test_class = test_class
 
 
         self.removed = 0

@@ -6,6 +6,7 @@ Created on Jan 24, 2014
 
 import logging
 
+
 class Comparator():
 
     log = logging.getLogger('Comparator')

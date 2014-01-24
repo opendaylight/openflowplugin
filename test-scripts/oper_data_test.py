@@ -1,65 +1,54 @@
-import unittest
-import os
-import re
-import sys
-import logging
-import time
 import argparse
-import requests
-
-import xml.dom.minidom as md
+import logging
+import sys
+import time
+import unittest
 from xml.etree import ElementTree as ET
 
+from openvswitch.flow_tools import FlowAdderThread, FlowRemoverThread, MapNames, \
+    WAIT_TIME
 from openvswitch.mininet_tools import MininetTools
-from openvswitch.flow_tools import  FlowAdderThread, FlowRemoverThread, MapNames, loglevels, TO_GET, WAIT_TIME, OPERATIONAL_DELAY, FLOWS_PER_SECOND
-from openvswitch.testclass_templates import TestClassAdd, TestClassRemove
-from openvswitch.testclass_components import CheckConfigFlowsComponent, CheckOperFlowsComponent
 
-class MultiTest(unittest.TestCase, TestClassAdd, TestClassRemove, CheckConfigFlowsComponent, CheckOperFlowsComponent):
+
+# Delay time value is important for slow machines 
+# value mean nr. of seconds for waiting for controller 
+CONTROLLER_DELAY = 50
+# value mean nr. of seconds for waiting for mininet 
+MININET_START_DELAY = 15
+
+
+class MultiTest(unittest.TestCase):
 
     log = logging.getLogger('MultiTest')
     total_errors = 0
-
-    id_maps = dict()
-    active_map = dict()
+    total_flows = 0
+    ids = []
 
     def setUp(self):
-        MultiTest.log.info('test setup...')
+        MultiTest.log.info('setUp')
+        self.threads_count = 50
+        self.thread_pool = list()
+
         self.__start_MN()
-
-	MultiTest.id_maps[MapNames.TEST] = dict()
-	MultiTest.id_maps[MapNames.DUMMY] = dict()
-
-	MultiTest.active_map = MultiTest.id_maps[MapNames.TEST]
-
+        self.__setup_threads()
+        self.__run_threads()
 
     def tearDown(self):
-        MultiTest.log.info('test cleanup...')
-	self.__set_active_map(MapNames.DUMMY)
-        self.remover = FlowRemoverThread(self, 1, self.host, self.port, self.net, list(MultiTest.active_map.items()))
-        self.remover.run()
+        MultiTest.log.info('tearDown')
+        self.net.stop()
 
-	for k, v in MultiTest.id_maps.items():
-            if len(v) > 0:
-                MultiTest.log.warning('not all flows were deleted, remaining test flows: {0}, from map: {1}'.format(len(v),k))
-
-    def __set_active_map(self, key):
-	try:	
-	    MultiTest.active_map = MultiTest.id_maps[key]
-	except KeyError as e:
-	    MultiTest.log.warning('Error switching between map ids: {0}'.format(str(e)))
-
-
-    def inc_error(self, value=1):
+    @staticmethod
+    def inc_error(value=1):
         MultiTest.total_errors += value
 
-    def inc_flow(self, flow_id= None, cookie_id=1):
-        if flow_id is not None and cookie_id is not None:
-	    #we dont care about actual value, just need to store flow_id as unique identifier		
-            MultiTest.active_map[flow_id] = flow_id
+    @staticmethod
+    def inc_flow(value=1):
+        MultiTest.total_flows += 1
 
-    def delete_flow_from_map(self, flow_id, cookie_id=None):
-        del MultiTest.active_map[flow_id]
+    @staticmethod
+    def add_flow_id(flow_id=None):
+        if (flow_id > None) :
+            MultiTest.ids.append(flow_id)
 
     def __start_MN(self):
         self.net = MininetTools.create_network(self.host, self.mn_port)
@@ -69,12 +58,12 @@ class MultiTest(unittest.TestCase, TestClassAdd, TestClassRemove, CheckConfigFlo
         time.sleep(WAIT_TIME)
 
     def test(self):
-	# add dummy flows to test removal when there are already some flows in operational
-	self.__set_active_map(MapNames.DUMMY)
-	self.adder = FlowAdderThread(self, 0, self.host, self.port, self.net, MultiTest.flows + 1, MultiTest.flows + 11)
+        # add dummy flows to test removal when there are already some flows in operational
+        self.__set_active_map(MapNames.DUMMY)
+        self.adder = FlowAdderThread(self, 0, self.host, self.port, self.net, MultiTest.flows + 1, MultiTest.flows + 11)
         self.adder.run()
 
-	self.__set_active_map(MapNames.TEST)
+        self.__set_active_map(MapNames.TEST)
         self.adder = FlowAdderThread(self, 1, self.host, self.port, self.net, 1, MultiTest.flows + 1)
         self.adder.run()
 
@@ -103,29 +92,49 @@ class MultiTest(unittest.TestCase, TestClassAdd, TestClassRemove, CheckConfigFlo
         # if we didn't manage to get any flows on controller there is no point doing test
         assert flows_oper_after == len(MultiTest.active_map), 'Number of flows added during test stored in operational should be {0}, is {1}'.format(len(MultiTest.active_map), flows_oper_after)
 
+    def __setup_threads(self):
+        if args.threads is not None:
+            self.threads_count = int(args.threads)
+
+        for i in range(0, self.threads_count):
+            #thread will have predetermined flows id to avoid using shared resource
+            t = FlowAdderThread(i, self.host, self.port, self.net, flows_ids_from=i*MultiTest.flows + 1, flows_ids_to=(i+1)*MultiTest.flows + 1)
+
+            self.thread_pool.append(t)
+
+    def __run_threads(self):
+        # start threads
+        for t in self.thread_pool:
+            t.start()
+
+        # wait for them to finish
+        for t in self.thread_pool:
+            t.join()
+
+        # collect results
+        #for t in self.thread_pool:
+        #    MultiTest.inc_flow(t.flows)
+        #    MultiTest.inc_error(t.errors)
 
 if __name__ == '__main__':
-
-    requests_log = logging.getLogger("requests")
-    requests_log.setLevel(logging.WARNING)
+    logging.basicConfig(level=logging.INFO)
 
     # parse cmdline arguments
-    parser = argparse.ArgumentParser(description='End to end stress tests of flows '
-                        'addition from multiple connections')
+    parser = argparse.ArgumentParser(description='Test for flow addition to'
+                        ' switch after the switch has been restarted')
     parser.add_argument('--odlhost', default='127.0.0.1', help='host where '
-                        'odl controller is running  (default = 127.0.0.1) ')
+                        'odl controller is running (default is 127.0.0.1)')
     parser.add_argument('--odlport', type=int, default=8080, help='port on '
-                        'which odl\'s RESTCONF is listening  (default = 8080) ')
+                        'which odl\'s RESTCONF is listening (default is 8080)')
     parser.add_argument('--mnport', type=int, default=6653, help='port on '
-                        'which odl\'s controller is listening  (default = 6653)')
-    parser.add_argument('--flows', default=100, help='how many flows will be added'
-                        ' (default = 100)')
-    parser.add_argument('--log', default='info', help='log level, permitted values are'
-                        ' debug/info/warning/error  (default = info)')
+                        'which odl\'s controller is listening (default is 6653)')
+    parser.add_argument('--xmls', default=None, help='generete tests only '
+                        'from some xmls (i.e. 1,3,34) (default is None - use internal template)')
+    parser.add_argument('--threads', default=5, help='how many threads '
+                        'should be used (default is 5)')
+    parser.add_argument('--flows', default=2, help='how many flows will add'
+                        ' one thread (default is 10)')
     args = parser.parse_args()
-
-    #logging.basicConfig(level=logging.DEBUG)
-    logging.basicConfig(level=loglevels.get(args.log, logging.INFO))
 
     # set host and port of ODL controller for test cases
     MultiTest.port = args.odlport
