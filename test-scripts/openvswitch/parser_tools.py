@@ -5,9 +5,10 @@ Created on Jan 24, 2014
 '''
 
 import re
-
 from xml.etree import ElementTree as ET
+
 from convertor_tools import ConvertorTools
+
 
 class ParseTools(): 
 

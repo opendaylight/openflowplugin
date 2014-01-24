@@ -1,25 +1,24 @@
 #!/usr/bin/env python
 
-import os
-import sys
-import time
-import logging
 import argparse
-import unittest
-import xml.dom.minidom as md
-from xml.etree import ElementTree as ET
-from string import lower
-
-import requests
-from netaddr import IPNetwork
+import logging
+import mininet.net
+from mininet.node import OVSKernelSwitch, RemoteController
 import mininet.node
 import mininet.topo
-import mininet.net
 import mininet.util
-from mininet.node import RemoteController
-from mininet.node import OVSKernelSwitch
-
+from netaddr import IPNetwork
+import os
+import requests
+from string import lower
+import sys
+import time
+import unittest
+from xml.etree import ElementTree as ET
 import xmltodict
+
+import xml.dom.minidom as md
+
 
 def create_network(controller_ip, controller_port):
     """Create topology and mininet network."""
@@ -637,7 +636,7 @@ class TestOpenFlowXMLs(unittest.TestCase):
 
 
 def get_values(node, *tags):
-    result = {tag: None for tag in tags}
+    result = dict((tag, None) for tag in tags)
     for node in all_nodes(node):
         if node.nodeName in result and len(node.childNodes) > 0:
             result[node.nodeName] = node.childNodes[0].nodeValue
@@ -906,8 +905,8 @@ def generate_tests_from_xmls(path, xmls=None, testName='Flow', testType='Add'):
 
 
     # define key getter for sorting
-    def get_test_number(test_name):
-        return int(test_name[1:-4])
+#     def get_test_number(test_name):
+#         return int(test_name[1:-4])
 
 
 if __name__ == '__main__':
