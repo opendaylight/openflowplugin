@@ -15,6 +15,14 @@ from xml.etree import ElementTree as ET
 from openvswitch.mininet_tools import MininetTools
 from openvswitch.parser_tools import ParseTools
 
+
+# Delay time value is important for slow machines 
+# value mean nr. of seconds for waiting for controller 
+CONTROLLER_DELAY = 50
+# value mean nr. of seconds for waiting for mininet 
+MININET_START_DELAY = 15
+
+
 FLOW_ID_TEMPLATE = 'FLOW_ID_TEMPLATE'
 COOKIE_TEMPLATE = 'COOKIE_TEMPLATE'
 HARD_TO_TEMPLATE = 'HARD_TO_TEMPLATE'
@@ -31,22 +39,8 @@ xml_template = '<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>' \
     '<match><ethernet-match><ethernet-type><type>2048</type></ethernet-type></ethernet-match>' \
     '<ipv4-destination>'+IPV4DST_TEMPLATE+'</ipv4-destination></match><hard-timeout>'+HARD_TO_TEMPLATE+'</hard-timeout>' \
     '<flags>FlowModFlags [_cHECKOVERLAP=false, _rESETCOUNTS=false, _nOPKTCOUNTS=false, _nOBYTCOUNTS=false, _sENDFLOWREM=false]</flags>' \
-    '<cookie>'+COOKIE_TEMPLATE+'</cookie><idle-timeout>34000</idle-timeout><flow-name>'+FLOW_NAME_TEMPLATE+'</flow-name><priority>'+PRIORITY_TEMPLATE+'</priority>' \
+    '<cookie>'+COOKIE_TEMPLATE+'</cookie><idle-timeout>34</idle-timeout><flow-name>'+FLOW_NAME_TEMPLATE+'</flow-name><priority>'+PRIORITY_TEMPLATE+'</priority>' \
     '<barrier>false</barrier></flow>'
-
-
-class Tool():
-
-    @staticmethod
-    def get_flows_string(net=None):
-        if net is None:
-            return []
-
-        switch = net.switches[0]
-        output = switch.cmdPrint(
-        'ovs-ofctl -O OpenFlow13 dump-flows %s' % switch.name)
-
-        return output.splitlines()[1:]
 
 
 class MultiTest(unittest.TestCase):
@@ -54,7 +48,7 @@ class MultiTest(unittest.TestCase):
     log = logging.getLogger('MultiTest')
     total_errors = 0
     total_flows = 0
-    stored_before_test_flows = 0
+    ids = []
 
     def setUp(self):
         MultiTest.log.info('setUp')
@@ -77,15 +71,18 @@ class MultiTest(unittest.TestCase):
     def inc_flow(value=1):
         MultiTest.total_flows += 1
 
-    def __start_MN(self):
-        wait_time = 15
+    @staticmethod
+    def add_flow_id(flow_id=None):
+        if (flow_id > None) :
+            MultiTest.ids.append(flow_id)
 
+    def __start_MN(self):
         self.net = MininetTools.create_network(self.host, self.mn_port)
         self.net.start()
         MultiTest.log.info('mininet stared')
-        MultiTest.log.info('waiting {0} seconds...'.format(wait_time))
-        time.sleep(wait_time)
-        self.stored_before_test_flows = len(MininetTools.get_flows_string(self.net))
+        MultiTest.log.info('waiting {0} seconds...'.format(MININET_START_DELAY))
+        time.sleep(MININET_START_DELAY)
+        self.total_flows = len(MininetTools.get_flows_string(self.net))
 
 
     def __setup_threads(self):
@@ -128,7 +125,13 @@ class MultiTest(unittest.TestCase):
         assert response.status_code == 200
 
         tree = ET.ElementTree(ET.fromstring(response.text))
-        flows_on_controller = len(tree.getroot())
+        flows_on_controller_config = len(tree.getroot())
+
+        MultiTest.log.info('{0} flows are stored by results from threads, {1} errors'.format(MultiTest.total_flows, MultiTest.total_errors))
+        MultiTest.log.info('{0} flows are stored in controller config'.format(flows_on_controller_config))
+
+        MultiTest.log.info('waiting for operational data store loading')
+        time.sleep(CONTROLLER_DELAY)
 
         # check operational
         url = 'http://%s:%d/restconf/operational/opendaylight-inventory:nodes' \
@@ -136,21 +139,69 @@ class MultiTest(unittest.TestCase):
         MultiTest.log.info('checking flows in controller - sending request to url: {0}'.format(url))
         response = requests.get(url, auth=('admin', 'admin'),
                                 headers={'Accept': 'application/xml'})
-        #assert response.status_code == 200
-        MultiTest.log.info('got resposnse: {0}'.format(response.status_code))
+        assert response.status_code == 200
+
+        tree = ET.ElementTree(ET.fromstring(response.text))
+        flows_on_controller_operational = len(tree.getroot())
+
+#         assert flows_on_controller_config == flows_on_controller_operational, 'Added amount of stored flows by controller should be equal for operational and config {0} <> {1}'.format(flows_on_controller_operational,flows_on_controller_config)
+
+        MultiTest.log.info('got response: {0}'.format(response.status_code))
+        MultiTest.log.info('{0} flows are stored in operational config \n'.format(flows_on_controller_operational))
+        
+        
+
+#         switch_flows_list =  ParseTools.get_flows_string(self.net)
+#         switch_flows = len(switch_flows_list)
+#         MultiTest.log.info('{0} flows are stored on switch'.format(switch_flows))
+#         MultiTest.log.debug('switch flow-dump:\n{0}'.format(switch_flows_list))
+
+#         assert MultiTest.total_flows == switch_flows, 'Added amount of flows to switch should be equal to successfully added flows to controller {0} <> {1}'.format(switch_flows,MultiTest.total_flows)
+        
+        headers = {
+                'Content-Type': 'application/xml',
+                'Accept': 'application/xml',
+            }
+        for id in MultiTest.ids :
+            url = 'http://%s:%d/restconf/config/opendaylight-inventory:nodes' \
+                '/node/openflow:1/table/2/flow/%s' % (self.host, self.port,id)
+            MultiTest.log.info('checking flows in controller - sending request to url: {0}'.format(url))
+            response = requests.delete(url, auth=('admin','admin'), headers=headers)
+            MultiTest.log.info('delete flows in controller - sending request to url: {0}'.format(url))
+            MultiTest.log.info('got response: {0}'.format(response.status_code))
+        
+        MultiTest.log.info('waiting for operational data store cleaning')
+        time.sleep(CONTROLLER_DELAY)
+        
+        # check config
+        url = 'http://%s:%d/restconf/config/opendaylight-inventory:nodes' \
+            '/node/openflow:1/table/2/' % (self.host, self.port)
+        MultiTest.log.info('checking flows in controller - sending request to url: {0}'.format(url))
+        response = requests.get(url, auth=('admin', 'admin'),
+                                headers={'Accept': 'application/xml'})
+        assert response.status_code == 200
+
+        tree = ET.ElementTree(ET.fromstring(response.text))
+        flows_on_controller_config = len(tree.getroot())
+
+        MultiTest.log.info('waiting for operational data store cleaning')
+        time.sleep(CONTROLLER_DELAY)
+
+        # check operational
+        url = 'http://%s:%d/restconf/operational/opendaylight-inventory:nodes' \
+            '/node/openflow:1/table/2/' % (self.host, self.port)
+        MultiTest.log.info('checking flows in controller - sending request to url: {0}'.format(url))
+        response = requests.delete(url, auth=('admin', 'admin'), headers={'Accept': 'application/xml'})
+        assert response.status_code == 200
+
+        tree = ET.ElementTree(ET.fromstring(response.text))
+        flows_on_controller_operational = len(tree.getroot())
+
+        MultiTest.log.info('got response: {0}'.format(response.status_code))
+        MultiTest.log.info('{0} flows are stored in operational config \n'.format(flows_on_controller_operational))
         MultiTest.log.info('operational dump:\n{0}'.format(response.text))
 
-        MultiTest.log.info('{0} flows are stored by results from threads, {1} errors'.format(MultiTest.total_flows, MultiTest.total_errors))
-        MultiTest.log.info('{0} flows are stored in controller config'.format(flows_on_controller))
-
-        switch_flows_list = Tool.get_flows_string(self.net)
-        switch_flows = len(switch_flows_list) - 1
-#         switch_flows += -(MultiTest.stored_before_test_flows)
-        MultiTest.log.info('{0} flows are stored on switch'.format(switch_flows))
-        MultiTest.log.debug('switch flow-dump:\n{0}'.format(switch_flows_list))
-
-
-        assert MultiTest.total_flows == switch_flows, 'Added amount of flows to switch should be equal to successfully added flows to controller {0} <> {1}'.format(switch_flows,MultiTest.total_flows)
+        assert flows_on_controller_config == flows_on_controller_operational, 'Added amount of stored flows by controller should be equal for operational and config {0} <> {1}'.format(flows_on_controller_operational,flows_on_controller_config)
 
 
 class FlowAdderThread(threading.Thread):
@@ -197,7 +248,7 @@ class FlowAdderThread(threading.Thread):
             self.log.debug('flow ip address from id: {0}'.format(self.make_ipv4_address(act_flow_id)))
 
             xml_string = str(xml_template).replace(FLOW_ID_TEMPLATE, str(act_flow_id)).replace(COOKIE_TEMPLATE, str(act_flow_id))\
-            .replace(HARD_TO_TEMPLATE, '1200').replace(FLOW_NAME_TEMPLATE,'FooXf{0}'.format(act_flow_id))\
+            .replace(HARD_TO_TEMPLATE, '12').replace(FLOW_NAME_TEMPLATE,'FooXf{0}'.format(act_flow_id))\
             .replace(IPV4DST_TEMPLATE,self.make_ipv4_address(act_flow_id)).replace(PRIORITY_TEMPLATE,str(act_flow_id))
 
             #TestRestartMininet.log.info('loaded xml: {0}'.format(''.join(xml_string.split())))
@@ -212,7 +263,7 @@ class FlowAdderThread(threading.Thread):
                 'Content-Type': 'application/xml',
                 'Accept': 'application/xml',
             }
-            self.log.debug('sending request to url: {0}'.format(url))
+            self.log.debug('PUT: sending request to url: {0}'.format(url))
             rsp = requests.put(url, auth=('admin', 'admin'), data=xml_string,
                                headers=headers)
             self.log.debug('received status code: {0}'.format(rsp.status_code))
@@ -220,19 +271,11 @@ class FlowAdderThread(threading.Thread):
             assert rsp.status_code == 204 or rsp.status_code == 200, 'Status' \
                             ' code returned %d' % rsp.status_code
 
-            # check request content against restconf's datastore
-            #response = requests.get(url, auth=('admin', 'admin'),
-            #                        headers={'Accept': 'application/xml'})
-            #assert response.status_code == 200, 'Conifg response should be 200, is {0}'.format(response.status_code)
-
-            #switch_flows = Tool.get_flows_string(self.net)
-            #assert len(switch_flows) > 0, 'Flows stored on switch shoul be greater than 0'
-
             # we expect that controller doesn't fail to store flow on switch
             self.flows += 1
             MultiTest.inc_flow()
-            # store last used table id which got flows for later checkup
-            #self.log.debug('{0} successfully stored flows - {1} flows are on switch'.format(self.flows, len(switch_flows)))
+            MultiTest.add_flow_id(act_flow_id)
+            
         except AssertionError as e:
             self.errors += 1
             self.log.error('AssertionError storing flow id:{0}, reason: {1}'.format(act_flow_id, str(e)))
@@ -257,17 +300,17 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Test for flow addition to'
                         ' switch after the switch has been restarted')
     parser.add_argument('--odlhost', default='127.0.0.1', help='host where '
-                        'odl controller is running  (default = 127.0.0.1) ')
+                        'odl controller is running (default is 127.0.0.1)')
     parser.add_argument('--odlport', type=int, default=8080, help='port on '
-                        'which odl\'s RESTCONF is listening  (default = 8080) ')
+                        'which odl\'s RESTCONF is listening (default is 8080)')
     parser.add_argument('--mnport', type=int, default=6653, help='port on '
-                        'which odl\'s controller is listening  (default = 6653)')
+                        'which odl\'s controller is listening (default is 6653)')
     parser.add_argument('--xmls', default=None, help='generete tests only '
-                        'from some xmls (i.e. 1,3,34)  (default = None)')
-    parser.add_argument('--threads', default=50, help='how many threads '
-                        'should be used  (default 50)')
-    parser.add_argument('--flows', default=20, help='how many flows will add'
-                        ' one thread  (default 20)')
+                        'from some xmls (i.e. 1,3,34) (default is None - use internal template)')
+    parser.add_argument('--threads', default=5, help='how many threads '
+                        'should be used (default is 5)')
+    parser.add_argument('--flows', default=2, help='how many flows will add'
+                        ' one thread (default is 10)')
     args = parser.parse_args()
 
     # set host and port of ODL controller for test cases
@@ -278,8 +321,4 @@ if __name__ == '__main__':
     MultiTest.flows = int(args.flows)
 
     del sys.argv[1:]
-    try :
-        unittest.main()
-    finally:
-        # TODO add delete all flows
-        print 'end'
+    unittest.main()

@@ -31,8 +31,8 @@
                 <address>00:00:00:01:23:ae</address>
             </ethernet-source>
         </ethernet-match>
-        <ipv4-source>10.1.2.0/24</ipv4-source>
-        <ipv4-destination>40.4.0.0/16</ipv4-destination>
+        <ipv4-source>10.1.2.3/24</ipv4-source>
+        <ipv4-destination>40.4.5.6/16</ipv4-destination>
     </match>
     <hard-timeout>12</hard-timeout>
     <flags>FlowModFlags [_cHECKOVERLAP=false, _rESETCOUNTS=false, _nOPKTCOUNTS=false, _nOBYTCOUNTS=false, _sENDFLOWREM=false]</flags>

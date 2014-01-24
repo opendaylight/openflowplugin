@@ -1,3 +1,9 @@
+'''
+Created on Jan 24, 2014
+
+@author: vdemcak
+'''
+
 import logging
 import os
 import re
@@ -8,6 +14,7 @@ class Loader():
     @staticmethod
     def loadXml(file_name):
         path_to_xml = os.path.join('', file_name)
+        path_to_xml = os.path.abspath(__file__ + '/../../../' + path_to_xml)
         with open(path_to_xml) as f:
                 xml_string = f.read()
                 xml_string = re.sub(' xmlns="[^"]+"', '', xml_string, count=1)
@@ -71,7 +78,7 @@ class Field():
         self.value_type = value_type
 
     def __str__(self):
-        return "Field: {}, size: {}, prerequisites: {}"\
+        return "Field: {0}, size: {1}, prerequisites: {2}"\
             .format(self.key, self.bits, self.prerequisites)
 
 
@@ -97,14 +104,14 @@ class XMLValidator():
 
     def create_dictionaries(self, file_name):
         self.test_name = file_name
-
-        formatter = logging.Formatter('TEST {}: %(levelname)s: %(message)s'.format(self.test_name))
+        
+        formatter = logging.Formatter('TEST {0}: %(levelname)s: %(message)s'.format(self.test_name))
         XMLValidator.channel.setFormatter(formatter)
 
         self.flow_dict = dict()
         treeXml1, self.xml_string = Loader.loadXml(file_name)
         Loader.buildXmlDocDictionaryForComarableElements(treeXml1, self.flow_dict, kwd=self.kwd, akwd=self.akwd, mkwd=self.mkwd)
-        XMLValidator.log.debug('loaded dict from xml: {}'.format(self.flow_dict))
+        XMLValidator.log.debug('loaded dict from xml: {0}'.format(self.flow_dict))
 
 
     def fill_fields(self):
@@ -114,30 +121,30 @@ class XMLValidator():
         self.fields.append(fields)
 
     def integer_check(self, value, bits, convert_from=10):
-        XMLValidator.log.debug('validating integer: {}'.format(value))
+        XMLValidator.log.debug('validating integer: {0}'.format(value))
         if (int(value, convert_from) / 2**bits) > 0:
-            XMLValidator.log.error('value: {} is larger than expected: {}'.format(value, 2**bits))
+            XMLValidator.log.error('value: {0} is larger than expected: {1}'.format(value, 2**bits))
             raise StandardError
 
     def boolean_check(self, value, bits):
-        XMLValidator.log.debug('validating boolean: {}'.format(value))
+        XMLValidator.log.debug('validating boolean: {0}'.format(value))
         if bits < 1:
-            XMLValidator.log.error('value: {} is larger than expected: {}'.format(value, 2**bits))
+            XMLValidator.log.error('value: {0} is larger than expected: {1}'.format(value, 2**bits))
             raise StandardError
 
     def ethernet_check(self, a):
-        XMLValidator.log.debug('validating ethernet address: {}'.format(a))
+        XMLValidator.log.debug('validating ethernet address: {0}'.format(a))
         numbers = a.split(':')
         max_range = (2**8) - 1
 
         for n in numbers:
             if int(n, 16) > max_range:
-                XMLValidator.log.error('octet: {} in ethernet address: {} larger than: {}'.format(n, a, max_range))
+                XMLValidator.log.error('octet: {0} in ethernet address: {1} larger than: {2}'.format(n, a, max_range))
                 raise StandardError
 
     def mask_check(self, address, mask, base=16, part_len=16, delimiter=':'):
         if (int(mask) % part_len) != 0:
-            raise StandardError('{} is not valid mask, should be multiples of {}'.format(mask, part_len))
+            raise StandardError('{0} is not valid mask, should be multiples of {1}'.format(mask, part_len))
 
         part_count = int(mask) / part_len
 
@@ -146,10 +153,10 @@ class XMLValidator():
             part_count -= 1
 
             if part_count < 0 and part_value != 0:
-                raise StandardError('address part {} should be 0'.format(part))
+                raise StandardError('address part {0} should be 0'.format(part))
 
     def ipv4_check(self, a):
-        XMLValidator.log.debug('validating ipv4 address: {}'.format(a))
+        XMLValidator.log.debug('validating ipv4 address: {0}'.format(a))
 
         mask_pos = a.find('/')
         if mask_pos > 0:
@@ -162,10 +169,10 @@ class XMLValidator():
 
         for n in numbers:
             if int(n) > max_range:
-                raise StandardError('octet: {} in ipv4 address: {} larger than: {}'.format(n, a, max_range))
+                raise StandardError('octet: {0} in ipv4 address: {1} larger than: {2}'.format(n, a, max_range))
 
     def ipv6_check(self, a):
-        XMLValidator.log.debug('validating ipv6 address: {}'.format(a))
+        XMLValidator.log.debug('validating ipv6 address: {0}'.format(a))
         mask_pos = a.find('/')
         if mask_pos > 0:
             a_mask = a[mask_pos + 1:]
@@ -178,10 +185,10 @@ class XMLValidator():
         for n in numbers:
             #if n == '' then the number is 0000 which is always smaller than max_range
             if n != '' and int(n, 16) > max_range:
-                raise StandardError('number: {} in ipv6 address: {} larger than: {}'.format(n, a, max_range))
+                raise StandardError('number: {0} in ipv6 address: {1} larger than: {2}'.format(n, a, max_range))
 
     def check_size(self, value, bits, value_type, convert_from=10):
-        XMLValidator.log.debug('checking value: {}, size should be {} bits'.format(value, bits))
+        XMLValidator.log.debug('checking value: {0}, size should be {1} bits'.format(value, bits))
         ipv6_regexp = re.compile("^[0-9,A-F,a-f]{0,4}(:[0-9,A-F,a-f]{0,4}){1,7}(/[0-9]{1,3})?$")
         ipv4_regexp = re.compile("^([0-9]{1,3}\.){3}[0-9]{1,3}(/[0-9]{1,2})?$")
         ethernet_regexp = re.compile("^[0-9,A-F,a-f]{2}(:[0-9,A-F,a-f]{2}){5}$")
@@ -200,23 +207,23 @@ class XMLValidator():
             else:
                 raise StandardError
 
-            XMLValidator.log.info('size of: {} < 2^{} validated successfully'.format(value, bits))
+            XMLValidator.log.info('size of: {0} < 2^{1} validated successfully'.format(value, bits))
 
         except ValueError:
-            XMLValidator.log.error('problem converting value to int or IP addresses: {}'.format(value))
+            XMLValidator.log.error('problem converting value to int or IP addresses: {0}'.format(value))
             self.xml_ok = False
 
         except TypeError:
-            XMLValidator.log.error('problem converting value: {}, TypeError'.format(value))
+            XMLValidator.log.error('problem converting value: {0}, TypeError'.format(value))
             self.xml_ok = False
 
         except StandardError as e:
-            XMLValidator.log.error('problem checking size for value: {}, reason: {}'.format(value, str(e)))
+            XMLValidator.log.error('problem checking size for value: {0}, reason: {1}'.format(value, str(e)))
             self.xml_ok = False
 
 
     def has_prerequisite(self, key, values, convert_from, flow_dict):
-        XMLValidator.log.debug('checking prerequisite: {} - {}'.format(key, values))
+        XMLValidator.log.debug('checking prerequisite: {0} - {1}'.format(key, values))
         try:
             flow_value_raw = flow_dict[key]
 
@@ -227,28 +234,28 @@ class XMLValidator():
                 if flow_value not in values:
                     raise StandardError()
 
-            XMLValidator.log.info('prerequisite {}: {} to value {} validated successfully'.format(key, values, flow_value_raw))
+            XMLValidator.log.info('prerequisite {0}: {1} to value {2} validated successfully'.format(key, values, flow_value_raw))
 
         except KeyError:
-            XMLValidator.log.error('can\'t find element: {} in xml {} or in keywords {}'.format(key, self.xml_string, self.mkwd.keys()))
+            XMLValidator.log.error('can\'t find element: {0} in xml {1} or in keywords {2}'.format(key, self.xml_string, self.mkwd.keys()))
             self.xml_ok = False
 
         except ValueError or TypeError:
             # flow_value_raw is string that cannot be converted to decimal or hex number or None
             if flow_value_raw not in values:
-                XMLValidator.log.error('can\'t find element: {} with value value: {} '
-                               'in expected values {}'.format(key, flow_value_raw, values))
+                XMLValidator.log.error('can\'t find element: {0} with value value: {1} '
+                               'in expected values {2}'.format(key, flow_value_raw, values))
                 self.xml_ok = False
             else:
-                XMLValidator.log.info('prerequisite {}: {} to value {} validated successfully'.format(key, values, flow_value_raw))
+                XMLValidator.log.info('prerequisite {0}: {1} to value {2} validated successfully'.format(key, values, flow_value_raw))
 
         except StandardError:
-            XMLValidator.log.error('can\'t find element: {} with value value: {} '
-                           'in expected values {}'.format(key, flow_value, values))
+            XMLValidator.log.error('can\'t find element: {0} with value value: {1} '
+                           'in expected values {2}'.format(key, flow_value, values))
             self.xml_ok = False
 
     def check_all_prerequisites(self, prerequisites_dict, convert_from, flow_dict):
-        XMLValidator.log.debug('checking prerequisites: {}'.format(prerequisites_dict))
+        XMLValidator.log.debug('checking prerequisites: {0}'.format(prerequisites_dict))
         for k, v in prerequisites_dict.items():
             self.has_prerequisite(k, v, convert_from, flow_dict)
 
@@ -259,10 +266,10 @@ class XMLValidator():
         """
 
         if field.key not in flow_dict:
-            XMLValidator.log.debug('{} is not set in XML, skipping validation'.format(field.key))
+            XMLValidator.log.debug('{0} is not set in XML, skipping validation'.format(field.key))
             return
         else:
-            XMLValidator.log.info('validating: {}'.format(field))
+            XMLValidator.log.info('validating: {0}'.format(field))
 
         if field.bits is not None:
             self.check_size(flow_dict[field.key], field.bits, field.value_type, field.convert_from)
@@ -272,32 +279,32 @@ class XMLValidator():
 
     def validate_fields(self):
         self.xml_ok = True
-        XMLValidator.log.info('validating against flow: {}'.format(self.flow_dict))
+        XMLValidator.log.info('validating against flow: {0}'.format(self.flow_dict))
         for field in self.fields:
             self.check_single_field(field, self.flow_dict)
 
     def validate_misc_values(self):
         for kw in self.kwd.keys():
             if kw in self.flow_dict.keys():
-                XMLValidator.log.info('validating: {}: {}'.format(kw, self.flow_dict[kw]))
+                XMLValidator.log.info('validating: {0}: {1}'.format(kw, self.flow_dict[kw]))
                 try:
                     value = int(self.flow_dict[kw])
                     if value < 0:
-                        XMLValidator.log.error('value: {}: {} should be non-negative'.format(kw, self.flow_dict[kw]))
+                        XMLValidator.log.error('value: {0}: {1} should be non-negative'.format(kw, self.flow_dict[kw]))
                         self.xml_ok = False
                     else:
-                        XMLValidator.log.info('value: {}: {} validated successfully'.format(kw, self.flow_dict[kw]))
+                        XMLValidator.log.info('value: {0}: {1} validated successfully'.format(kw, self.flow_dict[kw]))
                 except StandardError:
-                    XMLValidator.log.error('can\'t convert value: {}: {} to integer'.format(kw, self.flow_dict[kw]))
+                    XMLValidator.log.error('can\'t convert value: {0}: {1} to integer'.format(kw, self.flow_dict[kw]))
                     self.xml_ok = False
             else:
-                XMLValidator.log.debug('{} is not set in XML, skipping validation'.format(kw))
+                XMLValidator.log.debug('{0} is not set in XML, skipping validation'.format(kw))
 
     def validate(self):
         self.validate_fields()
         self.validate_misc_values()
 
-        XMLValidator.log.info('XML valid: {}'.format(self.xml_ok))
+        XMLValidator.log.info('XML valid: {0}'.format(self.xml_ok))
 
         return self.xml_ok
 
@@ -407,19 +414,19 @@ class Matchers():
 if __name__ == '__main__':
 
     keywords = None
-    with open('keywords.csv') as f:
+    with open(os.path.abspath(__file__ + '/../../../keywords.csv')) as f:
         keywords = dict(line.strip().split(';') for line in f if not line.startswith('#'))
 
     #print keywords
 
     match_keywords = None
-    with open('match-keywords.csv') as f:
+    with open(os.path.abspath(__file__ + '/../../../match-keywords.csv')) as f:
         match_keywords = dict(line.strip().split(';') for line in f if not line.startswith('#'))
 
     #print match_keywords
 
     action_keywords = None
-    with open('action-keywords.csv') as f:
+    with open(os.path.abspath(__file__ + '/../../../action-keywords.csv')) as f:
         action_keywords = dict(line.strip().split(';') for line in f if not line.startswith('#'))
 
     paths_to_xml = list()
@@ -433,5 +440,4 @@ if __name__ == '__main__':
     for path in paths_to_xml:
         validator.create_dictionaries(path)
         validator.validate()
-
 
