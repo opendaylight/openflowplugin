@@ -102,6 +102,7 @@ class DropTestCommiter implements PacketProcessingListener {
         val value = new BigInteger("10", 10);
         fb.setCookie(value);
         fb.setCookieMask(value);
+        fb.setTableId(0 as short);
         fb.setHardTimeout(300);
         fb.setIdleTimeout(240);
         fb.setFlags(new FlowModFlags(false, false, false, false, false));
