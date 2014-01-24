@@ -35,7 +35,7 @@ public class ErrorTranslator implements IMDMessageTranslator<OfHeader, List<Data
         if (msg instanceof ErrorMessage) {
             ErrorMessage message = (ErrorMessage) msg;
             List<DataObject> list = new CopyOnWriteArrayList<DataObject>();
-            LOG.error(" Error Message received: type={}[{}], code={}[{}], data={}[{}] ", message.getType(),
+            LOG.debug(" Error Message received: type={}[{}], code={}[{}], data={}[{}] ", message.getType(),
                     message.getTypeString(), message.getCode(), message.getCodeString(), new String(message.getData()),
                     ByteUtil.bytesToHexstring(message.getData(), " "));
 
@@ -61,7 +61,7 @@ public class ErrorTranslator implements IMDMessageTranslator<OfHeader, List<Data
             list.add(nodeErrorEvent);
             return list;
         } else {
-            LOG.error("Message is not of Error Message ");
+            LOG.debug("Message is not of Error Message ");
             return Collections.emptyList();
         }
     }
