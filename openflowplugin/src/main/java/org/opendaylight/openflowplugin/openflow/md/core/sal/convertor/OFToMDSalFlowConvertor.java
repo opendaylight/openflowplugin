@@ -56,7 +56,7 @@ public class OFToMDSalFlowConvertor {
         List<Instruction> salInstructionList = new ArrayList<Instruction>();
         
         for(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.Instructions switchInst : instructions){
-            if(switchInst instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.ApplyActions){
+            if(switchInst.getType().equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.ApplyActions.class)){
                 
                 ActionsInstruction actionsInstruction = (ActionsInstruction)switchInst.getAugmentation(ActionsInstruction.class);
                 ApplyActionsCaseBuilder applyActionsCaseBuilder = new ApplyActionsCaseBuilder();
@@ -74,7 +74,7 @@ public class OFToMDSalFlowConvertor {
                 InstructionBuilder instBuilder = new InstructionBuilder();
                 instBuilder.setInstruction(applyActionsCaseBuilder.build());
                 salInstructionList.add(instBuilder.build());
-            }else if(switchInst instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.ClearActions){
+            }else if(switchInst.getType().equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.ClearActions.class)){
                 InstructionBuilder instBuilder = new InstructionBuilder();
                 
                 ClearActionsCaseBuilder clearActionsCaseBuilder = new ClearActionsCaseBuilder();
@@ -83,7 +83,7 @@ public class OFToMDSalFlowConvertor {
                 
                 instBuilder.setInstruction(clearActionsCaseBuilder.build());
                 salInstructionList.add(instBuilder.build());
-            }else if(switchInst instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.GotoTable){
+            }else if(switchInst.getType().equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.GotoTable.class)){
                 
                 TableIdInstruction tableIdInstruction = (TableIdInstruction)switchInst.getAugmentation(TableIdInstruction.class);
                 
@@ -95,7 +95,7 @@ public class OFToMDSalFlowConvertor {
                 InstructionBuilder instBuilder = new InstructionBuilder();
                 instBuilder.setInstruction(goToTableCaseBuilder.build());
                 salInstructionList.add(instBuilder.build());
-            }else if(switchInst instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.Meter){
+            }else if(switchInst.getType().equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.Meter.class)){
                 
                 MeterIdInstruction meterIdInstruction = (MeterIdInstruction) switchInst.getAugmentation(MeterIdInstruction.class);
                 
@@ -108,7 +108,7 @@ public class OFToMDSalFlowConvertor {
                 
                 instBuilder.setInstruction(meterCaseBuilder.build());
                 salInstructionList.add(instBuilder.build());
-            }else if(switchInst instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.WriteActions){
+            }else if(switchInst.getType().equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.WriteActions.class)){
                 
                 ActionsInstruction actionsInstruction = (ActionsInstruction)switchInst.getAugmentation(ActionsInstruction.class);
                 
@@ -121,7 +121,7 @@ public class OFToMDSalFlowConvertor {
                 instBuilder.setInstruction(writeActionsCaseBuilder.build());
                 salInstructionList.add(instBuilder.build());
             
-            }else if(switchInst instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.WriteMetadata){
+            }else if(switchInst.getType().equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.WriteMetadata.class)){
 
                 MetadataInstruction metadataInstruction = (MetadataInstruction)switchInst.getAugmentation(MetadataInstruction.class);
                 
