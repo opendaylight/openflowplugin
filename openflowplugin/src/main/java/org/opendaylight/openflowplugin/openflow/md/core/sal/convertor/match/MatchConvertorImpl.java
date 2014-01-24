@@ -1098,7 +1098,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
         return matchEntriesBuilder.build();
     }
 
-    private static MatchEntries toOfIpDscp(Dscp ipDscp) {
+    public static MatchEntries toOfIpDscp(Dscp ipDscp) {
         MatchEntriesBuilder matchEntriesBuilder = new MatchEntriesBuilder();
         matchEntriesBuilder.setOxmClass(OpenflowBasicClass.class);
         matchEntriesBuilder.setHasMask(false);
