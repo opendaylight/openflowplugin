@@ -211,6 +211,8 @@
             <watch_group>14</watch_group>
             <watch_port>1234</watch_port>
         </bucket>
+<!--
+Bad ID because next bucket has same ID (only one could by found on device)
         <bucket>
             <action>
                 <set-queue-action>
@@ -218,10 +220,11 @@
                 </set-queue-action>
                <order>0</order>
             </action>
-            <bucket-id>32</bucket-id>
+            <bucket-id>31</bucket-id>
             <watch_group>14</watch_group>
             <watch_port>1234</watch_port>
         </bucket>
+-->
         <bucket>
             <action>
                 <output-action>
