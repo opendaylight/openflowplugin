@@ -23,10 +23,6 @@ class TestRestartMininet(unittest.TestCase):
 
         self.__start_MN()
 
-        xmls = self.__load_xmls()
-        for xml in xmls:
-            self.__add_flows(xml)
-
     def tearDown(self):
         TestRestartMininet.log.info('tearDown')
         self.net.stop()
@@ -88,31 +84,28 @@ class TestRestartMininet(unittest.TestCase):
                            headers=headers)
         TestRestartMininet.log.info('received status code: {}'.format(rsp.status_code))
         TestRestartMininet.log.debug('received content: {}'.format(rsp.text))
-        try:
-            assert rsp.status_code == 204 or rsp.status_code == 200, 'Status' \
-                            ' code returned %d' % rsp.status_code
+        assert rsp.status_code == 204 or rsp.status_code == 200, 'Status' \
+                        ' code returned %d' % rsp.status_code
+        
+        # check request content against restconf's datastore
+        response = requests.get(url, auth=('admin', 'admin'),
+                                headers={'Accept': 'application/xml'})
+        assert response.status_code == 200
 
-            # check request content against restconf's datastore
-            response = requests.get(url, auth=('admin', 'admin'),
-                                    headers={'Accept': 'application/xml'})
-            assert response.status_code == 200
+        switch_flows = self.__get_flows_string(self.net)
+        assert len(switch_flows) > 0
 
-            switch_flows = self.__get_flows_string(self.net)
-            assert len(switch_flows) > 0
-
-            # store last used table id which got flows for later checkup
-            self.table_id = ids['table_id']
-            self.switch_flows_stored = len(switch_flows)
-            TestRestartMininet.log.info('stored: {} flows'.format(self.switch_flows_stored))
-
-
-        except AssertionError as e:
-            TestRestartMininet.log.error('error adding flow, assert: {}'.format(str(e)))
-        except StandardError as e:
-            TestRestartMininet.log.error('error adding flow: {}'.format(str(e)))
+        # store last used table id which got flows for later checkup
+        self.table_id = ids['table_id']
+        self.switch_flows_stored = len(switch_flows)
+        TestRestartMininet.log.info('stored: {} flows'.format(self.switch_flows_stored))
 
     def test(self):
 
+        xmls = self.__load_xmls()
+        for xml in xmls:
+            self.__add_flows(xml)
+        
         switch_flows = 0
 
         TestRestartMininet.log.info('---------- preparation finished, running test ----------\n\n')
@@ -163,10 +156,10 @@ if __name__ == '__main__':
                         'which odl\'s controller is listening')
     parser.add_argument('--xmls', default=None, help='generete tests only '
                         'from some xmls (i.e. 1,3,34) ')
-    parser.add_argument('--wait', default=60, help='number of second that '
+    parser.add_argument('--wait', default=30, help='number of second that '
                         'should test wait before trying to get flows from '
                         'restared mininet switch')
-    parser.add_argument('--retry', default=2, help='number of tries to get'
+    parser.add_argument('--retry', default=1, help='number of tries to get'
                         'flows from restarted mininet')
     args = parser.parse_args()
 
