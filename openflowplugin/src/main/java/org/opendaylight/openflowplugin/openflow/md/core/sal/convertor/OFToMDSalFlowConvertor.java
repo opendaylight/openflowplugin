@@ -30,6 +30,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.write.metadata._case.WriteMetadataBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.ActionsInstruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.MetadataInstruction;
@@ -42,9 +43,6 @@ public class OFToMDSalFlowConvertor {
     /**
      * Method convert Openflow 1.3+ specific instructions to MD-SAL format
      * flow instruction
-     * Note: MD-SAL won't augment this data directly to the data store, 
-     * so key setting is not required. If user wants to augment this data
-     * directly to the data store, key setting is required for each instructions. 
      * @param instructions
      * @return
      */
@@ -54,7 +52,7 @@ public class OFToMDSalFlowConvertor {
         InstructionsBuilder instructionsBuilder = new InstructionsBuilder();
         
         List<Instruction> salInstructionList = new ArrayList<Instruction>();
-        
+        int instructionTreeNodekey=0;
         for(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.Instructions switchInst : instructions){
             if(switchInst.getType().equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.ApplyActions.class)){
                 
@@ -73,6 +71,9 @@ public class OFToMDSalFlowConvertor {
                 
                 InstructionBuilder instBuilder = new InstructionBuilder();
                 instBuilder.setInstruction(applyActionsCaseBuilder.build());
+                instBuilder.setKey(new InstructionKey(instructionTreeNodekey));
+                instBuilder.setOrder(instructionTreeNodekey);
+                instructionTreeNodekey++;
                 salInstructionList.add(instBuilder.build());
             }else if(switchInst.getType().equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.ClearActions.class)){
                 InstructionBuilder instBuilder = new InstructionBuilder();
@@ -82,6 +83,10 @@ public class OFToMDSalFlowConvertor {
                 clearActionsCaseBuilder.setClearActions(clearActionsBuilder.build());
                 
                 instBuilder.setInstruction(clearActionsCaseBuilder.build());
+                instBuilder.setKey(new InstructionKey(instructionTreeNodekey));
+                instBuilder.setOrder(instructionTreeNodekey);
+                instructionTreeNodekey++;
+
                 salInstructionList.add(instBuilder.build());
             }else if(switchInst.getType().equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.GotoTable.class)){
                 
@@ -94,6 +99,10 @@ public class OFToMDSalFlowConvertor {
                 
                 InstructionBuilder instBuilder = new InstructionBuilder();
                 instBuilder.setInstruction(goToTableCaseBuilder.build());
+                instBuilder.setKey(new InstructionKey(instructionTreeNodekey));
+                instBuilder.setOrder(instructionTreeNodekey);
+                instructionTreeNodekey++;
+
                 salInstructionList.add(instBuilder.build());
             }else if(switchInst.getType().equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.Meter.class)){
                 
@@ -107,6 +116,10 @@ public class OFToMDSalFlowConvertor {
                 meterCaseBuilder.setMeter(meterBuilder.build());
                 
                 instBuilder.setInstruction(meterCaseBuilder.build());
+                instBuilder.setKey(new InstructionKey(instructionTreeNodekey));
+                instBuilder.setOrder(instructionTreeNodekey);
+                instructionTreeNodekey++;
+
                 salInstructionList.add(instBuilder.build());
             }else if(switchInst.getType().equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.WriteActions.class)){
                 
@@ -119,6 +132,10 @@ public class OFToMDSalFlowConvertor {
                 
                 InstructionBuilder instBuilder = new InstructionBuilder();
                 instBuilder.setInstruction(writeActionsCaseBuilder.build());
+                instBuilder.setKey(new InstructionKey(instructionTreeNodekey));
+                instBuilder.setOrder(instructionTreeNodekey);
+                instructionTreeNodekey++;
+
                 salInstructionList.add(instBuilder.build());
             
             }else if(switchInst.getType().equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.WriteMetadata.class)){
@@ -133,6 +150,10 @@ public class OFToMDSalFlowConvertor {
                 
                 InstructionBuilder instBuilder = new InstructionBuilder();
                 instBuilder.setInstruction(writeMetadataCaseBuilder.build());
+                instBuilder.setKey(new InstructionKey(instructionTreeNodekey));
+                instBuilder.setOrder(instructionTreeNodekey);
+                instructionTreeNodekey++;
+
                 salInstructionList.add(instBuilder.build());
             }
         }
@@ -183,6 +204,8 @@ public class OFToMDSalFlowConvertor {
                 
         InstructionBuilder instBuilder = new InstructionBuilder();
         instBuilder.setInstruction(applyActionsCaseBuilder.build());
+        instBuilder.setKey(new InstructionKey(0));
+        instBuilder.setOrder(0);
         salInstructionList.add(instBuilder.build());
         
         instructionsBuilder.setInstruction(salInstructionList);
