@@ -29,18 +29,19 @@
         </ethernet-match>
         <ipv6-source>1234:5678:9ABC:DEF0:FDCD:A987:6543:0/76</ipv6-source>
         <ipv6-destination>fe80:2acf:e9ff:fe21::0/94</ipv6-destination>
-        <ipv6-nd-target>fe80:3456:789A:fe21::6431</ipv6-nd-target>
+	<icmpv6-match>
+            <icmpv6-type>135</icmpv6-type>
+            <icmpv6-code>0</icmpv6-code>
+        </icmpv6-match>
+	<ipv6-nd-target>fe80:3456:789A:fe21::6431</ipv6-nd-target>
         <ipv6-nd-sll>12:34:56:78:9A:BC</ipv6-nd-sll>
-        <ipv6-nd-tll>FE:DC:BA:98:76:54</ipv6-nd-tll>
         <metadata>
             <metadata>12345</metadata>
         </metadata>
         <ip-match>
-            <ip-protocol>6</ip-protocol>
+            <ip-protocol>58</ip-protocol>
             <ip-dscp>60</ip-dscp>
             <ip-ecn>3</ip-ecn>
         </ip-match>
-        <tcp-source-port>183</tcp-source-port>
-        <tcp-destination-port>8080</tcp-destination-port>
     </match>
 </flow>

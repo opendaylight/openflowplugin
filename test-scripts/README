@@ -35,3 +35,5 @@ How to Run
    To run with all XMLs, omit the '--xmls' option. 
 
    For more options, type 'sudo python odl_tests.py --help'
+   
+3. > src has to be in PYTHONPATH so you are able to run sudo PYTHONPATH=src stress_test python2.6 stress_test.py

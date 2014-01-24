@@ -32,14 +32,14 @@
                 <address>00:00:00:11:23:ae</address>
             </ethernet-source>
         </ethernet-match>
+        <protocol-match-fields>
 <!-- I have no idea about PBB in match that is all what I've found
 	https://bugs.opendaylight.org/show_bug.cgi?id=382
-	<protocol-match-fields>
+-->
             <pbb>
                 <pbb-isid>45</pbb-isid>
             </pbb>
         </protocol-match-fields>
--->
     </match>
     <flags>FlowModFlags [_cHECKOVERLAP=false, _rESETCOUNTS=false, _nOPKTCOUNTS=false, _nOBYTCOUNTS=false, _sENDFLOWREM=false]</flags>
 </flow>

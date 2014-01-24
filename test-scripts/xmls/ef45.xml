@@ -3,7 +3,7 @@
     <strict>false</strict>
     <instructions>
         <instruction>
-            <order>0</order>
+                    <order>0</order>
             <apply-actions>
                 <action>
                     <order>0</order>
@@ -13,24 +13,24 @@
         </instruction>
     </instructions>
     <table_id>2</table_id>
-    <id>154</id>
+    <id>168</id>
     <cookie_mask>10</cookie_mask>
     <out_port>10</out_port>
     <installHw>false</installHw>
     <out_group>2</out_group>
     <match>
-        <ethernet-match>
-            <ethernet-type>
-                <type>2048</type>
-            </ethernet-type>
-        </ethernet-match>
-        <ipv4-destination>10.0.0.0/24</ipv4-destination>
+        <metadata>
+	    <!-- incorect metadata-mask -> expect int 
+		(dec, hexadec [prefix 0x], ocatal [prefix 0] -->
+            <metadata-mask>[B@46645a66</metadata-mask>
+            <metadata>500</metadata>
+        </metadata>
     </match>
     <hard-timeout>12</hard-timeout>
     <flags>FlowModFlags [_cHECKOVERLAP=false, _rESETCOUNTS=false, _nOPKTCOUNTS=false, _nOBYTCOUNTS=false, _sENDFLOWREM=false]</flags>
     <cookie>10</cookie>
     <idle-timeout>34</idle-timeout>
-    <flow-name>FooXf31</flow-name>
+    <flow-name>FooXf45</flow-name>
     <priority>2</priority>
     <barrier>false</barrier>
 </flow>
