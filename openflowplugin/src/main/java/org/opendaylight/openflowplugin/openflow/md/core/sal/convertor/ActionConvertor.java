@@ -18,6 +18,7 @@ import org.opendaylight.openflowplugin.openflow.md.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchConvertorImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchReactor;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Dscp;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlInCase;
@@ -481,11 +482,29 @@ public final class ActionConvertor {
                     .setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.StripVlan.class);
 
             return emtpyAction(actionBuilder, actionsListBuilder);
+        } else if (version >= OFConstants.OFP_VERSION_1_3) {
+            OxmFieldsActionBuilder oxmFieldsActionBuilder = new OxmFieldsActionBuilder();
+            ActionBuilder actionBuilder = new ActionBuilder();
+            actionBuilder
+                    .setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.SetField.class);
+            List<MatchEntries> matchEntriesList = new ArrayList<>();
+            MatchEntriesBuilder matchEntriesBuilder = new MatchEntriesBuilder();
+            matchEntriesBuilder.setOxmClass(OpenflowBasicClass.class);
+            matchEntriesBuilder.setOxmMatchField(VlanVid.class);
+            VlanVidMatchEntryBuilder vlanVidBuilder = new VlanVidMatchEntryBuilder();
+            vlanVidBuilder.setCfiBit(true);
+            vlanVidBuilder.setVlanVid(new Integer(0x0000));
+            matchEntriesBuilder.addAugmentation(VlanVidMatchEntry.class, vlanVidBuilder.build());
+            matchEntriesBuilder.setHasMask(false);
+            matchEntriesList.add(matchEntriesBuilder.build());
+            oxmFieldsActionBuilder.setMatchEntries(matchEntriesList);
+            actionBuilder.addAugmentation(OxmFieldsAction.class, oxmFieldsActionBuilder.build());
+            actionsListBuilder.setAction(actionBuilder.build());
+            return actionsListBuilder.build();
         } else {
             logger.error("Unknown Action Type for the Version", version);
             return null;
         }
-
     }
 
     private static ActionsList SalToOFSetDlSrc(
@@ -660,11 +679,11 @@ public final class ActionConvertor {
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
             ActionsListBuilder actionsListBuilder, short version) {
 
+        SetNwTosActionCase setnwtoscase = (SetNwTosActionCase) action;
+        SetNwTosAction setnwtosaction = setnwtoscase.getSetNwTosAction();
+
         if (version == OFConstants.OFP_VERSION_1_0) {
             ActionBuilder actionBuilder = new ActionBuilder();
-            SetNwTosActionCase setnwtoscase = (SetNwTosActionCase) action;
-            SetNwTosAction setnwtosaction = setnwtoscase.getSetNwTosAction();
-
             NwTosActionBuilder tosBuilder = new NwTosActionBuilder();
             tosBuilder.setNwTos(setnwtosaction.getTos().shortValue());
             actionBuilder.addAugmentation(NwTosAction.class, tosBuilder.build());
@@ -674,6 +693,17 @@ public final class ActionConvertor {
             actionsListBuilder.setAction(actionBuilder.build());
             return actionsListBuilder.build();
 
+        } else if (version >= OFConstants.OFP_VERSION_1_3) {
+            OxmFieldsActionBuilder oxmFieldsActionBuilder = new OxmFieldsActionBuilder();
+            ActionBuilder actionBuilder = new ActionBuilder();
+            actionBuilder
+                    .setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.SetField.class);
+            List<MatchEntries> matchEntriesList = new ArrayList<>();
+            matchEntriesList.add(MatchConvertorImpl.toOfIpDscp(new Dscp(setnwtosaction.getTos().shortValue())));
+            oxmFieldsActionBuilder.setMatchEntries(matchEntriesList);
+            actionBuilder.addAugmentation(OxmFieldsAction.class, oxmFieldsActionBuilder.build());
+            actionsListBuilder.setAction(actionBuilder.build());
+            return actionsListBuilder.build();
         } else {
             logger.error("Unknown Action Type for the Version", version);
             return null;
