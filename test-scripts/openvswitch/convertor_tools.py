@@ -7,8 +7,8 @@ Created on Jan 24, 2014
 
 class ConvertorTools():
     """
-    Tool class contains static conversion method
-    for the value conversions
+        Tool class contains static conversion method
+        for the value conversions
     """
     CONVERTORS = {
         'cookie': hex, 

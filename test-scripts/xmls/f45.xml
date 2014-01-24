@@ -20,7 +20,7 @@
     <out_group>2</out_group>
     <match>
         <metadata>
-            <metadata-mask>[B@46645a66</metadata-mask>
+            <metadata-mask>0x46645a66</metadata-mask>
             <metadata>500</metadata>
         </metadata>
     </match>

@@ -4,13 +4,13 @@ Created on Jan 24, 2014
 @author: vdemcak
 '''
 
-import re
 import logging
-import mininet.topo
 import mininet.net
+from mininet.node import OVSKernelSwitch, RemoteController
+import mininet.topo
 import mininet.util
-from mininet.node import RemoteController
-from mininet.node import OVSKernelSwitch
+import re
+
 
 class MininetTools():
     """

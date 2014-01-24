@@ -35,19 +35,17 @@
         <ipv6-label>
             <ipv6-flabel>33</ipv6-flabel>
         </ipv6-label>
-	<!-- It looks like Extra Header OVS bug, because the switch has
-	return ned BAD_FIELD. I have no idea why, because it has same
-	preconditions as ipv6-label.
-	<ipv6-ext-header>
+	<!-- extra header has any extra preconditions but switch has
+	returned BAD_FIELD. I have no idea why (propably bug in ovs) -->
+        <ipv6-ext-header>
             <ipv6-exthdr>0</ipv6-exthdr>
         </ipv6-ext-header>
-	-->
         <ip-match>
             <ip-protocol>6</ip-protocol>
             <ip-dscp>60</ip-dscp>
             <ip-ecn>3</ip-ecn>
         </ip-match>
-	<tcp-source-port>183</tcp-source-port>
+        <tcp-source-port>183</tcp-source-port>
         <tcp-destination-port>8080</tcp-destination-port>
     </match>
 </flow>

@@ -3,7 +3,7 @@
     <strict>false</strict>
     <instructions>
         <instruction>
-                    <order>0</order>
+            <order>0</order>
             <apply-actions>
                 <action>
                     <order>0</order>
