@@ -42,7 +42,7 @@ public class OutputTestCommandProvider implements CommandProvider {
 
     public void _sendOutputMsg(CommandInterpreter ci) {
         /* Sending package OUT */
-        LOG.info("SendOutMsg");
+        LOG.debug("SendOutMsg");
         if (sessionInitiated) {
             String inNodeKey = ci.nextArgument();
             
@@ -63,7 +63,7 @@ public class OutputTestCommandProvider implements CommandProvider {
 
     public void _sendOutTopologyMsg(CommandInterpreter ci) {
         /* Sending package OUT */
-        LOG.info("SendOutTopologyMsg");
+        LOG.debug("SendOutTopologyMsg");
         
         
     }

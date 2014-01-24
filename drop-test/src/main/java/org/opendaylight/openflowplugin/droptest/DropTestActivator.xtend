@@ -42,13 +42,13 @@ class DropTestActivator extends AbstractBindingAwareProvider {
     
     override startImpl(BundleContext ctx) {
         super.startImpl(ctx);
-//        LOG.info("-------------------------------------    DROP ALL PACK TEST INITIATED ------------------------ ")
+//        LOG.debug("-------------------------------------    DROP ALL PACK TEST INITIATED ------------------------ ")
         cmdProvider = new DropTestCommandProvider(ctx,provider,rpcProvider);
         outCmdProvider = new OutputTestCommandProvider(ctx);
     }
 
     override protected stopImpl(BundleContext context) {
-//        LOG.info("--------------------------------------    DROP ALL PACK TEST STOPED --------------------------- ")
+//        LOG.debug("--------------------------------------    DROP ALL PACK TEST STOPED --------------------------- ")
         provider.close();
     }
 

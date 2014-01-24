@@ -426,7 +426,7 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                 }
                 message.setQueueIdAndStatisticsMap(statsMap);
 
-                logger.info("Converted queue statistics : {}",message.build().toString());
+                logger.debug("Converted queue statistics : {}",message.build().toString());
                 listDataObject.add(message.build());
                 return listDataObject;
             }

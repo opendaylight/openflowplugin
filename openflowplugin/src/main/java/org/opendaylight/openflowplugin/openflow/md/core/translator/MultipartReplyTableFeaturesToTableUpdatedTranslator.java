@@ -44,7 +44,7 @@ public class MultipartReplyTableFeaturesToTableUpdatedTranslator implements
 		
 				
 		if(msg instanceof MultipartReply && ((MultipartReply) msg).getType() == MultipartType.OFPMPTABLEFEATURES) {
-			LOG.info("MultipartReply Being translated to TableUpdated " );
+			LOG.debug("MultipartReply Being translated to TableUpdated " );
 			MultipartReplyMessage mpReply = (MultipartReplyMessage)msg;
                         
             List<DataObject> listDataObject = new CopyOnWriteArrayList<DataObject>();

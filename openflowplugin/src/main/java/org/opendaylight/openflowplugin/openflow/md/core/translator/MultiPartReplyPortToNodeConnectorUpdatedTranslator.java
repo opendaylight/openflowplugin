@@ -38,13 +38,13 @@ public class MultiPartReplyPortToNodeConnectorUpdatedTranslator implements IMDMe
             SessionContext sc, OfHeader msg) {
         if(msg instanceof MultipartReply && ((MultipartReply) msg).getType() == MultipartType.OFPMPPORTDESC) {
             BigInteger datapathId = sc.getFeatures().getDatapathId();
-            LOG.info("MultiPartReplyPortToNodeConnectorUpdatedTranslator Being translated to NodeConnectorUpdated ");
+            LOG.trace("MultiPartReplyPortToNodeConnectorUpdatedTranslator Being translated to NodeConnectorUpdated ");
             MultipartReplyMessage message = (MultipartReplyMessage) msg;
             MultipartReplyPortDescCase caseBody = (MultipartReplyPortDescCase) message.getMultipartReplyBody();
             MultipartReplyPortDesc body = caseBody.getMultipartReplyPortDesc();
             List<DataObject> list = new CopyOnWriteArrayList<DataObject>();
             for ( Ports port : body.getPorts() ) {
-                LOG.info("Port: " + port);
+                LOG.debug("Port: " + port);
                 list.add(PortTranslatorUtil.translatePort(msg.getVersion(), datapathId, port.getPortNo(), port));
             }
             return list;

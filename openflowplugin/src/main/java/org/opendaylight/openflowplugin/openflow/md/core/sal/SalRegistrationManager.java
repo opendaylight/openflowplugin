@@ -80,7 +80,7 @@ public class SalRegistrationManager implements SessionListener, SwitchInventory 
         getSessionManager().registerSessionListener(this);
         getSessionManager().setNotificationProviderService(publishService);
         getSessionManager().setDataProviderService(dataService);
-        LOG.info("SalRegistrationManager initialized");
+        LOG.debug("SalRegistrationManager initialized");
 
     }
 
@@ -96,7 +96,7 @@ public class SalRegistrationManager implements SessionListener, SwitchInventory 
         salSwitches.put(identifier, ofSwitch);
         ofSwitch.register(providerContext);
 
-        LOG.info("ModelDrivenSwitch for {} registered to MD-SAL.", datapathId.toString());
+        LOG.debug("ModelDrivenSwitch for {} registered to MD-SAL.", datapathId.toString());
 
         publishService.publish(nodeAdded(ofSwitch, features,nodeRef));
     }
@@ -109,7 +109,7 @@ public class SalRegistrationManager implements SessionListener, SwitchInventory 
         NodeRef nodeRef = new NodeRef(identifier);
         NodeRemoved nodeRemoved = nodeRemoved(nodeRef);
         LLDPSpeaker.getInstance().removeModelDrivenSwitch(identifier);
-        LOG.info("ModelDrivenSwitch for {} unregistred from MD-SAL.", datapathId.toString());
+        LOG.debug("ModelDrivenSwitch for {} unregistred from MD-SAL.", datapathId.toString());
         publishService.publish(nodeRemoved);
     }
 
