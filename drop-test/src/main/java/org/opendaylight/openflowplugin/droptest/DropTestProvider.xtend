@@ -36,12 +36,12 @@ class DropTestProvider implements AutoCloseable {
 
     def void start() {
         listenerRegistration = notificationService.registerNotificationListener(commiter);
-        LOG.info("DropTestProvider Started.");
+        LOG.debug("DropTestProvider Started.");
         
     }   
     
     override close() {
-       LOG.info("DropTestProvider stopped.");
+       LOG.debug("DropTestProvider stopped.");
         listenerRegistration?.close();
     }
     

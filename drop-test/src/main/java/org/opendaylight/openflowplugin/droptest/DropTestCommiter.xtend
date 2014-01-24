@@ -50,16 +50,16 @@ class DropTestCommiter implements PacketProcessingListener {
     }
     
     override onPacketReceived(PacketReceived notification) {
-        LOG.info("onPacketReceived - Entering - " + notification);
+        LOG.debug("onPacketReceived - Entering - " + notification);
         val ncr = notification.ingress // Get the Ingress nodeConnectorRef
         val ncri = (ncr.value as InstanceIdentifier<NodeConnector>); // Get the instance identifier for the nodeConnectorRef
         val ncKey = InstanceIdentifier.keyOf(ncri);
         val nodeInstanceId = ncri.firstIdentifierOf(Node); // Get the instanceID for the Node in the tree above us
         val nodeKey = InstanceIdentifier.keyOf(nodeInstanceId);
         val rawPacket = notification.payload;
-        LOG.info("onPacketReceived - received Packet on Node {} and NodeConnector {} payload {}",nodeKey.id,ncKey.id,Hex.encodeHexString(rawPacket));
+        LOG.debug("onPacketReceived - received Packet on Node {} and NodeConnector {} payload {}",nodeKey.id,ncKey.id,Hex.encodeHexString(rawPacket));
         val srcMac = Arrays.copyOfRange(rawPacket,6,12);
-        LOG.info("onPacketReceived - received Packet on Node {} and NodeConnector {} srcMac {}",nodeKey.id,ncKey.id,Hex.encodeHexString(srcMac));
+        LOG.debug("onPacketReceived - received Packet on Node {} and NodeConnector {} srcMac {}",nodeKey.id,ncKey.id,Hex.encodeHexString(srcMac));
         
         val match = new MatchBuilder();
         val ethernetMatch = new EthernetMatchBuilder();
@@ -115,10 +115,10 @@ class DropTestCommiter implements PacketProcessingListener {
             .build();
         val flow = fb.build()
         val transaction = _manager.dataService.beginTransaction
-        LOG.info("onPacketReceived - About to write flow - " + flow);
+        LOG.debug("onPacketReceived - About to write flow - " + flow);
         transaction.putConfigurationData(flowInstanceId,flow);
         transaction.commit;
-        LOG.info("onPacketReceived - About to write flow commited");
+        LOG.debug("onPacketReceived - About to write flow commited");
     }
     
 }

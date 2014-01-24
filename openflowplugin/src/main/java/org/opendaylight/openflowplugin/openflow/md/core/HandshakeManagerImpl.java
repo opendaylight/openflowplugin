@@ -74,7 +74,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
 
     @Override
     public synchronized void shake() {
-        LOG.info("handshake STARTED");
+        LOG.trace("handshake STARTED");
         setActiveXid(20L);
         HelloMessage receivedHelloLoc = receivedHello;
         
@@ -310,7 +310,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
                     featureOutput.getDatapathId());
             LOG.debug("obtained features: auxiliaryId={}",
                     featureOutput.getAuxiliaryId());
-            LOG.info("handshake SETTLED: version={}, datapathId={}, auxiliaryId={}", 
+            LOG.trace("handshake SETTLED: version={}, datapathId={}, auxiliaryId={}", 
                     version, featureOutput.getDatapathId(), featureOutput.getAuxiliaryId());
             
             handshakeListener.onHandshakeSuccessfull(featureOutput, proposedVersion);

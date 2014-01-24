@@ -34,12 +34,12 @@ class DropTestRpcProvider implements AutoCloseable {
     def void start() {
         commiter = new DropTestRpcSender(this,flowService)
         listenerRegistration = notificationService.registerNotificationListener(commiter);
-        LOG.info("DropTestProvider Started.");
+        LOG.debug("DropTestProvider Started.");
         
     }   
     
     override close() {
-       LOG.info("DropTestProvider stopped.");
+       LOG.debug("DropTestProvider stopped.");
         listenerRegistration?.close();
     }
     

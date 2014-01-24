@@ -38,7 +38,7 @@ public class PacketInTranslator implements IMDMessageTranslator<OfHeader, List<D
         if(sc !=null && msg instanceof PacketInMessage) {
             PacketInMessage message = (PacketInMessage)msg;
             List<DataObject> list = new CopyOnWriteArrayList<DataObject>();
-            LOG.info("PacketIn: InPort: {} Cookie: {} Match.type: {}",
+            LOG.trace("PacketIn: InPort: {} Cookie: {} Match.type: {}",
                     message.getInPort(), message.getCookie(),
                     message.getMatch() != null ? message.getMatch().getType()
                                               : message.getMatch());
@@ -87,7 +87,7 @@ public class PacketInTranslator implements IMDMessageTranslator<OfHeader, List<D
                    LOG.warn("Received packet_in, but couldn't find an input port");
                    return null;
                }else{
-                   LOG.info("Receive packet_in from {} on port {}", dpid, port);
+                   LOG.trace("Receive packet_in from {} on port {}", dpid, port);
                }
                pktInBuilder.setIngress(InventoryDataServiceUtil.nodeConnectorRefFromDatapathIdPortno(dpid,port));
                PacketReceived pktInEvent = pktInBuilder.build();

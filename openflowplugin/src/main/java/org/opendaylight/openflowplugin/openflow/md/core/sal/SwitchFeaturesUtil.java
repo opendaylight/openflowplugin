@@ -48,7 +48,7 @@ public class SwitchFeaturesUtil {
     public SwitchFeatures buildSwitchFeatures(GetFeaturesOutput features) {
 
         if(swFeaturesBuilders.containsKey(features.getVersion()) == true) {
-            LOG.info("map contains version {}", features.getVersion());
+            LOG.debug("map contains version {}", features.getVersion());
             try {
                 return swFeaturesBuilders.get(features.getVersion()).build(features);
             } catch (NullPointerException e) {

@@ -36,7 +36,7 @@ public class MultiPartMessageDescToNodeUpdatedTranslator implements IMDMessageTr
     public List<DataObject> translate(SwitchConnectionDistinguisher cookie,
             SessionContext sc, OfHeader msg) {
         if(msg instanceof MultipartReply && ((MultipartReply) msg).getType() == MultipartType.OFPMPDESC) {
-            LOG.info("MultipartReplyMessage - MultipartReplyDesc Being translated to NodeUpdated ");
+            LOG.debug("MultipartReplyMessage - MultipartReplyDesc Being translated to NodeUpdated ");
             MultipartReplyMessage message = (MultipartReplyMessage) msg;
             List<DataObject> list = new CopyOnWriteArrayList<DataObject>();
             BigInteger datapathId = sc.getFeatures().getDatapathId();

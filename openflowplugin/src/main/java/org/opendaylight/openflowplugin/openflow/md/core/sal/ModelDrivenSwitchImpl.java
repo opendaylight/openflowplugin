@@ -532,7 +532,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 
     @Override
     public Future<RpcResult<Void>> transmitPacket(TransmitPacketInput input) {
-        LOG.info("TransmitPacket - {}",input);
+        LOG.debug("TransmitPacket - {}",input);
     	// Convert TransmitPacket to PacketOutInput
         PacketOutInput message = PacketOutConvertor.toPacketOutInput(input, version, sessionContext.getNextXid());
     	
@@ -1050,7 +1050,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         //Generate xid to associate it with the request
         Long xid = this.getSessionContext().getNextXid();
 
-        LOG.info("Prepare port statistics request for all ports of node {} - TrasactionId - {}",arg0.getNode().getValue(),xid);
+        LOG.debug("Prepare port statistics request for all ports of node {} - TrasactionId - {}",arg0.getNode().getValue(),xid);
 
         // Create multipart request header
         MultipartRequestInputBuilder mprInput = new MultipartRequestInputBuilder();
@@ -1087,7 +1087,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         //Generate xid to associate it with the request
         Long xid = this.getSessionContext().getNextXid();
 
-        LOG.info("Prepare port statistics request for port {} of node {} - TrasactionId - {}",arg0.getNodeConnectorId(), arg0.getNode().getValue(),xid);
+        LOG.debug("Prepare port statistics request for port {} of node {} - TrasactionId - {}",arg0.getNodeConnectorId(), arg0.getNode().getValue(),xid);
 
         // Create multipart request header
         MultipartRequestInputBuilder mprInput = new MultipartRequestInputBuilder();
@@ -1300,7 +1300,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         //Generate xid to associate it with the request
         Long xid = this.getSessionContext().getNextXid();
 
-        LOG.info("Prepare statistics request to get flow stats of all switch tables - Transaction id - {}",xid);
+        LOG.debug("Prepare statistics request to get flow stats of all switch tables - Transaction id - {}",xid);
 
         // Create multipart request header
         MultipartRequestInputBuilder mprInput = new MultipartRequestInputBuilder();
@@ -1347,7 +1347,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         //Generate xid to associate it with the request
         Long xid = this.getSessionContext().getNextXid();
 
-        LOG.info("Prepare statistics request to get stats for flow {} for switch tables {} - Transaction id - {}"
+        LOG.debug("Prepare statistics request to get stats for flow {} for switch tables {} - Transaction id - {}"
                 ,arg0.getMatch().toString(),arg0.getTableId(),xid);
 
         // Create multipart request header
@@ -1411,7 +1411,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         //Generate xid to associate it with the request
         Long xid = this.getSessionContext().getNextXid();
 
-        LOG.info("Prepare aggregate flow statistics request to get aggregate flow stats for all the flow installed on switch table {} - Transaction id - {}"
+        LOG.debug("Prepare aggregate flow statistics request to get aggregate flow stats for all the flow installed on switch table {} - Transaction id - {}"
                 ,arg0.getTableId().getValue(),xid);
 
         // Create multipart request header
@@ -1509,7 +1509,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         //Generate xid to associate it with the request
         Long xid = this.getSessionContext().getNextXid();
 
-        LOG.info("Prepare flow table statistics request to get flow table stats for all tables " +
+        LOG.debug("Prepare flow table statistics request to get flow table stats for all tables " +
         		"from node {}- Transaction id - {}",arg0.getNode(),xid);
 
         // Create multipart request header
@@ -1547,7 +1547,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         //Generate xid to associate it with the request
         Long xid = this.getSessionContext().getNextXid();
 
-        LOG.info("Prepare queue statistics request to collect stats for all queues attached to all the ports of node {} - TrasactionId - {}",arg0.getNode().getValue(),xid);
+        LOG.debug("Prepare queue statistics request to collect stats for all queues attached to all the ports of node {} - TrasactionId - {}",arg0.getNode().getValue(),xid);
 
         // Create multipart request header
         MultipartRequestInputBuilder mprInput = new MultipartRequestInputBuilder();
@@ -1589,7 +1589,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         //Generate xid to associate it with the request
         Long xid = this.getSessionContext().getNextXid();
 
-        LOG.info("Prepare queue statistics request to collect stats for " +
+        LOG.debug("Prepare queue statistics request to collect stats for " +
         		"all queues attached to given port {} of node {} - TrasactionId - {}",arg0.getNodeConnectorId().toString(),arg0.getNode().getValue(),xid);
 
         // Create multipart request header
@@ -1632,7 +1632,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         //Generate xid to associate it with the request
         Long xid = this.getSessionContext().getNextXid();
 
-        LOG.info("Prepare queue statistics request to collect stats for " +
+        LOG.debug("Prepare queue statistics request to collect stats for " +
                         "given queue attached to given port {} of node {} - TrasactionId - {}",arg0.getQueueId().toString(),arg0.getNodeConnectorId().toString(),arg0.getNode().getValue(),xid);
 
         // Create multipart request header

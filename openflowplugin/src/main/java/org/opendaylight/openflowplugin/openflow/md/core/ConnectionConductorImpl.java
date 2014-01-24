@@ -223,7 +223,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         Boolean portBandwidth = portFeaturesUtils.getPortBandwidth(msg);
         
         if(portBandwidth == null) {
-            LOG.warn("can't get bandwidth info from port: {}, aborting port update", msg.toString());
+            LOG.debug("can't get bandwidth info from port: {}, aborting port update", msg.toString());
         } else {
             this.getSessionContext().getPhysicalPorts().put(portNumber, msg);
             this.getSessionContext().getPortsBandwidth().put(portNumber, portBandwidth);                   
@@ -322,7 +322,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
 
     @Override
     public Future<Boolean> disconnect() {
-        LOG.info("disconnecting: sessionCtx={}|auxId={}", sessionContext, auxiliaryKey);
+        LOG.trace("disconnecting: sessionCtx={}|auxId={}", sessionContext, auxiliaryKey);
 
         Future<Boolean> result = null;
         if (connectionAdapter.isAlive()) {

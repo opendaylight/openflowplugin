@@ -237,7 +237,7 @@ public class ConnectionAdapterStackImpl implements ConnectionAdapter, Runnable {
 
     @Override
     public Future<Boolean> disconnect() {
-        LOG.info("adapter is told to disconnect");
+        LOG.debug("adapter is told to disconnect");
         DisconnectEventBuilder disconnectEventBuilder = new DisconnectEventBuilder();
         disconnectEventBuilder.setInfo("disconnected by plugin");
         systemListener.onDisconnectEvent(disconnectEventBuilder.build());
