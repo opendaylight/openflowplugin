@@ -743,6 +743,16 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     @Override
     public Future<RpcResult<GetAllGroupStatisticsOutput>> getAllGroupStatistics(GetAllGroupStatisticsInput input) {
 
+        GetAllGroupStatisticsOutputBuilder output = new GetAllGroupStatisticsOutputBuilder();
+        Collection<RpcError> errors = Collections.emptyList();
+
+        if(version == OFConstants.OFP_VERSION_1_0){
+            output.setTransactionId(null);
+            output.setGroupStats(null);
+
+            RpcResult<GetAllGroupStatisticsOutput> rpcResult = Rpcs.getRpcResult(true, output.build(), errors);
+            return Futures.immediateFuture(rpcResult);
+        }
         //Generate xid to associate it with the request
         Long xid = this.getSessionContext().getNextXid();
 
@@ -770,11 +780,9 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 
         // Prepare rpc return output. Set xid and send it back.
         LOG.debug("Return results and transaction id back to caller");
-        GetAllGroupStatisticsOutputBuilder output = new GetAllGroupStatisticsOutputBuilder();
         output.setTransactionId(generateTransactionId(xid));
         output.setGroupStats(null);
 
-        Collection<RpcError> errors = Collections.emptyList();
         RpcResult<GetAllGroupStatisticsOutput> rpcResult = Rpcs.getRpcResult(true, output.build(), errors);
         return Futures.immediateFuture(rpcResult);
 
@@ -783,6 +791,16 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     @Override
     public Future<RpcResult<GetGroupDescriptionOutput>> getGroupDescription(GetGroupDescriptionInput input) {
 
+        GetGroupDescriptionOutputBuilder output = new GetGroupDescriptionOutputBuilder();
+        Collection<RpcError> errors = Collections.emptyList();
+
+        if(version == OFConstants.OFP_VERSION_1_0){
+            output.setTransactionId(null);
+            output.setGroupDescStats(null);
+
+            RpcResult<GetGroupDescriptionOutput> rpcResult = Rpcs.getRpcResult(true, output.build(), errors);
+            return Futures.immediateFuture(rpcResult);
+        }
         //Generate xid to associate it with the request
         Long xid = this.getSessionContext().getNextXid();
 
@@ -807,11 +825,9 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 
         // Prepare rpc return output. Set xid and send it back.
         LOG.debug("Return results and transaction id back to caller");
-        GetGroupDescriptionOutputBuilder output = new GetGroupDescriptionOutputBuilder();
         output.setTransactionId(generateTransactionId(xid));
         output.setGroupDescStats(null);
 
-        Collection<RpcError> errors = Collections.emptyList();
         RpcResult<GetGroupDescriptionOutput> rpcResult = Rpcs.getRpcResult(true, output.build(), errors);
         return Futures.immediateFuture(rpcResult);
 
@@ -820,6 +836,15 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     @Override
     public Future<RpcResult<GetGroupFeaturesOutput>> getGroupFeatures(GetGroupFeaturesInput input) {
 
+        GetGroupFeaturesOutputBuilder output = new GetGroupFeaturesOutputBuilder();
+        Collection<RpcError> errors = Collections.emptyList();
+
+        if(version == OFConstants.OFP_VERSION_1_0){
+            output.setTransactionId(null);
+
+            RpcResult<GetGroupFeaturesOutput> rpcResult = Rpcs.getRpcResult(true, output.build(), errors);
+            return Futures.immediateFuture(rpcResult);
+        }
         //Generate xid to associate it with the request
         Long xid = this.getSessionContext().getNextXid();
 
@@ -844,10 +869,8 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 
         // Prepare rpc return output. Set xid and send it back.
         LOG.debug("Return results and transaction id back to caller");
-        GetGroupFeaturesOutputBuilder output = new GetGroupFeaturesOutputBuilder();
         output.setTransactionId(generateTransactionId(xid));
 
-        Collection<RpcError> errors = Collections.emptyList();
         RpcResult<GetGroupFeaturesOutput> rpcResult = Rpcs.getRpcResult(true, output.build(), errors);
         return Futures.immediateFuture(rpcResult);
     }
@@ -855,6 +878,16 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     @Override
     public Future<RpcResult<GetGroupStatisticsOutput>> getGroupStatistics(GetGroupStatisticsInput input) {
 
+        GetGroupStatisticsOutputBuilder output = new GetGroupStatisticsOutputBuilder();
+        Collection<RpcError> errors = Collections.emptyList();
+
+        if(version == OFConstants.OFP_VERSION_1_0){
+            output.setTransactionId(null);
+            output.setGroupStats(null);
+
+            RpcResult<GetGroupStatisticsOutput> rpcResult = Rpcs.getRpcResult(true, output.build(), errors);
+            return Futures.immediateFuture(rpcResult);
+        }
         //Generate xid to associate it with the request
         Long xid = this.getSessionContext().getNextXid();
 
@@ -882,11 +915,9 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 
         // Prepare rpc return output. Set xid and send it back.
         LOG.debug("Return results and transaction id back to caller");
-        GetGroupStatisticsOutputBuilder output = new GetGroupStatisticsOutputBuilder();
         output.setTransactionId(generateTransactionId(xid));
         output.setGroupStats(null);
 
-        Collection<RpcError> errors = Collections.emptyList();
         RpcResult<GetGroupStatisticsOutput> rpcResult = Rpcs.getRpcResult(true, output.build(), errors);
         return Futures.immediateFuture(rpcResult);
     }
@@ -895,6 +926,17 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     public Future<RpcResult<GetAllMeterConfigStatisticsOutput>> getAllMeterConfigStatistics(
             GetAllMeterConfigStatisticsInput input) {
 
+        GetAllMeterConfigStatisticsOutputBuilder output = new GetAllMeterConfigStatisticsOutputBuilder();
+        Collection<RpcError> errors = Collections.emptyList();
+
+        if(version == OFConstants.OFP_VERSION_1_0){
+            output.setTransactionId(null);
+            output.setMeterConfigStats(null);
+
+            RpcResult<GetAllMeterConfigStatisticsOutput> rpcResult = Rpcs.getRpcResult(true, output.build(), errors);
+            return Futures.immediateFuture(rpcResult);
+
+        }
         //Generate xid to associate it with the request
         Long xid = this.getSessionContext().getNextXid();
 
@@ -922,11 +964,9 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 
         // Prepare rpc return output. Set xid and send it back.
         LOG.debug("Return results and transaction id back to caller");
-        GetAllMeterConfigStatisticsOutputBuilder output = new GetAllMeterConfigStatisticsOutputBuilder();
         output.setTransactionId(generateTransactionId(xid));
         output.setMeterConfigStats(null);
 
-        Collection<RpcError> errors = Collections.emptyList();
         RpcResult<GetAllMeterConfigStatisticsOutput> rpcResult = Rpcs.getRpcResult(true, output.build(), errors);
         return Futures.immediateFuture(rpcResult);
     }
@@ -934,6 +974,16 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     @Override
     public Future<RpcResult<GetAllMeterStatisticsOutput>> getAllMeterStatistics(GetAllMeterStatisticsInput input) {
 
+        GetAllMeterStatisticsOutputBuilder output = new GetAllMeterStatisticsOutputBuilder();
+        Collection<RpcError> errors = Collections.emptyList();
+
+        if(version == OFConstants.OFP_VERSION_1_0){
+            output.setTransactionId(null);
+            output.setMeterStats(null);
+
+            RpcResult<GetAllMeterStatisticsOutput> rpcResult = Rpcs.getRpcResult(true, output.build(), errors);
+            return Futures.immediateFuture(rpcResult);
+        }
         //Generate xid to associate it with the request
         Long xid = this.getSessionContext().getNextXid();
 
@@ -961,11 +1011,9 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 
         // Prepare rpc return output. Set xid and send it back.
         LOG.debug("Return results and transaction id back to caller");
-        GetAllMeterStatisticsOutputBuilder output = new GetAllMeterStatisticsOutputBuilder();
         output.setTransactionId(generateTransactionId(xid));
         output.setMeterStats(null);
 
-        Collection<RpcError> errors = Collections.emptyList();
         RpcResult<GetAllMeterStatisticsOutput> rpcResult = Rpcs.getRpcResult(true, output.build(), errors);
         return Futures.immediateFuture(rpcResult);
     }
@@ -973,6 +1021,15 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     @Override
     public Future<RpcResult<GetMeterFeaturesOutput>> getMeterFeatures(GetMeterFeaturesInput input) {
 
+        GetMeterFeaturesOutputBuilder output = new GetMeterFeaturesOutputBuilder();
+        Collection<RpcError> errors = Collections.emptyList();
+
+        if(version == OFConstants.OFP_VERSION_1_0){
+            output.setTransactionId(null);
+
+            RpcResult<GetMeterFeaturesOutput> rpcResult = Rpcs.getRpcResult(true, output.build(), errors);
+            return Futures.immediateFuture(rpcResult);
+        }
         //Generate xid to associate it with the request
         Long xid = this.getSessionContext().getNextXid();
 
@@ -997,16 +1054,26 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 
         // Prepare rpc return output. Set xid and send it back.
         LOG.debug("Return results and transaction id back to caller");
-        GetMeterFeaturesOutputBuilder output = new GetMeterFeaturesOutputBuilder();
         output.setTransactionId(generateTransactionId(xid));
 
-        Collection<RpcError> errors = Collections.emptyList();
         RpcResult<GetMeterFeaturesOutput> rpcResult = Rpcs.getRpcResult(true, output.build(), errors);
         return Futures.immediateFuture(rpcResult);
     }
 
     @Override
     public Future<RpcResult<GetMeterStatisticsOutput>> getMeterStatistics(GetMeterStatisticsInput input) {
+        
+        GetMeterStatisticsOutputBuilder output = new GetMeterStatisticsOutputBuilder();
+        Collection<RpcError> errors = Collections.emptyList();
+
+        if(version == OFConstants.OFP_VERSION_1_0){
+            output.setTransactionId(null);
+            output.setMeterStats(null);
+
+            RpcResult<GetMeterStatisticsOutput> rpcResult = Rpcs.getRpcResult(true, output.build(), errors);
+            return Futures.immediateFuture(rpcResult);
+
+        }
         //Generate xid to associate it with the request
         Long xid = this.getSessionContext().getNextXid();
 
@@ -1035,11 +1102,9 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 
         // Prepare rpc return output. Set xid and send it back.
         LOG.debug("Return results and transaction id back to caller");
-        GetMeterStatisticsOutputBuilder output = new GetMeterStatisticsOutputBuilder();
         output.setTransactionId(generateTransactionId(xid));
         output.setMeterStats(null);
 
-        Collection<RpcError> errors = Collections.emptyList();
         RpcResult<GetMeterStatisticsOutput> rpcResult = Rpcs.getRpcResult(true, output.build(), errors);
         return Futures.immediateFuture(rpcResult);
     }
@@ -1132,8 +1197,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 	// TODO Auto-generated method stub
 	return null;
     }
-    
-
+  
     @Override
     public Future<RpcResult<UpdatePortOutput>> updatePort(UpdatePortInput input) {
 	PortModInput ofPortModInput = null ;
