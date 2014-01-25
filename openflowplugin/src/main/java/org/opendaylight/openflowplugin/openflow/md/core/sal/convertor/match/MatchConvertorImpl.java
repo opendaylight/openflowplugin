@@ -695,7 +695,20 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
                     String ipv4PrefixStr = ipv4AddressMatchEntry.getIpv4Address().getValue();
                     MaskMatchEntry maskMatchEntry = ofMatch.getAugmentation(MaskMatchEntry.class);
                     if (maskMatchEntry != null) {
-                        ipv4PrefixStr += PREFIX_SEPARATOR + ByteBuffer.wrap(maskMatchEntry.getMask()).getInt();
+                        int receivedMask = ByteBuffer.wrap(maskMatchEntry.getMask()).getInt();
+                        int shiftCount=0;
+                        while(receivedMask != 0xffffffff){
+                            receivedMask = receivedMask >> 1;
+                            shiftCount++;
+                        }
+                        ipv4PrefixStr += PREFIX_SEPARATOR + (32-shiftCount);
+                    }else{
+                        //Openflow Spec : 1.3.2 
+                        //An all-one-bits oxm_mask is equivalent to specifying 0 for oxm_hasmask and omitting oxm_mask.
+                        // So when user specify 32 as a mast, switch omit that mast and we get null as a mask in flow
+                        // statistics response.
+
+                        ipv4PrefixStr+=PREFIX_SEPARATOR + "32";
                     }
                     if (ofMatch.getOxmMatchField().equals(Ipv4Src.class)) {
                         ipv4MatchBuilder.setIpv4Source(new Ipv4Prefix(ipv4PrefixStr));
