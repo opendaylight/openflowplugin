@@ -178,9 +178,6 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
                 .child(Node.class, testNode.getKey()).augmentation(FlowCapableNode.class)
                 .child(Meter.class, new MeterKey(testMeter.getMeterId()))
                 .build();
-        modification.removeOperationalData(nodeToInstanceId(testNode));
-        modification.removeOperationalData(path1);
-        modification.removeConfigurationData(nodeToInstanceId(testNode));
         modification.removeConfigurationData(path1);
         Future<RpcResult<TransactionStatus>> commitFuture = modification.commit();
         try {
@@ -218,8 +215,6 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
                 .child(Meter.class, new MeterKey(meter.getMeterId()))
                 .build();
         DataObject cls = (DataObject) modification.readConfigurationData(path1);
-        modification.putOperationalData(nodeToInstanceId(testNode), testNode);
-        modification.putOperationalData(path1, meter);
         modification.putConfigurationData(nodeToInstanceId(testNode), testNode);
         modification.putConfigurationData(path1, meter);
         Future<RpcResult<TransactionStatus>> commitFuture = modification.commit();

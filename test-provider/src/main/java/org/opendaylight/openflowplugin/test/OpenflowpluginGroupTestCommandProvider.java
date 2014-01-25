@@ -668,11 +668,6 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         DataModification<InstanceIdentifier<?>, DataObject> modification = dataBrokerService.beginTransaction();
         InstanceIdentifier<Group> path1 = InstanceIdentifier.builder(Nodes.class).child(Node.class, testNode.getKey())
                 .augmentation(FlowCapableNode.class).child(Group.class, new GroupKey(gbuilder.getGroupId())).build();
-        // DataObject cls = (DataObject)
-        // modification.readConfigurationData(path1);
-        // modification.removeOperationalData(nodeToInstanceId(testNode));
-        modification.removeOperationalData(path1);
-        // modification.removeConfigurationData(nodeToInstanceId(testNode));
         modification.removeConfigurationData(path1);
         Future<RpcResult<TransactionStatus>> commitFuture = modification.commit();
         try {
@@ -710,8 +705,6 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
                 .child(Node.class, testNode.getKey()).augmentation(FlowCapableNode.class)
                 .child(Group.class, new GroupKey(group.getGroupId()))
                 .build();
-        modification.putOperationalData(nodeToInstanceId(testNode), testNode);
-        modification.putOperationalData(path1, group);
         modification.putConfigurationData(nodeToInstanceId(testNode), testNode);
         modification.putConfigurationData(path1, group);
         Future<RpcResult<TransactionStatus>> commitFuture = modification.commit();

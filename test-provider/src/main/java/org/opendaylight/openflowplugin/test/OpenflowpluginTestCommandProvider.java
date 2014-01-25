@@ -3116,9 +3116,6 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         InstanceIdentifier<Flow> path1 = InstanceIdentifier.builder(Nodes.class).child(Node.class, tn.getKey())
                 .augmentation(FlowCapableNode.class).child(Table.class, new TableKey(tf.getTableId()))
                 .child(Flow.class, tf.getKey()).build();
-        modification.removeOperationalData(nodeBuilderToInstanceId(tn));
-        modification.removeOperationalData(path1);
-        modification.removeConfigurationData(nodeBuilderToInstanceId(tn));
         modification.removeConfigurationData(path1);
         Future<RpcResult<TransactionStatus>> commitFuture = modification.commit();
         try {
@@ -3133,6 +3130,13 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         }
     }
 
+    /**
+     * @param ci arguments: switchId flowType tableNum
+     * 
+     * <pre>
+     * e.g.: addMDFlow openflow:1 f1 42
+     * </pre>
+     */
     public void _addMDFlow(CommandInterpreter ci) {
         NodeBuilder tn = createTestNode(ci.nextArgument());
         String flowtype = ci.nextArgument();
@@ -3150,8 +3154,6 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         InstanceIdentifier<Flow> path1 = InstanceIdentifier.builder(Nodes.class)
                 .child(Node.class, nodeBuilder.getKey()).augmentation(FlowCapableNode.class)
                 .child(Table.class, new TableKey(flow.getTableId())).child(Flow.class, flow.getKey()).build();
-        modification.putOperationalData(nodeBuilderToInstanceId(nodeBuilder), nodeBuilder.build());
-        modification.putOperationalData(path1, flow.build());
         modification.putConfigurationData(nodeBuilderToInstanceId(nodeBuilder), nodeBuilder.build());
         modification.putConfigurationData(path1, flow.build());
         Future<RpcResult<TransactionStatus>> commitFuture = modification.commit();
