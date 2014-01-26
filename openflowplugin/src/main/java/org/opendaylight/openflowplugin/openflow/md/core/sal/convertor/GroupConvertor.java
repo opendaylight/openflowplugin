@@ -82,13 +82,17 @@ public final class GroupConvertor {
         }
 
         groupModInputBuilder.setGroupId(new GroupId(source.getGroupId().getValue()));
-        // Only if the bucket is configured for the group then add it
-        if ((source.getBuckets() != null) && (source.getBuckets().getBucket().size() != 0)) {
-
-            bucketLists = new ArrayList<BucketsList>();
-            getbucketList(source.getBuckets(), bucketLists, version, source.getGroupType().getIntValue(),datapathid);
-            groupModInputBuilder.setBucketsList(bucketLists);
+        // delete command must not specify buckets (OF-1.3.2::6.5 Group Table Modiﬁcation Messages)
+        if (GroupModCommand.OFPGCDELETE != groupModInputBuilder.getCommand()) {
+            // Only if the bucket is configured for the group then add it
+            if ((source.getBuckets() != null) && (source.getBuckets().getBucket().size() != 0)) {
+    
+                bucketLists = new ArrayList<BucketsList>();
+                getbucketList(source.getBuckets(), bucketLists, version, source.getGroupType().getIntValue(),datapathid);
+                groupModInputBuilder.setBucketsList(bucketLists);
+            }
         }
+        
         groupModInputBuilder.setVersion(version);
         return groupModInputBuilder;
 
