@@ -158,6 +158,9 @@ public class MDController implements IMDController {
         // Push the updated Listeners to Session Manager which will be then picked up by ConnectionConductor eventually
         OFSessionUtil.getSessionManager().setTranslatorMapping(messageTranslators);
         OFSessionUtil.getSessionManager().setPopListenerMapping(popListeners);
+
+        // Push MDConfiguration to Session Manager TODO: read configuration from md-sal subsystem
+        OFSessionUtil.getSessionManager().setMdConfiguration(MDConfigurationFactory.createDefaultConfiguration());
     }
 
     /**

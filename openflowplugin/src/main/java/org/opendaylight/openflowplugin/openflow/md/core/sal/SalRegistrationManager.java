@@ -56,22 +56,39 @@ public class SalRegistrationManager implements SessionListener, SwitchInventory 
     
     private SwitchFeaturesUtil swFeaturesUtil;
     
+    /**
+     * default ctor
+     */
     public SalRegistrationManager() {
         swFeaturesUtil = SwitchFeaturesUtil.getInstance();
     }
 
+    /**
+     * @return publish service
+     */
     public NotificationProviderService getPublishService() {
         return publishService;
     }
 
+    /**
+     * inject publishService
+     * @param publishService
+     */
     public void setPublishService(NotificationProviderService publishService) {
         this.publishService = publishService;
     }
 
+    /**
+     * @return provider context
+     */
     public ProviderContext getProviderContext() {
         return providerContext;
     }
 
+    /**
+     * inject appropriate services into {@link SessionManager}
+     * @param session
+     */
     public void onSessionInitiated(ProviderContext session) {
         this.providerContext = session;
         this.publishService = session.getSALService(NotificationProviderService.class);
@@ -105,12 +122,21 @@ public class SalRegistrationManager implements SessionListener, SwitchInventory 
     public void onSessionRemoved(SessionContext context) {
         GetFeaturesOutput features = context.getFeatures();
         BigInteger datapathId = features.getDatapathId();
-        InstanceIdentifier<Node> identifier = identifierFromDatapathId(datapathId);
-        NodeRef nodeRef = new NodeRef(identifier);
-        NodeRemoved nodeRemoved = nodeRemoved(nodeRef);
-        LLDPSpeaker.getInstance().removeModelDrivenSwitch(identifier);
-        LOG.debug("ModelDrivenSwitch for {} unregistred from MD-SAL.", datapathId.toString());
-        publishService.publish(nodeRemoved);
+        
+        MDConfiguration mdConfiguration = OFSessionUtil.getSessionManager().getMdConfiguration();
+        if (mdConfiguration.isCleanConfigUponSwitchDisconnect()) {
+            NodeId switchId = SalRegistrationManager.nodeIdFromDatapathId(datapathId);
+            OFSessionUtil.cleanFlowsConfig(switchId, dataService, (short) 255);
+            OFSessionUtil.cleanGroupsConfig(switchId, dataService);
+            OFSessionUtil.cleanMetersConfig(switchId, dataService);
+            
+            InstanceIdentifier<Node> identifier = identifierFromDatapathId(datapathId);
+            NodeRef nodeRef = new NodeRef(identifier);
+            NodeRemoved nodeRemoved = nodeRemoved(nodeRef);
+            LLDPSpeaker.getInstance().removeModelDrivenSwitch(identifier);
+            LOG.debug("ModelDrivenSwitch for {} unregistered from MD-SAL.", datapathId.toString());
+            publishService.publish(nodeRemoved);
+        }
     }
 
     private NodeUpdated nodeAdded(ModelDrivenSwitch sw, GetFeaturesOutput features, NodeRef nodeRef) {
@@ -125,7 +151,11 @@ public class SalRegistrationManager implements SessionListener, SwitchInventory 
         return builder.build();
     }
 
-    private NodeRemoved nodeRemoved(NodeRef nodeRef) {
+    /**
+     * @param nodeRef
+     * @return representation of remove node action
+     */
+    private static NodeRemoved nodeRemoved(NodeRef nodeRef) {
         NodeRemovedBuilder builder = new NodeRemovedBuilder();
         builder.setNodeRef(nodeRef);
         return builder.build();
@@ -136,22 +166,37 @@ public class SalRegistrationManager implements SessionListener, SwitchInventory 
         return salSwitches.get(node.getValue());
     }
 
+    /**
+     * @param datapathId
+     * @return instanceIdentifier build upon Nodes/Node/(key baked from datapathId)
+     */
     public static InstanceIdentifier<Node> identifierFromDatapathId(BigInteger datapathId) {
         NodeKey nodeKey = nodeKeyFromDatapathId(datapathId);
         InstanceIdentifierBuilder<Node> builder = InstanceIdentifier.builder(Nodes.class).child(Node.class,nodeKey);
         return builder.toInstance();
     }
 
+    /**
+     * @param datapathId
+     * @return nodeKey baked from nodeId (baked from datapathId)
+     */
     public static NodeKey nodeKeyFromDatapathId(BigInteger datapathId) {
         return new NodeKey(nodeIdFromDatapathId(datapathId));
     }
 
+    /**
+     * @param datapathId
+     * @return nodeId baked from openflow prefix and datapathId (separated by colon)
+     */
     public static NodeId nodeIdFromDatapathId(BigInteger datapathId) {
         // FIXME: Convert to textual representation of datapathID
         String current = datapathId.toString();
         return new NodeId("openflow:" + current);
     }
 
+    /**
+     * @return singleton of {@link SessionManager}
+     */
     public SessionManager getSessionManager() {
         return OFSessionUtil.getSessionManager();
     }

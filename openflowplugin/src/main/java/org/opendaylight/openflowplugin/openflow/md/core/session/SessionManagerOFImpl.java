@@ -21,6 +21,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.openflow.md.core.TranslatorKey;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.MDConfiguration;
 import org.opendaylight.openflowplugin.openflow.md.queue.PopListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
@@ -45,6 +46,8 @@ public class SessionManagerOFImpl implements SessionManager {
     private NotificationProviderService notificationProviderService;
 
     private DataProviderService dataProviderService;
+    
+    private MDConfiguration mdConfiguration;
 
     /**
      * @return singleton instance
@@ -223,6 +226,16 @@ public class SessionManagerOFImpl implements SessionManager {
     public void setPopListenerMapping(
             Map<Class<? extends DataObject>, Collection<PopListener<DataObject>>> popListenerMapping) {
         this.popListenerMapping = popListenerMapping;
+    }
+
+    @Override
+    public MDConfiguration getMdConfiguration() {
+        return mdConfiguration;
+    }
+
+    @Override
+    public void setMdConfiguration(MDConfiguration mdConfiguration) {
+        this.mdConfiguration = mdConfiguration;
     }
 
 }

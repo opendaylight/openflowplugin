@@ -28,12 +28,20 @@ public class OFConstants {
     public static final short OFP_VERSION_1_3 = 0x04;
     
     public static final Short OFPTT_ALL = 0xff;
-    public static final Long ANY = Long.parseLong("ffffffff", 16);
+    private static final Long ANY = 0xffffffffL;
+    /** openflow protocol 1.3 - port numbering */
     public static final Long OFPP_ANY = ANY;
+    /** openflow protocol 1.3 - group numbering */
     public static final Long OFPG_ANY = ANY;
+    /** openflow protocol 1.3 - group numbering */
+    public static final Long OFPG_ALL = 0xfffffffcL;
+    /** openflow protocol 1.3 - queue numbering */
     public static final Long OFPQ_ANY = ANY;
+    /** openflow protocol 1.3 - meter numbering */
+    public static final Long OFPM_ALL = 0xffffffffL;
     public static final BigInteger DEFAULT_COOKIE = BigInteger.ZERO;
     public static final BigInteger DEFAULT_COOKIE_MASK = BigInteger.ZERO;
+    /** openflow protocol 1.3 - no buffer */
     public static final Long OFP_NO_BUFFER = 0xffffffffL;
 
     public static final int MAC_ADDRESS_LENGTH = 6;

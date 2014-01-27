@@ -50,17 +50,18 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemovedMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloMessageBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessageBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group.features._case.MultipartReplyGroupFeaturesBuilder;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * test of {@link ConnectionConductorImpl}
+ */
 @RunWith(MockitoJUnitRunner.class)
 public class ConnectionConductorImplTest {
 
@@ -178,8 +179,7 @@ public class ConnectionConductorImplTest {
         connectionConductor.shutdownPool();
 
         for (Exception problem : adapter.getOccuredExceptions()) {
-            LOG.error("during simulation on adapter side: "
-                    + problem.getMessage());
+            LOG.error("during simulation on adapter side: {}", problem.getMessage(), problem);
         }
         Assert.assertEquals(0, adapter.getOccuredExceptions().size());
         adapter = null;
@@ -197,7 +197,7 @@ public class ConnectionConductorImplTest {
         
         // logging errors if occurred
         ArgumentCaptor<Throwable> errorCaptor = ArgumentCaptor.forClass(Throwable.class);
-        Mockito.verify(errorHandler, Mockito.atMost(1)).handleException(
+        Mockito.verify(errorHandler, Mockito.atMost(10)).handleException(
                 errorCaptor.capture(), Matchers.any(SessionContext.class));
         for (Throwable problem : errorCaptor.getAllValues()) {
             LOG.warn(problem.getMessage(), problem);
@@ -231,24 +231,48 @@ public class ConnectionConductorImplTest {
      */
     @Test
     public void testHandshake1() throws Exception {
+        GetFeaturesOutputBuilder featureResponseMsg = getFeatureResponseMsg();
+        
         eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L,
                 EventFactory.DEFAULT_VERSION, new HelloMessageBuilder()));
         eventPlan.add(0, EventFactory.createDefaultWaitForAllEvent(
                 EventFactory.createDefaultWaitForRpcEvent(43, "helloReply"),
                 EventFactory.createDefaultWaitForRpcEvent(44, "getFeatures")));
         eventPlan.add(0, EventFactory.createDefaultRpcResponseEvent(44,
-                EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
+                EventFactory.DEFAULT_VERSION, featureResponseMsg));
         
         eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(1, "multipartRequestInput"));
         eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(2, "multipartRequestInput"));
         eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(3, "multipartRequestInput"));
         eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(4, "multipartRequestInput"));
+        addFlowCleaningToPlan(featureResponseMsg.getTables());
+        addGroupCleaningToPlan();
+        addMeterCleaningToPlan();
+        
         executeNow();
 
         Assert.assertEquals(ConnectionConductor.CONDUCTOR_STATE.WORKING,
                 connectionConductor.getConductorState());
         Assert.assertEquals((short) 0x04, connectionConductor.getVersion()
                 .shortValue());
+    }
+
+    /**
+     * @param tables 
+     * 
+     */
+    private void addFlowCleaningToPlan(short tables) {
+        for (int i = 0; i < tables; i++) {
+            eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(42, "flowMod"));
+        }
+    }
+    
+    private void addGroupCleaningToPlan() {
+        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(42, "groupMod"));
+    }
+
+    private void addMeterCleaningToPlan() {
+        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(42, "meterMod"));
     }
     
     /**
@@ -258,19 +282,24 @@ public class ConnectionConductorImplTest {
      */
     @Test
     public void testHandshake1SwitchStarts() throws Exception {
+        GetFeaturesOutputBuilder featureResponseMsg = getFeatureResponseMsg();
+        
         eventPlan.add(0, EventFactory.createConnectionReadyCallback(connectionConductor));
         eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(21, "helloReply"));
         eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L,
                 EventFactory.DEFAULT_VERSION, new HelloMessageBuilder()));
         eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(43, "getFeatures"));
         eventPlan.add(0, EventFactory.createDefaultRpcResponseEvent(43,
-                EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
+                EventFactory.DEFAULT_VERSION, featureResponseMsg));
         
         eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(1, "multipartRequestInput"));
         eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(2, "multipartRequestInput"));
         eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(3, "multipartRequestInput"));
         eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(4, "multipartRequestInput"));
-
+        addFlowCleaningToPlan(featureResponseMsg.getTables());
+        addGroupCleaningToPlan();
+        addMeterCleaningToPlan();
+        
         executeNow();
 
         Assert.assertEquals(ConnectionConductor.CONDUCTOR_STATE.WORKING,
@@ -287,7 +316,9 @@ public class ConnectionConductorImplTest {
      */
     @Test
     public void testHandshake2() throws Exception {
+        GetFeaturesOutputBuilder featureResponseMsg = getFeatureResponseMsg();
         connectionConductor.setBitmapNegotiationEnable(false);
+        
         eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L,
                 (short) 0x05, new HelloMessageBuilder()));
         eventPlan.add(0,
@@ -302,11 +333,12 @@ public class ConnectionConductorImplTest {
                 EventFactory.createDefaultWaitForRpcEvent(45, "getFeatures"));
 
         eventPlan.add(0, EventFactory.createDefaultRpcResponseEvent(45,
-                EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
+                EventFactory.DEFAULT_VERSION, featureResponseMsg));
         
         eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(1, "multipartRequestInput"));
         eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(2, "multipartRequestInput"));
-
+        addFlowCleaningToPlan((short) 1);
+        
         executeNow();
 
         Assert.assertEquals(ConnectionConductor.CONDUCTOR_STATE.WORKING,
@@ -323,7 +355,9 @@ public class ConnectionConductorImplTest {
      */
     @Test
     public void testHandshake2SwitchStarts() throws Exception {
+        GetFeaturesOutputBuilder featureResponseMsg = getFeatureResponseMsg();
         connectionConductor.setBitmapNegotiationEnable(false);
+
         eventPlan.add(0, EventFactory.createConnectionReadyCallback(connectionConductor));
         eventPlan.add(0,
                 EventFactory.createDefaultWaitForRpcEvent(21, "helloReply"));
@@ -339,11 +373,12 @@ public class ConnectionConductorImplTest {
                 EventFactory.createDefaultWaitForRpcEvent(45, "getFeatures"));
 
         eventPlan.add(0, EventFactory.createDefaultRpcResponseEvent(45,
-                EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
+                EventFactory.DEFAULT_VERSION, featureResponseMsg));
         
         eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(1, "multipartRequestInput"));
         eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(2, "multipartRequestInput"));
-
+        addFlowCleaningToPlan((short) 1);
+        
         executeNow();
 
         Assert.assertEquals(ConnectionConductor.CONDUCTOR_STATE.WORKING,
@@ -663,7 +698,7 @@ public class ConnectionConductorImplTest {
 
     /**
      * Test method for
-     * {@link org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductorImpl#onExperimenterMessage(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessage)}
+     * {@link org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductorImpl#onExperimenterMessage(ExperimenterMessage)}
      * .
      * @throws InterruptedException
      */
@@ -712,7 +747,7 @@ public class ConnectionConductorImplTest {
 
     /**
      * Test method for
-     * {@link org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductorImpl#processPortStatusMsg(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage)}
+     * {@link org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductorImpl#processPortStatusMsg(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatus)}
      * <br><br> 
      * Tests for getting features from port status message by port version 
      * <ul>
@@ -771,7 +806,7 @@ public class ConnectionConductorImplTest {
 		Assert.assertEquals(connectionConductor.getSessionContext().getPhysicalPort(portNumberV10), msg);
     }
     
-    private void simulateV13PostHandshakeState(ConnectionConductorImpl conductor) {
+    private static void simulateV13PostHandshakeState(ConnectionConductorImpl conductor) {
         GetFeaturesOutputBuilder featureOutput = getFeatureResponseMsg();
         conductor.postHandshakeBasic(featureOutput.build(), OFConstants.OFP_VERSION_1_3);
     }

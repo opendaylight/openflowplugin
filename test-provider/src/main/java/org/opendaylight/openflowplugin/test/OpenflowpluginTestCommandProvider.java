@@ -3129,6 +3129,53 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
             LOG.error(e.getMessage(), e);
         }
     }
+    
+    public void _removeAllMDFlows(CommandInterpreter ci) {
+        DataModification<InstanceIdentifier<?>, DataObject> modification = dataBrokerService.beginTransaction();
+        NodeBuilder tn = createTestNode(ci.nextArgument());
+
+        short tablesAmount = 64;
+        String nextArgument = "";
+        try {
+            nextArgument = ci.nextArgument();
+            if (nextArgument != null) {
+                tablesAmount = Short.parseShort(nextArgument);
+            }
+        } catch (NumberFormatException e1) {
+            ci.println("tablesAmount not understood: "+nextArgument);
+        }
+        
+        for (short tableId = 0; tableId < tablesAmount; tableId++) {
+            InstanceIdentifier<Table> pathToSwitchTable = InstanceIdentifier.builder(Nodes.class)
+                    .child(Node.class, tn.getKey()).augmentation(FlowCapableNode.class)
+                    .child(Table.class, new TableKey(tableId)).build();
+            Table tbl = (Table) modification.readConfigurationData(pathToSwitchTable);
+            if (tbl != null) {
+                for (Flow flow : tbl.getFlow()) {
+                    LOG.info("flow: {}", flow);
+                    
+                    InstanceIdentifier<Flow> pathToFlow = InstanceIdentifier.builder(Nodes.class)
+                            .child(Node.class, tn.getKey())
+                            .augmentation(FlowCapableNode.class)
+                            .child(Table.class, new TableKey(tableId))
+                            .child(Flow.class, flow.getKey()).build();
+                    modification.removeConfigurationData(pathToFlow);
+                }
+            }
+            
+        }
+
+        Future<RpcResult<TransactionStatus>> commitFuture = modification.commit();
+        try {
+            RpcResult<TransactionStatus> result = commitFuture.get();
+            TransactionStatus status = result.getResult();
+            ci.println("Status of Flow Removed Transaction: " + status);
+        } catch (InterruptedException e) {
+            LOG.error(e.getMessage(), e);
+        } catch (ExecutionException e) {
+            LOG.error(e.getMessage(), e);
+        }
+    }
 
     /**
      * @param ci arguments: switchId flowType tableNum
