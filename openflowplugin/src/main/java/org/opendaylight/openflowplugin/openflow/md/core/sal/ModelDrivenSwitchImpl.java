@@ -328,7 +328,6 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 		LOG.debug("****** AddGroup Begin-Transaction****"
 				+ input.getTransactionUri().toString());
 		LOG.debug("******AddGroup Plugin transaction-Id****" + xId.intValue());
-		System.out.println("****AddGroup ******"+input.getTransactionUri().toString()+ "******"+xId.intValue());
 		mapBulkTransaction.put(
 				new TransactionKey(input.getNode().getValue()
 						.firstKeyOf(Node.class, NodeKey.class).getId()
@@ -464,7 +463,6 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     	LOG.debug("******RemoveFlow Begin-Transaction****"
 				+ input.getTransactionUri().toString());
 		LOG.debug("******RemoveFlow Plugin transaction-Id****" + xId.intValue());
-		System.out.println("****removeFlow ******"+input.getTransactionUri().toString()+ "******"+xId.intValue());
 		mapBulkTransaction.put(
 				new TransactionKey(input.getNode().getValue()
 						.firstKeyOf(Node.class, NodeKey.class).getId()
@@ -711,7 +709,6 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         LOG.debug("******UpdateFlow Begin-Transaction****"
 				+ input.getTransactionUri().toString());
 		LOG.debug("******UpdateFlow Plugin transaction-Id****" + xId.intValue());
-		System.out.println("****updateFlow ******"+input.getTransactionUri().toString()+ "******"+xId.intValue());
 		mapBulkTransaction.put(
 				new TransactionKey(input.getNode().getValue()
 						.firstKeyOf(Node.class, NodeKey.class).getId()
@@ -783,7 +780,6 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 				+ input.getTransactionUri().toString());
 		LOG.debug("******UpdateGroup Plugin transaction-Id****"
 				+ xId.intValue());
-		System.out.println("****updateGroup ******"+input.getTransactionUri().toString()+ "******"+xId.intValue());
 		mapBulkTransaction.put(
 				new TransactionKey(input.getNode().getValue()
 						.firstKeyOf(Node.class, NodeKey.class).getId()
@@ -852,7 +848,6 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         LOG.debug("****** UpdateMeter Begin-Transaction****"
 				+ input.getTransactionUri().toString());
 		LOG.debug("******UpdateMeter Plugin transaction-Id****" + xId.intValue());	
-		System.out.println("****UpdateMeter ******"+input.getTransactionUri().toString()+ "******"+xId.intValue());
 		mapBulkTransaction.put(
 				new TransactionKey(input.getNode().getValue()
 						.firstKeyOf(Node.class, NodeKey.class).getId()
@@ -1902,9 +1897,6 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 		public void run(Timeout timeout) throws Exception {
 			// TODO Auto-generated method stub
 			LOG.debug("******Timeout Task DONE for****" + nodeId + xId);
-			for(int i=0;i<10;i++)
-				System.out.println();
-			System.out.println("****Timeout Done ******"+nodeId + xId);
 			mapBulkTransaction.remove(new TransactionKey(nodeId, xId));
 			timeout.cancel();
 
