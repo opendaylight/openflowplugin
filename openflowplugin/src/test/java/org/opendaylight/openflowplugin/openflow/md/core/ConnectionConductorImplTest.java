@@ -197,7 +197,7 @@ public class ConnectionConductorImplTest {
         
         // logging errors if occurred
         ArgumentCaptor<Throwable> errorCaptor = ArgumentCaptor.forClass(Throwable.class);
-        Mockito.verify(errorHandler, Mockito.atMost(1)).handleException(
+        Mockito.verify(errorHandler, Mockito.atMost(10)).handleException(
                 errorCaptor.capture(), Matchers.any(SessionContext.class));
         for (Throwable problem : errorCaptor.getAllValues()) {
             LOG.warn(problem.getMessage(), problem);
@@ -231,24 +231,38 @@ public class ConnectionConductorImplTest {
      */
     @Test
     public void testHandshake1() throws Exception {
+        GetFeaturesOutputBuilder featureResponseMsg = getFeatureResponseMsg();
+        
         eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L,
                 EventFactory.DEFAULT_VERSION, new HelloMessageBuilder()));
         eventPlan.add(0, EventFactory.createDefaultWaitForAllEvent(
                 EventFactory.createDefaultWaitForRpcEvent(43, "helloReply"),
                 EventFactory.createDefaultWaitForRpcEvent(44, "getFeatures")));
         eventPlan.add(0, EventFactory.createDefaultRpcResponseEvent(44,
-                EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
+                EventFactory.DEFAULT_VERSION, featureResponseMsg));
         
         eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(1, "multipartRequestInput"));
         eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(2, "multipartRequestInput"));
         eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(3, "multipartRequestInput"));
         eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(4, "multipartRequestInput"));
+        addFlowCleaningToPlan(featureResponseMsg.getTables());
+        
         executeNow();
 
         Assert.assertEquals(ConnectionConductor.CONDUCTOR_STATE.WORKING,
                 connectionConductor.getConductorState());
         Assert.assertEquals((short) 0x04, connectionConductor.getVersion()
                 .shortValue());
+    }
+
+    /**
+     * @param tables 
+     * 
+     */
+    private void addFlowCleaningToPlan(short tables) {
+        for (int i = 0; i < tables; i++) {
+            eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(42, "flowMod"));
+        }
     }
     
     /**
@@ -258,19 +272,22 @@ public class ConnectionConductorImplTest {
      */
     @Test
     public void testHandshake1SwitchStarts() throws Exception {
+        GetFeaturesOutputBuilder featureResponseMsg = getFeatureResponseMsg();
+        
         eventPlan.add(0, EventFactory.createConnectionReadyCallback(connectionConductor));
         eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(21, "helloReply"));
         eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L,
                 EventFactory.DEFAULT_VERSION, new HelloMessageBuilder()));
         eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(43, "getFeatures"));
         eventPlan.add(0, EventFactory.createDefaultRpcResponseEvent(43,
-                EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
+                EventFactory.DEFAULT_VERSION, featureResponseMsg));
         
         eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(1, "multipartRequestInput"));
         eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(2, "multipartRequestInput"));
         eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(3, "multipartRequestInput"));
         eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(4, "multipartRequestInput"));
-
+        addFlowCleaningToPlan(featureResponseMsg.getTables());
+        
         executeNow();
 
         Assert.assertEquals(ConnectionConductor.CONDUCTOR_STATE.WORKING,
@@ -287,7 +304,9 @@ public class ConnectionConductorImplTest {
      */
     @Test
     public void testHandshake2() throws Exception {
+        GetFeaturesOutputBuilder featureResponseMsg = getFeatureResponseMsg();
         connectionConductor.setBitmapNegotiationEnable(false);
+        
         eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L,
                 (short) 0x05, new HelloMessageBuilder()));
         eventPlan.add(0,
@@ -302,10 +321,11 @@ public class ConnectionConductorImplTest {
                 EventFactory.createDefaultWaitForRpcEvent(45, "getFeatures"));
 
         eventPlan.add(0, EventFactory.createDefaultRpcResponseEvent(45,
-                EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
+                EventFactory.DEFAULT_VERSION, featureResponseMsg));
         
         eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(1, "multipartRequestInput"));
         eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(2, "multipartRequestInput"));
+        addFlowCleaningToPlan((short) 1);
 
         executeNow();
 
@@ -323,7 +343,9 @@ public class ConnectionConductorImplTest {
      */
     @Test
     public void testHandshake2SwitchStarts() throws Exception {
+        GetFeaturesOutputBuilder featureResponseMsg = getFeatureResponseMsg();
         connectionConductor.setBitmapNegotiationEnable(false);
+
         eventPlan.add(0, EventFactory.createConnectionReadyCallback(connectionConductor));
         eventPlan.add(0,
                 EventFactory.createDefaultWaitForRpcEvent(21, "helloReply"));
@@ -339,10 +361,11 @@ public class ConnectionConductorImplTest {
                 EventFactory.createDefaultWaitForRpcEvent(45, "getFeatures"));
 
         eventPlan.add(0, EventFactory.createDefaultRpcResponseEvent(45,
-                EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
+                EventFactory.DEFAULT_VERSION, featureResponseMsg));
         
         eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(1, "multipartRequestInput"));
         eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(2, "multipartRequestInput"));
+        addFlowCleaningToPlan((short) 1);
 
         executeNow();
 

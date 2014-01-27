@@ -15,6 +15,7 @@ import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderCo
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.controller.sal.binding.api.data.DataProviderService;
 import org.opendaylight.openflowplugin.openflow.md.ModelDrivenSwitch;
+import org.opendaylight.openflowplugin.openflow.md.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.SwitchInventory;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
@@ -105,11 +106,16 @@ public class SalRegistrationManager implements SessionListener, SwitchInventory 
     public void onSessionRemoved(SessionContext context) {
         GetFeaturesOutput features = context.getFeatures();
         BigInteger datapathId = features.getDatapathId();
+        
+        //FIXME: config datastore should be merged with real switch status
+        NodeId switchId = SalRegistrationManager.nodeIdFromDatapathId(datapathId);
+        OFSessionUtil.cleanFlowsConfig(switchId, dataService, (short) 255);
+        
         InstanceIdentifier<Node> identifier = identifierFromDatapathId(datapathId);
         NodeRef nodeRef = new NodeRef(identifier);
         NodeRemoved nodeRemoved = nodeRemoved(nodeRef);
         LLDPSpeaker.getInstance().removeModelDrivenSwitch(identifier);
-        LOG.debug("ModelDrivenSwitch for {} unregistred from MD-SAL.", datapathId.toString());
+        LOG.debug("ModelDrivenSwitch for {} unregistered from MD-SAL.", datapathId.toString());
         publishService.publish(nodeRemoved);
     }
 
