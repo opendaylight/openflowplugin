@@ -70,7 +70,12 @@
             <groupId>org.opendaylight.openflowjava</groupId>
             <artifactId>openflow-protocol-spi</artifactId>
         </dependency>
-
+	
+	    <dependency>
+	        <groupId>org.jboss.netty</groupId>
+	        <artifactId>netty</artifactId>
+	        <version>3.2.0.Final</version>
+        </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>

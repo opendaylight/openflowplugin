@@ -61,6 +61,8 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
     private ProviderContext pc;
     private final BundleContext ctx;
     private Meter testMeter;
+    private Meter testMeter1;
+    private Meter testMeter2;
     private Node testNode;
     private final String originalMeterName = "Foo";
     private final String updatedMeterName = "Bar";
@@ -162,6 +164,67 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
         return meter;
     }
 
+    
+    private MeterBuilder createTestMeters(String s1,String s2) {
+        // Sample data , committing to DataStore
+        DataModification modification = dataBrokerService.beginTransaction();
+         long id = Integer.parseInt(s1);
+        MeterKey key = new MeterKey(new MeterId(id));
+        MeterBuilder meter = new MeterBuilder();
+        meter.setContainerName("abcd");     
+        meter.setKey(key);       
+        meter.setMeterId(new MeterId(9L));
+        MeterBandHeaderBuilder bandHeader = new MeterBandHeaderBuilder();
+        if(s2.equalsIgnoreCase("modify") )
+        {
+        	meter.setMeterName(updatedMeterName);            
+            bandHeader.setBandRate((long) 234);
+        }
+        else
+        {        	
+        meter.setMeterName(originalMeterName);  
+        bandHeader.setBandRate((long) 123);
+        }
+        meter.setFlags(new MeterFlags(true, false, false, false));
+        MeterBandHeadersBuilder bandHeaders = new MeterBandHeadersBuilder();
+        List<MeterBandHeader> bandHdr = new ArrayList<MeterBandHeader>();
+
+
+        bandHeader.setBandBurstSize((long) 444);
+        DscpRemarkBuilder dscpRemark = new DscpRemarkBuilder();
+        dscpRemark.setDscpRemarkBurstSize((long) 5);
+        dscpRemark.setPercLevel((short) 1);
+        dscpRemark.setDscpRemarkRate((long) 12);
+        bandHeader.setBandType(dscpRemark.build());
+        MeterBandTypesBuilder bandTypes = new MeterBandTypesBuilder();
+        MeterBandType bandType = new MeterBandType(false, true, false);
+        bandTypes.setFlags(bandType);
+        bandHeader.setMeterBandTypes(bandTypes.build());
+        bandHeader.setBandId(new BandId(0L));
+        bandHdr.add(bandHeader.build());       
+        bandHeaders.setMeterBandHeader(bandHdr);
+        meter.setMeterBandHeaders(bandHeaders.build());
+        
+        if(Integer.parseInt(s1) == 1)
+        {
+        	testMeter1 = meter.build();
+        }
+        else if(Integer.parseInt(s1) == 2)
+        {
+        	testMeter2 = meter.build();
+        }
+        else if(Integer.parseInt(s1) == 3)
+        {
+        	testMeter1 = meter.build();
+        }
+        else
+        {
+        	testMeter2 = meter.build();
+        }
+        
+        return meter;
+    }
+
     public void _removeMeter(CommandInterpreter ci) {
         String nref = ci.nextArgument();
 
@@ -193,6 +256,68 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
             e.printStackTrace();
         }
     }
+    
+    public void _removeMeters(CommandInterpreter ci) {
+        String nref = ci.nextArgument();
+
+        if (nref == null) {
+            ci.println("test node added");
+            createTestNode();
+        } else {
+            ci.println("User node added" + nref);
+            createUserNode(nref);
+        }
+        
+		Integer count = Integer.parseInt(ci.nextArgument());
+
+        DataModification modification = dataBrokerService.beginTransaction();
+		switch (count) {
+		case 1:
+	        MeterBuilder mBuilder = createTestMeters("1","remove");
+	        InstanceIdentifier<Meter> path1 = InstanceIdentifier.builder(Nodes.class)
+	                .child(Node.class, testNode.getKey()).augmentation(FlowCapableNode.class)
+	                .child(Meter.class, new MeterKey(testMeter1.getMeterId()))
+	                .build();
+	        modification.removeConfigurationData(path1);
+	        MeterBuilder mBuilder1 = createTestMeters("2","remove");
+	        InstanceIdentifier<Meter> path2 = InstanceIdentifier.builder(Nodes.class)
+	                .child(Node.class, testNode.getKey()).augmentation(FlowCapableNode.class)
+	                .child(Meter.class, new MeterKey(testMeter2.getMeterId()))
+	                .build();
+	        modification.removeConfigurationData(path2);
+
+			  break;
+		case 2:
+	        MeterBuilder mBuilder2 = createTestMeters("3","remove");
+	        InstanceIdentifier<Meter> path3 = InstanceIdentifier.builder(Nodes.class)
+	                .child(Node.class, testNode.getKey()).augmentation(FlowCapableNode.class)
+	                .child(Meter.class, new MeterKey(testMeter1.getMeterId()))
+	                .build();
+	        modification.removeConfigurationData(path3);
+	        MeterBuilder mBuilder3 = createTestMeters("4","remove");
+	        InstanceIdentifier<Meter> path4 = InstanceIdentifier.builder(Nodes.class)
+	                .child(Node.class, testNode.getKey()).augmentation(FlowCapableNode.class)
+	                .child(Meter.class, new MeterKey(testMeter2.getMeterId()))
+	                .build();
+	        modification.removeConfigurationData(path4);
+			  break;	  
+			
+		}
+
+        Future<RpcResult<TransactionStatus>> commitFuture = modification.commit();
+        try {
+            RpcResult<TransactionStatus> result = commitFuture.get();
+            TransactionStatus status = result.getResult();
+            ci.println("Status of Meter Data Loaded Transaction: " + status);
+
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
 
     public void _addMeter(CommandInterpreter ci) {
         String nref = ci.nextArgument();
@@ -206,6 +331,35 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
         }
         createTestMeter();
         writeMeter(ci, testMeter);
+    }
+    
+    public void _addMeters(CommandInterpreter ci) {
+        String nref = ci.nextArgument();
+
+        if (nref == null) {
+            ci.println("test node added");
+            createTestNode();
+        } else {
+            ci.println("User node added" + nref);
+            createUserNode(nref);
+        }
+		Integer count = Integer.parseInt(ci.nextArgument());
+		switch (count) {
+		case 1:
+			  createTestMeters("1" , "add");
+			  createTestMeters("2" ,"add");
+			  writeMeter(ci, testMeter1 , testMeter2);
+			  break;
+		case 2:
+			  createTestMeters("3" ,"add");
+			  createTestMeters("4","add");
+			  writeMeter(ci, testMeter1 , testMeter2);
+			  break;
+			  
+			
+		}
+ //       createTestMeters();
+  //      writeMeter(ci, testMeter);
     }
 
     private void writeMeter(CommandInterpreter ci, Meter meter) {
@@ -231,6 +385,39 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
             e.printStackTrace();
         }
     }
+    
+    private void writeMeter(CommandInterpreter ci, Meter meter,Meter meter1) {
+        DataModification modification = dataBrokerService.beginTransaction();
+        InstanceIdentifier<Meter> path1 = InstanceIdentifier.builder(Nodes.class)
+                .child(Node.class, testNode.getKey()).augmentation(FlowCapableNode.class)
+                .child(Meter.class, new MeterKey(meter.getMeterId()))
+                .build();
+        DataObject cls = (DataObject) modification.readConfigurationData(path1);
+        modification.putConfigurationData(nodeToInstanceId(testNode), testNode);
+        modification.putConfigurationData(path1, meter);
+        InstanceIdentifier<Meter> path2 = InstanceIdentifier.builder(Nodes.class)
+                .child(Node.class, testNode.getKey()).augmentation(FlowCapableNode.class)
+                .child(Meter.class, new MeterKey(meter1.getMeterId()))
+                .build();
+        DataObject cls1 = (DataObject) modification.readConfigurationData(path2);
+        modification.putConfigurationData(nodeToInstanceId(testNode), testNode);
+        modification.putConfigurationData(path2, meter1);
+        
+        Future<RpcResult<TransactionStatus>> commitFuture = modification.commit();
+        try {
+            RpcResult<TransactionStatus> result = commitFuture.get();
+            TransactionStatus status = result.getResult();
+            ci.println("Status of Meter Data Loaded Transaction: " + status);
+
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
 
     public void _modifyMeter(CommandInterpreter ci) {
         String nref = ci.nextArgument();
@@ -247,6 +434,32 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
         writeMeter(ci, meter.build());
         meter.setMeterName(originalMeterName);
         writeMeter(ci, meter.build());
+    }
+    
+    public void _modifyMeters(CommandInterpreter ci) {
+        String nref = ci.nextArgument();
+
+        if (nref == null) {
+            ci.println("test node added");
+            createTestNode();
+        } else {
+            ci.println("User node added" + nref);
+            createUserNode(nref);
+        }
+        
+		Integer count = Integer.parseInt(ci.nextArgument());
+		switch (count) {
+		case 1:
+			  createTestMeters("1","modify");
+			  createTestMeters("2","modify");
+			  writeMeter(ci, testMeter1 , testMeter2);
+			  break;
+		case 2:
+			  createTestMeters("3","modify");
+			  createTestMeters("4","modify");
+			  writeMeter(ci, testMeter1 , testMeter2);
+			  break;
+		}
     }
 
     @Override
