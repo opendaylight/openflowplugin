@@ -41,8 +41,8 @@
       <slf4j.version>1.7.2</slf4j.version>
       <logback.version>1.0.9</logback.version>
       <nexusproxy>http://nexus.opendaylight.org/content</nexusproxy>
-      <openflowjava.version>0.1-SNAPSHOT</openflowjava.version>
-      <controller.model.version>1.0-SNAPSHOT</controller.model.version>
+      <openflowjava.version>0.4</openflowjava.version>
+      <controller.model.version>1.0</controller.model.version>
     </properties>
 
     <dependencyManagement>
@@ -116,17 +116,17 @@
         <dependency>
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>sal</artifactId>
-            <version>0.7.0-SNAPSHOT</version>
+            <version>0.7.0</version>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>sal.connection</artifactId>
-            <version>0.1.1-SNAPSHOT</version>
+            <version>0.1.1</version>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>sal-common-util</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0</version>
         </dependency>
 
         <dependency>
@@ -300,11 +300,13 @@
         </releases>
       </pluginRepository>
     </pluginRepositories>
+
     <modules>
       <module>openflowplugin</module>
       <module>distribution/base</module>
       <module>openflowplugin-it</module>
       <module>test-provider</module>
       <module>drop-test</module>
+      <module>samples/sample-consumer</module>
     </modules>
 </project>
