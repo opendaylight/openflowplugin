@@ -19,6 +19,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.openflow.md.core.TranslatorKey;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.MDConfiguration;
 import org.opendaylight.openflowplugin.openflow.md.queue.PopListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
@@ -111,4 +112,14 @@ public interface SessionManager {
      * @param popListenerMapping the popListenerMapping to set
      */
     void setPopListenerMapping(Map<Class<? extends DataObject>, Collection<PopListener<DataObject>>> popListenerMapping);
+
+    /**
+     * @param mdConfiguration the mdConfiguration to set
+     */
+    void setMdConfiguration(MDConfiguration mdConfiguration);
+
+    /**
+     * @return the mdConfiguration
+     */
+    MDConfiguration getMdConfiguration();
 }

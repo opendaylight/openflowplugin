@@ -16,19 +16,25 @@ import java.util.concurrent.TimeUnit;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionReadyListener;
 import org.opendaylight.openflowplugin.openflow.md.OFConstants;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.MDConfiguration;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.FlowConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.session.PortFeaturesUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionManager;
 import org.opendaylight.openflowplugin.openflow.md.queue.QueueKeeper;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartRequestFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.TableId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoReplyInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoRequestMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterMessage;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemovedMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloMessage;
@@ -376,6 +382,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     @Override
     public void onHandshakeSuccessfull(GetFeaturesOutput featureOutput,
             Short negotiatedVersion) {
+        
         postHandshakeBasic(featureOutput, negotiatedVersion);
         
         // post-handshake actions
@@ -391,6 +398,30 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         
         requestDesc();
         requestPorts();
+        
+        MDConfiguration mdConfiguration = OFSessionUtil.getSessionManager().getMdConfiguration();
+        if (mdConfiguration.isCleanSwitchUponConnect()) {
+            //FIXME: config datastore should be merged with real switch status
+            // clean flows on switch
+            RemoveFlowInputBuilder removeFlow = new RemoveFlowInputBuilder();
+            removeFlow.setMatch(new MatchBuilder().build());
+            FlowModInputBuilder flowModInput = FlowConvertor.toFlowModInput(
+                    removeFlow.build(), version, featureOutput.getDatapathId());
+            flowModInput.setXid(42L);
+            short tablesAmount;
+            if(version == OFConstants.OFP_VERSION_1_0) {
+                tablesAmount = 1;
+            } else {
+                tablesAmount = featureOutput.getTables();
+            }
+            for (long tableId = 0; tableId < tablesAmount; tableId++) {
+                flowModInput.setTableId(new TableId(tableId));
+                LOG.debug("about to clean flows on switch, table:{}", tableId);
+                connectionAdapter.flowMod(
+                        flowModInput.build());
+            }
+        }
+        
     }
 
     /**

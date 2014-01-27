@@ -56,6 +56,9 @@ public class SalRegistrationManager implements SessionListener, SwitchInventory 
     
     private SwitchFeaturesUtil swFeaturesUtil;
     
+    /**
+     * default ctor
+     */
     public SalRegistrationManager() {
         swFeaturesUtil = SwitchFeaturesUtil.getInstance();
     }
@@ -105,12 +108,20 @@ public class SalRegistrationManager implements SessionListener, SwitchInventory 
     public void onSessionRemoved(SessionContext context) {
         GetFeaturesOutput features = context.getFeatures();
         BigInteger datapathId = features.getDatapathId();
-        InstanceIdentifier<Node> identifier = identifierFromDatapathId(datapathId);
-        NodeRef nodeRef = new NodeRef(identifier);
-        NodeRemoved nodeRemoved = nodeRemoved(nodeRef);
-        LLDPSpeaker.getInstance().removeModelDrivenSwitch(identifier);
-        LOG.debug("ModelDrivenSwitch for {} unregistred from MD-SAL.", datapathId.toString());
-        publishService.publish(nodeRemoved);
+        
+        MDConfiguration mdConfiguration = OFSessionUtil.getSessionManager().getMdConfiguration();
+        if (mdConfiguration.isCleanConfigUponSwitchDisconnect()) {
+            //FIXME: config datastore should be merged with real switch status
+            NodeId switchId = SalRegistrationManager.nodeIdFromDatapathId(datapathId);
+            OFSessionUtil.cleanFlowsConfig(switchId, dataService, (short) 255);
+            
+            InstanceIdentifier<Node> identifier = identifierFromDatapathId(datapathId);
+            NodeRef nodeRef = new NodeRef(identifier);
+            NodeRemoved nodeRemoved = nodeRemoved(nodeRef);
+            LLDPSpeaker.getInstance().removeModelDrivenSwitch(identifier);
+            LOG.debug("ModelDrivenSwitch for {} unregistered from MD-SAL.", datapathId.toString());
+            publishService.publish(nodeRemoved);
+        }
     }
 
     private NodeUpdated nodeAdded(ModelDrivenSwitch sw, GetFeaturesOutput features, NodeRef nodeRef) {

@@ -13,15 +13,30 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
+import org.opendaylight.controller.md.sal.common.api.TransactionStatus;
+import org.opendaylight.controller.md.sal.common.api.data.DataModification;
+import org.opendaylight.controller.sal.binding.api.data.DataBrokerService;
 import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.openflow.md.queue.PopListener;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -165,6 +180,49 @@ public abstract class OFSessionUtil {
     public static Map<Class<? extends DataObject>, Collection<PopListener<DataObject>>> getPopListenerMapping() {
         // TODO Auto-generated method stub
         return getSessionManager().getPopListenerMapping();
+    }
+    
+    /**
+     * clean flows from all tables under given switch (target = md-sal:config datastore)
+     * @param switchId
+     * @param dataBrokerService
+     * @param tables 
+     */
+    public static void cleanFlowsConfig(NodeId switchId, DataBrokerService dataBrokerService, Short tables) {
+        if (dataBrokerService == null) {
+            return;
+        }
+        
+        DataModification<InstanceIdentifier<?>, DataObject> modification = dataBrokerService.beginTransaction();
+        NodeKey switchKey = new NodeKey(switchId);
+
+        for (short tableId = 0; tableId < tables; tableId++) {
+            InstanceIdentifier<Table> pathToSwitchTable = InstanceIdentifier.builder(Nodes.class)
+                    .child(Node.class, switchKey).augmentation(FlowCapableNode.class)
+                    .child(Table.class, new TableKey(tableId)).build();
+            Table tbl = (Table) modification.readConfigurationData(pathToSwitchTable);
+            if (tbl != null) {
+                for (Flow flow : tbl.getFlow()) {
+                    LOG.info("flow: {}", flow);
+                    
+                    InstanceIdentifier<Flow> pathToFlow = InstanceIdentifier.builder(Nodes.class)
+                            .child(Node.class, switchKey)
+                            .augmentation(FlowCapableNode.class)
+                            .child(Table.class, new TableKey(tableId))
+                            .child(Flow.class, flow.getKey()).build();
+                    modification.removeConfigurationData(pathToFlow);
+                }
+            }
+        }
+
+        Future<RpcResult<TransactionStatus>> commitFuture = modification.commit();
+        try {
+            RpcResult<TransactionStatus> result = commitFuture.get();
+            TransactionStatus status = result.getResult();
+            LOG.debug("Status of Flow Removed Transaction: " + status);
+        } catch (InterruptedException | ExecutionException e) {
+            LOG.error("Failed to remove configuration for switch {} due to {}", switchId, e.getMessage(), e);
+        }
     }
 
 }
