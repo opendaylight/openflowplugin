@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<group xmlns="urn:opendaylight:flow:inventory">
+    <group-type>group-indirect</group-type>
+    <buckets>
+        <bucket>
+            <action>
+                <pop-vlan-action/>
+                <order>0</order>
+            </action>
+            <bucket-id>12</bucket-id>
+            <watch_group>14</watch_group>
+            <watch_port>1234</watch_port>
+        </bucket>
+    </buckets>
+    <barrier>false</barrier>
+    <group-name>Foo</group-name>
+    <group-id>130</group-id>
+</group>

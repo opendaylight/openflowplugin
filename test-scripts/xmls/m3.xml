@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<meter xmlns="urn:opendaylight:flow:inventory">
+    <container-name>abcd</container-name>
+    <flags>meter-burst</flags>
+    <meter-band-headers>
+        <meter-band-header>
+            <band-burst-size>444</band-burst-size>
+            <band-id>0</band-id>
+            <band-rate>234</band-rate>
+            <dscp-remark-burst-size>5</dscp-remark-burst-size>
+            <dscp-remark-rate>12</dscp-remark-rate>
+            <perc_level>1</perc_level>
+            <meter-band-types>
+                <flags>ofpmbt-dscp-remark</flags>
+            </meter-band-types>
+        </meter-band-header>
+    </meter-band-headers>
+    <meter-id>14</meter-id>
+    <meter-name>Foo</meter-name>
+</meter>

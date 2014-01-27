@@ -146,7 +146,6 @@ def fallback_comparator(xml_element, switch_flow, kw):
 
     data = xml_element.toxml(), name, actual
     # print 'fallback_comparator: data', data
-
     assert expected == actual, 'xml part: %s && switch %s=%s' % data
 
 
@@ -429,7 +428,9 @@ def actions_comparator(actions, switch_flow):
         expected_action = action_keywords.get(action_name)
 
         data = action.toxml(), expected_action
-        # print 'actions_comparator:', data
+        print 'actions_comparator:', data
+
+	print 'actual_actions:',actual_actions
 
         assert expected_action in actual_actions, \
             'xml part:\n%s\n expected action: %s' % data
@@ -502,12 +503,14 @@ def check_elements(xmlstr, keywords):
 class TestOpenFlowXMLs(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+	print '********Setup Execution******'
         cls.net = create_network(cls.host, cls.mn_port)
         cls.net.start()
         time.sleep(15)
 
     @classmethod
     def tearDownClass(cls):
+	print '*********Tear Down Execution *****'
         cls.net.stop()
 
 
@@ -526,22 +529,49 @@ class BadResponseCodeError(Exception):
         return repr('BadResponseCodeError: %s' % self.value)    
 
 
-def generate_tests_from_xmls(path, xmls=None):
-    # generate test function from path to request xml
-    def generate_test(path_to_xml):
-        xml_string = ''
-        with open(path_to_xml) as f:
-            xml_string = f.read()
-
-        tree = md.parseString(xml_string)
-        ids = get_values(tree.documentElement, 'table_id', 'id')
-
-        def new_test(self):
+def create_test_case(host,port,ids,net,xml_string,testName,testType):
             log = logging.getLogger(__name__)
-            # send request throught RESTCONF
-            data = (self.host, self.port, ids['table_id'], ids['id'])
-            url = 'http://%s:%d/restconf/config/opendaylight-inventory:nodes' \
-                  '/node/openflow:1/table/%s/flow/%s' % data
+	    time.sleep(1)
+	    if testName == 'Flow':
+        	data = (host, port, ids['table_id'], ids['id'])
+            	url = 'http://%s:%d/restconf/config/opendaylight-inventory:nodes' \
+                  	'/node/openflow:1/table/%s/flow/%s' % data
+	    elif testName == 'Meter':
+        	data = (host, port, ids['meter-id'])
+            	url = 'http://%s:%d/restconf/config/opendaylight-inventory:nodes' \
+                  '/node/openflow:1/meter/%s' % data
+		print 'URL::',url
+	    elif testName == 'Group':
+        	data = (host, port, ids['group-id'])
+            	url = 'http://%s:%d/restconf/config/opendaylight-inventory:nodes' \
+                  	'/node/openflow:1/group/%s' % data
+	    elif testName == 'Stats':
+        	data = (host, port, ids['stats-id'])
+            	url = 'http://%s:%d/restconf/config/opendaylight-inventory:nodes' \
+                  	'/node/openflow:1/stats/%s' % data
+	    elif testName == 'All' or testName == None:
+        	data = (host, port, ids['stats-id'])
+            	url = 'http://%s:%d/restconf/config/opendaylight-inventory:nodes' \
+                  	'/node/openflow:1/stats/%s' % data
+                if ids['table_id'] != None and ids['id'] != None:
+        		data = (host, port, ids['table_id'], ids['id'])
+            		url = 'http://%s:%d/restconf/config/opendaylight-inventory:nodes' \
+                  		'/node/openflow:1/table/%s/flow/%s' % data
+             	elif ids['meter-id'] != None:
+        		data = (host, port, ids['meter-id'])
+            		url = 'http://%s:%d/restconf/config/opendaylight-inventory:nodes' \
+                  		'/node/openflow:1/meter/%s' % data
+			print 'URL::',url
+             	elif ids['group-id'] != None:
+        		data = (host, port, ids['group-id'])
+            		url = 'http://%s:%d/restconf/config/opendaylight-inventory:nodes' \
+                  		'/node/openflow:1/group/%s' % data
+             	elif ids['stats-id'] != None:
+        		data = (host, port, ids['stats-id'])
+            		url = 'http://%s:%d/restconf/config/opendaylight-inventory:nodes' \
+                  		'/node/openflow:1/stats/%s' % data
+	    else:
+		print 'Invalid option1 ', testName
             headers = {
                 'Content-Type': 'application/xml',
                 'Accept': 'application/xml',
@@ -549,63 +579,218 @@ def generate_tests_from_xmls(path, xmls=None):
             log.info('sending request to url: {}'.format(url))
             rsp = requests.put(url, auth=('admin', 'admin'), data=xml_string,
                                headers=headers)                               
-            log.info('received status code: {}'.format(rsp.status_code))
+	    log.info('received status code: {}'.format(rsp.status_code))
             log.debug('received content: {}'.format(rsp.text))
-            assert rsp.status_code == 204 or rsp.status_code == 200, 'Status' \
+	    try:
+		print 'PUT',url
+                assert rsp.status_code == 204 or rsp.status_code == 200, 'Status' \
                     ' code returned %d' % rsp.status_code
-
+	    except AssertionError as e:
+	   	log.info('----testName---')
             try:        
+	
+		#url = url.replace('config','operational')
+		print 'Modified GET url',url
+		time.sleep(2)	
                 # check request content against restconf's datastore
                 response = requests.get(url, auth=('admin', 'admin'),
                                         headers={'Accept': 'application/xml'})
                 if response.status_code != 200:
                     raise BadResponseCodeError('response: {}'.format(response))
-                    
+                print 'stored xml ', xml_string
+		print 'uploaded xml ', response.text  
                 req = xmltodict.parse(ET.tostring(ET.fromstring(xml_string)))
                 res = xmltodict.parse(ET.tostring(ET.fromstring(response.text)))
                 assert req == res, 'uploaded and stored xml, are not the same\n' \
                     'uploaded: %s\nstored:%s' % (req, res)
+		print 'testname-type',testName
+		#resultLog.info('Adding',testName,'-Success')
+	     	if testName == 'Meter' and testType == 'Modify':
+			#Modify functionality for Meter		
+		        print 'Modify Meter'		
+            		log.info('sending request to url: {}'.format(url))
+			xml_string = xml_string.replace('234','111')
+			
+			print 'Modified XML is:: ', xml_string
+            		rsp = requests.put(url, auth=('admin', 'admin'), data=xml_string,
+                               headers=headers)                               
+	    		log.info('received status code: {}'.format(rsp.status_code))
+            		log.debug('received content: {}'.format(rsp.text))
+            		assert rsp.status_code == 204 or rsp.status_code == 200, 'Status' \
+                    		' code returned %d' % rsp.status_code
+		#	result.info('Modify',testName,'-Success')
+			print '*******************Modify Meter working fine *******'
+		elif testName == 'Flow' and testType == 'Modify':
+			#xml_string
+			print 'Need to add Flow modify test cases'
+		elif testName == 'Group' and testType == 'Modify':
+                        #Modify functionality for Group 
+                        print 'Modify Group'
+		 	xml_string = xml_string.replace('CONTROLLER','FLOOD')
+                        log.info('sending request to url: {}'.format(url))
+                        print 'Modified XML is ', xml_string
+                        rsp = requests.put(url, auth=('admin', 'admin'), data=xml_string,
+                               headers=headers)
+                        log.info('received status code: {}'.format(rsp.status_code))
+                        log.debug('received content: {}'.format(rsp.text))
+                        assert rsp.status_code == 204 or rsp.status_code == 200, 'Status' \
+                                ' code returned %d' % rsp.status_code
+                #       result.info('Modify',testName,'-Success')
+		elif testName == 'Stats' and testType == 'Modify':		
+			raise AssertionError('No Test Case for Flow Modify')
+	     	if testName == 'Flow':
+               		 # collect flow table state on switch
+                	switch_flows = get_flows(net)
+			print 'Testing code::',len(switch_flows)
+                	assert len(switch_flows) > 0
 
-                # collect flow table state on switch
-                switch_flows = get_flows(self.net)
-                assert len(switch_flows) > 0
-
-                # compare requested object and flow table state
-                for important_element in check_elements(xml_string, keywords):
-                    # log.info('important element: {}'.format(important_element.nodeName))
-                    comparator = COMPARATORS.get(important_element.nodeName,
+                	# compare requested object and flow table state
+                	for important_element in check_elements(xml_string, keywords):
+                    		# log.info('important element: {}'.format(important_element.nodeName))
+                    		comparator = COMPARATORS.get(important_element.nodeName,
                                                  COMPARATORS['default'])
 
-                    comparator(important_element, switch_flows[0])                    
+                    	print 'important_element',important_element
+		    	print 'actual_element',switch_flows[0] 
+		    	comparator(important_element, switch_flows[0])          
+	     	else: 
+			print 'TestCase:',testName          
             finally:    
+                #url = url.replace('operational','config')
+                print 'Modified DELETE url',url
+
                 response = requests.delete(url, auth=('admin', 'admin'),
                                     headers={'Accept': 'application/xml'})
                 assert response.status_code == 200
                 print '\n\n\n'
-                
+               
+
+
+def generate_tests_from_xmls(path, xmls=None, testName='Flow', testType='Add'):
+    # generate test function from path to request xml
+    # define key getter for sorting
+    def get_test_number(test_name):
+        return int(test_name[1:-4])
+    # define test case runner
+
+
+    def test_case_runner_for_list(xmlfilesList = []):
+      overAllTestCases = []
+      for xmlfiles in xmlfilesList: 
+    	if xmlfiles != None: 
+       		for xmlfile in xmlfiles:
+			print 'xmlfile',xmlfile
+			overAllTestCases.append(xmlfile)
+    	else:
+		print 'Invalid3 testName  ( Allowed are:  Flow/Group/Stats/Meter )'
+
+      for testCase in overAllTestCases:
+	print 'TestName', testCase
+        setattr(TestOpenFlowXMLs,'test_xml_'+str(testCase),generate_test(os.path.join(path, testCase)))
+
+
+    def test_case_runner(xmlfiles):
+    	if xmlfiles != None: 
+       		for xmlfile in xmlfiles:
+        		test_name = 'test_xml_%04d' % get_test_number(xmlfile)
+        		setattr(TestOpenFlowXMLs,
+                		test_name,
+                		generate_test(os.path.join(path, xmlfile)))
+    	else:
+		print 'Invalid3 testName  ( Allowed are:  Flow/Group/Stats/Meter )'
+    def generate_test(path_to_xml):
+        xml_string = ''
+	if os.path.isfile(path_to_xml): 
+          with open(path_to_xml) as f:
+            xml_string = f.read()
+	else: 
+	  print 'File',path_to_xml,'doesnt exists'
+	  sys.exit()
+        tree = md.parseString(xml_string)
+        ids = get_values(tree.documentElement, 'table_id', 'id', 'meter-id', 'group-id','stats-id')
+        def new_test(self):
+          log = logging.getLogger(__name__)
+          # send request throught RESTCONF
+	  if testName == 'Flow' or testName == 'Group' or testName== 'Meter' or testName == 'Stats':
+                create_test_case(self.host,self.port,ids,self.net,xml_string,testName,testType) 
+	  elif testName == 'All' or testName == 'None':
+	     if ids['table_id'] != None and ids['id'] != None:
+                create_test_case(self.host,self.port,ids,self.net,xml_string,'Flow',testType) 
+	     elif ids['meter-id'] != None:
+                create_test_case(self.host,self.port,ids,self.net,xml_string,'Meter',testType) 
+	     elif ids['group-id'] != None:
+                create_test_case(self.host,self.port,ids,self.net,xml_string,'Group',testType) 
+	     elif ids['stats-id'] != None:
+                create_test_case(self.host,self.port,ids,self.net,xml_string,'Stats',testType) 
+	  else:
+		print 'Invalid etype  ( Allowed are:  Flow/Group/Stats/Meter/All)'
+ 
         return new_test
 
     # generate list of available xml requests
     xmlfiles = None
-    if xmls is not None:
-        xmlfiles = ('f%d.xml' % fid for fid in xmls)
+    xmlfiles_flow = None
+    xmlfiles_meter = None
+    xmlfiles_group = None
+
+    xmlList = []
+
+    print 'xmls content-',xmls
+
+    if testName == 'Flow': 
+     	if xmls is not None:
+        	xmlfiles = ('f%d.xml' % fid for fid in xmls)
+     	else:
+        	xmlfiles = (xml for xml in os.listdir(path) if xml.startswith('f') and xml.endswith('.xml'))
+	test_case_runner(xmlfiles)
+    elif testName == 'Group':
+     	if xmls is not None:
+        	xmlfiles = ('g%d.xml' % fid for fid in xmls)
+     	else:
+        	xmlfiles = (xml for xml in os.listdir(path) if xml.startswith('g') and xml.endswith('.xml'))
+	test_case_runner(xmlfiles)
+    elif testName == 'Meter':
+     	if xmls is not None:
+        	xmlfiles = ('m%d.xml' % fid for fid in xmls)
+     	else:
+        	xmlfiles = (xml for xml in os.listdir(path) if xml.startswith('m') and xml.endswith('.xml'))
+	test_case_runner(xmlfiles)
+    elif testName == 'Stats':
+     	if xmls is not None:
+        	xmlfiles = ('s%d.xml' % fid for fid in xmls)
+     	else:
+        	xmlfiles = (xml for xml in os.listdir(path) if xml.startswith('s') and xml.endswith('.xml'))
+	test_case_runner(xmlfiles)
+    elif testName == 'All' or testName == 'None':
+     	if xmls is not None:
+        	xmlfiles_flow = ('f%d.xml' % fid for fid in xmls)
+        	xmlfiles_meter = ('m%d.xml' % fid for fid in xmls)
+        	xmlfiles_group = ('g%d.xml' % fid for fid in xmls)
+        	xmlfiles_stats = ('s%d.xml' % fid for fid in xmls)
+		
+     	else:
+        	xmlfiles_flow = (xml for xml in os.listdir(path) if xml.startswith('f') and xml.endswith('.xml'))
+        	xmlfiles_meter = (xml for xml in os.listdir(path) if xml.startswith('m') and xml.endswith('.xml'))
+        	xmlfiles_group = (xml for xml in os.listdir(path) if xml.startswith('g') and xml.endswith('.xml'))
+        	xmlfiles_stats = (xml for xml in os.listdir(path) if xml.startswith('s') and xml.endswith('.xml'))
+
+	xmlList.append(xmlfiles_flow)
+	xmlList.append(xmlfiles_meter)
+	#xmlList.append(xmlfiles_group)
+	#xmlList.append(xmlfiles_stats)
+	test_case_runner_for_list(xmlList)
     else:
-        xmlfiles = (xml for xml in os.listdir(path) if xml.endswith('.xml'))
+        xmlfiles = None
+
 
     # define key getter for sorting
     def get_test_number(test_name):
         return int(test_name[1:-4])
 
-    for xmlfile in xmlfiles:
-        test_name = 'test_xml_%04d' % get_test_number(xmlfile)
-        setattr(TestOpenFlowXMLs,
-                test_name,
-                generate_test(os.path.join(path, xmlfile)))
-
 
 if __name__ == '__main__':
     # set up logging
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(filename='testResults.log', level=logging.DEBUG)
 
     # parse cmdline arguments
     parser = argparse.ArgumentParser(description='Run switch <-> ODL tests '
@@ -616,6 +801,10 @@ if __name__ == '__main__':
                         'which odl\'s RESTCONF is listening')
     parser.add_argument('--mnport', type=int, default=6653, help='port on '
                         'which odl\'s controller is listening')
+    parser.add_argument('--etype', default='None', help='Test case to run '
+                        'Flow/Group/Meter/Stats')
+    parser.add_argument('--run', default='Add', help='Type of the Test case to run '
+                        'Add/Modify')
     parser.add_argument('--xmls', default=None, help='generete tests only '
                         'from some xmls (i.e. 1,3,34) ')
     args = parser.parse_args()
@@ -625,6 +814,13 @@ if __name__ == '__main__':
     TestOpenFlowXMLs.host = args.odlhost
     TestOpenFlowXMLs.mn_port = args.mnport
 
+    testName = args.etype
+    testType = args.run
+
+    if testName == 'None':
+	testName = 'Flow'
+
+    print 'Test name::', testName
     keywords = None
     with open('keywords.csv') as f:
         keywords = dict(line.strip().split(';') for line in f
@@ -640,15 +836,21 @@ if __name__ == '__main__':
         action_keywords = dict(line.strip().split(';') for line in f
                                     if not line.startswith('#'))
 
+    if testType != 'Add' and testType != 'Modify':
+	print 'Add/Modify are the valid values for --run option!'
+	sys.exit()
+
     # fix arguments for unittest
     del sys.argv[1:]
 
     # generate tests for TestOpenFlowXMLs
     if args.xmls is not None:
         xmls = map(int, args.xmls.split(','))
-        generate_tests_from_xmls('xmls', xmls)
+        generate_tests_from_xmls('xmls', xmls,testName,testType)
     else:
-        generate_tests_from_xmls('xmls')
+        generate_tests_from_xmls('xmls',None,testName,testType)
 
     # run all tests
     unittest.main()
+
+

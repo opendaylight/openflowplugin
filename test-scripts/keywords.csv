@@ -13,3 +13,5 @@ priority;priority
 reg;reg
 table;table
 table_id;table
+meter-id;meter
+group-id;group
