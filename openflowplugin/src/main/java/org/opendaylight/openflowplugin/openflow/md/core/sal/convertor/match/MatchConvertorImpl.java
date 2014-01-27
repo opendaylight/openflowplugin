@@ -451,7 +451,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
                     swMatch.getDlVlanPcp()));
             matchBuilder.setVlanMatch(vlanMatchBuilder.build());
         }
-        if (!swMatch.getWildcards().isNWPROTO().booleanValue() && swMatch.getNwSrc() != null) {
+        if (!swMatch.getWildcards().isDLTYPE().booleanValue() && swMatch.getNwSrc() != null) {
             String ipv4PrefixStr = swMatch.getNwSrc().getValue();
             if (swMatch.getNwSrcMask() != null) {
                 ipv4PrefixStr += PREFIX_SEPARATOR + swMatch.getNwSrcMask();
@@ -461,7 +461,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
                 matchBuilder.setLayer3Match(ipv4MatchBuilder.build());
             }
         }
-        if (!swMatch.getWildcards().isNWPROTO().booleanValue() && swMatch.getNwDst() != null) {
+        if (!swMatch.getWildcards().isDLTYPE().booleanValue() && swMatch.getNwDst() != null) {
             String ipv4PrefixStr = swMatch.getNwDst().getValue();
             if (swMatch.getNwDstMask() != null) {
                 ipv4PrefixStr += PREFIX_SEPARATOR + swMatch.getNwDstMask();

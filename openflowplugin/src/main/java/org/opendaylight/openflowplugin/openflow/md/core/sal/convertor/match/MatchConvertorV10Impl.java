@@ -247,7 +247,7 @@ public class MatchConvertorV10Impl implements MatchConvertor<MatchV10> {
      * @return
      */
     private static int buildPrefix(String[] addressParts) {
-        int prefix = 0;
+        int prefix = 32;
         if (addressParts.length > 1) {
             prefix = Integer.parseInt(addressParts[1]);
         }
