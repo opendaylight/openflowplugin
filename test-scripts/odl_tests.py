@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import os
 import sys
 import time
@@ -135,6 +137,9 @@ def compare_elements(expected_match, actual_match, kw, comparators, default):
 
 
 def fallback_comparator(xml_element, switch_flow, kw):
+    """
+    A comparator for simple strings. Used when no special handling is required.
+    """
     # print 'fallback_comparator-xml_element', xml_element.toxml()
     # print 'fallback_comparator: switch_flow', switch_flow
     # print 'fallback_comparator: kw', kws
@@ -150,10 +155,19 @@ def fallback_comparator(xml_element, switch_flow, kw):
 
 
 def default_comparator(xml_element, switch_flow):
+    """
+    The comparatorA parametrized comparator for simple strings - uses  the 
+    top level keyword set.
+    """
     fallback_comparator(xml_element, switch_flow, keywords)
 
 
 def integer_comparator(expected, actual, kw, base):
+    """
+    Comparator for integers in different formats; in xml, integers are always
+    decimal, but OVS displays number either as decimal or as hexadecimal.
+    This is a generic comparator that can use either base.
+    """
     expected_value = int(expected.childNodes[0].data)
 
     name = kw.get(expected.nodeName)
@@ -165,10 +179,14 @@ def integer_comparator(expected, actual, kw, base):
 
 
 def cookie_comparator(cookie, switch_flow):
+    """
+    Compare cookie values. Cookies are displays in hex in OVS
+    """
     integer_comparator(cookie, switch_flow, keywords, 16)
 
 
 def ethernet_address_comparator(child, actual_match, kw):
+    """ Compare ethernet addresses. """
     expected_address = child.getElementsByTagName("address")[0].childNodes[0].data
     actual_address = actual_match[kw.get(child.nodeName)]
 
@@ -179,6 +197,10 @@ def ethernet_address_comparator(child, actual_match, kw):
 
 
 def masked_value_hex_comparator(child, actual_match, kw, vname, kname):
+    """
+    Generic function to compar value-mask pairs that occur quite often in XML
+    TODO: finish mask parsing and processing.
+    """
     print 'masked_value_hex_comparator', child.toxml(), actual_match, \
         vname, kname, child.nodeName
 
@@ -292,6 +314,10 @@ def ethernet_match_comparator(expected_match, actual_match, kw):
             
 
 def ip_subnet_comparator(expected_match, actual_match, kw):
+    """
+    Compare IP addresses; OVS applies the address mask, so we need to compare 
+    subnet as opposed to strings.
+    """
     # print 'ip_comparator:', expected_match.toxml(), actual_match
     # print 'ip_comparator-actual_match:', actual_match
 
@@ -364,7 +390,7 @@ def ip_match_comparator(expected_match, actual_match, kw):
 
 
 def match_comparator(expected_match, switch_flow):
-
+    """ The main function to compare flow matches """
     def compare_metadata(expected, actual, kw):
         masked_value_hex_comparator(expected, actual, kw, \
                                     'metadata', 'metadata-mask')
@@ -415,22 +441,118 @@ def match_comparator(expected_match, switch_flow):
 
 
 def actions_comparator(actions, switch_flow):
-    # print 'actions_comparator:', actions, switch_flow
+    """
+    The main function to compare actions
+    """
+
+    def process_action(name, node):
+        """
+        Function that includes other helper functions to cover special cases and        to process actions with their arguments
+        """
+
+        def process_set_mpls_ttl_output(output, node):
+           """
+               parse the set_mpls_ttl output from the ovs
+               Eg: set_mpls_ttl(1)
+           """
+           print "NODE:", node
+           print "OUTPUT: ", output
+           ttl_value = node.getElementsByTagName('mpls-ttl')[0].childNodes[0].data
+           print "TTL: ", ttl_value
+           action = output + "(" + ttl_value + ")"
+           return action
+
+
+        def process_set_field_output(output, node):
+            """
+               parse the set_field output from the ovs
+               Eg: set_field:2059->tcp_src
+            """
+            OVS_SET_FIELD_ACTION_MAP = {
+                'tcp-source-port': 'tcp_src',
+                'tcp-destination-port': 'tcp_dst',
+                'udp-source-port': 'udp_src',
+                'udp-destination-port': 'udp_dst',
+                'sctp-source-port': 'sctp_src',
+                'sctp-destination-port': 'sctp_dst',
+            }
+            field_name = node.childNodes[1].nodeName
+            field_value = node.getElementsByTagName(field_name)[0].childNodes[0].data
+            action = output + ":" + field_value + "->" + OVS_SET_FIELD_ACTION_MAP.get(field_name)
+            print "ACTION: ", action
+            return action
+
+        def process_vlan_output(output, node):
+            """
+               take push_vlan(output), extract the ethernet type in hex
+               join them with a ':' and retrun
+            """
+            ether_type = node.getElementsByTagName("ethernet-type")[0].childNodes[0].data
+            action = output + ":" + hex(int(ether_type))
+            return action
+
+        def process_output_port(output, node):
+
+            def hasNumbers(inputString):
+                return any(char.isdigit() for char in inputString)
+
+
+            output_port = node.getElementsByTagName("output-node-connector")[0].childNodes[0].data
+
+            if hasNumbers(output_port) is True:
+                # TODO: proper parsing of the input port. For now we just 
+                # assume that the port_number string is a number.
+                action = "%s:%s" % (output, output_port)
+                print 'name: ', action
+
+            elif output_port == 'INPORT':
+                action = 'IN_PORT'
+
+            elif output_port == 'CONTROLLER':
+                max_length = node.getElementsByTagName("max-length")[0].childNodes[0].data
+                action = "%s:%s" % (output_port, max_length)
+
+            else:
+                action = output_port
+
+            return action
+
+
+        def passthrough(name, node):
+            return name
+
+
+        NAME_PROCESSORS = {
+            'output': process_output_port,
+            'push_vlan': process_vlan_output,
+            'set_field': process_set_field_output,
+            'set_mpls_ttl': process_set_mpls_ttl_output,
+        }
+
+        return NAME_PROCESSORS.get(name, passthrough)(name, node)
+
 
     actual_actions = switch_flow['actions'].split(",")
-    # print 'actions_comparator:', actual_actions
+
+    print 'actions_comparator:', actions.toxml(), actual_actions
 
     for action in actions.childNodes:
         if action.nodeType is actions.TEXT_NODE:
             continue
 
-        action_name = action.childNodes[3].nodeName
-        expected_action = action_keywords.get(action_name)
+        name = action.childNodes[3].nodeName
+
+        print 'actions_comparator:', name
+
+        expected_action = action_keywords.get(name)
+        print 'actions_comparator expected_action:', expected_action
+        expected_action = process_action(expected_action, \
+                                         action.childNodes[3])
+        print 'actions_comparator processed expected_action:', expected_action
 
         data = action.toxml(), expected_action
-        print 'actions_comparator:', data
-
-	print 'actual_actions:',actual_actions
+        # print 'actions_comparator:', data
+        print str(data)
 
         assert expected_action in actual_actions, \
             'xml part:\n%s\n expected action: %s' % data
@@ -667,7 +789,7 @@ def create_test_case(host,port,ids,net,xml_string,testName,testType):
 
 
 def generate_tests_from_xmls(path, xmls=None, testName='Flow', testType='Add'):
-    # generate test function from path to request xml
+    """ generate test function from path to request xml """
     # define key getter for sorting
     def get_test_number(test_name):
         return int(test_name[1:-4])
