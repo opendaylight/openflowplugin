@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <flow xmlns="urn:opendaylight:flow:inventory">
     <strict>false</strict>
-    <flow-name>push-mpls-action</flow-name>
+    <flow-name>pop-mpls-action</flow-name>
     <id>263</id>
     <cookie_mask>255</cookie_mask>
-    <cookie>401</cookie>
+    <cookie>889</cookie>
     <table_id>2</table_id>
     <priority>8</priority>
     <hard-timeout>1200</hard-timeout>
@@ -16,9 +16,9 @@
             <apply-actions>
                 <action>
                     <order>0</order>
-                    <push-mpls-action>
-                        <ethernet-type>34888</ethernet-type>
-                    </push-mpls-action>
+                    <pop-mpls-action>
+                        <ethernet-type>2048</ethernet-type>
+                    </pop-mpls-action>
                 </action>
             </apply-actions>
         </instruction>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <flow xmlns="urn:opendaylight:flow:inventory">
     <strict>false</strict>
-    <flow-name>set-field-tcp-src</flow-name>
+    <flow-name>set-field-tunnel-id</flow-name>
     <id>256</id>
     <cookie_mask>255</cookie_mask>
     <cookie>101</cookie>
@@ -17,7 +17,9 @@
                 <action>
                     <order>0</order>
                     <set-field>
-                        <tcp-source-port>2059</tcp-source-port>
+                        <tunnel>
+                            <tunnel-id>2591</tunnel-id>
+                        </tunnel>
                     </set-field>
                 </action>
             </apply-actions>
@@ -36,6 +38,7 @@
         </metadata>
         <ip-match>
             <ip-protocol>6</ip-protocol>
+            <ip-dscp>60</ip-dscp>
             <ip-ecn>3</ip-ecn>
         </ip-match>
         <tcp-source-port>183</tcp-source-port>
