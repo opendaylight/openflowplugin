@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da6255ed_b5ad50eb",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/session/OFSessionUtil.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 224,
+      "author": {
+        "id": 649
+      },
+      "writtenOn": "2014-01-29T15:01:24Z",
+      "side": 1,
+      "message": "Please add a descriptive string for the failure: we need to know what the code was trying to do from the logs (not from the class name). \"Failed to remove configuration for switch {}: {}\", switchId, e.getMessage(), e); or similer ...",
+      "revId": "c891383b56c7df5745f072b74e1e9d13044f40b2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da6255ed_95b80c2b",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/session/SessionManagerOFImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 649
+      },
+      "writtenOn": "2014-01-29T15:01:24Z",
+      "side": 1,
+      "message": "Unused imports?",
+      "revId": "c891383b56c7df5745f072b74e1e9d13044f40b2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
