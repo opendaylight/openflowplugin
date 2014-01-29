@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<flow xmlns="urn:opendaylight:flow:inventory">
+    <strict>false</strict>
+    <flow-name>set-field-udp-dst</flow-name>
+    <id>256</id>
+    <cookie_mask>255</cookie_mask>
+    <cookie>101</cookie>
+    <table_id>2</table_id>
+    <priority>2</priority>
+    <hard-timeout>1200</hard-timeout>
+    <idle-timeout>3400</idle-timeout>
+    <installHw>false</installHw>
+    <instructions>
+        <instruction>
+            <order>0</order>
+            <apply-actions>
+                <action>
+                    <order>0</order>
+                    <set-field>
+                        <udp-destination-port>1234</udp-destination-port>
+                    </set-field>
+                </action>
+            </apply-actions>
+        </instruction>
+    </instructions>
+    <match>
+        <ethernet-match>
+            <ethernet-type>
+                <type>34525</type>
+            </ethernet-type>
+        </ethernet-match>
+        <ipv6-source>1234:5678:9ABC:DEF0:FDCD:A987:6543:210F/76</ipv6-source>
+        <ipv6-destination>fe80:2acf:e9ff:fe21::6431/94</ipv6-destination>
+        <metadata>
+            <metadata>12345</metadata>
+        </metadata>
+        <ip-match>
+            <ip-protocol>17</ip-protocol>
+            <ip-ecn>3</ip-ecn>
+        </ip-match>
+        <udp-source-port>183</udp-source-port>
+        <udp-destination-port>8080</udp-destination-port>
+    </match>
+</flow>
+

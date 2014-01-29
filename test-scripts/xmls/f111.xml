@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<flow xmlns="urn:opendaylight:flow:inventory">
+    <strict>false</strict>
+    <instructions>
+        <instruction>
+            <order>0</order>
+            <apply-actions>
+                <action>
+                    <order>0</order>
+                    <pop-vlan-action/>
+                </action>
+            </apply-actions>
+        </instruction>
+    </instructions>
+    <table_id>2</table_id>
+    <id>152</id>
+    <cookie_mask>10</cookie_mask>
+    <installHw>false</installHw>
+    <out_group>2</out_group>
+    <match>
+        <ethernet-match>
+            <ethernet-type>
+                <type>2048</type>
+            </ethernet-type>
+        </ethernet-match>
+        <ipv4-destination>10.0.0.1/24</ipv4-destination>
+    </match>
+    <hard-timeout>12</hard-timeout>
+    <flags>FlowModFlags [_cHECKOVERLAP=false, _rESETCOUNTS=false, _nOPKTCOUNTS=false, _nOBYTCOUNTS=false, _sENDFLOWREM=false]</flags>
+    <cookie>10</cookie>
+    <idle-timeout>34</idle-timeout>
+    <flow-name>pop-vlan-action</flow-name>
+    <priority>2</priority>
+    <barrier>false</barrier>
+</flow>
