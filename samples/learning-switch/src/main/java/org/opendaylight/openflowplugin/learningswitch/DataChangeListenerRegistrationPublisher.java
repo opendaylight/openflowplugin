@@ -19,6 +19,6 @@ public interface DataChangeListenerRegistrationPublisher {
     /**
      * @return the dataChangeListenerRegistration
      */
-    public abstract ListenerRegistration<DataChangeListener> getDataChangeListenerRegistration();
+    ListenerRegistration<DataChangeListener> getDataChangeListenerRegistration();
 
 }

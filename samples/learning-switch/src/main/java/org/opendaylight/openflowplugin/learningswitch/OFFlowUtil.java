@@ -44,6 +44,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetDestinationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetSourceBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInputBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -128,7 +129,7 @@ public abstract class OFFlowUtil {
         allToCtrlFlow.setId(flowId);
         allToCtrlFlow.setKey(new FlowKey(flowId));
         
-        MatchBuilder emptyMatchBuilder = new MatchBuilder();
+        MatchBuilder matchBuilder = new MatchBuilder();
 
         // Create output action -> send to controller
         OutputActionBuilder output = new OutputActionBuilder();
@@ -160,12 +161,12 @@ public abstract class OFFlowUtil {
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         
-        allToCtrlFlow.setMatch(emptyMatchBuilder.build());
+        allToCtrlFlow.setMatch(matchBuilder.build());
         allToCtrlFlow.setInstructions(isb.build());
         allToCtrlFlow.setPriority(priority);
         allToCtrlFlow.setBufferId(0L);
-        allToCtrlFlow.setHardTimeout(300);
-        allToCtrlFlow.setIdleTimeout(240);
+        allToCtrlFlow.setHardTimeout(0);
+        allToCtrlFlow.setIdleTimeout(0);
         allToCtrlFlow.setFlags(new FlowModFlags(false, false, false, false, false));
         
         return allToCtrlFlow;
@@ -174,9 +175,9 @@ public abstract class OFFlowUtil {
     /**
      * @param flowId
      * @param tablePathArg 
-     * @return
+     * @return path to flow
      */
-    static InstanceIdentifier<Flow> assemleFlowPath(FlowId flowId, InstanceIdentifier<Table> tablePathArg) {
+    public static InstanceIdentifier<Flow> assemleFlowPath(FlowId flowId, InstanceIdentifier<Table> tablePathArg) {
         FlowKey flowKey = new FlowKey(flowId);
         InstanceIdentifier<Flow> flowPath = InstanceIdentifier.builder(tablePathArg)
                 .child(Flow.class, flowKey )
@@ -186,21 +187,33 @@ public abstract class OFFlowUtil {
 
     /**
      * @param payload
-     * @return
+     * @return destination MAC address
      */
-    static byte[] extractDstMac(byte[] payload) {
+    public static byte[] extractDstMac(byte[] payload) {
         return Arrays.copyOfRange(payload, 0, 6);
     }
 
     /**
      * @param payload
-     * @return
+     * @return source MAC address
      */
-    static byte[] extractSrcMac(byte[] payload) {
+    public static byte[] extractSrcMac(byte[] payload) {
         return Arrays.copyOfRange(payload, 6, 12);
     }
+    
+    /**
+     * @param payload
+     * @return source MAC address
+     */
+    public static byte[] extractEtherType(byte[] payload) {
+        return Arrays.copyOfRange(payload, 12, 14);
+    }
 
-    static MacAddress rawMacToMac(byte[] rawMac) {
+    /**
+     * @param rawMac
+     * @return {@link MacAddress} wrapping string value, baked upon binary MAC address
+     */
+    public static MacAddress rawMacToMac(byte[] rawMac) {
         MacAddress mac = null;
         if (rawMac != null && rawMac.length == 6) {
             StringBuffer sb = new StringBuffer();
@@ -212,30 +225,48 @@ public abstract class OFFlowUtil {
         return mac;
     }
 
-    static TransmitPacketInput buildPacketOut(byte[] payload, NodeConnectorRef ingress,
-            String outputPort, NodeKey nodekey) {
+    /**
+     * @param payload
+     * @param ingress
+     * @param egress
+     * @param nodekey
+     * @return packetOut suitable for rpc: {@link PacketProcessingService#transmitPacket(TransmitPacketInput)}
+     */
+    public static TransmitPacketInput buildPacketOut(byte[] payload, NodeConnectorRef ingress,
+            NodeConnectorRef egress, NodeKey nodekey) {
         InstanceIdentifier<Node> nodePath = InstanceIdentifier.builder(Nodes.class)
                 .child(Node.class, nodekey).toInstance();
-        
-        NodeConnectorRef egressConfRef = new NodeConnectorRef(
-                createNodeConnRef(nodePath, nodekey, outputPort));
         
         TransmitPacketInputBuilder tPackBuilder = new TransmitPacketInputBuilder();
         tPackBuilder.setPayload(payload);
         tPackBuilder.setNode(new NodeRef(nodePath));
         tPackBuilder.setCookie(null);
-        tPackBuilder.setEgress(egressConfRef);
+        tPackBuilder.setEgress(egress);
         tPackBuilder.setIngress(ingress);
         return tPackBuilder.build();
     }
 
-    private static NodeConnectorRef createNodeConnRef(InstanceIdentifier<Node> nodeInstId, 
+    /**
+     * @param nodeInstId
+     * @param nodeKey
+     * @param port
+     * @return port wrapped into {@link NodeConnectorRef}
+     */
+    public static NodeConnectorRef createNodeConnRef(InstanceIdentifier<Node> nodeInstId, 
             NodeKey nodeKey, String port) {
         StringBuilder sBuild = new StringBuilder(nodeKey.getId().getValue()).append(":").append(port);
         NodeConnectorKey nConKey = new NodeConnectorKey(new NodeConnectorId(sBuild.toString()));
         InstanceIdentifier<NodeConnector> portPath = InstanceIdentifier.builder(nodeInstId)
                 .child(NodeConnector.class, nConKey).toInstance();
         return new NodeConnectorRef(portPath);
+    }
+    
+    /**
+     * @param nodeConnector
+     * @return nodeConnector key
+     */
+    public static NodeConnectorKey distillKey(NodeConnectorRef nodeConnector) {
+        return nodeConnector.getValue().firstKeyOf(NodeConnector.class, NodeConnectorKey.class);
     }
 
 }

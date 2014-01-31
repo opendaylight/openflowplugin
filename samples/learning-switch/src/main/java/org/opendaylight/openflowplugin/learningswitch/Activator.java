@@ -11,6 +11,7 @@ import org.opendaylight.controller.sal.binding.api.AbstractBindingAwareConsumer;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ConsumerContext;
 import org.opendaylight.controller.sal.binding.api.NotificationService;
 import org.opendaylight.controller.sal.binding.api.data.DataBrokerService;
+import org.opendaylight.openflowplugin.learningswitch.multi.LearningSwitchManagerMultiImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
@@ -23,13 +24,14 @@ public class Activator extends AbstractBindingAwareConsumer implements AutoClose
     
     private static final Logger LOG = LoggerFactory.getLogger(Activator.class);
 
-    private SimpleLearningSwitchManager learningSwitch;
+    private LearningSwitchManager learningSwitch;
 
     
     @Override
     protected void startImpl(BundleContext context) {
         LOG.info("startImpl() passing");
-        learningSwitch = new SimpleLearningSwitchManager();
+        //learningSwitch = new LearningSwitchManagerSimpleImpl();
+        learningSwitch = new LearningSwitchManagerMultiImpl();
     }
     
     @Override
@@ -42,11 +44,16 @@ public class Activator extends AbstractBindingAwareConsumer implements AutoClose
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         LOG.info("close() passing");
         if (learningSwitch != null) {
             learningSwitch.stop();
         }
     }
-
+    
+    @Override
+    protected void stopImpl(BundleContext context) {
+        close();
+        super.stopImpl(context);
+    }
 }
