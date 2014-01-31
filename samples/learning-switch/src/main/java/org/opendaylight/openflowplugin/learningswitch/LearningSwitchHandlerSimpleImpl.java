@@ -22,8 +22,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInput;
@@ -34,10 +37,10 @@ import org.slf4j.LoggerFactory;
 /**
  * 
  */
-public class SimpleLearningSwitchHandlerImpl implements SimpleLearningSwitchHandler {
+public class LearningSwitchHandlerSimpleImpl implements LearningSwitchHandler, PacketProcessingListener {
     
     private static final Logger LOG = LoggerFactory
-            .getLogger(SimpleLearningSwitchHandler.class);
+            .getLogger(LearningSwitchHandler.class);
     
     private DataChangeListenerRegistrationPublisher registrationPublisher;
     private OFDataStoreAccessor dataStoreAccessor;
@@ -63,12 +66,15 @@ public class SimpleLearningSwitchHandlerImpl implements SimpleLearningSwitchHand
         LOG.debug("expected table acquired, learning ..");
        
         // disable listening - simple learning handles only one node (switch)
-        try {
-            LOG.debug("closing dataChangeListenerRegistration");
-            registrationPublisher.getDataChangeListenerRegistration().close();
-        } catch (Exception e) {
-            LOG.error("closing registration upon flowCapable node update listener failed: " + e.getMessage(), e);
+        if (registrationPublisher != null) {
+            try {
+                LOG.debug("closing dataChangeListenerRegistration");
+                registrationPublisher.getDataChangeListenerRegistration().close();
+            } catch (Exception e) {
+                LOG.error("closing registration upon flowCapable node update listener failed: " + e.getMessage(), e);
+            }
         }
+        
         iAmLearning  = true;
         tablePath = appearedTablePath;
         nodePath = tablePath.firstIdentifierOf(Node.class);
@@ -126,8 +132,13 @@ public class SimpleLearningSwitchHandlerImpl implements SimpleLearningSwitchHand
         MacAddress dstMac = OFFlowUtil.rawMacToMac(dstMacRaw);
         MacAddress srcMac = OFFlowUtil.rawMacToMac(srcMacRaw);
         
-        LOG.debug("Received packet from MAC match: {}, ingress: {}", srcMac, notification.getIngress());
-        LOG.debug("Received packet to   MAC match: {}", dstMac);
+        if (LOG.isDebugEnabled()) {
+            NodeConnectorKey ingressKey = notification.getIngress().getValue()
+                    .firstKeyOf(NodeConnector.class, NodeConnectorKey.class);
+            LOG.debug("Received packet from MAC match: {}, ingress: {}", srcMac,
+                    ingressKey.getId());
+            LOG.debug("Received packet to   MAC match: {}", dstMac);
+        }
         
         mac2portMapping.put(srcMac, notification.getIngress());
 
@@ -135,13 +146,19 @@ public class SimpleLearningSwitchHandlerImpl implements SimpleLearningSwitchHand
         NodeConnectorRef dstNodeConnectorRef = mac2portMapping.get(dstMac);
         if (dstNodeConnectorRef != null) {
             synchronized (coveredMacPaths) {
-                // add flow
-                addBridgeFlow(srcMac, dstMac, dstNodeConnectorRef);
-                addBridgeFlow(dstMac, srcMac, notification.getIngress());
+                if (!dstNodeConnectorRef.equals(notification.getIngress())) {
+                    // add flow
+                    addBridgeFlow(srcMac, dstMac, dstNodeConnectorRef);
+                    addBridgeFlow(dstMac, srcMac, notification.getIngress());
+                } 
             }
+            LOG.debug("packetIn-directing.. ");
+            sendThroughPort(notification.getPayload(), notification.getIngress(), dstNodeConnectorRef);
+        } else {
+            // flood
+            LOG.debug("packetIn-still flooding.. ");
+            flood(notification.getPayload(), notification.getIngress());
         }
-        // flood
-        flood(notification.getPayload(), notification.getIngress());
     }
 
     /**
@@ -154,11 +171,16 @@ public class SimpleLearningSwitchHandlerImpl implements SimpleLearningSwitchHand
         synchronized (coveredMacPaths) {
             String macPath = srcMac.toString() + dstMac.toString();
             if (!coveredMacPaths.contains(macPath)) {
-                LOG.debug("covering mac path: {}", macPath);
+                if (LOG.isDebugEnabled()) {
+                    NodeConnectorKey nodeConnectorKey = dstNodeConnectorRef.getValue()
+                            .firstKeyOf(NodeConnector.class, NodeConnectorKey.class);
+                    LOG.debug("covering mac path: {} by [{}]", macPath, nodeConnectorKey.getId());
+                }
+                
                 coveredMacPaths.add(macPath);
                 FlowId flowId = new FlowId(String.valueOf(flowIdInc.getAndIncrement()));
 
-                // create flow in table with id = 0, priority = 2 (other params are defaulted in OFDataStoreUtil)
+                // create flow in table with id = 0, priority = 0 (other params are defaulted in OFDataStoreUtil)
                 InstanceIdentifier<Flow> flowPath = OFFlowUtil.assemleFlowPath(flowId, tablePath);
                 FlowBuilder srcToDstFlow = OFFlowUtil.createDirectMacToMacFlow((short) 0, 512,
                         srcMac, dstMac, dstNodeConnectorRef);
@@ -170,8 +192,15 @@ public class SimpleLearningSwitchHandlerImpl implements SimpleLearningSwitchHand
 
     private void flood(byte[] payload, NodeConnectorRef ingress) {
         NodeKey nodeKey = new NodeKey(nodeId);
+        NodeConnectorRef egressConfRef = new NodeConnectorRef(
+                OFFlowUtil.createNodeConnRef(nodePath, nodeKey, "0xfffffffb"));
         
-        TransmitPacketInput input = OFFlowUtil.buildPacketOut(payload, ingress, "0xfffffffb", nodeKey);
+        sendThroughPort(payload, ingress, egressConfRef);
+    }
+    
+    private void sendThroughPort(byte[] payload, NodeConnectorRef ingress, NodeConnectorRef egress) {
+        NodeKey nodeKey = new NodeKey(nodeId);
+        TransmitPacketInput input = OFFlowUtil.buildPacketOut(payload, ingress, egress, nodeKey);
         packetProcessingService.transmitPacket(input);
     }
 }

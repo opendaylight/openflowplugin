@@ -27,7 +27,7 @@ public class WakeupOnNode implements DataChangeListener {
     private static final Logger LOG = LoggerFactory
             .getLogger(WakeupOnNode.class);
     
-    private SimpleLearningSwitchHandler learningSwitchHandler;
+    private LearningSwitchHandler learningSwitchHandler;
 
     @Override
     public void onDataChanged(DataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
@@ -54,7 +54,7 @@ public class WakeupOnNode implements DataChangeListener {
      * @param learningSwitchHandler the learningSwitchHandler to set
      */
     public void setLearningSwitchHandler(
-            SimpleLearningSwitchHandler learningSwitchHandler) {
+            LearningSwitchHandler learningSwitchHandler) {
         this.learningSwitchHandler = learningSwitchHandler;
     }
 }
