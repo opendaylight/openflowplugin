@@ -31,10 +31,11 @@ import org.slf4j.LoggerFactory;
  * corresponding MACs)</li>
  * </ul>
  */
-public class SimpleLearningSwitchManager implements DataChangeListenerRegistrationPublisher {
+public class LearningSwitchManagerSimpleImpl implements DataChangeListenerRegistrationPublisher,
+        LearningSwitchManager {
     
     protected static final Logger LOG = LoggerFactory
-            .getLogger(SimpleLearningSwitchManager.class);
+            .getLogger(LearningSwitchManagerSimpleImpl.class);
 
     private NotificationService notificationService;
     private PacketProcessingService packetProcessingService;
@@ -73,7 +74,7 @@ public class SimpleLearningSwitchManager implements DataChangeListenerRegistrati
         LOG.debug("start() -->");
         OFDataStoreAccessor dataStoreAccessor = new OFDataStoreAccessorImpl(data);
 
-        SimpleLearningSwitchHandler learningSwitchHandler = new SimpleLearningSwitchHandlerImpl();
+        SimpleLearningSwitchHandlerImpl learningSwitchHandler = new SimpleLearningSwitchHandlerImpl();
         learningSwitchHandler.setRegistrationPublisher(this);
         learningSwitchHandler.setDataStoreAccessor(dataStoreAccessor);
         learningSwitchHandler.setPacketProcessingService(packetProcessingService);
