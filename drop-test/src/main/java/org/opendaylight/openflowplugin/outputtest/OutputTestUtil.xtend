@@ -110,13 +110,13 @@ class OutputTestUtil {
         }
     }
     
-    private static def createNodeRef(String nodeId) {
+    public static def createNodeRef(String nodeId) {
         var key = new NodeKey(new NodeId(nodeId));
         var path = InstanceIdentifier.builder(Nodes).child(Node, key).toInstance
         return new NodeRef(path)
     }
     
-    private static def createNodeConnRef(String nodeId, String port) {
+    public static def createNodeConnRef(String nodeId, String port) {
         var sBuild = new StringBuilder(nodeId).append(":").append(port);
         var nConKey = new NodeConnectorKey(new NodeConnectorId(sBuild.toString));
         var path = InstanceIdentifier.builder(Nodes)

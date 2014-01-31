@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,12 +46,15 @@ public class PacketOutConvertor {
      *            Data source
      * @return PacketOutInput required by OF Library
      */
-    public static PacketOutInput toPacketOutInput(TransmitPacketInput inputPacket, short version, Long xid) {
+    public static PacketOutInput toPacketOutInput(TransmitPacketInput inputPacket, short version, Long xid,
+            BigInteger datapathid) {
 
-     // Build Port ID from TransmitPacketInput.Ingress
+        // Build Port ID from TransmitPacketInput.Ingress
         PortNumber inPortNr = null;
-        
+        Long bufferId = OFConstants.OFP_NO_BUFFER;
+        List<ActionsList> actions = new ArrayList<ActionsList>();
         List<PathArgument> inArgs = null;
+        PacketOutInputBuilder builder = new PacketOutInputBuilder();
         if (inputPacket.getIngress() != null) {
             inArgs = inputPacket.getIngress().getValue().getPath();
         }
@@ -60,53 +64,60 @@ public class PacketOutConvertor {
             // The packetOut originated from the controller
             inPortNr = new PortNumber(0xfffffffdL);
         }
-        
+
         // Build Buffer ID to be NO_OFP_NO_BUFFER
-        Long bufferId = OFConstants.OFP_NO_BUFFER;
-        
+        if (inputPacket.getBufferId() != null) {
+            bufferId = inputPacket.getBufferId();
+        }
+
         PortNumber outPort = null;
         NodeConnectorRef outRef = inputPacket.getEgress();
         List<PathArgument> outArgs = outRef.getValue().getPathArguments();
         if (outArgs.size() >= 3) {
             outPort = getPortNumber(outArgs.get(2));
         } else {
-            new Exception("PORT NR not exist in Egress"); //TODO : P4 search for some normal exception
+            new Exception("PORT NR not exist in Egress"); // TODO : P4 search
+                                                          // for some normal
+                                                          // exception
         }
-        
+
         // TODO VD P! wait for way to move Actions (e.g. augmentation)
-        
+
         // FIXME VD implementation for testing PacketIn (REMOVE IT)
-        List<ActionsList> actions = new ArrayList<ActionsList>();
-        ActionsListBuilder asBuild = new ActionsListBuilder();
-        ActionBuilder aBuild = new ActionBuilder();
-        aBuild.setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.Output.class);
-        PortActionBuilder paBuild = new PortActionBuilder();
-        paBuild.setPort(outPort);        
-        aBuild.addAugmentation(PortAction.class, paBuild.build());
-        MaxLengthActionBuilder mlBuild = new MaxLengthActionBuilder();
-        mlBuild.setMaxLength(0xffff);
-        aBuild.addAugmentation(MaxLengthAction.class, mlBuild.build());
-        asBuild.setAction(aBuild.build());
-        actions.add(asBuild.build());
-        
-        PacketOutInputBuilder builder = new PacketOutInputBuilder();
-        builder.setActionsList(actions);
+        if (inputPacket.getAction() == null) {
+            ActionsListBuilder asBuild = new ActionsListBuilder();
+            ActionBuilder aBuild = new ActionBuilder();
+            aBuild.setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.Output.class);
+            PortActionBuilder paBuild = new PortActionBuilder();
+            paBuild.setPort(outPort);
+            aBuild.addAugmentation(PortAction.class, paBuild.build());
+            MaxLengthActionBuilder mlBuild = new MaxLengthActionBuilder();
+            mlBuild.setMaxLength(0xffff);
+            aBuild.addAugmentation(MaxLengthAction.class, mlBuild.build());
+            asBuild.setAction(aBuild.build());
+            actions.add(asBuild.build());
+            builder.setActionsList(actions);
+        } else {
+            builder.setActionsList(ActionConvertor.getActionList(inputPacket.getAction(), version, datapathid));
+        }
+
         builder.setData(inputPacket.getPayload());
         builder.setVersion(version);
         builder.setXid(xid);
         builder.setInPort(inPortNr);
         builder.setBufferId(bufferId);
         // --------------------------------------------------------
-        
+
         return builder.build();
     }
-    
+
     private static PortNumber getPortNumber(PathArgument pathArgument) {
-        //FIXME VD P! find InstanceIdentifier helper 
-        InstanceIdentifier.IdentifiableItem item = Arguments.checkInstanceOf(pathArgument, InstanceIdentifier.IdentifiableItem.class);
+        // FIXME VD P! find InstanceIdentifier helper
+        InstanceIdentifier.IdentifiableItem item = Arguments.checkInstanceOf(pathArgument,
+                InstanceIdentifier.IdentifiableItem.class);
         NodeConnectorKey key = Arguments.checkInstanceOf(item.getKey(), NodeConnectorKey.class);
         String[] split = key.getId().getValue().split(":");
-        Long port = Long.decode(split[split.length-1]);
+        Long port = Long.decode(split[split.length - 1]);
         return new PortNumber(port);
     }
 }
