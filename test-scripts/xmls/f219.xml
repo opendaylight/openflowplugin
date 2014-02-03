@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<flow xmlns="urn:opendaylight:flow:inventory">
+    <strict>false</strict>
+    <instructions>
+        <instruction>
+        	<order>0</order>
+		<clear-actions>
+		<action>
+                    <order>0</order>
+                    <output-action>
+                        <output-node-connector>INPORT</output-node-connector>
+                        <max-length>60</max-length>
+                    </output-action>
+                </action>
+		</clear-actions>
+	</instruction>
+    </instructions>
+    <table_id>2</table_id>
+    <id>172</id>
+    <cookie_mask>10</cookie_mask>
+    <out_port>10</out_port>
+    <installHw>false</installHw>
+    <out_group>2</out_group>
+    <match>
+        <vlan-match>
+            <vlan-id>
+                <vlan-id>10</vlan-id>
+                <vlan-id-present>true</vlan-id-present>
+            </vlan-id>
+            <vlan-pcp>3</vlan-pcp>
+        </vlan-match>
+    </match>
+    <hard-timeout>0</hard-timeout>
+    <flags>FlowModFlags [_cHECKOVERLAP=false, _rESETCOUNTS=false, _nOPKTCOUNTS=false, _nOBYTCOUNTS=false, _sENDFLOWREM=false]</flags>
+    <cookie>10</cookie>
+    <idle-timeout>0</idle-timeout>
+    <flow-name>flow-instruction-clear-actions</flow-name>
+    <priority>2</priority>
+    <barrier>false</barrier>
+</flow>
