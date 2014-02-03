@@ -19,6 +19,10 @@ import org.slf4j.LoggerFactory;
 
 /**
  * learning switch activator
+ * 
+ * Activator is derived from AbstractBindingAwareConsumer, which takes care
+ * of looking up MD-SAL in Service Registry and registering consumer
+ * when MD-SAL is present.
  */
 public class Activator extends AbstractBindingAwareConsumer implements AutoCloseable {
     
@@ -30,14 +34,29 @@ public class Activator extends AbstractBindingAwareConsumer implements AutoClose
     @Override
     protected void startImpl(BundleContext context) {
         LOG.info("startImpl() passing");
-        //learningSwitch = new LearningSwitchManagerSimpleImpl();
-        learningSwitch = new LearningSwitchManagerMultiImpl();
     }
     
+    /**
+     * Invoked when consumer is registered to the MD-SAL.
+     * 
+     * 
+     * 
+     */
     @Override
     public void onSessionInitialized(ConsumerContext session) {
         LOG.info("inSessionInitialized() passing");
-        learningSwitch.setData(session.getSALService(DataBrokerService.class));
+        /**
+         * We create instance of our LearningSwitchManager
+         * and set all required dependencies,
+         * 
+         * which are 
+         *   Data Broker (data storage service) - for configuring flows and reading stored switch state
+         *   PacketProcessingService - for sending out packets
+         *   NotificationService - for receiving notifications such as packet in.
+         * 
+         */
+        learningSwitch = new LearningSwitchManagerMultiImpl();
+        learningSwitch.setDataBroker(session.getSALService(DataBrokerService.class));
         learningSwitch.setPacketProcessingService(session.getRpcService(PacketProcessingService.class));
         learningSwitch.setNotificationService(session.getSALService(NotificationService.class));
         learningSwitch.start();

@@ -12,8 +12,8 @@ import org.opendaylight.controller.sal.binding.api.data.DataBrokerService;
 import org.opendaylight.controller.sal.binding.api.data.DataChangeListener;
 import org.opendaylight.openflowplugin.learningswitch.DataChangeListenerRegistrationPublisher;
 import org.opendaylight.openflowplugin.learningswitch.LearningSwitchManager;
-import org.opendaylight.openflowplugin.learningswitch.OFDataStoreAccessor;
-import org.opendaylight.openflowplugin.learningswitch.OFDataStoreAccessorImpl;
+import org.opendaylight.openflowplugin.learningswitch.FlowCommitWrapper;
+import org.opendaylight.openflowplugin.learningswitch.FlowCommitWrapperImpl;
 import org.opendaylight.openflowplugin.learningswitch.WakeupOnNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
@@ -71,7 +71,7 @@ public class LearningSwitchManagerMultiImpl implements DataChangeListenerRegistr
      * @param data the data to set
      */
     @Override
-    public void setData(DataBrokerService data) {
+    public void setDataBroker(DataBrokerService data) {
         this.data = data;
     }
 
@@ -81,7 +81,7 @@ public class LearningSwitchManagerMultiImpl implements DataChangeListenerRegistr
     @Override
     public void start() {
         LOG.debug("start() -->");
-        OFDataStoreAccessor dataStoreAccessor = new OFDataStoreAccessorImpl(data);
+        FlowCommitWrapper dataStoreAccessor = new FlowCommitWrapperImpl(data);
 
         PacketInDispatcherImpl packetInDispatcher = new PacketInDispatcherImpl();
         MultipleLearningSwitchHandlerFacadeImpl learningSwitchHandler = new MultipleLearningSwitchHandlerFacadeImpl();

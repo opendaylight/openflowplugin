@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.learningswitch;
 
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
@@ -30,7 +29,7 @@ public interface LearningSwitchHandler {
    /**
     * @param dataStoreAccessor the dataStoreAccessor to set
     */
-   void setDataStoreAccessor(OFDataStoreAccessor dataStoreAccessor);
+   void setDataStoreAccessor(FlowCommitWrapper dataStoreAccessor);
 
    /**
     * @param registrationPublisher the registrationPublisher to set

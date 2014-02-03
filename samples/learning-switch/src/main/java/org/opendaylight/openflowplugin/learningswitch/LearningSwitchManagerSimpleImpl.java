@@ -66,7 +66,7 @@ public class LearningSwitchManagerSimpleImpl implements DataChangeListenerRegist
      * @param data the data to set
      */
     @Override
-    public void setData(DataBrokerService data) {
+    public void setDataBroker(DataBrokerService data) {
         this.data = data;
     }
 
@@ -76,7 +76,7 @@ public class LearningSwitchManagerSimpleImpl implements DataChangeListenerRegist
     @Override
     public void start() {
         LOG.debug("start() -->");
-        OFDataStoreAccessor dataStoreAccessor = new OFDataStoreAccessorImpl(data);
+        FlowCommitWrapper dataStoreAccessor = new FlowCommitWrapperImpl(data);
 
         LearningSwitchHandlerSimpleImpl learningSwitchHandler = new LearningSwitchHandlerSimpleImpl();
         learningSwitchHandler.setRegistrationPublisher(this);

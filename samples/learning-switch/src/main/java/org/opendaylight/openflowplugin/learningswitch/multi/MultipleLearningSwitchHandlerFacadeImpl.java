@@ -9,7 +9,8 @@
 package org.opendaylight.openflowplugin.learningswitch.multi;
 
 import org.opendaylight.openflowplugin.learningswitch.DataChangeListenerRegistrationPublisher;
-import org.opendaylight.openflowplugin.learningswitch.OFDataStoreAccessor;
+import org.opendaylight.openflowplugin.learningswitch.InstanceIdentifierUtils;
+import org.opendaylight.openflowplugin.learningswitch.FlowCommitWrapper;
 import org.opendaylight.openflowplugin.learningswitch.LearningSwitchHandler;
 import org.opendaylight.openflowplugin.learningswitch.LearningSwitchHandlerSimpleImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
@@ -27,7 +28,7 @@ public class MultipleLearningSwitchHandlerFacadeImpl implements LearningSwitchHa
     private static final Logger LOG = LoggerFactory
             .getLogger(MultipleLearningSwitchHandlerFacadeImpl.class);
     
-    private OFDataStoreAccessor dataStoreAccessor;
+    private FlowCommitWrapper dataStoreAccessor;
     private PacketProcessingService packetProcessingService;
     
 
@@ -39,14 +40,34 @@ public class MultipleLearningSwitchHandlerFacadeImpl implements LearningSwitchHa
     public synchronized void onSwitchAppeared(InstanceIdentifier<Table> appearedTablePath) {
         LOG.debug("expected table acquired, learning ..");
        
-        nodePath = appearedTablePath.firstIdentifierOf(Node.class);
+        /**
+         * appearedTablePath is in form of /nodes/node/node-id/table/table-id
+         * so we shorten it to /nodes/node/node-id to get identifier of switch.
+         * 
+         */
+        nodePath = InstanceIdentifierUtils.getNodePath(appearedTablePath);
         
+        /**
+         * We check if we already initialized dispatcher for that node,
+         * if not we create new handler for switch.
+         * 
+         */
         if (!packetInDispatcher.getHandlerMapping().containsKey(nodePath)) {
             // delegate this node (owning appearedTable) to SimpleLearningSwitchHandler  
             LearningSwitchHandlerSimpleImpl simpleLearningSwitch = new LearningSwitchHandlerSimpleImpl();
+            /**
+             * We configure dependencies
+             */
             simpleLearningSwitch.setDataStoreAccessor(dataStoreAccessor);
             simpleLearningSwitch.setPacketProcessingService(packetProcessingService);
+            
+            /**
+             * We propagate table event to newly instantiated instance of learning switch
+             */
             simpleLearningSwitch.onSwitchAppeared(appearedTablePath);
+            /**
+             * We update mapping of already instantiated LearningSwitchHanlders
+             */
             packetInDispatcher.getHandlerMapping().put(nodePath, simpleLearningSwitch);
         }
     }
@@ -58,7 +79,7 @@ public class MultipleLearningSwitchHandlerFacadeImpl implements LearningSwitchHa
     }
     
     @Override
-    public void setDataStoreAccessor(OFDataStoreAccessor dataStoreAccessor) {
+    public void setDataStoreAccessor(FlowCommitWrapper dataStoreAccessor) {
         this.dataStoreAccessor = dataStoreAccessor;
     }
     

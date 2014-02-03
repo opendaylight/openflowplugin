@@ -22,6 +22,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
@@ -37,17 +38,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Simple Learning Switch implementation which does mac learning for one switch.
+ * 
  * 
  */
 public class LearningSwitchHandlerSimpleImpl implements LearningSwitchHandler, PacketProcessingListener {
-    
-    private static final Logger LOG = LoggerFactory
-            .getLogger(LearningSwitchHandler.class);
 
-    private static final byte[] ETH_TYPE_IPV4 = new byte[] {0x08, 0x00};
-    
+    private static final Logger LOG = LoggerFactory.getLogger(LearningSwitchHandler.class);
+
+    private static final byte[] ETH_TYPE_IPV4 = new byte[] { 0x08, 0x00 };
+
+    private static final int DIRECT_FLOW_PRIORITY = 512;
+
     private DataChangeListenerRegistrationPublisher registrationPublisher;
-    private OFDataStoreAccessor dataStoreAccessor;
+    private FlowCommitWrapper dataStoreAccessor;
     private PacketProcessingService packetProcessingService;
 
     private boolean iAmLearning = false;
@@ -66,9 +70,9 @@ public class LearningSwitchHandlerSimpleImpl implements LearningSwitchHandler, P
             LOG.debug("already learning a node, skipping {}", nodeId.getValue());
             return;
         }
-        
+
         LOG.debug("expected table acquired, learning ..");
-       
+
         // disable listening - simple learning handles only one node (switch)
         if (registrationPublisher != null) {
             try {
@@ -78,102 +82,100 @@ public class LearningSwitchHandlerSimpleImpl implements LearningSwitchHandler, P
                 LOG.error("closing registration upon flowCapable node update listener failed: " + e.getMessage(), e);
             }
         }
-        
-        iAmLearning  = true;
+
+        iAmLearning = true;
         tablePath = appearedTablePath;
         nodePath = tablePath.firstIdentifierOf(Node.class);
         nodeId = nodePath.firstKeyOf(Node.class, NodeKey.class).getId();
         mac2portMapping = new HashMap<>();
         coveredMacPaths = new HashSet<>();
-        
+
         // start forwarding all packages to controller
         FlowId flowId = new FlowId(String.valueOf(flowIdInc.getAndIncrement()));
-        InstanceIdentifier<Flow> flowPath = OFFlowUtil.assemleFlowPath(flowId, tablePath);
+        FlowKey flowKey = new FlowKey(flowId);
+        InstanceIdentifier<Flow> flowPath = InstanceIdentifierUtils.createFlowPath(tablePath, flowKey);
 
-        // create flow in table with id = 0, priority = 4 (other params are defaulted in OFDataStoreUtil)
+        int priority = 0;
+        // create flow in table with id = 0, priority = 4 (other params are
+        // defaulted in OFDataStoreUtil)
         FlowBuilder allToCtrlFlow = OFFlowUtil.createFwdAllToControllerFlow(
-                appearedTablePath.firstKeyOf(Table.class, TableKey.class).getId(), 0, flowId);
+                InstanceIdentifierUtils.getTableId(tablePath), priority, flowId);
 
         LOG.debug("writing packetForwardToController flow");
-        dataStoreAccessor.writeFlowToConfig(flowPath, allToCtrlFlow.build());        
+        dataStoreAccessor.writeFlowToConfig(flowPath, allToCtrlFlow.build());
     }
 
     @Override
-    public void setRegistrationPublisher(
-            DataChangeListenerRegistrationPublisher registrationPublisher) {
+    public void setRegistrationPublisher(DataChangeListenerRegistrationPublisher registrationPublisher) {
         this.registrationPublisher = registrationPublisher;
     }
-    
+
     @Override
-    public void setDataStoreAccessor(OFDataStoreAccessor dataStoreAccessor) {
+    public void setDataStoreAccessor(FlowCommitWrapper dataStoreAccessor) {
         this.dataStoreAccessor = dataStoreAccessor;
     }
-    
+
     @Override
-    public void setPacketProcessingService(
-            PacketProcessingService packetProcessingService) {
+    public void setPacketProcessingService(PacketProcessingService packetProcessingService) {
         this.packetProcessingService = packetProcessingService;
     }
-    
+
     @Override
     public void onPacketReceived(PacketReceived notification) {
         if (!iAmLearning) {
             // ignoring packets - this should not happen
             return;
         }
-        
+
         LOG.debug("Received packet via match: {}", notification.getMatch());
-        
+
         // detect and compare node - we support one switch
         if (!nodePath.contains(notification.getIngress().getValue())) {
             return;
         }
-        
+
         // read src MAC and dst MAC
         byte[] dstMacRaw = OFFlowUtil.extractDstMac(notification.getPayload());
         byte[] srcMacRaw = OFFlowUtil.extractSrcMac(notification.getPayload());
         byte[] etherType = OFFlowUtil.extractEtherType(notification.getPayload());
-        
+
         MacAddress dstMac = OFFlowUtil.rawMacToMac(dstMacRaw);
         MacAddress srcMac = OFFlowUtil.rawMacToMac(srcMacRaw);
-        
-        NodeConnectorKey ingressKey = OFFlowUtil.distillKey(notification.getIngress());
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Received packet from MAC match: {}, ingress: {}", srcMac,
-                    ingressKey.getId());
-            LOG.debug("Received packet to   MAC match: {}", dstMac);
-            LOG.debug("Ethertype: {}", Integer.toHexString(0x0000ffff & ByteBuffer.wrap(etherType).getShort()));
-        }
-        
+
+        NodeConnectorKey ingressKey = InstanceIdentifierUtils.getNodeConnectorKey(notification.getIngress().getValue());
+
+        LOG.debug("Received packet from MAC match: {}, ingress: {}", srcMac, ingressKey.getId());
+        LOG.debug("Received packet to   MAC match: {}", dstMac);
+        LOG.debug("Ethertype: {}", Integer.toHexString(0x0000ffff & ByteBuffer.wrap(etherType).getShort()));
+
         // learn by IPv4 traffic only
         if (Arrays.equals(ETH_TYPE_IPV4, etherType)) {
             NodeConnectorRef previousPort = mac2portMapping.put(srcMac, notification.getIngress());
             if (previousPort != null && !notification.getIngress().equals(previousPort)) {
-                LOG.debug("mac2port mapping changed by mac {}: {} -> {}",
-                        srcMac, OFFlowUtil.distillKey(previousPort).getId(), ingressKey.getId());
+                NodeConnectorKey previousPortKey = InstanceIdentifierUtils.getNodeConnectorKey(previousPort.getValue());
+                LOG.debug("mac2port mapping changed by mac {}: {} -> {}", srcMac, previousPortKey, ingressKey.getId());
             }
-            // if dst MAC mapped: 
-            NodeConnectorRef dstNodeConnectorRef = mac2portMapping.get(dstMac);
-            if (dstNodeConnectorRef != null) {
+            // if dst MAC mapped:
+            NodeConnectorRef destNodeConnector = mac2portMapping.get(dstMac);
+            if (destNodeConnector != null) {
                 synchronized (coveredMacPaths) {
-                    if (!dstNodeConnectorRef.equals(notification.getIngress())) {
+                    if (!destNodeConnector.equals(notification.getIngress())) {
                         // add flow
-                        addBridgeFlow(srcMac, dstMac, dstNodeConnectorRef);
+                        addBridgeFlow(srcMac, dstMac, destNodeConnector);
                         addBridgeFlow(dstMac, srcMac, notification.getIngress());
                     } else {
                         LOG.debug("useless rule ignoring - both MACs are behind the same port");
                     }
                 }
-                LOG.debug("packetIn-directing.. to {}", 
-                        OFFlowUtil.distillKey(dstNodeConnectorRef).getId());
-                sendThroughPort(notification.getPayload(), notification.getIngress(), dstNodeConnectorRef);
+                LOG.debug("packetIn-directing.. to {}", InstanceIdentifierUtils.getNodeConnectorKey(destNodeConnector.getValue()).getId());
+                sendThroughPort(notification.getPayload(), notification.getIngress(), destNodeConnector);
             } else {
                 // flood
                 LOG.debug("packetIn-still flooding.. ");
                 flood(notification.getPayload(), notification.getIngress());
             }
         } else {
-            //non IPv4 package
+            // non IPv4 package
             flood(notification.getPayload(), notification.getIngress());
         }
 
@@ -182,26 +184,26 @@ public class LearningSwitchHandlerSimpleImpl implements LearningSwitchHandler, P
     /**
      * @param srcMac
      * @param dstMac
-     * @param dstNodeConnectorRef
+     * @param destNodeConnector
      */
-    private void addBridgeFlow(MacAddress srcMac, MacAddress dstMac,
-            NodeConnectorRef dstNodeConnectorRef) {
+    private void addBridgeFlow(MacAddress srcMac, MacAddress dstMac, NodeConnectorRef destNodeConnector) {
         synchronized (coveredMacPaths) {
             String macPath = srcMac.toString() + dstMac.toString();
             if (!coveredMacPaths.contains(macPath)) {
-                if (LOG.isDebugEnabled()) {
-                    NodeConnectorKey nodeConnectorKey = dstNodeConnectorRef.getValue()
-                            .firstKeyOf(NodeConnector.class, NodeConnectorKey.class);
-                    LOG.debug("covering mac path: {} by [{}]", macPath, nodeConnectorKey.getId());
-                }
-                
+                LOG.debug("covering mac path: {} by [{}]", macPath,
+                        destNodeConnector.getValue().firstKeyOf(NodeConnector.class, NodeConnectorKey.class).getId());
+
                 coveredMacPaths.add(macPath);
                 FlowId flowId = new FlowId(String.valueOf(flowIdInc.getAndIncrement()));
+                FlowKey flowKey = new FlowKey(flowId);
+                /**
+                 * Path to the flow we want to program.
+                 */
+                InstanceIdentifier<Flow> flowPath = InstanceIdentifierUtils.createFlowPath(tablePath, flowKey);
 
-                // create flow in table with id = 0, priority = 0 (other params are defaulted in OFDataStoreUtil)
-                InstanceIdentifier<Flow> flowPath = OFFlowUtil.assemleFlowPath(flowId, tablePath);
-                FlowBuilder srcToDstFlow = OFFlowUtil.createDirectMacToMacFlow((short) 0, 512,
-                        srcMac, dstMac, dstNodeConnectorRef);
+                Short tableId = InstanceIdentifierUtils.getTableId(tablePath);
+                FlowBuilder srcToDstFlow = OFFlowUtil.createDirectMacToMacFlow(tableId, DIRECT_FLOW_PRIORITY, srcMac,
+                        dstMac, destNodeConnector);
 
                 dataStoreAccessor.writeFlowToConfig(flowPath, srcToDstFlow.build());
             }
@@ -210,12 +212,12 @@ public class LearningSwitchHandlerSimpleImpl implements LearningSwitchHandler, P
 
     private void flood(byte[] payload, NodeConnectorRef ingress) {
         NodeKey nodeKey = new NodeKey(nodeId);
-        NodeConnectorRef egressConfRef = new NodeConnectorRef(
-                OFFlowUtil.createNodeConnRef(nodePath, nodeKey, "0xfffffffb"));
-        
+        NodeConnectorRef egressConfRef = new NodeConnectorRef(OFFlowUtil.createNodeConnRef(nodePath, nodeKey,
+                "0xfffffffb"));
+
         sendThroughPort(payload, ingress, egressConfRef);
     }
-    
+
     private void sendThroughPort(byte[] payload, NodeConnectorRef ingress, NodeConnectorRef egress) {
         NodeKey nodeKey = new NodeKey(nodeId);
         TransmitPacketInput input = OFFlowUtil.buildPacketOut(payload, ingress, egress, nodeKey);

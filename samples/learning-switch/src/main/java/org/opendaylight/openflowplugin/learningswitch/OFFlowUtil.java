@@ -20,8 +20,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags;
@@ -29,6 +27,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Output
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.InstructionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.apply.actions._case.ApplyActions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.apply.actions._case.ApplyActionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder;
@@ -36,18 +35,20 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetDestinationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetSourceBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInputBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+
+import com.google.common.collect.ImmutableList;
 
 /**
  * 
@@ -56,79 +57,81 @@ public abstract class OFFlowUtil {
 
     /**
      * @param tableId
-     * @param priority 
-     * @param srcMac 
-     * @param dstMac 
-     * @param dstPort 
+     * @param priority
+     * @param srcMac
+     * @param dstMac
+     * @param dstPort
      * @return {@link FlowBuilder} forwarding all packets to controller port
      */
-    public static FlowBuilder createDirectMacToMacFlow(Short tableId, int priority,
-            MacAddress srcMac, MacAddress dstMac, NodeConnectorRef dstPort) {
-        FlowBuilder allToCtrlFlow = new FlowBuilder();
-        allToCtrlFlow.setTableId(tableId);
-        allToCtrlFlow.setFlowName("mac2mac");
-        allToCtrlFlow.setId(new FlowId(Long.toString(allToCtrlFlow.hashCode())));
-        
+    public static FlowBuilder createDirectMacToMacFlow(Short tableId, int priority, MacAddress srcMac,
+            MacAddress dstMac, NodeConnectorRef dstPort) {
+        FlowBuilder macToMacFlow = new FlowBuilder() //
+                .setTableId(tableId) //
+                .setFlowName("mac2mac");
+        macToMacFlow.setId(new FlowId(Long.toString(macToMacFlow.hashCode())));
+
+        EthernetMatch ethernetMatch = new EthernetMatchBuilder() //
+                .setEthernetSource(new EthernetSourceBuilder() //
+                        .setAddress(srcMac) //
+                        .build()) //
+                .setEthernetDestination(new EthernetDestinationBuilder() //
+                        .setAddress(dstMac) //
+                        .build()) //
+                .build();
+
         MatchBuilder match = new MatchBuilder();
-        EthernetMatchBuilder ethernetMatch = new EthernetMatchBuilder();
-        EthernetSourceBuilder ethSourceBuilder = new EthernetSourceBuilder();
-        ethSourceBuilder.setAddress(srcMac);
-        ethernetMatch.setEthernetSource(ethSourceBuilder.build());
-        EthernetDestinationBuilder ethDestinationBuilder = new EthernetDestinationBuilder();
-        ethDestinationBuilder.setAddress(dstMac);
-        ethernetMatch.setEthernetDestination(ethDestinationBuilder.build());
-        match.setEthernetMatch(ethernetMatch.build());
-       
-        OutputActionBuilder output = new OutputActionBuilder();
-        output.setMaxLength(new Integer(0xffff));
-        Uri outputPort = dstPort.getValue().firstKeyOf(
-                NodeConnector.class, NodeConnectorKey.class).getId();
-        output.setOutputNodeConnector(outputPort);
-        ActionBuilder ab = new ActionBuilder();
-        ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
-        
-        // Add our drop action to a list
-        ArrayList<Action> actionList = new ArrayList<>();
-        actionList.add(ab.build());
-        
+        match.setEthernetMatch(ethernetMatch);
+
+        Uri outputPort = dstPort.getValue().firstKeyOf(NodeConnector.class, NodeConnectorKey.class).getId();
+
+        Action outputToControllerAction = new ActionBuilder() //
+                .setAction(new OutputActionCaseBuilder() //
+                        .setOutputAction(new OutputActionBuilder() //
+                                .setMaxLength(new Integer(0xffff)) //
+                                .setOutputNodeConnector(outputPort) //
+                                .build()) //
+                        .build()) //
+                .build();
+
         // Create an Apply Action
-        ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-        
+        ApplyActions applyActions = new ApplyActionsBuilder().setAction(ImmutableList.of(outputToControllerAction))
+                .build();
+
         // Wrap our Apply Action in an Instruction
-        InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-        
+        Instruction applyActionsInstruction = new InstructionBuilder() //
+                .setInstruction(new ApplyActionsCaseBuilder()//
+                        .setApplyActions(applyActions) //
+                        .build()) //
+                .build();
+
         // Put our Instruction in a list of Instructions
-        InstructionsBuilder isb = new InstructionsBuilder();
-        ArrayList<Instruction> instructions = new ArrayList<Instruction>();
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        
-        allToCtrlFlow.setMatch(match.build())
-           .setInstructions(isb.build())
-           .setPriority(priority)
-           .setBufferId(0L)
-           .setHardTimeout(0)
-           .setIdleTimeout(0)
-           .setFlags(new FlowModFlags(false, false, false, false, false));
-        
-        return allToCtrlFlow;
+
+        macToMacFlow //
+                .setMatch(new MatchBuilder() //
+                        .setEthernetMatch(ethernetMatch) //
+                        .build()) //
+                .setInstructions(new InstructionsBuilder() //
+                        .setInstruction(ImmutableList.of(applyActionsInstruction)) //
+                        .build()) //
+                .setPriority(priority) //
+                .setBufferId(0L) //
+                .setHardTimeout(0) //
+                .setIdleTimeout(0) //
+                .setFlags(new FlowModFlags(false, false, false, false, false));
+
+        return macToMacFlow;
     }
-    
+
     /**
      * @param tableId
      * @param priority
-     * @param flowId 
+     * @param flowId
      * @return {@link FlowBuilder} forwarding all packets to controller port
      */
     public static FlowBuilder createFwdAllToControllerFlow(Short tableId, int priority, FlowId flowId) {
-        FlowBuilder allToCtrlFlow = new FlowBuilder();
-        allToCtrlFlow.setTableId(tableId);
-        allToCtrlFlow.setFlowName("allPacketsToCtrl");
-        allToCtrlFlow.setId(flowId);
-        allToCtrlFlow.setKey(new FlowKey(flowId));
-        
+        FlowBuilder allToCtrlFlow = new FlowBuilder().setTableId(tableId).setFlowName("allPacketsToCtrl").setId(flowId)
+                .setKey(new FlowKey(flowId));
+
         MatchBuilder matchBuilder = new MatchBuilder();
 
         // Create output action -> send to controller
@@ -136,15 +139,15 @@ public abstract class OFFlowUtil {
         output.setMaxLength(new Integer(0xffff));
         Uri controllerPort = new Uri(OutputPortValues.CONTROLLER.toString());
         output.setOutputNodeConnector(controllerPort);
-        
+
         ActionBuilder ab = new ActionBuilder();
         ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
         ab.setOrder(0);
         ab.setKey(new ActionKey(0));
-        
+
         List<Action> actionList = new ArrayList<Action>();
         actionList.add(ab.build());
-        
+
         // Create an Apply Action
         ApplyActionsBuilder aab = new ApplyActionsBuilder();
         aab.setAction(actionList);
@@ -160,7 +163,7 @@ public abstract class OFFlowUtil {
         List<Instruction> instructions = new ArrayList<Instruction>();
         instructions.add(ib.build());
         isb.setInstruction(instructions);
-        
+
         allToCtrlFlow.setMatch(matchBuilder.build());
         allToCtrlFlow.setInstructions(isb.build());
         allToCtrlFlow.setPriority(priority);
@@ -168,21 +171,8 @@ public abstract class OFFlowUtil {
         allToCtrlFlow.setHardTimeout(0);
         allToCtrlFlow.setIdleTimeout(0);
         allToCtrlFlow.setFlags(new FlowModFlags(false, false, false, false, false));
-        
-        return allToCtrlFlow;
-    }
 
-    /**
-     * @param flowId
-     * @param tablePathArg 
-     * @return path to flow
-     */
-    public static InstanceIdentifier<Flow> assemleFlowPath(FlowId flowId, InstanceIdentifier<Table> tablePathArg) {
-        FlowKey flowKey = new FlowKey(flowId);
-        InstanceIdentifier<Flow> flowPath = InstanceIdentifier.builder(tablePathArg)
-                .child(Flow.class, flowKey )
-                .toInstance();
-        return flowPath;
+        return allToCtrlFlow;
     }
 
     /**
@@ -200,7 +190,7 @@ public abstract class OFFlowUtil {
     public static byte[] extractSrcMac(byte[] payload) {
         return Arrays.copyOfRange(payload, 6, 12);
     }
-    
+
     /**
      * @param payload
      * @return source MAC address
@@ -211,7 +201,8 @@ public abstract class OFFlowUtil {
 
     /**
      * @param rawMac
-     * @return {@link MacAddress} wrapping string value, baked upon binary MAC address
+     * @return {@link MacAddress} wrapping string value, baked upon binary MAC
+     *         address
      */
     public static MacAddress rawMacToMac(byte[] rawMac) {
         MacAddress mac = null;
@@ -230,20 +221,19 @@ public abstract class OFFlowUtil {
      * @param ingress
      * @param egress
      * @param nodekey
-     * @return packetOut suitable for rpc: {@link PacketProcessingService#transmitPacket(TransmitPacketInput)}
+     * @return packetOut suitable for rpc:
+     *         {@link PacketProcessingService#transmitPacket(TransmitPacketInput)}
      */
-    public static TransmitPacketInput buildPacketOut(byte[] payload, NodeConnectorRef ingress,
-            NodeConnectorRef egress, NodeKey nodekey) {
-        InstanceIdentifier<Node> nodePath = InstanceIdentifier.builder(Nodes.class)
-                .child(Node.class, nodekey).toInstance();
-        
-        TransmitPacketInputBuilder tPackBuilder = new TransmitPacketInputBuilder();
-        tPackBuilder.setPayload(payload);
-        tPackBuilder.setNode(new NodeRef(nodePath));
-        tPackBuilder.setCookie(null);
-        tPackBuilder.setEgress(egress);
-        tPackBuilder.setIngress(ingress);
-        return tPackBuilder.build();
+    public static TransmitPacketInput buildPacketOut(byte[] payload, NodeConnectorRef ingress, NodeConnectorRef egress,
+            NodeKey nodekey) {
+        InstanceIdentifier<Node> nodePath = InstanceIdentifierUtils.getNodePath(egress.getValue());
+        TransmitPacketInput tPackBuilder = new TransmitPacketInputBuilder() //
+                .setPayload(payload) //
+                .setNode(new NodeRef(nodePath)) //
+                .setEgress(egress) //
+                .setIngress(ingress) //
+                .build();
+        return tPackBuilder;
     }
 
     /**
@@ -252,21 +242,11 @@ public abstract class OFFlowUtil {
      * @param port
      * @return port wrapped into {@link NodeConnectorRef}
      */
-    public static NodeConnectorRef createNodeConnRef(InstanceIdentifier<Node> nodeInstId, 
-            NodeKey nodeKey, String port) {
+    public static NodeConnectorRef createNodeConnRef(InstanceIdentifier<Node> nodeInstId, NodeKey nodeKey, String port) {
         StringBuilder sBuild = new StringBuilder(nodeKey.getId().getValue()).append(":").append(port);
         NodeConnectorKey nConKey = new NodeConnectorKey(new NodeConnectorId(sBuild.toString()));
         InstanceIdentifier<NodeConnector> portPath = InstanceIdentifier.builder(nodeInstId)
                 .child(NodeConnector.class, nConKey).toInstance();
         return new NodeConnectorRef(portPath);
     }
-    
-    /**
-     * @param nodeConnector
-     * @return nodeConnector key
-     */
-    public static NodeConnectorKey distillKey(NodeConnectorRef nodeConnector) {
-        return nodeConnector.getValue().firstKeyOf(NodeConnector.class, NodeConnectorKey.class);
-    }
-
 }

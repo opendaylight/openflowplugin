@@ -24,7 +24,7 @@ public class PacketInDispatcherImpl implements PacketProcessingListener {
     private Map<InstanceIdentifier<Node>, PacketProcessingListener> handlerMapping;
     
     /**
-     * default ctor
+     * default constructor
      */
     public PacketInDispatcherImpl() {
         handlerMapping = new HashMap<>();
@@ -33,7 +33,17 @@ public class PacketInDispatcherImpl implements PacketProcessingListener {
     @Override
     public void onPacketReceived(PacketReceived notification) {
         // find corresponding handler
-        InstanceIdentifier<Node> nodeOfPacket = notification.getIngress().getValue().firstIdentifierOf(Node.class);
+        /**
+         * Notification contains reference to ingress port
+         * in a form of path in inventory: /nodes/node/node-connector
+         * 
+         * In order to get path we shorten path to the first node reference
+         * by using firstIdentifierOf helper method provided by InstanceIdentifier,
+         * this will effectively shorten the path to /nodes/node.
+         * 
+         */
+        InstanceIdentifier<?> ingressPort = notification.getIngress().getValue();
+        InstanceIdentifier<Node> nodeOfPacket = ingressPort.firstIdentifierOf(Node.class);
         PacketProcessingListener nodeHandler = handlerMapping.get(nodeOfPacket);
         
         if (nodeHandler != null) {
