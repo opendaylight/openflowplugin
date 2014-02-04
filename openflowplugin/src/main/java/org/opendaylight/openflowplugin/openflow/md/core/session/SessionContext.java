@@ -10,14 +10,13 @@ package org.opendaylight.openflowplugin.openflow.md.core.session;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.Port;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatus;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
 
 /**
  * @author mirehak
@@ -82,7 +81,7 @@ public interface SessionContext {
      * Returns a map containing all OFPhysicalPorts of this switch.
      * @return The Map of OFPhysicalPort
      */
-    public Map<Long, Port> getPhysicalPorts();
+    public Map<Long, PortGrouping> getPhysicalPorts();
     
     /**
      * Returns a map containing all bandwidths for all OFPorts of this switch.
@@ -101,7 +100,7 @@ public interface SessionContext {
      * @param portNumber The port ID
      * @return OFPhysicalPort for the specified PortNumber
      */
-    public Port getPhysicalPort(Long portNumber);
+    public PortGrouping getPhysicalPort(Long portNumber);
 
     /**
      * Returns the bandwidth of the specified portNumber of this switch.
@@ -122,13 +121,13 @@ public interface SessionContext {
      * @param port
      * @return True if the port is enabled
      */
-    public boolean isPortEnabled(Port port);
+    public boolean isPortEnabled(PortGrouping port);
 
     /**
      * Returns a list containing all enabled ports of this switch.
      * @return List containing all enabled ports of this switch
      */
-    public List<Port> getEnabledPorts();
+    public List<PortGrouping> getEnabledPorts();
 
     // TODO:: add listeners here, manager will set them and conductor use them
 

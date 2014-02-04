@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.Port;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
 
 /**
  * @author mirehak
@@ -35,7 +35,7 @@ public class SessionContextOFImpl implements SessionContext {
     private SwitchConnectionDistinguisher sessionKey;
     private IMessageDispatchService mdService;
     private final AtomicLong xid;
-    private final Map<Long, Port> physicalPorts;
+    private final Map<Long, PortGrouping> physicalPorts;
     private final Map<Long, Boolean> portBandwidth;
 
     /**
@@ -45,7 +45,7 @@ public class SessionContextOFImpl implements SessionContext {
         auxiliaryConductors = new ConcurrentHashMap<>();
         mdService = new MessageDispatchServiceImpl(this);
         xid = new AtomicLong();
-        this.physicalPorts = new HashMap<Long, Port>();
+        this.physicalPorts = new HashMap<Long, PortGrouping>();
         this.portBandwidth = new HashMap<Long, Boolean>();
     }
 
@@ -132,7 +132,7 @@ public class SessionContextOFImpl implements SessionContext {
     }
 
     @Override
-    public Map<Long, Port> getPhysicalPorts() {
+    public Map<Long, PortGrouping> getPhysicalPorts() {
         return this.physicalPorts;
     }
     
@@ -147,7 +147,7 @@ public class SessionContextOFImpl implements SessionContext {
     }
 
     @Override
-    public Port getPhysicalPort(Long portNumber) {
+    public PortGrouping getPhysicalPort(Long portNumber) {
         return this.physicalPorts.get(portNumber);
     }
 
@@ -162,7 +162,7 @@ public class SessionContextOFImpl implements SessionContext {
     }
 
     @Override
-    public boolean isPortEnabled(Port port) {
+    public boolean isPortEnabled(PortGrouping port) {
         if (port == null) {
             return false;
         }
@@ -179,10 +179,10 @@ public class SessionContextOFImpl implements SessionContext {
     }
 
     @Override
-    public List<Port> getEnabledPorts() {
-        List<Port> result = new ArrayList<Port>();
+    public List<PortGrouping> getEnabledPorts() {
+        List<PortGrouping> result = new ArrayList<PortGrouping>();
         synchronized (this.physicalPorts) {
-            for (Port port : physicalPorts.values()) {
+            for (PortGrouping port : physicalPorts.values()) {
                 if (isPortEnabled(port)) {
                     result.add(port);
                 }

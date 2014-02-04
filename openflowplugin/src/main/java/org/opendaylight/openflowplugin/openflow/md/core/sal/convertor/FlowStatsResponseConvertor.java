@@ -68,8 +68,8 @@ public class FlowStatsResponseConvertor {
         salFlowStatsBuilder.setTableId(flowStats.getTableId());
         if(flowStats.getMatchV10() != null){
             salFlowStatsBuilder.setMatch(MatchConvertorImpl.fromOFMatchV10ToSALMatch(flowStats.getMatchV10(),datapathid));
-            if(flowStats.getActionsList().size()!=0){
-                salFlowStatsBuilder.setInstructions(OFToMDSalFlowConvertor.wrapOF10ActionsToInstruction(flowStats.getActionsList()));
+            if(flowStats.getAction().size()!=0){
+                salFlowStatsBuilder.setInstructions(OFToMDSalFlowConvertor.wrapOF10ActionsToInstruction(flowStats.getAction()));
             }
         }
         if(flowStats.getMatch() != null){
@@ -81,8 +81,8 @@ public class FlowStatsResponseConvertor {
                             flowStats.getFlags().isOFPFFNOBYTCOUNTS(),
                             flowStats.getFlags().isOFPFFSENDFLOWREM()));
         }
-        if(flowStats.getInstructions()!= null){
-            salFlowStatsBuilder.setInstructions(OFToMDSalFlowConvertor.toSALInstruction(flowStats.getInstructions()));
+        if(flowStats.getInstruction()!= null){
+            salFlowStatsBuilder.setInstructions(OFToMDSalFlowConvertor.toSALInstruction(flowStats.getInstruction()));
         }
         
         return salFlowStatsBuilder.build();

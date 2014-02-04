@@ -22,7 +22,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortFeaturesV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortState;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortStateV10;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.Port;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
 
 public class PortTranslatorUtil {
     public static  org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures translatePortFeatures(PortFeatures apf) {
@@ -87,7 +87,7 @@ public class PortTranslatorUtil {
         return npc;
     }
     
-    public static NodeConnectorUpdated translatePort(Short version,BigInteger datapathId,Long portNo, Port port) {
+    public static NodeConnectorUpdated translatePort(Short version,BigInteger datapathId,Long portNo, PortGrouping port) {
         NodeConnectorUpdatedBuilder builder = InventoryDataServiceUtil
                 .nodeConnectorUpdatedBuilderFromDatapathIdPortNo(datapathId,port.getPortNo());
         FlowCapableNodeConnectorUpdatedBuilder fcncub = new FlowCapableNodeConnectorUpdatedBuilder();

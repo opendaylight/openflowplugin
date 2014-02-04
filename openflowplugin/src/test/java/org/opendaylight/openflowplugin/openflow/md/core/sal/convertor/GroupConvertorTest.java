@@ -33,10 +33,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.Bucket;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.BucketBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.GroupIdAction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.ActionsList;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupModCommand;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupType;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GroupModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GroupModInputBuilder;
 
 public class GroupConvertorTest {
@@ -130,10 +129,10 @@ public class GroupConvertorTest {
         Assert.assertEquals(20L, (long) outAddGroupInput.getBucketsList().get(0).getWatchPort().getValue());
         Assert.assertEquals((Long) 22L, outAddGroupInput.getBucketsList().get(0).getWatchGroup());
 
-        List<ActionsList> outActionList = outAddGroupInput.getBucketsList().get(0).getActionsList();
+        List<Action> outActionList = outAddGroupInput.getBucketsList().get(0).getAction();
         for (int outItem = 0; outItem < outActionList.size(); outItem++) {
-            org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.actions.list.Action action = outActionList
-                    .get(outItem).getAction();
+           Action action = outActionList
+                    .get(outItem);
             if (action instanceof GroupIdAction) {
                 Assert.assertEquals((Long) 5L, ((GroupIdAction) action).getGroupId());
 
@@ -144,10 +143,10 @@ public class GroupConvertorTest {
         Assert.assertEquals((Integer) 50, outAddGroupInput.getBucketsList().get(1).getWeight());
         Assert.assertEquals((long) 60, (long) outAddGroupInput.getBucketsList().get(1).getWatchPort().getValue());
         Assert.assertEquals((Long) 70L, outAddGroupInput.getBucketsList().get(1).getWatchGroup());
-        List<ActionsList> outActionList1 = outAddGroupInput.getBucketsList().get(1).getActionsList();
+        List<Action> outActionList1 = outAddGroupInput.getBucketsList().get(1).getAction();
         for (int outItem = 0; outItem < outActionList1.size(); outItem++) {
-            org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.actions.list.Action action = outActionList1
-                    .get(outItem).getAction();
+            Action action = outActionList1
+                    .get(outItem);
             if (action instanceof GroupIdAction) {
 
                 Assert.assertEquals((Long) 6L, ((GroupIdAction) action).getGroupId());
@@ -233,19 +232,19 @@ public class GroupConvertorTest {
 
         Assert.assertEquals(10L, outAddGroupInput.getGroupId().getValue().longValue());
 
-        List<ActionsList> outActionList = outAddGroupInput.getBucketsList().get(0).getActionsList();
+        List<Action> outActionList = outAddGroupInput.getBucketsList().get(0).getAction();
         for (int outItem = 0; outItem < outActionList.size(); outItem++) {
-            org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.actions.list.Action action = outActionList
-                    .get(outItem).getAction();
+            Action action = outActionList
+                    .get(outItem);
             if (action instanceof GroupIdAction) {
                 Assert.assertEquals((Long) 5L, ((GroupIdAction) action).getGroupId());
             }
         }
 
-        List<ActionsList> outActionList1 = outAddGroupInput.getBucketsList().get(1).getActionsList();
+        List<Action> outActionList1 = outAddGroupInput.getBucketsList().get(1).getAction();
         for (int outItem = 0; outItem < outActionList1.size(); outItem++) {
-            org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.actions.list.Action action = outActionList1
-                    .get(outItem).getAction();
+            Action action = outActionList1
+                    .get(outItem);
             if (action instanceof GroupIdAction) {
                 Assert.assertEquals((Long) 6L, ((GroupIdAction) action).getGroupId());
             }
@@ -346,10 +345,10 @@ public class GroupConvertorTest {
 
         Assert.assertEquals(10L, outAddGroupInput.getGroupId().getValue().longValue());
 
-        List<ActionsList> outActionList = outAddGroupInput.getBucketsList().get(0).getActionsList();
+        List<Action> outActionList = outAddGroupInput.getBucketsList().get(0).getAction();
         for (int outItem = 0; outItem < outActionList.size(); outItem++) {
-            org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.actions.list.Action action = outActionList
-                    .get(outItem).getAction();
+            Action action = outActionList
+                    .get(outItem);
             if (action instanceof GroupIdAction) {
                 Assert.assertEquals((Long) 5L, ((GroupIdAction) action).getGroupId());
 
@@ -357,10 +356,10 @@ public class GroupConvertorTest {
 
         }
 
-        List<ActionsList> outActionList1 = outAddGroupInput.getBucketsList().get(1).getActionsList();
+        List<Action> outActionList1 = outAddGroupInput.getBucketsList().get(1).getAction();
         for (int outItem = 0; outItem < outActionList1.size(); outItem++) {
-            org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.actions.list.Action action = outActionList1
-                    .get(outItem).getAction();
+            Action action = outActionList1
+                    .get(outItem);
             if (action instanceof GroupIdAction) {
 
                 Assert.assertEquals((Long) 6L, ((GroupIdAction) action).getGroupId());

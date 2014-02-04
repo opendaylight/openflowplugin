@@ -7,7 +7,7 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.session;
 
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.Port;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
 
 /**
  * 
@@ -30,7 +30,7 @@ public class FeaturesV13Bandwidth implements IGetBandwith {
     }
     
     @Override
-    public boolean getBandwidth(Port port) {        
+    public boolean getBandwidth(PortGrouping port) {        
         return (port.getCurrentFeatures().is_100gbFd() | port.getCurrentFeatures().is_100mbFd() | port.getCurrentFeatures().is_100mbHd() | 
                 port.getCurrentFeatures().is_10gbFd() | port.getCurrentFeatures().is_10mbFd() | port.getCurrentFeatures().is_10mbHd() | 
                 port.getCurrentFeatures().is_1gbFd() | port.getCurrentFeatures().is_1gbHd() | port.getCurrentFeatures().is_1tbFd() | 

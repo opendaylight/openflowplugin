@@ -19,9 +19,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.MaxLengthActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.PortAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.PortActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.ActionsList;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.ActionsListBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.actions.list.ActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOutInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOutInputBuilder;
@@ -52,7 +51,7 @@ public class PacketOutConvertor {
         // Build Port ID from TransmitPacketInput.Ingress
         PortNumber inPortNr = null;
         Long bufferId = OFConstants.OFP_NO_BUFFER;
-        List<ActionsList> actions = new ArrayList<ActionsList>();
+        List<Action> actions = new ArrayList<>();
         List<PathArgument> inArgs = null;
         PacketOutInputBuilder builder = new PacketOutInputBuilder();
         if (inputPacket.getIngress() != null) {
@@ -85,7 +84,6 @@ public class PacketOutConvertor {
 
         // FIXME VD implementation for testing PacketIn (REMOVE IT)
         if (inputPacket.getAction() == null) {
-            ActionsListBuilder asBuild = new ActionsListBuilder();
             ActionBuilder aBuild = new ActionBuilder();
             aBuild.setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.Output.class);
             PortActionBuilder paBuild = new PortActionBuilder();
@@ -94,11 +92,10 @@ public class PacketOutConvertor {
             MaxLengthActionBuilder mlBuild = new MaxLengthActionBuilder();
             mlBuild.setMaxLength(0xffff);
             aBuild.addAugmentation(MaxLengthAction.class, mlBuild.build());
-            asBuild.setAction(aBuild.build());
-            actions.add(asBuild.build());
-            builder.setActionsList(actions);
+            actions.add(aBuild.build());
+            builder.setAction(actions);
         } else {
-            builder.setActionsList(ActionConvertor.getActionList(inputPacket.getAction(), version, datapathid));
+            builder.setAction(ActionConvertor.getActions(inputPacket.getAction(), version, datapathid));
         }
 
         builder.setData(inputPacket.getPayload());

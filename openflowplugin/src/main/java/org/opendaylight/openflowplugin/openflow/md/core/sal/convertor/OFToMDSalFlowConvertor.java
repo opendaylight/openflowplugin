@@ -36,7 +36,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.MetadataInstruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.MeterIdInstruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.TableIdInstruction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.ActionsList;
 
 public class OFToMDSalFlowConvertor {
     
@@ -47,13 +46,13 @@ public class OFToMDSalFlowConvertor {
      * @return
      */
     public static Instructions toSALInstruction(
-            List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.Instructions> instructions) {
+            List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping.Instruction> instructions) {
         
         InstructionsBuilder instructionsBuilder = new InstructionsBuilder();
         
         List<Instruction> salInstructionList = new ArrayList<Instruction>();
         int instructionTreeNodekey=0;
-        for(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.Instructions switchInst : instructions){
+        for(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping.Instruction switchInst : instructions){
             if(switchInst.getType().equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.ApplyActions.class)){
                 
                 ActionsInstruction actionsInstruction = (ActionsInstruction)switchInst.getAugmentation(ActionsInstruction.class);
@@ -63,7 +62,7 @@ public class OFToMDSalFlowConvertor {
                 
                 applyActionsBuilder.setAction(
                             wrapActionList(
-                                    ActionConvertor.toMDSalActions(actionsInstruction.getActionsList()
+                                    ActionConvertor.toMDSalActions(actionsInstruction.getAction()
                                             )
                                             ));
                 
@@ -127,7 +126,7 @@ public class OFToMDSalFlowConvertor {
                 
                 WriteActionsCaseBuilder writeActionsCaseBuilder = new WriteActionsCaseBuilder();
                 WriteActionsBuilder writeActionsBuilder = new WriteActionsBuilder();
-                writeActionsBuilder.setAction(wrapActionList(ActionConvertor.toMDSalActions(actionsInstruction.getActionsList())));
+                writeActionsBuilder.setAction(wrapActionList(ActionConvertor.toMDSalActions(actionsInstruction.getAction())));
                 writeActionsCaseBuilder.setWriteActions(writeActionsBuilder.build());
                 
                 InstructionBuilder instBuilder = new InstructionBuilder();
@@ -186,7 +185,8 @@ public class OFToMDSalFlowConvertor {
      * Method wraps openflow 1.0 actions list to Apply Action Instructions
      */
     
-    public static Instructions wrapOF10ActionsToInstruction(List<ActionsList> actionsList) {
+    public static Instructions wrapOF10ActionsToInstruction(
+            List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action> actionsList) {
         InstructionsBuilder instructionsBuilder = new InstructionsBuilder();
         
         List<Instruction> salInstructionList = new ArrayList<Instruction>();
