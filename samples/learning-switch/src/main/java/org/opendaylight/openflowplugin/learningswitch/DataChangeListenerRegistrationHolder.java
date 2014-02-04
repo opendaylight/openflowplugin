@@ -14,11 +14,11 @@ import org.opendaylight.yangtools.concepts.ListenerRegistration;
 /**
  * 
  */
-public interface DataChangeListenerRegistrationPublisher {
+public interface DataChangeListenerRegistrationHolder {
 
     /**
      * @return the dataChangeListenerRegistration
      */
-    public abstract ListenerRegistration<DataChangeListener> getDataChangeListenerRegistration();
+    ListenerRegistration<DataChangeListener> getDataChangeListenerRegistration();
 
 }

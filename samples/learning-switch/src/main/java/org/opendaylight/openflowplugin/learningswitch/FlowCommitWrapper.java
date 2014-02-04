@@ -18,14 +18,17 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 /**
  * 
  */
-public interface OFDataStoreAccessor {
+public interface FlowCommitWrapper {
 
     /**
+     * Starts and commits data change transaction which 
+     * modifies provided flow path with supplied body.
+     * 
      * @param flowPath 
-     * @param allToCtrlFlow 
+     * @param flowBody 
      * @return transaction commit 
      * 
      */
-    Future<RpcResult<TransactionStatus>> writeFlowToConfig(InstanceIdentifier<Flow> flowPath, Flow allToCtrlFlow);
+    Future<RpcResult<TransactionStatus>> writeFlowToConfig(InstanceIdentifier<Flow> flowPath, Flow flowBody);
 
 }
