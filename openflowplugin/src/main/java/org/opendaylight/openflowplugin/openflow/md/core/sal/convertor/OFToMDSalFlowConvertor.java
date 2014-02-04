@@ -36,7 +36,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.MetadataInstruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.MeterIdInstruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.TableIdInstruction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.ActionsList;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionsList;
 
 public class OFToMDSalFlowConvertor {
     
@@ -47,13 +47,13 @@ public class OFToMDSalFlowConvertor {
      * @return
      */
     public static Instructions toSALInstruction(
-            List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.Instructions> instructions) {
+            List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping.Instructions> instructions) {
         
         InstructionsBuilder instructionsBuilder = new InstructionsBuilder();
         
         List<Instruction> salInstructionList = new ArrayList<Instruction>();
         int instructionTreeNodekey=0;
-        for(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.Instructions switchInst : instructions){
+        for(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping.Instructions switchInst : instructions){
             if(switchInst.getType().equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.ApplyActions.class)){
                 
                 ActionsInstruction actionsInstruction = (ActionsInstruction)switchInst.getAugmentation(ActionsInstruction.class);

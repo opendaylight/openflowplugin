@@ -50,9 +50,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OpenflowProtocolListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOutInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOutInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.Port;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortModInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatus;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.RoleRequestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.RoleRequestOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetAsyncInput;
@@ -251,7 +250,7 @@ class MockSessionContext implements SessionContext {
     }
 
     @Override
-    public Map<Long, Port> getPhysicalPorts() {
+    public Map<Long, PortGrouping> getPhysicalPorts() {
         // TODO Auto-generated method stub
         return null;
     }
@@ -263,7 +262,7 @@ class MockSessionContext implements SessionContext {
     }
 
     @Override
-    public Port getPhysicalPort(Long portNumber) {
+    public PortGrouping getPhysicalPort(Long portNumber) {
         // TODO Auto-generated method stub
         return null;
     }
@@ -281,13 +280,13 @@ class MockSessionContext implements SessionContext {
     }
 
     @Override
-    public boolean isPortEnabled(Port port) {
+    public boolean isPortEnabled(PortGrouping port) {
         // TODO Auto-generated method stub
         return false;
     }
 
     @Override
-    public List<Port> getEnabledPorts() {
+    public List<PortGrouping> getEnabledPorts() {
         // TODO Auto-generated method stub
         return null;
     }

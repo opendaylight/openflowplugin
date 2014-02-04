@@ -126,7 +126,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.UdpD
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.UdpSrc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.VlanPcp;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.VlanVid;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.MatchEntries;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.grouping.MatchEntries;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemovedMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -170,7 +170,7 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
 
             salFlowRemoved.setRemovedReason(removeReasonFlag);
 
-            org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.match.grouping.Match ofMatch = ofFlow
+            org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.match.grouping.Match ofMatch = ofFlow
                     .getMatch();
             if (ofMatch != null) {
                 salFlowRemoved.setMatch(fromMatch(ofMatch,sc.getFeatures().getDatapathId()));
@@ -191,7 +191,7 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
 
 
     public Match fromMatch(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.match.grouping.Match ofMatch,BigInteger datapathid) {
+            org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.match.grouping.Match ofMatch,BigInteger datapathid) {
         MatchBuilder matchBuilder = new MatchBuilder();
         EthernetMatchBuilder ethernetMatch = null;
         VlanMatchBuilder vlanMatch = null;

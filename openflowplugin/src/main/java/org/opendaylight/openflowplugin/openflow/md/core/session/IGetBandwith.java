@@ -7,7 +7,7 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.session;
 
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.Port;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
 
 /**
  * Utility for extracting bandwith from port according to port version
@@ -22,5 +22,5 @@ public interface IGetBandwith {
 	 * @param port
 	 * @return port bandwidth
 	 */
-    public boolean getBandwidth(Port port);
+    public boolean getBandwidth(PortGrouping port);
 }
