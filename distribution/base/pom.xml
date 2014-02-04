@@ -33,7 +33,7 @@ see https://git.opendaylight.org/gerrit/#/c/390/
     <dependency>
       <groupId>org.opendaylight.openflowplugin</groupId>
       <artifactId>openflowplugin</artifactId>
-      <version>0.0.3-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
     
     <!-- debug provider -->
@@ -43,19 +43,19 @@ see https://git.opendaylight.org/gerrit/#/c/390/
       <version>0.0.3-SNAPSHOT</version>
     </dependency>
     
-     <!-- drop-test provider -->
+    <!-- drop-test provider -->
     <dependency>
       <groupId>org.opendaylight.openflowplugin</groupId>
       <artifactId>drop-test</artifactId>
-      <version>0.0.3-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
-    
+
+   
     <dependency>
       <groupId>commons-codec</groupId>
       <artifactId>commons-codec</artifactId>
       <version>1.8</version>
     </dependency>
-
 
     <!-- openflowjava -->
     <dependency>
@@ -71,6 +71,7 @@ see https://git.opendaylight.org/gerrit/#/c/390/
       <artifactId>openflow-protocol-spi</artifactId>
     </dependency>
   </dependencies>
+
   <build>
     <resources>
       <resource>

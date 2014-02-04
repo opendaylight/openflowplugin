@@ -306,5 +306,6 @@
       <module>test-provider</module>
       <module>drop-test</module>
       <module>samples/sample-consumer</module>
+      <module>samples/learning-switch</module>
     </modules>
 </project>
