@@ -5,11 +5,16 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.openflowplugin.learningswitch;
+package org.opendaylight.openflowplugin.learningswitch.multi;
 
 import org.opendaylight.controller.sal.binding.api.NotificationService;
 import org.opendaylight.controller.sal.binding.api.data.DataBrokerService;
 import org.opendaylight.controller.sal.binding.api.data.DataChangeListener;
+import org.opendaylight.openflowplugin.learningswitch.DataChangeListenerRegistrationHolder;
+import org.opendaylight.openflowplugin.learningswitch.LearningSwitchManager;
+import org.opendaylight.openflowplugin.learningswitch.FlowCommitWrapper;
+import org.opendaylight.openflowplugin.learningswitch.FlowCommitWrapperImpl;
+import org.opendaylight.openflowplugin.learningswitch.WakeupOnNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -31,10 +36,11 @@ import org.slf4j.LoggerFactory;
  * corresponding MACs)</li>
  * </ul>
  */
-public class SimpleLearningSwitchManager implements DataChangeListenerRegistrationPublisher {
+public class LearningSwitchManagerMultiImpl implements DataChangeListenerRegistrationHolder,
+        LearningSwitchManager {
     
     protected static final Logger LOG = LoggerFactory
-            .getLogger(SimpleLearningSwitchManager.class);
+            .getLogger(LearningSwitchManagerMultiImpl.class);
 
     private NotificationService notificationService;
     private PacketProcessingService packetProcessingService;
@@ -47,6 +53,7 @@ public class SimpleLearningSwitchManager implements DataChangeListenerRegistrati
     /**
      * @param notificationService the notificationService to set
      */
+    @Override
     public void setNotificationService(NotificationService notificationService) {
         this.notificationService = notificationService;
     }
@@ -54,6 +61,7 @@ public class SimpleLearningSwitchManager implements DataChangeListenerRegistrati
     /**
      * @param packetProcessingService the packetProcessingService to set
      */
+    @Override
     public void setPacketProcessingService(
             PacketProcessingService packetProcessingService) {
         this.packetProcessingService = packetProcessingService;
@@ -62,23 +70,26 @@ public class SimpleLearningSwitchManager implements DataChangeListenerRegistrati
     /**
      * @param data the data to set
      */
-    public void setData(DataBrokerService data) {
+    @Override
+    public void setDataBroker(DataBrokerService data) {
         this.data = data;
     }
 
     /**
      * starting learning switch
      */
+    @Override
     public void start() {
         LOG.debug("start() -->");
-        OFDataStoreAccessor dataStoreAccessor = new OFDataStoreAccessorImpl(data);
+        FlowCommitWrapper dataStoreAccessor = new FlowCommitWrapperImpl(data);
 
-        SimpleLearningSwitchHandler learningSwitchHandler = new SimpleLearningSwitchHandlerImpl();
+        PacketInDispatcherImpl packetInDispatcher = new PacketInDispatcherImpl();
+        MultipleLearningSwitchHandlerFacadeImpl learningSwitchHandler = new MultipleLearningSwitchHandlerFacadeImpl();
         learningSwitchHandler.setRegistrationPublisher(this);
         learningSwitchHandler.setDataStoreAccessor(dataStoreAccessor);
         learningSwitchHandler.setPacketProcessingService(packetProcessingService);
-        //FIXME: should register for packets from particular node
-        packetInRegistration = notificationService.registerNotificationListener(learningSwitchHandler);
+        learningSwitchHandler.setPacketInDispatcher(packetInDispatcher);
+        packetInRegistration = notificationService.registerNotificationListener(packetInDispatcher);
         
         WakeupOnNode wakeupListener = new WakeupOnNode();
         wakeupListener.setLearningSwitchHandler(learningSwitchHandler);
@@ -94,6 +105,7 @@ public class SimpleLearningSwitchManager implements DataChangeListenerRegistrati
     /**
      * stopping learning switch 
      */
+    @Override
     public void stop() {
         LOG.debug("stop() -->");
         //TODO: remove flow (created in #start())

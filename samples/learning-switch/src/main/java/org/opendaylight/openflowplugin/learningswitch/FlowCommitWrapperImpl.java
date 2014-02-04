@@ -20,24 +20,23 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 /**
  * 
  */
-public class OFDataStoreAccessorImpl implements OFDataStoreAccessor {
+public class FlowCommitWrapperImpl implements FlowCommitWrapper {
     
     private DataBrokerService dataBrokerService;
 
     /**
      * @param dataBrokerService
      */
-    public OFDataStoreAccessorImpl(DataBrokerService dataBrokerService) {
+    public FlowCommitWrapperImpl(DataBrokerService dataBrokerService) {
         this.dataBrokerService = dataBrokerService;
     }
 
     @Override
     public Future<RpcResult<TransactionStatus>> writeFlowToConfig(InstanceIdentifier<Flow> flowPath, 
-            Flow allToCtrlFlow) {
+            Flow flowBody) {
         DataModificationTransaction addFlowTransaction = dataBrokerService.beginTransaction();
-        addFlowTransaction.putConfigurationData(flowPath, allToCtrlFlow);
+        addFlowTransaction.putConfigurationData(flowPath, flowBody);
         return addFlowTransaction.commit();
     }
-    
 
 }
