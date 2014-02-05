@@ -40,7 +40,7 @@
       <logback.version>1.0.9</logback.version>
       <nexusproxy>http://nexus.opendaylight.org/content</nexusproxy>
       <openflowjava.version>0.4</openflowjava.version>
-      <controller.model.version>1.0</controller.model.version>
+      <controller.model.version>1.1-SNAPSHOT</controller.model.version>
     </properties>
 
     <dependencyManagement>
