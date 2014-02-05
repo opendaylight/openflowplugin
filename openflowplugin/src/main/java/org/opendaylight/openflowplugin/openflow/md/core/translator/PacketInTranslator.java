@@ -14,6 +14,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchConvertorImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.PortNumberMatchEntry;
@@ -24,6 +25,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.Cookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceivedBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketInReason;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.NoMatch;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.InvalidTtl;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.SendToController;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.MatchBuilder;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,10 +58,14 @@ public class PacketInTranslator implements IMDMessageTranslator<OfHeader, List<D
            // Make sure we actually have features, some naughty switches start sending packetIn before they send us the FeatureReply
            if ( features != null) {
                BigInteger dpid = features.getDatapathId();
-    
+               pktInBuilder.setPacketInReason(getPacketInReason(message.getReason()));
+               if (message.getTableId() != null) {
+                   pktInBuilder.setTableId(new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableId(
+                                               message.getTableId().getValue().shortValue()));
+               }
                // get the Cookie if it exists
                if(message.getCookie() != null) {
-                   pktInBuilder.setCookie(new Cookie(message.getCookie().longValue()));
+                   pktInBuilder.setCookie(new Cookie(message.getCookie()));
                }
     
                // extract the port number
@@ -80,6 +90,10 @@ public class PacketInTranslator implements IMDMessageTranslator<OfHeader, List<D
                            }
                        }
                    }
+                   org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match match =
+                           MatchConvertorImpl.fromOFMatchToSALMatch(message.getMatch(), dpid);
+                   MatchBuilder matchBuilder = new MatchBuilder(match);
+                   pktInBuilder.setMatch(matchBuilder.build());
                }
     
                if (port == null) {
@@ -92,9 +106,28 @@ public class PacketInTranslator implements IMDMessageTranslator<OfHeader, List<D
                pktInBuilder.setIngress(InventoryDataServiceUtil.nodeConnectorRefFromDatapathIdPortno(dpid,port));
                PacketReceived pktInEvent = pktInBuilder.build();
                list.add(pktInEvent);
-                return list;
+               return list;
            } 
         } 
         return Collections.emptyList();
+    }
+
+    private Class<? extends PacketInReason> getPacketInReason(
+                    org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PacketInReason reason) {
+        if(null == reason) {
+            return PacketInReason.class;
+        }
+
+        if(reason.equals(
+            org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PacketInReason.OFPRNOMATCH)) {
+            return NoMatch.class;
+        } else if(reason.equals(
+                   org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PacketInReason.OFPRINVALIDTTL)) {
+            return InvalidTtl.class;
+        } else if(reason.equals(
+                   org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PacketInReason.OFPRACTION)) {
+            return SendToController.class;
+        }
+        return PacketInReason.class;
     }
 }
