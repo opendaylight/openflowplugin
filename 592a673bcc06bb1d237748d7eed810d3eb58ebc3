@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da6255ed_ef23e853",
+        "filename": "distribution/base/pom.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2014-02-07T09:22:42Z",
+      "side": 1,
+      "message": "Why is here the old netty dependency? Plugin is currently getting netty-4.0.10.Final via openflowjava project.",
+      "revId": "592a673bcc06bb1d237748d7eed810d3eb58ebc3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
