@@ -16,6 +16,24 @@
       "revId": "ff745b82f551e2339b0593b026135f1c660e8ff6",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da6255ed_4fc31338",
+        "filename": "pom.xml",
+        "patchSetId": 5
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1469
+      },
+      "writtenOn": "2014-02-10T07:56:09Z",
+      "side": 1,
+      "message": "You are correct Michal. We will update openflowjava with current  version \"0.5-SNAPSHOT\". Thanks for the comment :)",
+      "parentUuid": "da6255ed_4ff55455",
+      "revId": "ff745b82f551e2339b0593b026135f1c660e8ff6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
