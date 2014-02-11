@@ -41,6 +41,10 @@
       <nexusproxy>http://nexus.opendaylight.org/content</nexusproxy>
       <openflowjava.version>0.5-SNAPSHOT</openflowjava.version>
       <controller.model.version>1.1-SNAPSHOT</controller.model.version>
+      <sal.api.version>0.8.1-SNAPSHOT</sal.api.version>
+      <sal.connection.api.version>0.1.2-SNAPSHOT</sal.connection.api.version>
+      <netconf.connector.version>0.2.5-SNAPSHOT</netconf.connector.version>
+      <config.manager.version>0.2.5-SNAPSHOT</config.manager.version>
     </properties>
 
     <dependencyManagement>
@@ -61,6 +65,27 @@
           <artifactId>org.eclipse.osgi</artifactId>
           <version>3.8.1.v20120830-144521</version>
         </dependency>
+        <dependency>
+          <groupId>equinoxSDK381</groupId>
+          <artifactId>org.eclipse.equinox.console</artifactId>
+          <version>1.0.0.v20120522-1841</version>
+        </dependency>
+        <dependency>
+          <groupId>equinoxSDK381</groupId>
+          <artifactId>org.apache.felix.gogo.command</artifactId>
+          <version>0.8.0.v201108120515</version>
+        </dependency>
+        <dependency>
+          <groupId>equinoxSDK381</groupId>
+          <artifactId>org.apache.felix.gogo.runtime</artifactId>
+          <version>0.8.0.v201108120515</version>
+        </dependency>
+        <dependency>
+          <groupId>equinoxSDK381</groupId>
+          <artifactId>org.apache.felix.gogo.shell</artifactId>
+          <version>0.8.0.v201110170705</version>
+        </dependency>
+
         <dependency>
           <groupId>org.opendaylight.openflowjava</groupId>
           <artifactId>openflow-protocol-impl</artifactId>
@@ -114,18 +139,41 @@
         <dependency>
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>sal</artifactId>
-            <version>0.7.0</version>
+            <version>${sal.api.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>sal.connection</artifactId>
-            <version>0.1.1</version>
+            <version>${sal.connection.api.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>sal-common-util</artifactId>
-            <version>1.0</version>
+            <version>${controller.model.version}</version>
         </dependency>
+
+        <!-- IT -->
+        <dependency>
+            <groupId>org.opendaylight.controller</groupId>
+            <artifactId>config-netconf-connector</artifactId>
+            <version>${netconf.connector.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.controller</groupId>
+            <artifactId>sal-binding-it</artifactId>
+            <version>${controller.model.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.controller</groupId>
+            <artifactId>sal-binding-broker-impl</artifactId>
+            <version>${controller.model.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.controller</groupId>
+            <artifactId>config-manager</artifactId>
+            <version>${config.manager.version}</version>
+        </dependency>
+        
 
         <dependency>
             <groupId>xml-apis</groupId>
@@ -166,11 +214,16 @@
             <artifactId>commons-lang</artifactId>
             <version>2.6</version>
         </dependency>
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.7</version>
+        </dependency>
 
         <dependency>
           <groupId>junit</groupId>
           <artifactId>junit</artifactId>
-          <version>4.8.1</version>
+          <version>4.11</version>
           <scope>test</scope>
         </dependency>
         <dependency>

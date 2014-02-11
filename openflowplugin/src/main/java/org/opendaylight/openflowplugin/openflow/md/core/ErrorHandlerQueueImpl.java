@@ -63,4 +63,9 @@ public class ErrorHandlerQueueImpl implements ErrorHandler {
             LOG.error(e1.getMessage(), e1);
         }
     }
+
+    @Override
+    public void close() throws Exception {
+        //TODO: add special exception to queue and recognize it in run method
+    }
 }

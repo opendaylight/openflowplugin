@@ -12,7 +12,6 @@ import org.apache.felix.dm.Component;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.core.ComponentActivatorAbstractBase;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
-import org.opendaylight.openflowplugin.openflow.md.core.MDController;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.OpenflowPluginProvider;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
@@ -31,8 +30,9 @@ public class Activator extends ComponentActivatorAbstractBase {
      * are done by the ComponentActivatorAbstractBase.
      *
      */
+    @Override
     public void init() {
-        logger.debug("init");
+        super.init();
     }
 
     /**
@@ -40,9 +40,11 @@ public class Activator extends ComponentActivatorAbstractBase {
      * ComponentActivatorAbstractBase
      *
      */
+    @Override
     public void destroy() {
-        logger.debug("destroy");
-        pluginProvider.close();
+        if (pluginProvider != null) {
+            pluginProvider.close();
+        }
         super.destroy();
     }
 
@@ -62,6 +64,7 @@ public class Activator extends ComponentActivatorAbstractBase {
      *         instantiated in order to get an fully working implementation
      *         Object
      */
+    @Override
     public Object[] getImplementations() {
         Object[] res = {};
         return res;
@@ -82,8 +85,9 @@ public class Activator extends ComponentActivatorAbstractBase {
      *            per-container different behavior if needed, usually should not
      *            be the case though.
      */
+    @Override
     public void configureInstance(Component c, Object imp, String containerName) {
-
+        // NOOP
     }
 
     /**
@@ -95,6 +99,7 @@ public class Activator extends ComponentActivatorAbstractBase {
      *         instantiated in order to get an fully working implementation
      *         Object
      */
+    @Override
     public Object[] getGlobalImplementations() {
         Object[] res = { pluginProvider };
         return res;
@@ -111,12 +116,9 @@ public class Activator extends ComponentActivatorAbstractBase {
      *            Implementation class that is being configured, needed as long
      *            as the same routine can configure multiple implementations
      */
+    @Override
     public void configureGlobalInstance(Component c, Object imp) {
-         if (imp == pluginProvider) {
-            // c.setInterface(new String[] { IDiscoveryListener.class.getName(),
-            // IContainerListener.class.getName(),
-            // IRefreshInternalProvider.class.getName(),
-            // IInventoryShimExternalListener.class.getName() }, null);
+         if (pluginProvider == imp) {
             c.add(createServiceDependency().setService(BindingAwareBroker.class)
                     .setCallbacks("setBroker", "unsetBroker").setRequired(true));
             c.add(createServiceDependency().setService(SwitchConnectionProvider.class)

@@ -38,10 +38,6 @@ public class SwitchConnectionHandlerImpl implements SwitchConnectionHandler {
     public SwitchConnectionHandlerImpl() {
         queueKeeper = new QueueKeeperLightImpl();
         
-        errorHandler = new ErrorHandlerQueueImpl();
-        //TODO: implement shutdown invocation upon service stop event
-        new Thread(errorHandler).start();
-        
         //TODO: implement shutdown invocation upon service stop event
         spyPool = new ScheduledThreadPoolExecutor(1);
     }
@@ -77,6 +73,13 @@ public class SwitchConnectionHandlerImpl implements SwitchConnectionHandler {
      */
     public void setMessageSpy(MessageSpy<OfHeader, DataObject> messageSpy) {
         this.messageSpy = messageSpy;
+    }
+    
+    /**
+     * @param errorHandler the errorHandler to set
+     */
+    public void setErrorHandler(ErrorHandler errorHandler) {
+        this.errorHandler = errorHandler;
     }
 
 }

@@ -72,19 +72,23 @@
         <dependency>
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>sal-binding-it</artifactId>
-            <version>1.0</version>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.ops4j.pax.exam</groupId>
+                    <artifactId>pax-exam-container-native</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
-        <groupId>org.opendaylight.controller</groupId>
-        <artifactId>sal-binding-broker-impl</artifactId>
-        <version>1.0</version>
-        <scope>test</scope>
+            <groupId>org.opendaylight.controller</groupId>
+            <artifactId>sal-binding-broker-impl</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.openflowplugin</groupId>
             <artifactId>openflowplugin</artifactId>
-            <version>0.0.3-SNAPSHOT</version>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -127,10 +131,36 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.ops4j.pax.exam</groupId>
+            <artifactId>pax-exam</artifactId>
+            <version>${exam.version}</version>
+        </dependency>
+        <dependency>
             <groupId>equinoxSDK381</groupId>
             <artifactId>org.eclipse.osgi</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+          <groupId>equinoxSDK381</groupId>
+          <artifactId>org.eclipse.equinox.console</artifactId>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>equinoxSDK381</groupId>
+          <artifactId>org.apache.felix.gogo.command</artifactId>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>equinoxSDK381</groupId>
+          <artifactId>org.apache.felix.gogo.runtime</artifactId>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>equinoxSDK381</groupId>
+          <artifactId>org.apache.felix.gogo.shell</artifactId>
+          <scope>test</scope>
+        </dependency>
+            
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>log4j-over-slf4j</artifactId>
@@ -150,7 +180,17 @@
         <dependency>
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>config-netconf-connector</artifactId>
-            <version>0.2.3</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.controller</groupId>
+            <artifactId>config-manager</artifactId>
+            <scope>test</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
         </dependency>
     </dependencies>
 </project>
