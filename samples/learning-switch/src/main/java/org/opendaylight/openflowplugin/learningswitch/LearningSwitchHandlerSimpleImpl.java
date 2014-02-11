@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.learningswitch;
 
+import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -60,6 +61,8 @@ public class LearningSwitchHandlerSimpleImpl implements LearningSwitchHandler, P
 
     private NodeId nodeId;
     private AtomicLong flowIdInc = new AtomicLong();
+    private AtomicLong flowCookieInc = new AtomicLong(0x2a00000000000000L);
+    
     private InstanceIdentifier<Node> nodePath;
     private InstanceIdentifier<Table> tablePath;
 
@@ -208,6 +211,7 @@ public class LearningSwitchHandlerSimpleImpl implements LearningSwitchHandler, P
                 Short tableId = InstanceIdentifierUtils.getTableId(tablePath);
                 FlowBuilder srcToDstFlow = FlowUtils.createDirectMacToMacFlow(tableId, DIRECT_FLOW_PRIORITY, srcMac,
                         dstMac, destNodeConnector);
+                srcToDstFlow.setCookie(BigInteger.valueOf(flowCookieInc.getAndIncrement()));
 
                 dataStoreAccessor.writeFlowToConfig(flowPath, srcToDstFlow.build());
             }
