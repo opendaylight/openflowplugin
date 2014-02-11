@@ -23,11 +23,16 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.RpcService;
 import org.osgi.framework.BundleContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * OFPlugin provider implementation
  */
 public class OpenflowPluginProvider implements BindingAwareProvider, AutoCloseable {
+    
+    private static final Logger LOG = LoggerFactory
+            .getLogger(OpenflowPluginProvider.class);
 
     private BindingAwareBroker broker;
 
@@ -41,29 +46,46 @@ public class OpenflowPluginProvider implements BindingAwareProvider, AutoCloseab
 
     private MessageObservatory<OfHeader, DataObject> messageCountProvider;
     
-    public void unsetSwitchConnectionProvider() {
+    private SalRegistrationManager registrationManager = new SalRegistrationManager();
+    
+    /**
+     * dependencymanager requirement 
+     * @param switchConnectionProviderArg
+     */
+    public void unsetSwitchConnectionProvider(SwitchConnectionProvider switchConnectionProviderArg) {
         switchConnectionProvider = null;
     }
 
+    /**
+     * dependencymanager requirement 
+     * @param switchConnectionProvider
+     */
     public void setSwitchConnectionProvider(
             SwitchConnectionProvider switchConnectionProvider) {
         this.switchConnectionProvider = switchConnectionProvider;
         registerProvider();
     }
 
+    /**
+     * @return osgi context
+     */
     public BundleContext getContext() {
         return context;
     }
 
+    /**
+     * dependencymanager requirement 
+     * @param context
+     */
     public void setContext(BundleContext context) {
         this.context = context;
     }
 
-    SalRegistrationManager registrationManager = new SalRegistrationManager();
 
 
     @Override
     public void onSessionInitiated(ProviderContext session) {
+        LOG.debug("session initiated -> wiring up local components");
         messageCountProvider = new MessageSpyCounterImpl();
         registrationManager.onSessionInitiated(session);
         mdController = new MDController();
@@ -77,7 +99,9 @@ public class OpenflowPluginProvider implements BindingAwareProvider, AutoCloseab
     
     @Override
     public void close() {
-        mdController.stop();
+        if (mdController != null) {
+            mdController.stop();
+        }
     }
 
     @Override
@@ -95,16 +119,27 @@ public class OpenflowPluginProvider implements BindingAwareProvider, AutoCloseab
         return Collections.emptySet();
     }
 
+    /**
+     * @return BA default broker
+     */
     public BindingAwareBroker getBroker() {
         return broker;
     }
 
+    /**
+     * dependencymanager requirement 
+     * @param broker
+     */
     public void setBroker(BindingAwareBroker broker) {
         this.broker = broker;
         registerProvider();
     }
 
-    public void unsetBroker(BindingAwareBroker broker) {
+    /**
+     * dependencymanager requirement 
+     * @param brokerArg
+     */
+    public void unsetBroker(BindingAwareBroker brokerArg) {
         this.broker = null;
     }
 

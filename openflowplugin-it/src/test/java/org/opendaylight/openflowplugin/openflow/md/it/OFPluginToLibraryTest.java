@@ -7,8 +7,6 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.it;
 
-import static org.ops4j.pax.exam.CoreOptions.junitBundles;
-import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 
@@ -17,9 +15,9 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
-import junit.framework.Assert;
-
 import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opendaylight.controller.test.sal.binding.it.TestHelper;
@@ -31,38 +29,38 @@ import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionPro
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
+import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
+import org.ops4j.pax.exam.spi.reactors.PerClass;
+import org.ops4j.pax.exam.util.Filter;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * covers basic handshake scenarios
+ */
 @RunWith(PaxExam.class)
+@ExamReactorStrategy(PerClass.class)
 public class OFPluginToLibraryTest {
 
     private static final Logger LOG = LoggerFactory
             .getLogger(OFPluginToLibraryTest.class);
 
-    /** base controller package */
-    public static final String ODL = "org.opendaylight.controller";
-    /** controller.model package */
-    public static final String ODL_MODEL = "org.opendaylight.controller.model";
-    /** yangtools package */
-    public static final String YANG = "org.opendaylight.yangtools";
-    /** yangtools.model package */
-    public static final String YANG_MODEL = "org.opendaylight.yangtools.model";
-    /** OFPlugin package */
-    public static final String OFPLUGIN = "org.opendaylight.openflowplugin";
-    /** OFLibrary package */
-    public static final String OFLIBRARY = "org.opendaylight.openflowjava";
-    /** netty.io package */
-    public static final String NETTY = "io.netty";
-
-    @Inject
+    @Inject @Filter(timeout=5000)
     SwitchConnectionProvider switchConnectionProvider;
-
+    
     @Inject
     BundleContext ctx;
 
     private SimpleClient switchSim;
+
+    /**
+     * test setup
+     */
+    @Before
+    public void setUp() {
+        LOG.debug("switchConnectionProvider: "+switchConnectionProvider);
+    }
 
     /**
      * test tear down
@@ -77,6 +75,18 @@ public class OFPluginToLibraryTest {
             LOG.error(msg, e);
             Assert.fail(msg);
         }
+
+        //TODO: dump errors of plugin (by exploiting ErrorHandler)
+        
+        try {
+            LOG.debug("checking if simulator succeeded to connect to controller");
+            boolean simulatorWasOnline = switchSim.getIsOnlineFuture().get(100, TimeUnit.MILLISECONDS);
+            Assert.assertTrue("simulator failed to connect to controller", simulatorWasOnline);
+        } catch (Exception e) {
+            String message = "simulator probably failed to connect to controller";
+            LOG.error(message, e);
+            Assert.fail(message);
+        } 
     }
 
     /**
@@ -85,10 +95,9 @@ public class OFPluginToLibraryTest {
      */
     @Test
     public void handshakeOk1() throws Exception {
-        LOG.debug("handshake integration test");
-        LOG.debug("switchConnectionProvider: "+switchConnectionProvider);
+        LOG.debug("handshakeOk1 integration test");
 
-        switchSim = new SimpleClient("localhost", 6653);
+        switchSim = createSimpleClient();
         switchSim.setSecuredClient(false);
         Stack<ClientEvent> handshakeScenario = ScenarioFactory.createHandshakeScenarioVBM(
                 ScenarioFactory.VERSION_BITMAP_13, (short) 0, ScenarioFactory.VERSION_BITMAP_10_13);
@@ -96,14 +105,6 @@ public class OFPluginToLibraryTest {
         ScenarioHandler scenario = new ScenarioHandler(handshakeScenario);
         switchSim.setScenarioHandler(scenario);
         switchSim.start();
-        try {
-            switchSim.getScenarioDone().get(getFailSafeTimeout(), TimeUnit.MILLISECONDS);
-        } catch (Exception e) {
-            String msg = "waiting for scenario to finish failed: "+e.getMessage();
-            LOG.error(msg, e);
-            Assert.fail(msg);
-        }
-        //TODO: dump errors of plugin
     }
 
     /**
@@ -112,10 +113,9 @@ public class OFPluginToLibraryTest {
      */
     @Test
     public void handshakeOk2() throws Exception {
-        LOG.debug("handshake integration test");
-        LOG.debug("switchConnectionProvider: "+switchConnectionProvider);
+        LOG.debug("handshakeOk2 integration test");
 
-        switchSim = new SimpleClient("localhost", 6653);
+        switchSim = createSimpleClient();
         switchSim.setSecuredClient(false);
         Stack<ClientEvent> handshakeScenario = ScenarioFactory.createHandshakeScenario(
                 (short) 0, ScenarioFactory.VERSION_BITMAP_10_13);
@@ -123,26 +123,18 @@ public class OFPluginToLibraryTest {
         ScenarioHandler scenario = new ScenarioHandler(handshakeScenario);
         switchSim.setScenarioHandler(scenario);
         switchSim.start();
-        try {
-            switchSim.getScenarioDone().get(getFailSafeTimeout(), TimeUnit.MILLISECONDS);
-        } catch (Exception e) {
-            String msg = "waiting for scenario to finish failed: "+e.getMessage();
-            LOG.error(msg, e);
-            Assert.fail(msg);
-        }
-        //TODO: dump errors of plugin
     }
 
     /**
-     * test basic integration with OFLib running the handshake
+     * test basic integration with OFLib running the handshake:
+     * creating auxiliary connection without primary connection -- FAIL
      * @throws Exception
      */
     @Test
     public void handshakeFail1() throws Exception {
-        LOG.debug("handshake integration test");
-        LOG.debug("switchConnectionProvider: "+switchConnectionProvider);
+        LOG.debug("handshakeFail1 integration test");
 
-        switchSim = new SimpleClient("localhost", 6653);
+        switchSim = createSimpleClient();
         switchSim.setSecuredClient(false);
         Stack<ClientEvent> handshakeScenario = ScenarioFactory.createHandshakeScenario((short) 1,
                 ScenarioFactory.VERSION_BITMAP_10_13);
@@ -150,36 +142,34 @@ public class OFPluginToLibraryTest {
         ScenarioHandler scenario = new ScenarioHandler(handshakeScenario);
         switchSim.setScenarioHandler(scenario);
         switchSim.start();
-        try {
-            switchSim.getScenarioDone().get(getFailSafeTimeout(), TimeUnit.MILLISECONDS);
-        } catch (Exception e) {
-            String msg = "waiting for scenario to finish failed: "+e.getMessage();
-            LOG.error(msg, e);
-            Assert.fail(msg);
-        }
-        //TODO: dump errors of plugin
     }
 
     /**
      * test basic integration with OFLib running the handshake
+     * adding 5s wait as first event of switch -- FAIL
      * @throws Exception
      */
     @Test
     public void handshakeFail2() throws Exception {
-        LOG.debug("handshake integration test");
+        LOG.debug("handshakeFail2 integration test");
         LOG.debug("switchConnectionProvider: "+switchConnectionProvider);
 
-        switchSim = new SimpleClient("localhost", 6653);
+        switchSim = createSimpleClient();
         switchSim.setSecuredClient(false);
-        Stack<ClientEvent> handshakeScenario = ScenarioFactory.createHandshakeScenario((short) 1,
+        Stack<ClientEvent> handshakeScenario = ScenarioFactory.createHandshakeScenario((short) 0,
                 ScenarioFactory.VERSION_BITMAP_10_13);
         handshakeScenario.setElementAt(new SleepEvent(5000), 0);
 
         ScenarioHandler scenario = new ScenarioHandler(handshakeScenario);
         switchSim.setScenarioHandler(scenario);
         switchSim.start();
-        tearDown();
-        //TODO: dump errors of plugin
+    }
+
+    /**
+     * @return
+     */
+    private static SimpleClient createSimpleClient() {
+        return new SimpleClient("localhost", 6653);
     }
 
     /**
@@ -195,36 +185,22 @@ public class OFPluginToLibraryTest {
      */
     @Configuration
     public Option[] config() {
+        LOG.info("configuring...");
         return options(
                 systemProperty("osgi.console").value("2401"),
-                mavenBundle("org.slf4j", "slf4j-api").versionAsInProject(),
-                mavenBundle("org.slf4j", "log4j-over-slf4j").versionAsInProject(),
-                mavenBundle("ch.qos.logback", "logback-core").versionAsInProject(),
-                mavenBundle("ch.qos.logback", "logback-classic").versionAsInProject(),
-                mavenBundle("org.apache.felix", "org.apache.felix.dependencymanager").versionAsInProject(),
-                TestHelper.mdSalCoreBundles(), TestHelper.bindingAwareSalBundles(),
-                TestHelper.flowCapableModelBundles(), TestHelper.baseModelBundles(),
+                systemProperty("osgi.bundles.defaultStartLevel").value("4"),
+                systemProperty("pax.exam.osgi.unresolved.fail").value("true"),
 
-
-                mavenBundle(ODL, "sal").versionAsInProject(),
-                mavenBundle(ODL, "sal.connection").versionAsInProject(),
-                mavenBundle(ODL, "sal-common").versionAsInProject(),
-
-                mavenBundle(ODL_MODEL, "model-flow-statistics").versionAsInProject(),
-
-                mavenBundle(OFLIBRARY, "openflow-protocol-impl").versionAsInProject(),
-                mavenBundle(OFLIBRARY, "openflow-protocol-api").versionAsInProject(),
-                mavenBundle(OFLIBRARY, "openflow-protocol-spi").versionAsInProject(),
-
-                mavenBundle(NETTY, "netty-handler").versionAsInProject(),
-                mavenBundle(NETTY, "netty-buffer").versionAsInProject(),
-                mavenBundle(NETTY, "netty-common").versionAsInProject(),
-                mavenBundle(NETTY, "netty-transport").versionAsInProject(),
-                mavenBundle(NETTY, "netty-codec").versionAsInProject(),
-
-                mavenBundle(OFLIBRARY, "simple-client").versionAsInProject().start(),
-                mavenBundle(OFPLUGIN, "openflowplugin").versionAsInProject(),
-                junitBundles());
+                OFPaxOptionsAssistant.osgiConsoleBundles(),
+                OFPaxOptionsAssistant.loggingBudles(),
+                
+                TestHelper.junitAndMockitoBundles(),
+                TestHelper.mdSalCoreBundles(), 
+                TestHelper.configMinumumBundles(),
+                TestHelper.baseModelBundles(),
+                TestHelper.flowCapableModelBundles(), 
+                
+                OFPaxOptionsAssistant.ofPluginBundles());
     }
 
 }

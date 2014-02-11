@@ -14,6 +14,9 @@ import org.opendaylight.openflowjava.protocol.impl.clients.SendEvent;
 import org.opendaylight.openflowjava.protocol.impl.clients.WaitForMessageEvent;
 import org.opendaylight.openflowjava.protocol.impl.util.ByteBufUtils;
 
+/**
+ * provisioning of most common scenarios used by testing of integration between OFLibrary, OFPlugin and MD-SAL 
+ */
 public abstract class ScenarioFactory {
     
     /** version bitmap hex-string containing version 1.3 */

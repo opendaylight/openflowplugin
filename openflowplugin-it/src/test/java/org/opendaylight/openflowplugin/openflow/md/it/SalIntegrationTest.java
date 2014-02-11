@@ -9,13 +9,6 @@ package org.opendaylight.openflowplugin.openflow.md.it;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.opendaylight.controller.test.sal.binding.it.TestHelper.baseModelBundles;
-import static org.opendaylight.controller.test.sal.binding.it.TestHelper.bindingAwareSalBundles;
-import static org.opendaylight.controller.test.sal.binding.it.TestHelper.configMinumumBundles;
-import static org.opendaylight.controller.test.sal.binding.it.TestHelper.flowCapableModelBundles;
-import static org.opendaylight.controller.test.sal.binding.it.TestHelper.mdSalCoreBundles;
-import static org.ops4j.pax.exam.CoreOptions.junitBundles;
-import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 
@@ -31,6 +24,7 @@ import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ConsumerContext;
 import org.opendaylight.controller.sal.binding.api.BindingAwareConsumer;
 import org.opendaylight.controller.sal.binding.api.NotificationService;
+import org.opendaylight.controller.test.sal.binding.it.TestHelper;
 import org.opendaylight.openflowjava.protocol.impl.clients.ScenarioHandler;
 import org.opendaylight.openflowjava.protocol.impl.clients.SimpleClient;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
@@ -46,25 +40,13 @@ import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-//@RunWith(PaxExam.class)
+/**
+ * Exercise inventory listener ({@link OpendaylightInventoryListener#onNodeUpdated(NodeUpdated)})
+ */
+@RunWith(PaxExam.class)
 public class SalIntegrationTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(SalIntegrationTest.class);
-
-    /** base controller package */
-    public static final String ODL = "org.opendaylight.controller";
-    /** controller.model package */
-    public static final String ODL_MODEL = "org.opendaylight.controller.model";
-    /** yangtools package */
-    public static final String YANG = "org.opendaylight.yangtools";
-    /** yangtools.model package */
-    public static final String YANG_MODEL = "org.opendaylight.yangtools.model";
-    /** OFPlugin package */
-    public static final String OFPLUGIN = "org.opendaylight.openflowplugin";
-    /** OFLibrary package */
-    public static final String OFLIBRARY = "org.opendaylight.openflowjava";
-    /** netty.io package */
-    public static final String NETTY = "io.netty";
 
     @Inject
     SwitchConnectionProvider switchConnectionProvider;
@@ -87,7 +69,7 @@ public class SalIntegrationTest {
      *
      * @throws Exception
      */
-    //@Test
+    @Test
     public void handshakeAndNodeUpdate() throws Exception {
 
         final TestInventoryListener listener = new TestInventoryListener();
@@ -112,7 +94,7 @@ public class SalIntegrationTest {
         switchSim.start();
 
         switchSim.getScenarioDone().get(getFailSafeTimeout(), TimeUnit.MILLISECONDS);
-        Thread.sleep(2000);
+        Thread.sleep(4000);
         assertEquals(1, listener.nodeUpdated.size());
         assertNotNull(listener.nodeUpdated.get(0));
 
@@ -124,32 +106,16 @@ public class SalIntegrationTest {
     @Configuration
     public Option[] config() {
         return options(systemProperty("osgi.console").value("2401"),
-                mavenBundle("org.slf4j", "slf4j-api").versionAsInProject(),
-                mavenBundle("org.slf4j", "log4j-over-slf4j").versionAsInProject(),
-                mavenBundle("ch.qos.logback", "logback-core").versionAsInProject(),
-                mavenBundle("ch.qos.logback", "logback-classic").versionAsInProject(),
-
-                mavenBundle("org.apache.felix", "org.apache.felix.dependencymanager").versionAsInProject(),
-
-                mavenBundle(OFLIBRARY, "openflow-protocol-impl").versionAsInProject(),
-                mavenBundle(OFLIBRARY, "openflow-protocol-api").versionAsInProject(),
-                mavenBundle(OFLIBRARY, "openflow-protocol-spi").versionAsInProject(),
-
-                mavenBundle(ODL, "sal").versionAsInProject(),
-                mavenBundle(ODL, "sal.connection").versionAsInProject(),
-                mdSalCoreBundles(), baseModelBundles(), flowCapableModelBundles(),
-                configMinumumBundles(),
-
-                bindingAwareSalBundles(),
-
-                mavenBundle(NETTY, "netty-handler").versionAsInProject(),
-                mavenBundle(NETTY, "netty-buffer").versionAsInProject(),
-                mavenBundle(NETTY, "netty-common").versionAsInProject(),
-                mavenBundle(NETTY, "netty-transport").versionAsInProject(),
-                mavenBundle(NETTY, "netty-codec").versionAsInProject(),
-
-                mavenBundle(OFLIBRARY, "simple-client").versionAsInProject().start(),
-                mavenBundle(OFPLUGIN, "openflowplugin").versionAsInProject(), junitBundles()
+                OFPaxOptionsAssistant.osgiConsoleBundles(),
+                OFPaxOptionsAssistant.loggingBudles(),
+                
+                TestHelper.junitAndMockitoBundles(),
+                TestHelper.mdSalCoreBundles(), 
+                TestHelper.configMinumumBundles(),
+                TestHelper.baseModelBundles(),
+                TestHelper.flowCapableModelBundles(), 
+                
+                OFPaxOptionsAssistant.ofPluginBundles()
                 );
     }
 

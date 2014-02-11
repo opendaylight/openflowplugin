@@ -189,6 +189,11 @@ public class MDController implements IMDController {
         // setup handler
         SwitchConnectionHandlerImpl switchConnectionHandler = new SwitchConnectionHandlerImpl();
         switchConnectionHandler.setMessageSpy(messageSpyCounter);
+
+        ErrorHandlerQueueImpl errorHandler = new ErrorHandlerQueueImpl();
+        new Thread(errorHandler).start();
+        
+        switchConnectionHandler.setErrorHandler(errorHandler);
         switchConnectionHandler.init();
         
         switchConnectionProvider.setSwitchConnectionHandler(switchConnectionHandler);
