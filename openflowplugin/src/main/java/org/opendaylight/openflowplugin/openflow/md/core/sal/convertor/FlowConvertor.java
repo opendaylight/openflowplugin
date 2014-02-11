@@ -238,10 +238,6 @@ public class FlowConvertor {
                 ClearActions clearActions = clearActionscase.getClearActions();
                 instructionBuilder
                         .setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.ClearActions.class);
-                ActionsInstructionBuilder actionsInstructionBuilder = new ActionsInstructionBuilder();
-                actionsInstructionBuilder.setActionsList(ActionConvertor.getActionList(clearActions.getAction(),
-                        version,datapathid));
-                instructionBuilder.addAugmentation(ActionsInstruction.class, actionsInstructionBuilder.build());
                 instructionsList.add(instructionBuilder.build());
             }
 
