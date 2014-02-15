@@ -90,7 +90,7 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
         if (!session.isValid()) {
             LOG.warn("Session for the cookie {} is invalid.", cookie);
             throw new IllegalArgumentException("Session for the cookie is invalid. Reason: "
-                    + "the switch has been recently diconnected OR inventory provides outdated information.");
+                    + "the switch has been recently disconnected OR inventory provides outdated information.");
         }
         LOG.debug("finding connecton for cookie value {}. ", cookie);
         // set main connection as default
