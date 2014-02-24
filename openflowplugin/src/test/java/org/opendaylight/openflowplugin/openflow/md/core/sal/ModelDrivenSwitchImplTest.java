@@ -38,6 +38,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.*;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.*;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 /**
  * simple NPE smoke test
@@ -89,6 +93,7 @@ public class ModelDrivenSwitchImplTest {
                 Matchers.any(SwitchConnectionDistinguisher.class))).thenReturn(Futures.immediateFuture(result));
         
         AddFlowInputBuilder input = new AddFlowInputBuilder();
+		input.setNode(createNodeRef("openflow:6"));
         input.setMatch(new MatchBuilder().build());
         
         mdSwitchOF10.addFlow(input.build());
@@ -108,7 +113,8 @@ public class ModelDrivenSwitchImplTest {
         Mockito.when(messageDispatchService.flowMod(Matchers.any(FlowModInput.class), 
                 Matchers.any(SwitchConnectionDistinguisher.class))).thenReturn(Futures.immediateFuture(result));
         
-        RemoveFlowInputBuilder input = new RemoveFlowInputBuilder();
+        RemoveFlowInputBuilder input = new RemoveFlowInputBuilder();		
+		input.setNode(createNodeRef("openflow:6"));
         input.setMatch(new MatchBuilder().build());
         
         mdSwitchOF10.removeFlow(input.build());
@@ -129,12 +135,22 @@ public class ModelDrivenSwitchImplTest {
                 Matchers.any(SwitchConnectionDistinguisher.class))).thenReturn(Futures.immediateFuture(result));
         
         UpdateFlowInputBuilder input = new UpdateFlowInputBuilder();
-        UpdatedFlowBuilder updatedFlow = new UpdatedFlowBuilder();
+        UpdatedFlowBuilder updatedFlow = new UpdatedFlowBuilder();		
+		input.setNode(createNodeRef("openflow:6"));
         updatedFlow.setMatch(new MatchBuilder().build());
         input.setUpdatedFlow(updatedFlow.build());
         
         mdSwitchOF10.updateFlow(input.build());
         mdSwitchOF13.updateFlow(input.build());
+    }
+	
+	
+	    private static NodeRef createNodeRef(String string) {
+        NodeKey key = new NodeKey(new NodeId(string));
+        InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node> path = InstanceIdentifier.builder().node(Nodes.class).node(org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node.class, key)
+                .toInstance();
+
+        return new NodeRef(path);
     }
 
 }
