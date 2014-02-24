@@ -12,8 +12,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
+import org.jboss.netty.util.HashedWheelTimer;
+import org.jboss.netty.util.Timeout;
+import org.jboss.netty.util.TimerTask;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.controller.sal.common.util.Rpcs;
 import org.opendaylight.openflowjava.protocol.api.util.BinContent;
@@ -90,6 +95,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetGroupStatisticsOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterOutputBuilder;
@@ -196,6 +202,9 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     private short version = 0;
     private final SessionContext session;
     NotificationProviderService rpcNotificationProviderService;
+    private Timeout timeout = null;
+    public static ConcurrentHashMap<TransactionKey, Object> mapBulkTransaction = new ConcurrentHashMap<TransactionKey, Object>();
+    public static HashedWheelTimer hashedwheeltimer = new HashedWheelTimer();
 
     protected ModelDrivenSwitchImpl(NodeId nodeId, InstanceIdentifier<Node> identifier, SessionContext context) {
         super(identifier, context);
@@ -237,7 +246,19 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
             newFlow.setFlowRef(input.getFlowRef());
             rpcNotificationProviderService.publish(newFlow.build());
         }
-
+		
+		if(input != null) {
+            LOG.debug("****** AddFlow Begin-Transaction****" + input.getTransactionUri().toString());
+            LOG.debug("******AddFlow Plugin transaction-Id****" + xId.intValue());
+            mapBulkTransaction.put(new TransactionKey(input.getNode().getValue().firstKeyOf(Node.class, NodeKey.class)
+                   .getId().getValue().toString(), (new TransactionId(BigInteger.valueOf(xId.intValue()))).toString()),
+                   input);
+            timeout = hashedwheeltimer.newTimeout(
+                    new EndTimerTask(input.getNode().getValue().firstKeyOf(Node.class, NodeKey.class).getId().getValue()
+                            .toString(), (new TransactionId(BigInteger.valueOf(xId.intValue()))).toString()), 5000,
+                    TimeUnit.MILLISECONDS);
+            LOG.debug("******AddFlow Timeout task assign****" + timeout.toString());
+        }
         Future<RpcResult<UpdateFlowOutput>> resultFromOFLib = messageService.flowMod(ofFlowModInput.build(), cookie);
         RpcResult<UpdateFlowOutput> rpcResultFromOFLib = null;
 
@@ -292,7 +313,20 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
             groupMod.setGroupRef(input.getGroupRef());
             rpcNotificationProviderService.publish(groupMod.build());
         }
-
+		
+		if(input != null) {
+            LOG.debug("****** AddGroup Begin-Transaction****" + input.getTransactionUri().toString());
+            LOG.debug("******AddGroup Plugin transaction-Id****" + xId.intValue());
+            mapBulkTransaction.put(new TransactionKey(input.getNode().getValue().firstKeyOf(Node.class, NodeKey.class)
+                    .getId().getValue().toString(), (new TransactionId(BigInteger.valueOf(xId.intValue()))).toString()),
+                    input);
+            timeout = hashedwheeltimer.newTimeout(
+                    new EndTimerTask(input.getNode().getValue().firstKeyOf(Node.class, NodeKey.class).getId().getValue()
+                           .toString(), (new TransactionId(BigInteger.valueOf(xId.intValue()))).toString()), 5000,
+                    TimeUnit.MILLISECONDS);
+            LOG.debug("******AddGroup Timeout task assign****" + timeout.toString());
+        }
+		
         Future<RpcResult<UpdateGroupOutput>> resultFromOFLib = messageService.groupMod(ofGroupModInput.build(), cookie);
         RpcResult<UpdateGroupOutput> rpcResultFromOFLib = null;
 
@@ -345,9 +379,22 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
             meterMod.setMeterRef(input.getMeterRef());
             rpcNotificationProviderService.publish(meterMod.build());
         }
-
-        Future<RpcResult<UpdateMeterOutput>> resultFromOFLib = messageService.meterMod(ofMeterModInput.build(), cookie);
-
+		
+		if(input != null) {
+            LOG.debug("****** AddMeter Begin-Transaction****" + input.getTransactionUri().toString());
+            LOG.debug("******AddMeter Plugin transaction-Id****" + xId.intValue());
+            mapBulkTransaction.put(new TransactionKey(input.getNode().getValue().firstKeyOf(Node.class, NodeKey.class)
+                    .getId().getValue().toString(), (new TransactionId(BigInteger.valueOf(xId.intValue()))).toString()),
+                    input);
+            timeout = hashedwheeltimer.newTimeout(
+                    new EndTimerTask(input.getNode().getValue().firstKeyOf(Node.class, NodeKey.class).getId().getValue()
+                            .toString(), (new TransactionId(BigInteger.valueOf(xId.intValue()))).toString()), 5000,
+                    TimeUnit.MILLISECONDS);
+            LOG.debug("******AddMeter Timeout task assign****" + timeout.toString());
+		}
+		
+        Future<RpcResult<UpdateMeterOutput>> resultFromOFLib = messageService.meterMod(ofMeterModInput.build(), cookie);        
+		
         RpcResult<UpdateMeterOutput> rpcResultFromOFLib = null;
 
         try {
@@ -400,7 +447,16 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
             removeFlow.setFlowRef(input.getFlowRef());
             rpcNotificationProviderService.publish(removeFlow.build());
         }
-
+        LOG.debug("******RemoveFlow Begin-Transaction****" + input.getTransactionUri().toString());
+        LOG.debug("******RemoveFlow Plugin transaction-Id****" + xId.intValue());
+        mapBulkTransaction.put(new TransactionKey(input.getNode().getValue().firstKeyOf(Node.class, NodeKey.class)
+                .getId().getValue().toString(), (new TransactionId(BigInteger.valueOf(xId.intValue()))).toString()),
+                input);
+        timeout = hashedwheeltimer.newTimeout(
+                new EndTimerTask(input.getNode().getValue().firstKeyOf(Node.class, NodeKey.class).getId().getValue()
+                        .toString(), (new TransactionId(BigInteger.valueOf(xId.intValue()))).toString()), 5000,
+                TimeUnit.MILLISECONDS);
+        LOG.debug("******RemoveFlow Timeout task assign****" + timeout.toString());
         Future<RpcResult<UpdateFlowOutput>> resultFromOFLib = messageService.flowMod(ofFlowModInput.build(), cookie);
 
         RpcResult<UpdateFlowOutput> rpcResultFromOFLib = null;
@@ -456,7 +512,16 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
             groupMod.setGroupRef(input.getGroupRef());
             rpcNotificationProviderService.publish(groupMod.build());
         }
-
+        LOG.debug("****** RemoveGroup Begin-Transaction****" + input.getTransactionUri().toString());
+        LOG.debug("******RemoveGroup Plugin transaction-Id****" + xId.intValue());
+        mapBulkTransaction.put(new TransactionKey(input.getNode().getValue().firstKeyOf(Node.class, NodeKey.class)
+                .getId().getValue().toString(), (new TransactionId(BigInteger.valueOf(xId.intValue()))).toString()),
+                input);
+        timeout = hashedwheeltimer.newTimeout(
+                new EndTimerTask(input.getNode().getValue().firstKeyOf(Node.class, NodeKey.class).getId().getValue()
+                        .toString(), (new TransactionId(BigInteger.valueOf(xId.intValue()))).toString()), 5000,
+                TimeUnit.MILLISECONDS);
+        LOG.debug("******RemoveGroup Timeout task assign****" + timeout.toString());
         Future<RpcResult<UpdateGroupOutput>> resultFromOFLib = messageService.groupMod(ofGroupModInput.build(), cookie);
 
         RpcResult<UpdateGroupOutput> rpcResultFromOFLib = null;
@@ -510,7 +575,16 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
             meterMod.setMeterRef(input.getMeterRef());
             rpcNotificationProviderService.publish(meterMod.build());
         }
-
+        LOG.debug("****** RemoveMeter Begin-Transaction****" + input.getTransactionUri().toString());
+        LOG.debug("******RemoveMeter Plugin transaction-Id****" + xId.intValue());
+        mapBulkTransaction.put(new TransactionKey(input.getNode().getValue().firstKeyOf(Node.class, NodeKey.class)
+                .getId().getValue().toString(), (new TransactionId(BigInteger.valueOf(xId.intValue()))).toString()),
+                input);
+        timeout = hashedwheeltimer.newTimeout(
+                new EndTimerTask(input.getNode().getValue().firstKeyOf(Node.class, NodeKey.class).getId().getValue()
+                        .toString(), (new TransactionId(BigInteger.valueOf(xId.intValue()))).toString()), 5000,
+                TimeUnit.MILLISECONDS);
+        LOG.debug("******RemoveMeter Timeout task assign****" + timeout.toString());
         Future<RpcResult<UpdateMeterOutput>> resultFromOFLib = messageService.meterMod(ofMeterModInput.build(), cookie);
 
         RpcResult<UpdateMeterOutput> rpcResultFromOFLib = null;
@@ -607,7 +681,16 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
             updateFlow.setFlowRef(input.getFlowRef());
             rpcNotificationProviderService.publish(updateFlow.build());
         }
-
+        LOG.debug("******UpdateFlow Begin-Transaction****" + input.getTransactionUri().toString());
+        LOG.debug("******UpdateFlow Plugin transaction-Id****" + xId.intValue());
+        mapBulkTransaction.put(new TransactionKey(input.getNode().getValue().firstKeyOf(Node.class, NodeKey.class)
+                .getId().getValue().toString(), (new TransactionId(BigInteger.valueOf(xId.intValue()))).toString()),
+                input);
+        timeout = hashedwheeltimer.newTimeout(
+                new EndTimerTask(input.getNode().getValue().firstKeyOf(Node.class, NodeKey.class).getId().getValue()
+                        .toString(), (new TransactionId(BigInteger.valueOf(xId.intValue()))).toString()), 5000,
+                TimeUnit.MILLISECONDS);
+        LOG.debug("******UpdateFlow Timeout task assign****" + timeout.toString());
         Future<RpcResult<UpdateFlowOutput>> resultFromOFLib = messageService.flowMod(ofFlowModInput.build(), cookie);
 
         RpcResult<UpdateFlowOutput> rpcResultFromOFLib = null;
@@ -662,7 +745,16 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
             groupMod.setGroupRef(input.getGroupRef());
             rpcNotificationProviderService.publish(groupMod.build());
         }
-
+        LOG.debug("******UpdateGroup Begin-Transaction****" + input.getTransactionUri().toString());
+        LOG.debug("******UpdateGroup Plugin transaction-Id****" + xId.intValue());
+        mapBulkTransaction.put(new TransactionKey(input.getNode().getValue().firstKeyOf(Node.class, NodeKey.class)
+                .getId().getValue().toString(), (new TransactionId(BigInteger.valueOf(xId.intValue()))).toString()),
+                input);
+        timeout = hashedwheeltimer.newTimeout(
+                new EndTimerTask(input.getNode().getValue().firstKeyOf(Node.class, NodeKey.class).getId().getValue()
+                        .toString(), (new TransactionId(BigInteger.valueOf(xId.intValue()))).toString()), 5000,
+                TimeUnit.MILLISECONDS);
+        LOG.debug("******UpdateGroup Timeout task assign****" + timeout.toString());
         Future<RpcResult<UpdateGroupOutput>> resultFromOFLib = messageService.groupMod(ofGroupModInput.build(), cookie);
 
         RpcResult<UpdateGroupOutput> rpcResultFromOFLib = null;
@@ -715,7 +807,16 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
             meterMod.setMeterRef(input.getMeterRef());
             rpcNotificationProviderService.publish(meterMod.build());
         }
-
+        LOG.debug("****** UpdateMeter Begin-Transaction****" + input.getTransactionUri().toString());
+        LOG.debug("******UpdateMeter Plugin transaction-Id****" + xId.intValue());
+        mapBulkTransaction.put(new TransactionKey(input.getNode().getValue().firstKeyOf(Node.class, NodeKey.class)
+                .getId().getValue().toString(), (new TransactionId(BigInteger.valueOf(xId.intValue()))).toString()),
+                input);
+        timeout = hashedwheeltimer.newTimeout(
+                new EndTimerTask(input.getNode().getValue().firstKeyOf(Node.class, NodeKey.class).getId().getValue()
+                        .toString(), (new TransactionId(BigInteger.valueOf(xId.intValue()))).toString()), 5000,
+                TimeUnit.MILLISECONDS);
+        LOG.debug("******UpdateMeter Timeout task assign****" + timeout.toString());
         Future<RpcResult<UpdateMeterOutput>> resultFromOFLib = messageService.meterMod(ofMeterModInput.build(), cookie);
 
         RpcResult<UpdateMeterOutput> rpcResultFromOFLib = null;
@@ -1757,6 +1858,26 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         Collection<RpcError> errors = Collections.emptyList();
         RpcResult<GetQueueStatisticsFromGivenPortOutput> rpcResult = Rpcs.getRpcResult(true, output.build(), errors);
         return Futures.immediateFuture(rpcResult);
+    }
+
+    class EndTimerTask implements TimerTask {
+        String nodeId;
+        String xId;
+
+        public EndTimerTask(String nodeId, String xId) {
+            this.nodeId = nodeId;
+            this.xId = xId;
+        }
+
+        @Override
+        public void run(Timeout timeout) throws Exception {
+            // TODO Auto-generated method stub
+            LOG.debug("******Timeout Task DONE for****" + nodeId + xId);
+            mapBulkTransaction.remove(new TransactionKey(nodeId, xId));
+            timeout.cancel();
+
+        }
+
     }
 
 }
