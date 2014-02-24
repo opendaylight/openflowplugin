@@ -11,10 +11,10 @@ package org.opendaylight.openflowplugin.openflow.md.core;
  * @author mirehak
  */
 public class TranslatorKey {
-    
-    private int version;
-    private String messageClass;
-    
+
+    private final int version;
+    private final String messageClass;
+
     /**
      * @param version
      * @param messageClass
@@ -23,13 +23,12 @@ public class TranslatorKey {
         this.version = version;
         this.messageClass = messageClass;
     }
-    
+
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result
-                + ((messageClass == null) ? 0 : messageClass.hashCode());
+        result = prime * result + ((messageClass == null) ? 0 : messageClass.hashCode());
         result = prime * result + version;
         return result;
     }

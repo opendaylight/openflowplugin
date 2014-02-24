@@ -12,8 +12,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
+import org.jboss.netty.util.HashedWheelTimer;
+import org.jboss.netty.util.Timeout;
+import org.jboss.netty.util.TimerTask;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.controller.sal.common.util.Rpcs;
 import org.opendaylight.openflowjava.protocol.api.util.BinContent;
@@ -89,6 +94,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetGroupStatisticsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetGroupStatisticsOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterOutput;
@@ -196,6 +202,9 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     private short version = 0;
     private final SessionContext session;
     NotificationProviderService rpcNotificationProviderService;
+    private Timeout timeout = null;
+    public static ConcurrentHashMap<TransactionKey, Object> mapBulkTransaction = new ConcurrentHashMap<TransactionKey, Object>();
+    public static HashedWheelTimer hashedwheeltimer = new HashedWheelTimer();
 
     protected ModelDrivenSwitchImpl(NodeId nodeId, InstanceIdentifier<Node> identifier, SessionContext context) {
         super(identifier, context);
@@ -238,6 +247,8 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
             rpcNotificationProviderService.publish(newFlow.build());
         }
 
+        mapBulkTransaction.put(new TransactionKey(input.getNode(), xId), input);
+        timeout = hashedwheeltimer.newTimeout(new EndTimerTask(input.getNode(), xId), 5000, TimeUnit.MILLISECONDS);
         Future<RpcResult<UpdateFlowOutput>> resultFromOFLib = messageService.flowMod(ofFlowModInput.build(), cookie);
         RpcResult<UpdateFlowOutput> rpcResultFromOFLib = null;
 
@@ -293,6 +304,9 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
             rpcNotificationProviderService.publish(groupMod.build());
         }
 
+        mapBulkTransaction.put(new TransactionKey(input.getNode(), xId), input);
+        timeout = hashedwheeltimer.newTimeout(new EndTimerTask(input.getNode(), xId), 5000, TimeUnit.MILLISECONDS);
+
         Future<RpcResult<UpdateGroupOutput>> resultFromOFLib = messageService.groupMod(ofGroupModInput.build(), cookie);
         RpcResult<UpdateGroupOutput> rpcResultFromOFLib = null;
 
@@ -345,6 +359,9 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
             meterMod.setMeterRef(input.getMeterRef());
             rpcNotificationProviderService.publish(meterMod.build());
         }
+
+        mapBulkTransaction.put(new TransactionKey(input.getNode(), xId), input);
+        timeout = hashedwheeltimer.newTimeout(new EndTimerTask(input.getNode(), xId), 5000, TimeUnit.MILLISECONDS);
 
         Future<RpcResult<UpdateMeterOutput>> resultFromOFLib = messageService.meterMod(ofMeterModInput.build(), cookie);
 
@@ -400,7 +417,8 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
             removeFlow.setFlowRef(input.getFlowRef());
             rpcNotificationProviderService.publish(removeFlow.build());
         }
-
+        mapBulkTransaction.put(new TransactionKey(input.getNode(), xId), input);
+        timeout = hashedwheeltimer.newTimeout(new EndTimerTask(input.getNode(), xId), 5000, TimeUnit.MILLISECONDS);
         Future<RpcResult<UpdateFlowOutput>> resultFromOFLib = messageService.flowMod(ofFlowModInput.build(), cookie);
 
         RpcResult<UpdateFlowOutput> rpcResultFromOFLib = null;
@@ -456,7 +474,8 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
             groupMod.setGroupRef(input.getGroupRef());
             rpcNotificationProviderService.publish(groupMod.build());
         }
-
+        mapBulkTransaction.put(new TransactionKey(input.getNode(), xId), input);
+        timeout = hashedwheeltimer.newTimeout(new EndTimerTask(input.getNode(), xId), 5000, TimeUnit.MILLISECONDS);
         Future<RpcResult<UpdateGroupOutput>> resultFromOFLib = messageService.groupMod(ofGroupModInput.build(), cookie);
 
         RpcResult<UpdateGroupOutput> rpcResultFromOFLib = null;
@@ -510,7 +529,8 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
             meterMod.setMeterRef(input.getMeterRef());
             rpcNotificationProviderService.publish(meterMod.build());
         }
-
+        mapBulkTransaction.put(new TransactionKey(input.getNode(), xId), input);
+        timeout = hashedwheeltimer.newTimeout(new EndTimerTask(input.getNode(), xId), 5000, TimeUnit.MILLISECONDS);
         Future<RpcResult<UpdateMeterOutput>> resultFromOFLib = messageService.meterMod(ofMeterModInput.build(), cookie);
 
         RpcResult<UpdateMeterOutput> rpcResultFromOFLib = null;
@@ -607,7 +627,8 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
             updateFlow.setFlowRef(input.getFlowRef());
             rpcNotificationProviderService.publish(updateFlow.build());
         }
-
+        mapBulkTransaction.put(new TransactionKey(input.getNode(), xId), input);
+        timeout = hashedwheeltimer.newTimeout(new EndTimerTask(input.getNode(), xId), 5000, TimeUnit.MILLISECONDS);
         Future<RpcResult<UpdateFlowOutput>> resultFromOFLib = messageService.flowMod(ofFlowModInput.build(), cookie);
 
         RpcResult<UpdateFlowOutput> rpcResultFromOFLib = null;
@@ -662,7 +683,8 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
             groupMod.setGroupRef(input.getGroupRef());
             rpcNotificationProviderService.publish(groupMod.build());
         }
-
+        mapBulkTransaction.put(new TransactionKey(input.getNode(), xId), input);
+        timeout = hashedwheeltimer.newTimeout(new EndTimerTask(input.getNode(), xId), 5000, TimeUnit.MILLISECONDS);
         Future<RpcResult<UpdateGroupOutput>> resultFromOFLib = messageService.groupMod(ofGroupModInput.build(), cookie);
 
         RpcResult<UpdateGroupOutput> rpcResultFromOFLib = null;
@@ -715,7 +737,8 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
             meterMod.setMeterRef(input.getMeterRef());
             rpcNotificationProviderService.publish(meterMod.build());
         }
-
+        mapBulkTransaction.put(new TransactionKey(input.getNode(), xId), input);
+        timeout = hashedwheeltimer.newTimeout(new EndTimerTask(input.getNode(), xId), 5000, TimeUnit.MILLISECONDS);
         Future<RpcResult<UpdateMeterOutput>> resultFromOFLib = messageService.meterMod(ofMeterModInput.build(), cookie);
 
         RpcResult<UpdateMeterOutput> rpcResultFromOFLib = null;
@@ -1757,6 +1780,25 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         Collection<RpcError> errors = Collections.emptyList();
         RpcResult<GetQueueStatisticsFromGivenPortOutput> rpcResult = Rpcs.getRpcResult(true, output.build(), errors);
         return Futures.immediateFuture(rpcResult);
+    }
+
+    class EndTimerTask implements TimerTask {
+        NodeRef nodeId;
+        Long xId;
+
+        public EndTimerTask(NodeRef nodeId, Long xId) {
+            this.nodeId = nodeId;
+            this.xId = xId;
+        }
+
+        @Override
+        public void run(Timeout timeout) throws Exception {
+            // TODO Auto-generated method stub
+            mapBulkTransaction.remove(new TransactionKey(nodeId, xId));
+            timeout.cancel();
+
+        }
+
     }
 
 }
