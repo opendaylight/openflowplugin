@@ -22,7 +22,7 @@ see https://git.opendaylight.org/gerrit/#/c/390/
     <dependency>
       <groupId>org.opendaylight.controller</groupId>
       <artifactId>distribution.opendaylight</artifactId>
-      <version>0.1.2-SNAPSHOT</version>
+      <version>0.1.2-SNAPSHOT</version>	  
       <type>zip</type>
       <classifier>osgipackage</classifier>
       <!-- Make sure this isn't included on any classpath-->
@@ -34,6 +34,11 @@ see https://git.opendaylight.org/gerrit/#/c/390/
       <groupId>org.opendaylight.openflowplugin</groupId>
       <artifactId>openflowplugin</artifactId>
       <version>${project.version}</version>
+    </dependency>
+	<dependency>
+      <groupId>org.jboss.netty</groupId>
+      <artifactId>netty</artifactId>
+      <version>${netty.version}</version>
     </dependency>
     
     <!-- debug provider -->
