@@ -39,9 +39,10 @@ public abstract class ConvertReactor<FROM> {
      * @param source
      * @param version
      * @param target 
+     * @param datapathid 
      */
     @SuppressWarnings("unchecked")
-    public <RESULT, TARGET> void convert(FROM source, short version, TARGET target,BigInteger datapathid) {
+    public <RESULT, TARGET> void convert(FROM source, short version, TARGET target, BigInteger datapathid) {
         
         //lookup converter
         Convertor<FROM, RESULT> convertor = (Convertor<FROM, RESULT>) conversionMapping.get(version);
@@ -51,12 +52,22 @@ public abstract class ConvertReactor<FROM> {
         RESULT convertedItem = convertor.convert(source,datapathid);
         
         //lookup injection
-        InjectionKey key = new InjectionKey(version, target.getClass().getName());
+        InjectionKey key = buildInjectionKey(version, convertedItem, target);
         ResultInjector<RESULT, TARGET> injection = (ResultInjector<RESULT, TARGET>) injectionMapping.get(key);
         if (injection == null) {
             throw new IllegalArgumentException("injector for given version and target ["+key+"] not found");
         }
         injection.inject(convertedItem, target);
+    }
+
+    /**
+     * @param version
+     * @param convertedItem to be injected 
+     * @param target object
+     * @return
+     */
+    protected InjectionKey buildInjectionKey(short version, Object convertedItem, Object target) {
+        return new InjectionKey(version, target.getClass().getName());
     }
 
 }
