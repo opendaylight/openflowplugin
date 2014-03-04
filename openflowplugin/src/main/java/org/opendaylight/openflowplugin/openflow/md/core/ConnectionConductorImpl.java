@@ -466,7 +466,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         this.isBitmapNegotiationEnable = isBitmapNegotiationEnable;
     }
 
-    protected void shutdownPool() {
+    public void shutdownPool() {
         hsPool.shutdownNow();
         LOG.debug("pool is terminated: {}", hsPool.isTerminated());
     }

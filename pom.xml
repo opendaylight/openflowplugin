@@ -107,6 +107,11 @@
           <version>${controller.model.version}</version>
         </dependency>
         <dependency>
+          <groupId>org.opendaylight.controller.md</groupId>
+          <artifactId>disconnect-manager</artifactId>
+          <version>${controller.model.version}</version>
+        </dependency>
+        <dependency>
           <groupId>org.opendaylight.controller</groupId>
           <artifactId>sal-binding-api</artifactId>
           <version>${controller.model.version}</version>

@@ -8,7 +8,7 @@
 package org.opendaylight.openflowplugin.openflow.md;
 
 import java.util.concurrent.Future;
-
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.OpendaylightInventoryService;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
@@ -19,6 +19,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.Upda
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.OpendaylightFlowStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.OpendaylightFlowTableStatisticsService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.OpendaylightDisconnectSwitchInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.OpendaylightDisconnectSwitchOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupInput;
@@ -66,7 +68,8 @@ public interface ModelDrivenSwitch extends //
         OpendaylightPortStatisticsService, //
         OpendaylightFlowTableStatisticsService, //
         OpendaylightQueueStatisticsService, //
-        Identifiable<InstanceIdentifier<Node>> {
+        Identifiable<InstanceIdentifier<Node>>, //
+        OpendaylightInventoryService {
 
     CompositeObjectRegistration<ModelDrivenSwitch> register(ProviderContext ctx);
 
@@ -113,4 +116,7 @@ public interface ModelDrivenSwitch extends //
     
     @Override
     public Future<RpcResult<UpdateTableOutput>> updateTable(UpdateTableInput input) ;
+    
+    @Override
+    Future<RpcResult<OpendaylightDisconnectSwitchOutput>> opendaylightDisconnectSwitch(OpendaylightDisconnectSwitchInput input);
 }

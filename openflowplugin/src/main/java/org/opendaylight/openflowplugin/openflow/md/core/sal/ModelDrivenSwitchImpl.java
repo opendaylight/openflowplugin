@@ -177,6 +177,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableOutputBuilder;
+import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
+import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductorImpl;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.*;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -1757,6 +1760,21 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         Collection<RpcError> errors = Collections.emptyList();
         RpcResult<GetQueueStatisticsFromGivenPortOutput> rpcResult = Rpcs.getRpcResult(true, output.build(), errors);
         return Futures.immediateFuture(rpcResult);
+    }
+    
+    @Override
+   public  Future<RpcResult<OpendaylightDisconnectSwitchOutput>> opendaylightDisconnectSwitch(OpendaylightDisconnectSwitchInput input){
+    	SwitchConnectionDistinguisher cookie = null ;
+
+    	OpendaylightDisconnectSwitchOutputBuilder output = new OpendaylightDisconnectSwitchOutputBuilder();
+        ((ConnectionConductorImpl)this.session.getPrimaryConductor()).disconnect();
+        
+         ((ConnectionConductorImpl)this.session.getPrimaryConductor()).shutdownPool();   
+         output.setDisconnectOutput(true);
+         
+         Collection<RpcError> errors = Collections.emptyList();
+         RpcResult<OpendaylightDisconnectSwitchOutput> rpcResult = Rpcs.getRpcResult(true, output.build(), errors);
+         return Futures.immediateFuture(rpcResult);     
     }
 
 }
