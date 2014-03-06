@@ -21,6 +21,7 @@ import java.util.concurrent.TimeoutException;
 
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionConfiguration;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
+import org.opendaylight.openflowplugin.openflow.md.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.translator.ErrorTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.translator.ExperimenterTranslator;
@@ -31,6 +32,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.translator.MultiPartRepl
 import org.opendaylight.openflowplugin.openflow.md.core.translator.MultipartReplyTableFeaturesToTableUpdatedTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.translator.MultipartReplyTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.translator.PacketInTranslator;
+import org.opendaylight.openflowplugin.openflow.md.core.translator.PacketInV10Translator;
 import org.opendaylight.openflowplugin.openflow.md.core.translator.PortStatusMessageToNodeConnectorUpdatedTranslator;
 import org.opendaylight.openflowplugin.openflow.md.lldp.LLDPSpeakerPopListener;
 import org.opendaylight.openflowplugin.openflow.md.queue.MessageSpy;
@@ -81,8 +83,8 @@ public class MDController implements IMDController {
     private Map<Class<? extends DataObject>, Collection<PopListener<DataObject>>> popListeners;
     private MessageSpy<OfHeader, DataObject> messageSpyCounter; 
 
-    final private int OF10 = 1;
-    final private int OF13 = 4;
+    final private int OF10 = OFConstants.OFP_VERSION_1_0;
+    final private int OF13 = OFConstants.OFP_VERSION_1_3;
 
 
     /**
@@ -104,7 +106,7 @@ public class MDController implements IMDController {
         addMessageTranslator(ErrorMessage.class, OF13, new ErrorTranslator());
         addMessageTranslator(FlowRemovedMessage.class, OF10, new FlowRemovedTranslator());
         addMessageTranslator(FlowRemovedMessage.class, OF13, new FlowRemovedTranslator());
-        addMessageTranslator(PacketInMessage.class,OF10, new PacketInTranslator());
+        addMessageTranslator(PacketInMessage.class,OF10, new PacketInV10Translator());
         addMessageTranslator(PacketInMessage.class,OF13, new PacketInTranslator());
         addMessageTranslator(PortStatusMessage.class,OF10, new PortStatusMessageToNodeConnectorUpdatedTranslator());
         addMessageTranslator(PortStatusMessage.class,OF13, new PortStatusMessageToNodeConnectorUpdatedTranslator());
