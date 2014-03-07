@@ -15,11 +15,19 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
+import org.opendaylight.openflowplugin.openflow.md.core.session.TransactionKey;
 import org.opendaylight.openflowplugin.openflow.md.util.ByteUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.errors.rev131116.ErrorType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.NodeErrorNotification;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.NodeErrorNotificationBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.NodeFlow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.node.error.notification.object.reference.FlowRefBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.node.error.notification.object.reference.GroupRefBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.node.error.notification.object.reference.MeterRefBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev131103.TransactionId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev131103.TransactionMetadata;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.NodeGroup;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.NodeMeter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -46,6 +54,30 @@ public class ErrorTranslator implements IMDMessageTranslator<OfHeader, List<Data
             // Message
 
             nodeErrBuilder.setTransactionId(new TransactionId(BigInteger.valueOf(message.getXid())));
+
+            Object object = sc.getbulkTransactionCache().getIfPresent(new TransactionKey(message.getXid()));
+            if (object != null) {
+                nodeErrBuilder.setTransactionUri(((TransactionMetadata) object).getTransactionUri());
+                FlowRefBuilder flowRef = new FlowRefBuilder();
+                GroupRefBuilder groupRef = new GroupRefBuilder();
+                MeterRefBuilder meterRef = new MeterRefBuilder();
+                if (object instanceof NodeFlow) {
+                    FlowEntityData flowEntry = new FlowEntityData();
+                    flowRef = flowEntry.getBuilder(object);
+                    nodeErrBuilder.setObjectReference(flowRef.build());
+                } else if (object instanceof NodeGroup) {
+                    GroupEntityData groupEntry = new GroupEntityData();
+                    groupRef = groupEntry.getBuilder(object);
+                    nodeErrBuilder.setObjectReference(groupRef.build());
+
+                } else if (object instanceof NodeMeter) {
+                    MeterEntityData meterEntry = new MeterEntityData();
+                    meterRef = meterEntry.getBuilder(object);
+                    nodeErrBuilder.setObjectReference(meterRef.build());
+
+                }
+
+            }
 
             nodeErrBuilder.setType(ErrorType.forValue(message.getType()));
 
