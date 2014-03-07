@@ -18,6 +18,9 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import java.util.concurrent.TimeUnit;
 import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
@@ -37,6 +40,8 @@ public class SessionContextOFImpl implements SessionContext {
     private final AtomicLong xid;
     private final Map<Long, PortGrouping> physicalPorts;
     private final Map<Long, Boolean> portBandwidth;
+    public static Cache<TransactionKey, Object> bulkTransactionCache = CacheBuilder.newBuilder().expireAfterWrite(10000, TimeUnit.MILLISECONDS).concurrencyLevel(1).build();
+
 
     /**
      * default ctor
@@ -70,6 +75,11 @@ public class SessionContextOFImpl implements SessionContext {
     @Override
     public Set<Entry<SwitchConnectionDistinguisher, ConnectionConductor>> getAuxiliaryConductors() {
         return Collections.unmodifiableSet(auxiliaryConductors.entrySet());
+    }
+    
+    @Override
+    public Cache<TransactionKey, Object> getbulkTransactionCache() {
+        return bulkTransactionCache;
     }
 
     @Override
