@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import com.google.common.cache.Cache;
 import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
@@ -94,6 +95,11 @@ public interface SessionContext {
      * @return The Set of port ID
      */
     public Set<Long> getPorts();
+    
+    /**
+     * @return the Object for this session xId
+     */
+    public Cache<TransactionKey, Object> getbulkTransactionCache();
 
     /**
      * Returns OFPhysicalPort of the specified portNumber of this switch.

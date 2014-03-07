@@ -17,6 +17,7 @@ import java.util.concurrent.Future;
 
 import junit.framework.Assert;
 
+import com.google.common.cache.Cache;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -234,6 +235,11 @@ class MockSessionContext implements SessionContext {
     @Override
     public SwitchConnectionDistinguisher getSessionKey() {
         // TODO Auto-generated method stub
+        return null;
+    }
+    
+    @Override
+    public Cache<TransactionKey, Object> getbulkTransactionCache() {
         return null;
     }
 
