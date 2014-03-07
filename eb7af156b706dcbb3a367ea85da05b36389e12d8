@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a5c5d37_f0127657",
+        "filename": "openflowplugin/src/test/java/org/opendaylight/openflowplugin/openflow/md/core/sal/ModelDrivenSwitchImplTest.java",
+        "patchSetId": 17
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2014-03-07T13:48:20Z",
+      "side": 1,
+      "message": "either remove mock annotation (real implementation is used) or leave the value empty so that mockito will provide default implementation for Cache interface (but then you need to prescribe behavior of cache).",
+      "revId": "eb7af156b706dcbb3a367ea85da05b36389e12d8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
