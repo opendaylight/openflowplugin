@@ -528,45 +528,6 @@ public final class ActionConvertor {
         }
         
         return actionBuilder.build();
-        
-//        SetNwSrcActionCase setnwsrccase = (SetNwSrcActionCase) action;
-//        SetNwSrcAction setnwsrcaction = setnwsrccase.getSetNwSrcAction();
-//        Ipv4 address_ipv4 = (Ipv4) setnwsrcaction.getAddress();
-//
-//        if (version == OFConstants.OFP_VERSION_1_0) {
-//            IpAddressActionBuilder ipvaddress = new IpAddressActionBuilder();
-//
-//            Ipv4Address address = new Ipv4Address(address_ipv4.getIpv4Address().getValue());
-//            ipvaddress.setIpAddress(address);
-//            actionBuilder
-//                    .setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.SetNwSrc.class);
-//            actionBuilder.addAugmentation(
-//                    org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.IpAddressAction.class,
-//                    ipvaddress.build());
-//            return actionBuilder.build();
-//        } else if (version >= OFConstants.OFP_VERSION_1_3) {
-//            OxmFieldsActionBuilder oxmFieldsActionBuilder = new OxmFieldsActionBuilder();
-//            actionBuilder
-//                    .setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.SetField.class);
-//            List<MatchEntries> matchEntriesList = new ArrayList<>();
-//            String[] addressParts = address_ipv4.getIpv4Address().getValue().split(PREFIX_SEPARATOR);
-//            MatchEntriesBuilder matchEntriesBuilder = new MatchEntriesBuilder();
-//            matchEntriesBuilder.setOxmClass(OpenflowBasicClass.class);
-//            matchEntriesBuilder.setOxmMatchField(Ipv4Src.class);
-//            Ipv4Address ipv4Address = new Ipv4Address(addressParts[0]);
-//            Ipv4AddressMatchEntryBuilder ipv4AddressBuilder = new Ipv4AddressMatchEntryBuilder();
-//            ipv4AddressBuilder.setIpv4Address(ipv4Address);
-//            matchEntriesBuilder.addAugmentation(Ipv4AddressMatchEntry.class, ipv4AddressBuilder.build());
-//            matchEntriesBuilder.setHasMask(false);
-//            matchEntriesList.add(matchEntriesBuilder.build());
-//            oxmFieldsActionBuilder.setMatchEntries(matchEntriesList);
-//            actionBuilder.addAugmentation(OxmFieldsAction.class, oxmFieldsActionBuilder.build());
-//            return actionBuilder.build();
-//        } else {
-//            logger.error("Unknown Action Type for the Version", version);
-//            return null;
-//        }
-
     }
 
     protected static Action SalToOFSetNwDst(
@@ -581,45 +542,6 @@ public final class ActionConvertor {
         }
         
         return actionBuilder.build();
-        
-//        SetNwDstActionCase setnwdstcase = (SetNwDstActionCase) action;
-//        SetNwDstAction setnwdstaction = setnwdstcase.getSetNwDstAction();
-//        Ipv4 address_ipv4 = (Ipv4) setnwdstaction.getAddress();
-//
-//        if (version == OFConstants.OFP_VERSION_1_0) {
-//            IpAddressActionBuilder ipvaddress = new IpAddressActionBuilder();
-//
-//            Ipv4Address address = new Ipv4Address(address_ipv4.getIpv4Address().getValue());
-//            ipvaddress.setIpAddress(address);
-//            actionBuilder
-//                    .setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.SetNwDst.class);
-//            actionBuilder.addAugmentation(
-//                    org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.IpAddressAction.class,
-//                    ipvaddress.build());
-//            return actionBuilder.build();
-//        } else if (version >= OFConstants.OFP_VERSION_1_3) {
-//            OxmFieldsActionBuilder oxmFieldsActionBuilder = new OxmFieldsActionBuilder();
-//            actionBuilder
-//                    .setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.SetField.class);
-//            List<MatchEntries> matchEntriesList = new ArrayList<>();
-//            String[] addressParts = address_ipv4.getIpv4Address().getValue().split(PREFIX_SEPARATOR);
-//            MatchEntriesBuilder matchEntriesBuilder = new MatchEntriesBuilder();
-//            matchEntriesBuilder.setOxmClass(OpenflowBasicClass.class);
-//            matchEntriesBuilder.setOxmMatchField(Ipv4Dst.class);
-//            Ipv4Address ipv4Address = new Ipv4Address(addressParts[0]);
-//            Ipv4AddressMatchEntryBuilder ipv4AddressBuilder = new Ipv4AddressMatchEntryBuilder();
-//            ipv4AddressBuilder.setIpv4Address(ipv4Address);
-//            matchEntriesBuilder.addAugmentation(Ipv4AddressMatchEntry.class, ipv4AddressBuilder.build());
-//            matchEntriesBuilder.setHasMask(false);
-//            matchEntriesList.add(matchEntriesBuilder.build());
-//            oxmFieldsActionBuilder.setMatchEntries(matchEntriesList);
-//            actionBuilder.addAugmentation(OxmFieldsAction.class, oxmFieldsActionBuilder.build());
-//            return actionBuilder.build();
-//        } else {
-//            logger.error("Unknown Action Type for the Version", version);
-//            return null;
-//        }
-
     }
 
     private static Action SalToOFSetNwTos(

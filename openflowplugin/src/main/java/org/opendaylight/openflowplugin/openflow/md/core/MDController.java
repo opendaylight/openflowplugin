@@ -24,6 +24,7 @@ import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionPro
 import org.opendaylight.openflowplugin.openflow.md.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.translator.ErrorTranslator;
+import org.opendaylight.openflowplugin.openflow.md.core.translator.ErrorV10Translator;
 import org.opendaylight.openflowplugin.openflow.md.core.translator.ExperimenterTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.translator.FeaturesV10ToNodeConnectorUpdatedTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.translator.FlowRemovedTranslator;
@@ -102,7 +103,7 @@ public class MDController implements IMDController {
         messageTranslators = new ConcurrentHashMap<>();
         popListeners = new ConcurrentHashMap<>();
         //TODO: move registration to factory
-        addMessageTranslator(ErrorMessage.class, OF10, new ErrorTranslator());
+        addMessageTranslator(ErrorMessage.class, OF10, new ErrorV10Translator());
         addMessageTranslator(ErrorMessage.class, OF13, new ErrorTranslator());
         addMessageTranslator(FlowRemovedMessage.class, OF10, new FlowRemovedTranslator());
         addMessageTranslator(FlowRemovedMessage.class, OF13, new FlowRemovedTranslator());

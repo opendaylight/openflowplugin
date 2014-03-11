@@ -10,11 +10,23 @@ package org.opendaylight.openflowplugin.openflow.md.core.translator;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.errors.rev131116.ErrorType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.NodeErrorNotificationBuilder;
 
-public class ErrorTranslator extends AbstractErrorTranslator {
+public class ErrorV10Translator extends AbstractErrorTranslator {
 
     @Override
-    public void decodeErrorType(NodeErrorNotificationBuilder nodeErrBuilder, int type) {
-        nodeErrBuilder.setType(ErrorType.forValue(type));
+    public void decodeErrorType(NodeErrorNotificationBuilder nodeErrBuilder, int typeArg) {
+        ErrorType type = ErrorType.forValue(typeArg);
+        switch (type.ordinal()) {
+            case 3:
+                type = ErrorType.FlowModFailed;
+                break;
+            case 4:
+                type = ErrorType.PortModFailed;
+                break;
+            case 5:
+                type = ErrorType.QueueOpFailed;
+                break;
+        }
+        nodeErrBuilder.setType(type);
     }
 
 }
