@@ -282,6 +282,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
         }
     }
 
+
     /**
      * after handshake set features, register to session
      * @param proposedVersion
@@ -290,7 +291,9 @@ public class HandshakeManagerImpl implements HandshakeManager {
      */
     protected void postHandshake(Short proposedVersion, Long xid) throws Throwable {
         // set version
+        long maxTimeout = 3000;
         version = proposedVersion;
+
         LOG.debug("version set: " + proposedVersion);
         // request features
         GetFeaturesInputBuilder featuresBuilder = new GetFeaturesInputBuilder();
