@@ -1,11 +1,11 @@
 package org.opendaylight.openflowplugin.learningswitch;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.google.common.collect.ImmutableList;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DropActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.drop.action._case.DropActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.output.action._case.OutputActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
@@ -23,6 +23,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
@@ -31,7 +32,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatchBuilder;
 
-import com.google.common.collect.ImmutableList;
+import java.util.ArrayList;
+import java.util.List;
 
 public class FlowUtils {
     /**
@@ -153,5 +155,52 @@ public class FlowUtils {
             .setFlags(new FlowModFlags(false, false, false, false, false));
 
         return allToCtrlFlow;
+    }
+
+
+    public static FlowBuilder dropAllIncomingPacketsOnPort(Short tableId, NodeConnectorRef port){
+
+        FlowBuilder flowBuilder = new FlowBuilder() //
+                .setTableId(tableId) //
+                .setFlowName("mac2mac");
+        flowBuilder.setId(new FlowId(Long.toString(flowBuilder.hashCode())));
+
+        Uri outputPort = port.getValue().firstKeyOf(NodeConnector.class, NodeConnectorKey.class).getId();
+
+        // Match the in port
+        MatchBuilder match = new MatchBuilder();
+        match.setInPort(new NodeConnectorId(outputPort));
+
+        Action dropAction = new ActionBuilder() //
+                .setAction(new DropActionCaseBuilder() //
+                        .setDropAction(new DropActionBuilder()
+                                .build())
+                        .build()) //
+                .build();
+
+        // Create an Apply Action
+        ApplyActions applyActions = new ApplyActionsBuilder().setAction(ImmutableList.of(dropAction))
+                .build();
+
+        // Wrap our Apply Action in an Instruction
+        Instruction applyActionsInstruction = new InstructionBuilder() //
+                .setInstruction(new ApplyActionsCaseBuilder()//
+                        .setApplyActions(applyActions) //
+                        .build()) //
+                .build();
+
+        // Put our Instruction in a list of Instructions
+        flowBuilder //
+                .setMatch(new MatchBuilder().build()) //
+                .setInstructions(new InstructionsBuilder() //
+                        .setInstruction(ImmutableList.of(applyActionsInstruction)) //
+                        .build()) //
+                .setPriority(0) //
+                .setBufferId(0L) //
+                .setHardTimeout(0) //
+                .setIdleTimeout(0) //
+                .setFlags(new FlowModFlags(false, false, false, false, false));
+
+        return flowBuilder;
     }
 }
