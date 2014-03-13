@@ -42,11 +42,9 @@ import org.slf4j.LoggerFactory;
 /**
  * session and inventory listener implementation
  */
-public class SalRegistrationManager implements SessionListener, SwitchInventory {
+public class SalRegistrationManager implements SessionListener, AutoCloseable {
 
     private final static Logger LOG = LoggerFactory.getLogger(SalRegistrationManager.class);
-
-    Map<InstanceIdentifier<Node>, ModelDrivenSwitch> salSwitches = new ConcurrentHashMap<>();
 
     private ProviderContext providerContext;
 
@@ -73,6 +71,7 @@ public class SalRegistrationManager implements SessionListener, SwitchInventory 
     }
 
     public void onSessionInitiated(ProviderContext session) {
+        LOG.debug("onSessionInitiated");
         this.providerContext = session;
         this.publishService = session.getSALService(NotificationProviderService.class);
         this.dataService = session.getSALService(DataProviderService.class);
@@ -81,7 +80,6 @@ public class SalRegistrationManager implements SessionListener, SwitchInventory 
         getSessionManager().setNotificationProviderService(publishService);
         getSessionManager().setDataProviderService(dataService);
         LOG.debug("SalRegistrationManager initialized");
-
     }
 
     @Override
@@ -93,7 +91,6 @@ public class SalRegistrationManager implements SessionListener, SwitchInventory 
         NodeId nodeId = nodeIdFromDatapathId(datapathId);
         ModelDrivenSwitchImpl ofSwitch = new ModelDrivenSwitchImpl(nodeId, identifier, context);
         LLDPSpeaker.getInstance().addModelDrivenSwitch(identifier, ofSwitch);
-        salSwitches.put(identifier, ofSwitch);
         ofSwitch.register(providerContext);
 
         LOG.debug("ModelDrivenSwitch for {} registered to MD-SAL.", datapathId.toString());
@@ -131,11 +128,6 @@ public class SalRegistrationManager implements SessionListener, SwitchInventory 
         return builder.build();
     }
 
-    @Override
-    public ModelDrivenSwitch getSwitch(NodeRef node) {
-        return salSwitches.get(node.getValue());
-    }
-
     public static InstanceIdentifier<Node> identifierFromDatapathId(BigInteger datapathId) {
         NodeKey nodeKey = nodeKeyFromDatapathId(datapathId);
         InstanceIdentifierBuilder<Node> builder = InstanceIdentifier.builder(Nodes.class).child(Node.class,nodeKey);
@@ -154,5 +146,13 @@ public class SalRegistrationManager implements SessionListener, SwitchInventory 
 
     public SessionManager getSessionManager() {
         return OFSessionUtil.getSessionManager();
+    }
+    
+    @Override
+    public void close() {
+        LOG.debug("close");
+        dataService = null;
+        providerContext = null;
+        publishService = null;
     }
 }

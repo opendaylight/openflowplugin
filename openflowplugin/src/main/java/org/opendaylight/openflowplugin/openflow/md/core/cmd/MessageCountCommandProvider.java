@@ -13,15 +13,23 @@ import org.eclipse.osgi.framework.console.CommandProvider;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.openflowplugin.openflow.md.queue.MessageCountDumper;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 
  */
-public class MessageCountCommandProvider implements CommandProvider {
+public class MessageCountCommandProvider implements CommandProvider, AutoCloseable {
+    
+    private static Logger LOG = LoggerFactory
+            .getLogger(MessageCountCommandProvider.class);
     
     private boolean sessionInitiated;
     private BundleContext ctx;
     private MessageCountDumper provider;
+
+    private ServiceRegistration commandRegistration;
     
     /**
      * @param ctx
@@ -43,7 +51,8 @@ public class MessageCountCommandProvider implements CommandProvider {
      * @param session
      */
     public void onSessionInitiated(ProviderContext session) {
-        ctx.registerService(CommandProvider.class.getName(), this, null);
+        LOG.debug("onSessionInitiated");
+        commandRegistration = ctx.registerService(CommandProvider.class.getName(), this, null);
         this.sessionInitiated = true;
     }
     
@@ -59,6 +68,17 @@ public class MessageCountCommandProvider implements CommandProvider {
         } else {
             ci.println("Session not initiated, try again in a few seconds");
         }
+    }
+    
+    @Override
+    public void close() {
+        LOG.debug("close");
+        if (commandRegistration != null) {
+            commandRegistration.unregister();
+        }
+        ctx = null;
+        provider = null;
+        sessionInitiated = false;
     }
 
 }

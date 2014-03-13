@@ -32,6 +32,7 @@ public class Activator extends ComponentActivatorAbstractBase {
      *
      */
     public void init() {
+        logger.debug("init");
     }
 
     /**
@@ -40,12 +41,14 @@ public class Activator extends ComponentActivatorAbstractBase {
      *
      */
     public void destroy() {
+        logger.debug("destroy");
         pluginProvider.close();
         super.destroy();
     }
 
     @Override
     public void start(BundleContext arg0) {
+        logger.debug("start");
         super.start(arg0);
         pluginProvider.setContext(arg0);
     }
@@ -93,8 +96,7 @@ public class Activator extends ComponentActivatorAbstractBase {
      *         Object
      */
     public Object[] getGlobalImplementations() {
-        //TODO:: is MDController still needed here?
-        Object[] res = { MDController.class, pluginProvider };
+        Object[] res = { pluginProvider };
         return res;
     }
 
@@ -110,7 +112,6 @@ public class Activator extends ComponentActivatorAbstractBase {
      *            as the same routine can configure multiple implementations
      */
     public void configureGlobalInstance(Component c, Object imp) {
-
          if (imp == pluginProvider) {
             // c.setInterface(new String[] { IDiscoveryListener.class.getName(),
             // IContainerListener.class.getName(),

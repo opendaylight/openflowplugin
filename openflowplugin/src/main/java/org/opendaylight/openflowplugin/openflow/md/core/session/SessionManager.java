@@ -27,7 +27,7 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 /**
  * @author mirehak
  */
-public interface SessionManager {
+public interface SessionManager extends AutoCloseable {
 
     /**
      * @param sessionKey

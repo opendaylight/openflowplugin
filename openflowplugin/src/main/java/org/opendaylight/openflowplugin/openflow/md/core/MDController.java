@@ -74,7 +74,7 @@ import com.google.common.collect.Lists;
  * @author mirehak
  *
  */
-public class MDController implements IMDController {
+public class MDController implements IMDController, AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(MDController.class);
 
@@ -99,7 +99,7 @@ public class MDController implements IMDController {
      * provisioning of translator mapping
      */
     public void init() {
-        LOG.debug("Initializing!");
+        LOG.debug("init");
         messageTranslators = new ConcurrentHashMap<>();
         popListeners = new ConcurrentHashMap<>();
         //TODO: move registration to factory
@@ -225,6 +225,7 @@ public class MDController implements IMDController {
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             LOG.error(e.getMessage(), e);
         }
+        close();
     }
 
     /**
@@ -234,7 +235,7 @@ public class MDController implements IMDController {
      *
      */
     public void destroy() {
-        // do nothing
+        close();
     }
 
     @Override
@@ -293,5 +294,14 @@ public class MDController implements IMDController {
             MessageSpy<OfHeader, DataObject> messageSpyCounter) {
         this.messageSpyCounter = messageSpyCounter;
     }
-
+    
+    @Override
+    public void close() {
+        LOG.debug("close");
+        messageSpyCounter = null;
+        messageTranslators = null;
+        popListeners = null;
+        switchConnectionProvider = null;
+        OFSessionUtil.releaseSessionManager();
+    }
 }

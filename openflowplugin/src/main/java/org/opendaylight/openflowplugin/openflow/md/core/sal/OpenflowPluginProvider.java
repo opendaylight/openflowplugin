@@ -23,12 +23,16 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.RpcService;
 import org.osgi.framework.BundleContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * OFPlugin provider implementation
  */
 public class OpenflowPluginProvider implements BindingAwareProvider, AutoCloseable {
-
+    
+    private static Logger LOG = LoggerFactory.getLogger(OpenflowPluginProvider.class);
+    
     private BindingAwareBroker broker;
 
     private BundleContext context;
@@ -40,6 +44,8 @@ public class OpenflowPluginProvider implements BindingAwareProvider, AutoCloseab
     private MessageCountCommandProvider messageCountCommandProvider;
 
     private MessageObservatory<OfHeader, DataObject> messageCountProvider;
+    
+    private SalRegistrationManager registrationManager;
     
     public void unsetSwitchConnectionProvider() {
         switchConnectionProvider = null;
@@ -59,12 +65,11 @@ public class OpenflowPluginProvider implements BindingAwareProvider, AutoCloseab
         this.context = context;
     }
 
-    SalRegistrationManager registrationManager = new SalRegistrationManager();
-
-
     @Override
     public void onSessionInitiated(ProviderContext session) {
+        LOG.debug("onSessionInitiated");
         messageCountProvider = new MessageSpyCounterImpl();
+        registrationManager = new SalRegistrationManager();
         registrationManager.onSessionInitiated(session);
         mdController = new MDController();
         mdController.setSwitchConnectionProvider(switchConnectionProvider);
@@ -77,7 +82,13 @@ public class OpenflowPluginProvider implements BindingAwareProvider, AutoCloseab
     
     @Override
     public void close() {
+        LOG.debug("close");
         mdController.stop();
+        mdController = null;
+        registrationManager.close();
+        registrationManager = null;
+        messageCountCommandProvider.close();
+        messageCountCommandProvider = null;
     }
 
     @Override

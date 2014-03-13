@@ -35,13 +35,13 @@ import org.slf4j.LoggerFactory;
 public class SessionManagerOFImpl implements SessionManager {
 
     protected static final Logger LOG = LoggerFactory.getLogger(SessionManagerOFImpl.class);
-    private static SessionManager instance;
+    private static SessionManagerOFImpl instance;
     private ConcurrentHashMap<SwitchConnectionDistinguisher, SessionContext> sessionLot;
     private Map<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, List<DataObject>>>> translatorMapping;
     private Map<Class<? extends DataObject>, Collection<PopListener<DataObject>>> popListenerMapping;
 
 
-    protected final ListenerRegistry<SessionListener> sessionListeners = new ListenerRegistry<>();
+    protected ListenerRegistry<SessionListener> sessionListeners;
     private NotificationProviderService notificationProviderService;
 
     private DataProviderService dataProviderService;
@@ -55,9 +55,19 @@ public class SessionManagerOFImpl implements SessionManager {
         }
         return instance;
     }
+    
+    /**
+     * close and release singleton instace
+     */
+    public static synchronized void releaseInstance() {
+        instance.close();
+        instance = null;
+    }
 
     private SessionManagerOFImpl() {
+        LOG.debug("singleton creating");
         sessionLot = new ConcurrentHashMap<>();
+        sessionListeners = new ListenerRegistry<>();
     }
 
     @Override
@@ -157,6 +167,7 @@ public class SessionManagerOFImpl implements SessionManager {
 
     @Override
     public ListenerRegistration<SessionListener> registerSessionListener(SessionListener listener) {
+        LOG.debug("registerSessionListener");
         return sessionListeners.register(listener);
     }
 
@@ -224,5 +235,15 @@ public class SessionManagerOFImpl implements SessionManager {
             Map<Class<? extends DataObject>, Collection<PopListener<DataObject>>> popListenerMapping) {
         this.popListenerMapping = popListenerMapping;
     }
-
+    
+    @Override
+    public void close() {
+        LOG.debug("close");
+        sessionListeners = null;
+        synchronized (sessionLot) {
+            for (SessionContext sessionContext : sessionLot.values()) {
+                sessionContext.getPrimaryConductor().disconnect();
+            }
+        }
+    }
 }

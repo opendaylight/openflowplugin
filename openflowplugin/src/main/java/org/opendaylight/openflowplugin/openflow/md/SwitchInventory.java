@@ -8,8 +8,11 @@
 package org.opendaylight.openflowplugin.openflow.md;
 
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 
+/**
+ * @deprecated seems there is no use for this interface
+ */
+@Deprecated
 public interface SwitchInventory {
 
     ModelDrivenSwitch getSwitch(NodeRef node);

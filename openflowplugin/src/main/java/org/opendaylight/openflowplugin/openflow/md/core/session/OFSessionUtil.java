@@ -151,7 +151,14 @@ public abstract class OFSessionUtil {
     public static SessionManager getSessionManager() {
         return SessionManagerOFImpl.getInstance();
     }
-
+    
+    /**
+     * release session manager singleton instance
+     */
+    public static void releaseSessionManager() {
+        SessionManagerOFImpl.releaseInstance();
+    }
+    
     /**
     * @return session manager listener Map
     */
