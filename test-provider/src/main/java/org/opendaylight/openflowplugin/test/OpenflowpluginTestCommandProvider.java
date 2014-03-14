@@ -277,6 +277,8 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         if (flowType == null) {
             flowType = "f1";
         }
+        
+        flow.setPriority(2);
 
         switch (flowType) {
         case "f1":
@@ -551,6 +553,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
             id += 54;
             flow.setMatch(new MatchBuilder().build());
             flow.setInstructions(createSentToControllerInstructions().build());
+            flow.setPriority(0);
             break;
         case "f55":
             id += 55;
@@ -723,7 +726,6 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         // flow.setOutPort(outputPort);
 
         flow.setKey(key);
-        flow.setPriority(2);
         flow.setFlowName(originalFlowName + "X" + flowType);
         testFlow = flow;
         return flow;

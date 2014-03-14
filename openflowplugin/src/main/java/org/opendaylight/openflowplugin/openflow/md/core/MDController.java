@@ -301,6 +301,7 @@ public class MDController implements IMDController, AutoCloseable {
         messageSpyCounter = null;
         messageTranslators = null;
         popListeners = null;
+        switchConnectionProvider.setSwitchConnectionHandler(null);
         switchConnectionProvider = null;
         OFSessionUtil.releaseSessionManager();
     }
