@@ -64,13 +64,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowAdded;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowRemoved;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowUpdated;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.NodeErrorNotification;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.NodeExperimenterErrorNotification;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowListener;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SwitchFlowRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.OutputPortValues;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.InstructionsBuilder;
@@ -126,7 +120,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
     private ProviderContext pc;
     private FlowBuilder testFlow;
     private final String originalFlowName = "Foo";
-    private final FlowEventListener flowEventListener = new FlowEventListener();
+    private final SalFlowListener flowEventListener = new FlowEventListenerLoggingImpl();
     private Registration<org.opendaylight.yangtools.yang.binding.NotificationListener> listener1Reg;
     private Node testNode12;
     private final String originalGroupName = "Foo";
@@ -155,49 +149,6 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         builder.setKey(new NodeKey(builder.getId()));
         testNode = builder;
         return builder;
-    }
-
-    final class FlowEventListener implements SalFlowListener {
-
-        List<FlowAdded> addedFlows = new ArrayList<>();
-        List<FlowRemoved> removedFlows = new ArrayList<>();
-        List<FlowUpdated> updatedFlows = new ArrayList<>();
-
-        @Override
-        public void onFlowAdded(FlowAdded notification) {
-            // TODO Auto-generated method stub
-        }
-
-        @Override
-        public void onFlowRemoved(FlowRemoved notification) {
-            // TODO Auto-generated method stub
-
-        };
-
-        @Override
-        public void onFlowUpdated(FlowUpdated notification) {
-            // TODO Auto-generated method stub
-        }
-
-        @Override
-        public void onNodeErrorNotification(NodeErrorNotification notification) {
-            LOG.error("Error notification  flow Xid........................."
-                    + notification.getTransactionId().getValue());
-            LOG.debug("notification Begin-Transaction:" + notification.getTransactionUri().toString()
-                    + "-----------------------------------------------------------------------------------");
-        }
-
-        @Override
-        public void onNodeExperimenterErrorNotification(NodeExperimenterErrorNotification notification) {
-            // TODO Auto-generated method stub
-
-        }
-
-        @Override
-        public void onSwitchFlowRemoved(SwitchFlowRemoved notification) {
-            LOG.debug("Switch flow removed : Cookies..................." + notification.getCookie().toString());
-            LOG.debug("-----------------------------------------------------------------------------------");
-        }
     }
 
     private static NodeRef createNodeRef(String string) {

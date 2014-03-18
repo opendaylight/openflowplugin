@@ -115,13 +115,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowAdded;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowRemoved;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowUpdated;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.NodeErrorNotification;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.NodeExperimenterErrorNotification;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowListener;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SwitchFlowRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.OutputPortValues;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.InstructionsBuilder;
@@ -191,7 +185,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
     private NodeBuilder testNode;
     private final String originalFlowName = "Foo";
     private final String updatedFlowName = "Bar";
-    private final FlowEventListener flowEventListener = new FlowEventListener();
+    private final SalFlowListener flowEventListener = new FlowEventListenerLoggingImpl();
     private static NotificationService notificationService;
     private Registration<org.opendaylight.yangtools.yang.binding.NotificationListener> listener1Reg;
 
@@ -219,49 +213,6 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         builder.setKey(new NodeKey(builder.getId()));
         testNode = builder;
         return builder;
-    }
-
-    final class FlowEventListener implements SalFlowListener {
-
-        @Override
-        public void onFlowAdded(FlowAdded notification) {
-            LOG.info("flow to be added.........................." + notification.toString());
-            LOG.info("added flow Xid........................." + notification.getTransactionId().getValue());
-            LOG.info("-----------------------------------------------------------------------------------");
-        }
-
-        @Override
-        public void onFlowRemoved(FlowRemoved notification) {
-            LOG.debug("removed flow.........................." + notification.toString());
-            LOG.debug("remove flow Xid........................." + notification.getTransactionId().getValue());
-            LOG.debug("-----------------------------------------------------------------------------------");
-        }
-
-        @Override
-        public void onFlowUpdated(FlowUpdated notification) {
-            LOG.debug("updated flow.........................." + notification.toString());
-            LOG.debug("updated flow Xid........................." + notification.getTransactionId().getValue());
-            LOG.debug("-----------------------------------------------------------------------------------");
-        }
-
-        @Override
-        public void onNodeErrorNotification(NodeErrorNotification notification) {
-            LOG.error("Error notification  flow Xid........................."
-                    + notification.getTransactionId().getValue());
-            LOG.debug("-----------------------------------------------------------------------------------");
-        }
-
-        @Override
-        public void onNodeExperimenterErrorNotification(NodeExperimenterErrorNotification notification) {
-            // TODO Auto-generated method stub
-
-        }
-
-        @Override
-        public void onSwitchFlowRemoved(SwitchFlowRemoved notification) {
-            LOG.debug("Switch flow removed : Cookies..................." + notification.getCookie().toString());
-            LOG.debug("-----------------------------------------------------------------------------------");
-        }
     }
 
     private InstanceIdentifier<Node> nodeBuilderToInstanceId(NodeBuilder node) {
