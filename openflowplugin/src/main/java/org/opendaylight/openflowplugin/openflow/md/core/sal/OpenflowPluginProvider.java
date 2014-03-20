@@ -7,9 +7,6 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal;
 
-import java.util.Collection;
-import java.util.Collections;
-
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ConsumerContext;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
@@ -23,6 +20,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.RpcService;
 import org.osgi.framework.BundleContext;
+
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * OFPlugin provider implementation
@@ -70,7 +70,7 @@ public class OpenflowPluginProvider implements BindingAwareProvider, AutoCloseab
         mdController.setSwitchConnectionProvider(switchConnectionProvider);
         mdController.setMessageSpyCounter(messageCountProvider);
         mdController.init();
-        mdController.start();
+        mdController.startController();
         messageCountCommandProvider = new MessageCountCommandProvider(context, messageCountProvider);
         messageCountCommandProvider.onSessionInitiated(session);
     }

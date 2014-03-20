@@ -8,17 +8,7 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core;
 
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
+import com.google.common.collect.Lists;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionConfiguration;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.openflowplugin.openflow.md.OFConstants;
@@ -68,9 +58,19 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Lists;
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
+ *
  * @author mirehak
  *
  */
@@ -187,13 +187,20 @@ public class MDController implements IMDController {
      *
      */
     public void start() {
+    }
+
+    /**
+     * Just an alternative method to be called once all the md-sal service dependencies have also been
+     * injected into the controller
+     */
+    public void startController(){
         LOG.debug("starting ..");
         LOG.debug("switchConnectionProvider: " + switchConnectionProvider);
         // setup handler
         SwitchConnectionHandlerImpl switchConnectionHandler = new SwitchConnectionHandlerImpl();
         switchConnectionHandler.setMessageSpy(messageSpyCounter);
         switchConnectionHandler.init();
-        
+
         switchConnectionProvider.setSwitchConnectionHandler(switchConnectionHandler);
 
         // configure and startup library servers
