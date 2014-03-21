@@ -7,13 +7,8 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.Future;
-
+import com.google.common.base.Objects;
+import com.google.common.util.concurrent.Futures;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.controller.sal.common.util.Rpcs;
 import org.opendaylight.openflowjava.protocol.api.util.BinContent;
@@ -183,8 +178,12 @@ import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 
-import com.google.common.base.Objects;
-import com.google.common.util.concurrent.Futures;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.Future;
 
 /**
  * RPC implementation of MD-switch
@@ -1265,7 +1264,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
             mdInput.setAdvertise(ofPortModInput.getAdvertise());
 
             LOG.debug("Calling the PortMod RPC method on MessageDispatchService");
-            Future<RpcResult<UpdatePortOutput>> resultFromOFLib = messageService.portMod(ofPortModInput, cookie);
+            Future<RpcResult<UpdatePortOutput>> resultFromOFLib = messageService.portMod(mdInput.build(), cookie);
 
             try {
                 rpcResultFromOFLib = resultFromOFLib.get();
