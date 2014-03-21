@@ -70,18 +70,10 @@ public final class PortConvertor {
 
     private static PortConfig maskPortConfigFields(
             org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortConfig configData) {
-        Boolean portDown = false;
-        Boolean noRecv = false;
-        Boolean noFwd = false;
-        Boolean noPacketIn = false;
-        if (configData.isNOFWD())
-            noFwd = true;
-        if (configData.isNOPACKETIN())
-            noPacketIn = true;
-        if (configData.isNORECV())
-            noRecv = true;
-        if (configData.isPORTDOWN())
-            portDown = true;
+        Boolean portDown = configData.isPORTDOWN();
+        Boolean noRecv = configData.isNORECV();
+        Boolean noFwd = configData.isNOFWD();
+        Boolean noPacketIn = configData.isNOPACKETIN();
 
         return new PortConfig(noFwd, noPacketIn, noRecv, portDown);
 
@@ -89,18 +81,10 @@ public final class PortConvertor {
 
     private static PortConfigV10 maskPortConfigV10Fields(
             org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortConfig configData) {
-        Boolean portDown = false;
-        Boolean noRecv = false;
-        Boolean noFwd = false;
-        Boolean noPacketIn = false;
-        if (configData.isNOFWD())
-            noFwd = true;
-        if (configData.isNOPACKETIN())
-            noPacketIn = true;
-        if (configData.isNORECV())
-            noRecv = true;
-        if (configData.isPORTDOWN())
-            portDown = true;
+        Boolean portDown = configData.isPORTDOWN();
+        Boolean noRecv = configData.isNORECV();
+        Boolean noFwd = configData.isNOFWD();
+        Boolean noPacketIn = configData.isNOPACKETIN();
 
         return new PortConfigV10(false, noFwd, noPacketIn, noRecv, true, true, portDown);
 
@@ -150,7 +134,8 @@ public final class PortConvertor {
 
         OFPortDescDataBuilder.setConfig(config);
 
-        getPortState(source.getState(), portState);
+        portState = getPortState(source.getState());
+
         OFPortDescDataBuilder.setState(portState);
         OFPortDescDataBuilder.setCurrentFeatures(getPortFeatures(source.getCurrentFeature()));
         OFPortDescDataBuilder.setAdvertisedFeatures(getPortFeatures(source.getAdvertisedFeatures()));
@@ -163,21 +148,14 @@ public final class PortConvertor {
 
     }
 
-    private static void getPortState(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortState state, PortState portState) {
+    private static PortState getPortState(
+            org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortState state) {
 
-        boolean isLinkDown = false;// (0),
-        boolean isBlocked = false; // (1),
-        boolean isLive = false; // (2);
+        boolean isLinkDown = state.isLinkDown();
+        boolean isBlocked = state.isBlocked();
+        boolean isLive = state.isLive();
 
-        if (state.isLinkDown()) {
-            isLinkDown = true;
-        } else if (state.isBlocked()) {
-            isBlocked = true;
-        } else if (state.isLive()) {
-            isLive = true;
-        }
-        portState = new PortState(isLinkDown, isBlocked, isLive);
+        return new PortState(isLinkDown, isBlocked, isLive);
 
     }
 
