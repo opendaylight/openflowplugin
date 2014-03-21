@@ -11,7 +11,9 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortConfig;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortConfigV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortFeatures;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortFeaturesV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortState;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortModInput;
@@ -45,17 +47,23 @@ public final class PortConvertor {
             short version) {
 
 
-        PortConfig config = null;
+        PortConfig config = maskPortConfigFields(source.getConfiguration());
+        PortConfigV10 configV10 = maskPortConfigV10Fields(source.getConfiguration());
 
         PortModInputBuilder portModInputBuilder = new PortModInputBuilder();
         portModInputBuilder.setAdvertise(getPortFeatures(source.getAdvertisedFeatures()));
         portModInputBuilder.setPortNo(new PortNumber(source.getPortNumber()));
-        config = maskPortConfigFields(source.getConfiguration());
+
         portModInputBuilder.setConfig(config);
-        portModInputBuilder.setHwAddress(new MacAddress(source.getHardwareAddress()));
-        config = maskPortConfigFields(source.getMask());
         portModInputBuilder.setMask(config);
+
+        portModInputBuilder.setHwAddress(new MacAddress(source.getHardwareAddress()));
+
         portModInputBuilder.setVersion(version);
+
+        portModInputBuilder.setConfigV10(configV10);
+        portModInputBuilder.setMaskV10(configV10);
+        portModInputBuilder.setAdvertiseV10(getPortFeaturesV10(source.getAdvertisedFeatures()));
         return portModInputBuilder.build();
 
     }
@@ -79,6 +87,24 @@ public final class PortConvertor {
 
     }
 
+    private static PortConfigV10 maskPortConfigV10Fields(
+            org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortConfig configData) {
+        Boolean portDown = false;
+        Boolean noRecv = false;
+        Boolean noFwd = false;
+        Boolean noPacketIn = false;
+        if (configData.isNOFWD())
+            noFwd = true;
+        if (configData.isNOPACKETIN())
+            noPacketIn = true;
+        if (configData.isNORECV())
+            noRecv = true;
+        if (configData.isPORTDOWN())
+            portDown = true;
+
+        return new PortConfigV10(false, noFwd, noPacketIn, noRecv, true, true, portDown);
+
+    }
     private static PortFeatures getPortFeatures(
             org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures salPortFeatures) {
 
@@ -89,6 +115,15 @@ public final class PortConvertor {
                 salPortFeatures.isCopper(), salPortFeatures.isFiber(), salPortFeatures.isOther(),
                 salPortFeatures.isPause(), salPortFeatures.isPauseAsym());
     }
+
+    private static PortFeaturesV10 getPortFeaturesV10(
+            org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures salPortFeatures) {
+
+        return new PortFeaturesV10(salPortFeatures.isHundredMbFd(), salPortFeatures.isHundredMbHd(), salPortFeatures.isTenGbFd(), salPortFeatures.isTenMbFd(), salPortFeatures.isTenMbHd(),
+                salPortFeatures.isOneGbFd(), salPortFeatures.isOneGbHd(), salPortFeatures.isAutoeng(), salPortFeatures.isCopper(), salPortFeatures.isFiber(),
+                salPortFeatures.isPause(), salPortFeatures.isPauseAsym());
+    }
+
 
     /*
      * This method is called as a reply to OFPMP_PORT_DESCRIPTION

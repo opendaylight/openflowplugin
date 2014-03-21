@@ -7,13 +7,8 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.Future;
-
+import com.google.common.base.Objects;
+import com.google.common.util.concurrent.Futures;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.controller.sal.common.util.Rpcs;
 import org.opendaylight.openflowjava.protocol.api.util.BinContent;
@@ -183,8 +178,12 @@ import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 
-import com.google.common.base.Objects;
-import com.google.common.util.concurrent.Futures;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.Future;
 
 /**
  * RPC implementation of MD-switch
@@ -1252,20 +1251,11 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
             // Insert the Xid ( transaction Id) before calling the RPC on the
             // OFLibrary
 
-            PortModInputBuilder mdInput = new PortModInputBuilder();
+            PortModInputBuilder mdInput = new PortModInputBuilder(ofPortModInput);
             mdInput.setXid(Xid);
-            mdInput.setVersion(ofPortModInput.getVersion());
-            mdInput.setPortNo(ofPortModInput.getPortNo());
-            mdInput.setMaskV10(ofPortModInput.getMaskV10());
-            mdInput.setMask(ofPortModInput.getMask());
-            mdInput.setHwAddress(ofPortModInput.getHwAddress());
-            mdInput.setConfigV10(ofPortModInput.getConfigV10());
-            mdInput.setConfig(ofPortModInput.getConfig());
-            mdInput.setAdvertiseV10(ofPortModInput.getAdvertiseV10());
-            mdInput.setAdvertise(ofPortModInput.getAdvertise());
 
             LOG.debug("Calling the PortMod RPC method on MessageDispatchService");
-            Future<RpcResult<UpdatePortOutput>> resultFromOFLib = messageService.portMod(ofPortModInput, cookie);
+            Future<RpcResult<UpdatePortOutput>> resultFromOFLib = messageService.portMod(mdInput.build(), cookie);
 
             try {
                 rpcResultFromOFLib = resultFromOFLib.get();
