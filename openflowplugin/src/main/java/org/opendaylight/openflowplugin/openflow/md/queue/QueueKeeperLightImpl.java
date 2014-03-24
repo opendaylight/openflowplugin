@@ -172,7 +172,7 @@ public class QueueKeeperLightImpl implements QueueKeeper<OfHeader, DataObject> {
                 }
                 List<DataObject> translatorOutput = translator.translate(cookie, conductor.getSessionContext(), message);
                 if(translatorOutput != null) {
-                    result.addAll(translator.translate(cookie, conductor.getSessionContext(), message));
+                    result.addAll(translatorOutput);
                 }
             }
             if (messageSpy != null) {
