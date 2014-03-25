@@ -72,6 +72,7 @@ class DropTestCommiter implements PacketProcessingListener {
         val dab = new DropActionBuilder();
         val dropAction = dab.build();
         val ab = new ActionBuilder();
+        ab.setOrder(0);
         ab.setAction(new DropActionCaseBuilder().setDropAction(dropAction).build());
         
         // Add our drop action to a list
@@ -84,6 +85,7 @@ class DropTestCommiter implements PacketProcessingListener {
         
         // Wrap our Apply Action in an Instruction
         val ib = new InstructionBuilder();
+        ib.setOrder(0);
         ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
         
         // Put our Instruction in a list of Instructions
