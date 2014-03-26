@@ -64,7 +64,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.OutputPortValues;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.InstructionsBuilder;
@@ -120,7 +119,6 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
     private ProviderContext pc;
     private FlowBuilder testFlow;
     private final String originalFlowName = "Foo";
-    private final SalFlowListener flowEventListener = new FlowEventListenerLoggingImpl();
     private Registration<org.opendaylight.yangtools.yang.binding.NotificationListener> listener1Reg;
     private Node testNode12;
     private final String originalGroupName = "Foo";
@@ -133,7 +131,6 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
     public void onSessionInitiated(ProviderContext session) {
         pc = session;
         notificationService = session.getSALService(NotificationService.class);
-        listener1Reg = notificationService.registerNotificationListener(flowEventListener);
         dataBrokerService = session.getSALService(DataBrokerService.class);
         ctx.registerService(CommandProvider.class.getName(), this, null);
         createTestFlow(createTestNode(null), null, null);
