@@ -122,7 +122,6 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
     private ProviderContext pc;
     private FlowBuilder testFlow;
     private final String originalFlowName = "Foo";
-    private final SalFlowListener flowEventListener = new FlowEventListenerLoggingImpl();
     private final NodeErrorListener nodeErrorListener = new NodeErrorListenerLoggingImpl();
     private Registration<org.opendaylight.yangtools.yang.binding.NotificationListener> listener1Reg;
     private Registration<org.opendaylight.yangtools.yang.binding.NotificationListener> listener2Reg;
@@ -137,7 +136,6 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
     public void onSessionInitiated(ProviderContext session) {
         pc = session;
         notificationService = session.getSALService(NotificationService.class);
-        listener1Reg = notificationService.registerNotificationListener(flowEventListener);
         listener2Reg = notificationService.registerNotificationListener(nodeErrorListener);
         dataBrokerService = session.getSALService(DataBrokerService.class);
         ctx.registerService(CommandProvider.class.getName(), this, null);
