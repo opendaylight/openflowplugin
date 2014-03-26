@@ -55,6 +55,11 @@
             <artifactId>yang-binding</artifactId>
             <version>0.6.1</version>
         </dependency>
+        <dependency>
+          <groupId>org.osgi</groupId>
+          <artifactId>org.osgi.core</artifactId>
+        </dependency>
+
 
         <dependency>
             <groupId>junit</groupId>
