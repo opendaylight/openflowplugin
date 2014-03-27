@@ -71,7 +71,7 @@ public class PacketOutConvertor {
 
         PortNumber outPort = null;
         NodeConnectorRef outRef = inputPacket.getEgress();
-        List<PathArgument> outArgs = outRef.getValue().getPathArguments();
+        List<PathArgument> outArgs = outRef.getValue().getPath();
         if (outArgs.size() >= 3) {
             outPort = getPortNumber(outArgs.get(2));
         } else {
