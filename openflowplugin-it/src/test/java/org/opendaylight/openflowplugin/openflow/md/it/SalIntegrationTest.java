@@ -18,6 +18,8 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
+import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
@@ -63,7 +65,17 @@ public class SalIntegrationTest {
     private static long getFailSafeTimeout() {
         return 20000;
     }
-
+    
+    /**
+     * test setup
+     * @throws InterruptedException
+     */
+    @Before
+    public void setUp() throws InterruptedException {
+        //FIXME: plugin should provide service exposing startup result via future 
+        Thread.sleep(5000);
+    }
+    
     /**
      * test basic integration with OFLib running the handshake
      *
@@ -93,11 +105,28 @@ public class SalIntegrationTest {
         switchSim.setScenarioHandler(scenario);
         switchSim.start();
 
-        switchSim.getScenarioDone().get(getFailSafeTimeout(), TimeUnit.MILLISECONDS);
+        try {
+            LOG.debug("tearing down simulator");
+            switchSim.getScenarioDone().get(getFailSafeTimeout(), TimeUnit.MILLISECONDS);
+        } catch (Exception e) {
+            String msg = "waiting for scenario to finish failed: "+e.getMessage();
+            LOG.error(msg, e);
+            Assert.fail(msg);
+        }
+        
+        try {
+            LOG.debug("checking if simulator succeeded to connect to controller");
+            boolean simulatorWasOnline = switchSim.getIsOnlineFuture().get(100, TimeUnit.MILLISECONDS);
+            Assert.assertTrue("simulator failed to connect to controller", simulatorWasOnline);
+        } catch (Exception e) {
+            String message = "simulator probably failed to connect to controller";
+            LOG.error(message, e);
+            Assert.fail(message);
+        }
+        
         Thread.sleep(4000);
         assertEquals(1, listener.nodeUpdated.size());
         assertNotNull(listener.nodeUpdated.get(0));
-
     }
 
     /**
