@@ -163,8 +163,6 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
      *    then continue connection processing. if no common version found, just disconnect.
      * 3. If HelloMessage version is not supported, send HelloMessage with lower supported version.
      * 4. If Hello message received again with not supported version, just disconnect.
-     *
-     *   TODO: Better to handle handshake into a maintainable innerclass which uses State-Pattern.
      */
     @Override
     public synchronized void onHelloMessage(final HelloMessage hello) {
@@ -173,7 +171,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         checkState(CONDUCTOR_STATE.HANDSHAKING);
         HandshakeStepWrapper handshakeStepWrapper = new HandshakeStepWrapper(
                 hello, handshakeManager, connectionAdapter);
-        hsPool.execute(handshakeStepWrapper);
+        hsPool.submit(handshakeStepWrapper);
     }
 
     /**
@@ -403,6 +401,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         version = negotiatedVersion;
         conductorState = CONDUCTOR_STATE.WORKING;
         OFSessionUtil.registerSession(this, featureOutput, negotiatedVersion);
+        hsPool.shutdownNow();
     }
 
     /*
