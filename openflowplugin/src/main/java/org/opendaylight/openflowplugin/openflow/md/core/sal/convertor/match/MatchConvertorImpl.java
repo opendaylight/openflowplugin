@@ -1144,7 +1144,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
         matchEntriesBuilder.setOxmClass(OpenflowBasicClass.class);
         matchEntriesBuilder.setOxmMatchField(VlanVid.class);
         VlanVidMatchEntryBuilder vlanVidBuilder = new VlanVidMatchEntryBuilder();
-        if (vlanId.isVlanIdPresent() == Boolean.TRUE) {
+        if (Boolean.TRUE.equals(vlanId.isVlanIdPresent())) {
             setCfiBit = true;
             if (vlanId.getVlanId() != null) {
                 vidEntryValue = vlanId.getVlanId().getValue();
