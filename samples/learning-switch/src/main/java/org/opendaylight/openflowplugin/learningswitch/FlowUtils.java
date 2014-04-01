@@ -42,8 +42,8 @@ public class FlowUtils {
      * @param dstPort
      * @return {@link FlowBuilder} forwarding all packets to controller port
      */
-    public static FlowBuilder createDirectMacToMacFlow(Short tableId, int priority, MacAddress srcMac,
-            MacAddress dstMac, NodeConnectorRef dstPort) {
+    public static FlowBuilder createDirectMacToMacFlow(final Short tableId, final int priority, final MacAddress srcMac,
+            final MacAddress dstMac, final NodeConnectorRef dstPort) {
         FlowBuilder macToMacFlow = new FlowBuilder() //
                 .setTableId(tableId) //
                 .setFlowName("mac2mac");
@@ -64,6 +64,7 @@ public class FlowUtils {
         Uri outputPort = dstPort.getValue().firstKeyOf(NodeConnector.class, NodeConnectorKey.class).getId();
 
         Action outputToControllerAction = new ActionBuilder() //
+                .setOrder(0)
                 .setAction(new OutputActionCaseBuilder() //
                         .setOutputAction(new OutputActionBuilder() //
                                 .setMaxLength(new Integer(0xffff)) //
@@ -78,6 +79,7 @@ public class FlowUtils {
 
         // Wrap our Apply Action in an Instruction
         Instruction applyActionsInstruction = new InstructionBuilder() //
+                .setOrder(0)
                 .setInstruction(new ApplyActionsCaseBuilder()//
                         .setApplyActions(applyActions) //
                         .build()) //
@@ -107,7 +109,7 @@ public class FlowUtils {
      * @param flowId
      * @return {@link FlowBuilder} forwarding all packets to controller port
      */
-    public static FlowBuilder createFwdAllToControllerFlow(Short tableId, int priority, FlowId flowId) {
+    public static FlowBuilder createFwdAllToControllerFlow(final Short tableId, final int priority, final FlowId flowId) {
         FlowBuilder allToCtrlFlow = new FlowBuilder().setTableId(tableId).setFlowName("allPacketsToCtrl").setId(flowId)
                 .setKey(new FlowKey(flowId));
 
