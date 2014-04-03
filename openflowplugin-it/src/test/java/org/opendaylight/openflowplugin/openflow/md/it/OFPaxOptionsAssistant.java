@@ -9,11 +9,11 @@
 package org.opendaylight.openflowplugin.openflow.md.it;
 
 
-import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
-
 import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.options.DefaultCompositeOption;
+
+import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 
 /**
  * @author mirehak
@@ -33,6 +33,7 @@ public abstract class OFPaxOptionsAssistant {
     public static final String OFPLUGIN = "org.opendaylight.openflowplugin";
     /** controller.model package */
     public static final String CONTROLLER_MODEL = "org.opendaylight.controller.model";
+
     
     /**
      * Works only if property -DinspectOsgi is used
@@ -72,7 +73,8 @@ public abstract class OFPaxOptionsAssistant {
                 baseSalBundles(),
                 ofLibraryBundles(),
                 mavenBundle(CONTROLLER_MODEL, "model-flow-statistics").versionAsInProject(),
-                mavenBundle(OFPLUGIN, "openflowplugin").versionAsInProject());
+                mavenBundle(OFPLUGIN, "openflowplugin").versionAsInProject(),
+                mavenBundle(CONTROLLER,"config-api").versionAsInProject());
     }
 
     /**

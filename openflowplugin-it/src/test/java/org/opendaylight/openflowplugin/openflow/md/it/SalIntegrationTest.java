@@ -7,17 +7,6 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.it;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.ops4j.pax.exam.CoreOptions.options;
-import static org.ops4j.pax.exam.CoreOptions.systemProperty;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import javax.inject.Inject;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,17 +19,24 @@ import org.opendaylight.controller.test.sal.binding.it.TestHelper;
 import org.opendaylight.openflowjava.protocol.impl.clients.ScenarioHandler;
 import org.opendaylight.openflowjava.protocol.impl.clients.SimpleClient;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRemoved;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorUpdated;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRemoved;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeUpdated;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.OpendaylightInventoryListener;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.*;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
+import org.ops4j.pax.exam.util.Filter;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.ops4j.pax.exam.CoreOptions.options;
+import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 
 /**
  * Exercise inventory listener ({@link OpendaylightInventoryListener#onNodeUpdated(NodeUpdated)})
@@ -51,6 +47,7 @@ public class SalIntegrationTest {
     private static final Logger LOG = LoggerFactory.getLogger(SalIntegrationTest.class);
 
     @Inject
+    @Filter(timeout=60*1000)
     SwitchConnectionProvider switchConnectionProvider;
 
     @Inject
@@ -143,7 +140,7 @@ public class SalIntegrationTest {
                 TestHelper.configMinumumBundles(),
                 TestHelper.baseModelBundles(),
                 TestHelper.flowCapableModelBundles(), 
-                
+                OFPaxOptionsAssistant.ofLibraryBundles(),
                 OFPaxOptionsAssistant.ofPluginBundles()
                 );
     }

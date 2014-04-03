@@ -1,0 +1,58 @@
+module openflow-provider-impl {
+	yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:openflow:common:config:impl";
+    prefix "ofplugin-cfg-impl";
+
+    import config {prefix config; revision-date 2013-04-05; }
+    import openflow-provider {prefix openflow-provider;}
+    import  openflow-switch-connection-provider {prefix  openflow-switch-connection-provider;revision-date 2014-03-28;}
+
+    import opendaylight-md-sal-binding { prefix md-sal-binding; revision-date 2013-10-28; }
+
+
+    description
+        "openflow-plugin-custom-config-impl";
+
+    revision "2014-03-26" {
+        description
+            "Initial revision";
+    }
+
+    identity openflow-provider-impl {
+        base config:module-type;
+        config:provided-service openflow-provider:openflow-provider;
+        config:java-name-prefix ConfigurableOpenFlowProvider;
+    }
+
+    augment "/config:modules/config:module/config:configuration" {
+        case openflow-provider-impl {
+            when "/config:modules/config:module/config:type = 'openflow-provider-impl'";
+
+             container binding-aware-broker{
+                  uses config:service-ref {
+                        refine type {
+                               mandatory true;
+                               config:required-identity md-sal-binding:binding-broker-osgi-registry;
+                        }
+                  }
+             }
+             container openflow-switch-connection-provider{
+                   uses config:service-ref {
+                          refine type {
+                                 mandatory true;
+                                 config:required-identity  openflow-switch-connection-provider:openflow-switch-connection-provider;
+                          }
+                    }
+             }
+
+
+            leaf legacyport {
+                type uint16;
+            }
+
+            leaf port {
+                type uint16;
+            }
+        }
+    }
+}
