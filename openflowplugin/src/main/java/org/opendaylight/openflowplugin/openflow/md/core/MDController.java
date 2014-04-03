@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -69,6 +70,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.JdkFutureAdapters;
+import com.google.common.util.concurrent.ListenableFuture;
 
 /**
  * @author mirehak
@@ -78,7 +82,7 @@ public class MDController implements IMDController, AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(MDController.class);
 
-    private SwitchConnectionProvider switchConnectionProvider;
+    private Collection<SwitchConnectionProvider> switchConnectionProviders;
 
     private ConcurrentMap<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, List<DataObject>>>> messageTranslators;
     private Map<Class<? extends DataObject>, Collection<PopListener<DataObject>>> popListeners;
@@ -86,6 +90,8 @@ public class MDController implements IMDController, AutoCloseable {
 
     final private int OF10 = OFConstants.OFP_VERSION_1_0;
     final private int OF13 = OFConstants.OFP_VERSION_1_3;
+
+    private ErrorHandlerQueueImpl errorHandler;
 
 
     /**
@@ -164,21 +170,11 @@ public class MDController implements IMDController, AutoCloseable {
     }
 
     /**
-     * @param switchConnectionProvider
-     *            the switchConnectionProvider to set
+     * @param switchConnectionProviders
+     *            the switchConnectionProviders to set
      */
-    public void setSwitchConnectionProvider(SwitchConnectionProvider switchConnectionProvider) {
-        this.switchConnectionProvider = switchConnectionProvider;
-    }
-
-    /**
-     * @param switchConnectionProviderToUnset
-     *            the switchConnectionProvider to unset
-     */
-    public void unsetSwitchConnectionProvider(SwitchConnectionProvider switchConnectionProviderToUnset) {
-        if (this.switchConnectionProvider == switchConnectionProviderToUnset) {
-            this.switchConnectionProvider = null;
-        }
+    public void setSwitchConnectionProviders(Collection<SwitchConnectionProvider> switchConnectionProviders) {
+        this.switchConnectionProviders = switchConnectionProviders;
     }
 
     /**
@@ -188,22 +184,25 @@ public class MDController implements IMDController, AutoCloseable {
      */
     public void start() {
         LOG.debug("starting ..");
-        LOG.debug("switchConnectionProvider: " + switchConnectionProvider);
+        LOG.debug("switchConnectionProvider: " + switchConnectionProviders);
         // setup handler
         SwitchConnectionHandlerImpl switchConnectionHandler = new SwitchConnectionHandlerImpl();
         switchConnectionHandler.setMessageSpy(messageSpyCounter);
 
-        ErrorHandlerQueueImpl errorHandler = new ErrorHandlerQueueImpl();
+        errorHandler = new ErrorHandlerQueueImpl();
         new Thread(errorHandler).start();
         
         switchConnectionHandler.setErrorHandler(errorHandler);
         switchConnectionHandler.init();
         
-        switchConnectionProvider.setSwitchConnectionHandler(switchConnectionHandler);
-
-        // configure and startup library servers
-        switchConnectionProvider.configure(getConnectionConfiguration());
-        Future<List<Boolean>> srvStarted = switchConnectionProvider.startup();
+        List<ListenableFuture<Boolean>> starterChain = new ArrayList<>();
+        for (SwitchConnectionProvider switchConnectionPrv : switchConnectionProviders) {
+            switchConnectionPrv.setSwitchConnectionHandler(switchConnectionHandler);
+            ListenableFuture<Boolean> isOnlineFuture = switchConnectionPrv.startup();
+            starterChain.add(isOnlineFuture);
+        }
+        
+        Future<List<Boolean>> srvStarted = Futures.allAsList(starterChain);
     }
 
     /**
@@ -224,9 +223,13 @@ public class MDController implements IMDController, AutoCloseable {
      */
     public void stop() {
         LOG.debug("stopping");
-        Future<List<Boolean>> srvStopped = switchConnectionProvider.shutdown();
+        List<ListenableFuture<Boolean>> stopChain = new ArrayList<>();
         try {
-            srvStopped.get(5000, TimeUnit.MILLISECONDS);
+            for (SwitchConnectionProvider switchConnectionPrv : switchConnectionProviders) {
+                ListenableFuture<Boolean> shutdown =  switchConnectionPrv.shutdown();
+                stopChain.add(shutdown);
+            }
+            Futures.allAsList(stopChain).get(5000, TimeUnit.MILLISECONDS);
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             LOG.error(e.getMessage(), e);
         }
@@ -306,8 +309,11 @@ public class MDController implements IMDController, AutoCloseable {
         messageSpyCounter = null;
         messageTranslators = null;
         popListeners = null;
-        switchConnectionProvider.setSwitchConnectionHandler(null);
-        switchConnectionProvider = null;
+        for (SwitchConnectionProvider switchConnectionPrv : switchConnectionProviders) {
+            switchConnectionPrv.setSwitchConnectionHandler(null);
+        }
+        switchConnectionProviders = null;
         OFSessionUtil.releaseSessionManager();
+        errorHandler.close();
     }
 }

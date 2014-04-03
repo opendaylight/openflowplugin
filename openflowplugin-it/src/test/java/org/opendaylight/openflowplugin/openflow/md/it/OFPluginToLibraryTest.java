@@ -25,7 +25,7 @@ import org.opendaylight.openflowjava.protocol.impl.clients.ClientEvent;
 import org.opendaylight.openflowjava.protocol.impl.clients.ScenarioHandler;
 import org.opendaylight.openflowjava.protocol.impl.clients.SimpleClient;
 import org.opendaylight.openflowjava.protocol.impl.clients.SleepEvent;
-import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.OpenflowPluginProvider;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
@@ -47,7 +47,7 @@ public class OFPluginToLibraryTest {
             .getLogger(OFPluginToLibraryTest.class);
 
     @Inject @Filter(timeout=5000)
-    SwitchConnectionProvider switchConnectionProvider;
+    OpenflowPluginProvider openflowPluginProvider;
     
     @Inject
     BundleContext ctx;
@@ -60,7 +60,7 @@ public class OFPluginToLibraryTest {
      */
     @Before
     public void setUp() throws InterruptedException {
-        LOG.debug("switchConnectionProvider: "+switchConnectionProvider);
+        LOG.debug("openflowPluginProvider: "+openflowPluginProvider);
         //FIXME: plugin should provide service exposing startup result via future 
         Thread.sleep(5000);
     }
@@ -155,7 +155,7 @@ public class OFPluginToLibraryTest {
     @Test
     public void handshakeFail2() throws Exception {
         LOG.debug("handshakeFail2 integration test");
-        LOG.debug("switchConnectionProvider: "+switchConnectionProvider);
+        LOG.debug("openflowPluginProvider: "+openflowPluginProvider);
 
         switchSim = createSimpleClient();
         switchSim.setSecuredClient(false);

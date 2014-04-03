@@ -16,5 +16,6 @@ target
 .settings
 MANIFEST.MF
 xtend-gen
-
+.externalToolBuilders
+maven-eclipse.xml
 

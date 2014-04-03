@@ -37,7 +37,7 @@ public class OpenflowPluginProvider implements BindingAwareProvider, AutoCloseab
 
     private BundleContext context;
 
-    private SwitchConnectionProvider switchConnectionProvider;
+    private Collection<SwitchConnectionProvider> switchConnectionProviders;
 
     private MDController mdController;
     
@@ -48,21 +48,10 @@ public class OpenflowPluginProvider implements BindingAwareProvider, AutoCloseab
     private SalRegistrationManager registrationManager;
     
     /**
-     * dependencymanager requirement 
-     * @param switchConnectionProviderArg
-     */
-    public void unsetSwitchConnectionProvider(SwitchConnectionProvider switchConnectionProviderArg) {
-        switchConnectionProvider = null;
-    }
-
-    /**
-     * dependencymanager requirement 
      * @param switchConnectionProvider
      */
-    public void setSwitchConnectionProvider(
-            SwitchConnectionProvider switchConnectionProvider) {
-        this.switchConnectionProvider = switchConnectionProvider;
-        registerProvider();
+    public void setSwitchConnectionProviders(Collection<SwitchConnectionProvider> switchConnectionProvider) {
+        this.switchConnectionProviders = switchConnectionProvider;
     }
 
     /**
@@ -75,7 +64,10 @@ public class OpenflowPluginProvider implements BindingAwareProvider, AutoCloseab
     /**
      * dependencymanager requirement 
      * @param context
+     * 
+     * @deprecated we should stop relying on osgi to provide cli interface for messageCounter 
      */
+    @Deprecated
     public void setContext(BundleContext context) {
         this.context = context;
     }
@@ -87,7 +79,7 @@ public class OpenflowPluginProvider implements BindingAwareProvider, AutoCloseab
         registrationManager = new SalRegistrationManager();
         registrationManager.onSessionInitiated(session);
         mdController = new MDController();
-        mdController.setSwitchConnectionProvider(switchConnectionProvider);
+        mdController.setSwitchConnectionProviders(switchConnectionProviders);
         mdController.setMessageSpyCounter(messageCountProvider);
         mdController.init();
         mdController.start();
@@ -134,7 +126,6 @@ public class OpenflowPluginProvider implements BindingAwareProvider, AutoCloseab
      */
     public void setBroker(BindingAwareBroker broker) {
         this.broker = broker;
-        registerProvider();
     }
 
     /**
@@ -146,12 +137,17 @@ public class OpenflowPluginProvider implements BindingAwareProvider, AutoCloseab
     }
 
     private boolean hasAllDependencies(){
-        if(this.broker != null && this.switchConnectionProvider != null) {
+        if(this.broker != null && this.switchConnectionProviders != null) {
             return true;
         }
         return false;
     }
-    private void registerProvider() {
+    
+    /**
+     * register providers for md-sal
+     */
+    public void registerProvider() {
+        //FIXME: is it needed
         if(hasAllDependencies()) {
             this.broker.registerProvider(this,context);
         }

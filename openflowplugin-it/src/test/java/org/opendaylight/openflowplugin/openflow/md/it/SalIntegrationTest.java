@@ -29,7 +29,7 @@ import org.opendaylight.controller.sal.binding.api.NotificationService;
 import org.opendaylight.controller.test.sal.binding.it.TestHelper;
 import org.opendaylight.openflowjava.protocol.impl.clients.ScenarioHandler;
 import org.opendaylight.openflowjava.protocol.impl.clients.SimpleClient;
-import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.OpenflowPluginProvider;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRemoved;
@@ -38,6 +38,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Openday
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
+import org.ops4j.pax.exam.util.Filter;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,13 +52,14 @@ public class SalIntegrationTest {
     private static final Logger LOG = LoggerFactory.getLogger(SalIntegrationTest.class);
 
     @Inject
-    SwitchConnectionProvider switchConnectionProvider;
-
-    @Inject
     BundleContext ctx;
 
     @Inject
     BindingAwareBroker broker;
+    
+    @Inject 
+    @Filter(timeout=20*1000)
+    OpenflowPluginProvider openflowPluginProvider;
 
     /**
      * @return timeout for case of failure
@@ -94,9 +96,9 @@ public class SalIntegrationTest {
         };
         ConsumerContext consumerReg = broker.registerConsumer(openflowConsumer, ctx);
         assertNotNull(consumerReg);
-
+        
         LOG.debug("handshake integration test");
-        LOG.debug("switchConnectionProvider: " + switchConnectionProvider);
+        LOG.debug("openflowPluginProvider: " + openflowPluginProvider);
 
         SimpleClient switchSim = new SimpleClient("localhost", 6653);
         switchSim.setSecuredClient(false);
@@ -143,7 +145,7 @@ public class SalIntegrationTest {
                 TestHelper.configMinumumBundles(),
                 TestHelper.baseModelBundles(),
                 TestHelper.flowCapableModelBundles(), 
-                
+                OFPaxOptionsAssistant.ofLibraryBundles(),
                 OFPaxOptionsAssistant.ofPluginBundles()
                 );
     }

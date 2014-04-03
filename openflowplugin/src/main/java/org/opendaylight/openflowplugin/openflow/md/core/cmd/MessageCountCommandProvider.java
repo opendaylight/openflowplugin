@@ -29,7 +29,7 @@ public class MessageCountCommandProvider implements CommandProvider, AutoCloseab
     private BundleContext ctx;
     private MessageCountDumper provider;
 
-    private ServiceRegistration commandRegistration;
+    private ServiceRegistration<?> commandRegistration;
     
     /**
      * @param ctx

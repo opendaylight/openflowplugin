@@ -17,6 +17,18 @@
         <exclude>opendaylight/plugins/org.opendaylight.controller.protocol_plugins.openflow-*.jar</exclude>
       </excludes>
     </fileSet>
+    <fileSet>
+      <directory>
+        src/main/resources/
+      </directory>
+      <excludes>
+        <exclude>version.properties</exclude>
+        <exclude>configuration/config.ini</exclude>
+      </excludes>
+      <outputDirectory>
+        opendaylight/
+      </outputDirectory>
+    </fileSet>
   </fileSets>
   <dependencySets>
     <dependencySet>

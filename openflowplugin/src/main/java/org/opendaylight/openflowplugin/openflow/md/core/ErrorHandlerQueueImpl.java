@@ -39,6 +39,9 @@ public class ErrorHandlerQueueImpl implements ErrorHandler {
             Exception error;
             try {
                 error = errorQueue.take();
+                if (error instanceof QueueShutdownItem) {
+                    break;
+                }
                 Throwable cause = error.getCause();
                 LOG.error(error.getMessage()+" -> "+cause.getMessage(), cause);
             } catch (InterruptedException e) {
@@ -65,7 +68,13 @@ public class ErrorHandlerQueueImpl implements ErrorHandler {
     }
 
     @Override
-    public void close() throws Exception {
-        //TODO: add special exception to queue and recognize it in run method
+    public void close() {
+        // add special exception to queue and recognize it in run method
+        errorQueue.add(new QueueShutdownItem());
+    }
+    
+    static class QueueShutdownItem extends Exception {
+        private static final long serialVersionUID = 1L;
+        // nothing
     }
 }

@@ -32,7 +32,13 @@
                 <capability>
                     urn:opendaylight:params:xml:ns:yang:controller:md:sal:common?module=opendaylight-md-sal-common&amp;revision=2013-10-28
                 </capability>
-
+                
+                <!-- openflowjava -->
+                <capability>urn:opendaylight:params:xml:ns:yang:openflow:switch:connection:provider:impl?module=openflow-switch-connection-provider-impl&amp;revision=2014-03-28</capability>
+                <capability>urn:opendaylight:params:xml:ns:yang:openflow:switch:connection:provider?module=openflow-switch-connection-provider&amp;revision=2014-03-28</capability>
+                <!-- openflowplugin -->
+                <capability>urn:opendaylight:params:xml:ns:yang:openflow:common:config:impl?module=openflow-provider-impl&amp;revision=2014-03-26</capability>
+                <capability>urn:opendaylight:params:xml:ns:yang:openflow:common:config?module=openflow-provider&amp;revision=2014-03-26</capability>
             </required-capabilities>
             <configuration>
 
@@ -110,6 +116,43 @@
                                 </type>
                                 <name>ref_runtime-mapping-singleton</name>
                             </mapping-service>
+                        </module>
+                        
+                        
+                        
+                        <!-- default OF-switch-connection-provider (port 6633) -->
+                        <module>
+                          <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:openflow:switch:connection:provider:impl">prefix:openflow-switch-connection-provider-impl</type>
+                          <name>openflow-switch-connection-provider-default-impl</name>
+                          <port>6633</port>
+                          <switch-idle-timeout>15000</switch-idle-timeout>
+                        </module>
+                        <!-- default OF-switch-connection-provider (port 6653) -->
+                        <module>
+                          <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:openflow:switch:connection:provider:impl">prefix:openflow-switch-connection-provider-impl</type>
+                          <name>openflow-switch-connection-provider-legacy-impl</name>
+                          <port>6653</port>
+                          <switch-idle-timeout>15000</switch-idle-timeout>
+                        </module>
+                
+                        <!-- default OF-plugin openflow-provider -->
+                        <module>
+                          <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:openflow:common:config:impl">prefix:openflow-provider-impl</type>
+                          <name>openflow-provider-impl</name>
+                          
+                          <openflow-switch-connection-provider>
+                            <type xmlns:ofSwitch="urn:opendaylight:params:xml:ns:yang:openflow:switch:connection:provider">ofSwitch:openflow-switch-connection-provider</type>
+                            <name>openflow-switch-connection-provider-default</name>
+                          </openflow-switch-connection-provider>
+                          <openflow-switch-connection-provider>
+                            <type xmlns:ofSwitch="urn:opendaylight:params:xml:ns:yang:openflow:switch:connection:provider">ofSwitch:openflow-switch-connection-provider</type>
+                            <name>openflow-switch-connection-provider-legacy</name>
+                          </openflow-switch-connection-provider>
+                
+                          <binding-aware-broker>
+                            <type xmlns:binding="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding">binding:binding-broker-osgi-registry</type>
+                            <name>ref_binding-broker-impl</name>
+                          </binding-aware-broker>
                         </module>
                     </modules>
 
@@ -189,6 +232,27 @@
                                     /config/modules/module[name='binding-data-broker']/instance[name='binding-data-broker']
                                 </provider>
                             </instance>
+                        </service>
+                        
+                        <!-- OFJava instances -->
+                        <service>
+                          <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:openflow:switch:connection:provider">prefix:openflow-switch-connection-provider</type>
+                          <instance>
+                            <name>openflow-switch-connection-provider-default</name>
+                            <provider>/modules/module[type='openflow-switch-connection-provider-impl'][name='openflow-switch-connection-provider-default-impl']</provider>
+                          </instance>
+                          <instance>
+                            <name>openflow-switch-connection-provider-legacy</name>
+                            <provider>/modules/module[type='openflow-switch-connection-provider-impl'][name='openflow-switch-connection-provider-legacy-impl']</provider>
+                          </instance>
+                        </service>
+                        <!-- OFPlugin instance -->
+                        <service>
+                          <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:openflow:common:config">prefix:openflow-provider</type>
+                          <instance>
+                            <name>openflow-provider</name>
+                            <provider>/modules/module[type='openflow-provider-impl'][name='openflow-provider-impl']</provider>
+                          </instance>
                         </service>
                     </services>
                 </data>
