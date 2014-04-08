@@ -7,7 +7,7 @@ see https://git.opendaylight.org/gerrit/#/c/390/
   <parent>
     <groupId>org.opendaylight.openflowplugin</groupId>
     <artifactId>openflowplugin-parent</artifactId>
-    <version>0.0.3-SNAPSHOT</version>
+    <version>0.0.2-1-SNAPSHOT</version>
     <relativePath>../../</relativePath>
   </parent>
 
@@ -22,7 +22,7 @@ see https://git.opendaylight.org/gerrit/#/c/390/
     <dependency>
       <groupId>org.opendaylight.controller</groupId>
       <artifactId>distribution.opendaylight</artifactId>
-      <version>0.1.2-SNAPSHOT</version>
+      <version>0.1.1-1-SNAPSHOT</version>
       <type>zip</type>
       <classifier>osgipackage</classifier>
       <!-- Make sure this isn't included on any classpath-->
