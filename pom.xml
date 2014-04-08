@@ -6,7 +6,7 @@
     </prerequisites>
     <groupId>org.opendaylight.openflowplugin</groupId>
     <artifactId>openflowplugin-parent</artifactId>
-    <version>0.0.3-SNAPSHOT</version>
+    <version>0.0.3-1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <scm>
@@ -39,20 +39,20 @@
       <slf4j.version>1.7.2</slf4j.version>
       <logback.version>1.0.9</logback.version>
       <nexusproxy>http://nexus.opendaylight.org/content</nexusproxy>
-      <openflowjava.version>0.5-SNAPSHOT</openflowjava.version>
-      <controller.model.version>1.1-SNAPSHOT</controller.model.version>
+      <openflowjava.version>0.4-1-SNAPSHOT</openflowjava.version>
+      <controller.model.version>1.0-1-SNAPSHOT</controller.model.version>
       <osgi.core.version>5.0.0</osgi.core.version>
-      <sal.api.version>0.8.1-SNAPSHOT</sal.api.version>
-      <sal.connection.api.version>0.1.2-SNAPSHOT</sal.connection.api.version>
-      <netconf.parent.version>0.2.5-SNAPSHOT</netconf.parent.version>
-      <config.parent.version>0.2.5-SNAPSHOT</config.parent.version>
+      <sal.api.version>0.7.0-1-SNAPSHOT</sal.api.version>
+      <sal.connection.api.version>0.1.1-1-SNAPSHOT</sal.connection.api.version>
+      <netconf.parent.version>0.2.3-1-SNAPSHOT</netconf.parent.version>
+      <config.parent.version>0.2.3-1-SNAPSHOT</config.parent.version>
       <build.helper.version>1.8</build.helper.version>
       <xtend.version>2.4.3</xtend.version>
       <xtend.dstdir>src/main/xtend-gen</xtend.dstdir>
       <jmxGeneratorPath>src/main/yang-gen-config</jmxGeneratorPath>
       <salGeneratorPath>src/main/yang-gen-sal</salGeneratorPath>
       <maven.bundle.version>2.4.0</maven.bundle.version>
-      <exi.nagasena.version>0000.0002.0038.0-SNAPSHOT</exi.nagasena.version>
+      <exi.nagasena.version>0000.0002.0038.0</exi.nagasena.version>
     </properties>
 
     <dependencyManagement>
@@ -224,19 +224,19 @@
 
         <!-- thirdparty -->
         <dependency>
-          <groupId>org.opendaylight.controller.thirdparty</groupId>
+          <groupId>org.openexi</groupId>
           <artifactId>nagasena</artifactId>
           <version>${exi.nagasena.version}</version>
         </dependency>
         <dependency>
-          <groupId>org.opendaylight.controller.thirdparty</groupId>
+          <groupId>org.openexi</groupId>
           <artifactId>nagasena-rta</artifactId>
           <version>${exi.nagasena.version}</version>
         </dependency>
         <dependency>
           <groupId>org.opendaylight.controller.thirdparty</groupId>
           <artifactId>ganymed</artifactId>
-          <version>1.1-SNAPSHOT</version>
+          <version>1.0-1-SNAPSHOT</version>
         </dependency>
         
         
@@ -394,7 +394,7 @@
             <plugin>
               <groupId>org.opendaylight.yangtools</groupId>
               <artifactId>yang-maven-plugin</artifactId>
-              <version>0.6.2-SNAPSHOT</version>
+              <version>0.6.1-1-SNAPSHOT</version>
             </plugin>
             <plugin>
               <groupId>org.apache.felix</groupId>

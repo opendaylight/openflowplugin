@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opendaylight.openflowplugin</groupId>
         <artifactId>openflowplugin-parent</artifactId>
-        <version>0.0.3-SNAPSHOT</version>
+        <version>0.0.3-1-SNAPSHOT</version>
         <relativePath>../</relativePath>
     </parent>
 
@@ -12,11 +12,11 @@
     <packaging>bundle</packaging>
 
     <properties>
-        <yangtools.version>0.6.2-SNAPSHOT</yangtools.version>
-        <yangtools.generator.version>0.6.2-SNAPSHOT</yangtools.generator.version>
-        <yangtools.binding.version>0.6.2-SNAPSHOT</yangtools.binding.version>
+        <yangtools.version>0.6.1-1-SNAPSHOT</yangtools.version>
+        <yangtools.generator.version>0.6.1-1-SNAPSHOT</yangtools.generator.version>
+        <yangtools.binding.version>0.6.1-1-SNAPSHOT</yangtools.binding.version>
         <jmxGeneratorPath>${project.build.directory}/generated-sources/config</jmxGeneratorPath>
-        <sal-binding-api.version>1.1-SNAPSHOT</sal-binding-api.version>
+        <sal-binding-api.version>1.0-1-SNAPSHOT</sal-binding-api.version>
     </properties>
 
     <build>
@@ -65,7 +65,7 @@
                     <dependency>
                         <groupId>org.opendaylight.controller</groupId>
                         <artifactId>yang-jmx-generator-plugin</artifactId>
-                        <version>0.2.5-SNAPSHOT</version>
+                        <version>0.2.3-1-SNAPSHOT</version>
                     </dependency>
                     <dependency>
                         <groupId>org.opendaylight.yangtools</groupId>
@@ -127,7 +127,7 @@
         <dependency>
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>config-api</artifactId>
-            <version>0.2.5-SNAPSHOT</version>
+            <version>0.2.3-1-SNAPSHOT</version>
         </dependency>
 
         <dependency>
