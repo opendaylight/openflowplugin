@@ -65,7 +65,7 @@
                 <configuration>
                     <instructions>
                         <Bundle-Activator>org.opendaylight.openflowplugin.droptest.DropTestActivator</Bundle-Activator>
-                        <Embed-Dependency>commons-lang</Embed-Dependency>&gt;
+                        <Embed-Dependency>commons-lang</Embed-Dependency>
                         <Bundle-Name>${project.groupId}.${project.artifactId}</Bundle-Name>
                     </instructions>
                     <manifestLocation>${project.basedir}/META-INF</manifestLocation>
