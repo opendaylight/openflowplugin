@@ -72,7 +72,7 @@
                 <configuration>
                     <instructions>
                         <Bundle-Activator>org.opendaylight.openflowplugin.droptest.DropTestActivator</Bundle-Activator>
-                        <Embed-Dependency>commons-lang</Embed-Dependency>&gt;
+                        <Embed-Dependency>commons-lang</Embed-Dependency>;
                         <Bundle-Name>${project.groupId}.${project.artifactId}</Bundle-Name>
                     </instructions>
                     <manifestLocation>${project.basedir}/META-INF</manifestLocation>
@@ -81,31 +81,6 @@
             <plugin>
                 <groupId>org.eclipse.xtend</groupId>
                 <artifactId>xtend-maven-plugin</artifactId>
-                <version>${xtend.version}</version>
-                <executions>
-                  <execution>
-                      <goals>
-                          <goal>compile</goal>
-                      </goals>
-                      <configuration>
-                          <outputDirectory>${basedir}/src/main/xtend-gen</outputDirectory>
-                      </configuration>
-                  </execution>
-              </executions>
-            </plugin>
-            <plugin>
-                <artifactId>maven-clean-plugin</artifactId>
-                <version>${maven.clean.plugin.version}</version>
-                <configuration>
-                    <filesets>
-                        <fileset>
-                            <directory>${basedir}/src/main/xtend-gen</directory>
-                            <includes>
-                                <include>**</include>
-                            </includes>
-                        </fileset>
-                    </filesets>
-                </configuration>
             </plugin>
         </plugins>
     </build>
