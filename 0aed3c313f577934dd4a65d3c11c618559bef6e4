@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa82b9bf_4b5dede8",
+        "filename": "drop-test/src/main/java/org/opendaylight/openflowplugin/droptest/DropTestActivator.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2014-04-09T13:14:03Z",
+      "side": 1,
+      "message": "Simple manual version:\nprivate static DropTestProvider provider \u003d new DropTestProvider();\nCould you replace this and similar occurrences?",
+      "revId": "0aed3c313f577934dd4a65d3c11c618559bef6e4",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_eb716178",
+        "filename": "drop-test/src/main/java/org/opendaylight/openflowplugin/droptest/DropTestActivator.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2014-04-09T13:14:03Z",
+      "side": 1,
+      "message": "Simple manual version: private static DropTestRpcProvider rpcProvider \u003d  new DropTestRpcProvider(); Could you replace this and similar occurrences?",
+      "revId": "0aed3c313f577934dd4a65d3c11c618559bef6e4",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_8b63f5b0",
+        "filename": "drop-test/src/main/java/org/opendaylight/openflowplugin/droptest/DropTestCommiter.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2014-04-09T13:14:03Z",
+      "side": 1,
+      "message": "This is generated code, but manual version is simple:\nprivate final static Logger LOG \u003d LoggerFactory.getLogger(DropTestProvider.class);\t\n\nCould you use the simple version and replace it on all other places?",
+      "revId": "0aed3c313f577934dd4a65d3c11c618559bef6e4",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_2b58a9f9",
+        "filename": "drop-test/src/main/java/org/opendaylight/openflowplugin/droptest/DropTestCommiter.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2014-04-09T13:14:03Z",
+      "side": 1,
+      "message": "here we lost all comments, could you restore them?",
+      "revId": "0aed3c313f577934dd4a65d3c11c618559bef6e4",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
