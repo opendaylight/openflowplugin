@@ -13,7 +13,6 @@ import java.util.List;
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
-import org.eclipse.xtext.xbase.lib.Conversions;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCaseBuilder;
@@ -120,7 +119,7 @@ public class OutputTestCommandProvider implements CommandProvider {
             NodeConnectorRef nEngressConRef = _nodeConnectorRef_2;
 
             final ArrayList<Byte> _converted_list = list;
-            byte[] _primitive = ArrayUtils.toPrimitive(((Byte[]) Conversions.unwrapArray(_converted_list, Byte.class)));
+            byte[] _primitive = ArrayUtils.toPrimitive(_converted_list.toArray(new Byte[0]));
 
             List<Action> actionList = new ArrayList<Action>();
             ActionBuilder ab = new ActionBuilder();

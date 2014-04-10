@@ -13,9 +13,7 @@
         <developerConnection>scm:git:ssh://git.opendaylight.org:29418/openflowplugin.git</developerConnection>
     </scm>
     <properties>
-        <xtend.version>2.4.3</xtend.version>
         <bundle.plugin.version>2.4.0</bundle.plugin.version>
-        <maven.clean.plugin.version>2.5</maven.clean.plugin.version>
     </properties>
     <dependencies>
         <dependency>
@@ -41,11 +39,6 @@
         <dependency>
             <groupId>org.opendaylight.controller.model</groupId>
             <artifactId>model-inventory</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.xtend</groupId>
-            <artifactId>org.eclipse.xtend.lib</artifactId>
-            <version>${xtend.version}</version>
         </dependency>
          <dependency>
 	        <groupId>equinoxSDK381</groupId>
@@ -76,35 +69,6 @@
                         <Bundle-Name>${project.groupId}.${project.artifactId}</Bundle-Name>
                     </instructions>
                     <manifestLocation>${project.basedir}/META-INF</manifestLocation>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.eclipse.xtend</groupId>
-                <artifactId>xtend-maven-plugin</artifactId>
-                <version>${xtend.version}</version>
-                <executions>
-                  <execution>
-                      <goals>
-                          <goal>compile</goal>
-                      </goals>
-                      <configuration>
-                          <outputDirectory>${basedir}/src/main/xtend-gen</outputDirectory>
-                      </configuration>
-                  </execution>
-              </executions>
-            </plugin>
-            <plugin>
-                <artifactId>maven-clean-plugin</artifactId>
-                <version>${maven.clean.plugin.version}</version>
-                <configuration>
-                    <filesets>
-                        <fileset>
-                            <directory>${basedir}/src/main/xtend-gen</directory>
-                            <includes>
-                                <include>**</include>
-                            </includes>
-                        </fileset>
-                    </filesets>
                 </configuration>
             </plugin>
         </plugins>
