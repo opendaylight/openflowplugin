@@ -48,11 +48,13 @@ public class FlowEventListenerLoggingImpl implements SalFlowListener {
 
     @Override
     public void onNodeErrorNotification(NodeErrorNotification notification) {
-        LOG.error("Error notification  flow Xid........................."
+    //commenting as we have a NodeErrorListener
+    /*    LOG.error("Error notification  flow Xid........................."
                 + notification.getTransactionId().getValue());
         LOG.debug("notification Begin-Transaction:"
                 + notification.getTransactionUri()
                 + "-----------------------------------------------------------------------------------");
+    */
     }
 
     @Override

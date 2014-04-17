@@ -8,12 +8,11 @@
 package org.opendaylight.openflowplugin.openflow.md.core.translator;
 
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.errors.rev131116.ErrorType;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.NodeErrorNotificationBuilder;
 
 public class ErrorV10Translator extends AbstractErrorTranslator {
 
     @Override
-    public void decodeErrorType(NodeErrorNotificationBuilder nodeErrBuilder, int typeArg) {
+    public ErrorType decodeErrorType(int typeArg) {
         ErrorType type = ErrorType.forValue(typeArg);
         switch (type.ordinal()) {
             case 3:
@@ -26,7 +25,7 @@ public class ErrorV10Translator extends AbstractErrorTranslator {
                 type = ErrorType.QueueOpFailed;
                 break;
         }
-        nodeErrBuilder.setType(type);
+        return type;
     }
 
 }
