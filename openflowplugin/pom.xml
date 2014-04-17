@@ -5,19 +5,12 @@
         <groupId>org.opendaylight.openflowplugin</groupId>
         <artifactId>openflowplugin-parent</artifactId>
         <version>0.0.3-SNAPSHOT</version>
-        <relativePath>../</relativePath>
+        <relativePath>../parent/pom.xml</relativePath>
     </parent>
 
     <artifactId>openflowplugin</artifactId>
     <packaging>bundle</packaging>
 
-    <properties>
-        <yangtools.version>0.6.2-SNAPSHOT</yangtools.version>
-        <yangtools.generator.version>0.6.2-SNAPSHOT</yangtools.generator.version>
-        <yangtools.binding.version>0.6.2-SNAPSHOT</yangtools.binding.version>
-        <jmxGeneratorPath>${project.build.directory}/generated-sources/config</jmxGeneratorPath>
-        <sal-binding-api.version>1.1-SNAPSHOT</sal-binding-api.version>
-    </properties>
 
     <build>
         <plugins>
@@ -65,14 +58,19 @@
                     <dependency>
                         <groupId>org.opendaylight.controller</groupId>
                         <artifactId>yang-jmx-generator-plugin</artifactId>
-                        <version>0.2.5-SNAPSHOT</version>
+                        <version>${yang.jmx.generator.plugin.version}</version>
                     </dependency>
                     <dependency>
                         <groupId>org.opendaylight.yangtools</groupId>
                         <artifactId>maven-sal-api-gen-plugin</artifactId>
-                        <version>${yangtools.version}</version>
-                        <type>jar</type>
+                        <version>${sal-binding-api.version}</version>
                     </dependency>
+                  <dependency>
+                        <groupId>equinoxSDK381</groupId>
+                        <artifactId>org.eclipse.osgi</artifactId>
+                        <version>${equinoxSDK381.version}</version>
+                  </dependency>
+        
                 </dependencies>
             </plugin>
         </plugins>
@@ -109,7 +107,6 @@
         <dependency>
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>sal-binding-broker-impl</artifactId>
-            <version>${sal-binding-api.version}</version>
         </dependency>
 
         <dependency>
@@ -127,7 +124,6 @@
         <dependency>
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>config-api</artifactId>
-            <version>0.2.5-SNAPSHOT</version>
         </dependency>
 
         <dependency>
@@ -137,12 +133,15 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.1</version>
         </dependency>
         <dependency>
             <groupId>equinoxSDK381</groupId>
             <artifactId>org.eclipse.osgi</artifactId>
         </dependency>
+      <!--  <dependency>
+                <groupId>org.osgi</groupId>
+                <artifactId>org.osgi.core</artifactId>
+        </dependency> -->
 
 
         <dependency>

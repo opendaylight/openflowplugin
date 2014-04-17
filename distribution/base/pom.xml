@@ -8,7 +8,7 @@ see https://git.opendaylight.org/gerrit/#/c/390/
     <groupId>org.opendaylight.openflowplugin</groupId>
     <artifactId>openflowplugin-parent</artifactId>
     <version>0.0.3-SNAPSHOT</version>
-    <relativePath>../../</relativePath>
+    <relativePath>../../parent</relativePath>
   </parent>
 
   <artifactId>distributions-openflowplugin-base</artifactId>
