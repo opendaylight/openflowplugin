@@ -7,22 +7,20 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.translator;
 
-import java.math.BigInteger;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.openflow.md.core.session.TransactionKey;
 import org.opendaylight.openflowplugin.openflow.md.util.ByteUtil;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.errors.rev131116.ErrorType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.NodeErrorNotification;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.NodeErrorNotificationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.NodeFlow;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.node.error.notification.object.reference.FlowRefBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.node.error.notification.object.reference.GroupRefBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.node.error.notification.object.reference.MeterRefBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.node.error.reference.ObjectReference;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.node.error.reference.object.reference.FlowRefBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.node.error.reference.object.reference.GroupRefBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.node.error.reference.object.reference.MeterRefBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev131103.TransactionId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev131103.TransactionMetadata;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.NodeGroup;
@@ -32,6 +30,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public abstract class AbstractErrorTranslator implements IMDMessageTranslator<OfHeader, List<DataObject>> {
 
@@ -52,6 +56,7 @@ public abstract class AbstractErrorTranslator implements IMDMessageTranslator<Of
                         hexData);
 
             }
+
             // create a Node Error Notification event builder
             NodeErrorNotificationBuilder nodeErrBuilder = new NodeErrorNotificationBuilder();
 
@@ -61,31 +66,19 @@ public abstract class AbstractErrorTranslator implements IMDMessageTranslator<Of
             nodeErrBuilder.setTransactionId(new TransactionId(BigInteger.valueOf(message.getXid())));
 
             Object object = sc.getbulkTransactionCache().getIfPresent(new TransactionKey(message.getXid()));
-            if (object != null) {
-                nodeErrBuilder.setTransactionUri(((TransactionMetadata) object).getTransactionUri());
-                FlowRefBuilder flowRef = new FlowRefBuilder();
-                GroupRefBuilder groupRef = new GroupRefBuilder();
-                MeterRefBuilder meterRef = new MeterRefBuilder();
-                if (object instanceof NodeFlow) {
-                    FlowEntityData flowEntry = new FlowEntityData();
-                    flowRef = flowEntry.getBuilder(object);
-                    nodeErrBuilder.setObjectReference(flowRef.build());
-                } else if (object instanceof NodeGroup) {
-                    GroupEntityData groupEntry = new GroupEntityData();
-                    groupRef = groupEntry.getBuilder(object);
-                    nodeErrBuilder.setObjectReference(groupRef.build());
 
-                } else if (object instanceof NodeMeter) {
-                    MeterEntityData meterEntry = new MeterEntityData();
-                    meterRef = meterEntry.getBuilder(object);
-                    nodeErrBuilder.setObjectReference(meterRef.build());
-
-                }
-
+            Uri uri = null;
+            ObjectReference objRef = null;
+            if(object != null) {
+                uri = ((TransactionMetadata) object).getTransactionUri();
+                objRef = getReference(object);
             }
 
-            decodeErrorType(nodeErrBuilder, message.getType());
+            nodeErrBuilder.setTransactionUri(uri);
+            nodeErrBuilder.setObjectReference(objRef);
 
+            ErrorType type = decodeErrorType(message.getType());
+            nodeErrBuilder.setType(type);
             nodeErrBuilder.setCode(message.getCode());
 
             if (message.getData() != null) {
@@ -96,6 +89,9 @@ public abstract class AbstractErrorTranslator implements IMDMessageTranslator<Of
 
             NodeErrorNotification nodeErrorEvent = nodeErrBuilder.build();
             list.add(nodeErrorEvent);
+
+            list.addAll(getGranularNodeErrors(message, type, uri, objRef));
+
             return list;
         } else {
             LOG.error("Message is not of Error Message ");
@@ -103,10 +99,34 @@ public abstract class AbstractErrorTranslator implements IMDMessageTranslator<Of
         }
     }
 
+    private ObjectReference getReference(Object object) {
+        if (object instanceof NodeFlow) {
+            FlowEntityData flowEntry = new FlowEntityData();
+            FlowRefBuilder flowRef = flowEntry.getBuilder(object);
+            return flowRef.build();
+
+        } else if (object instanceof NodeGroup) {
+            GroupEntityData groupEntry = new GroupEntityData();
+            GroupRefBuilder groupRef = groupEntry.getBuilder(object);
+            return groupRef.build();
+
+        } else if (object instanceof NodeMeter) {
+            MeterEntityData meterEntry = new MeterEntityData();
+            MeterRefBuilder meterRef = meterEntry.getBuilder(object);
+            return meterRef.build();
+
+        }
+        return null;
+    }
+
+    protected List<DataObject> getGranularNodeErrors(ErrorMessage message, ErrorType errorType, Uri uri, ObjectReference objRef){
+        // this is the impl for V1.0
+        return new ArrayList<>();
+    }
+
     /**
-     * @param nodeErrBuilder translated error message
      * @param type error type in source message
      */
-    public abstract void decodeErrorType(NodeErrorNotificationBuilder nodeErrBuilder, int type);
+    public abstract ErrorType decodeErrorType(int type);
 
 }

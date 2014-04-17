@@ -166,6 +166,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.UdpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.protocol.match.fields.PbbBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanIdBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.node.error.service.rev140410.NodeErrorListener;
 import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -186,8 +187,10 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
     private final String originalFlowName = "Foo";
     private final String updatedFlowName = "Bar";
     private final SalFlowListener flowEventListener = new FlowEventListenerLoggingImpl();
+    private final NodeErrorListener nodeErrorListener = new NodeErrorListenerLoggingImpl();
     private static NotificationService notificationService;
     private Registration<org.opendaylight.yangtools.yang.binding.NotificationListener> listener1Reg;
+    private Registration<org.opendaylight.yangtools.yang.binding.NotificationListener> listener2Reg;
 
     public OpenflowpluginTestCommandProvider(BundleContext ctx) {
         this.ctx = ctx;
@@ -198,6 +201,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         notificationService = session.getSALService(NotificationService.class);
         // For switch events
         listener1Reg = notificationService.registerNotificationListener(flowEventListener);
+        listener2Reg = notificationService.registerNotificationListener(nodeErrorListener);
         dataBrokerService = session.getSALService(DataBrokerService.class);
         ctx.registerService(CommandProvider.class.getName(), this, null);
         createTestFlow(createTestNode(null), null, null);

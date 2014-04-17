@@ -101,6 +101,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6MatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.node.error.service.rev140410.NodeErrorListener;
 import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -121,7 +122,9 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
     private FlowBuilder testFlow;
     private final String originalFlowName = "Foo";
     private final SalFlowListener flowEventListener = new FlowEventListenerLoggingImpl();
+    private final NodeErrorListener nodeErrorListener = new NodeErrorListenerLoggingImpl();
     private Registration<org.opendaylight.yangtools.yang.binding.NotificationListener> listener1Reg;
+    private Registration<org.opendaylight.yangtools.yang.binding.NotificationListener> listener2Reg;
     private Node testNode12;
     private final String originalGroupName = "Foo";
     private static NotificationService notificationService;
@@ -134,6 +137,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         pc = session;
         notificationService = session.getSALService(NotificationService.class);
         listener1Reg = notificationService.registerNotificationListener(flowEventListener);
+        listener2Reg = notificationService.registerNotificationListener(nodeErrorListener);
         dataBrokerService = session.getSALService(DataBrokerService.class);
         ctx.registerService(CommandProvider.class.getName(), this, null);
         createTestFlow(createTestNode(null), null, null);

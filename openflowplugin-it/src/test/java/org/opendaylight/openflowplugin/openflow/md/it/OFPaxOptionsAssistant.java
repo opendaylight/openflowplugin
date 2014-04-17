@@ -34,6 +34,8 @@ public abstract class OFPaxOptionsAssistant {
     /** controller.model package */
     public static final String CONTROLLER_MODEL = "org.opendaylight.controller.model";
 
+    public static final String YANGTOOLS = "org.opendaylight.yangtools";
+
     
     /**
      * Works only if property -DinspectOsgi is used
@@ -94,7 +96,9 @@ public abstract class OFPaxOptionsAssistant {
     public static Option baseSalBundles() {
         return new DefaultCompositeOption(
                 mavenBundle("org.apache.felix", "org.apache.felix.dependencymanager").versionAsInProject(),
-                mavenBundle(CONTROLLER, "sal").versionAsInProject());
+                mavenBundle(CONTROLLER, "sal").versionAsInProject(),
+                mavenBundle(YANGTOOLS + ".thirdparty", "antlr4-runtime-osgi-nohead").versionAsInProject());
+
     }
 
 }
