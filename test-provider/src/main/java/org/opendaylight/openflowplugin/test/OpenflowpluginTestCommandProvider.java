@@ -116,6 +116,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowListener;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.OutputPortValues;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.InstructionsBuilder;
@@ -658,8 +659,8 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         // flow.setBufferId(new Long(12));
         BigInteger value = new BigInteger("10", 10);
         // BigInteger outputPort = new BigInteger("65535", 10);
-        flow.setCookie(value);
-        flow.setCookieMask(value);
+        flow.setCookie(new FlowCookie(value));
+        flow.setCookieMask(new FlowCookie(value));
         flow.setHardTimeout(0);
         flow.setIdleTimeout(0);
         flow.setInstallHw(false);

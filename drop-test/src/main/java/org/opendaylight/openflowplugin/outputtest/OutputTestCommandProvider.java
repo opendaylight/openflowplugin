@@ -133,7 +133,7 @@ public class OutputTestCommandProvider implements CommandProvider {
             ab.setKey(new ActionKey(0));
             actionList.add(ab.build());
 
-            packet_out.setCookie(null);
+            packet_out.setConnectionCookie(null);
             packet_out.setAction(actionList);
             packet_out.setPayload(_primitive);
             packet_out.setNode(ref);

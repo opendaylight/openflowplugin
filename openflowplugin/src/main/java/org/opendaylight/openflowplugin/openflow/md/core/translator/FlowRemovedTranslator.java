@@ -30,6 +30,7 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SwitchFlowRemovedBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.RemovedReasonFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.mod.removed.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.mod.removed.MatchBuilder;
@@ -148,7 +149,7 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
 
             SwitchFlowRemovedBuilder salFlowRemoved = new SwitchFlowRemovedBuilder();
 
-            salFlowRemoved.setCookie(ofFlow.getCookie());
+            salFlowRemoved.setCookie(new FlowCookie(ofFlow.getCookie()));
             salFlowRemoved.setPriority(ofFlow.getPriority());
 
             if (ofFlow.getTableId() != null) {
