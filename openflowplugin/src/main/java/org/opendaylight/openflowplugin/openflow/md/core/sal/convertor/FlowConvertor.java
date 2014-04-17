@@ -93,7 +93,7 @@ public class FlowConvertor {
     public static FlowModInputBuilder toFlowModInput(Flow flow, short version,BigInteger datapathid) {
         FlowModInputBuilder flowMod = new FlowModInputBuilder();
         if (flow.getCookie() != null) {
-            flowMod.setCookie(flow.getCookie());
+            flowMod.setCookie(flow.getCookie().getValue());
         } else {
             flowMod.setCookie(DEFAULT_COOKIE);
         }

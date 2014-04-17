@@ -30,6 +30,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.InstructionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
@@ -88,7 +89,7 @@ public class OutputTestUtil {
 
         tPackBuilder.setNode(ref);
         // TODO VD P2 missing cookies in Test
-        tPackBuilder.setCookie(null);
+        tPackBuilder.setConnectionCookie(null);
         tPackBuilder.setEgress(nEgressConfRef);
         tPackBuilder.setIngress(nIngressConRef);
         return tPackBuilder.build();
@@ -164,8 +165,8 @@ public class OutputTestUtil {
         fBuild.setBarrier(false);
         // flow.setBufferId(new Long(12));
         BigInteger value = new BigInteger("10", 10);
-        fBuild.setCookie(value);
-        fBuild.setCookieMask(value);
+        fBuild.setCookie(new FlowCookie(value));
+        fBuild.setCookieMask(new FlowCookie(value));
         fBuild.setHardTimeout(0);
         fBuild.setIdleTimeout(0);
         fBuild.setInstallHw(false);

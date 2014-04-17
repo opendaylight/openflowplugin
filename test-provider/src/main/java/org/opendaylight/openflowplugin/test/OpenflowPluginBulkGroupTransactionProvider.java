@@ -53,6 +53,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.Fl
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowListener;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.InstructionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
@@ -143,7 +144,7 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
 
     private static NodeRef createNodeRef(String string) {
         NodeKey key = new NodeKey(new NodeId(string));
-        InstanceIdentifier<Node> path = InstanceIdentifier.builder().node(Nodes.class).node(Node.class, key)
+        InstanceIdentifier<Node> path = InstanceIdentifier.builder(Nodes.class).child(Node.class, key)
                 .toInstance();
 
         return new NodeRef(path);
@@ -543,8 +544,8 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
         // flow.setBufferId(new Long(12));
         BigInteger value = new BigInteger("10", 10);
         BigInteger outputPort = new BigInteger("4294967295", 10);
-        flow.setCookie(value);
-        flow.setCookieMask(value);
+        flow.setCookie(new FlowCookie(value));
+        flow.setCookieMask(new FlowCookie(value));
         flow.setHardTimeout(0);
         flow.setIdleTimeout(0);
         flow.setInstallHw(false);

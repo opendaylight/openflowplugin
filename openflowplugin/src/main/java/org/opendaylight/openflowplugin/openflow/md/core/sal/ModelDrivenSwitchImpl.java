@@ -558,7 +558,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 
     private FlowModInputBuilder toFlowModInputBuilder(Flow source) {
         FlowModInputBuilder target = new FlowModInputBuilder();
-        target.setCookie(source.getCookie());
+        target.setCookie(source.getCookie().getValue());
         target.setIdleTimeout(source.getIdleTimeout());
         target.setHardTimeout(source.getHardTimeout());
         target.setMatch(toMatch(source.getMatch()));
@@ -1448,12 +1448,12 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
             mprFlowRequestBuilder.setOutGroup(OFConstants.OFPG_ANY);
 
         if (arg0.getCookie() != null)
-            mprFlowRequestBuilder.setCookie(arg0.getCookie());
+            mprFlowRequestBuilder.setCookie(arg0.getCookie().getValue());
         else
             mprFlowRequestBuilder.setCookie(OFConstants.DEFAULT_COOKIE);
 
         if (arg0.getCookieMask() != null)
-            mprFlowRequestBuilder.setCookieMask(arg0.getCookieMask());
+            mprFlowRequestBuilder.setCookieMask(arg0.getCookieMask().getValue());
         else
             mprFlowRequestBuilder.setCookieMask(OFConstants.DEFAULT_COOKIE_MASK);
 
@@ -1556,8 +1556,8 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
                 this.getSessionContext().getFeatures().getDatapathId());
         // TODO: repeating code
         if (version == OFConstants.OFP_VERSION_1_3) {
-            mprAggregateRequestBuilder.setCookie(arg0.getCookie());
-            mprAggregateRequestBuilder.setCookieMask(arg0.getCookieMask());
+            mprAggregateRequestBuilder.setCookie(arg0.getCookie().getValue());
+            mprAggregateRequestBuilder.setCookieMask(arg0.getCookieMask().getValue());
             mprAggregateRequestBuilder.setOutGroup(arg0.getOutGroup());
         }
 

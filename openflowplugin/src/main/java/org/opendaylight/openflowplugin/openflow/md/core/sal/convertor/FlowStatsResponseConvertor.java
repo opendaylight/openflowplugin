@@ -16,6 +16,7 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.Counter64;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.flow.and.statistics.map.list.FlowAndStatisticsMapList;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.flow.and.statistics.map.list.FlowAndStatisticsMapListBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.statistics.types.rev130925.duration.DurationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.flow._case.multipart.reply.flow.FlowStats;
@@ -54,7 +55,7 @@ public class FlowStatsResponseConvertor {
     public FlowAndStatisticsMapList toSALFlowStats(FlowStats flowStats,BigInteger datapathid){
         FlowAndStatisticsMapListBuilder salFlowStatsBuilder = new FlowAndStatisticsMapListBuilder();
         salFlowStatsBuilder.setByteCount(new Counter64(flowStats.getByteCount()));
-        salFlowStatsBuilder.setCookie(flowStats.getCookie());
+        salFlowStatsBuilder.setCookie(new FlowCookie(flowStats.getCookie()));
 
         DurationBuilder time = new DurationBuilder();
         time.setSecond(new Counter32(flowStats.getDurationSec()));

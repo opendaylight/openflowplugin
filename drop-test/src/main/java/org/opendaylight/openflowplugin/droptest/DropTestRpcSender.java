@@ -16,6 +16,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.InstructionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
@@ -133,8 +134,8 @@ public class DropTestRpcSender implements PacketProcessingListener {
         fb.setPriority(4);
         fb.setBufferId(0L);
         final BigInteger value = new BigInteger("10", 10);
-        fb.setCookie(value);
-        fb.setCookieMask(value);
+        fb.setCookie(new FlowCookie(value));
+        fb.setCookieMask(new FlowCookie(value));
         fb.setTableId(Short.valueOf(((short) 0)));
         fb.setHardTimeout(300);
         fb.setIdleTimeout(240);

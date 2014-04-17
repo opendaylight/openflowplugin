@@ -36,7 +36,7 @@ public class InventoryDataServiceUtil {
      * Get an InstanceIdentifier for the Nodes class that is the root of the
      * inventory tree We use this alot, so its worth keeping around
      */
-    private static InstanceIdentifier<Nodes> nodesIdentifier = InstanceIdentifier.builder().node(Nodes.class)
+    private static InstanceIdentifier<Nodes> nodesIdentifier = InstanceIdentifier.builder(Nodes.class)
             .toInstance();
 
     public static Nodes checkForNodes() {
