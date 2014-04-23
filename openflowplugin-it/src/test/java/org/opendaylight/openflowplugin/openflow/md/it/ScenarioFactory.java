@@ -11,6 +11,7 @@ import java.util.Stack;
 
 import org.opendaylight.openflowjava.protocol.impl.clients.ClientEvent;
 import org.opendaylight.openflowjava.protocol.impl.clients.SendEvent;
+import org.opendaylight.openflowjava.protocol.impl.clients.SleepEvent;
 import org.opendaylight.openflowjava.protocol.impl.clients.WaitForMessageEvent;
 import org.opendaylight.openflowjava.protocol.impl.util.ByteBufUtils;
 
@@ -52,7 +53,15 @@ public abstract class ScenarioFactory {
                 + "00 01 02 03 01 "
                 + Integer.toHexString(auxId)
                 + " 00 00 00 01 02 03 00 01 02 03")));
+        addSleep(stack);
         return stack;
+    }
+
+    /**
+     * @param stack
+     */
+    private static void addSleep(Stack<ClientEvent> stack) {
+        stack.add(0, new SleepEvent(2000));
     }
 
     /**
@@ -73,6 +82,7 @@ public abstract class ScenarioFactory {
                 + "00 01 02 03 01 "
                 + Integer.toHexString(auxId)
                 + " 00 00 00 01 02 03 00 01 02 03")));
+        addSleep(stack);
         return stack;
     }
 }
