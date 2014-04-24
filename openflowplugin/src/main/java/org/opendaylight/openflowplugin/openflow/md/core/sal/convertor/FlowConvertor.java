@@ -99,7 +99,7 @@ public class FlowConvertor {
         }
 
         if (flow.getCookieMask() != null) {
-            flowMod.setCookieMask(new BigInteger(flow.getCookieMask().toString()));
+            flowMod.setCookieMask(flow.getCookieMask().getValue());
         } else {
             flowMod.setCookieMask(DEFAULT_COOKIE_MASK);
         }
