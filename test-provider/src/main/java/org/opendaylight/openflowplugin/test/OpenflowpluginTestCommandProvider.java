@@ -151,6 +151,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ipv6.match.fields.Ipv6ExtHeaderBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ipv6.match.fields.Ipv6LabelBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.FoobarBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Icmpv4MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Icmpv6MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.IpMatchBuilder;
@@ -159,6 +160,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.TunnelBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.ArpMatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.BarMatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.FooMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6MatchBuilder;
@@ -652,6 +655,26 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
             flow.setMatch(createToSMatch().build());
             flow.setInstructions(createOutputInstructions().build());
             break;
+
+       // NXMs
+        case "f83":
+            id += 83;
+            flow.setMatch(createInphyportMatch(nodeBuilder.getId()).build());
+            flow.setInstructions(createFooInstructions().build());
+            break;
+        // NXMs
+        case "f84":
+            id += 84;
+            flow.setMatch(createInphyportMatch(nodeBuilder.getId()).build());
+            flow.setInstructions(createBarDstInstruction().build());
+            break;
+        // NXMs
+//        case "f85":
+//            id += 85;
+//            flow.setMatch(createInphyportMatch(nodeBuilder.getId()).build());
+//            flow.setInstructions(createFoobarInstructions().build());
+//            break;
+
         default:
             LOG.warn("flow type not understood: {}", flowType);
         }
@@ -711,6 +734,117 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         return table;
 
+    }
+
+
+
+    private static InstructionsBuilder createFooInstructions() {
+
+        List<Action> actionList = new ArrayList<Action>();
+        ActionBuilder ab = new ActionBuilder();
+
+        SetFieldBuilder setFieldBuilder = new SetFieldBuilder();
+        Ipv4Prefix dstIp = new Ipv4Prefix("200.71.9.52");
+
+//        FooMatchBuilder fooMatchBuilder = new FooMatchBuilder();
+//        fooMatchBuilder.setFooDestination(dstIp);
+
+        FooMatchBuilder fooMatchBuilder = new FooMatchBuilder();
+        fooMatchBuilder.setFooDestination(dstIp);
+
+        setFieldBuilder.setLayer3Match(fooMatchBuilder.build());
+
+        ab.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder.build()).build());
+        ab.setKey(new ActionKey(0));
+        actionList.add(ab.build());
+
+        ApplyActionsBuilder aab = new ApplyActionsBuilder();
+        aab.setAction(actionList);
+
+        InstructionBuilder ib = new InstructionBuilder();
+        ib.setKey(new InstructionKey(0));
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
+
+        InstructionsBuilder isb = new InstructionsBuilder();
+        List<Instruction> instructions = new ArrayList<Instruction>();
+        instructions.add(ib.build());
+        isb.setInstruction(instructions);
+        return isb;
+    }
+
+    private static InstructionsBuilder createBarDstInstruction() {
+
+        List<Action> actionList = new ArrayList<Action>();
+        ActionBuilder ab = new ActionBuilder();
+
+        SetFieldBuilder setFieldBuilder = new SetFieldBuilder();
+
+        // setting the values of ARP
+
+        Ipv4Prefix dstiparp = new Ipv4Prefix("200.71.9.52");
+
+        // create ARP match action
+        BarMatchBuilder barMatchBuilder = new BarMatchBuilder();
+
+        barMatchBuilder.setBarTargetTransportAddress(dstiparp);
+        setFieldBuilder.setLayer3Match(barMatchBuilder.build());
+        ab.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder.build()).build());
+        ab.setKey(new ActionKey(0));
+        actionList.add(ab.build());
+
+        setFieldBuilder.setLayer3Match(barMatchBuilder.build());
+
+        ab.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder.build()).build());
+        ab.setKey(new ActionKey(1));
+        actionList.add(ab.build());
+
+
+        setFieldBuilder.setLayer3Match(barMatchBuilder.build());
+        ab.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder.build()).build());
+        ab.setKey(new ActionKey(4));
+        actionList.add(ab.build());
+
+        ApplyActionsBuilder aab = new ApplyActionsBuilder();
+        aab.setAction(actionList);
+
+        InstructionBuilder ib = new InstructionBuilder();
+        ib.setKey(new InstructionKey(0));
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
+
+        // Put our Instruction in a list of Instructions
+        InstructionsBuilder isb = new InstructionsBuilder();
+        List<Instruction> instructions = new ArrayList<Instruction>();
+        instructions.add(ib.build());
+        isb.setInstruction(instructions);
+        return isb;
+    }
+
+
+    private static InstructionsBuilder createFoobarInstructions() {
+
+        List<Action> actionList = new ArrayList<Action>();
+        ActionBuilder ab = new ActionBuilder();
+        SetFieldBuilder setFieldBuilder = new SetFieldBuilder();
+        // Tunnel
+        FoobarBuilder foobarBuilder = new FoobarBuilder();
+        foobarBuilder.setFoobarId(BigInteger.valueOf(10668));
+        setFieldBuilder.setFoobar(foobarBuilder.build());
+        ab.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder.build()).build());
+        actionList.add(ab.build());
+
+        ApplyActionsBuilder aab = new ApplyActionsBuilder();
+        aab.setAction(actionList);
+
+        InstructionBuilder ib = new InstructionBuilder();
+        ib.setKey(new InstructionKey(0));
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
+
+        // Put our Instruction in a list of Instructions
+        InstructionsBuilder isb = new InstructionsBuilder();
+        List<Instruction> instructions = new ArrayList<Instruction>();
+        instructions.add(ib.build());
+        isb.setInstruction(instructions);
+        return isb;
     }
 
     /**
@@ -2249,6 +2383,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         actionList.add(ab.build());
 
         setFieldBuilder1.setLayer3Match(arpmatch1.build());
+
         ab1.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder1.build()).build());
         ab1.setKey(new ActionKey(1));
         actionList.add(ab1.build());

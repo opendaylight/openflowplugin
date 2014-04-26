@@ -55,9 +55,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.ArpS
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.ArpSpa;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.ArpTha;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.ArpTpa;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.BarDst;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.BarSrc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.EthDst;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.EthSrc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.EthType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Foo;
+//import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.FoobarId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Icmpv4Code;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Icmpv4Type;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Icmpv6Code;
@@ -539,9 +543,24 @@ public class TableFeaturesConvertor {
             } else if (currMatchType
                     .equals(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.VlanVid.class)) {
                 setMatchEntry(matchEntryBuilder, VlanVid.class, currMatch.isHasMask());
+            } else if (currMatchType
+                .equals(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Foo.class)) {
+                setMatchEntry(matchEntryBuilder, Foo.class, currMatch.isHasMask());
+
+            // NXMs
+//            } else if (currMatchType
+//                .equals(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.FoobarId.class)) {
+//                setMatchEntry(matchEntryBuilder, FoobarId.class, currMatch.isHasMask());
+            } else if (currMatchType
+                .equals(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.BarDst.class)) {
+                setMatchEntry(matchEntryBuilder, BarDst.class, currMatch.isHasMask());
+            } else if (currMatchType
+                .equals(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.BarSrc.class)) {
+                setMatchEntry(matchEntryBuilder, BarSrc.class, currMatch.isHasMask());
             }
             matchEntriesList.add(matchEntryBuilder.build());
         }
+
         OxmRelatedTableFeaturePropertyBuilder propBuilder = new OxmRelatedTableFeaturePropertyBuilder();
         propBuilder.setMatchEntries(matchEntriesList);
         builder.setType(type);

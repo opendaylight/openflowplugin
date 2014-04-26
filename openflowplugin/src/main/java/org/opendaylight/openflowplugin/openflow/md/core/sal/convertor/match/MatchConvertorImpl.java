@@ -27,6 +27,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.field._case.SetFieldBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
+
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.arp.match.fields.ArpSourceHardwareAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.arp.match.fields.ArpSourceHardwareAddressBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.arp.match.fields.ArpTargetHardwareAddress;
@@ -43,6 +44,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ipv6.match.fields.Ipv6LabelBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.FoobarBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Icmpv4Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Icmpv4MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Icmpv6Match;
@@ -59,6 +61,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.ArpMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.ArpMatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.BarMatch;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.BarMatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.FooMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6Match;
@@ -130,9 +135,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.ArpS
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.ArpSpa;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.ArpTha;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.ArpTpa;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.BarDst;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.BarSrc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.EthDst;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.EthSrc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.EthType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Foo;
+//import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.FoobarId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Icmpv4Code;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Icmpv4Type;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Icmpv6Code;
@@ -340,6 +349,19 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
                     matchEntriesList.add(toOfMacAddress(ArpTha.class, arpTargetHardwareAddress.getAddress(),
                             arpTargetHardwareAddress.getMask()));
                 }
+
+                // NXMs
+            } else if (layer3Match instanceof BarMatch) {
+                BarMatch barMatch = (BarMatch) layer3Match;
+
+                if (barMatch.getBarSourceTransportAddress() != null) {
+                    matchEntriesList.add(toOfIpv4Prefix(ArpSpa.class, barMatch.getBarSourceTransportAddress()));
+                }
+
+                if (barMatch.getBarTargetTransportAddress() != null) {
+                    matchEntriesList.add(toOfIpv4Prefix(ArpTpa.class, barMatch.getBarTargetTransportAddress()));
+                }
+
             }
 
             else if (layer3Match instanceof Ipv6Match) {
@@ -398,6 +420,12 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
         if (tunnel != null) {
             matchEntriesList.add(toOfMetadata(TunnelId.class, tunnel.getTunnelId(), tunnel.getTunnelMask()));
         }
+
+//      //  NXMs
+//        org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Foobar foobar = match.getFoobar();
+//        if (foobar != null) {
+//            matchEntriesList.add(toOfMetadata(FoobarId.class, foobar.getFoobarId(), foobar.getFoobarMask()));
+//        }
 
         return matchEntriesList;
     }
@@ -540,6 +568,8 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
         Icmpv6MatchBuilder icmpv6MatchBuilder = new Icmpv6MatchBuilder();
         Ipv4MatchBuilder ipv4MatchBuilder = new Ipv4MatchBuilder();
         ArpMatchBuilder arpMatchBuilder = new ArpMatchBuilder();
+        FooMatchBuilder fooMatchBuilder = new FooMatchBuilder();
+        BarMatchBuilder barMatchBuilder = new BarMatchBuilder();
         Ipv6MatchBuilder ipv6MatchBuilder = new Ipv6MatchBuilder();
         ProtocolMatchFieldsBuilder protocolMatchFieldsBuilder = new ProtocolMatchFieldsBuilder();
 
@@ -880,13 +910,65 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
                     MaskMatchEntry maskMatchEntry = ofMatch.getAugmentation(MaskMatchEntry.class);
                     if (maskMatchEntry != null) {
                         tunnelBuilder.setTunnelMask(new BigInteger(OFConstants.SIGNUM_UNSIGNED, maskMatchEntry
-                                .getMask()));
+                            .getMask()));
                     }
                     matchBuilder.setTunnel(tunnelBuilder.build());
+                }
+
+                // NXMs
+//            } else if (ofMatch.getOxmMatchField().equals(FoobarId.class)) {
+//                FoobarBuilder foobarBuilder = new FoobarBuilder();
+//                MetadataMatchEntry metadataMatchEntry = ofMatch.getAugmentation(MetadataMatchEntry.class);
+//                if (metadataMatchEntry != null) {
+//                    foobarBuilder.setFoobarId(new BigInteger(1, metadataMatchEntry.getMetadata()));
+//                    MaskMatchEntry maskMatchEntry = ofMatch.getAugmentation(MaskMatchEntry.class);
+//                    if (maskMatchEntry != null) {
+//                        foobarBuilder.setFoobarMask(new BigInteger(OFConstants.SIGNUM_UNSIGNED, maskMatchEntry
+//                            .getMask()));
+//                    }
+//                    matchBuilder.setFoobar(foobarBuilder.build());
+//                }
+
+
+            // NXMs
+            else if (ofMatch.getOxmMatchField().equals(BarSrc.class)
+                || ofMatch.getOxmMatchField().equals(BarDst.class)) {
+                Ipv4AddressMatchEntry ipv4AddressMatchEntry = ofMatch.getAugmentation(Ipv4AddressMatchEntry.class);
+                if (ipv4AddressMatchEntry != null) {
+                    String ipv4PrefixStr = ipv4AddressMatchEntry.getIpv4Address().getValue();
+                    MaskMatchEntry maskMatchEntry = ofMatch.getAugmentation(MaskMatchEntry.class);
+                    if (maskMatchEntry != null) {
+                        ipv4PrefixStr += PREFIX_SEPARATOR + ByteBuffer.wrap(maskMatchEntry.getMask()).getInt();
+                    }
+                    if (ofMatch.getOxmMatchField().equals(BarSrc.class)) {
+                        barMatchBuilder.setBarSourceTransportAddress(new Ipv4Prefix(ipv4PrefixStr));
+                    }
+                    if (ofMatch.getOxmMatchField().equals(BarDst.class)) {
+                        barMatchBuilder.setBarTargetTransportAddress(new Ipv4Prefix(ipv4PrefixStr));
+                    }
+                    matchBuilder.setLayer3Match(barMatchBuilder.build());
+                }
+
+
+                    // NXMs
+                } else if (ofMatch.getOxmMatchField().equals(Foo.class)) {
+                    Ipv4AddressMatchEntry ipv4AddressMatchEntry = ofMatch.getAugmentation(Ipv4AddressMatchEntry.class);
+                    if (ipv4AddressMatchEntry != null) {
+                        String ipv4PrefixStr = ipv4AddressMatchEntry.getIpv4Address().getValue();
+                        MaskMatchEntry maskMatchEntry = ofMatch.getAugmentation(MaskMatchEntry.class);
+                        if (maskMatchEntry != null) {
+                            ipv4PrefixStr += PREFIX_SEPARATOR + ByteBuffer.wrap(maskMatchEntry.getMask()).getInt();
+                        }
+                        if (ofMatch.getOxmMatchField().equals(Foo.class)) {
+                            fooMatchBuilder.setFooDestination(new Ipv4Prefix(ipv4PrefixStr));
+                        }
+                        matchBuilder.setLayer3Match(fooMatchBuilder.build());
+                    }
                 }
             }
         }
         return matchBuilder.build();
+
     }
 
     private static MatchEntries toOfMplsPbb(Pbb pbb) {
