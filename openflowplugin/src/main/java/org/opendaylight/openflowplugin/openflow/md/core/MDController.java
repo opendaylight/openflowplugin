@@ -30,6 +30,8 @@ import org.opendaylight.openflowplugin.openflow.md.core.translator.PortStatusMes
 import org.opendaylight.openflowplugin.openflow.md.lldp.LLDPSpeakerPopListener;
 import org.opendaylight.openflowplugin.openflow.md.queue.MessageSpy;
 import org.opendaylight.openflowplugin.openflow.md.queue.PopListener;
+import org.opendaylight.openflowplugin.openflow.md.queue.QueueKeeperPool;
+import org.opendaylight.openflowplugin.openflow.md.queue.QueueKeeperPoolImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.NodeErrorNotification;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SwitchFlowRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.AggregateFlowStatisticsUpdate;
@@ -105,6 +107,7 @@ public class MDController implements IMDController, AutoCloseable {
     final private int OF13 = OFConstants.OFP_VERSION_1_3;
 
     private ErrorHandlerQueueImpl errorHandler;
+    private static QueueKeeperPool qkPool;
 
 
     /**
@@ -195,6 +198,9 @@ public class MDController implements IMDController, AutoCloseable {
         // Push the updated Listeners to Session Manager which will be then picked up by ConnectionConductor eventually
         OFSessionUtil.getSessionManager().setTranslatorMapping(messageTranslators);
         OFSessionUtil.getSessionManager().setPopListenerMapping(popListeners);
+        //set up QueueKeeperPool
+        qkPool = new QueueKeeperPoolImpl();
+        qkPool.initialize(messageSpyCounter);
     }
 
     /**
@@ -344,4 +350,11 @@ public class MDController implements IMDController, AutoCloseable {
         OFSessionUtil.releaseSessionManager();
         errorHandler.close();
     }
+    public static QueueKeeperPool getQueueKeeperPool(){
+        if (qkPool != null){
+            LOG.debug("QK Pool From MDC");
+        }
+        return qkPool;
+    }
+
 }

@@ -21,6 +21,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.session.PortFeaturesUtil
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionManager;
 import org.opendaylight.openflowplugin.openflow.md.queue.QueueKeeper;
+import org.opendaylight.openflowplugin.openflow.md.queue.QueueKeeperType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartRequestFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoInputBuilder;
@@ -86,6 +87,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     private boolean firstHelloProcessed;
     
     private PortFeaturesUtil portFeaturesUtils;
+    protected int connectionId;
 
     /**
      * @param connectionAdapter
@@ -374,6 +376,26 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     @Override
     public void onHandshakeSuccessfull(GetFeaturesOutput featureOutput,
             Short negotiatedVersion) {
+
+        // This is mainly to check if pool is configured with single QK instance or
+        // pool of QK instances distinctly for Main and Aux Connections
+        if (MDController.getQueueKeeperPool().isExtendedPool()){
+            if (isMainConnection(featureOutput)){
+                // Reassign new QK instance from Main Pool
+                LOG.debug(">>>>>>>>>>>>>>>>assigning QK from Main-Connection-QK Pool");
+                this.queueKeeper = MDController.getQueueKeeperPool().selectQueueKeeper(this.connectionId,
+                        QueueKeeperType.MAIN);
+            }
+            else{
+                // Reassign new QK instance for Aux Pool
+                this.queueKeeper = MDController.getQueueKeeperPool().selectQueueKeeper(this.connectionId,
+                        QueueKeeperType.AUX);
+                LOG.debug(">>>>>>>>>>>>>>>assigning QK from Aux-Connection-QK Pool");
+            }
+        }
+        else{
+            LOG.debug("Retaining original Initial Connection QK instance - NOOP");
+        }
         postHandshakeBasic(featureOutput, negotiatedVersion);
         
         // post-handshake actions
@@ -469,4 +491,17 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         hsPool.shutdownNow();
         LOG.debug("pool is terminated: {}", hsPool.isTerminated());
     }
+
+	@Override
+	public void setConnectionId(int connectionId) {
+		this.connectionId = connectionId;
+
+	}
+
+	private boolean isMainConnection(GetFeaturesOutput featureOutput){
+		if (featureOutput.getDatapathId() != null && featureOutput.getAuxiliaryId().shortValue() > 0){
+			return true;
+		}
+		return false;
+	}
 }

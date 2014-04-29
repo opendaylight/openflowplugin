@@ -33,8 +33,11 @@ import org.opendaylight.openflowplugin.openflow.md.core.plan.ConnectionAdapterSt
 import org.opendaylight.openflowplugin.openflow.md.core.plan.EventFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.plan.SwitchTestEvent;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
+import org.opendaylight.openflowplugin.openflow.md.queue.MessageObservatory;
+import org.opendaylight.openflowplugin.openflow.md.queue.MessageSpyCounterImpl;
 import org.opendaylight.openflowplugin.openflow.md.queue.PopListener;
-import org.opendaylight.openflowplugin.openflow.md.queue.QueueKeeperLightImpl;
+import org.opendaylight.openflowplugin.openflow.md.queue.QueueKeeper;
+import org.opendaylight.openflowplugin.openflow.md.queue.QueueKeeperType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Capabilities;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ErrorType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortFeatures;
@@ -79,7 +82,7 @@ public class ConnectionConductorImplTest {
     private ScheduledThreadPoolExecutor pool = new ScheduledThreadPoolExecutor(
             8);
 
-    private QueueKeeperLightImpl queueKeeper;
+    private QueueKeeper<OfHeader, DataObject> queueKeeper;
 
     private PopListener<DataObject> popListener;
 
@@ -95,6 +98,7 @@ public class ConnectionConductorImplTest {
     private ErrorHandlerQueueImpl errorHandler;
 
     private int expectedErrors = 0;
+    private MessageObservatory<OfHeader, DataObject> messageCountProvider;
 
     public void incrExperimenterMessageCounter() {
         this.experimenterMessageCounter++;
@@ -130,28 +134,38 @@ public class ConnectionConductorImplTest {
      */
     @Before
     public void setUp() throws Exception {
+
+
+        controller = new MDController();
+        messageCountProvider = new MessageSpyCounterImpl();
+        controller.setMessageSpyCounter(messageCountProvider);
+        controller.init();
+        //controller.start();
+
+
+
         adapter = new ConnectionAdapterStackImpl();
 
         popListener = new PopListenerCountingImpl<>();
 
-        queueKeeper = new QueueKeeperLightImpl();
+        queueKeeper = MDController.getQueueKeeperPool().selectQueueKeeper(1, QueueKeeperType.INITIAL);
+        //ScheduledThreadPoolExecutor schedpool = new ScheduledThreadPoolExecutor(2);
+        //queueKeeper.setThreadPool(schedpool);
 
         connectionConductor = new ConnectionConductorImpl(adapter);
         connectionConductor.setQueueKeeper(queueKeeper);
         connectionConductor.init();
         pool.execute(errorHandler);
         connectionConductor.setErrorHandler(errorHandler);
-        controller = new MDController();
-        controller.init();
-        queueKeeper.setTranslatorMapping(controller.getMessageTranslators());
+        //queueKeeper.setTranslatorMapping(controller.getMessageTranslators());
         eventPlan = new Stack<>();
         adapter.setEventPlan(eventPlan);
         adapter.setProceedTimeout(5000L);
         adapter.checkListeners();
 
         controller.getMessageTranslators().putAll(assembleTranslatorMapping());
-        queueKeeper.setPopListenersMapping(assemblePopListenerMapping());
-        queueKeeper.init();
+        //queueKeeper.setPopListenersMapping(assemblePopListenerMapping());
+        //queueKeeper.init();
     }
 
     /**
@@ -174,7 +188,7 @@ public class ConnectionConductorImplTest {
         if (libSimulation != null) {
             libSimulation.join();
         }
-        queueKeeper.shutdown();
+        //queueKeeper.shutdown();
         connectionConductor.shutdownPool();
 
         for (Exception problem : adapter.getOccuredExceptions()) {

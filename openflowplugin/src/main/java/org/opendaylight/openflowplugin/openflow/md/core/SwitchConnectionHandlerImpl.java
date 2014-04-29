@@ -27,7 +27,7 @@ public class SwitchConnectionHandlerImpl implements SwitchConnectionHandler {
     
     private ScheduledThreadPoolExecutor spyPool; 
 
-    private QueueKeeperLightImpl queueKeeper;
+    // private QueueKeeperLightImpl queueKeeper;
     private ErrorHandler errorHandler;
     private MessageSpy<OfHeader, DataObject> messageSpy;
     private int spyRate = 10;
@@ -36,7 +36,7 @@ public class SwitchConnectionHandlerImpl implements SwitchConnectionHandler {
      *
      */
     public SwitchConnectionHandlerImpl() {
-        queueKeeper = new QueueKeeperLightImpl();
+        // queueKeeper = new QueueKeeperLightImpl();
         
         //TODO: implement shutdown invocation upon service stop event
         spyPool = new ScheduledThreadPoolExecutor(1);
@@ -46,12 +46,14 @@ public class SwitchConnectionHandlerImpl implements SwitchConnectionHandler {
      * wire all up
      */
     public void init() {
-        queueKeeper.setTranslatorMapping(OFSessionUtil.getTranslatorMap());
-        queueKeeper.setPopListenersMapping(OFSessionUtil.getPopListenerMapping());
-        queueKeeper.setMessageSpy(messageSpy);
-        
-        queueKeeper.init();
-        
+        /*
+         * queueKeeper.setTranslatorMapping(OFSessionUtil.getTranslatorMap());
+         * queueKeeper
+         * .setPopListenersMapping(OFSessionUtil.getPopListenerMapping());
+         * queueKeeper.setMessageSpy(messageSpy);
+         *
+         * queueKeeper.init();
+         */
         spyPool.scheduleAtFixedRate(messageSpy, spyRate, spyRate, TimeUnit.SECONDS);
     }
 
@@ -64,7 +66,7 @@ public class SwitchConnectionHandlerImpl implements SwitchConnectionHandler {
     @Override
     public void onSwitchConnected(ConnectionAdapter connectionAdapter) {
         ConnectionConductor conductor = ConnectionConductorFactory.createConductor(
-                connectionAdapter, queueKeeper);
+                connectionAdapter);
         conductor.setErrorHandler(errorHandler);
     }
     
