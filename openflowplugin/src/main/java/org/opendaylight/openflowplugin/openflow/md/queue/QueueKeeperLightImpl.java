@@ -35,7 +35,7 @@ public class QueueKeeperLightImpl implements QueueKeeper<OfHeader, DataObject> {
     private Map<Class<? extends DataObject>, Collection<PopListener<DataObject>>> popListenersMapping;
     private BlockingQueue<TicketResult<DataObject>> processQueue;
     private ScheduledThreadPoolExecutor pool;
-    private int poolSize = 10;
+    //private int poolSize = 10;
     private Map<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, List<DataObject>>>> translatorMapping;
     private TicketProcessorFactory<OfHeader, DataObject> ticketProcessorFactory;
     private MessageSpy<OfHeader, DataObject> messageSpy;
@@ -72,7 +72,8 @@ public class QueueKeeperLightImpl implements QueueKeeper<OfHeader, DataObject> {
      */
     public void init() {
         processQueue = new LinkedBlockingQueue<>();
-        pool = new ScheduledThreadPoolExecutor(poolSize);
+        // 10-Apr-2013 - changed because the thread-pool can be common thread-pool injected separately
+        //pool = new ScheduledThreadPoolExecutor(poolSize);
 
         ticketProcessorFactory = new TicketProcessorFactory<>();
         ticketProcessorFactory.setRegisteredTypeExtractor(registeredSrcTypeExtractor);
@@ -89,7 +90,18 @@ public class QueueKeeperLightImpl implements QueueKeeper<OfHeader, DataObject> {
      * stop processing queue
      */
     public void shutdown() {
-        pool.shutdown();
+        //pool.shutdown(); //TODO: Remove this
+    }
+
+
+    /**
+     * For injecting common thread-pool for all QueueKeeper instances
+     * from where QueueKeeper instances are init'd
+     *
+     * @param pool
+     */
+    public void setThreadPool(ScheduledThreadPoolExecutor pool){
+        this.pool = pool;
     }
 
     @Override
@@ -126,7 +138,7 @@ public class QueueKeeperLightImpl implements QueueKeeper<OfHeader, DataObject> {
      * @param poolSize the poolSize to set
      */
     public void setPoolSize(int poolSize) {
-        this.poolSize = poolSize;
+        //this.poolSize = poolSize;
     }
 
     @Override

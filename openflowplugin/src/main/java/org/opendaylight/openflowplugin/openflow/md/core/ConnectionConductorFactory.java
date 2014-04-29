@@ -8,10 +8,9 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
-import org.opendaylight.openflowplugin.openflow.md.queue.QueueKeeper;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
-import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.opendaylight.openflowplugin.openflow.md.queue.QueueKeeperType;
 
 /**
  * @author mirehak
@@ -19,15 +18,25 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
  */
 public abstract class ConnectionConductorFactory {
 
+    private static AtomicInteger connectionIdentifier = new AtomicInteger(0);
     /**
      * @param connectionAdapter
      * @param queueKeeper 
      * @return conductor for given connection
      */
-    public static ConnectionConductor createConductor(ConnectionAdapter connectionAdapter, 
-            QueueKeeper<OfHeader, DataObject> queueKeeper) {
+    public static ConnectionConductor createConductor(ConnectionAdapter connectionAdapter) {
+        int connectionId;
+
         ConnectionConductor connectionConductor = new ConnectionConductorImpl(connectionAdapter);
-        connectionConductor.setQueueKeeper(queueKeeper);
+        // set the connection-id for the connection-conductor
+        connectionId = connectionIdentifier.incrementAndGet();
+        connectionConductor.setConnectionId(connectionId);
+        //Source the initial QueueKeeper instance from QueueKeeperPool and
+        //inject to the ConnectionConductor
+        connectionConductor.setQueueKeeper(MDController.getQueueKeeperPool().selectQueueKeeper(connectionId, QueueKeeperType.INITIAL));
+
+
+        //connectionConductor.setQueueKeeper(queueKeeper);
         connectionConductor.init();
         return connectionConductor;
     }

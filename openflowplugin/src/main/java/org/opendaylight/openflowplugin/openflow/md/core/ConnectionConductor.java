@@ -105,4 +105,10 @@ public interface ConnectionConductor {
      */
     void setErrorHandler(ErrorHandler errorHandler);
 
+    /**
+     * Sets unique connection-id for each connection. Connection-id is not reused and generated in
+     * monotonously increments
+     * @param connectionId
+     */
+    void setConnectionId(int connectionId);
 }

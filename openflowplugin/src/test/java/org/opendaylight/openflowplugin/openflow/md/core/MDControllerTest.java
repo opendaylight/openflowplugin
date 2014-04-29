@@ -109,6 +109,10 @@ public class MDControllerTest {
         }
     }
 
+    @Test
+    public void testGetQueueKeeperPool(){
+        Assert.assertNotNull(MDController.getQueueKeeperPool());
 
+    }
 
 }

@@ -393,6 +393,12 @@ class MockConnectionConductor implements ConnectionConductor {
     @Override
     public void setErrorHandler(ErrorHandler errorHandler) {
     }
+
+    @Override
+    public void setConnectionId(int connectionId) {
+        // TODO Auto-generated method stub
+
+    }
 }
 
 enum MessageType {
