@@ -34,6 +34,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
+import org.opendaylight.yangtools.concepts.CompositeObjectRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier.InstanceIdentifierBuilder;
 import org.slf4j.Logger;
@@ -91,7 +92,8 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
         NodeId nodeId = nodeIdFromDatapathId(datapathId);
         ModelDrivenSwitchImpl ofSwitch = new ModelDrivenSwitchImpl(nodeId, identifier, context);
         LLDPSpeaker.getInstance().addModelDrivenSwitch(identifier, ofSwitch);
-        ofSwitch.register(providerContext);
+        CompositeObjectRegistration<ModelDrivenSwitch> registration = ofSwitch.register(providerContext);
+        context.setProviderRegistration(registration);
 
         LOG.debug("ModelDrivenSwitch for {} registered to MD-SAL.", datapathId.toString());
 
@@ -106,7 +108,10 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
         NodeRef nodeRef = new NodeRef(identifier);
         NodeRemoved nodeRemoved = nodeRemoved(nodeRef);
         LLDPSpeaker.getInstance().removeModelDrivenSwitch(identifier);
-        LOG.debug("ModelDrivenSwitch for {} unregistred from MD-SAL.", datapathId.toString());
+        CompositeObjectRegistration<ModelDrivenSwitch> registration = context.getProviderRegistration();
+        registration.close();
+        
+        LOG.debug("ModelDrivenSwitch for {} unregistered from MD-SAL.", datapathId.toString());
         publishService.publish(nodeRemoved);
     }
 
