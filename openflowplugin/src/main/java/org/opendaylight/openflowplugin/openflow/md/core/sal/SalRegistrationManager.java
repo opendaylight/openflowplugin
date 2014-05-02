@@ -8,19 +8,16 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal;
 
 import java.math.BigInteger;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.controller.sal.binding.api.data.DataProviderService;
 import org.opendaylight.openflowplugin.openflow.md.ModelDrivenSwitch;
-import org.opendaylight.openflowplugin.openflow.md.SwitchInventory;
-import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionListener;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionManager;
+import org.opendaylight.openflowplugin.openflow.md.core.session.SwitchSessionKeyOF;
 import org.opendaylight.openflowplugin.openflow.md.lldp.LLDPSpeaker;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeUpdatedBuilder;
@@ -84,7 +81,7 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
     }
 
     @Override
-    public void onSessionAdded(SwitchConnectionDistinguisher sessionKey, SessionContext context) {
+    public void onSessionAdded(SwitchSessionKeyOF sessionKey, SessionContext context) {
         GetFeaturesOutput features = context.getFeatures();
         BigInteger datapathId = features.getDatapathId();
         InstanceIdentifier<Node> identifier = identifierFromDatapathId(datapathId);

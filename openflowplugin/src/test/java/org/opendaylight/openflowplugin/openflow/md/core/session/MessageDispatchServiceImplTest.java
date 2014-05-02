@@ -184,6 +184,7 @@ class MockSessionContext implements SessionContext {
     private IMessageDispatchService messageService;
     private boolean isValid = true;
     private CompositeObjectRegistration<ModelDrivenSwitch> registration;
+    private int seed;
 
     MockSessionContext(int conductorNum) {
         conductor = new MockConnectionConductor(conductorNum);
@@ -237,7 +238,7 @@ class MockSessionContext implements SessionContext {
     }
 
     @Override
-    public SwitchConnectionDistinguisher getSessionKey() {
+    public SwitchSessionKeyOF getSessionKey() {
         // TODO Auto-generated method stub
         return null;
     }
@@ -317,6 +318,18 @@ class MockSessionContext implements SessionContext {
             CompositeObjectRegistration<ModelDrivenSwitch> registration) {
         this.registration = registration;
     }
+
+    @Override
+    public int getSeed() {
+        return seed;
+    }
+    
+    /**
+     * @param seed the seed to set
+     */
+    public void setSeed(int seed) {
+        this.seed = seed;
+    }
 }
 
 class MockConnectionConductor implements ConnectionConductor {
@@ -381,9 +394,8 @@ class MockConnectionConductor implements ConnectionConductor {
     public SwitchConnectionDistinguisher getAuxiliaryKey() {
         if (0 != conductorNum) {
             SwitchConnectionCookieOFImpl key = new SwitchConnectionCookieOFImpl();
-            key.setDatapathId(BigInteger.valueOf(10L));
             key.setAuxiliaryId((short) conductorNum);
-            key.initId();
+            key.init(42);
             return key;
         }
         return null;
