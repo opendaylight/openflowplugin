@@ -10,26 +10,32 @@ package org.opendaylight.openflowplugin.openflow.md.core.session;
 
 import java.security.MessageDigest;
 
+import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
+
+import com.google.common.hash.HashFunction;
+import com.google.common.hash.Hasher;
+import com.google.common.hash.Hashing;
+
 /**
  * @author mirehak
  */
-public class SwitchConnectionCookieOFImpl extends SwitchSessionKeyOFImpl {
+public class SwitchConnectionCookieOFImpl implements SwitchConnectionDistinguisher {
 
     private short auxiliaryId;
+    private long cookie;
 
     /**
-     * @param encodedId
-     * @see {@link SwitchSessionKeyOFImpl#SwitchSessionKeyOFImpl(byte[])}
+     * @param cookie
      */
-    public SwitchConnectionCookieOFImpl(byte[] encodedId) {
-        super(encodedId);
+    public SwitchConnectionCookieOFImpl(long cookie) {
+        this.cookie = cookie;
     }
 
     /**
      * default ctor
      */
     public SwitchConnectionCookieOFImpl() {
-        // do nothing
+        // NOOP
     }
 
     /**
@@ -39,11 +45,56 @@ public class SwitchConnectionCookieOFImpl extends SwitchSessionKeyOFImpl {
     public void setAuxiliaryId(short auxiliaryId) {
         this.auxiliaryId = auxiliaryId;
     }
-
-    @Override
-    protected void extend(MessageDigest medi) {
-        super.extend(medi);
-        medi.update(new byte[] { (byte) (auxiliaryId >> 8), (byte) auxiliaryId });
+    
+    /**
+     * compute pseudorandom key unique for given seed and {@link #auxiliaryId}
+     * @param seed random int but fixed per session
+     */
+    public void init(int seed) {
+        if (auxiliaryId <= 0) {
+            throw new IllegalStateException("auxiliaryId must be greater than 0");
+        }
+        
+        HashFunction mm32Hf = Hashing.murmur3_32(seed);
+        Hasher hasher = mm32Hf.newHasher(8);
+        hasher.putInt(auxiliaryId);
+        long hash = 0xFFFFFFFFL & hasher.hash().asInt();
+        cookie = (auxiliaryId << 24) | (hash >> 8);
     }
+    
+    @Override
+    public long getCookie() {
+        return cookie;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + (int) (cookie ^ (cookie >>> 32));
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        SwitchConnectionCookieOFImpl other = (SwitchConnectionCookieOFImpl) obj;
+        if (cookie != other.cookie)
+            return false;
+        return true;
+    }
+    
+    
 
 }

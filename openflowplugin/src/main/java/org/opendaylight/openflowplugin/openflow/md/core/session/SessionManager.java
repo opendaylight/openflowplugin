@@ -35,14 +35,14 @@ public interface SessionManager extends AutoCloseable {
      * @return corresponding conductor, holding {@link ConnectionAdapter} to
      *         primary connection
      */
-    public SessionContext getSessionContext(SwitchConnectionDistinguisher sessionKey);
+    public SessionContext getSessionContext(SwitchSessionKeyOF sessionKey);
 
     /**
      * disconnect all underlying {@link ConnectionAdapter}s and notify listeners
      *
      * @param sessionKey
      */
-    public void invalidateSessionContext(SwitchConnectionDistinguisher sessionKey);
+    public void invalidateSessionContext(SwitchSessionKeyOF sessionKey);
 
     /**
      * register session context
@@ -50,7 +50,7 @@ public interface SessionManager extends AutoCloseable {
      * @param sessionKey
      * @param context
      */
-    public void addSessionContext(SwitchConnectionDistinguisher sessionKey, SessionContext context);
+    public void addSessionContext(SwitchSessionKeyOF sessionKey, SessionContext context);
 
     /**
      * disconnect particular auxiliary {@link ConnectionAdapter}, identified by
@@ -59,7 +59,7 @@ public interface SessionManager extends AutoCloseable {
      * @param sessionKey
      * @param connectionCookie
      */
-    public void invalidateAuxiliary(SwitchConnectionDistinguisher sessionKey,
+    public void invalidateAuxiliary(SwitchSessionKeyOF sessionKey,
             SwitchConnectionDistinguisher connectionCookie);
 
     /**
