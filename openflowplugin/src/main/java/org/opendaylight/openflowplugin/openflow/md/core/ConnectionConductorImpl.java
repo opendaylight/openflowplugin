@@ -499,7 +499,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
 	}
 
 	private boolean isMainConnection(GetFeaturesOutput featureOutput){
-		if (featureOutput.getDatapathId() != null && featureOutput.getAuxiliaryId().shortValue() > 0){
+		if (featureOutput.getDatapathId() != null && featureOutput.getAuxiliaryId()!=null && featureOutput.getAuxiliaryId().shortValue() > 0){
 			return true;
 		}
 		return false;
