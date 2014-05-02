@@ -40,7 +40,7 @@ public abstract class OFSessionUtil {
      */
     public static void registerSession(ConnectionConductor connectionConductor,
             GetFeaturesOutput features, short version) {
-        SwitchConnectionDistinguisher sessionKey = createSwitchSessionKey(features
+        SwitchSessionKeyOF sessionKey = createSwitchSessionKey(features
                 .getDatapathId());
         SessionContext sessionContext = getSessionManager().getSessionContext(sessionKey);
         if (LOG.isDebugEnabled()) {
@@ -59,6 +59,7 @@ public abstract class OFSessionUtil {
             context.setPrimaryConductor(connectionConductor);
             context.setFeatures(features);
             context.setSessionKey(sessionKey);
+            context.setSeed((int) System.currentTimeMillis());
             connectionConductor.setSessionContext(context);
             context.setValid(true);
             getSessionManager().addSessionContext(sessionKey, context);
@@ -69,7 +70,7 @@ public abstract class OFSessionUtil {
                         + dumpDataPathId(features.getDatapathId()));
             } else {
                 // register auxiliary conductor into existing sessionContext
-                SwitchConnectionDistinguisher auxiliaryKey = createConnectionCookie(features);
+                SwitchConnectionDistinguisher auxiliaryKey = createConnectionCookie(features, sessionContext.getSeed());
                 if (sessionContext.getAuxiliaryConductor(auxiliaryKey) != null) {
                     LOG.warn("duplicate datapathId+auxiliary occured while registering switch session: "
                             + dumpDataPathId(features.getDatapathId())
@@ -109,39 +110,37 @@ public abstract class OFSessionUtil {
      * @param datapathId
      * @return new session key
      */
-    public static SwitchConnectionDistinguisher createSwitchSessionKey(
+    public static SwitchSessionKeyOF createSwitchSessionKey(
             BigInteger datapathId) {
-        SwitchSessionKeyOFImpl key = new SwitchSessionKeyOFImpl();
+        SwitchSessionKeyOF key = new SwitchSessionKeyOF();
         key.setDatapathId(datapathId);
-        key.initId();
         return key;
     }
 
     /**
      * @param features
+     * @param seed 
      * @return connection cookie key
      * @see #createConnectionCookie(BigInteger, short)
      */
     public static SwitchConnectionDistinguisher createConnectionCookie(
-            GetFeaturesOutput features) {
+            GetFeaturesOutput features, int seed) {
         return createConnectionCookie(features.getDatapathId(),
-                features.getAuxiliaryId());
+                features.getAuxiliaryId(), seed);
     }
 
     /**
      * @param datapathId
      * @param auxiliaryId
+     * @param seed 
      * @return connection cookie key
      */
     public static SwitchConnectionDistinguisher createConnectionCookie(
-            BigInteger datapathId, short auxiliaryId) {
+            BigInteger datapathId, short auxiliaryId, int seed) {
         SwitchConnectionCookieOFImpl cookie = null;
-        if (auxiliaryId != 0) {
-            cookie = new SwitchConnectionCookieOFImpl();
-            cookie.setDatapathId(datapathId);
-            cookie.setAuxiliaryId(auxiliaryId);
-            cookie.initId();
-        }
+        cookie = new SwitchConnectionCookieOFImpl();
+        cookie.setAuxiliaryId(auxiliaryId);
+        cookie.init(datapathId.intValue() + seed);
         return cookie;
     }
 

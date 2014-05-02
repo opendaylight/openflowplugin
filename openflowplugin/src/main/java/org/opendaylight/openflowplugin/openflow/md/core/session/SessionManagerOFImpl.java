@@ -37,7 +37,7 @@ public class SessionManagerOFImpl implements SessionManager {
 
     protected static final Logger LOG = LoggerFactory.getLogger(SessionManagerOFImpl.class);
     private static SessionManagerOFImpl instance;
-    private ConcurrentHashMap<SwitchConnectionDistinguisher, SessionContext> sessionLot;
+    private ConcurrentHashMap<SwitchSessionKeyOF, SessionContext> sessionLot;
     private Map<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, List<DataObject>>>> translatorMapping;
     private Map<Class<? extends DataObject>, Collection<PopListener<DataObject>>> popListenerMapping;
 
@@ -72,12 +72,12 @@ public class SessionManagerOFImpl implements SessionManager {
     }
 
     @Override
-    public SessionContext getSessionContext(SwitchConnectionDistinguisher sessionKey) {
+    public SessionContext getSessionContext(SwitchSessionKeyOF sessionKey) {
         return sessionLot.get(sessionKey);
     }
 
     @Override
-    public void invalidateSessionContext(SwitchConnectionDistinguisher sessionKey) {
+    public void invalidateSessionContext(SwitchSessionKeyOF sessionKey) {
         SessionContext context = getSessionContext(sessionKey);
         if (context == null) {
             LOG.warn("context for invalidation not found");
@@ -115,7 +115,7 @@ public class SessionManagerOFImpl implements SessionManager {
     }
 
     @Override
-    public void addSessionContext(SwitchConnectionDistinguisher sessionKey, SessionContext context) {
+    public void addSessionContext(SwitchSessionKeyOF sessionKey, SessionContext context) {
         sessionLot.put(sessionKey, context);
 
         sessionNotifier.onSessionAdded(sessionKey, context);
@@ -123,7 +123,7 @@ public class SessionManagerOFImpl implements SessionManager {
     }
 
     @Override
-    public void invalidateAuxiliary(SwitchConnectionDistinguisher sessionKey,
+    public void invalidateAuxiliary(SwitchSessionKeyOF sessionKey,
             SwitchConnectionDistinguisher connectionCookie) {
         SessionContext context = getSessionContext(sessionKey);
         invalidateAuxiliary(context, connectionCookie, true);
@@ -175,7 +175,7 @@ public class SessionManagerOFImpl implements SessionManager {
     private final SessionListener sessionNotifier = new SessionListener() {
 
         @Override
-        public void onSessionAdded(SwitchConnectionDistinguisher sessionKey, SessionContext context) {
+        public void onSessionAdded(SwitchSessionKeyOF sessionKey, SessionContext context) {
             for (ListenerRegistration<SessionListener> listener : sessionListeners) {
                 try {
                     listener.getInstance().onSessionAdded(sessionKey, context);

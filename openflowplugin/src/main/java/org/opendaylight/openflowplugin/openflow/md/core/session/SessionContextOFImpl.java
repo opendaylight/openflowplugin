@@ -39,14 +39,15 @@ public class SessionContextOFImpl implements SessionContext {
     private ConnectionConductor primaryConductor;
     private ConcurrentHashMap<SwitchConnectionDistinguisher, ConnectionConductor> auxiliaryConductors;
     private boolean valid;
-    private SwitchConnectionDistinguisher sessionKey;
+    private SwitchSessionKeyOF sessionKey;
     private IMessageDispatchService mdService;
     private final AtomicLong xid;
     private final Map<Long, PortGrouping> physicalPorts;
     private final Map<Long, Boolean> portBandwidth;
-    public static Cache<TransactionKey, Object> bulkTransactionCache = CacheBuilder.newBuilder().expireAfterWrite(10000, TimeUnit.MILLISECONDS).concurrencyLevel(1).build();
+    private Cache<TransactionKey, Object> bulkTransactionCache = CacheBuilder.newBuilder().expireAfterWrite(10000, TimeUnit.MILLISECONDS).concurrencyLevel(1).build();
     private CompositeObjectRegistration<ModelDrivenSwitch> providerRegistration;
-
+    private int seed;
+    
 
     /**
      * default ctor
@@ -127,12 +128,19 @@ public class SessionContextOFImpl implements SessionContext {
     /**
      * @param sessionKey the sessionKey to set
      */
-    public void setSessionKey(SwitchConnectionDistinguisher sessionKey) {
+    public void setSessionKey(SwitchSessionKeyOF sessionKey) {
         this.sessionKey = sessionKey;
+    }
+    
+    /**
+     * @param seed the seed to set
+     */
+    public void setSeed(int seed) {
+        this.seed = seed;
     }
 
     @Override
-    public SwitchConnectionDistinguisher getSessionKey() {
+    public SwitchSessionKeyOF getSessionKey() {
         return sessionKey;
     }
 
@@ -215,5 +223,10 @@ public class SessionContextOFImpl implements SessionContext {
     @Override
     public CompositeObjectRegistration<ModelDrivenSwitch> getProviderRegistration() {
         return providerRegistration;
+    }
+    
+    @Override
+    public int getSeed() {
+        return seed;
     }
 }
