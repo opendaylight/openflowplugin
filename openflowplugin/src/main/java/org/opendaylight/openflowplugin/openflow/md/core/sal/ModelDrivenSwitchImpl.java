@@ -28,12 +28,14 @@ import org.opendaylight.openflowplugin.openflow.md.core.session.TransactionKey;
 import org.opendaylight.openflowplugin.openflow.md.util.FlowCreatorUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowAddedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowRemovedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowUpdatedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInput;
@@ -597,44 +599,96 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
             xId = session.getNextXid();
             barrierInput.setVersion(version);
             barrierInput.setXid(xId);
-            Future<RpcResult<BarrierOutput>> barrierOFLib = messageService.barrier(barrierInput.build(), cookie);
+    	    Future<RpcResult<BarrierOutput>> barrierOFLib = messageService.barrier(barrierInput.build(), cookie);
+    	}
+    	
+        boolean updatedFlow = input.getUpdatedFlow().getMatch().equals(input.getOriginalFlow().getMatch());
+    	xId = session.getNextXid();
+    	// If Flow match fields are Modified.
+        if(!updatedFlow)
+        {
+        	RemoveFlowInputBuilder removeflow = new RemoveFlowInputBuilder(input.getOriginalFlow());
+        	removeflow.setStrict(true);        	
+            FlowModInputBuilder ofFlowModInput = FlowConvertor.toFlowModInput(removeflow.build(), version,this.getSessionContext().getFeatures().getDatapathId());        
+            
+            ofFlowModInput.setXid(xId);
+        	
+           	Future<RpcResult<UpdateFlowOutput>> resultFromOFLibRemove = messageService.flowMod(ofFlowModInput.build(), cookie) ;
+           	
+            if (Objects.firstNonNull(input.getUpdatedFlow().isBarrier(), Boolean.FALSE)) {
+                BarrierInputBuilder barrierInput = new BarrierInputBuilder();
+                xId = session.getNextXid();
+                barrierInput.setVersion(version);
+                barrierInput.setXid(xId);
+        	    Future<RpcResult<BarrierOutput>> barrierOFLib = messageService.barrier(barrierInput.build(), cookie);
+        	}
+            
+        	// Convert the AddFlowInput to FlowModInput
+           	AddFlowInputBuilder addFlow = new AddFlowInputBuilder(input.getUpdatedFlow());
+        	FlowModInputBuilder ofFlowModInputAdd = FlowConvertor.toFlowModInput(addFlow.build(), version,this.getSessionContext().getFeatures().getDatapathId());
+            ofFlowModInputAdd.setXid(xId);
+
+            session.getbulkTransactionCache().put(new TransactionKey(xId), input);
+           	Future<RpcResult<UpdateFlowOutput>> resultFromOFLib = messageService.flowMod(ofFlowModInputAdd.build(), cookie) ;
+           	RpcResult<UpdateFlowOutput> rpcResultFromOFLib = null ;
+
+        	try {
+        		rpcResultFromOFLib = resultFromOFLib.get();
+        	} catch( Exception ex ) {
+        		LOG.error( " Error while getting result for AddFlow RPC" + ex.getMessage());
+        	}
+
+        	UpdateFlowOutput updateFlowOutputOFLib = rpcResultFromOFLib.getResult() ;
+
+        	UpdateFlowOutputBuilder updateFlowOutput = new UpdateFlowOutputBuilder() ;
+        	updateFlowOutput.setTransactionId(updateFlowOutputOFLib.getTransactionId()) ;
+        	UpdateFlowOutput result = updateFlowOutput.build();
+
+        	Collection<RpcError> errors = rpcResultFromOFLib.getErrors() ;
+            RpcResult<UpdateFlowOutput> rpcResult = Rpcs.getRpcResult(true, result, errors);
+
+        	LOG.debug("Returning the Add Flow RPC result to MD-SAL");
+            return Futures.immediateFuture(rpcResult);
+            
+        }
+        else
+        {
+        	// Convert the UpdateFlowInput to FlowModInput
+            FlowModInputBuilder ofFlowModInput = FlowConvertor.toFlowModInput(input.getUpdatedFlow(), version,this.getSessionContext().getFeatures().getDatapathId());
+            ofFlowModInput.setXid(xId);
+            
+            if (null != rpcNotificationProviderService) {        
+                FlowUpdatedBuilder updateFlow = 
+                   new FlowUpdatedBuilder((org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow)input.getUpdatedFlow());          
+                updateFlow.setTransactionId(new TransactionId(BigInteger.valueOf(xId.intValue())));
+                updateFlow.setFlowRef(input.getFlowRef());
+                rpcNotificationProviderService.publish(updateFlow.build());
+            }
+
+            session.getbulkTransactionCache().put(new TransactionKey(xId), input);
+           	Future<RpcResult<UpdateFlowOutput>> resultFromOFLib = messageService.flowMod(ofFlowModInput.build(), cookie) ;
+
+           	RpcResult<UpdateFlowOutput> rpcResultFromOFLib = null ;
+
+        	try {
+        		rpcResultFromOFLib = resultFromOFLib.get();
+        	} catch( Exception ex ) {
+        		LOG.error( " Error while getting result for UpdateFlow RPC" + ex.getMessage());
+        	}
+
+        	UpdateFlowOutput updateFlowOutputOFLib = rpcResultFromOFLib.getResult() ;
+
+        	UpdateFlowOutputBuilder updateFlowOutput = new UpdateFlowOutputBuilder() ;
+        	updateFlowOutput.setTransactionId(updateFlowOutputOFLib.getTransactionId()) ;
+        	UpdateFlowOutput result = updateFlowOutput.build();
+
+        	Collection<RpcError> errors = rpcResultFromOFLib.getErrors() ;
+            RpcResult<UpdateFlowOutput> rpcResult = Rpcs.getRpcResult(true, result, errors);
+
+        	LOG.debug("Returning the Update Flow RPC result to MD-SAL");
+            return Futures.immediateFuture(rpcResult);
         }
 
-        // Convert the UpdateFlowInput to FlowModInput
-        FlowModInputBuilder ofFlowModInput = FlowConvertor.toFlowModInput(input.getUpdatedFlow(), version, this
-                .getSessionContext().getFeatures().getDatapathId());
-        xId = session.getNextXid();
-        ofFlowModInput.setXid(xId);
-
-        if (null != rpcNotificationProviderService) {
-            FlowUpdatedBuilder updateFlow = new FlowUpdatedBuilder(input.getUpdatedFlow());
-            updateFlow.setTransactionId(new TransactionId(BigInteger.valueOf(xId.intValue())));
-            updateFlow.setFlowRef(input.getFlowRef());
-            rpcNotificationProviderService.publish(updateFlow.build());
-        }
-
-        session.getbulkTransactionCache().put(new TransactionKey(xId), input);
-        Future<RpcResult<UpdateFlowOutput>> resultFromOFLib = messageService.flowMod(ofFlowModInput.build(), cookie);
-
-        RpcResult<UpdateFlowOutput> rpcResultFromOFLib = null;
-
-        try {
-            rpcResultFromOFLib = resultFromOFLib.get();
-        } catch (Exception ex) {
-            LOG.error(" Error while getting result for UpdateFlow RPC" + ex.getMessage());
-        }
-
-        UpdateFlowOutput updateFlowOutputOFLib = rpcResultFromOFLib.getResult();
-
-        UpdateFlowOutputBuilder updateFlowOutput = new UpdateFlowOutputBuilder();
-        updateFlowOutput.setTransactionId(updateFlowOutputOFLib.getTransactionId());
-        UpdateFlowOutput result = updateFlowOutput.build();
-
-        Collection<RpcError> errors = rpcResultFromOFLib.getErrors();
-        RpcResult<UpdateFlowOutput> rpcResult = Rpcs.getRpcResult(true, result, errors);
-
-        LOG.debug("Returning the Update Flow RPC result to MD-SAL");
-        return Futures.immediateFuture(rpcResult);
     }
 
     @Override

@@ -8,11 +8,8 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal;
 
-import java.math.BigInteger;
-import java.util.Collections;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,16 +30,20 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.Remo
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.OriginalFlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.UpdatedFlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev131103.TransactionId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
+import java.math.BigInteger;
+import java.util.Collections;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /**
  * simple NPE smoke test
@@ -77,6 +78,7 @@ public class ModelDrivenSwitchImplTest {
         Mockito.when(context.getFeatures()).thenReturn(features);
         Mockito.when(context.getbulkTransactionCache()).thenReturn(bulkTransactionCache);
         Mockito.when(features.getDatapathId()).thenReturn(BigInteger.valueOf(1));
+        //Mockito.when(context.getNextXid()).thenReturn(1L);
 
         mdSwitchOF10 = new ModelDrivenSwitchImpl(null, null, context);
         mdSwitchOF13 = new ModelDrivenSwitchImpl(null, null, context);
@@ -141,10 +143,17 @@ public class ModelDrivenSwitchImplTest {
                 messageDispatchService.flowMod(Matchers.any(FlowModInput.class),
                         Matchers.any(SwitchConnectionDistinguisher.class))).thenReturn(Futures.immediateFuture(result));
 
+
+        Match sameMatch = new MatchBuilder().build();
+
         UpdateFlowInputBuilder input = new UpdateFlowInputBuilder();
         UpdatedFlowBuilder updatedFlow = new UpdatedFlowBuilder();
-        updatedFlow.setMatch(new MatchBuilder().build());
+        updatedFlow.setMatch(sameMatch);
         input.setUpdatedFlow(updatedFlow.build());
+
+        OriginalFlowBuilder originalFlowBuilder = new OriginalFlowBuilder();
+        originalFlowBuilder.setMatch(sameMatch);
+        input.setOriginalFlow(originalFlowBuilder.build());
 
         mdSwitchOF10.updateFlow(input.build());
         mdSwitchOF13.updateFlow(input.build());
