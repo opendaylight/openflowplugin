@@ -79,7 +79,7 @@ public interface SessionContext {
     /**
      * @return the sessionKey
      */
-    SwitchConnectionDistinguisher getSessionKey();
+    SwitchSessionKeyOF getSessionKey();
 
     /**
      * Returns a map containing all OFPhysicalPorts of this switch.
@@ -161,4 +161,9 @@ public interface SessionContext {
      * @return provider composite registration
      */
     CompositeObjectRegistration<ModelDrivenSwitch> getProviderRegistration();
+    
+    /**
+     * @return seed value for random operations
+     */
+    int getSeed();
 }
