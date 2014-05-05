@@ -13,7 +13,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
  * @author mirehak
  *
  */
-public interface ErrorHandler extends Runnable, AutoCloseable {
+public interface ErrorHandler {
 
     /**
      * @param e cause
