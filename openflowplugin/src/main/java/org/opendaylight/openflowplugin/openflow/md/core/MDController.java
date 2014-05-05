@@ -104,7 +104,7 @@ public class MDController implements IMDController, AutoCloseable {
     final private int OF10 = OFConstants.OFP_VERSION_1_0;
     final private int OF13 = OFConstants.OFP_VERSION_1_3;
 
-    private ErrorHandlerQueueImpl errorHandler;
+    private ErrorHandlerSimpleImpl errorHandler;
 
 
     /**
@@ -217,8 +217,7 @@ public class MDController implements IMDController, AutoCloseable {
         SwitchConnectionHandlerImpl switchConnectionHandler = new SwitchConnectionHandlerImpl();
         switchConnectionHandler.setMessageSpy(messageSpyCounter);
 
-        errorHandler = new ErrorHandlerQueueImpl();
-        new Thread(errorHandler).start();
+        errorHandler = new ErrorHandlerSimpleImpl();
         
         switchConnectionHandler.setErrorHandler(errorHandler);
         switchConnectionHandler.init();
@@ -342,6 +341,6 @@ public class MDController implements IMDController, AutoCloseable {
         }
         switchConnectionProviders = null;
         OFSessionUtil.releaseSessionManager();
-        errorHandler.close();
+        errorHandler = null;
     }
 }
