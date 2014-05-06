@@ -7,8 +7,13 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal;
 
-import com.google.common.base.Objects;
-import com.google.common.util.concurrent.Futures;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.Future;
+
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.controller.sal.common.util.Rpcs;
 import org.opendaylight.openflowjava.protocol.api.util.BinContent;
@@ -177,12 +182,10 @@ import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.Future;
+import com.google.common.base.Function;
+import com.google.common.base.Objects;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.JdkFutureAdapters;
 
 /**
  * RPC implementation of MD-switch
@@ -196,7 +199,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     private final SessionContext session;
     NotificationProviderService rpcNotificationProviderService;
 
-    protected ModelDrivenSwitchImpl(NodeId nodeId, InstanceIdentifier<Node> identifier, SessionContext context) {
+    protected ModelDrivenSwitchImpl(final NodeId nodeId, final InstanceIdentifier<Node> identifier, final SessionContext context) {
         super(identifier, context);
         this.nodeId = nodeId;
         messageService = sessionContext.getMessageDispatchService();
@@ -206,7 +209,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     }
 
     @Override
-    public Future<RpcResult<AddFlowOutput>> addFlow(AddFlowInput input) {
+    public Future<RpcResult<AddFlowOutput>> addFlow(final AddFlowInput input) {
         LOG.debug("Calling the FlowMod RPC method on MessageDispatchService");
         Long xId = null;
         // For Flow provisioning, the SwitchConnectionDistinguisher is set to
@@ -239,29 +242,28 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 
         session.getbulkTransactionCache().put(new TransactionKey(xId), input);
         Future<RpcResult<UpdateFlowOutput>> resultFromOFLib = messageService.flowMod(ofFlowModInput.build(), cookie);
-        RpcResult<UpdateFlowOutput> rpcResultFromOFLib = null;
 
-        try {
-            rpcResultFromOFLib = resultFromOFLib.get();
-        } catch (Exception ex) {
-            LOG.error(" Error while getting result for AddFlow RPC" + ex.getMessage());
-        }
+        return Futures.transform(JdkFutureAdapters.listenInPoolThread(resultFromOFLib), new Function<RpcResult<UpdateFlowOutput>,RpcResult<AddFlowOutput>>() {
 
-        UpdateFlowOutput updateFlowOutput = rpcResultFromOFLib.getResult();
+            @Override
+            public RpcResult<AddFlowOutput> apply(final RpcResult<UpdateFlowOutput> input) {
+                Collection<RpcError> errors = input.getErrors();
 
-        AddFlowOutputBuilder addFlowOutput = new AddFlowOutputBuilder();
-        addFlowOutput.setTransactionId(updateFlowOutput.getTransactionId());
-        AddFlowOutput result = addFlowOutput.build();
+                UpdateFlowOutput updateFlowOutput = input.getResult();
 
-        Collection<RpcError> errors = rpcResultFromOFLib.getErrors();
-        RpcResult<AddFlowOutput> rpcResult = Rpcs.getRpcResult(true, result, errors);
+                AddFlowOutputBuilder addFlowOutput = new AddFlowOutputBuilder();
+                addFlowOutput.setTransactionId(updateFlowOutput.getTransactionId());
+                AddFlowOutput result = addFlowOutput.build();
+                RpcResult<AddFlowOutput> rpcResult = Rpcs.getRpcResult(input.isSuccessful(), result, errors);
 
-        LOG.debug("Returning the Add Flow RPC result to MD-SAL");
-        return Futures.immediateFuture(rpcResult);
+                LOG.debug("Returning the Add Flow RPC result to MD-SAL");
+                return rpcResult;
+            }
+        });
     }
 
     @Override
-    public Future<RpcResult<AddGroupOutput>> addGroup(AddGroupInput input) {
+    public Future<RpcResult<AddGroupOutput>> addGroup(final AddGroupInput input) {
         LOG.debug("Calling the GroupMod RPC method on MessageDispatchService");
         Long xId = null;
 
@@ -317,7 +319,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     }
 
     @Override
-    public Future<RpcResult<AddMeterOutput>> addMeter(AddMeterInput input) {
+    public Future<RpcResult<AddMeterOutput>> addMeter(final AddMeterInput input) {
         LOG.debug("Calling the MeterMod RPC method on MessageDispatchService");
         Long xId = null;
         // For Meter provisioning, the SwitchConnectionDistinguisher is set to
@@ -372,7 +374,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     }
 
     @Override
-    public Future<RpcResult<RemoveFlowOutput>> removeFlow(RemoveFlowInput input) {
+    public Future<RpcResult<RemoveFlowOutput>> removeFlow(final RemoveFlowInput input) {
         LOG.debug("Calling the removeFlow RPC method on MessageDispatchService");
         Long xId = null;
         // For Flow provisioning, the SwitchConnectionDistinguisher is set to
@@ -428,7 +430,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     }
 
     @Override
-    public Future<RpcResult<RemoveGroupOutput>> removeGroup(RemoveGroupInput input) {
+    public Future<RpcResult<RemoveGroupOutput>> removeGroup(final RemoveGroupInput input) {
         LOG.debug("Calling the Remove Group RPC method on MessageDispatchService");
         Long xId = null;
 
@@ -485,7 +487,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     }
 
     @Override
-    public Future<RpcResult<RemoveMeterOutput>> removeMeter(RemoveMeterInput input) {
+    public Future<RpcResult<RemoveMeterOutput>> removeMeter(final RemoveMeterInput input) {
         LOG.debug("Calling the Remove MeterMod RPC method on MessageDispatchService");
         Long xId = null;
 
@@ -540,7 +542,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     }
 
     @Override
-    public Future<RpcResult<Void>> transmitPacket(TransmitPacketInput input) {
+    public Future<RpcResult<Void>> transmitPacket(final TransmitPacketInput input) {
         LOG.debug("TransmitPacket - {}", input);
         // Convert TransmitPacket to PacketOutInput
         PacketOutInput message = PacketOutConvertor.toPacketOutInput(input, version, sessionContext.getNextXid(),
@@ -556,7 +558,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         return messageService.packetOut(message, cookie);
     }
 
-    private FlowModInputBuilder toFlowModInputBuilder(Flow source) {
+    private FlowModInputBuilder toFlowModInputBuilder(final Flow source) {
         FlowModInputBuilder target = new FlowModInputBuilder();
         target.setCookie(source.getCookie().getValue());
         target.setIdleTimeout(source.getIdleTimeout());
@@ -566,7 +568,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         return target;
     }
 
-    private Match toMatch(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match match) {
+    private Match toMatch(final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match match) {
         MatchBuilder target = new MatchBuilder();
 
         target.setMatchEntries(toMatchEntries(match));
@@ -575,14 +577,14 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     }
 
     private List<MatchEntries> toMatchEntries(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match match) {
+            final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match match) {
         List<MatchEntries> entries = new ArrayList<>();
 
         return null;
     }
 
     @Override
-    public Future<RpcResult<UpdateFlowOutput>> updateFlow(UpdateFlowInput input) {
+    public Future<RpcResult<UpdateFlowOutput>> updateFlow(final UpdateFlowInput input) {
         LOG.debug("Calling the updateFlow RPC method on MessageDispatchService");
         Long xId = null;
         // Call the RPC method on MessageDispatchService
@@ -638,7 +640,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     }
 
     @Override
-    public Future<RpcResult<UpdateGroupOutput>> updateGroup(UpdateGroupInput input) {
+    public Future<RpcResult<UpdateGroupOutput>> updateGroup(final UpdateGroupInput input) {
         LOG.debug("Calling the update Group Mod RPC method on MessageDispatchService");
         Long xId = null;
 
@@ -694,7 +696,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     }
 
     @Override
-    public Future<RpcResult<UpdateMeterOutput>> updateMeter(UpdateMeterInput input) {
+    public Future<RpcResult<UpdateMeterOutput>> updateMeter(final UpdateMeterInput input) {
         LOG.debug("Calling the MeterMod RPC method on MessageDispatchService");
         Long xId = null;
 
@@ -756,7 +758,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
      * Methods for requesting statistics from switch
      */
     @Override
-    public Future<RpcResult<GetAllGroupStatisticsOutput>> getAllGroupStatistics(GetAllGroupStatisticsInput input) {
+    public Future<RpcResult<GetAllGroupStatisticsOutput>> getAllGroupStatistics(final GetAllGroupStatisticsInput input) {
 
         GetAllGroupStatisticsOutputBuilder output = new GetAllGroupStatisticsOutputBuilder();
         Collection<RpcError> errors = Collections.emptyList();
@@ -804,7 +806,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     }
 
     @Override
-    public Future<RpcResult<GetGroupDescriptionOutput>> getGroupDescription(GetGroupDescriptionInput input) {
+    public Future<RpcResult<GetGroupDescriptionOutput>> getGroupDescription(final GetGroupDescriptionInput input) {
 
         GetGroupDescriptionOutputBuilder output = new GetGroupDescriptionOutputBuilder();
         Collection<RpcError> errors = Collections.emptyList();
@@ -850,7 +852,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     }
 
     @Override
-    public Future<RpcResult<GetGroupFeaturesOutput>> getGroupFeatures(GetGroupFeaturesInput input) {
+    public Future<RpcResult<GetGroupFeaturesOutput>> getGroupFeatures(final GetGroupFeaturesInput input) {
 
         GetGroupFeaturesOutputBuilder output = new GetGroupFeaturesOutputBuilder();
         Collection<RpcError> errors = Collections.emptyList();
@@ -893,7 +895,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     }
 
     @Override
-    public Future<RpcResult<GetGroupStatisticsOutput>> getGroupStatistics(GetGroupStatisticsInput input) {
+    public Future<RpcResult<GetGroupStatisticsOutput>> getGroupStatistics(final GetGroupStatisticsInput input) {
 
         GetGroupStatisticsOutputBuilder output = new GetGroupStatisticsOutputBuilder();
         Collection<RpcError> errors = Collections.emptyList();
@@ -942,7 +944,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 
     @Override
     public Future<RpcResult<GetAllMeterConfigStatisticsOutput>> getAllMeterConfigStatistics(
-            GetAllMeterConfigStatisticsInput input) {
+            final GetAllMeterConfigStatisticsInput input) {
 
         GetAllMeterConfigStatisticsOutputBuilder output = new GetAllMeterConfigStatisticsOutputBuilder();
         Collection<RpcError> errors = Collections.emptyList();
@@ -990,7 +992,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     }
 
     @Override
-    public Future<RpcResult<GetAllMeterStatisticsOutput>> getAllMeterStatistics(GetAllMeterStatisticsInput input) {
+    public Future<RpcResult<GetAllMeterStatisticsOutput>> getAllMeterStatistics(final GetAllMeterStatisticsInput input) {
 
         GetAllMeterStatisticsOutputBuilder output = new GetAllMeterStatisticsOutputBuilder();
         Collection<RpcError> errors = Collections.emptyList();
@@ -1037,7 +1039,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     }
 
     @Override
-    public Future<RpcResult<GetMeterFeaturesOutput>> getMeterFeatures(GetMeterFeaturesInput input) {
+    public Future<RpcResult<GetMeterFeaturesOutput>> getMeterFeatures(final GetMeterFeaturesInput input) {
 
         GetMeterFeaturesOutputBuilder output = new GetMeterFeaturesOutputBuilder();
         Collection<RpcError> errors = Collections.emptyList();
@@ -1080,7 +1082,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     }
 
     @Override
-    public Future<RpcResult<GetMeterStatisticsOutput>> getMeterStatistics(GetMeterStatisticsInput input) {
+    public Future<RpcResult<GetMeterStatisticsOutput>> getMeterStatistics(final GetMeterStatisticsInput input) {
 
         GetMeterStatisticsOutputBuilder output = new GetMeterStatisticsOutputBuilder();
         Collection<RpcError> errors = Collections.emptyList();
@@ -1130,7 +1132,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 
     @Override
     public Future<RpcResult<GetAllNodeConnectorsStatisticsOutput>> getAllNodeConnectorsStatistics(
-            GetAllNodeConnectorsStatisticsInput arg0) {
+            final GetAllNodeConnectorsStatisticsInput arg0) {
 
         // Generate xid to associate it with the request
         Long xid = this.getSessionContext().getNextXid();
@@ -1171,7 +1173,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 
     @Override
     public Future<RpcResult<GetNodeConnectorStatisticsOutput>> getNodeConnectorStatistics(
-            GetNodeConnectorStatisticsInput arg0) {
+            final GetNodeConnectorStatisticsInput arg0) {
         // Generate xid to associate it with the request
         Long xid = this.getSessionContext().getNextXid();
 
@@ -1211,7 +1213,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         return Futures.immediateFuture(rpcResult);
     }
 
-    private TransactionId generateTransactionId(Long xid) {
+    private TransactionId generateTransactionId(final Long xid) {
         String stringXid = xid.toString();
         BigInteger bigIntXid = new BigInteger(stringXid);
         return new TransactionId(bigIntXid);
@@ -1219,7 +1221,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     }
 
     @Override
-    public Future<RpcResult<UpdatePortOutput>> updatePort(UpdatePortInput input) {
+    public Future<RpcResult<UpdatePortOutput>> updatePort(final UpdatePortInput input) {
         PortModInput ofPortModInput = null;
         RpcResult<UpdatePortOutput> rpcResultFromOFLib = null;
 
@@ -1277,7 +1279,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     }
 
     @Override
-    public Future<RpcResult<UpdateTableOutput>> updateTable(UpdateTableInput input) {
+    public Future<RpcResult<UpdateTableOutput>> updateTable(final UpdateTableInput input) {
 
         // Get the Xid. The same Xid has to be sent in all the Multipart
         // requests
@@ -1324,7 +1326,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 
     @Override
     public Future<RpcResult<GetAllFlowStatisticsFromFlowTableOutput>> getAllFlowStatisticsFromFlowTable(
-            GetAllFlowStatisticsFromFlowTableInput arg0) {
+            final GetAllFlowStatisticsFromFlowTableInput arg0) {
 
         // Generate xid to associate it with the request
         Long xid = this.getSessionContext().getNextXid();
@@ -1370,7 +1372,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 
     @Override
     public Future<RpcResult<GetAllFlowsStatisticsFromAllFlowTablesOutput>> getAllFlowsStatisticsFromAllFlowTables(
-            GetAllFlowsStatisticsFromAllFlowTablesInput arg0) {
+            final GetAllFlowsStatisticsFromAllFlowTablesInput arg0) {
 
         // Generate xid to associate it with the request
         Long xid = this.getSessionContext().getNextXid();
@@ -1418,7 +1420,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 
     @Override
     public Future<RpcResult<GetFlowStatisticsFromFlowTableOutput>> getFlowStatisticsFromFlowTable(
-            GetFlowStatisticsFromFlowTableInput arg0) {
+            final GetFlowStatisticsFromFlowTableInput arg0) {
         // Generate xid to associate it with the request
         Long xid = this.getSessionContext().getNextXid();
 
@@ -1481,7 +1483,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 
     @Override
     public Future<RpcResult<GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput>> getAggregateFlowStatisticsFromFlowTableForAllFlows(
-            GetAggregateFlowStatisticsFromFlowTableForAllFlowsInput arg0) {
+            final GetAggregateFlowStatisticsFromFlowTableForAllFlowsInput arg0) {
         // Generate xid to associate it with the request
         Long xid = this.getSessionContext().getNextXid();
 
@@ -1527,7 +1529,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 
     @Override
     public Future<RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>> getAggregateFlowStatisticsFromFlowTableForGivenMatch(
-            GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput arg0) {
+            final GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput arg0) {
 
         // Generate xid to associate it with the request
         Long xid = this.getSessionContext().getNextXid();
@@ -1580,7 +1582,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     }
 
     @Override
-    public Future<RpcResult<GetFlowTablesStatisticsOutput>> getFlowTablesStatistics(GetFlowTablesStatisticsInput arg0) {
+    public Future<RpcResult<GetFlowTablesStatisticsOutput>> getFlowTablesStatistics(final GetFlowTablesStatisticsInput arg0) {
         // Generate xid to associate it with the request
         Long xid = this.getSessionContext().getNextXid();
 
@@ -1618,7 +1620,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 
     @Override
     public Future<RpcResult<GetAllQueuesStatisticsFromAllPortsOutput>> getAllQueuesStatisticsFromAllPorts(
-            GetAllQueuesStatisticsFromAllPortsInput arg0) {
+            final GetAllQueuesStatisticsFromAllPortsInput arg0) {
         // Generate xid to associate it with the request
         Long xid = this.getSessionContext().getNextXid();
 
@@ -1663,7 +1665,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 
     @Override
     public Future<RpcResult<GetAllQueuesStatisticsFromGivenPortOutput>> getAllQueuesStatisticsFromGivenPort(
-            GetAllQueuesStatisticsFromGivenPortInput arg0) {
+            final GetAllQueuesStatisticsFromGivenPortInput arg0) {
         // Generate xid to associate it with the request
         Long xid = this.getSessionContext().getNextXid();
 
@@ -1709,7 +1711,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 
     @Override
     public Future<RpcResult<GetQueueStatisticsFromGivenPortOutput>> getQueueStatisticsFromGivenPort(
-            GetQueueStatisticsFromGivenPortInput arg0) {
+            final GetQueueStatisticsFromGivenPortInput arg0) {
         // Generate xid to associate it with the request
         Long xid = this.getSessionContext().getNextXid();
 
