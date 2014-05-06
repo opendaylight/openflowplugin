@@ -54,6 +54,18 @@ public class DropTestCommiter implements PacketProcessingListener {
 
     private final DropTestProvider _manager;
 
+    private int _sent;
+    private int _rcvd;
+    
+    public DropTestStats getStats(){
+    	return new DropTestStats(this._sent, this._rcvd);
+    }
+    
+    public void clearStats(){
+    	this._sent = 0;
+    	this._rcvd = 0;
+   }
+
     public DropTestProvider getManager() {
         return this._manager;
     }
@@ -63,9 +75,13 @@ public class DropTestCommiter implements PacketProcessingListener {
     }
 
     public void onPacketReceived(final PacketReceived notification) {
-        LOG.debug("onPacketReceived - Entering - " + notification);
+        // LOG.debug("onPacketReceived - Entering - " + notification);
 
-        // Get the Ingress nodeConnectorRef
+    	synchronized(this) {
+    		this._rcvd++;
+    	}
+    	
+       // Get the Ingress nodeConnectorRef
         final NodeConnectorRef ncr = notification.getIngress();
 
         // Get the instance identifier for the nodeConnectorRef
@@ -78,13 +94,13 @@ public class DropTestCommiter implements PacketProcessingListener {
         final NodeKey nodeKey = InstanceIdentifier.<Node, NodeKey>keyOf(nodeInstanceId);
         final byte[] rawPacket = notification.getPayload();
 
-        LOG.debug("onPacketReceived - received Packet on Node {} and NodeConnector {} payload {}",
-                nodeKey.getId(), ncKey.getId(), Hex.encodeHexString(rawPacket));
+        // LOG.debug("onPacketReceived - received Packet on Node {} and NodeConnector {} payload {}",
+        //        nodeKey.getId(), ncKey.getId(), Hex.encodeHexString(rawPacket));
 
         final byte[] srcMac = Arrays.copyOfRange(rawPacket, 6, 12);
 
-        LOG.debug("onPacketReceived - received Packet on Node {} and NodeConnector {} srcMac {}",
-                nodeKey.getId(), ncKey.getId(), Hex.encodeHexString(srcMac));
+        //LOG.debug("onPacketReceived - received Packet on Node {} and NodeConnector {} srcMac {}",
+        //        nodeKey.getId(), ncKey.getId(), Hex.encodeHexString(srcMac));
 
         final MatchBuilder match = new MatchBuilder();
         final EthernetMatchBuilder ethernetMatch = new EthernetMatchBuilder();
@@ -150,9 +166,13 @@ public class DropTestCommiter implements PacketProcessingListener {
         final Flow flow = fb.build();
         final DataModificationTransaction transaction = this._manager.getDataService().beginTransaction();
 
-        LOG.debug("onPacketReceived - About to write flow - " + flow);
+        // LOG.debug("onPacketReceived - About to write flow - " + flow);
         transaction.putConfigurationData(flowInstanceId, flow);
         transaction.commit();
-        LOG.debug("onPacketReceived - About to write flow commited");
+        // LOG.debug("onPacketReceived - About to write flow commited");
+    	synchronized(this) {
+    		this._sent++;
+    	}
+
     }
 }
