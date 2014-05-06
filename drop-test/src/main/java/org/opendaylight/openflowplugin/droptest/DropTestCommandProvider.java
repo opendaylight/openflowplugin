@@ -89,6 +89,27 @@ public class DropTestCommandProvider implements CommandProvider {
         }
     }
     
+    public void _showDropStats(CommandInterpreter ci) {
+        if(sessionInitiated) {    	
+        	ci.println("RPC Test Statistics: " + this.rpcProvider.getStats().toString());
+        	ci.println("FRM Test Statistics: " + this.provider.getStats().toString());
+       } else {
+        	ci.println("Session not initiated, try again in a few seconds");
+        }
+   }
+    
+    public void _clearDropStats(CommandInterpreter ci) {
+        if(sessionInitiated) {    	
+        	ci.print("Clearing drop statistics... ");
+        	this.rpcProvider.clearStats();
+        	this.provider.clearStats();
+        	ci.println("Done.");
+
+        } else {
+        	ci.println("Session not initiated, try again in a few seconds");
+        }
+  }
+    
     @Override
     public String getHelp() {
         String helpString = "----------------- dropAllPackets--------------\n"
