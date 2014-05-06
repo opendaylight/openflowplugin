@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
 
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.controller.sal.binding.api.data.DataProviderService;
@@ -195,6 +196,7 @@ public class SessionManagerOFImpl implements SessionManager {
             }
         }
     };
+    private ExecutorService rpcPool;
 
 
     @Override
@@ -244,6 +246,18 @@ public class SessionManagerOFImpl implements SessionManager {
             for (SessionContext sessionContext : sessionLot.values()) {
                 sessionContext.getPrimaryConductor().disconnect();
             }
+            // TODO: handle timeouted shutdown
+            rpcPool.shutdown();
         }
+    }
+
+    @Override
+    public void setRpcPool(ExecutorService rpcPool) {
+        this.rpcPool = rpcPool;
+    }
+    
+    @Override
+    public ExecutorService getRpcPool() {
+        return rpcPool;
     }
 }

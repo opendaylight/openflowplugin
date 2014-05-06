@@ -54,6 +54,8 @@ public class PacketInTranslator implements IMDMessageTranslator<OfHeader, List<D
            // create a packet received event builder
            PacketReceivedBuilder pktInBuilder = new PacketReceivedBuilder();
            pktInBuilder.setPayload(message.getData());
+           //TODO: add connection cookie
+           //pktInBuilder.setConnectionCookie(new ConnectionCookie(cookie.getId()));
 
            // get the DPID
            GetFeaturesOutput features = sc.getFeatures();

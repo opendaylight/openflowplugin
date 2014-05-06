@@ -170,7 +170,6 @@ public abstract class OFSessionUtil {
      * @return pop listener Map
      */
     public static Map<Class<? extends DataObject>, Collection<PopListener<DataObject>>> getPopListenerMapping() {
-        // TODO Auto-generated method stub
         return getSessionManager().getPopListenerMapping();
     }
 

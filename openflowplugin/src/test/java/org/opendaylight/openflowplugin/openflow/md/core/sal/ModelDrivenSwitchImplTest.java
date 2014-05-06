@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.Set;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
@@ -26,6 +27,7 @@ import org.opendaylight.openflowplugin.openflow.md.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.openflow.md.core.session.IMessageDispatchService;
+import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.openflow.md.core.session.TransactionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
@@ -77,6 +79,8 @@ public class ModelDrivenSwitchImplTest {
         Mockito.when(context.getFeatures()).thenReturn(features);
         Mockito.when(context.getbulkTransactionCache()).thenReturn(bulkTransactionCache);
         Mockito.when(features.getDatapathId()).thenReturn(BigInteger.valueOf(1));
+        
+        OFSessionUtil.getSessionManager().setRpcPool(Executors.newFixedThreadPool(10));
 
         mdSwitchOF10 = new ModelDrivenSwitchImpl(null, null, context);
         mdSwitchOF13 = new ModelDrivenSwitchImpl(null, null, context);

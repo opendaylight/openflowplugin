@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.openflow.md.core.session;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
 
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.controller.sal.binding.api.data.DataProviderService;
@@ -111,4 +112,14 @@ public interface SessionManager extends AutoCloseable {
      * @param popListenerMapping the popListenerMapping to set
      */
     void setPopListenerMapping(Map<Class<? extends DataObject>, Collection<PopListener<DataObject>>> popListenerMapping);
+
+    /**
+     * @param newFixedThreadPool
+     */
+    void setRpcPool(ExecutorService newFixedThreadPool);
+
+    /**
+     * @return the rpcPool instance
+     */
+    ExecutorService getRpcPool();
 }
