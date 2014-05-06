@@ -23,6 +23,14 @@ public class DropTestProvider implements AutoCloseable {
     private Registration<NotificationListener> listenerRegistration;
     private final DropTestCommiter commiter = new DropTestCommiter(this);
 
+    public DropTestStats getStats() {
+    	return this.commiter.getStats();
+    }
+    
+    public void clearStats() {
+    	this.commiter.clearStats();
+    }
+    
     public DataProviderService getDataService() {
         return this._dataService;
     }
