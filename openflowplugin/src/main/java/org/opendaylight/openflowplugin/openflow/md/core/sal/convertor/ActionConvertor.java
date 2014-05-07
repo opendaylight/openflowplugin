@@ -134,9 +134,10 @@ public final class ActionConvertor {
                 ofAction = SalToOFSetNwTtl(action, actionBuilder);
             else if (action instanceof DecNwTtlCase)
                 ofAction = SalToOFDecNwTtl(actionBuilder);
-            else if (action instanceof SetFieldCase)
+            else if (action instanceof SetFieldCase) {
+                logger.error("*NXM* ActionConvertor IS SetFieldCase getActions => {} action => {}", version, action);
                 ofAction = SalToOFSetField(action, actionBuilder, version, datapathid);
-            else if (action instanceof PushPbbActionCase)
+            } else if (action instanceof PushPbbActionCase)
                 ofAction = SalToOFPushPbbAction(action, actionBuilder);
             else if (action instanceof PopPbbActionCase)
                 ofAction = SalToOFPopPBB(actionBuilder);
@@ -173,20 +174,35 @@ public final class ActionConvertor {
     }
 
     private static Action SalToOFSetField(
+
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
             ActionBuilder actionBuilder, short version, BigInteger datapathid) {
+
+        logger.error("*NXM* ActionConvertor IS SetFieldCase getActions  action => {} " +
+            "actionBuilder => {} version => {} datapathID => => {}",
+            action, actionBuilder, version, datapathid);
 
         SetFieldCase setFieldCase = (SetFieldCase) action;
         org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match match = setFieldCase
                 .getSetField();
 
+        logger.error("*NXM* ActionConvertor IS SetFieldCase getActions  action => {} " +
+            "actionBuilder => {} version => {} datapathID => {} SetFieldCase.getInterface => {}",
+            action, actionBuilder, version, datapathid, setFieldCase.getImplementedInterface());
+
         OxmFieldsActionBuilder oxmFieldsActionBuilder = new OxmFieldsActionBuilder();
         MatchReactor.getInstance().convert(match, version, oxmFieldsActionBuilder, datapathid);
+
+        logger.error("*NXM* ActionConvertor SalToOFSetField MatchReactor.getInstance().conver(oxmFieldsActionBuilder) => {} ",
+            oxmFieldsActionBuilder.getMatchEntries());
 
         actionBuilder
                 .setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.SetField.class);
 
         actionBuilder.addAugmentation(OxmFieldsAction.class, oxmFieldsActionBuilder.build());
+
+        logger.error("*NXM* ActionConvertor SalToOFSetField oxmFieldsActionBuilder.build() => {} ",oxmFieldsActionBuilder.getMatchEntries());
+
         return actionBuilder.build();
     }
 
@@ -743,10 +759,11 @@ public final class ActionConvertor {
                 DecNwTtlBuilder decNwTtl = new DecNwTtlBuilder();
                 bucketActions.add(new DecNwTtlCaseBuilder().setDecNwTtl(decNwTtl.build()).build());
             } else if (action.getType().equals(
-                    org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.SetField.class))
+                    org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.SetField.class)) {
                 bucketActions.add(new SetFieldCaseBuilder().setSetField(MatchConvertorImpl.ofToSALSetField(action))
-                        .build());
-
+                    .build());
+                logger.error("*NXM*  ActionConvertor SalToOFSetField bucketActions => {} ",bucketActions);
+            }
             else if (action.getType().equals(
                     org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.PushPbb.class))
                 bucketActions.add(ofToSALPushPbbAction(action));
@@ -762,6 +779,8 @@ public final class ActionConvertor {
             }
 
         }
+        logger.error("*NXM*  ActionConvertor SalToOFSetField bucketActions => {} ",bucketActions);
+
         return bucketActions;
     }
 
@@ -779,6 +798,7 @@ public final class ActionConvertor {
         PortAction port = action.getAugmentation(PortAction.class);
         if (port != null) {
             outputAction.setOutputNodeConnector(new Uri(port.getPort().getValue().toString()));
+
         } else {
             logger.error("Provided action is not OF Output action, no associated port found!");
         }
@@ -791,6 +811,7 @@ public final class ActionConvertor {
         }
 
         return new OutputActionCaseBuilder().setOutputAction(outputAction.build()).build();
+
     }
 
     /**

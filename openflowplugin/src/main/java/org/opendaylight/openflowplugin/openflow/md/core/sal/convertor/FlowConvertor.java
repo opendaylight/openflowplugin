@@ -178,11 +178,18 @@ public class FlowConvertor {
             short version,BigInteger datapathid) {
         List<Instruction> instructionsList = new ArrayList<>();
 
+        logger.error("*NXM*  FlowConvertor toInstructions instructionList => {} ",instructionsList);
+
+
         for (org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction instruction : instructions
                 .getInstruction()) {
             InstructionBuilder instructionBuilder = new InstructionBuilder();
             org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction curInstruction = instruction
                     .getInstruction();
+
+            logger.error("*NXM*  FlowConvertor toInstructions curInstruction => {} ",curInstruction);
+
+
             if (curInstruction instanceof GoToTableCase) {
                 GoToTableCase goToTablecase = (GoToTableCase) curInstruction;
                 GoToTable goToTable = goToTablecase.getGoToTable();
@@ -226,11 +233,14 @@ public class FlowConvertor {
                 ApplyActions applyActions = applyActionscase.getApplyActions();
                 instructionBuilder
                         .setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.ApplyActions.class);
+
                 ActionsInstructionBuilder actionsInstructionBuilder = new ActionsInstructionBuilder();
                 actionsInstructionBuilder.setAction(ActionConvertor.getActions(applyActions.getAction(),
                         version,datapathid));
                 instructionBuilder.addAugmentation(ActionsInstruction.class, actionsInstructionBuilder.build());
                 instructionsList.add(instructionBuilder.build());
+
+                logger.error("*NXM*  FlowConvertor toInstructions instructionsList => {} ",instructionsList);
             }
 
             else if (curInstruction instanceof ClearActionsCase) {
@@ -265,9 +275,14 @@ public class FlowConvertor {
             org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction curInstruction = instruction
                     .getInstruction();
 
+
             if (curInstruction instanceof ApplyActionsCase) {
                 ApplyActionsCase applyActionscase = (ApplyActionsCase) curInstruction;
                 ApplyActions applyActions = applyActionscase.getApplyActions();
+
+                logger.error("*NXM*  FlowConvertor getActions applyActions => {} ",applyActions);
+
+
                 return ActionConvertor.getActions(applyActions.getAction(), version,datapathid);
             }
 

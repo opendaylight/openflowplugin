@@ -55,13 +55,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.ArpS
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.ArpSpa;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.ArpTha;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.ArpTpa;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.BarDst;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.BarSrc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.EthDst;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.EthSrc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.EthType;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Foo;
-//import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.FoobarId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Icmpv4Code;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Icmpv4Type;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Icmpv6Code;
@@ -89,8 +85,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.PbbI
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.SctpDst;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.SctpSrc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TcpDst;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TcpFlag;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TcpSrc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TunnelId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TunnelIpv4Dst;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TunnelIpv4Src;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.UdpDst;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.UdpSrc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.VlanPcp;
@@ -221,6 +220,9 @@ public class TableFeaturesConvertor {
                 
                 if( null != matchSetField) {
                     setFieldMatch = matchSetField.getSetFieldMatch();
+                    logger.info("TableFeatureConvertor setFieldMatch => {}", setFieldMatch);
+
+
                 }
                 
                 setSetFieldTableFeatureProperty(
@@ -228,7 +230,13 @@ public class TableFeaturesConvertor {
                         TableFeaturesPropType.OFPTFPTMATCH,
                         ((setFieldMatch == null) ? new ArrayList<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatch>()
                                 : setFieldMatch));
+
+                logger.info("TableFeatureConvertor setFieldMatch 2nd => {}", setFieldMatch);
+
             } else if (propType instanceof Wildcards) {
+
+                logger.info("TableFeatureConvertor propType => {}", propType);
+
                 List<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatch> setFieldMatch = null;
                 WildcardSetfield wildcardSetField = ((Wildcards) propType).getWildcardSetfield();
                 
@@ -247,6 +255,9 @@ public class TableFeaturesConvertor {
                 
                 if (null != writeSetField) {
                     setFieldMatch = writeSetField.getSetFieldMatch();
+
+                    logger.info("TableFeatureConvertor setFieldMatch 3rd => {}", setFieldMatch);
+
                 }
                 
                 setSetFieldTableFeatureProperty(
@@ -272,6 +283,9 @@ public class TableFeaturesConvertor {
                   
                 if (null != applySetfield) {
                     setFieldMatch = applySetfield.getSetFieldMatch();
+
+                    logger.info("TableFeatureConvertor setFieldMatch 4th => {}", setFieldMatch);
+
                 }
                 setSetFieldTableFeatureProperty(
                         propBuilder,
@@ -284,6 +298,9 @@ public class TableFeaturesConvertor {
                 
                 if (null != applySetfieldMiss) {
                     setFieldMatch = applySetfieldMiss.getSetFieldMatch();
+
+                    logger.info("TableFeatureConvertor setFieldMatch 5th => {}", setFieldMatch);
+
                 }
                 setSetFieldTableFeatureProperty(
                         propBuilder,
@@ -423,6 +440,10 @@ public class TableFeaturesConvertor {
         for (org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatch currMatch : setFields) {
             Class<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.MatchField> currMatchType = currMatch
                     .getMatchType();
+
+            logger.info("TableFeatureConvertor matchEntriesList Pre => {}", matchEntriesList);
+            logger.info("TableFeatureConvertor setFieldMatch  => {}", setFields);
+
             MatchEntriesBuilder matchEntryBuilder = new MatchEntriesBuilder();
             if (currMatchType.equals(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.ArpOp.class)) {
                 setMatchEntry(matchEntryBuilder, ArpOp.class, currMatch.isHasMask());
@@ -543,20 +564,17 @@ public class TableFeaturesConvertor {
             } else if (currMatchType
                     .equals(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.VlanVid.class)) {
                 setMatchEntry(matchEntryBuilder, VlanVid.class, currMatch.isHasMask());
+                // NXMs
             } else if (currMatchType
-                .equals(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Foo.class)) {
-                setMatchEntry(matchEntryBuilder, Foo.class, currMatch.isHasMask());
-
-            // NXMs
-//            } else if (currMatchType
-//                .equals(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.FoobarId.class)) {
-//                setMatchEntry(matchEntryBuilder, FoobarId.class, currMatch.isHasMask());
+                .equals(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TunnelIpv4Dst.class)) {
+                setMatchEntry(matchEntryBuilder, TunnelIpv4Dst.class, currMatch.isHasMask());
+                // NXMs
             } else if (currMatchType
-                .equals(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.BarDst.class)) {
-                setMatchEntry(matchEntryBuilder, BarDst.class, currMatch.isHasMask());
+                .equals(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TunnelIpv4Src.class)) {
+                setMatchEntry(matchEntryBuilder, TunnelIpv4Src.class, currMatch.isHasMask());
             } else if (currMatchType
-                .equals(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.BarSrc.class)) {
-                setMatchEntry(matchEntryBuilder, BarSrc.class, currMatch.isHasMask());
+                .equals(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TcpFlag.class)) {
+                setMatchEntry(matchEntryBuilder, TcpFlag.class, currMatch.isHasMask());
             }
             matchEntriesList.add(matchEntryBuilder.build());
         }

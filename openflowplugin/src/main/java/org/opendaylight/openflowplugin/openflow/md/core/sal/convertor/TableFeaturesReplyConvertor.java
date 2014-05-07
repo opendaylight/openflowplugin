@@ -78,8 +78,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.PbbI
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.SctpDst;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.SctpSrc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TcpDst;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TcpFlag;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TcpSrc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TunnelId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TunnelIpv4Dst;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TunnelIpv4Src;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.UdpDst;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.UdpSrc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.VlanPcp;
@@ -473,9 +476,21 @@ public class TableFeaturesReplyConvertor {
                 salMatchField = org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.VlanPcp.class;
             } else if (ofMatchField.equals(VlanVid.class)) {
                 salMatchField = org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.VlanVid.class;
+            // NXM
+            } else if (ofMatchField.equals(TunnelIpv4Dst.class)) {
+                salMatchField = org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TunnelIpv4Dst.class;
+                // NXM
+            } else if (ofMatchField.equals(TunnelIpv4Src.class)) {
+                salMatchField = org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TunnelIpv4Src.class;
+                // NXM
+            } else if (ofMatchField.equals(TunnelIpv4Src.class)) {
+                salMatchField = org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TunnelIpv4Src.class;
+                // NXM TCP_Flag Conversion between the HighLevel and LowLevel 
+            } else if (ofMatchField.equals(TcpFlag.class)) {
+                salMatchField = org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TcpFlag.class;
             }
 
-            setFieldMatchBuilder.setMatchType(salMatchField);
+        setFieldMatchBuilder.setMatchType(salMatchField);
             if (setHasMask) {
                 setFieldMatchBuilder.setHasMask(currMatch.isHasMask());
             }

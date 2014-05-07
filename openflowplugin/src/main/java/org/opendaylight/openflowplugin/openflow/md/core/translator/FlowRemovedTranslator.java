@@ -45,7 +45,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ipv6.match.fields.Ipv6ExtHeaderBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ipv6.match.fields.Ipv6LabelBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatchBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.FoobarBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Icmpv4MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Icmpv6MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.IpMatchBuilder;
@@ -54,8 +53,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.TunnelBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.ArpMatchBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.BarMatchBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.FooMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.SctpMatchBuilder;
@@ -94,13 +91,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.ArpS
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.ArpSpa;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.ArpTha;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.ArpTpa;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.BarDst;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.BarSrc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.EthDst;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.EthSrc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.EthType;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Foo;
-//import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.FoobarId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Icmpv4Code;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Icmpv4Type;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Icmpv6Code;
@@ -130,6 +123,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Sctp
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TcpDst;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TcpSrc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TunnelId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TunnelIpv4Dst;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TunnelIpv4Src;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.UdpDst;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.UdpSrc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.VlanPcp;
@@ -213,18 +208,15 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
         ArpMatchBuilder arpMatch = null;
         Ipv6MatchBuilder ipv6Match = null;
         ProtocolMatchFieldsBuilder protocolMatchFields = null;
-        FooMatchBuilder fooMatch = null;
-        BarMatchBuilder barMatch = null;
-//        FoobarBuilder foobarMatch = null;
 
         for (MatchEntries entry : ofMatch.getMatchEntries()) {
             Class<? extends MatchField> field = entry.getOxmMatchField();
             if (field.equals(InPort.class)) {
-                matchBuilder.setInPort(InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(datapathid,entry.getAugmentation(PortNumberMatchEntry.class).getPortNumber().getValue()
-                        .longValue()));
+                matchBuilder.setInPort(InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(datapathid, entry.getAugmentation(PortNumberMatchEntry.class).getPortNumber().getValue()
+                    .longValue()));
             } else if (field.equals(InPhyPort.class)) {
-                matchBuilder.setInPhyPort(InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(datapathid,entry.getAugmentation(PortNumberMatchEntry.class).getPortNumber().getValue()
-                        .longValue()));
+                matchBuilder.setInPhyPort(InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(datapathid, entry.getAugmentation(PortNumberMatchEntry.class).getPortNumber().getValue()
+                    .longValue()));
             } else if (field.equals(Metadata.class)) {
                 MetadataBuilder metadata = new MetadataBuilder();
                 metadata.setMetadata(new BigInteger(1, entry.getAugmentation(MetadataMatchEntry.class).getMetadata()));
@@ -253,7 +245,7 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
                 } else if (field.equals(EthType.class)) {
                     EthernetTypeBuilder ethType = new EthernetTypeBuilder();
                     ethType.setType(new EtherType(entry.getAugmentation(EthTypeMatchEntry.class).getEthType()
-                            .getValue().longValue()));
+                        .getValue().longValue()));
                     ethernetMatch.setEthernetType(ethType.build());
                 }
             } else if (field.equals(VlanVid.class) || field.equals(VlanPcp.class)) {
@@ -275,7 +267,7 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
                     vlanMatch.setVlanId(vlanId.build());
                 } else if (field.equals(VlanPcp.class)) {
                     vlanMatch.setVlanPcp(new org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanPcp(
-                            entry.getAugmentation(VlanPcpMatchEntry.class).getVlanPcp().shortValue()));
+                        entry.getAugmentation(VlanPcpMatchEntry.class).getVlanPcp().shortValue()));
                 }
             } else if (field.equals(IpDscp.class) || field.equals(IpEcn.class) || field.equals(IpProto.class)) {
                 if (ipMatch == null) {
@@ -376,24 +368,6 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
                     arpMatch.setArpTargetHardwareAddress(arpTha.build());
                 }
 
-                // NXM
-            } else if (field.equals(Foo.class)) {
-                if (fooMatch == null) {
-                    fooMatch = new FooMatchBuilder();
-                } else if (field.equals(Foo.class)) {
-                    fooMatch.setFooDestination(toIpv4Prefix(entry));
-                }
-
-                // NXM
-
-            } else if (field.equals(BarSrc.class) || field.equals(BarDst.class)) {
-                if (barMatch == null) {
-                    barMatch = new BarMatchBuilder();
-                } else if (field.equals(BarSrc.class)) {
-                    barMatch.setBarSourceTransportAddress(toIpv4Prefix(entry));
-                } else if (field.equals(BarDst.class)) {
-                    barMatch.setBarTargetTransportAddress(toIpv4Prefix(entry));
-                }
 
             } else if (field.equals(Ipv6Src.class) || field.equals(Ipv6Dst.class) || field.equals(Ipv6Flabel.class)
                     || field.equals(Ipv6NdTarget.class) || field.equals(Ipv6NdSll.class)
@@ -466,13 +440,6 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
                 if (entry.isHasMask()) {
                     tunnel.setTunnelMask(new BigInteger(OFConstants.SIGNUM_UNSIGNED, entry.getAugmentation(MaskMatchEntry.class).getMask()));
                 }
-//                matchBuilder.setTunnel(tunnel.build());
-//            } else if (field.equals(FoobarId.class)) {
-//                FoobarBuilder foobar = new FoobarBuilder();
-//                foobar.setFoobarId(new BigInteger(1, entry.getAugmentation(MetadataMatchEntry.class).getMetadata()));
-//                if (entry.isHasMask()) {
-//                    foobar.setFoobarMask(new BigInteger(OFConstants.SIGNUM_UNSIGNED, entry.getAugmentation(MaskMatchEntry.class).getMask()));
-//                }
             }
         }
 
@@ -503,12 +470,8 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
         if (ipv4Match != null) {
             matchBuilder.setLayer3Match(ipv4Match.build());
 
-        // NXMs
-        } else if (fooMatch != null) {
-            matchBuilder.setLayer3Match(fooMatch.build());
-        // NXMs
-        } else if (barMatch != null) {
-            matchBuilder.setLayer3Match(barMatch.build());
+
+
 
         } else if (arpMatch != null) {
             matchBuilder.setLayer3Match(arpMatch.build());

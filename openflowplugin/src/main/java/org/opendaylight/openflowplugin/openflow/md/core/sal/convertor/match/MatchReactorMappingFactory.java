@@ -24,19 +24,24 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.aggregate._case.MultipartRequestAggregateBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.flow._case.MultipartRequestFlowBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * add prepared convertors and injectors into given mappings
  * @see MatchReactor
  */
 public class MatchReactorMappingFactory {
-    
+
+    private static final Logger logger = LoggerFactory.getLogger(MatchReactorMappingFactory.class);
     /**
      * @param conversionMapping
      */
     public static void addMatchConvertors(Map<Short, Convertor<Match, ?>> conversionMapping) {
         conversionMapping.put(OFConstants.OFP_VERSION_1_3, new MatchConvertorImpl());
         conversionMapping.put(OFConstants.OFP_VERSION_1_0, new MatchConvertorV10Impl());
+        logger.info("MatchReactor initMappings()=> {} ", conversionMapping);
+
     }
     
     /**
@@ -50,6 +55,9 @@ public class MatchReactorMappingFactory {
             public void inject(List<MatchEntries> value,
                     FlowModInputBuilder target) {
                 target.setMatch(wrapMatchV13(value).build());
+
+                logger.info("**NMX** MatchReactorMappingFactory addMatchIjectors" +
+                    " value => {} target => {}" , value, target);
             }
         });
         
@@ -59,7 +67,12 @@ public class MatchReactorMappingFactory {
             @Override
             public void inject(List<MatchEntries> value,
                     OxmFieldsActionBuilder target) {
+                logger.info("**NMX** MatchReactorMappingFactory addMatchIjectors" +
+                    " value => {} target => {}" , value, target);
+
                 target.setMatchEntries(value);
+                logger.info("**NMX** MatchReactorMappingFactory addMatchIjectors" +
+                    " value => {} target => {}" , value, target);
             }
         });
         
