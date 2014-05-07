@@ -14,10 +14,13 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import com.google.common.cache.Cache;
+
+import org.opendaylight.openflowplugin.openflow.md.ModelDrivenSwitch;
 import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
+import org.opendaylight.yangtools.concepts.CompositeObjectRegistration;
 
 /**
  * @author mirehak
@@ -27,25 +30,25 @@ public interface SessionContext {
     /**
      * @return primary connection wrapper
      */
-    public ConnectionConductor getPrimaryConductor();
+    ConnectionConductor getPrimaryConductor();
 
     /**
      * @return the features of corresponding switch
      */
-    public GetFeaturesOutput getFeatures();
+    GetFeaturesOutput getFeatures();
 
     /**
      * @param auxiliaryKey
      *            key under which the auxiliary conductor is stored
      * @return list of auxiliary connection wrappers
      */
-    public ConnectionConductor getAuxiliaryConductor(
+    ConnectionConductor getAuxiliaryConductor(
             SwitchConnectionDistinguisher auxiliaryKey);
 
     /**
      * @return entries of all auxiliary connections wrapped in conductors in this session
      */
-    public Set<Entry<SwitchConnectionDistinguisher, ConnectionConductor>> getAuxiliaryConductors();
+    Set<Entry<SwitchConnectionDistinguisher, ConnectionConductor>> getAuxiliaryConductors();
 
     /**
      * register new auxiliary connection wrapped in {@link ConnectionConductor}
@@ -53,87 +56,87 @@ public interface SessionContext {
      * @param auxiliaryKey
      * @param conductor
      */
-    public void addAuxiliaryConductor(SwitchConnectionDistinguisher auxiliaryKey,
+    void addAuxiliaryConductor(SwitchConnectionDistinguisher auxiliaryKey,
             ConnectionConductor conductor);
 
     /**
      * @param connectionCookie
      * @return removed connectionConductor
      */
-    public ConnectionConductor removeAuxiliaryConductor(
+    ConnectionConductor removeAuxiliaryConductor(
             SwitchConnectionDistinguisher connectionCookie);
 
     /**
      * @return true if this session is valid
      */
-    public boolean isValid();
+    boolean isValid();
 
     /**
      * @param valid the valid to set
      */
-    public void setValid(boolean valid);
+    void setValid(boolean valid);
 
     /**
      * @return the sessionKey
      */
-    public SwitchConnectionDistinguisher getSessionKey();
+    SwitchConnectionDistinguisher getSessionKey();
 
     /**
      * Returns a map containing all OFPhysicalPorts of this switch.
      * @return The Map of OFPhysicalPort
      */
-    public Map<Long, PortGrouping> getPhysicalPorts();
+    Map<Long, PortGrouping> getPhysicalPorts();
     
     /**
      * Returns a map containing all bandwidths for all OFPorts of this switch.
      * @return The Map of bandwidths for all OFPorts
      */
-    public Map<Long, Boolean> getPortsBandwidth();
+    Map<Long, Boolean> getPortsBandwidth();
 
     /**
      * Returns a Set containing all port IDs of this switch.
      * @return The Set of port ID
      */
-    public Set<Long> getPorts();
+    Set<Long> getPorts();
     
     /**
      * @return the Object for this session xId
      */
-    public Cache<TransactionKey, Object> getbulkTransactionCache();
+    Cache<TransactionKey, Object> getbulkTransactionCache();
 
     /**
      * Returns OFPhysicalPort of the specified portNumber of this switch.
      * @param portNumber The port ID
      * @return OFPhysicalPort for the specified PortNumber
      */
-    public PortGrouping getPhysicalPort(Long portNumber);
+    PortGrouping getPhysicalPort(Long portNumber);
 
     /**
      * Returns the bandwidth of the specified portNumber of this switch.
      * @param portNumber the port ID
      * @return bandwidth
      */
-    public Boolean getPortBandwidth(Long portNumber);
+    Boolean getPortBandwidth(Long portNumber);
 
     /**
      * Returns True if the port is enabled,
      * @param portNumber
      * @return True if the port is enabled
      */
-    public boolean isPortEnabled(long portNumber);
+    boolean isPortEnabled(long portNumber);
 
     /**
      * Returns True if the port is enabled.
      * @param port
      * @return True if the port is enabled
      */
-    public boolean isPortEnabled(PortGrouping port);
+    boolean isPortEnabled(PortGrouping port);
 
     /**
      * Returns a list containing all enabled ports of this switch.
      * @return List containing all enabled ports of this switch
      */
-    public List<PortGrouping> getEnabledPorts();
+    List<PortGrouping> getEnabledPorts();
 
     // TODO:: add listeners here, manager will set them and conductor use them
 
@@ -142,13 +145,20 @@ public interface SessionContext {
      *
      * @return the message service
      */
-    public IMessageDispatchService getMessageDispatchService();
+    IMessageDispatchService getMessageDispatchService();
 
    /**
     * @return the unique xid for this session
     */
-    public Long getNextXid();
+    Long getNextXid();
 
+    /**
+     * @param registration provider composite registration
+     */
+    void setProviderRegistration(CompositeObjectRegistration<ModelDrivenSwitch> registration);
 
-
+    /**
+     * @return provider composite registration
+     */
+    CompositeObjectRegistration<ModelDrivenSwitch> getProviderRegistration();
 }

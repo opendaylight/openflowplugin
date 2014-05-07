@@ -17,12 +17,12 @@ import java.util.concurrent.Future;
 
 import junit.framework.Assert;
 
-import com.google.common.cache.Cache;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionReadyListener;
+import org.opendaylight.openflowplugin.openflow.md.ModelDrivenSwitch;
 import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.openflow.md.core.ErrorHandler;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
@@ -59,8 +59,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetConfigInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.TableModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SystemNotificationsListener;
+import org.opendaylight.yangtools.concepts.CompositeObjectRegistration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+
+import com.google.common.cache.Cache;
 
 public class MessageDispatchServiceImplTest {
 
@@ -180,6 +183,7 @@ class MockSessionContext implements SessionContext {
     private Map<SwitchConnectionDistinguisher, ConnectionConductor> map;
     private IMessageDispatchService messageService;
     private boolean isValid = true;
+    private CompositeObjectRegistration<ModelDrivenSwitch> registration;
 
     MockSessionContext(int conductorNum) {
         conductor = new MockConnectionConductor(conductorNum);
@@ -303,6 +307,16 @@ class MockSessionContext implements SessionContext {
         return null;
     }
 
+    @Override
+    public CompositeObjectRegistration<ModelDrivenSwitch> getProviderRegistration() {
+        return registration;
+    }
+
+    @Override
+    public void setProviderRegistration(
+            CompositeObjectRegistration<ModelDrivenSwitch> registration) {
+        this.registration = registration;
+    }
 }
 
 class MockConnectionConductor implements ConnectionConductor {

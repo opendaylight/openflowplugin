@@ -20,11 +20,15 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+
 import java.util.concurrent.TimeUnit;
+
+import org.opendaylight.openflowplugin.openflow.md.ModelDrivenSwitch;
 import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
+import org.opendaylight.yangtools.concepts.CompositeObjectRegistration;
 
 /**
  * @author mirehak
@@ -41,6 +45,7 @@ public class SessionContextOFImpl implements SessionContext {
     private final Map<Long, PortGrouping> physicalPorts;
     private final Map<Long, Boolean> portBandwidth;
     public static Cache<TransactionKey, Object> bulkTransactionCache = CacheBuilder.newBuilder().expireAfterWrite(10000, TimeUnit.MILLISECONDS).concurrencyLevel(1).build();
+    private CompositeObjectRegistration<ModelDrivenSwitch> providerRegistration;
 
 
     /**
@@ -199,5 +204,16 @@ public class SessionContextOFImpl implements SessionContext {
             }
         }
         return result;
+    }
+    
+    @Override
+    public void setProviderRegistration(
+            CompositeObjectRegistration<ModelDrivenSwitch> providerRegistration) {
+                this.providerRegistration = providerRegistration;
+    }
+    
+    @Override
+    public CompositeObjectRegistration<ModelDrivenSwitch> getProviderRegistration() {
+        return providerRegistration;
     }
 }
