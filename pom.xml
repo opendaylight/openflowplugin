@@ -44,14 +44,15 @@
       <osgi.core.version>5.0.0</osgi.core.version>
       <sal.api.version>0.8.1-SNAPSHOT</sal.api.version>
       <sal.connection.api.version>0.1.2-SNAPSHOT</sal.connection.api.version>
-      <netconf.connector.version>0.2.5-SNAPSHOT</netconf.connector.version>
-      <config.manager.version>0.2.5-SNAPSHOT</config.manager.version>
+      <netconf.parent.version>0.2.5-SNAPSHOT</netconf.parent.version>
+      <config.parent.version>0.2.5-SNAPSHOT</config.parent.version>
       <build.helper.version>1.8</build.helper.version>
       <xtend.version>2.4.3</xtend.version>
       <xtend.dstdir>src/main/xtend-gen</xtend.dstdir>
       <jmxGeneratorPath>src/main/yang-gen-config</jmxGeneratorPath>
       <salGeneratorPath>src/main/yang-gen-sal</salGeneratorPath>
       <maven.bundle.version>2.4.0</maven.bundle.version>
+      <exi.nagasena.version>0000.0002.0038.0-SNAPSHOT</exi.nagasena.version>
     </properties>
 
     <dependencyManagement>
@@ -163,7 +164,7 @@
         <dependency>
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>config-netconf-connector</artifactId>
-            <version>${netconf.connector.version}</version>
+            <version>${netconf.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.controller</groupId>
@@ -178,8 +179,66 @@
         <dependency>
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>config-manager</artifactId>
-            <version>${config.manager.version}</version>
+            <version>${config.parent.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.opendaylight.yangtools.thirdparty</groupId>
+            <artifactId>antlr4-runtime-osgi-nohead</artifactId>
+            <version>4.0</version>
+        </dependency>
+        <dependency>
+          <groupId>org.opendaylight.controller</groupId>
+          <artifactId>logback-config</artifactId>
+          <version>${config.parent.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.opendaylight.controller</groupId>
+          <artifactId>config-persister-api</artifactId>
+          <version>${config.parent.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.opendaylight.controller</groupId>
+          <artifactId>config-persister-impl</artifactId>
+          <version>${config.parent.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.opendaylight.controller</groupId>
+          <artifactId>config-persister-file-xml-adapter</artifactId>
+          <version>${config.parent.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.opendaylight.controller</groupId>
+          <artifactId>netconf-monitoring</artifactId>
+          <version>${netconf.parent.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.opendaylight.controller</groupId>
+          <artifactId>netconf-client</artifactId>
+          <version>${netconf.parent.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.opendaylight.controller</groupId>
+          <artifactId>netconf-impl</artifactId>
+          <version>${netconf.parent.version}</version>
+        </dependency>
+
+        <!-- thirdparty -->
+        <dependency>
+          <groupId>org.opendaylight.controller.thirdparty</groupId>
+          <artifactId>nagasena</artifactId>
+          <version>${exi.nagasena.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.opendaylight.controller.thirdparty</groupId>
+          <artifactId>nagasena-rta</artifactId>
+          <version>${exi.nagasena.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.opendaylight.controller.thirdparty</groupId>
+          <artifactId>ganymed</artifactId>
+          <version>1.1-SNAPSHOT</version>
+        </dependency>
+        
         
 
         <dependency>

@@ -160,6 +160,62 @@
           <artifactId>org.apache.felix.gogo.shell</artifactId>
           <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.opendaylight.yangtools.thirdparty</groupId>
+            <artifactId>antlr4-runtime-osgi-nohead</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.opendaylight.controller</groupId>
+          <artifactId>logback-config</artifactId>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.opendaylight.controller</groupId>
+          <artifactId>config-persister-api</artifactId>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.opendaylight.controller</groupId>
+          <artifactId>config-persister-impl</artifactId>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.opendaylight.controller</groupId>
+          <artifactId>netconf-monitoring</artifactId>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.opendaylight.controller</groupId>
+          <artifactId>netconf-client</artifactId>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.opendaylight.controller</groupId>
+          <artifactId>netconf-impl</artifactId>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.opendaylight.controller</groupId>
+          <artifactId>config-persister-file-xml-adapter</artifactId>
+          <scope>test</scope>
+        </dependency>
+        
+        <dependency>
+          <groupId>org.opendaylight.controller.thirdparty</groupId>
+          <artifactId>nagasena</artifactId>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.opendaylight.controller.thirdparty</groupId>
+          <artifactId>nagasena-rta</artifactId>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.opendaylight.controller.thirdparty</groupId>
+          <artifactId>ganymed</artifactId>
+          <scope>test</scope>
+        </dependency>
             
         <dependency>
             <groupId>org.slf4j</groupId>
