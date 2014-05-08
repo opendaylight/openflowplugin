@@ -13,6 +13,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.Collection;
+import java.util.Iterator;
 
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
@@ -687,6 +695,59 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return flow;
     }
 
+    
+    private FlowBuilder createTestFlow_perfTest(NodeBuilder nodeBuilder, String flowTypeArg, String tableId, int id) {
+
+        FlowBuilder flow = new FlowBuilder();
+        //long id = 123;
+
+        String flowType = flowTypeArg;
+        if (flowType == null) {
+            flowType = "f1";
+        }
+        
+        flow.setPriority(id);
+
+        switch (flowType) {
+        case "f1":
+            id += 1;
+            flow.setMatch(createMatch1().build());
+            flow.setInstructions(createDecNwTtlInstructions().build());
+            break;
+        default:
+            LOG.warn("flow type not understood: {}", flowType);
+        }
+
+        FlowKey key = new FlowKey(new FlowId(Long.toString(id)));
+        if (null == flow.isBarrier()) {
+            flow.setBarrier(Boolean.FALSE);
+        }
+        // flow.setBufferId(new Long(12));
+        BigInteger value = new BigInteger("10", 10);
+        // BigInteger outputPort = new BigInteger("65535", 10);
+        flow.setCookie(new FlowCookie(value));
+        flow.setCookieMask(new FlowCookie(value));
+        flow.setHardTimeout(0);
+        flow.setIdleTimeout(0);
+        flow.setInstallHw(false);
+        flow.setStrict(false);
+        flow.setContainerName(null);
+        flow.setFlags(new FlowModFlags(false, false, false, false, true));
+        flow.setId(new FlowId("12"));
+        flow.setTableId(getTableId(tableId));
+        // commenting setOutGroup and setOutPort, as by default
+        // OFPG_ANY is send
+        // enable setOutGroup and setOutPort to enable output filtering
+        // flow.setOutGroup(new Long(2));
+        // set outport to OFPP_NONE (65535) to disable remove restriction for
+        // flow
+        // flow.setOutPort(outputPort);
+
+        flow.setKey(key);
+        flow.setFlowName(originalFlowName + "X" + flowType);
+        testFlow = flow;
+        return flow;
+    }
     private FlowBuilder createtablemiss(NodeBuilder nodeBuilder, String flowTypeArg, String tableId) {
         FlowBuilder flow = new FlowBuilder();
         long id = 456;
@@ -721,7 +782,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         DecNwTtl decNwTtl = ta.build();
         ActionBuilder ab = new ActionBuilder();
         ab.setAction(new DecNwTtlCaseBuilder().setDecNwTtl(decNwTtl).build());
-
+        ab.setKey(new ActionKey(0));
         // Add our drop action to a list
         List<Action> actionList = new ArrayList<Action>();
         actionList.add(ab.build());
@@ -729,7 +790,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         // Create an Apply Action
         ApplyActionsBuilder aab = new ApplyActionsBuilder();
         aab.setAction(actionList);
-
+       
         // Wrap our Apply Action in an Instruction
         InstructionBuilder ib = new InstructionBuilder();
         ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
@@ -740,6 +801,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         InstructionsBuilder isb = new InstructionsBuilder();
         List<Instruction> instructions = new ArrayList<Instruction>();
         instructions.add(ib.build());
+        ib.setKey(new InstructionKey(0));
         isb.setInstruction(instructions);
         return isb;
     }
@@ -758,6 +820,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
         List<Instruction> instructions = new ArrayList<Instruction>();
+        ib.setKey(new InstructionKey(0));
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         return isb;
@@ -775,6 +838,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
         List<Instruction> instructions = new ArrayList<Instruction>();
+        ib.setKey(new InstructionKey(0));
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         return isb;
@@ -791,6 +855,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
         List<Instruction> instructions = new ArrayList<Instruction>();
+        ib.setKey(new InstructionKey(0));
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         return isb;
@@ -801,11 +866,11 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         DropAction dropAction = dab.build();
         ActionBuilder ab = new ActionBuilder();
         ab.setAction(new DropActionCaseBuilder().setDropAction(dropAction).build());
-
+        ab.setKey(new ActionKey(0));
         // Add our drop action to a list
         List<Action> actionList = new ArrayList<Action>();
         actionList.add(ab.build());
-
+        ab.setKey(new ActionKey(0));
         // Create an Apply Action
         ApplyActionsBuilder aab = new ApplyActionsBuilder();
         aab.setAction(actionList);
@@ -817,6 +882,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
         List<Instruction> instructions = new ArrayList<Instruction>();
+        ib.setKey(new InstructionKey(0));
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         return isb;
@@ -829,6 +895,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         ControllerActionBuilder controller = new ControllerActionBuilder();
         controller.setMaxLength(5);
         ab.setAction(new ControllerActionCaseBuilder().setControllerAction(controller.build()).build());
+        ab.setKey(new ActionKey(0));
         actionList.add(ab.build());
         // Create an Apply Action
         ApplyActionsBuilder aab = new ApplyActionsBuilder();
@@ -841,6 +908,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
         List<Instruction> instructions = new ArrayList<Instruction>();
+        ib.setKey(new InstructionKey(0));
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         return isb;
@@ -856,6 +924,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         Uri value = new Uri("PCEP");
         output.setOutputNodeConnector(value);
         ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
+        ab.setKey(new ActionKey(0));
         actionList.add(ab.build());
         // Create an Apply Action
         ApplyActionsBuilder aab = new ApplyActionsBuilder();
@@ -868,6 +937,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
         List<Instruction> instructions = new ArrayList<Instruction>();
+        ib.setKey(new InstructionKey(0));
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         return isb;
@@ -1001,6 +1071,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         PushMplsActionBuilder push = new PushMplsActionBuilder();
         push.setEthernetType(new Integer(0x8847));
         ab.setAction(new PushMplsActionCaseBuilder().setPushMplsAction(push.build()).build());
+        ab.setKey(new ActionKey(0));
         actionList.add(ab.build());
         // Create an Apply Action
         ApplyActionsBuilder aab = new ApplyActionsBuilder();
@@ -1013,6 +1084,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
         List<Instruction> instructions = new ArrayList<Instruction>();
+        ib.setKey(new InstructionKey(0));
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         return isb;
@@ -1026,6 +1098,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         PushPbbActionBuilder pbb = new PushPbbActionBuilder();
         pbb.setEthernetType(new Integer(0x88E7));
         ab.setAction(new PushPbbActionCaseBuilder().setPushPbbAction(pbb.build()).build());
+        ab.setKey(new ActionKey(0));
         actionList.add(ab.build());
         // Create an Apply Action
         ApplyActionsBuilder aab = new ApplyActionsBuilder();
@@ -1038,6 +1111,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
         List<Instruction> instructions = new ArrayList<Instruction>();
+        ib.setKey(new InstructionKey(0));
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         return isb;
@@ -1051,6 +1125,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         PushVlanActionBuilder vlan = new PushVlanActionBuilder();
         vlan.setEthernetType(new Integer(0x8100));
         ab.setAction(new PushVlanActionCaseBuilder().setPushVlanAction(vlan.build()).build());
+        ab.setKey(new ActionKey(0));
         actionList.add(ab.build());
 
         // Create an Apply Action
@@ -1064,6 +1139,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
         List<Instruction> instructions = new ArrayList<Instruction>();
+        ib.setKey(new InstructionKey(0));
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         return isb;
@@ -1077,6 +1153,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         SetDlDstActionBuilder setdl = new SetDlDstActionBuilder();
         setdl.setAddress(new MacAddress("00:05:b9:7c:81:5f"));
         ab.setAction(new SetDlDstActionCaseBuilder().setSetDlDstAction(setdl.build()).build());
+        ab.setKey(new ActionKey(0));
         actionList.add(ab.build());
         // Create an Apply Action
         ApplyActionsBuilder aab = new ApplyActionsBuilder();
@@ -1089,6 +1166,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
         List<Instruction> instructions = new ArrayList<Instruction>();
+        ib.setKey(new InstructionKey(0));
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         return isb;
@@ -1102,6 +1180,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         SetDlSrcActionBuilder src = new SetDlSrcActionBuilder();
         src.setAddress(new MacAddress("00:05:b9:7c:81:5f"));
         ab.setAction(new SetDlSrcActionCaseBuilder().setSetDlSrcAction(src.build()).build());
+        ab.setKey(new ActionKey(0));
         actionList.add(ab.build());
 
         // Create an Apply Action
@@ -1115,6 +1194,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
         List<Instruction> instructions = new ArrayList<Instruction>();
+        ib.setKey(new InstructionKey(0));
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         return isb;
@@ -1129,6 +1209,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         VlanId a = new VlanId(4000);
         vl.setVlanId(a);
         ab.setAction(new SetVlanIdActionCaseBuilder().setSetVlanIdAction(vl.build()).build());
+        ab.setKey(new ActionKey(0));
         actionList.add(ab.build());
         // Create an Apply Action
         ApplyActionsBuilder aab = new ApplyActionsBuilder();
@@ -1141,6 +1222,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
         List<Instruction> instructions = new ArrayList<Instruction>();
+        ib.setKey(new InstructionKey(0));
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         return isb;
@@ -1155,6 +1237,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         VlanPcp pcp1 = new VlanPcp((short) 2);
         pcp.setVlanPcp(pcp1);
         ab.setAction(new SetVlanPcpActionCaseBuilder().setSetVlanPcpAction(pcp.build()).build());
+        ab.setKey(new ActionKey(0));
         actionList.add(ab.build());
         // Create an Apply Action
         ApplyActionsBuilder aab = new ApplyActionsBuilder();
@@ -1167,6 +1250,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
         List<Instruction> instructions = new ArrayList<Instruction>();
+        ib.setKey(new InstructionKey(0));
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         return isb;
@@ -1181,6 +1265,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         VlanPcp pcp1 = new VlanPcp((short) 9);
         pcp.setVlanPcp(pcp1);
         ab.setAction(new SetVlanPcpActionCaseBuilder().setSetVlanPcpAction(pcp.build()).build());
+        ab.setKey(new ActionKey(0));
         actionList.add(ab.build());
         // Create an Apply Action
         ApplyActionsBuilder aab = new ApplyActionsBuilder();
@@ -1193,6 +1278,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
         List<Instruction> instructions = new ArrayList<Instruction>();
+        ib.setKey(new InstructionKey(0));
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         return isb;
@@ -1205,6 +1291,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         CopyTtlInBuilder ttlin = new CopyTtlInBuilder();
         ab.setAction(new CopyTtlInCaseBuilder().setCopyTtlIn(ttlin.build()).build());
+        ab.setKey(new ActionKey(0));
         actionList.add(ab.build());
         // Create an Apply Action
         ApplyActionsBuilder aab = new ApplyActionsBuilder();
@@ -1217,6 +1304,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
         List<Instruction> instructions = new ArrayList<Instruction>();
+        ib.setKey(new InstructionKey(0));
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         return isb;
@@ -1229,6 +1317,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         CopyTtlOutBuilder ttlout = new CopyTtlOutBuilder();
         ab.setAction(new CopyTtlOutCaseBuilder().setCopyTtlOut(ttlout.build()).build());
+        ab.setKey(new ActionKey(0));
         actionList.add(ab.build());
         // Create an Apply Action
         ApplyActionsBuilder aab = new ApplyActionsBuilder();
@@ -1241,6 +1330,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
         List<Instruction> instructions = new ArrayList<Instruction>();
+        ib.setKey(new InstructionKey(0));
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         return isb;
@@ -1253,6 +1343,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         DecMplsTtlBuilder mpls = new DecMplsTtlBuilder();
         ab.setAction(new DecMplsTtlCaseBuilder().setDecMplsTtl(mpls.build()).build());
+        ab.setKey(new ActionKey(0));
         actionList.add(ab.build());
         // Create an Apply Action
         ApplyActionsBuilder aab = new ApplyActionsBuilder();
@@ -1279,6 +1370,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         DecNwTtlBuilder nwttl = new DecNwTtlBuilder();
         ab.setAction(new DecNwTtlCaseBuilder().setDecNwTtl(nwttl.build()).build());
+        ab.setKey(new ActionKey(0));
         actionList.add(ab.build());
 
         // Create an Apply Action
@@ -1292,6 +1384,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
         List<Instruction> instructions = new ArrayList<Instruction>();
+        ib.setKey(new InstructionKey(0));
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         return isb;
@@ -1304,6 +1397,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         DropActionBuilder drop = new DropActionBuilder();
         ab.setAction(new DropActionCaseBuilder().setDropAction(drop.build()).build());
+        ab.setKey(new ActionKey(0));
         actionList.add(ab.build());
 
         // Create an Apply Action
@@ -1317,6 +1411,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
         List<Instruction> instructions = new ArrayList<Instruction>();
+        ib.setKey(new InstructionKey(0));
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         return isb;
@@ -1329,6 +1424,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         FloodActionBuilder fld = new FloodActionBuilder();
         ab.setAction(new FloodActionCaseBuilder().setFloodAction(fld.build()).build());
+        ab.setKey(new ActionKey(0));
         actionList.add(ab.build());
         // Create an Apply Action
         ApplyActionsBuilder aab = new ApplyActionsBuilder();
@@ -1341,6 +1437,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
         List<Instruction> instructions = new ArrayList<Instruction>();
+        ib.setKey(new InstructionKey(0));
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         return isb;
@@ -1353,6 +1450,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         FloodAllActionBuilder fldall = new FloodAllActionBuilder();
         ab.setAction(new FloodAllActionCaseBuilder().setFloodAllAction(fldall.build()).build());
+        ab.setKey(new ActionKey(0));
         actionList.add(ab.build());
         // Create an Apply Action
         ApplyActionsBuilder aab = new ApplyActionsBuilder();
@@ -1365,6 +1463,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
         List<Instruction> instructions = new ArrayList<Instruction>();
+        ib.setKey(new InstructionKey(0));
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         return isb;
@@ -1379,6 +1478,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         groupActionB.setGroupId(1L);
         groupActionB.setGroup("0");
         ab.setAction(new GroupActionCaseBuilder().setGroupAction(groupActionB.build()).build());
+        ab.setKey(new ActionKey(0));
         actionList.add(ab.build());
 
         // Create an Apply Action
@@ -1392,6 +1492,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
         List<Instruction> instructions = new ArrayList<Instruction>();
+        ib.setKey(new InstructionKey(0));
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         return isb;
@@ -1404,6 +1505,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         HwPathActionBuilder hwPathB = new HwPathActionBuilder();
         ab.setAction(new HwPathActionCaseBuilder().setHwPathAction(hwPathB.build()).build());
+        ab.setKey(new ActionKey(0));
         actionList.add(ab.build());
         // Create an Apply Action
         ApplyActionsBuilder aab = new ApplyActionsBuilder();
@@ -1416,6 +1518,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
         List<Instruction> instructions = new ArrayList<Instruction>();
+        ib.setKey(new InstructionKey(0));
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         return isb;
@@ -1428,6 +1531,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         LoopbackActionBuilder loopbackActionBuilder = new LoopbackActionBuilder();
         ab.setAction(new LoopbackActionCaseBuilder().setLoopbackAction(loopbackActionBuilder.build()).build());
+        ab.setKey(new ActionKey(0));
         actionList.add(ab.build());
 
         // Create an Apply Action
@@ -1441,6 +1545,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
         List<Instruction> instructions = new ArrayList<Instruction>();
+        ib.setKey(new InstructionKey(0));
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         return isb;
@@ -1454,6 +1559,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         PopMplsActionBuilder popMplsActionBuilder = new PopMplsActionBuilder();
         popMplsActionBuilder.setEthernetType(0XB);
         ab.setAction(new PopMplsActionCaseBuilder().setPopMplsAction(popMplsActionBuilder.build()).build());
+        ab.setKey(new ActionKey(0));
         actionList.add(ab.build());
         // Create an Apply Action
         ApplyActionsBuilder aab = new ApplyActionsBuilder();
@@ -1466,6 +1572,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
         List<Instruction> instructions = new ArrayList<Instruction>();
+        ib.setKey(new InstructionKey(0));
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         return isb;
@@ -1478,6 +1585,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         PopPbbActionBuilder popPbbActionBuilder = new PopPbbActionBuilder();
         ab.setAction(new PopPbbActionCaseBuilder().setPopPbbAction(popPbbActionBuilder.build()).build());
+        ab.setKey(new ActionKey(0));
         actionList.add(ab.build());
         // Create an Apply Action
         ApplyActionsBuilder aab = new ApplyActionsBuilder();
@@ -1490,6 +1598,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
         List<Instruction> instructions = new ArrayList<Instruction>();
+        ib.setKey(new InstructionKey(0));
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         return isb;
@@ -1502,6 +1611,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         PopVlanActionBuilder popVlanActionBuilder = new PopVlanActionBuilder();
         ab.setAction(new PopVlanActionCaseBuilder().setPopVlanAction(popVlanActionBuilder.build()).build());
+        ab.setKey(new ActionKey(0));
         actionList.add(ab.build());
 
         // Create an Apply Action
@@ -1515,6 +1625,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
         List<Instruction> instructions = new ArrayList<Instruction>();
+        ib.setKey(new InstructionKey(0));
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         return isb;
@@ -1528,6 +1639,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         SetDlTypeActionBuilder setDlTypeActionBuilder = new SetDlTypeActionBuilder();
         setDlTypeActionBuilder.setDlType(new EtherType(8L));
         ab.setAction(new SetDlTypeActionCaseBuilder().setSetDlTypeAction(setDlTypeActionBuilder.build()).build());
+        ab.setKey(new ActionKey(0));
         actionList.add(ab.build());
 
         // Create an Apply Action
@@ -1541,6 +1653,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
         List<Instruction> instructions = new ArrayList<Instruction>();
+        ib.setKey(new InstructionKey(0));
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         return isb;
@@ -1553,6 +1666,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         SetFieldBuilder setFieldBuilder = new SetFieldBuilder();
         setFieldBuilder.setInPort(new NodeConnectorId(nodeId + ":2"));
+        ab.setKey(new ActionKey(0));
         actionList.add(ab.build());
 
         // Create an Apply Action
@@ -1566,6 +1680,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
         List<Instruction> instructions = new ArrayList<Instruction>();
+        ib.setKey(new InstructionKey(0));
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         return isb;
@@ -1579,6 +1694,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         SetMplsTtlActionBuilder setMplsTtlActionBuilder = new SetMplsTtlActionBuilder();
         setMplsTtlActionBuilder.setMplsTtl((short) 0X1);
         ab.setAction(new SetMplsTtlActionCaseBuilder().setSetMplsTtlAction(setMplsTtlActionBuilder.build()).build());
+        ab.setKey(new ActionKey(0));
         actionList.add(ab.build());
 
         // Create an Apply Action
@@ -1592,6 +1708,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
         List<Instruction> instructions = new ArrayList<Instruction>();
+        ib.setKey(new InstructionKey(0));
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         return isb;
@@ -1608,6 +1725,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         ipnext.setIpv4Address(prefix);
         setNextHopActionBuilder.setAddress(ipnext.build());
         ab.setAction(new SetNextHopActionCaseBuilder().setSetNextHopAction(setNextHopActionBuilder.build()).build());
+        ab.setKey(new ActionKey(0));
         actionList.add(ab.build());
 
         // Create an Apply Action
@@ -1621,6 +1739,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
         List<Instruction> instructions = new ArrayList<Instruction>();
+        ib.setKey(new InstructionKey(0));
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         return isb;
@@ -1637,6 +1756,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         ipdst.setIpv4Address(prefixdst);
         setNwDstActionBuilder.setAddress(ipdst.build());
         ab.setAction(new SetNwDstActionCaseBuilder().setSetNwDstAction(setNwDstActionBuilder.build()).build());
+        ab.setKey(new ActionKey(0));
         actionList.add(ab.build());
 
         // Create an Apply Action
@@ -1650,6 +1770,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
         List<Instruction> instructions = new ArrayList<Instruction>();
+        ib.setKey(new InstructionKey(0));
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         return isb;
@@ -1666,6 +1787,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         ipsrc.setIpv4Address(prefixsrc);
         setNwsrcActionBuilder.setAddress(ipsrc.build());
         ab.setAction(new SetNwSrcActionCaseBuilder().setSetNwSrcAction(setNwsrcActionBuilder.build()).build());
+        ab.setKey(new ActionKey(0));
         actionList.add(ab.build());
 
         // Create an Apply Action
@@ -1679,6 +1801,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
         List<Instruction> instructions = new ArrayList<Instruction>();
+        ib.setKey(new InstructionKey(0));
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         return isb;
@@ -1692,6 +1815,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         SetNwTosActionBuilder setNwTosActionBuilder = new SetNwTosActionBuilder();
         setNwTosActionBuilder.setTos(8);
         ab.setAction(new SetNwTosActionCaseBuilder().setSetNwTosAction(setNwTosActionBuilder.build()).build());
+        ab.setKey(new ActionKey(0));
         actionList.add(ab.build());
         // Create an Apply Action
         ApplyActionsBuilder aab = new ApplyActionsBuilder();
@@ -1704,6 +1828,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
         List<Instruction> instructions = new ArrayList<Instruction>();
+        ib.setKey(new InstructionKey(0));
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         return isb;
@@ -1717,6 +1842,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         SetNwTtlActionBuilder setNwTtlActionBuilder = new SetNwTtlActionBuilder();
         setNwTtlActionBuilder.setNwTtl((short) 1);
         ab.setAction(new SetNwTtlActionCaseBuilder().setSetNwTtlAction(setNwTtlActionBuilder.build()).build());
+        ab.setKey(new ActionKey(0));
         actionList.add(ab.build());
 
         // Create an Apply Action
@@ -1730,6 +1856,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
         List<Instruction> instructions = new ArrayList<Instruction>();
+        ib.setKey(new InstructionKey(0));
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         return isb;
@@ -1743,6 +1870,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         SetQueueActionBuilder setQueueActionBuilder = new SetQueueActionBuilder();
         setQueueActionBuilder.setQueueId(1L);
         ab.setAction(new SetQueueActionCaseBuilder().setSetQueueAction(setQueueActionBuilder.build()).build());
+        ab.setKey(new ActionKey(0));
         actionList.add(ab.build());
         // Create an Apply Action
         ApplyActionsBuilder aab = new ApplyActionsBuilder();
@@ -1755,6 +1883,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
         List<Instruction> instructions = new ArrayList<Instruction>();
+        ib.setKey(new InstructionKey(0));
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         return isb;
@@ -1769,6 +1898,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         setTpDstActionBuilder.setPort(new PortNumber(109));
 
         ab.setAction(new SetTpDstActionCaseBuilder().setSetTpDstAction(setTpDstActionBuilder.build()).build());
+        ab.setKey(new ActionKey(0));
         actionList.add(ab.build());
         // Create an Apply Action
         ApplyActionsBuilder aab = new ApplyActionsBuilder();
@@ -1781,6 +1911,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
         List<Instruction> instructions = new ArrayList<Instruction>();
+        ib.setKey(new InstructionKey(0));
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         return isb;
@@ -1794,6 +1925,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         SetTpSrcActionBuilder setTpSrcActionBuilder = new SetTpSrcActionBuilder();
         setTpSrcActionBuilder.setPort(new PortNumber(109));
         ab.setAction(new SetTpSrcActionCaseBuilder().setSetTpSrcAction(setTpSrcActionBuilder.build()).build());
+        ab.setKey(new ActionKey(0));
         actionList.add(ab.build());
 
         // Create an Apply Action
@@ -1807,6 +1939,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
         List<Instruction> instructions = new ArrayList<Instruction>();
+        ib.setKey(new InstructionKey(0));
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         return isb;
@@ -1820,6 +1953,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         SetVlanCfiActionBuilder setVlanCfiActionBuilder = new SetVlanCfiActionBuilder();
         setVlanCfiActionBuilder.setVlanCfi(new VlanCfi(2));
         ab.setAction(new SetVlanCfiActionCaseBuilder().setSetVlanCfiAction(setVlanCfiActionBuilder.build()).build());
+        ab.setKey(new ActionKey(0));
         actionList.add(ab.build());
 
         // Create an Apply Action
@@ -1833,6 +1967,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
         List<Instruction> instructions = new ArrayList<Instruction>();
+        ib.setKey(new InstructionKey(0));
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         return isb;
@@ -1845,6 +1980,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         SwPathActionBuilder swPathAction = new SwPathActionBuilder();
         ab.setAction(new SwPathActionCaseBuilder().setSwPathAction(swPathAction.build()).build());
+        ab.setKey(new ActionKey(0));
         actionList.add(ab.build());
 
         // Create an Apply Action
@@ -1858,6 +1994,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
         List<Instruction> instructions = new ArrayList<Instruction>();
+        ib.setKey(new InstructionKey(0));
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         return isb;
@@ -1913,6 +2050,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
         List<Instruction> instructions = new ArrayList<Instruction>();
+        ib.setKey(new InstructionKey(0));
         instructions.add(ib.build());
         isb.setInstruction(instructions);
         return isb;
@@ -2504,6 +2642,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         tunnel.setTunnelId(BigInteger.valueOf(10668));
         setFieldBuilder.setTunnel(tunnel.build());
         ab.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder.build()).build());
+        ab.setKey(new ActionKey(0));
         actionList.add(ab.build());
 
         ApplyActionsBuilder aab = new ApplyActionsBuilder();
@@ -3148,4 +3287,155 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
     public String getHelp() {
         return "No help";
     }
+    
+    /*
+     * usage testSwitchFlows <numberOfSwitches> <numberOfFlows> <warmup iterations> <Number Of Threads>
+     * ex: _perfFlowTest 10 5 1 2
+     */
+    public void _perfFlowTest(CommandInterpreter ci) {
+    	
+        String numberOfSwtichesStr = ci.nextArgument();
+        String numberOfFlowsStr = ci.nextArgument();
+        String warmupIterationsStr = ci.nextArgument();
+        String threadCountStr = ci.nextArgument();
+        String warmUpStr = ci.nextArgument();
+        
+        Collection<String> testResults = null;
+        if(testResults == null){
+        	testResults = new ArrayList<String>();
+        }
+         
+        int numberOfSwtiches = 0;
+        int numberOfFlows = 0;
+        int warmupIterations = 0;
+        boolean warmUpIterations = false;
+
+        int threadCount = 0;
+        if(numberOfSwtichesStr !=null && !numberOfSwtichesStr.trim().equals("")){
+        	numberOfSwtiches = new Integer(numberOfSwtichesStr).intValue();
+        }else {
+        	numberOfSwtiches = 2;
+        }
+        
+        if(numberOfFlowsStr !=null && !numberOfFlowsStr.trim().equals("")){
+        	numberOfFlows = new Integer(numberOfFlowsStr).intValue();
+        }else {
+        	numberOfFlows = 2;
+        }
+        
+        if(warmupIterationsStr !=null && !warmupIterationsStr.trim().equals("")){
+        	warmupIterations = new Integer(warmupIterationsStr).intValue();
+        }else {
+        	warmupIterations = 2;
+        }
+        
+        if(threadCountStr !=null && !threadCountStr.trim().equals("")){
+        	threadCount = new Integer(threadCountStr).intValue();
+        }else {
+        	threadCount = 2; 
+        }
+         if(warmUpStr !=null && !warmUpStr.trim().equals("") && warmUpStr.trim().equals("true")){
+             warmUpIterations = true;
+         }else {
+             warmUpIterations = false;
+         }    
+        ci.println("*     Test Configurations*");
+        ci.println("*     numberOfSwtiches:::"+numberOfSwtiches+"");
+        ci.println("*     numberOfFlows:::"+numberOfFlows+"");
+        ci.println("*     warmupIterations:::"+warmupIterations+"");
+        ci.println("*     Number of Threads :::"+threadCount+"");
+        ci.println("*     Warmup Required? :::"+warmUpIterations+"");
+        
+        String dataPath="openflow:1";
+        String flowType = "fTM";
+        NodeBuilder tn;
+        FlowBuilder tf;
+        String tableId = "0";
+        if(warmUpIterations){
+        ci.println("----Warmup Started-----");
+        for(int j =1; j<= warmupIterations; j++){
+	        for(int i =1;i<=numberOfSwtiches;i++){
+	        	 dataPath = "openflow:"+i;
+	        	 tn = createTestNode(dataPath);
+	        	for (int flow=1;flow<numberOfFlows;flow++){
+	                         tf = createTestFlow_perfTest(tn, "f1", tableId, flow);
+	        		 writeFlow(ci, tf, tn);
+	        	}
+	        }
+         }
+
+       ci.println("----Warmup Done-----");
+        }
+       try{
+	       ExecutorService executor = Executors.newFixedThreadPool(threadCount);
+	       int flowID = 0;
+               int tableID = 0;
+	       for ( int t=0;t< threadCount;t++){
+	    	   tableID = t+1;
+	    	   Runnable tRunnable = new TestFlowThread(numberOfSwtiches, numberOfFlows, ci, t, tableID);
+	    	   executor.execute(tRunnable);
+	       }
+	       executor.shutdown();
+	       executor.awaitTermination(1, TimeUnit.SECONDS);
+       } catch(Exception e){
+    	  ci.println("Exception:"+e.getMessage());
+       }
+    }
+    
+    public class TestFlowThread implements Runnable {
+
+        int numberOfSwitches;
+        int numberOfFlows;
+        int testTime;
+        CommandInterpreter ci;
+        int testFlowsAdded;
+        int theadNumber;
+        Collection<String> testResults = null;
+        int tableID = 0;
+
+        TestFlowThread(int numberOfSwtiches, int numberOfFlows, CommandInterpreter ci, int t, int tableID) {
+            this.numberOfSwitches = numberOfSwtiches;
+            this.numberOfFlows = numberOfFlows;
+            this.ci = ci;
+            this.theadNumber = t;
+            this.tableID = tableID;
+        }
+
+        @Override
+        public void run() {
+            executeFlow();
+        }
+
+        public void executeFlow() {
+
+            String dataPath = "openflow:1";
+            NodeBuilder tn;
+            FlowBuilder tf;
+            //String tableId = "0";
+
+            ci.println("New Thread started with id:  ID_"
+                    + this.theadNumber);
+            int totalNumberOfFlows = 0;
+            long startTime = System.currentTimeMillis();
+
+            for (int i = 1; i <= this.numberOfSwitches; i++) {
+                dataPath = "openflow:" + i;
+                tn = createTestNode(dataPath);
+                for (int flow2 = 1; flow2 <= this.numberOfFlows; flow2++) {
+                    tf = createTestFlow_perfTest(tn, "f1", ""+this.tableID, flow2);
+                    writeFlow(this.ci, tf, tn);
+                    totalNumberOfFlows++;
+                }
+            }
+            long endTime = System.currentTimeMillis();
+            long timeInSeconds = Math.round((endTime - startTime) / 1000);
+            if (timeInSeconds > 0) {
+                ci.println("Total flows added in Thread:" + this.theadNumber + ": Flows/Sec::" + Math.round(totalNumberOfFlows / timeInSeconds));
+            } else {
+                ci.println("Total flows added in Thread:" + this.theadNumber + ": Flows/Sec::" + totalNumberOfFlows);
+            }
+        }
+
+    }
+
 }
