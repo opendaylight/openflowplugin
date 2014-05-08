@@ -8,9 +8,18 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core;
 
-import com.google.common.collect.Lists;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionConfiguration;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
@@ -76,22 +85,12 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import com.google.common.collect.Lists;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 
 /**
- * @author mirehak
  *
  */
 public class MDController implements IMDController, AutoCloseable {
@@ -108,8 +107,6 @@ public class MDController implements IMDController, AutoCloseable {
     final private int OF13 = OFConstants.OFP_VERSION_1_3;
 
     private ErrorHandlerSimpleImpl errorHandler;
-    private ExecutorService rpcPool;
-
 
     /**
      * @return translator mapping
@@ -202,7 +199,8 @@ public class MDController implements IMDController, AutoCloseable {
         
         // prepare worker pool for rpc
         // TODO: get size from configSubsystem
-        OFSessionUtil.getSessionManager().setRpcPool(Executors.newFixedThreadPool(10));
+        OFSessionUtil.getSessionManager().setRpcPool(
+                MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(10)));
         
     }
 

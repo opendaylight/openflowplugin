@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.HelloElementType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.hello.Elements;
@@ -93,4 +95,32 @@ public abstract class MessageFactory {
         }
         return result;
     }
+    
+    /**
+     * @param ofVersion 
+     * @param ofXid 
+     * @return barrier message
+     */
+    public static BarrierInput createBarrier(short ofVersion, long ofXid) {
+        BarrierInputBuilder barrierInput = new BarrierInputBuilder();
+        barrierInput.setVersion(ofVersion);
+        barrierInput.setXid(ofXid);
+        return barrierInput.build();
+    }
+    
+//    /**
+//     * @param input
+//     * @param cookie
+//     * @param session
+//     * @param messageService 
+//     * @return barrier result
+//     */
+//    public static Future<RpcResult<BarrierOutput>> sendBarrier(
+//            SwitchConnectionDistinguisher cookie, SessionContext session, 
+//            IMessageDispatchService messageService) {
+//        BarrierInputBuilder barrierInput = new BarrierInputBuilder();
+//        barrierInput.setVersion(session.getFeatures().getVersion());
+//        barrierInput.setXid(session.getNextXid());
+//        return messageService.barrier(barrierInput.build(), cookie);
+//    }
 }

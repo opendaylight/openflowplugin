@@ -12,7 +12,6 @@ import java.math.BigInteger;
 import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -21,7 +20,6 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.opendaylight.controller.sal.common.util.Futures;
 import org.opendaylight.controller.sal.common.util.Rpcs;
 import org.opendaylight.openflowplugin.openflow.md.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
@@ -29,7 +27,6 @@ import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistingu
 import org.opendaylight.openflowplugin.openflow.md.core.session.IMessageDispatchService;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
-import org.opendaylight.openflowplugin.openflow.md.core.session.TransactionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInputBuilder;
@@ -43,8 +40,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.MoreExecutors;
 
 /**
  * simple NPE smoke test
@@ -76,7 +73,7 @@ public class ModelDrivenSwitchImplTest {
         Mockito.when(context.getFeatures()).thenReturn(features);
         Mockito.when(features.getDatapathId()).thenReturn(BigInteger.valueOf(1));
         
-        OFSessionUtil.getSessionManager().setRpcPool(Executors.newFixedThreadPool(10));
+        OFSessionUtil.getSessionManager().setRpcPool(MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(10)));
 
         mdSwitchOF10 = new ModelDrivenSwitchImpl(null, null, context);
         mdSwitchOF13 = new ModelDrivenSwitchImpl(null, null, context);

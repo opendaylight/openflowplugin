@@ -7,38 +7,36 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal;
 
+import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
+
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.openflow.md.core.session.IMessageDispatchService;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
 
-import com.google.common.util.concurrent.SettableFuture;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 
 /**
  * @param <T> input type
  * @param <K> future output type
  */
-public abstract class OFRpcTask<T, K> implements Runnable {
+public abstract class OFRpcTask<T, K> implements Callable<ListenableFuture<K>> {
     
-    private SwitchConnectionDistinguisher cookie;
-    private IMessageDispatchService messageService;
-    private SessionContext session;
+    private OFRpcTaskContext taskContext;
     private T input;
-    private SettableFuture<K> result;
-    private NotificationProviderService rpcNotificationProviderService;
+    private SwitchConnectionDistinguisher cookie;
     
     /**
-     * @return the result
+     * @param taskContext
+     * @param input 
+     * @param cookie 
      */
-    public SettableFuture<K> getResult() {
-        return result;
-    }
-    
-    /**
-     * @param result the result to set
-     */
-    public void setResult(SettableFuture<K> result) {
-        this.result = result;
+    public OFRpcTask(OFRpcTaskContext taskContext, SwitchConnectionDistinguisher cookie, T input) {
+        this.taskContext = taskContext;
+        this.cookie = cookie;
+        this.input = input;
     }
 
     /**
@@ -49,45 +47,10 @@ public abstract class OFRpcTask<T, K> implements Runnable {
     }
 
     /**
-     * @return the messageService
-     */
-    public IMessageDispatchService getMessageService() {
-        return messageService;
-    }
-
-    /**
-     * @return the session
-     */
-    public SessionContext getSession() {
-        return session;
-    }
-    
-    /**
-     * @return protocol version
-     */
-    public Short getVersion() {
-        return session.getFeatures().getVersion();
-    }
-
-    /**
      * @param cookie the cookie to set
      */
     public void setCookie(SwitchConnectionDistinguisher cookie) {
         this.cookie = cookie;
-    }
-
-    /**
-     * @param messageService the messageService to set
-     */
-    public void setMessageService(IMessageDispatchService messageService) {
-        this.messageService = messageService;
-    }
-
-    /**
-     * @param session the session to set
-     */
-    public void setSession(SessionContext session) {
-        this.session = session;
     }
 
     /**
@@ -105,17 +68,65 @@ public abstract class OFRpcTask<T, K> implements Runnable {
     }
 
     /**
-     * @param rpcNotificationProviderService
-     */
-    public void setRpcNotificationProviderService(
-            NotificationProviderService rpcNotificationProviderService) {
-                this.rpcNotificationProviderService = rpcNotificationProviderService;
-    }
-    
-    /**
      * @return the rpcNotificationProviderService
      */
     public NotificationProviderService getRpcNotificationProviderService() {
-        return rpcNotificationProviderService;
+        return taskContext.getRpcNotificationProviderService();
+    }
+
+    /**
+     * @return message service
+     * @see org.opendaylight.openflowplugin.openflow.md.core.sal.OFRpcTaskContext#getMessageService()
+     */
+    public IMessageDispatchService getMessageService() {
+        return taskContext.getMessageService();
+    }
+
+    /**
+     * @return session
+     * @see org.opendaylight.openflowplugin.openflow.md.core.sal.OFRpcTaskContext#getSession()
+     */
+    public SessionContext getSession() {
+        return taskContext.getSession();
+    }
+
+    /**
+     * @return max timeout
+     * @see org.opendaylight.openflowplugin.openflow.md.core.sal.OFRpcTaskContext#getMaxTimeout()
+     */
+    public long getMaxTimeout() {
+        return taskContext.getMaxTimeout();
+    }
+
+    /**
+     * @return time unit for max timeout
+     * @see org.opendaylight.openflowplugin.openflow.md.core.sal.OFRpcTaskContext#getMaxTimeoutUnit()
+     */
+    public TimeUnit getMaxTimeoutUnit() {
+        return taskContext.getMaxTimeoutUnit();
+    }
+    
+    /**
+     * @return protocol version
+     */
+    public Short getVersion() {
+        return taskContext.getSession().getFeatures().getVersion();
+        
+    }
+    
+    /**
+     * @return the taskContext
+     */
+    public OFRpcTaskContext getTaskContext() {
+        return taskContext;
+    }
+    
+    /**
+     * submit task into rpc worker pool
+     * @return future result of task 
+     */
+    public ListenableFuture<K> submit() {
+        ListenableFuture<ListenableFuture<K>> compoundResult = getTaskContext().getRpcPool().submit(this);
+        return Futures.dereference(compoundResult);
     }
 }

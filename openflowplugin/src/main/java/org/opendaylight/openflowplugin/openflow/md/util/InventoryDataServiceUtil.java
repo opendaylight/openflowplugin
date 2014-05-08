@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 import java.math.BigInteger;
 import java.util.List;
 
-public class InventoryDataServiceUtil {
+public abstract class InventoryDataServiceUtil {
     private final static Logger LOG = LoggerFactory.getLogger(InventoryDataServiceUtil.class);
 
     public final static String OF_URI_PREFIX = "openflow:";

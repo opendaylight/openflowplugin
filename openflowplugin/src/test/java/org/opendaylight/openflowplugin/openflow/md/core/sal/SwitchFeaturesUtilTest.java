@@ -7,9 +7,9 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal;
 
-import junit.framework.Assert;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Capabilities;

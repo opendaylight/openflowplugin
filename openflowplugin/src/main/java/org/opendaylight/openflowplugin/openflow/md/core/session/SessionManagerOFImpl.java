@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
 
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.controller.sal.binding.api.data.DataProviderService;
@@ -30,6 +29,8 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.util.concurrent.ListeningExecutorService;
+
 /**
  * @author mirehak
  */
@@ -41,11 +42,12 @@ public class SessionManagerOFImpl implements SessionManager {
     private Map<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, List<DataObject>>>> translatorMapping;
     private Map<Class<? extends DataObject>, Collection<PopListener<DataObject>>> popListenerMapping;
 
-
     protected ListenerRegistry<SessionListener> sessionListeners;
     private NotificationProviderService notificationProviderService;
 
     private DataProviderService dataProviderService;
+    private ListeningExecutorService rpcPool;
+    
 
     /**
      * @return singleton instance
@@ -196,8 +198,7 @@ public class SessionManagerOFImpl implements SessionManager {
             }
         }
     };
-    private ExecutorService rpcPool;
-
+    
 
     @Override
     public Map<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, List<DataObject>>>> getTranslatorMapping() {
@@ -252,12 +253,12 @@ public class SessionManagerOFImpl implements SessionManager {
     }
 
     @Override
-    public void setRpcPool(ExecutorService rpcPool) {
+    public void setRpcPool(ListeningExecutorService rpcPool) {
         this.rpcPool = rpcPool;
     }
     
     @Override
-    public ExecutorService getRpcPool() {
+    public ListeningExecutorService getRpcPool() {
         return rpcPool;
     }
 }

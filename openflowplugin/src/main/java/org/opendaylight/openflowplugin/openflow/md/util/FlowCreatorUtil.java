@@ -19,7 +19,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.aggregate._case.MultipartRequestAggregateBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.flow._case.MultipartRequestFlowBuilder;
 
-public class FlowCreatorUtil {
+public abstract class FlowCreatorUtil {
     
     public static void setWildcardedFlowMatch(short version,MultipartRequestFlowBuilder flowBuilder){
         if(version == OFConstants.OFP_VERSION_1_0){

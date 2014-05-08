@@ -8,8 +8,6 @@
 package org.opendaylight.openflowplugin.openflow.md.core.session;
 
 import java.math.BigInteger;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.concurrent.Future;
 
 import org.opendaylight.controller.sal.common.util.Rpcs;
@@ -47,12 +45,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.TableModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.UpdatePortOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.UpdatePortOutputBuilder;
-import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Function;
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.JdkFutureAdapters;
+import com.google.common.util.concurrent.ListenableFuture;
 
 /**
  * message dispatch service to send the message to switch.
@@ -119,24 +119,29 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
     }
 
     @Override
-    public Future<RpcResult<UpdateFlowOutput>> flowMod(FlowModInput input, SwitchConnectionDistinguisher cookie) {
+    public Future<RpcResult<UpdateFlowOutput>> flowMod(final FlowModInput input, SwitchConnectionDistinguisher cookie) {
         LOG.debug("Calling OFLibrary flowMod");
         Future<RpcResult<Void>> response = getConnectionAdapter(cookie).flowMod(input);
 
-        // Send the same Xid back to caller - MessageDrivenSwitch
-        UpdateFlowOutputBuilder flowModOutput = new UpdateFlowOutputBuilder();        
-        BigInteger bigIntXid = BigInteger.valueOf(input.getXid()) ;
-        flowModOutput.setTransactionId(new TransactionId(bigIntXid));
+        // appending xid
+        ListenableFuture<RpcResult<UpdateFlowOutput>> xidResult = Futures.transform(
+                JdkFutureAdapters.listenInPoolThread(response), 
+                new Function<RpcResult<Void>,RpcResult<UpdateFlowOutput>>() {
 
-        UpdateFlowOutput result = flowModOutput.build();
-        Collection<RpcError> errors = Collections.emptyList();
-        RpcResult<UpdateFlowOutput> rpcResult = Rpcs.getRpcResult(true, result, errors);
+            @Override
+            public RpcResult<UpdateFlowOutput> apply(final RpcResult<Void> inputArg) {
+                UpdateFlowOutputBuilder flowModOutput = new UpdateFlowOutputBuilder();        
+                BigInteger bigIntXid = BigInteger.valueOf(input.getXid()) ;
+                flowModOutput.setTransactionId(new TransactionId(bigIntXid));
 
-        // solution 1: sending directly and hooking listener to get error
-        // hookup listener to catch the possible error with no reference to returned future-object
-        LOG.debug("Returning to ModelDrivenSwitch for flowMod RPC");
-        return Futures.immediateFuture(rpcResult);
-
+                UpdateFlowOutput result = flowModOutput.build();
+                RpcResult<UpdateFlowOutput> rpcResult = Rpcs.getRpcResult(
+                        inputArg.isSuccessful(), result, inputArg.getErrors());
+                return rpcResult;
+            }
+        });
+        
+        return xidResult;
     }
 
     @Override
@@ -161,45 +166,55 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
     }
 
     @Override
-    public Future<RpcResult<UpdateGroupOutput>> groupMod(GroupModInput input, SwitchConnectionDistinguisher cookie) {        
+    public Future<RpcResult<UpdateGroupOutput>> groupMod(final GroupModInput input, SwitchConnectionDistinguisher cookie) {        
         LOG.debug("Calling OFLibrary groupMod");
         Future<RpcResult<Void>> response = getConnectionAdapter(cookie).groupMod(input);
 
-        // Send the same Xid back to caller - MessageDrivenSwitch
-        UpdateGroupOutputBuilder groupModOutput = new UpdateGroupOutputBuilder();      
-        BigInteger bigIntXid = BigInteger.valueOf(input.getXid());
-        groupModOutput.setTransactionId(new TransactionId(bigIntXid));
-       
-        UpdateGroupOutput result = groupModOutput.build();
-        Collection<RpcError> errors = Collections.emptyList();
-        RpcResult<UpdateGroupOutput> rpcResult = Rpcs.getRpcResult(true, result, errors);
+        // appending xid
+        ListenableFuture<RpcResult<UpdateGroupOutput>> xidResult = Futures.transform(
+                JdkFutureAdapters.listenInPoolThread(response), 
+                new Function<RpcResult<Void>,RpcResult<UpdateGroupOutput>>() {
 
-        // solution 1: sending directly and hooking listener to get error
-        // hookup listener to catch the possible error with no reference to returned future-object
-        LOG.debug("Returning to ModelDrivenSwitch for groupMod RPC");
-        return Futures.immediateFuture(rpcResult);
+            @Override
+            public RpcResult<UpdateGroupOutput> apply(final RpcResult<Void> inputArg) {
+                UpdateGroupOutputBuilder groupModOutput = new UpdateGroupOutputBuilder();      
+                BigInteger bigIntXid = BigInteger.valueOf(input.getXid());
+                groupModOutput.setTransactionId(new TransactionId(bigIntXid));
 
+                UpdateGroupOutput result = groupModOutput.build();
+                RpcResult<UpdateGroupOutput> rpcResult = Rpcs.getRpcResult(
+                        inputArg.isSuccessful(), result, inputArg.getErrors());
+                return rpcResult;
+            }
+        });
+        
+        return xidResult;
     }
 
     @Override
-    public Future<RpcResult<UpdateMeterOutput>> meterMod(MeterModInput input, SwitchConnectionDistinguisher cookie) {
+    public Future<RpcResult<UpdateMeterOutput>> meterMod(final MeterModInput input, SwitchConnectionDistinguisher cookie) {
         LOG.debug("Calling OFLibrary meterMod");
         Future<RpcResult<Void>> response = getConnectionAdapter(cookie).meterMod(input);
 
-        // Send the same Xid back to caller - MessageDrivenSwitch
-        UpdateMeterOutputBuilder meterModOutput = new UpdateMeterOutputBuilder();       
-        BigInteger bigIntXid =BigInteger.valueOf(input.getXid());
-        meterModOutput.setTransactionId(new TransactionId(bigIntXid));
+        // appending xid
+        ListenableFuture<RpcResult<UpdateMeterOutput>> xidResult = Futures.transform(
+                JdkFutureAdapters.listenInPoolThread(response), 
+                new Function<RpcResult<Void>,RpcResult<UpdateMeterOutput>>() {
+
+            @Override
+            public RpcResult<UpdateMeterOutput> apply(final RpcResult<Void> inputArg) {
+                UpdateMeterOutputBuilder meterModOutput = new UpdateMeterOutputBuilder();       
+                BigInteger bigIntXid = BigInteger.valueOf(input.getXid());
+                meterModOutput.setTransactionId(new TransactionId(bigIntXid));
+                
+                UpdateMeterOutput result = meterModOutput.build();
+                RpcResult<UpdateMeterOutput> rpcResult = Rpcs.getRpcResult(
+                        inputArg.isSuccessful(), result, inputArg.getErrors());
+                return rpcResult;
+            }
+        });
         
-        UpdateMeterOutput result = meterModOutput.build();
-        Collection<RpcError> errors = Collections.emptyList();
-        RpcResult<UpdateMeterOutput> rpcResult = Rpcs.getRpcResult(true, result, errors);
-
-        // solution 1: sending directly and hooking listener to get error
-        // hookup listener to catch the possible error with no reference to returned future-object
-        LOG.debug("Returning to ModelDrivenSwitch for meterMod RPC");
-        return Futures.immediateFuture(rpcResult);
-
+        return xidResult;
     }
 
     @Override
@@ -213,22 +228,29 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
     }
 
     @Override
-    public Future<RpcResult<UpdatePortOutput>> portMod(PortModInput input, SwitchConnectionDistinguisher cookie) {
-
+    public Future<RpcResult<UpdatePortOutput>> portMod(final PortModInput input, SwitchConnectionDistinguisher cookie) {
         LOG.debug("Calling OFLibrary portMod");
         Future<RpcResult<Void>> response = getConnectionAdapter(cookie).portMod(input);
+        
+        // appending xid
+        ListenableFuture<RpcResult<UpdatePortOutput>> xidResult = Futures.transform(
+                JdkFutureAdapters.listenInPoolThread(response), 
+                new Function<RpcResult<Void>,RpcResult<UpdatePortOutput>>() {
 
-        // Send the same Xid back to caller - ModelDrivenSwitch
-        UpdatePortOutputBuilder portModOutput = new UpdatePortOutputBuilder();
-        String stringXid =input.getXid().toString();
-        BigInteger bigIntXid = new BigInteger( stringXid );
-        portModOutput.setTransactionId(new TransactionId(bigIntXid));
-        UpdatePortOutput result = portModOutput.build();
-        Collection<RpcError> errors = Collections.emptyList();
-        RpcResult<UpdatePortOutput> rpcResult = Rpcs.getRpcResult(true, result, errors);
-
-        LOG.debug("Returning to ModelDrivenSwitch for portMod RPC");
-        return Futures.immediateFuture(rpcResult);
+            @Override
+            public RpcResult<UpdatePortOutput> apply(final RpcResult<Void> inputArg) {
+                UpdatePortOutputBuilder portModOutput = new UpdatePortOutputBuilder();
+                BigInteger bigIntXid = BigInteger.valueOf(input.getXid());
+                portModOutput.setTransactionId(new TransactionId(bigIntXid));
+                
+                UpdatePortOutput result = portModOutput.build();
+                RpcResult<UpdatePortOutput> rpcResult = Rpcs.getRpcResult(
+                        inputArg.isSuccessful(), result, inputArg.getErrors());
+                return rpcResult;
+            }
+        });
+        
+        return xidResult;
     }
 
     @Override

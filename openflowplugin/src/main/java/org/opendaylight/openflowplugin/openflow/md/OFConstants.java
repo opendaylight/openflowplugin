@@ -39,4 +39,9 @@ public class OFConstants {
     public static final int MAC_ADDRESS_LENGTH = 6;
     public static final int SIZE_OF_LONG_IN_BYTES = 8;
     public static final int SIGNUM_UNSIGNED = 1;
+    
+    /** RpcError application tag */
+    public static final String APPLICATION_TAG = "OPENFLOW_PLUGIN";
+    /** RpcError tag - timeout */
+    public static final String ERROR_TAG_TIMEOUT = "TIMOUT";
 }

@@ -13,6 +13,12 @@ import org.opendaylight.controller.sal.common.util.Rpcs;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeterOutput;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
@@ -29,13 +35,24 @@ public abstract class OFRpcFutureResultTransformFactory {
             .getLogger(OFRpcFutureResultTransformFactory.class);
 
     /**
+     * @param input
+     * @param result
+     * @return
+     */
+    protected static <E> RpcResult<E> assembleRpcResult(RpcResult<?> input, E result) {
+        Collection<RpcError> errors = input.getErrors();
+        RpcResult<E> rpcResult = Rpcs.getRpcResult(input.isSuccessful(), result, errors);
+        return rpcResult;
+    }
+
+    /**
      * @return translator from {@link UpdateFlowOutput} to {@link AddFlowOutput}
      */
     public static Function<RpcResult<UpdateFlowOutput>,RpcResult<AddFlowOutput>> createForAddFlowOutput() {
         return new Function<RpcResult<UpdateFlowOutput>,RpcResult<AddFlowOutput>>() {
 
             @Override
-            public RpcResult<AddFlowOutput> apply(final RpcResult<UpdateFlowOutput> input) {
+            public RpcResult<AddFlowOutput> apply(RpcResult<UpdateFlowOutput> input) {
 
                 UpdateFlowOutput updateFlowOutput = input.getResult();
 
@@ -51,15 +68,49 @@ public abstract class OFRpcFutureResultTransformFactory {
         };
     }
     
+    /**
+     * @return translator from {@link UpdateGroupOutput} to {@link AddGroupOutput}
+     */
+    public static Function<RpcResult<UpdateGroupOutput>, RpcResult<AddGroupOutput>> createForAddGroupOutput() {
+        return new Function<RpcResult<UpdateGroupOutput>,RpcResult<AddGroupOutput>>() {
+
+            @Override
+            public RpcResult<AddGroupOutput> apply(RpcResult<UpdateGroupOutput> input) {
+                UpdateGroupOutput updateGroupOutput = input.getResult();
+                
+                AddGroupOutputBuilder addGroupOutput = new AddGroupOutputBuilder();
+                addGroupOutput.setTransactionId(updateGroupOutput.getTransactionId());
+                AddGroupOutput result = addGroupOutput.build();
+
+                RpcResult<AddGroupOutput> rpcResult = assembleRpcResult(input, result);
+                LOG.debug("Returning the Add Group RPC result to MD-SAL");
+                return rpcResult;
+            }
+        };
+    }
     
     /**
-     * @param input
-     * @param result
-     * @return
+     * @return translator from {@link UpdateGroupOutput} to {@link AddGroupOutput}
      */
-    protected static <E> RpcResult<E> assembleRpcResult(RpcResult<?> input, E result) {
-        Collection<RpcError> errors = input.getErrors();
-        RpcResult<E> rpcResult = Rpcs.getRpcResult(input.isSuccessful(), result, errors);
-        return rpcResult;
+    public static Function<RpcResult<UpdateMeterOutput>, RpcResult<AddMeterOutput>> createForAddMeterOutput() {
+        return new Function<RpcResult<UpdateMeterOutput>,RpcResult<AddMeterOutput>>() {
+
+            @Override
+            public RpcResult<AddMeterOutput> apply(final RpcResult<UpdateMeterOutput> input) {
+                UpdateMeterOutput updateMeterOutput = input.getResult();
+                
+                AddMeterOutputBuilder addMeterOutput = new AddMeterOutputBuilder();
+                addMeterOutput.setTransactionId(updateMeterOutput.getTransactionId());
+                AddMeterOutput result = addMeterOutput.build();
+
+                RpcResult<AddMeterOutput> rpcResult = assembleRpcResult(input, result);
+                LOG.debug("Returning the Add Meter RPC result to MD-SAL");
+                return rpcResult;
+            }
+        };
     }
+    
+    
+    
+    
 }

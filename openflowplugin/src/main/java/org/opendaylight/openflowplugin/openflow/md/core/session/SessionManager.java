@@ -11,7 +11,6 @@ package org.opendaylight.openflowplugin.openflow.md.core.session;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
 
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.controller.sal.binding.api.data.DataProviderService;
@@ -24,6 +23,8 @@ import org.opendaylight.openflowplugin.openflow.md.queue.PopListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
+
+import com.google.common.util.concurrent.ListeningExecutorService;
 
 /**
  * @author mirehak
@@ -116,10 +117,10 @@ public interface SessionManager extends AutoCloseable {
     /**
      * @param newFixedThreadPool
      */
-    void setRpcPool(ExecutorService newFixedThreadPool);
+    void setRpcPool(ListeningExecutorService newFixedThreadPool);
 
     /**
      * @return the rpcPool instance
      */
-    ExecutorService getRpcPool();
+    ListeningExecutorService getRpcPool();
 }
