@@ -20,12 +20,12 @@
       <!-- OpenDayLight Released artifact -->
       <repository>
         <id>opendaylight-release</id>
-        <url>${nexusproxy}/repositories/opendaylight.release/</url>
+        <url>${nexusproxy}/repositories/opendaylight.release</url>
       </repository>
       <!-- OpenDayLight Snapshot artifact -->
       <snapshotRepository>
         <id>opendaylight-snapshot</id>
-        <url>${nexusproxy}/repositories/opendaylight.snapshot/</url>
+        <url>${nexusproxy}/repositories/opendaylight.snapshot</url>
       </snapshotRepository>
       <!-- Site deployment -->
       <!-- site>
@@ -462,18 +462,20 @@
     </profiles>
 
     <repositories>
+      <!-- covered by groups/public
       <repository>
         <id>opendaylight-release</id>
         <name>opendaylight-release</name>
-        <url>${nexusproxy}/repositories/opendaylight.release/</url>
+        <url>${nexusproxy}/repositories/opendaylight.release</url>
         <snapshots>
           <enabled>false</enabled>
         </snapshots>
       </repository>
+      -->
       <repository>
         <id>opendaylight-snapshot</id>
         <name>opendaylight-snapshot</name>
-        <url>${nexusproxy}/repositories/opendaylight.snapshot/</url>
+        <url>${nexusproxy}/repositories/opendaylight.snapshot</url>
         <releases>
           <enabled>false</enabled>
         </releases>
@@ -481,7 +483,7 @@
       <repository>
         <id>public</id>
         <name>public</name>
-        <url>${nexusproxy}/groups/public/</url>
+        <url>${nexusproxy}/groups/public</url>
         <snapshots>
           <enabled>false</enabled>
         </snapshots>
@@ -493,7 +495,7 @@
       <pluginRepository>
         <id>opendaylight-central</id>
         <name>opendaylight-central</name>
-        <url>${nexusproxy}/repositories/public/</url>
+        <url>${nexusproxy}/repositories/public</url>
         <snapshots>
           <enabled>false</enabled>
         </snapshots>
@@ -501,7 +503,7 @@
       <pluginRepository>
         <id>opendaylight-snapshot</id>
         <name>central2</name>
-        <url>${nexusproxy}/repositories/opendaylight.snapshot/</url>
+        <url>${nexusproxy}/repositories/opendaylight.snapshot</url>
         <releases>
           <enabled>false</enabled>
         </releases>
