@@ -115,6 +115,11 @@
           <version>${openflowjava.version}</version>
         </dependency>
         <dependency>
+          <groupId>org.opendaylight.openflowjava</groupId>
+          <artifactId>openflow-protocol-config</artifactId>
+          <version>${openflowjava.version}</version>
+        </dependency>
+        <dependency>
           <groupId>org.opendaylight.controller.model</groupId>
           <artifactId>model-flow-base</artifactId>
           <version>${controller.model.version}</version>
