@@ -3437,5 +3437,32 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         }
 
     }
-
+    /*
+     * usage testAllFlows <dp>
+     * ex: _perfFlowTest 1
+     */
+    public void _testAllFlows(CommandInterpreter ci) {
+    	String dataPathID = ci.nextArgument();
+    	int numberOfFlows = 82;
+        int threadCount = 0;
+        if(dataPathID ==null || dataPathID.trim().equals("")){
+        	dataPathID = "1";
+        }
+        ci.println("*     Test All Flows	*");
+        ci.println("*     dataPathID:::"+dataPathID+"");
+        String dataPath="openflow:"+dataPathID;
+        String tableId = "0";
+        NodeBuilder tn = createTestNode(dataPath);
+        FlowBuilder tf;
+        	for (int flow=1;flow<numberOfFlows;flow++){
+        		String flowID = "f"+flow;
+        		try{
+        			tf = createTestFlow(tn, flowID, tableId);
+        			writeFlow(ci, tf, tn);
+        		} catch(Exception e){
+        			ci.println("--Test Failed--Issue found while adding flow"+ flow);
+        			break;
+        		}
+        	}
+    }
 }
