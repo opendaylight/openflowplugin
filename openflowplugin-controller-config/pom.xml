@@ -16,7 +16,7 @@
     </parent>
 
     <artifactId>openflowplugin-controller-config</artifactId>
-    <description>Controller Configuration files for openflowplugin + openflowjava couple</description>
+    <description>Controller Configuration files for openflowplugin</description>
     <packaging>jar</packaging>
   
 </project>
