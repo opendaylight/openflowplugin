@@ -22,21 +22,6 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
 
     <data xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
       <modules xmlns="urn:opendaylight:params:xml:ns:yang:controller:config">
-        <!-- default OF-switch-connection-provider (port 6633) -->
-        <module>
-          <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:openflow:switch:connection:provider:impl">prefix:openflow-switch-connection-provider-impl</type>
-          <name>openflow-switch-connection-provider-default-impl</name>
-          <port>6633</port>
-          <switch-idle-timeout>15000</switch-idle-timeout>
-        </module>
-        <!-- default OF-switch-connection-provider (port 6653) -->
-        <module>
-          <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:openflow:switch:connection:provider:impl">prefix:openflow-switch-connection-provider-impl</type>
-          <name>openflow-switch-connection-provider-legacy-impl</name>
-          <port>6653</port>
-          <switch-idle-timeout>15000</switch-idle-timeout>
-        </module>
-
 
         <module>
           <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:openflow:common:config:impl">prefix:openflow-provider-impl</type>
@@ -60,18 +45,6 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
       </modules>
 
       <services xmlns="urn:opendaylight:params:xml:ns:yang:controller:config">
-        <service>
-          <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:openflow:switch:connection:provider">prefix:openflow-switch-connection-provider</type>
-          <instance>
-            <name>openflow-switch-connection-provider-default</name>
-            <provider>/modules/module[type='openflow-switch-connection-provider-impl'][name='openflow-switch-connection-provider-default-impl']</provider>
-          </instance>
-          <instance>
-            <name>openflow-switch-connection-provider-legacy</name>
-            <provider>/modules/module[type='openflow-switch-connection-provider-impl'][name='openflow-switch-connection-provider-legacy-impl']</provider>
-          </instance>
-        </service>
-
         <service>
           <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:openflow:common:config">prefix:openflow-provider</type>
           <instance>
