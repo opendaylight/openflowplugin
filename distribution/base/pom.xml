@@ -82,6 +82,20 @@ see https://git.opendaylight.org/gerrit/#/c/390/
         <version>2.8</version>
         <executions>
           <execution>
+            <id>unpack-provided-openflowjava-configs</id>
+            <goals>
+              <goal>unpack-dependencies</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+             <outputDirectory>${project.build.directory}/provided-configs</outputDirectory>
+             <includeArtifactIds>openflow-protocol-config</includeArtifactIds>
+             <includes>initial\/*.xml</includes>
+             <excludeTransitive>true</excludeTransitive>
+             <ignorePermissions>false</ignorePermissions>
+            </configuration>
+          </execution>
+          <execution>
             <id>unpack-shared-resources</id>
             <goals>
               <goal>unpack-dependencies</goal>
