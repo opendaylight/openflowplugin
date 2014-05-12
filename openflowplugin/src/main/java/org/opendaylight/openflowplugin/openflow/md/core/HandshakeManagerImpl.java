@@ -40,7 +40,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
     private Short version;
     private ErrorHandler errorHandler;
     
-    private long maxTimeout = 1000;
+    private long maxTimeout = 3000;
     private TimeUnit maxTimeoutUnit = TimeUnit.MILLISECONDS;
     private Short highestVersion;
 
@@ -102,7 +102,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
                 // versionBitmap missing at least on one side -> STEP-BY-STEP NEGOTIATION applying 
                 handleStepByStepVersionNegotiation(remoteVersion);
             }
-        } catch (Throwable ex) {
+        } catch (Exception ex) {
             errorHandler.handleException(ex, null);
             connectionAdapter.disconnect();
             LOG.debug("ret - "+ex.getMessage());
@@ -111,9 +111,9 @@ public class HandshakeManagerImpl implements HandshakeManager {
 
     /**
      * @param remoteVersion
-     * @throws Throwable 
+     * @throws Exception 
      */
-    private void handleStepByStepVersionNegotiation(Short remoteVersion) throws Throwable {
+    private void handleStepByStepVersionNegotiation(Short remoteVersion) throws Exception {
         LOG.debug("remoteVersion:{} lastProposedVersion:{}, highestVersion:{}", 
                 remoteVersion, lastProposedVersion, highestVersion);
         
@@ -142,9 +142,9 @@ public class HandshakeManagerImpl implements HandshakeManager {
 
     /**
      * @param remoteVersion
-     * @throws Throwable 
+     * @throws Exception 
      */
-    private void handleLowerVersionProposal(Short remoteVersion) throws Throwable {
+    private void handleLowerVersionProposal(Short remoteVersion) throws Exception {
         Short proposedVersion;
         // find the version from header version field
         proposedVersion = proposeNextVersion(remoteVersion);
@@ -161,9 +161,9 @@ public class HandshakeManagerImpl implements HandshakeManager {
 
     /**
      * @param elements
-     * @throws Throwable 
+     * @throws Exception 
      */
-    private void handleVersionBitmapNegotiation(List<Elements> elements) throws Throwable {
+    private void handleVersionBitmapNegotiation(List<Elements> elements) throws Exception {
         Short proposedVersion;
         proposedVersion = proposeCommonBitmapVersion(elements);
         if (lastProposedVersion == null) {
@@ -262,9 +262,9 @@ public class HandshakeManagerImpl implements HandshakeManager {
      * send hello reply without versionBitmap
      * @param helloVersion
      * @param helloXid
-     * @throws Throwable 
+     * @throws Exception 
      */
-    private void sendHelloMessage(Short helloVersion, Long helloXid) throws Throwable {
+    private void sendHelloMessage(Short helloVersion, Long helloXid) throws Exception {
         //Short highestVersion = ConnectionConductor.versionOrder.get(0);
         //final Long helloXid = 21L;
         HelloInput helloInput = MessageFactory.createHelloInput(helloVersion, helloXid, versionOrder);
@@ -276,7 +276,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
             RpcResult<Void> helloResult = connectionAdapter.hello(helloInput).get(maxTimeout, maxTimeoutUnit);
             RpcUtil.smokeRpc(helloResult);
             LOG.debug("FIRST HELLO sent.");
-        } catch (Throwable e) {
+        } catch (Exception e) {
             LOG.debug("FIRST HELLO sending failed.");
             throw e;
         }
@@ -287,11 +287,10 @@ public class HandshakeManagerImpl implements HandshakeManager {
      * after handshake set features, register to session
      * @param proposedVersion
      * @param xId
-     * @throws Throwable 
+     * @throws Exception 
      */
-    protected void postHandshake(Short proposedVersion, Long xid) throws Throwable {
+    protected void postHandshake(Short proposedVersion, Long xid) throws Exception {
         // set version
-        long maxTimeout = 3000;
         version = proposedVersion;
 
         LOG.debug("version set: " + proposedVersion);
@@ -317,7 +316,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
                     version, featureOutput.getDatapathId(), featureOutput.getAuxiliaryId());
             
             handshakeListener.onHandshakeSuccessfull(featureOutput, proposedVersion);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             //handshake failed
             LOG.error("issuing disconnect during handshake, reason: "+e.getMessage());
             connectionAdapter.disconnect();

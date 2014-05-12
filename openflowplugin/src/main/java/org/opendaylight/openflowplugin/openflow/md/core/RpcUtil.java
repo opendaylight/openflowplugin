@@ -18,9 +18,9 @@ public abstract class RpcUtil {
 
     /**
      * @param result
-     * @throws Throwable 
+     * @throws Exception 
      */
-    public static void smokeRpc(RpcResult<?> result) throws Throwable {
+    public static void smokeRpc(RpcResult<?> result) throws Exception {
         if (!result.isSuccessful()) {
             Throwable firstCause = null;
             StringBuffer sb = new StringBuffer();
