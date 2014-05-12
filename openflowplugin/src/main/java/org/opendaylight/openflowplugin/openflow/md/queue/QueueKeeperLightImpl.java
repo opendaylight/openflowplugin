@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
@@ -71,7 +72,7 @@ public class QueueKeeperLightImpl implements QueueKeeper<OfHeader, DataObject> {
      * prepare queue
      */
     public void init() {
-        processQueue = new LinkedBlockingQueue<>();
+        processQueue = new LinkedBlockingQueue<>(1000);
         pool = new ScheduledThreadPoolExecutor(poolSize);
 
         ticketProcessorFactory = new TicketProcessorFactory<>();
@@ -105,9 +106,12 @@ public class QueueKeeperLightImpl implements QueueKeeper<OfHeader, DataObject> {
             ticket.setMessage(message);
             LOG.debug("ticket scheduling: {}, ticket: {}",
                     message.getImplementedInterface().getSimpleName(), System.identityHashCode(ticket));
-            //TODO: block if queue limit reached
-            processQueue.add(ticket);
-            scheduleTicket(ticket);
+            try {
+                processQueue.put(ticket);
+                scheduleTicket(ticket);
+            } catch (InterruptedException e) {
+                LOG.warn("message enqueing interrupted", e);
+            }
         } else if (queueType == QueueKeeper.QueueType.UNORDERED){
             List<DataObject> processedMessages = translate(message,conductor);
             pop(processedMessages,conductor);
