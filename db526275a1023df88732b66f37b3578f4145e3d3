@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "fa82b9bf_c1952a41",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/HandshakeManagerImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2014-05-12T15:40:56Z",
+      "side": 1,
+      "message": "right, will be fixed some when else",
+      "parentUuid": "fa82b9bf_01f472f0",
+      "revId": "db526275a1023df88732b66f37b3578f4145e3d3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fa82b9bf_81908296",
         "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/HandshakeManagerImpl.java",
         "patchSetId": 1
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "fa82b9bf_61a77ebe",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/HandshakeManagerImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2014-05-12T15:40:56Z",
+      "side": 1,
+      "message": "LOG.error is done in errorHandler (will decrease it to warn)\nLOG.debug here should be probably decreased to trace as it is easier to grep \u0027ret -\u0027 lines from log in order to observe handshake workflow",
+      "parentUuid": "fa82b9bf_81908296",
+      "revId": "db526275a1023df88732b66f37b3578f4145e3d3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fa82b9bf_61ef7e1f",
         "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/HandshakeManagerImpl.java",
         "patchSetId": 1
@@ -47,6 +83,24 @@
       "writtenOn": "2014-05-12T13:27:24Z",
       "side": 1,
       "message": "Throw a more specific exception?",
+      "revId": "db526275a1023df88732b66f37b3578f4145e3d3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_21b176f8",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/HandshakeManagerImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2014-05-12T15:40:56Z",
+      "side": 1,
+      "message": "there are 2 sources of exception:\n- timeout by waiting for future\n- list of RpcError, delivered by OFJAva, wrapped inside general Exception\n\nthose can be separated and given more useful message",
+      "parentUuid": "fa82b9bf_61ef7e1f",
       "revId": "db526275a1023df88732b66f37b3578f4145e3d3",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
