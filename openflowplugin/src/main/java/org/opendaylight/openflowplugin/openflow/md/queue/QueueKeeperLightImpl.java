@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
@@ -39,6 +40,9 @@ public class QueueKeeperLightImpl implements QueueKeeper<OfHeader, DataObject> {
     private Map<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, List<DataObject>>>> translatorMapping;
     private TicketProcessorFactory<OfHeader, DataObject> ticketProcessorFactory;
     private MessageSpy<OfHeader, DataObject> messageSpy;
+    //TODO read from configuration
+    private long enqueueTimeout = 100;
+    private TimeUnit enqueueTimeoutUnit = TimeUnit.MILLISECONDS;
 
     private VersionExtractor<OfHeader> versionExtractor = new VersionExtractor<OfHeader>() {
         @Override
@@ -71,7 +75,7 @@ public class QueueKeeperLightImpl implements QueueKeeper<OfHeader, DataObject> {
      * prepare queue
      */
     public void init() {
-        processQueue = new LinkedBlockingQueue<>();
+        processQueue = new LinkedBlockingQueue<>(1000);
         pool = new ScheduledThreadPoolExecutor(poolSize);
 
         ticketProcessorFactory = new TicketProcessorFactory<>();
@@ -105,9 +109,15 @@ public class QueueKeeperLightImpl implements QueueKeeper<OfHeader, DataObject> {
             ticket.setMessage(message);
             LOG.debug("ticket scheduling: {}, ticket: {}",
                     message.getImplementedInterface().getSimpleName(), System.identityHashCode(ticket));
-            //TODO: block if queue limit reached
-            processQueue.add(ticket);
-            scheduleTicket(ticket);
+            try {
+                boolean enqueued = processQueue.offer(ticket, enqueueTimeout, enqueueTimeoutUnit);
+                if (!enqueued) {
+                    throw new IllegalStateException("message processing queue is full");
+                }
+                scheduleTicket(ticket);
+            } catch (Exception e) {
+                LOG.warn("enqueueing of message failed: {}", message, e);
+            }
         } else if (queueType == QueueKeeper.QueueType.UNORDERED){
             List<DataObject> processedMessages = translate(message,conductor);
             pop(processedMessages,conductor);
