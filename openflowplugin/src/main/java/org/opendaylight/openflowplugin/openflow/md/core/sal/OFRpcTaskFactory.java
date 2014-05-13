@@ -15,6 +15,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.FlowConver
 import org.opendaylight.openflowplugin.openflow.md.core.session.TransactionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowAddedBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowUpdatedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev131103.TransactionId;
@@ -92,10 +93,10 @@ public abstract class OFRpcTaskFactory {
                 ofFlowModInput.setXid(xId);
 
                 if (null != getRpcNotificationProviderService()) {
-                    FlowAddedBuilder newFlow = new FlowAddedBuilder(getInput().getUpdatedFlow());
-                    newFlow.setTransactionId(new TransactionId(BigInteger.valueOf(xId.intValue())));
-                    newFlow.setFlowRef(getInput().getFlowRef());
-                    getRpcNotificationProviderService().publish(newFlow.build());
+                    FlowUpdatedBuilder updFlow = new FlowUpdatedBuilder(getInput().getUpdatedFlow());
+                    updFlow.setTransactionId(new TransactionId(BigInteger.valueOf(xId.intValue())));
+                    updFlow.setFlowRef(getInput().getFlowRef());
+                    getRpcNotificationProviderService().publish(updFlow.build());
                 }
 
                 getSession().getbulkTransactionCache().put(new TransactionKey(xId), getInput());
