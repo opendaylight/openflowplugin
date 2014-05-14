@@ -68,7 +68,11 @@ public abstract class AbstractErrorTranslator implements IMDMessageTranslator<Of
             Object object = null;
             if (sc != null) {
                 // sessionContext is available only after handshake finished
-                object = sc.getbulkTransactionCache().getIfPresent(new TransactionKey(message.getXid()));
+                TransactionKey txKey = new TransactionKey(message.getXid());
+                object = sc.getbulkTransactionCache().getIfPresent(txKey);
+                if (object != null) {
+                    sc.getbulkTransactionCache().invalidate(txKey);
+                }
             }
 
             Uri uri = null;

@@ -44,7 +44,8 @@ public class SessionContextOFImpl implements SessionContext {
     private final AtomicLong xid;
     private final Map<Long, PortGrouping> physicalPorts;
     private final Map<Long, Boolean> portBandwidth;
-    private Cache<TransactionKey, Object> bulkTransactionCache = CacheBuilder.newBuilder().expireAfterWrite(10000, TimeUnit.MILLISECONDS).concurrencyLevel(1).build();
+    private Cache<TransactionKey, Object> bulkTransactionCache = CacheBuilder.newBuilder()
+            .softValues().maximumSize(1000).expireAfterWrite(2000, TimeUnit.MILLISECONDS).concurrencyLevel(1).build();
     private CompositeObjectRegistration<ModelDrivenSwitch> providerRegistration;
     private int seed;
     
