@@ -44,8 +44,6 @@ public class SessionContextOFImpl implements SessionContext {
     private final AtomicLong xid;
     private final Map<Long, PortGrouping> physicalPorts;
     private final Map<Long, Boolean> portBandwidth;
-    private Cache<TransactionKey, Object> bulkTransactionCache = CacheBuilder.newBuilder()
-            .softValues().maximumSize(1000).expireAfterWrite(2000, TimeUnit.MILLISECONDS).concurrencyLevel(1).build();
     private CompositeObjectRegistration<ModelDrivenSwitch> providerRegistration;
     private int seed;
     
@@ -84,11 +82,6 @@ public class SessionContextOFImpl implements SessionContext {
         return Collections.unmodifiableSet(auxiliaryConductors.entrySet());
     }
     
-    @Override
-    public Cache<TransactionKey, Object> getbulkTransactionCache() {
-        return bulkTransactionCache;
-    }
-
     @Override
     public GetFeaturesOutput getFeatures() {
         return features;

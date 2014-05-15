@@ -100,11 +100,6 @@ public interface SessionContext {
     Set<Long> getPorts();
     
     /**
-     * @return the Object for this session xId
-     */
-    Cache<TransactionKey, Object> getbulkTransactionCache();
-
-    /**
      * Returns OFPhysicalPort of the specified portNumber of this switch.
      * @param portNumber The port ID
      * @return OFPhysicalPort for the specified PortNumber

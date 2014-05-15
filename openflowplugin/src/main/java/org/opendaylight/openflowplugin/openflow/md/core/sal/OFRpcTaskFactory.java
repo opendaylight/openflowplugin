@@ -12,7 +12,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.FlowConvertor;
-import org.opendaylight.openflowplugin.openflow.md.core.session.TransactionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowAddedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowUpdatedBuilder;
@@ -59,7 +58,6 @@ public abstract class OFRpcTaskFactory {
                     getRpcNotificationProviderService().publish(newFlow.build());
                 }
 
-                getSession().getbulkTransactionCache().put(new TransactionKey(xId), getInput());
                 Future<RpcResult<UpdateFlowOutput>> resultFromOFLib =
                         getMessageService().flowMod(ofFlowModInput.build(), getCookie());
                 OFRpcTaskHelper.chainFutures(resultFromOFLib, getResult());
@@ -99,7 +97,6 @@ public abstract class OFRpcTaskFactory {
                     getRpcNotificationProviderService().publish(updFlow.build());
                 }
 
-                getSession().getbulkTransactionCache().put(new TransactionKey(xId), getInput());
                 Future<RpcResult<UpdateFlowOutput>> resultFromOFLib =
                         getMessageService().flowMod(ofFlowModInput.build(), getCookie());
                 OFRpcTaskHelper.chainFutures(resultFromOFLib, getResult());

@@ -7,8 +7,16 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.translator;
 
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.errors.rev131116.ErrorType;
+import java.math.BigInteger;
 
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.errors.rev131116.ErrorType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.NodeErrorNotificationBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev131103.TransactionId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessage;
+
+/**
+ * OF-1.0 errorMessage support
+ */
 public class ErrorV10Translator extends AbstractErrorTranslator {
 
     @Override
@@ -26,6 +34,24 @@ public class ErrorV10Translator extends AbstractErrorTranslator {
                 break;
         }
         return type;
+    }
+    
+    /**
+     * @param message
+     * @param errorType
+     * @return translated error message of general type (OF-1.0)
+     */
+    @Override
+    public org.opendaylight.yang.gen.v1.urn.opendaylight.flow.errors.rev131116.ErrorMessage getGranularNodeErrors(ErrorMessage message, ErrorType errorType){
+        NodeErrorNotificationBuilder nodeErrBuilder = new NodeErrorNotificationBuilder();
+        nodeErrBuilder.setTransactionId(new TransactionId(BigInteger.valueOf(message.getXid())));
+        nodeErrBuilder.setType(errorType);
+        nodeErrBuilder.setCode(message.getCode());
+
+        if (message.getData() != null) {
+            nodeErrBuilder.setData(new String(message.getData()));
+        }
+        return nodeErrBuilder.build();
     }
 
 }

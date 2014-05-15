@@ -7,7 +7,6 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.session;
 
-import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,9 +14,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.Future;
 
-import junit.framework.Assert;
-
-import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
@@ -63,8 +60,9 @@ import org.opendaylight.yangtools.concepts.CompositeObjectRegistration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
-import com.google.common.cache.Cache;
-
+/**
+ * test for {@link MessageDispatchServiceImpl}
+ */
 public class MessageDispatchServiceImplTest {
 
     MockSessionContext session;
@@ -75,14 +73,6 @@ public class MessageDispatchServiceImplTest {
     @Before
     public void setUp() throws Exception {
         session = new MockSessionContext(0);
-
-    }
-
-    /**
-     * @throws java.lang.Exception
-     */
-    @After
-    public void tearDown() throws Exception {
 
     }
 
@@ -217,8 +207,8 @@ class MockSessionContext implements SessionContext {
     }
 
     @Override
-    public void addAuxiliaryConductor(SwitchConnectionDistinguisher auxiliaryKey, ConnectionConductor conductor) {
-        map.put(auxiliaryKey, conductor);
+    public void addAuxiliaryConductor(SwitchConnectionDistinguisher auxiliaryKey, ConnectionConductor conductorArg) {
+        map.put(auxiliaryKey, conductorArg);
     }
 
     @Override
@@ -243,11 +233,6 @@ class MockSessionContext implements SessionContext {
         return null;
     }
     
-    @Override
-    public Cache<TransactionKey, Object> getbulkTransactionCache() {
-        return null;
-    }
-
     @Override
     public IMessageDispatchService getMessageDispatchService() {
         // TODO Auto-generated method stub
@@ -418,6 +403,7 @@ class MockConnectionConductor implements ConnectionConductor {
 
     @Override
     public void setErrorHandler(ErrorHandler errorHandler) {
+        // NOOP
     }
 }
 

@@ -64,9 +64,6 @@ public class ModelDrivenSwitchImplTest {
     @Mock
     private GetFeaturesOutput features;
 
-    public static Cache<TransactionKey, Object> bulkTransactionCache = CacheBuilder.newBuilder()
-            .expireAfterWrite(10000, TimeUnit.MILLISECONDS).concurrencyLevel(1).build();
-
     /**
      * @throws java.lang.Exception
      */
@@ -77,7 +74,6 @@ public class ModelDrivenSwitchImplTest {
         Mockito.when(conductor.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_0)
                 .thenReturn(OFConstants.OFP_VERSION_1_3);
         Mockito.when(context.getFeatures()).thenReturn(features);
-        Mockito.when(context.getbulkTransactionCache()).thenReturn(bulkTransactionCache);
         Mockito.when(features.getDatapathId()).thenReturn(BigInteger.valueOf(1));
         
         OFSessionUtil.getSessionManager().setRpcPool(Executors.newFixedThreadPool(10));

@@ -257,7 +257,6 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
             rpcNotificationProviderService.publish(groupMod.build());
         }
 
-        session.getbulkTransactionCache().put(new TransactionKey(xId), input);
         Future<RpcResult<UpdateGroupOutput>> resultFromOFLib = messageService.groupMod(ofGroupModInput.build(), cookie);
         RpcResult<UpdateGroupOutput> rpcResultFromOFLib = null;
 
@@ -311,7 +310,6 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
             rpcNotificationProviderService.publish(meterMod.build());
         }
 
-        session.getbulkTransactionCache().put(new TransactionKey(xId), input);
         Future<RpcResult<UpdateMeterOutput>> resultFromOFLib = messageService.meterMod(ofMeterModInput.build(), cookie);
 
         RpcResult<UpdateMeterOutput> rpcResultFromOFLib = null;
@@ -367,7 +365,6 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
             rpcNotificationProviderService.publish(removeFlow.build());
         }
 
-        session.getbulkTransactionCache().put(new TransactionKey(xId), input);
         Future<RpcResult<UpdateFlowOutput>> resultFromOFLib = messageService.flowMod(ofFlowModInput.build(), cookie);
 
         RpcResult<UpdateFlowOutput> rpcResultFromOFLib = null;
@@ -424,7 +421,6 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
             rpcNotificationProviderService.publish(groupMod.build());
         }
 
-        session.getbulkTransactionCache().put(new TransactionKey(xId), input);
         Future<RpcResult<UpdateGroupOutput>> resultFromOFLib = messageService.groupMod(ofGroupModInput.build(), cookie);
 
         RpcResult<UpdateGroupOutput> rpcResultFromOFLib = null;
@@ -479,7 +475,6 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
             rpcNotificationProviderService.publish(meterMod.build());
         }
 
-        session.getbulkTransactionCache().put(new TransactionKey(xId), input);
         Future<RpcResult<UpdateMeterOutput>> resultFromOFLib = messageService.meterMod(ofMeterModInput.build(), cookie);
 
         RpcResult<UpdateMeterOutput> rpcResultFromOFLib = null;
@@ -592,7 +587,6 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
             rpcNotificationProviderService.publish(groupMod.build());
         }
 
-        session.getbulkTransactionCache().put(new TransactionKey(xId), input);
         Future<RpcResult<UpdateGroupOutput>> resultFromOFLib = messageService.groupMod(ofGroupModInput.build(), cookie);
 
         RpcResult<UpdateGroupOutput> rpcResultFromOFLib = null;
@@ -646,7 +640,6 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
             rpcNotificationProviderService.publish(meterMod.build());
         }
 
-        session.getbulkTransactionCache().put(new TransactionKey(xId), input);
         Future<RpcResult<UpdateMeterOutput>> resultFromOFLib = messageService.meterMod(ofMeterModInput.build(), cookie);
 
         RpcResult<UpdateMeterOutput> rpcResultFromOFLib = null;
