@@ -19,8 +19,10 @@ import org.opendaylight.openflowplugin.openflow.md.core.MessageFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.openflow.md.core.session.IMessageDispatchService;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
+import org.opendaylight.openflowplugin.openflow.md.queue.MessageSpy;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierOutput;
+import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.opendaylight.yangtools.yang.binding.Notification;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcError.ErrorSeverity;
@@ -95,11 +97,14 @@ public abstract class OFRpcTaskUtil {
     }
     
     /**
+     * @param task of rpc
      * @param originalResult
      * @param notificationProviderService
      * @param notificationComposer lazy notification composer
      */
-    public static <R, N extends Notification> void hookFutureNotification(ListenableFuture<R> originalResult, 
+    public static <R, N extends Notification, INPUT extends DataContainer> void hookFutureNotification(
+            final OFRpcTask<INPUT, R> task, 
+            ListenableFuture<R> originalResult, 
             final NotificationProviderService notificationProviderService, 
             final NotificationComposer<N> notificationComposer) {
         Futures.addCallback(originalResult, new FutureCallback<R>() {
@@ -108,14 +113,16 @@ public abstract class OFRpcTaskUtil {
                 if (null != notificationProviderService) {
                     notificationProviderService.publish(notificationComposer.compose());
                 }
+                task.getTaskContext().getMessageSpy().spyMessage(
+                        task.getInput(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_SUCCESS);
             }
             
             @Override
             public void onFailure(Throwable t) {
-                //NOOP
+                task.getTaskContext().getMessageSpy().spyMessage(
+                        task.getInput(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_FAILURE);
             }
         });
-        
     }
 
 }

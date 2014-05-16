@@ -9,46 +9,72 @@
 package org.opendaylight.openflowplugin.openflow.md.queue;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
-import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * message counter (by type)
  */
-public class MessageSpyCounterImpl implements MessageObservatory<OfHeader, DataObject> {
+public class MessageSpyCounterImpl implements MessageObservatory<DataContainer> {
     
     private static final Logger LOG = LoggerFactory
             .getLogger(MessageSpyCounterImpl.class);
     
-    private Map<Class<? extends DataContainer>, AtomicLong[]> inputStats = new ConcurrentHashMap<>();
+    private Map<STATISTIC_GROUP, Map<Class<? extends DataContainer>, AtomicLong[]>> inputStats = new ConcurrentHashMap<>();
     
     @Override
-    public void spyIn(OfHeader message) {
+    public void spyIn(DataContainer message) {
+        AtomicLong[] counters = getCounters(message, STATISTIC_GROUP.FROM_SWITCH_TRANSLATE_IN_SUCCESS);
+        counters[0].incrementAndGet();  
+    }
+
+    /**
+     * @param message
+     * @param statGroup TODO
+     * @return
+     */
+    private AtomicLong[] getCounters(DataContainer message, STATISTIC_GROUP statGroup) {
         Class<? extends DataContainer> msgType = message.getImplementedInterface();
-        AtomicLong counter;
-        synchronized(msgType) {
-            AtomicLong[] counters = inputStats.get(msgType);
+        Map<Class<? extends DataContainer>, AtomicLong[]> groupData = getOrCreateGroupData(statGroup);
+        AtomicLong[] counters = getOrCreateCountersPair(msgType, groupData);
+        return counters;
+    }
+    
+    private static AtomicLong[] getOrCreateCountersPair(Class<? extends DataContainer> msgType, Map<Class<? extends DataContainer>, AtomicLong[]> groupData) {
+        AtomicLong[] counters = groupData.get(msgType);
+        synchronized(groupData) {
             if (counters == null) {
                 counters = new AtomicLong[] {new AtomicLong(), new AtomicLong()};
-                inputStats.put(msgType, counters);
+                groupData.put(msgType, counters);
             } 
-            counter = counters[0];
         }
-        counter.incrementAndGet();
+        return counters;
+    }
+
+    private Map<Class<? extends DataContainer>, AtomicLong[]> getOrCreateGroupData(STATISTIC_GROUP statGroup) {
+        Map<Class<? extends DataContainer>, AtomicLong[]> groupData = null;
+        synchronized(inputStats) {
+            groupData = inputStats.get(statGroup);
+            if (groupData == null) {
+                groupData = new HashMap<>();
+                inputStats.put(statGroup, groupData);
+            }
+        }
+        return groupData;
     }
 
     @Override
-    public void spyOut(List<DataObject> message) {
-        // NOOP   
+    public void spyOut(DataContainer message) {
+        AtomicLong[] counters = getCounters(message, STATISTIC_GROUP.FROM_SWITCH_TRANSLATE_OUT_SUCCESS);
+        counters[0].incrementAndGet();  
     }
 
     @Override
@@ -64,12 +90,27 @@ public class MessageSpyCounterImpl implements MessageObservatory<OfHeader, DataO
     @Override
     public List<String> dumpMessageCounts() {
         List<String> dump = new ArrayList<>();
-        for (Entry<Class<? extends DataContainer>, AtomicLong[]> statEntry : inputStats.entrySet()) {
-            long amountPerInterval = statEntry.getValue()[0].getAndSet(0);
-            long cumulativeAmount = statEntry.getValue()[1].addAndGet(amountPerInterval);
-            dump.add(String.format("MSG[%s] -> +%d | %d", 
-                    statEntry.getKey().getSimpleName(), amountPerInterval, cumulativeAmount));
+        for (STATISTIC_GROUP statGroup : STATISTIC_GROUP.values()) {
+            Map<Class<? extends DataContainer>, AtomicLong[]> groupData = inputStats.get(statGroup);
+            if (groupData != null) {
+                for (Entry<Class<? extends DataContainer>, AtomicLong[]> statEntry : groupData.entrySet()) {
+                    long amountPerInterval = statEntry.getValue()[0].getAndSet(0);
+                    long cumulativeAmount = statEntry.getValue()[1].addAndGet(amountPerInterval);
+                    dump.add(String.format("%s: MSG[%s] -> +%d | %d",
+                            statGroup,
+                            statEntry.getKey().getSimpleName(), amountPerInterval, cumulativeAmount));
+                }
+                
+            } else {
+                dump.add(String.format("%s: no activity detected", statGroup));
+            }
         }
         return dump;
+    }
+
+    @Override
+    public void spyMessage(DataContainer message, STATISTIC_GROUP statGroup) {
+        AtomicLong[] counters = getCounters(message, statGroup);
+        counters[0].incrementAndGet();
     }
 }

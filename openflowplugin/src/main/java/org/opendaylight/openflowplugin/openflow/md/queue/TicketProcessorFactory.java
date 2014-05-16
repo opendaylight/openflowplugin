@@ -16,6 +16,8 @@ import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.openflow.md.core.TranslatorKey;
+import org.opendaylight.yangtools.yang.binding.DataContainer;
+import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +25,7 @@ import org.slf4j.LoggerFactory;
  * @param <IN>
  * @param <OUT>
  */
-public class TicketProcessorFactory<IN, OUT> {
+public class TicketProcessorFactory<IN extends DataObject, OUT extends DataObject> {
 
     protected static final Logger LOG = LoggerFactory
             .getLogger(TicketProcessorFactory.class);
@@ -31,7 +33,7 @@ public class TicketProcessorFactory<IN, OUT> {
     protected VersionExtractor<IN> versionExtractor;
     protected RegisteredTypeExtractor<IN> registeredTypeExtractor;
     protected Map<TranslatorKey, Collection<IMDMessageTranslator<IN, List<OUT>>>> translatorMapping;
-    protected MessageSpy<IN, OUT> spy;
+    protected MessageSpy<DataContainer> spy;
 
     /**
      * @param versionExtractor the versionExtractor to set
@@ -59,7 +61,7 @@ public class TicketProcessorFactory<IN, OUT> {
     /**
      * @param spy the spy to set
      */
-    public void setSpy(MessageSpy<IN, OUT> spy) {
+    public void setSpy(MessageSpy<DataContainer> spy) {
         this.spy = spy;
     }
 
@@ -82,7 +84,9 @@ public class TicketProcessorFactory<IN, OUT> {
                     // spying on result
                     if (spy != null) {
                         spy.spyIn(ticket.getMessage());
-                        spy.spyOut(ticket.getResult().get());
+                        for (OUT outMessage : ticket.getResult().get()) {
+                            spy.spyOut(outMessage);
+                        }
                     }
                 } catch (Exception e) {
                     LOG.error("translation problem: {}", e.getMessage());

@@ -33,6 +33,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.plan.ConnectionAdapterSt
 import org.opendaylight.openflowplugin.openflow.md.core.plan.EventFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.plan.SwitchTestEvent;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
+import org.opendaylight.openflowplugin.openflow.md.queue.MessageSpy;
 import org.opendaylight.openflowplugin.openflow.md.queue.PopListener;
 import org.opendaylight.openflowplugin.openflow.md.queue.QueueKeeperLightImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Capabilities;
@@ -55,6 +56,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessageBuilder;
+import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -93,6 +95,8 @@ public class ConnectionConductorImplTest {
     private ErrorHandlerSimpleImpl errorHandler;
 
     private int expectedErrors = 0;
+    @Mock
+    private MessageSpy<DataContainer> messageSpy;
 
     public void incrExperimenterMessageCounter() {
         this.experimenterMessageCounter++;
@@ -133,6 +137,7 @@ public class ConnectionConductorImplTest {
         popListener = new PopListenerCountingImpl<>();
 
         queueKeeper = new QueueKeeperLightImpl();
+        queueKeeper.setMessageSpy(messageSpy);
 
         connectionConductor = new ConnectionConductorImpl(adapter);
         connectionConductor.setQueueKeeper(queueKeeper);

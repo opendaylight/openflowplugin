@@ -21,10 +21,12 @@ import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.openflow.md.core.TranslatorKey;
+import org.opendaylight.openflowplugin.openflow.md.queue.MessageSpy;
 import org.opendaylight.openflowplugin.openflow.md.queue.PopListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.concepts.util.ListenerRegistry;
+import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -198,6 +200,7 @@ public class SessionManagerOFImpl implements SessionManager {
             }
         }
     };
+    private MessageSpy<DataContainer> messageSpy;
     
 
     @Override
@@ -260,5 +263,15 @@ public class SessionManagerOFImpl implements SessionManager {
     @Override
     public ListeningExecutorService getRpcPool() {
         return rpcPool;
+    }
+    
+    @Override
+    public void setMessageSpy(MessageSpy<DataContainer> messageSpy) {
+        this.messageSpy = messageSpy;
+    }
+    
+    @Override
+    public MessageSpy<DataContainer> getMessageSpy() {
+        return messageSpy;
     }
 }

@@ -12,6 +12,8 @@ import java.util.concurrent.TimeUnit;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.openflowplugin.openflow.md.core.session.IMessageDispatchService;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
+import org.opendaylight.openflowplugin.openflow.md.queue.MessageSpy;
+import org.opendaylight.yangtools.yang.binding.DataContainer;
 
 import com.google.common.util.concurrent.ListeningExecutorService;
 
@@ -26,6 +28,7 @@ public class OFRpcTaskContext {
     private long maxTimeout;
     private TimeUnit maxTimeoutUnit;
     private ListeningExecutorService rpcPool;
+    private MessageSpy<DataContainer> messageSpy;
     
     /**
      * @return the messageService
@@ -100,5 +103,18 @@ public class OFRpcTaskContext {
      */
     public ListeningExecutorService getRpcPool() {
         return rpcPool;
+    }
+    
+    /**
+     * @param messageSpy
+     */
+    public void setMessageSpy(MessageSpy<DataContainer> messageSpy) {
+        this.messageSpy = messageSpy;
+    }
+    /**
+     * @return the messageSpy
+     */
+    public MessageSpy<DataContainer> getMessageSpy() {
+        return messageSpy;
     }
 }

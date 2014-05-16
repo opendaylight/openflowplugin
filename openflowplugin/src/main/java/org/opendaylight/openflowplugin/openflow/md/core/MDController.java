@@ -18,6 +18,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -81,6 +82,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.Tr
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.NodeConnectorStatisticsUpdate;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.QueueStatisticsUpdate;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.TableUpdated;
+import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,6 +90,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 
 /**
@@ -101,7 +104,7 @@ public class MDController implements IMDController, AutoCloseable {
 
     private ConcurrentMap<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, List<DataObject>>>> messageTranslators;
     private Map<Class<? extends DataObject>, Collection<PopListener<DataObject>>> popListeners;
-    private MessageSpy<OfHeader, DataObject> messageSpyCounter; 
+    private MessageSpy<DataContainer> messageSpyCounter; 
 
     final private int OF10 = OFConstants.OFP_VERSION_1_0;
     final private int OF13 = OFConstants.OFP_VERSION_1_3;
@@ -140,8 +143,12 @@ public class MDController implements IMDController, AutoCloseable {
         addMessageTranslator(MultipartReplyMessage.class,OF13,new MultipartReplyTableFeaturesToTableUpdatedTranslator());
         addMessageTranslator(GetFeaturesOutput.class,OF10, new FeaturesV10ToNodeConnectorUpdatedTranslator());
 
-        //TODO: move registration to factory
         NotificationPopListener<DataObject> notificationPopListener = new NotificationPopListener<DataObject>();
+        notificationPopListener.setNotificationProviderService(
+                OFSessionUtil.getSessionManager().getNotificationProviderService());
+        notificationPopListener.setMessageSpy(messageSpyCounter);
+        
+        //TODO: move registration to factory
         addMessagePopListener(NodeErrorNotification.class, notificationPopListener);
         addMessagePopListener(BadActionErrorNotification.class, notificationPopListener);
         addMessagePopListener(BadInstructionErrorNotification.class, notificationPopListener);
@@ -196,12 +203,28 @@ public class MDController implements IMDController, AutoCloseable {
         // Push the updated Listeners to Session Manager which will be then picked up by ConnectionConductor eventually
         OFSessionUtil.getSessionManager().setTranslatorMapping(messageTranslators);
         OFSessionUtil.getSessionManager().setPopListenerMapping(popListeners);
+        OFSessionUtil.getSessionManager().setMessageSpy(messageSpyCounter);
         
         // prepare worker pool for rpc
         // TODO: get size from configSubsystem
-        OFSessionUtil.getSessionManager().setRpcPool(
-                MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(10)));
+        int rpcThreadLimit = 10;
+        ListeningExecutorService rpcPoolDelegator = createRpcPoolSpyDecorated(rpcThreadLimit, messageSpyCounter);
+        OFSessionUtil.getSessionManager().setRpcPool(rpcPoolDelegator);
         
+    }
+
+    /**
+     * @param rpcThreadLimit
+     * @param messageSpy 
+     * @return
+     */
+    private static ListeningExecutorService createRpcPoolSpyDecorated(int rpcThreadLimit, MessageSpy<DataContainer> messageSpy) {
+        ThreadPoolLoggingExecutor rpcPool = new ThreadPoolLoggingExecutor(rpcThreadLimit, rpcThreadLimit, 0L, 
+                TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
+        ListeningExecutorService listeningRpcPool = MoreExecutors.listeningDecorator(rpcPool);
+        RpcListeningExecutorService rpcPoolDecorated = new RpcListeningExecutorService(listeningRpcPool);
+        rpcPoolDecorated.setMessageSpy(messageSpy);
+        return rpcPoolDecorated;
     }
 
     /**
@@ -241,7 +264,9 @@ public class MDController implements IMDController, AutoCloseable {
 
     /**
      * @return wished connections configurations
+     * @deprecated use configSubsystem
      */
+    @Deprecated
     private static Collection<ConnectionConfiguration> getConnectionConfiguration() {
         // TODO:: get config from state manager
         ConnectionConfiguration configuration = ConnectionConfigurationFactory.getDefault();
@@ -333,7 +358,7 @@ public class MDController implements IMDController, AutoCloseable {
      * @param messageSpyCounter the messageSpyCounter to set
      */
     public void setMessageSpyCounter(
-            MessageSpy<OfHeader, DataObject> messageSpyCounter) {
+            MessageSpy<DataContainer> messageSpyCounter) {
         this.messageSpyCounter = messageSpyCounter;
     }
     

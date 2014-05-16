@@ -8,19 +8,48 @@
 package org.opendaylight.openflowplugin.openflow.md.core;
 
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
-import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
+import org.opendaylight.openflowplugin.openflow.md.queue.MessageSpy;
 import org.opendaylight.openflowplugin.openflow.md.queue.PopListener;
 import org.opendaylight.yangtools.yang.binding.Notification;
 
+/**
+ * general publisher to MD-SAL 
+ * 
+ * @param <T> type of supported notification
+ */
 public class NotificationPopListener<T> implements PopListener<T> {
+    
+    private MessageSpy<? super T> messageSpy;
+    private NotificationProviderService notificationProviderService;
+    
+    /**
+     * @param messageSpy the messageSpy to set
+     */
+    public void setMessageSpy(MessageSpy<? super T> messageSpy) {
+        this.messageSpy = messageSpy;
+    }
 
+    /**
+     * @param notificationProviderService the notificationProviderService to set
+     */
+    public void setNotificationProviderService(
+            NotificationProviderService notificationProviderService) {
+        this.notificationProviderService = notificationProviderService;
+    }
 
     @Override
     public void onPop(T processedMessage) {
+        boolean published = false;
         if(processedMessage instanceof Notification) {
-            //TODO: create via factory, inject service
-            NotificationProviderService notificationProviderService = OFSessionUtil.getSessionManager().getNotificationProviderService();
-            notificationProviderService.publish((Notification) processedMessage);
+            if (notificationProviderService != null) {
+                notificationProviderService.publish((Notification) processedMessage);
+                messageSpy.spyMessage(processedMessage, MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS);
+                published = true;
+            }
+        }
+        
+        if (! published) {
+            messageSpy.spyMessage(processedMessage, MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE);
         }
     }
 

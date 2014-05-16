@@ -85,8 +85,8 @@ public abstract class OFRpcTaskFactory {
                             getMessageService().flowMod(ofFlowModInput.build(), getCookie());
                     result = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
                     
-                    OFRpcTaskUtil.hookFutureNotification(result, getRpcNotificationProviderService(), 
-                            createFlowAddedNotification(xId, getInput()));
+                    OFRpcTaskUtil.hookFutureNotification(this, result, 
+                            getRpcNotificationProviderService(), createFlowAddedNotification(xId, getInput()));
                 }
 
                 return result;
@@ -144,8 +144,8 @@ public abstract class OFRpcTaskFactory {
                             getMessageService().flowMod(ofFlowModInput.build(), getCookie());
                     result = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
                     
-                    OFRpcTaskUtil.hookFutureNotification(result, getRpcNotificationProviderService(), 
-                            createFlowUpdatedNotification(xId, getInput()));
+                    OFRpcTaskUtil.hookFutureNotification(this, result, 
+                            getRpcNotificationProviderService(), createFlowUpdatedNotification(xId, getInput()));
                 }
                 return result;
             }
@@ -201,8 +201,8 @@ public abstract class OFRpcTaskFactory {
                             .groupMod(ofGroupModInput.build(), getCookie());
                     result = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
                     
-                    OFRpcTaskUtil.hookFutureNotification(result, getRpcNotificationProviderService(), 
-                            createGroupAddedNotification(xId, getInput()));
+                    OFRpcTaskUtil.hookFutureNotification(this, result, 
+                            getRpcNotificationProviderService(), createGroupAddedNotification(xId, getInput()));
                 }
 
                 return result;
@@ -260,8 +260,8 @@ public abstract class OFRpcTaskFactory {
                             .meterMod(ofMeterModInput.build(), getCookie());
                     result = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
                     
-                    OFRpcTaskUtil.hookFutureNotification(result, getRpcNotificationProviderService(), 
-                            createMeterAddedNotification(xId, getInput()));
+                    OFRpcTaskUtil.hookFutureNotification(this, result, 
+                            getRpcNotificationProviderService(), createMeterAddedNotification(xId, getInput()));
                 }
 
                 return result;
@@ -321,8 +321,8 @@ public abstract class OFRpcTaskFactory {
                             getMessageService().groupMod(ofGroupModInput.build(), getCookie());
                     result = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
                     
-                    OFRpcTaskUtil.hookFutureNotification(result, getRpcNotificationProviderService(), 
-                            createGroupUpdatedNotification(xId, getInput()));
+                    OFRpcTaskUtil.hookFutureNotification(this, result, 
+                            getRpcNotificationProviderService(), createGroupUpdatedNotification(xId, getInput()));
                 }
                 return result;
             }
@@ -378,8 +378,8 @@ public abstract class OFRpcTaskFactory {
                             getMessageService().meterMod(ofMeterModInput.build(), getCookie());
                     result = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
                     
-                    OFRpcTaskUtil.hookFutureNotification(result, getRpcNotificationProviderService(), 
-                            createMeterUpdatedNotification(xId, getInput()));
+                    OFRpcTaskUtil.hookFutureNotification(this, result,
+                            getRpcNotificationProviderService(), createMeterUpdatedNotification(xId, getInput()));
                 }
                 return result;
             }

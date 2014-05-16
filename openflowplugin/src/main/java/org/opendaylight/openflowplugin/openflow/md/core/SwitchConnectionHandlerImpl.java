@@ -17,8 +17,7 @@ import org.opendaylight.openflowjava.protocol.api.connection.SwitchConnectionHan
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.queue.MessageSpy;
 import org.opendaylight.openflowplugin.openflow.md.queue.QueueKeeperLightImpl;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
-import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.opendaylight.yangtools.yang.binding.DataContainer;
 
 /**
  * basic interconnecting piece between plugin and library 
@@ -29,7 +28,7 @@ public class SwitchConnectionHandlerImpl implements SwitchConnectionHandler {
 
     private QueueKeeperLightImpl queueKeeper;
     private ErrorHandler errorHandler;
-    private MessageSpy<OfHeader, DataObject> messageSpy;
+    private MessageSpy<DataContainer> messageSpy;
     private int spyRate = 10;
 
     /**
@@ -71,7 +70,7 @@ public class SwitchConnectionHandlerImpl implements SwitchConnectionHandler {
     /**
      * @param messageSpy the messageSpy to set
      */
-    public void setMessageSpy(MessageSpy<OfHeader, DataObject> messageSpy) {
+    public void setMessageSpy(MessageSpy<DataContainer> messageSpy) {
         this.messageSpy = messageSpy;
     }
     

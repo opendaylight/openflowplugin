@@ -9,11 +9,10 @@
 package org.opendaylight.openflowplugin.openflow.md.queue;
 
 /**
- * @param <MSG_IN> 
- * @param <MSG_OUT> 
+ * @param <MSG_TYPE> 
  * 
  */
-public interface MessageObservatory<MSG_IN, MSG_OUT> extends MessageSpy<MSG_IN, MSG_OUT>, MessageCountDumper {
+public interface MessageObservatory<MSG_TYPE> extends MessageSpy<MSG_TYPE>, MessageCountDumper {
 
     // just unifying iface
     

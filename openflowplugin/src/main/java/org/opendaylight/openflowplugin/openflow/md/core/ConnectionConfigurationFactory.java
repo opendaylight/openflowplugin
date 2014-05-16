@@ -13,8 +13,9 @@ import java.net.InetAddress;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionConfiguration;
 
 /**
- * @author mirehak
+ * @deprecated use configSubsystem
  */
+@Deprecated
 public abstract class ConnectionConfigurationFactory {
 
     /** OF default listening port */

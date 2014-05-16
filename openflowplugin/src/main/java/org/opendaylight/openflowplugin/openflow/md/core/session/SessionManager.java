@@ -19,9 +19,11 @@ import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.openflow.md.core.TranslatorKey;
+import org.opendaylight.openflowplugin.openflow.md.queue.MessageSpy;
 import org.opendaylight.openflowplugin.openflow.md.queue.PopListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
+import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 
 import com.google.common.util.concurrent.ListeningExecutorService;
@@ -115,12 +117,22 @@ public interface SessionManager extends AutoCloseable {
     void setPopListenerMapping(Map<Class<? extends DataObject>, Collection<PopListener<DataObject>>> popListenerMapping);
 
     /**
-     * @param newFixedThreadPool
+     * @param rpcPoolDelegator
      */
-    void setRpcPool(ListeningExecutorService newFixedThreadPool);
+    void setRpcPool(ListeningExecutorService rpcPoolDelegator);
 
     /**
      * @return the rpcPool instance
      */
     ListeningExecutorService getRpcPool();
+
+    /**
+     * @param messageSpy
+     */
+    void setMessageSpy(MessageSpy<DataContainer> messageSpy);
+
+    /**
+     * @return the messageSpy
+     */
+    MessageSpy<DataContainer> getMessageSpy();
 }
