@@ -7,19 +7,20 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal;
 
-import java.math.BigInteger;
-import java.util.Collection;
-import java.util.concurrent.Future;
-
+import com.google.common.util.concurrent.JdkFutureAdapters;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.SettableFuture;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.FlowConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.GroupConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.MeterConvertor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowAdded;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowAddedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowUpdatedBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev131103.TransactionId;
@@ -46,9 +47,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
-import com.google.common.util.concurrent.JdkFutureAdapters;
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.SettableFuture;
+import java.math.BigInteger;
+import java.util.Collection;
+import java.util.concurrent.Future;
 
 /**
  *
@@ -133,18 +134,41 @@ public abstract class OFRpcTaskFactory {
                         getInput().getUpdatedFlow().isBarrier(), getCookie());
                 if (!barrierErrors.isEmpty()) {
                     OFRpcTaskUtil.wrapBarrierErrors(((SettableFuture<RpcResult<UpdateFlowOutput>>) result), barrierErrors);
+
                 } else {
-                    // Convert the AddFlowInput to FlowModInput
-                    FlowModInputBuilder ofFlowModInput = FlowConvertor.toFlowModInput(getInput().getUpdatedFlow(), 
-                            getVersion(), getSession().getFeatures().getDatapathId());
+                    Flow flow = null;
                     Long xId = getSession().getNextXid();
+                    boolean updatedFlow = (getInput().getUpdatedFlow().getMatch().equals(getInput().getOriginalFlow().getMatch())) &&
+                            (getInput().getUpdatedFlow().getPriority().equals(getInput().getOriginalFlow().getPriority()));
+
+
+                    if (updatedFlow == false) {
+                        // if neither match nor priority matches, then we would need to remove the flow and add it
+                        //remove flow
+                        RemoveFlowInputBuilder removeflow = new RemoveFlowInputBuilder(getInput().getOriginalFlow());
+                        FlowModInputBuilder ofFlowRemoveInput = FlowConvertor.toFlowModInput(removeflow.build(),
+                                getVersion(),getSession().getFeatures().getDatapathId());
+                        ofFlowRemoveInput.setXid(xId);
+                        Future<RpcResult<UpdateFlowOutput>> resultFromOFLibRemove = getMessageService().
+                                flowMod(ofFlowRemoveInput.build(), getCookie());
+                        //add flow
+                        AddFlowInputBuilder addFlow = new AddFlowInputBuilder(getInput().getUpdatedFlow());
+                        flow = addFlow.build();
+                    } else {
+                        //update flow
+                        flow = getInput().getUpdatedFlow();
+                    }
+
+                    FlowModInputBuilder ofFlowModInput = FlowConvertor.toFlowModInput(flow, getVersion(),
+                            getSession().getFeatures().getDatapathId());
+
                     ofFlowModInput.setXid(xId);
-    
-                    Future<RpcResult<UpdateFlowOutput>> resultFromOFLib = 
+
+                    Future<RpcResult<UpdateFlowOutput>> resultFromOFLib =
                             getMessageService().flowMod(ofFlowModInput.build(), getCookie());
                     result = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
-                    
-                    OFRpcTaskUtil.hookFutureNotification(this, result, 
+
+                    OFRpcTaskUtil.hookFutureNotification(this, result,
                             getRpcNotificationProviderService(), createFlowUpdatedNotification(xId, getInput()));
                 }
                 return result;
