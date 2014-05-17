@@ -7,14 +7,6 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.queue;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-
 import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
@@ -23,6 +15,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 /**
  * @author mirehak
@@ -105,12 +105,18 @@ public class QueueKeeperLightImpl implements QueueKeeper<OfHeader, DataObject> {
             ticket.setMessage(message);
             LOG.debug("ticket scheduling: {}, ticket: {}",
                     message.getImplementedInterface().getSimpleName(), System.identityHashCode(ticket));
-            try {
-                processQueue.put(ticket);
-                scheduleTicket(ticket);
-            } catch (InterruptedException e) {
-                LOG.warn("message enqueing interrupted", e);
-            }
+            int numTrys = 3;
+            boolean interrupted = true;
+            do {
+                try {
+                    processQueue.put(ticket);
+                    interrupted = false;
+                } catch (InterruptedException e) {
+                    LOG.warn("message enqueing interrupted", e);
+                }
+            } while(interrupted && --numTrys > 0);
+
+            scheduleTicket(ticket);
         } else if (queueType == QueueKeeper.QueueType.UNORDERED){
             List<DataObject> processedMessages = translate(message,conductor);
             pop(processedMessages,conductor);
