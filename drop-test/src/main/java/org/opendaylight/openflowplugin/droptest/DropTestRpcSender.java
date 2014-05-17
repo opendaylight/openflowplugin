@@ -39,7 +39,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Arrays;
 
 @SuppressWarnings("all")
@@ -122,8 +123,7 @@ public class DropTestRpcSender implements PacketProcessingListener {
 			ab.setAction(new DropActionCaseBuilder().setDropAction(dropAction).build());
 
 			// Add our drop action to a list
-			final ArrayList<Action> actionList = new ArrayList<Action>();
-			actionList.add(ab.build());
+			final List<Action> actionList = Collections.singletonList(ab.build());
 
 			// Create an Apply Action
 			final ApplyActionsBuilder aab = new ApplyActionsBuilder();
@@ -135,8 +135,7 @@ public class DropTestRpcSender implements PacketProcessingListener {
 
 			// Put our Instruction in a list of Instructions
 			final InstructionsBuilder isb = new InstructionsBuilder();;
-			final ArrayList<Instruction> instructions = new ArrayList<Instruction>();
-			instructions.add(ib.build());
+			final List<Instruction> instructions = Collections.singletonList(ib.build());
 			isb.setInstruction(instructions);
 
 			// Finally build our flow
