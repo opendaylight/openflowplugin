@@ -7,7 +7,7 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.lldp;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
@@ -129,8 +129,7 @@ public class LLDPSpeaker {
                 .setValue(customValue);
 
         // Create LLDP Custom Option list
-        List<LLDPTLV> customList = new ArrayList<LLDPTLV>();
-        customList.add(customTlv);
+        List<LLDPTLV> customList = Collections.singletonList(customTlv);
 
         // Create discovery pkt
         LLDP discoveryPkt = new LLDP();

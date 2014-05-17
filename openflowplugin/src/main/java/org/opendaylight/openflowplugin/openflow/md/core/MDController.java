@@ -251,8 +251,8 @@ public class MDController implements IMDController, AutoCloseable {
         
         switchConnectionHandler.setErrorHandler(errorHandler);
         switchConnectionHandler.init();
-        
-        List<ListenableFuture<Boolean>> starterChain = new ArrayList<>();
+
+        List<ListenableFuture<Boolean>> starterChain = new ArrayList<>(switchConnectionProviders.size());
         for (SwitchConnectionProvider switchConnectionPrv : switchConnectionProviders) {
             switchConnectionPrv.setSwitchConnectionHandler(switchConnectionHandler);
             ListenableFuture<Boolean> isOnlineFuture = switchConnectionPrv.startup();
@@ -282,7 +282,7 @@ public class MDController implements IMDController, AutoCloseable {
      */
     public void stop() {
         LOG.debug("stopping");
-        List<ListenableFuture<Boolean>> stopChain = new ArrayList<>();
+        List<ListenableFuture<Boolean>> stopChain = new ArrayList<>(switchConnectionProviders.size());
         try {
             for (SwitchConnectionProvider switchConnectionPrv : switchConnectionProviders) {
                 ListenableFuture<Boolean> shutdown =  switchConnectionPrv.shutdown();
