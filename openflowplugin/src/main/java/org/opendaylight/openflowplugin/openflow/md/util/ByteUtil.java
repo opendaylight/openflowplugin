@@ -128,7 +128,7 @@ public abstract class ByteUtil {
      * @see {@link MacAddress}
      */
     public static String macAddressToString(byte[] address) {
-        List<String> groups = new ArrayList<>();
+        List<String> groups = new ArrayList<>(MAC_ADDRESS_LENGTH);
         for(int i=0; i < MAC_ADDRESS_LENGTH; i++){
             groups.add(String.format("%02X", address[i]));
         }

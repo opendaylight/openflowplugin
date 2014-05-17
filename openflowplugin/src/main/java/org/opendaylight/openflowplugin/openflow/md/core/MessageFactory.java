@@ -8,6 +8,7 @@
 package org.opendaylight.openflowplugin.openflow.md.core;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.HelloElementType;
@@ -55,11 +56,14 @@ public abstract class MessageFactory {
     public static HelloInput createHelloInput(short helloVersion, long helloXid, List<Short> versionOrder) {
         HelloInputBuilder helloInputbuilder = prepareHelloInputBuilder(helloVersion, helloXid);
         if (versionOrder != null) {
-            List<Elements> elementList = new ArrayList<>();
             
             ElementsBuilder elementsBuilder = new ElementsBuilder();
             elementsBuilder.setType(HelloElementType.VERSIONBITMAP);
-            List<Boolean> booleanList = new ArrayList<>();
+            int resultVersionListSize = 0;
+            if (!versionOrder.isEmpty()) {
+                resultVersionListSize = versionOrder.get(0) + 1;
+            }
+            List<Boolean> booleanList = new ArrayList<>(resultVersionListSize);
             
             int versionOrderIndex = versionOrder.size() - 1;
             
@@ -74,7 +78,8 @@ public abstract class MessageFactory {
             }
             
             elementsBuilder.setVersionBitmap(booleanList);
-            elementList.add(elementsBuilder.build());
+
+            List<Elements> elementList = Collections.singletonList(elementsBuilder.build());
             helloInputbuilder.setElements(elementList);
         }
         return helloInputbuilder.build();
