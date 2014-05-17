@@ -81,12 +81,13 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -102,13 +103,12 @@ public class MDController implements IMDController, AutoCloseable {
 
     private ConcurrentMap<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, List<DataObject>>>> messageTranslators;
     private Map<Class<? extends DataObject>, Collection<PopListener<DataObject>>> popListeners;
-    private MessageSpy<OfHeader, DataObject> messageSpyCounter; 
+    private MessageSpy<OfHeader, DataObject> messageSpyCounter;
 
     final private int OF10 = OFConstants.OFP_VERSION_1_0;
     final private int OF13 = OFConstants.OFP_VERSION_1_3;
 
     private ErrorHandlerSimpleImpl errorHandler;
-    private ExecutorService rpcPool;
 
 
     /**
@@ -168,11 +168,11 @@ public class MDController implements IMDController, AutoCloseable {
 
         addMessagePopListener(SwitchFlowRemoved.class, notificationPopListener);
         addMessagePopListener(TableUpdated.class, notificationPopListener);
-        
+
         //Notification registration for flow statistics
         addMessagePopListener(FlowsStatisticsUpdate.class, notificationPopListener);
         addMessagePopListener(AggregateFlowStatisticsUpdate.class, notificationPopListener);
-        
+
         //Notification registrations for group-statistics
         addMessagePopListener(GroupStatisticsUpdated.class, notificationPopListener);
         addMessagePopListener(GroupFeaturesUpdated.class, notificationPopListener);
@@ -185,25 +185,27 @@ public class MDController implements IMDController, AutoCloseable {
 
         //Notification registration for port-statistics
         addMessagePopListener(NodeConnectorStatisticsUpdate.class, notificationPopListener);
-        
+
         //Notification registration for flow-table statistics
         addMessagePopListener(FlowTableStatisticsUpdate.class, notificationPopListener);
-        
+
         //Notification registration for queue-statistics
         addMessagePopListener(QueueStatisticsUpdate.class, notificationPopListener);
 
         //Notification for LLDPSpeaker
         LLDPSpeakerPopListener<DataObject> lldpPopListener  = new LLDPSpeakerPopListener<DataObject>();
         addMessagePopListener(NodeConnectorUpdated.class,lldpPopListener);
-        
+
         // Push the updated Listeners to Session Manager which will be then picked up by ConnectionConductor eventually
         OFSessionUtil.getSessionManager().setTranslatorMapping(messageTranslators);
         OFSessionUtil.getSessionManager().setPopListenerMapping(popListeners);
-        
+
         // prepare worker pool for rpc
         // TODO: get size from configSubsystem
-        OFSessionUtil.getSessionManager().setRpcPool(Executors.newFixedThreadPool(10));
-        
+        final ThreadPoolExecutor e = new ThreadPoolExecutor(10, 10, 0, TimeUnit.SECONDS,
+                new ArrayBlockingQueue<Runnable>(30000, true));
+        e.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+        OFSessionUtil.getSessionManager().setRpcPool(e);
     }
 
     /**
@@ -227,17 +229,17 @@ public class MDController implements IMDController, AutoCloseable {
         switchConnectionHandler.setMessageSpy(messageSpyCounter);
 
         errorHandler = new ErrorHandlerSimpleImpl();
-        
+
         switchConnectionHandler.setErrorHandler(errorHandler);
         switchConnectionHandler.init();
-        
+
         List<ListenableFuture<Boolean>> starterChain = new ArrayList<>();
         for (SwitchConnectionProvider switchConnectionPrv : switchConnectionProviders) {
             switchConnectionPrv.setSwitchConnectionHandler(switchConnectionHandler);
             ListenableFuture<Boolean> isOnlineFuture = switchConnectionPrv.startup();
             starterChain.add(isOnlineFuture);
         }
-        
+
         Future<List<Boolean>> srvStarted = Futures.allAsList(starterChain);
     }
 
@@ -338,7 +340,7 @@ public class MDController implements IMDController, AutoCloseable {
             MessageSpy<OfHeader, DataObject> messageSpyCounter) {
         this.messageSpyCounter = messageSpyCounter;
     }
-    
+
     @Override
     public void close() {
         LOG.debug("close");
