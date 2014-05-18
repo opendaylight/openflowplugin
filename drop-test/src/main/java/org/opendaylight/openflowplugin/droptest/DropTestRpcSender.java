@@ -168,7 +168,7 @@ public class DropTestRpcSender implements PacketProcessingListener {
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			LOG.error("dropTestRpc exception: {}", e.toString());
+			LOG.error("Failed to process packet", e);
 			synchronized (this) {
 				this._excs++;
 			}
