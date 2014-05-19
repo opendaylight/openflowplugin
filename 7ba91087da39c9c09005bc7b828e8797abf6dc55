@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa82b9bf_04778f3b",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/TableFeaturesReplyConvertor.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 487,
+      "author": {
+        "id": 491
+      },
+      "writtenOn": "2014-05-19T11:23:01Z",
+      "side": 1,
+      "message": "It probably doesn\u0027t matter, but you have this here twice.",
+      "revId": "7ba91087da39c9c09005bc7b828e8797abf6dc55",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_c4de8711",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/match/MatchConvertorImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 430,
+      "author": {
+        "id": 491
+      },
+      "writtenOn": "2014-05-19T11:23:01Z",
+      "side": 1,
+      "message": "Shouldn\u0027t the tunnel src/dst matches be added here as well? AFAIK, they are not part of the layer 3 matches, but the metadata.",
+      "revId": "7ba91087da39c9c09005bc7b828e8797abf6dc55",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_e4e14bd1",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/match/MatchConvertorImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 943,
+      "author": {
+        "id": 491
+      },
+      "writtenOn": "2014-05-19T11:23:01Z",
+      "side": 1,
+      "message": "Same as above.",
+      "revId": "7ba91087da39c9c09005bc7b828e8797abf6dc55",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_84e87fb5",
+        "filename": "test-provider/src/main/java/org/opendaylight/openflowplugin/test/OpenflowpluginTestCommandProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 819,
+      "author": {
+        "id": 491
+      },
+      "writtenOn": "2014-05-19T11:23:01Z",
+      "side": 1,
+      "message": "As in the implementation file, I think this should go to the metadata part, not layer 3.",
+      "revId": "7ba91087da39c9c09005bc7b828e8797abf6dc55",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
