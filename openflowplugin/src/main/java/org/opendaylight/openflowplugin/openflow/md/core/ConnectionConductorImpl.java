@@ -8,9 +8,9 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
@@ -80,7 +80,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     protected SessionContext sessionContext;
 
     private QueueKeeper<OfHeader, DataObject> queueKeeper;
-    private ExecutorService hsPool;
+    private ThreadPoolExecutor hsPool;
     private HandshakeManager handshakeManager;
 
     private boolean firstHelloProcessed;
@@ -93,7 +93,9 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     public ConnectionConductorImpl(ConnectionAdapter connectionAdapter) {
         this.connectionAdapter = connectionAdapter;
         conductorState = CONDUCTOR_STATE.HANDSHAKING;
-        hsPool = Executors.newFixedThreadPool(1);
+        int handshakeThreadLimit = 1;
+        hsPool = new ThreadPoolLoggingExecutor(handshakeThreadLimit , handshakeThreadLimit, 0L, 
+                TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
         firstHelloProcessed = false;
         handshakeManager = new HandshakeManagerImpl(connectionAdapter,
                 ConnectionConductor.versionOrder.get(0), ConnectionConductor.versionOrder);
@@ -401,7 +403,8 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         version = negotiatedVersion;
         conductorState = CONDUCTOR_STATE.WORKING;
         OFSessionUtil.registerSession(this, featureOutput, negotiatedVersion);
-        hsPool.shutdownNow();
+        hsPool.shutdown();
+        hsPool.purge();
     }
 
     /*
