@@ -76,7 +76,7 @@ public abstract class OFPaxOptionsAssistant {
                 ofLibraryBundles(),
                 mavenBundle(CONTROLLER_MODEL, "model-flow-statistics").versionAsInProject(),
                 mavenBundle(OFPLUGIN, "openflowplugin").versionAsInProject(),
-                mavenBundle("org.opendaylight.controller.thirdparty", "nagasena").versionAsInProject()
+                mavenBundle("org.openexi", "nagasena").versionAsInProject()
                 );
     }
 
