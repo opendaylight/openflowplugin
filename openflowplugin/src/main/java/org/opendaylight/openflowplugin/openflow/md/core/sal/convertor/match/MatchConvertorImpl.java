@@ -823,16 +823,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
                     Ipv6ExtHeaderBuilder ipv6ExtHeaderBuilder = new Ipv6ExtHeaderBuilder();
 
                     Ipv6ExthdrFlags pField = pseudoFieldMatchEntry.getPseudoField();
-                    Integer bitmap = 0;
-                    bitmap |= pField.isNonext() ? (1 << 0) : ~(1 << 0);
-                    bitmap |= pField.isEsp() ? (1 << 1) : ~(1 << 1);
-                    bitmap |= pField.isAuth() ? (1 << 2) : ~(1 << 2);
-                    bitmap |= pField.isDest() ? (1 << 3) : ~(1 << 3);
-                    bitmap |= pField.isFrag() ? (1 << 4) : ~(1 << 4);
-                    bitmap |= pField.isRouter() ? (1 << 5) : ~(1 << 5);
-                    bitmap |= pField.isHop() ? (1 << 6) : ~(1 << 6);
-                    bitmap |= pField.isUnrep() ? (1 << 7) : ~(1 << 7);
-                    bitmap |= pField.isUnseq() ? (1 << 8) : ~(1 << 8);
+                    Integer bitmap = MatchConvertorUtil.ipv6ExthdrFlagsToInt(pField);
 
                     ipv6ExtHeaderBuilder.setIpv6Exthdr(bitmap);
                     MaskMatchEntry maskMatchEntry = ofMatch.getAugmentation(MaskMatchEntry.class);
