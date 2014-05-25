@@ -853,7 +853,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
     private static InstructionsBuilder createGotoTableInstructions() {
 
         GoToTableBuilder aab = new GoToTableBuilder();
-        aab.setTableId((short) 2);
+        aab.setTableId((short) 5);
 
         InstructionBuilder ib = new InstructionBuilder();
         ib.setInstruction(new GoToTableCaseBuilder().setGoToTable(aab.build()).build());
@@ -3200,8 +3200,8 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         MatchBuilder match = new MatchBuilder();
         TunnelBuilder tunnel = new TunnelBuilder(); // tunnel id match
         tunnel.setTunnelId(BigInteger.valueOf(10668));
-        byte[] mask = new byte[] { (byte) -1, (byte) -1, (byte) -1, 0, 0, 0, (byte) 1, (byte) 1 };
-        tunnel.setTunnelMask(new BigInteger(mask));
+        byte[] mask = new byte[] {(byte) -1, (byte) -1, (byte) -1, 0, 0, 0, (byte) 1, (byte) 1 };
+        tunnel.setTunnelMask(new BigInteger(1, mask));
         match.setTunnel(tunnel.build());
 
         return match;
