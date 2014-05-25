@@ -647,7 +647,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
             break;
         case "f80":
             id += 80;
-            flow.setMatch(createMatch1().build());
+            flow.setMatch(createVlanMatch().build());
             flow.setInstructions(createAppyActionInstruction88().build());
             break;
         case "f81":
