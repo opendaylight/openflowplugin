@@ -1262,7 +1262,8 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         ActionBuilder ab = new ActionBuilder();
 
         SetVlanPcpActionBuilder pcp = new SetVlanPcpActionBuilder();
-        VlanPcp pcp1 = new VlanPcp((short) 9);
+        // the code point is a 3-bit(0-7) field representing the frame priority level
+        VlanPcp pcp1 = new VlanPcp((short) 4);
         pcp.setVlanPcp(pcp1);
         ab.setAction(new SetVlanPcpActionCaseBuilder().setSetVlanPcpAction(pcp.build()).build());
         ab.setKey(new ActionKey(0));
