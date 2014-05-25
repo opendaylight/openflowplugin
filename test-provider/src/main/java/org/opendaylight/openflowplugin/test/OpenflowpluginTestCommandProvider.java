@@ -3200,7 +3200,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         MatchBuilder match = new MatchBuilder();
         TunnelBuilder tunnel = new TunnelBuilder(); // tunnel id match
         tunnel.setTunnelId(BigInteger.valueOf(10668));
-        byte[] mask = new byte[] { (byte) -1, (byte) -1, (byte) -1, 0, 0, 0, (byte) 1, (byte) 1 };
+        byte[] mask = new byte[] { 0, (byte) -1, (byte) -1, (byte) -1, 0, 0, 0, (byte) 1, (byte) 1 };
         tunnel.setTunnelMask(new BigInteger(mask));
         match.setTunnel(tunnel.build());
 
