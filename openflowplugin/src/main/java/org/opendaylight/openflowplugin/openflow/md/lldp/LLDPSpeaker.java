@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.lldp;
 
+import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +15,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.lang3.StringUtils;
 import org.opendaylight.controller.sal.packet.Ethernet;
 import org.opendaylight.controller.sal.packet.LLDP;
 import org.opendaylight.controller.sal.packet.LLDPTLV;
@@ -101,7 +101,9 @@ public class LLDPSpeaker {
         ttlTlv.setType(LLDPTLV.TLVType.TTL.getValue()).setLength((short) ttl.length).setValue(ttl);
 		
         // Create LLDP ChassisID TLV
-        byte[] cidValue = LLDPTLV.createChassisIDTLVValue(colonize(StringUtils.leftPad(Long.toHexString(InventoryDataServiceUtil.dataPathIdFromNodeId(nodeId)),16,"0")));
+        BigInteger dataPathId = InventoryDataServiceUtil.dataPathIdFromNodeId(nodeId);
+        byte[] cidValue = LLDPTLV.createChassisIDTLVValue(
+                colonize(InventoryDataServiceUtil.bigIntegerToPaddedHex(dataPathId)));
         LLDPTLV chassisIdTlv = new LLDPTLV();
         chassisIdTlv.setType(LLDPTLV.TLVType.ChassisID.getValue());
         chassisIdTlv.setType(LLDPTLV.TLVType.ChassisID.getValue()).setLength((short) cidValue.length)
@@ -150,8 +152,8 @@ public class LLDPSpeaker {
         }
         return null;
 	}
-	
-	private class LLDPSpeakerTask extends TimerTask {
+
+    private class LLDPSpeakerTask extends TimerTask {
 
         @Override
         public void run() {
