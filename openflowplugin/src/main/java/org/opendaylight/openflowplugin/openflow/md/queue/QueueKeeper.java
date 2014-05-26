@@ -16,34 +16,49 @@ import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.TranslatorKey;
 
 /**
- * @author mirehak
+ * This processing mechanism based on queue. Processing consists of 2 steps: translate and publish. 
+ * Proposed workflow (might slightly deviate in implementations):
+ * <ol>
+ * <li>messages of input type are pushed in (via {@link QueueKeeper#push(Object, ConnectionConductor)} and similar)</li>
+ * <li>ticket (executable task) is build upon each pushed message and enqueued</li>
+ * <li>ticket is translated using appropriate translator</li>
+ * <li>ticket is dequeued and result is published by appropriate popListener</li>
+ * </ol>
+ * Message order might be not important, e.g. when speed is of the essence
  * @param <IN> source type
  * @param <OUT> result type
  */
 public interface QueueKeeper<IN, OUT> {
     
-    public enum QueueType {DEFAULT, UNORDERED}
+    /** type of message enqueue */
+    public enum QueueType {
+        /** ordered processing */
+        DEFAULT,
+        /** unordered processing - bypass fair processing */
+        UNORDERED}
 
     /**
-     * @param translatorMapping
+     * @param translatorMapping translators for message processing
      */
     void setTranslatorMapping(Map<TranslatorKey, Collection<IMDMessageTranslator<IN, List<OUT>>>> translatorMapping);
 
     /**
+     * enqueue message for processing using {@link QueueType#DEFAULT}
      * @param message
-     * @param conductor
+     * @param conductor source of message
      */
     void push(IN message, ConnectionConductor conductor);
     
     /**
+     * enqueue message for processing
      * @param message
-     * @param conductor
-     * @param ordered - true if message order matters, false otherwise
+     * @param conductor source of message
+     * @param queueType - {@link QueueType#DEFAULT} if message order matters, {@link QueueType#UNORDERED} otherwise
      */
     void push(IN message, ConnectionConductor conductor, QueueType queueType);
 
     /**
-     * @param popListenersMapping the popListenersMapping to set
+     * @param popListenersMapping listeners invoked when processing done
      */
     void setPopListenersMapping(Map<Class<? extends OUT>, Collection<PopListener<OUT>>> popListenersMapping);
 }
