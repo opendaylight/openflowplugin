@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa82b9bf_f12584c2",
+        "filename": "test-provider/src/main/java/org/opendaylight/openflowplugin/test/OpenflowpluginTestCommandProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 3196,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2014-05-26T09:51:14Z",
+      "side": 1,
+      "message": "Sorry but this is hack - mask length must be equal to value size. Could you please rather change contructor of BigInteger to \njava.math.BigInteger.BigInteger(int signum, byte[] magnitude)\nso it wont interpret the content as negative value based on most significant bit?",
+      "revId": "36910814d610c2cf5ca61e2faf703c48c7d474b9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
