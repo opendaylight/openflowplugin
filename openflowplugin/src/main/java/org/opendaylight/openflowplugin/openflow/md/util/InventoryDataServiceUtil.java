@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.util;
 
+import org.apache.commons.lang3.StringUtils;
 import org.opendaylight.controller.sal.binding.api.data.DataModificationTransaction;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
@@ -130,9 +131,9 @@ public abstract class InventoryDataServiceUtil {
         return new NodeId(OF_URI_PREFIX + current);
     }
     
-    public static Long dataPathIdFromNodeId(NodeId nodeId) {
+    public static BigInteger dataPathIdFromNodeId(NodeId nodeId) {
         String dpids = nodeId.getValue().replace(OF_URI_PREFIX, "");
-        Long dpid = Long.decode(dpids);
+        BigInteger dpid = new BigInteger(dpids);
         return dpid;
     }
 
@@ -199,5 +200,13 @@ public abstract class InventoryDataServiceUtil {
         NodeConnectorBuilder builder = new NodeConnectorBuilder();
         builder.setId(InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(datapathId,portNo));
         return builder;
+    }
+
+    /**
+     * @param dataPathId
+     * @return string of size 16, padded with '0'
+     */
+    public static String bigIntegerToPaddedHex(BigInteger dataPathId) {
+        return StringUtils.leftPad(dataPathId.toString(16),16,"0");
     }
 }
