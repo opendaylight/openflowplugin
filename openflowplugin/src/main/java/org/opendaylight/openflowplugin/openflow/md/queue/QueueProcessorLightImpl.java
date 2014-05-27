@@ -7,18 +7,18 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.queue;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
-import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
-import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
+import org.opendaylight.openflowplugin.openflow.md.core.ThreadPoolLoggingExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.openflow.md.queue.MessageSpy.STATISTIC_GROUP;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 /**
  * {@link QueueKeeper} implementation focused to keep order and use up mutiple threads for translation phase.
  * <br/>
- * There is internal thread pool of limited size ({@link QueueKeeperLightImpl#setPoolSize(int)}) 
+ * There is internal thread pool of limited size ({@link QueueProcessorLightImpl#setProcessingPoolSize(int)}) 
  * dedicated to translation. Then there is singleThreadPool dedicated to publishing (via popListeners)
  * <br/>
  * Workflow:
@@ -53,18 +53,25 @@ import org.slf4j.LoggerFactory;
  * 
  * 
  */
-public class QueueKeeperLightImpl implements QueueKeeper<OfHeader, DataObject> {
+public class QueueProcessorLightImpl implements QueueProcessor<OfHeader, DataObject>, 
+        MessageSourcePollRegistrator<QueueKeeper<OfHeader>>, Enqueuer<QueueItem<OfHeader>> {
 
     private static final Logger LOG = LoggerFactory
-            .getLogger(QueueKeeperLightImpl.class);
+            .getLogger(QueueProcessorLightImpl.class);
 
+    private BlockingQueue<TicketResult<DataObject>> ticketQueue;
+    private ExecutorService processingPool;
+    private int processingPoolSize = 10;
+    private ExecutorService harvesterPool;
+    private ExecutorService finisherPool;
+    
     private Map<Class<? extends DataObject>, Collection<PopListener<DataObject>>> popListenersMapping;
-    private BlockingQueue<TicketResult<DataObject>> processQueue;
-    private ScheduledThreadPoolExecutor pool;
-    private int poolSize = 10;
     private Map<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, List<DataObject>>>> translatorMapping;
     private TicketProcessorFactory<OfHeader, DataObject> ticketProcessorFactory;
     private MessageSpy<DataContainer> messageSpy;
+    protected Collection<QueueKeeper<OfHeader>> messageSources;
+    private Object harvestLock;
+    
 
     private VersionExtractor<OfHeader> versionExtractor = new VersionExtractor<OfHeader>() {
         @Override
@@ -97,50 +104,52 @@ public class QueueKeeperLightImpl implements QueueKeeper<OfHeader, DataObject> {
      * prepare queue
      */
     public void init() {
-        processQueue = new LinkedBlockingQueue<>(1000);
-        pool = new ScheduledThreadPoolExecutor(poolSize);
+        ticketQueue = new ArrayBlockingQueue<>(1000);
+        messageSources = new HashSet<>();
+        harvestLock = new Object();
+        
+        processingPool = new ThreadPoolLoggingExecutor(processingPoolSize, processingPoolSize, 0, 
+                TimeUnit.MILLISECONDS, new ArrayBlockingQueue<Runnable>(2*processingPoolSize));
+        harvesterPool = new ThreadPoolLoggingExecutor(1, 1, 0, 
+                TimeUnit.MILLISECONDS, new ArrayBlockingQueue<Runnable>(1));
+        finisherPool = new ThreadPoolLoggingExecutor(1, 1, 0, 
+                TimeUnit.MILLISECONDS, new ArrayBlockingQueue<Runnable>(1));
+        
+        harvesterPool.execute(new QueueKeeperHarvester<OfHeader>(this, messageSources, harvestLock));
 
         ticketProcessorFactory = new TicketProcessorFactory<>();
         ticketProcessorFactory.setRegisteredTypeExtractor(registeredSrcTypeExtractor);
         ticketProcessorFactory.setTranslatorMapping(translatorMapping);
         ticketProcessorFactory.setVersionExtractor(versionExtractor);
         ticketProcessorFactory.setSpy(messageSpy);
-
+        
         TicketFinisher<DataObject> finisher = new TicketFinisher<>(
-                processQueue, popListenersMapping, registeredOutTypeExtractor);
-        new Thread(finisher).start();
+                ticketQueue, popListenersMapping, registeredOutTypeExtractor);
+        finisherPool.execute(finisher);
     }
 
     /**
      * stop processing queue
      */
     public void shutdown() {
-        pool.shutdown();
+        processingPool.shutdown();
     }
 
     @Override
-    public void push(OfHeader message, ConnectionConductor conductor) {
-        push(message,conductor,QueueKeeper.QueueType.DEFAULT);
-    }
-
-    @Override
-    public void push(OfHeader message, ConnectionConductor conductor, QueueType queueType) {
-        messageSpy.spyMessage(message, STATISTIC_GROUP.FROM_SWITCH_ENQUEUED);
-        if(queueType == QueueKeeper.QueueType.DEFAULT) {
-            TicketImpl<OfHeader, DataObject> ticket = new TicketImpl<>();
-            ticket.setConductor(conductor);
-            ticket.setMessage(message);
-            LOG.debug("ticket scheduling: {}, ticket: {}",
-                    message.getImplementedInterface().getSimpleName(), System.identityHashCode(ticket));
-            try {
-                processQueue.put(ticket);
-                scheduleTicket(ticket);
-            } catch (InterruptedException e) {
-                LOG.warn("message enqueing interrupted", e);
-            }
-        } else if (queueType == QueueKeeper.QueueType.UNORDERED){
-            List<DataObject> processedMessages = translate(message,conductor);
-            pop(processedMessages,conductor);
+    public void enqueueQueueItem(QueueItem<OfHeader> queueItem) {
+        messageSpy.spyMessage(queueItem.getMessage(), STATISTIC_GROUP.FROM_SWITCH_ENQUEUED);
+        TicketImpl<OfHeader, DataObject> ticket = new TicketImpl<>();
+        ticket.setConductor(queueItem.getConnectionConductor());
+        ticket.setMessage(queueItem.getMessage());
+        
+        LOG.debug("ticket scheduling: {}, ticket: {}",
+                queueItem.getMessage().getImplementedInterface().getSimpleName(), 
+                System.identityHashCode(queueItem));
+        try {
+            ticketQueue.put(ticket);
+            scheduleTicket(ticket);
+        } catch (InterruptedException e) {
+            LOG.warn("message enqueing interrupted", e);
         }
     }
 
@@ -149,14 +158,14 @@ public class QueueKeeperLightImpl implements QueueKeeper<OfHeader, DataObject> {
      */
     private void scheduleTicket(Ticket<OfHeader, DataObject> ticket) {
         Runnable ticketProcessor = ticketProcessorFactory.createProcessor(ticket);
-        pool.execute(ticketProcessor);
+        processingPool.execute(ticketProcessor);
     }
 
     /**
      * @param poolSize the poolSize to set
      */
-    public void setPoolSize(int poolSize) {
-        this.poolSize = poolSize;
+    public void setProcessingPoolSize(int poolSize) {
+        this.processingPoolSize = poolSize;
     }
 
     @Override
@@ -178,62 +187,29 @@ public class QueueKeeperLightImpl implements QueueKeeper<OfHeader, DataObject> {
         this.messageSpy = messageSpy;
     }
 
-    private List<DataObject> translate(OfHeader message, ConnectionConductor conductor) {
-        List<DataObject> result = new ArrayList<>();
-        Class<? extends OfHeader> messageType = registeredSrcTypeExtractor.extractRegisteredType(message);
-        Collection<IMDMessageTranslator<OfHeader, List<DataObject>>> translators = null;
-        LOG.debug("translating message: {}", messageType.getSimpleName());
-
-        Short version = versionExtractor.extractVersion(message);
-        if (version == null) {
-           throw new IllegalArgumentException("version is NULL");
+    @Override
+    public AutoCloseable registerMessageSource(QueueKeeper<OfHeader> queue) {
+        boolean added = messageSources.add(queue);
+        if (! added) {
+            LOG.debug("registration of message source queue failed - already registered");
         }
-        TranslatorKey tKey = new TranslatorKey(version, messageType.getName());
-        translators = translatorMapping.get(tKey);
-
-        LOG.debug("translatorKey: {} + {}", version, messageType.getName());
-
-        if (translators != null) {
-            for (IMDMessageTranslator<OfHeader, List<DataObject>> translator : translators) {
-                SwitchConnectionDistinguisher cookie = null;
-                // Pass cookie only for PACKT_IN
-                if (messageType.equals("PacketInMessage.class")) {
-                    cookie = conductor.getAuxiliaryKey();
-                }
-                List<DataObject> translatorOutput = translator.translate(cookie, conductor.getSessionContext(), message);
-                if(translatorOutput != null) {
-                    result.addAll(translatorOutput);
-                }
-            }
-            if (messageSpy != null) {
-                messageSpy.spyIn(message);
-                for (DataObject outMsg : result) {
-                    messageSpy.spyOut(outMsg);
-                }
-            }
-        } else {
-            LOG.warn("No translators for this message Type: {}", messageType);
-            messageSpy.spyMessage(message, MessageSpy.STATISTIC_GROUP.FROM_SWITCH_TRANSLATE_SRC_FAILURE);
-        }
-        return result;
+        MessageSourcePollRegistration<QueueKeeper<OfHeader>> queuePollRegistration = 
+                new MessageSourcePollRegistration<>(this, queue);
+        return queuePollRegistration;
     }
-
-    /**
-     * @param processedMessages
-     * @param conductor
-     */
-    private void pop(List<DataObject> processedMessages, ConnectionConductor conductor) {
-        for (DataObject msg : processedMessages) {
-            Class<? extends Object> registeredType =
-                    registeredOutTypeExtractor.extractRegisteredType(msg);
-            Collection<PopListener<DataObject>> popListeners = popListenersMapping.get(registeredType);
-            if (popListeners == null) {
-                LOG.warn("no popListener registered for type {}"+registeredType);
-            } else {
-                for (PopListener<DataObject> consumer : popListeners) {
-                    consumer.onPop(msg);
-                }
-            }
-        }
+    
+    @Override
+    public boolean unregisterMessageSource(QueueKeeper<OfHeader> queue) {
+        return messageSources.remove(queue);
+    }
+    
+    @Override
+    public Collection<QueueKeeper<OfHeader>> getMessageSources() {
+        return messageSources;
+    }
+    
+    @Override
+    public Object getHarvestLock() {
+        return harvestLock;
     }
 }

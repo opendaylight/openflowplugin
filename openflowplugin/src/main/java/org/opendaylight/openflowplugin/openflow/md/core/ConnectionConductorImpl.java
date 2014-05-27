@@ -8,6 +8,8 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core;
 
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -20,7 +22,10 @@ import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.session.PortFeaturesUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionManager;
+import org.opendaylight.openflowplugin.openflow.md.queue.MessageSourcePollRegistrator;
 import org.opendaylight.openflowplugin.openflow.md.queue.QueueKeeper;
+import org.opendaylight.openflowplugin.openflow.md.queue.QueueKeeperFactory;
+import org.opendaylight.openflowplugin.openflow.md.queue.QueueProcessor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartRequestFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoInputBuilder;
@@ -61,6 +66,9 @@ import com.google.common.util.concurrent.Futures;
 public class ConnectionConductorImpl implements OpenflowProtocolListener,
         SystemNotificationsListener, ConnectionConductor, ConnectionReadyListener, HandshakeListener {
 
+    /** ingress queue limit */
+    private static final int INGRESS_QUEUE_MAX_SIZE = 200;
+
     protected static final Logger LOG = LoggerFactory
             .getLogger(ConnectionConductorImpl.class);
 
@@ -79,7 +87,8 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
 
     protected SessionContext sessionContext;
 
-    private QueueKeeper<OfHeader, DataObject> queueKeeper;
+    private QueueProcessor<OfHeader, DataObject> queueProcessor;
+    private QueueKeeper<OfHeader> queue;
     private ThreadPoolExecutor hsPool;
     private HandshakeManager handshakeManager;
 
@@ -87,6 +96,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     
     private PortFeaturesUtil portFeaturesUtils;
 
+    
     /**
      * @param connectionAdapter
      */
@@ -102,6 +112,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         handshakeManager.setUseVersionBitmap(isBitmapNegotiationEnable);
         handshakeManager.setHandshakeListener(this);
         portFeaturesUtils = PortFeaturesUtil.getInstance();
+        queue = QueueKeeperFactory.createFairQueueKeeper((MessageSourcePollRegistrator<QueueKeeper<OfHeader>>) queueProcessor, INGRESS_QUEUE_MAX_SIZE);
     }
 
     @Override
@@ -112,8 +123,8 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     }
 
     @Override
-    public void setQueueKeeper(QueueKeeper<OfHeader, DataObject> queueKeeper) {
-        this.queueKeeper = queueKeeper;
+    public void setQueueProcessor(QueueProcessor<OfHeader, DataObject> queueKeeper) {
+        this.queueProcessor = queueKeeper;
     }
 
     /**
@@ -143,17 +154,17 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
 
     @Override
     public void onErrorMessage(ErrorMessage errorMessage) {
-        queueKeeper.push(errorMessage, this);
+        queue.push(errorMessage, this);
     }
 
     @Override
     public void onExperimenterMessage(ExperimenterMessage experimenterMessage) {
-        queueKeeper.push(experimenterMessage, this);
+        queue.push(experimenterMessage, this);
     }
 
     @Override
     public void onFlowRemovedMessage(FlowRemovedMessage message) {
-        queueKeeper.push(message, this);
+        queue.push(message, this);
     }
 
 
@@ -194,18 +205,18 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
 
     @Override
     public void onMultipartReplyMessage(MultipartReplyMessage message) {
-        queueKeeper.push(message, this);
+        queue.push(message, this);
     }
 
     @Override
     public void onPacketInMessage(PacketInMessage message) {
-        queueKeeper.push(message, this, QueueKeeper.QueueType.UNORDERED);
+        queue.push(message, this, QueueKeeper.QueueType.UNORDERED);
     }
 
     @Override
     public void onPortStatusMessage(PortStatusMessage message) {
         processPortStatusMsg(message);
-        queueKeeper.push(message, this);
+        queue.push(message, this);
     }
     
     protected void processPortStatusMsg(PortStatus msg) {
@@ -386,7 +397,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
             //  Because the GetFeaturesOutput contains information about the port
             //  in OF1.0 (that we would otherwise get from the PortDesc) we have to pass
             //  it up for parsing to convert into a NodeConnectorUpdate
-            queueKeeper.push(featureOutput, this);
+            queue.push(featureOutput, this);
         }
         
         requestDesc();

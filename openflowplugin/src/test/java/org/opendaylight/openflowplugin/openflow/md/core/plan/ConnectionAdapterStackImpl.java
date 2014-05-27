@@ -612,4 +612,9 @@ public class ConnectionAdapterStackImpl implements ConnectionAdapter, Runnable {
         SettableFuture<RpcResult<Void>> result = createOneWayRpcResult();
         return result;
     }
+    
+    @Override
+    public boolean setChannelAutoread(boolean arg0) {
+        return false;
+    }
 }

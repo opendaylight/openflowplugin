@@ -7,13 +7,9 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.queue;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
 import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
-import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
-import org.opendaylight.openflowplugin.openflow.md.core.TranslatorKey;
+
+import com.google.common.util.concurrent.ListenableFuture;
 
 /**
  * This processing mechanism based on queue. Processing consists of 2 steps: translate and publish. 
@@ -28,7 +24,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.TranslatorKey;
  * @param <IN> source type
  * @param <OUT> result type
  */
-public interface QueueKeeper<IN, OUT> {
+public interface QueueKeeper<IN> extends AutoCloseable {
     
     /** type of message enqueue */
     public enum QueueType {
@@ -37,28 +33,26 @@ public interface QueueKeeper<IN, OUT> {
         /** unordered processing - bypass fair processing */
         UNORDERED}
 
-    /**
-     * @param translatorMapping translators for message processing
-     */
-    void setTranslatorMapping(Map<TranslatorKey, Collection<IMDMessageTranslator<IN, List<OUT>>>> translatorMapping);
 
     /**
      * enqueue message for processing using {@link QueueType#DEFAULT}
      * @param message
      * @param conductor source of message
+     * @return if queue available -> null, if queue full -> Future (value is set when queue is at least 50% free)  
      */
-    void push(IN message, ConnectionConductor conductor);
+    ListenableFuture<Void> push(IN message, ConnectionConductor conductor);
     
     /**
      * enqueue message for processing
      * @param message
      * @param conductor source of message
      * @param queueType - {@link QueueType#DEFAULT} if message order matters, {@link QueueType#UNORDERED} otherwise
+     * @return if queue available -> null, if queue full -> Future (value is set when queue is at least 50% free) 
      */
-    void push(IN message, ConnectionConductor conductor, QueueType queueType);
+    ListenableFuture<Void> push(IN message, ConnectionConductor conductor, QueueType queueType);
 
     /**
-     * @param popListenersMapping listeners invoked when processing done
+     * @return oldest item from queue - if available and remove it from queue
      */
-    void setPopListenersMapping(Map<Class<? extends OUT>, Collection<PopListener<OUT>>> popListenersMapping);
+    QueueItem<IN> poll();
 }
