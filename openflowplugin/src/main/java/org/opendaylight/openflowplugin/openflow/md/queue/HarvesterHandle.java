@@ -1,6 +1,6 @@
 /**
- * Copyright (c) 2013 Cisco Systems, Inc. and others.  All rights reserved.
- *
+ * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
+ * 
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
@@ -8,15 +8,13 @@
 package org.opendaylight.openflowplugin.openflow.md.queue;
 
 /**
- * @author mirehak
- * @param <T> message type
- *
+ * message harvester simple control
  */
-public interface VersionExtractor<T> {
+public interface HarvesterHandle {
 
     /**
-     * @param message
-     * @return version of message
+     * wakeup harvester in case it is in phase of starving sleep
      */
-    Short extractVersion(T message);
+    void ping();
+
 }

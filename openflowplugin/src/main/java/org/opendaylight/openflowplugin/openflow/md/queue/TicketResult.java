@@ -22,4 +22,14 @@ public interface TicketResult<T> {
      */
     SettableFuture<List<T>> getResult();
 
+    /**
+     * @return direct access to result
+     */
+    List<T> getDirectResult();
+
+    /**
+     * @param directResult setter for direct result
+     */
+    void setDirectResult(List<T> directResult);
+
 }
