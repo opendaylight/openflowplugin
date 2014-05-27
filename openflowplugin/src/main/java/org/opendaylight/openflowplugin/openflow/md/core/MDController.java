@@ -239,7 +239,7 @@ public class MDController implements IMDController, AutoCloseable {
         };
 
         ThreadPoolLoggingExecutor rpcPool = new ThreadPoolLoggingExecutor(rpcThreadLimit, rpcThreadLimit, 0L,
-                TimeUnit.MILLISECONDS, queue);
+                TimeUnit.MILLISECONDS, queue, "OFRpc");
         rpcPool.setRejectedExecutionHandler(new RejectedExecutionHandler() {
 			@Override
 			public void rejectedExecution(final Runnable r, final ThreadPoolExecutor executor) {

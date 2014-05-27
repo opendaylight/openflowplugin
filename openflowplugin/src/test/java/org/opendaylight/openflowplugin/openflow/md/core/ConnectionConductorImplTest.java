@@ -35,7 +35,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.plan.SwitchTestEvent;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.openflow.md.queue.MessageSpy;
 import org.opendaylight.openflowplugin.openflow.md.queue.PopListener;
-import org.opendaylight.openflowplugin.openflow.md.queue.QueueKeeperLightImpl;
+import org.opendaylight.openflowplugin.openflow.md.queue.QueueProcessorLightImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Capabilities;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ErrorType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortFeatures;
@@ -79,7 +79,7 @@ public class ConnectionConductorImplTest {
     private ScheduledThreadPoolExecutor pool = new ScheduledThreadPoolExecutor(
             8);
 
-    private QueueKeeperLightImpl queueKeeper;
+    private QueueProcessorLightImpl queueProcessor;
 
     private PopListener<DataObject> popListener;
 
@@ -136,24 +136,24 @@ public class ConnectionConductorImplTest {
 
         popListener = new PopListenerCountingImpl<>();
 
-        queueKeeper = new QueueKeeperLightImpl();
-        queueKeeper.setMessageSpy(messageSpy);
-
-        connectionConductor = new ConnectionConductorImpl(adapter);
-        connectionConductor.setQueueKeeper(queueKeeper);
-        connectionConductor.init();
-        connectionConductor.setErrorHandler(errorHandler);
         controller = new MDController();
         controller.init();
-        queueKeeper.setTranslatorMapping(controller.getMessageTranslators());
+        controller.getMessageTranslators().putAll(assembleTranslatorMapping());
+        
+        queueProcessor = new QueueProcessorLightImpl();
+        queueProcessor.setMessageSpy(messageSpy);
+        queueProcessor.setPopListenersMapping(assemblePopListenerMapping());
+        queueProcessor.setTranslatorMapping(controller.getMessageTranslators());
+        queueProcessor.init();
+
+        connectionConductor = new ConnectionConductorImpl(adapter);
+        connectionConductor.setQueueProcessor(queueProcessor);
+        connectionConductor.setErrorHandler(errorHandler);
+        connectionConductor.init();
         eventPlan = new Stack<>();
         adapter.setEventPlan(eventPlan);
         adapter.setProceedTimeout(5000L);
         adapter.checkListeners();
-
-        controller.getMessageTranslators().putAll(assembleTranslatorMapping());
-        queueKeeper.setPopListenersMapping(assemblePopListenerMapping());
-        queueKeeper.init();
     }
 
     /**
@@ -176,7 +176,7 @@ public class ConnectionConductorImplTest {
         if (libSimulation != null) {
             libSimulation.join();
         }
-        queueKeeper.shutdown();
+        queueProcessor.shutdown();
         connectionConductor.shutdownPool();
 
         for (Exception problem : adapter.getOccuredExceptions()) {
