@@ -54,9 +54,13 @@ public class SessionManagerOFImpl implements SessionManager {
     /**
      * @return singleton instance
      */
-    public static synchronized SessionManager getInstance() {
+    public static SessionManager getInstance() {
         if (instance == null) {
-            instance = new SessionManagerOFImpl();
+            synchronized (SessionContextOFImpl.class) {
+                if (instance == null) {
+                    instance = new SessionManagerOFImpl();
+                }
+            }
         }
         return instance;
     }
@@ -64,9 +68,15 @@ public class SessionManagerOFImpl implements SessionManager {
     /**
      * close and release singleton instace
      */
-    public static synchronized void releaseInstance() {
-        instance.close();
-        instance = null;
+    public static void releaseInstance() {
+        if (instance != null) {
+            synchronized (SessionManagerOFImpl.class) {
+                if (instance != null) {
+                    instance.close();
+                    instance = null;
+                }
+            }
+        }
     }
 
     private SessionManagerOFImpl() {

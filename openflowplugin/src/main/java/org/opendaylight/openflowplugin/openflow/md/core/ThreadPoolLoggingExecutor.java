@@ -14,8 +14,10 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+
 /**
- * 
+ * threadPoolExecutor implementation logging exceptions thrown by threads
  */
 public class ThreadPoolLoggingExecutor extends ThreadPoolExecutor {
     
@@ -27,10 +29,13 @@ public class ThreadPoolLoggingExecutor extends ThreadPoolExecutor {
      * @param keepAliveTime
      * @param unit
      * @param workQueue
+     * @param poolName thread name prefix
      */
     public ThreadPoolLoggingExecutor(int corePoolSize, int maximumPoolSize,
-            long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue) {
-        super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue);
+            long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue, 
+            final String poolName) {
+        super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, 
+                new ThreadFactoryBuilder().setNameFormat(poolName+"-%d").build());
     }
 
     @Override
