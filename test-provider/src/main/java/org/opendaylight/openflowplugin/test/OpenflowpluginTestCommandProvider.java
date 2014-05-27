@@ -164,6 +164,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.IpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.MetadataBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.ProtocolMatchFieldsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.TcpFlagMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.TunnelBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.ArpMatchBuilder;
@@ -659,6 +660,11 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
             id += 82;
             flow.setMatch(createToSMatch().build());
             flow.setInstructions(createOutputInstructions().build());
+            break;
+        case "f83":
+            id += 83;
+            flow.setMatch(createTcpFlagMatch().build());
+            flow.setInstructions(createDropInstructions().build());
             break;
         default:
             LOG.warn("flow type not understood: {}", flowType);
@@ -3197,6 +3203,42 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         byte[] mask = new byte[] { (byte) -1, (byte) -1, (byte) -1, 0, 0, 0, (byte) 1, (byte) 1 };
         tunnel.setTunnelMask(new BigInteger(mask));
         match.setTunnel(tunnel.build());
+
+        return match;
+    }
+
+    /**
+     * @return match
+     */
+    private static MatchBuilder createTcpFlagMatch() {
+        MatchBuilder match = new MatchBuilder();
+
+        // Ethertype match
+        EthernetMatchBuilder ethernetType = new EthernetMatchBuilder();
+        EthernetTypeBuilder ethTypeBuilder = new EthernetTypeBuilder();
+        ethTypeBuilder.setType(new EtherType(0x0800L));
+        ethernetType.setEthernetType(ethTypeBuilder.build());
+        match.setEthernetMatch(ethernetType.build());
+
+        // TCP Protocol Match
+        IpMatchBuilder ipmatch = new IpMatchBuilder(); // ipv4 version
+        ipmatch.setIpProtocol((short) 6);
+        match.setIpMatch(ipmatch.build());
+
+        // TCP Port
+        PortNumber dstport = new PortNumber(80);
+        TcpMatchBuilder tcpmatch = new TcpMatchBuilder();
+        tcpmatch.setTcpDestinationPort(dstport);
+        match.setLayer4Match(tcpmatch.build());
+        /**
+        * Defined TCP Flag values
+        * TCP_FIN 0x001 / TCP_SYN 0x002 / TCP_RST 0x004
+        * TCP_PSH 0x008 / TCP_ACK 0x010 / TCP_URG 0x020
+        * TCP_ECE 0x040 / TCP_CWR 0x080 / TCP_NS  0x100
+        */
+        TcpFlagMatchBuilder tcpFlagMatchBuilder = new TcpFlagMatchBuilder();
+        tcpFlagMatchBuilder.setTcpFlag(0x002);
+        match.setTcpFlagMatch(tcpFlagMatchBuilder.build());
 
         return match;
     }
