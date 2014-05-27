@@ -4,7 +4,6 @@ Created on Jan 24, 2014
 @author: vdemcak
 '''
 
-import libxml2
 import re
 from xml.etree import ElementTree as ET
 
