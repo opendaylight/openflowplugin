@@ -10,20 +10,21 @@ package org.opendaylight.openflowplugin.openflow.md.queue;
 import java.util.List;
 
 import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
+import org.opendaylight.openflowplugin.openflow.md.queue.QueueKeeper.QueueType;
 
 import com.google.common.util.concurrent.SettableFuture;
 
 /**
- * @author mirehak
  * @param <IN> source type
  * @param <OUT> result type
- *
  */
 public class TicketImpl<IN, OUT> implements Ticket<IN, OUT> {
     
     private IN message;
     private ConnectionConductor conductor;
     private SettableFuture<List<OUT>> future;
+    private QueueType queueType;
+    private List<OUT> directResult;
     
     /**
      * default ctor
@@ -65,5 +66,33 @@ public class TicketImpl<IN, OUT> implements Ticket<IN, OUT> {
      */
     public void setConductor(ConnectionConductor conductor) {
         this.conductor = conductor;
+    }
+    
+    /**
+     * @param queueType the queueType to set
+     */
+    public void setQueueType(QueueType queueType) {
+        this.queueType = queueType;
+    }
+    
+    @Override
+    public QueueType getQueueType() {
+        return queueType;
+    }
+
+    /**
+     * @return the directResult
+     */
+    @Override
+    public List<OUT> getDirectResult() {
+        return directResult;
+    }
+
+    /**
+     * @param directResult the directResult to set
+     */
+    @Override
+    public void setDirectResult(List<OUT> directResult) {
+        this.directResult = directResult;
     }
 }
