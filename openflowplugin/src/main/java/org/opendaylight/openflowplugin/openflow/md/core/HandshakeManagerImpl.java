@@ -41,7 +41,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
     private Short version;
     private ErrorHandler errorHandler;
     
-    private long maxTimeout = 1000;
+    private long maxTimeout = 8000;
     private TimeUnit maxTimeoutUnit = TimeUnit.MILLISECONDS;
     private Short highestVersion;
 
@@ -74,7 +74,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
     }
 
     @Override
-    public synchronized void shake() {
+    public void shake() {
         LOG.trace("handshake STARTED");
         setActiveXid(20L);
         HelloMessage receivedHelloLoc = receivedHello;
@@ -292,7 +292,6 @@ public class HandshakeManagerImpl implements HandshakeManager {
      */
     protected void postHandshake(Short proposedVersion, Long xid) throws Exception {
         // set version
-        long maxTimeout = 3000;
         version = proposedVersion;
 
         LOG.debug("version set: {}", proposedVersion);

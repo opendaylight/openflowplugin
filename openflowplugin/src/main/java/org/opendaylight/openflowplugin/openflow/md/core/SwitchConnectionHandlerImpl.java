@@ -16,7 +16,7 @@ import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.SwitchConnectionHandler;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.queue.MessageSpy;
-import org.opendaylight.openflowplugin.openflow.md.queue.QueueKeeperLightImpl;
+import org.opendaylight.openflowplugin.openflow.md.queue.QueueProcessorLightImpl;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 
 /**
@@ -26,7 +26,7 @@ public class SwitchConnectionHandlerImpl implements SwitchConnectionHandler {
     
     private ScheduledThreadPoolExecutor spyPool; 
 
-    private QueueKeeperLightImpl queueKeeper;
+    private QueueProcessorLightImpl queueProcessor;
     private ErrorHandler errorHandler;
     private MessageSpy<DataContainer> messageSpy;
     private int spyRate = 10;
@@ -35,7 +35,7 @@ public class SwitchConnectionHandlerImpl implements SwitchConnectionHandler {
      *
      */
     public SwitchConnectionHandlerImpl() {
-        queueKeeper = new QueueKeeperLightImpl();
+        queueProcessor = new QueueProcessorLightImpl();
         
         //TODO: implement shutdown invocation upon service stop event
         spyPool = new ScheduledThreadPoolExecutor(1);
@@ -45,11 +45,11 @@ public class SwitchConnectionHandlerImpl implements SwitchConnectionHandler {
      * wire all up
      */
     public void init() {
-        queueKeeper.setTranslatorMapping(OFSessionUtil.getTranslatorMap());
-        queueKeeper.setPopListenersMapping(OFSessionUtil.getPopListenerMapping());
-        queueKeeper.setMessageSpy(messageSpy);
+        queueProcessor.setTranslatorMapping(OFSessionUtil.getTranslatorMap());
+        queueProcessor.setPopListenersMapping(OFSessionUtil.getPopListenerMapping());
+        queueProcessor.setMessageSpy(messageSpy);
         
-        queueKeeper.init();
+        queueProcessor.init();
         
         spyPool.scheduleAtFixedRate(messageSpy, spyRate, spyRate, TimeUnit.SECONDS);
     }
@@ -63,7 +63,7 @@ public class SwitchConnectionHandlerImpl implements SwitchConnectionHandler {
     @Override
     public void onSwitchConnected(ConnectionAdapter connectionAdapter) {
         ConnectionConductor conductor = ConnectionConductorFactory.createConductor(
-                connectionAdapter, queueKeeper);
+                connectionAdapter, queueProcessor);
         conductor.setErrorHandler(errorHandler);
     }
     
