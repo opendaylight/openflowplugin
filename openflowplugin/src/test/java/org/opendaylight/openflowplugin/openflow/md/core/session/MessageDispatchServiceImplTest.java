@@ -23,7 +23,7 @@ import org.opendaylight.openflowplugin.openflow.md.ModelDrivenSwitch;
 import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.openflow.md.core.ErrorHandler;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
-import org.opendaylight.openflowplugin.openflow.md.queue.QueueKeeper;
+import org.opendaylight.openflowplugin.openflow.md.queue.QueueProcessor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierOutput;
@@ -397,13 +397,22 @@ class MockConnectionConductor implements ConnectionConductor {
     }
 
     @Override
-    public void setQueueKeeper(QueueKeeper<OfHeader, DataObject> queueKeeper) {
+    public void setQueueProcessor(QueueProcessor<OfHeader, DataObject> queueKeeper) {
         // NOOP
     }
 
     @Override
     public void setErrorHandler(ErrorHandler errorHandler) {
         // NOOP
+    }
+
+    /* (non-Javadoc)
+     * @see org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor#setId(int)
+     */
+    @Override
+    public void setId(int conductorId) {
+        // TODO Auto-generated method stub
+        
     }
 }
 
@@ -590,5 +599,4 @@ class MockConnectionAdapter implements ConnectionAdapter {
         // TODO Auto-generated method stub
         return null;
     }
-
 }
