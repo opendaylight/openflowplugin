@@ -28,6 +28,8 @@ public class TicketFinisher<OUT> implements Runnable {
     private final Map<Class<? extends OUT>, Collection<PopListener<OUT>>> popListenersMapping;
     private final RegisteredTypeExtractor<OUT> registeredOutTypeExtractor;
 
+    private boolean finished = false;
+
     /**
      * @param queue
      * @param popListenersMapping
@@ -44,7 +46,7 @@ public class TicketFinisher<OUT> implements Runnable {
 
     @Override
     public void run() {
-        while (true) {
+        while (! finished ) {
             try {
                 //TODO:: handle shutdown of queue
                 TicketResult<OUT> result = queue.take();
@@ -58,7 +60,7 @@ public class TicketFinisher<OUT> implements Runnable {
                             registeredOutTypeExtractor.extractRegisteredType(msg);
                     Collection<PopListener<OUT>> popListeners = popListenersMapping.get(registeredType);
                     if (popListeners == null) {
-                        LOG.warn("no popListener registered for type {}"+registeredType);
+                        LOG.warn("no popListener registered for type {}", registeredType);
                     } else {
                         for (PopListener<OUT> consumer : popListeners) {
                             consumer.onPop(msg);
@@ -66,8 +68,16 @@ public class TicketFinisher<OUT> implements Runnable {
                     }
                 }
             } catch (Exception e) {
-                LOG.error(e.getMessage(), e);
+                LOG.warn("processing (translate, publish) of ticket failed", e);
             }
         }
+    }
+    
+    /**
+     * initiate shutdown of this worker
+     */
+    public void finish() {
+        finished = true;
+        //TODO: send special ticket in case queue is empty
     }
 }
