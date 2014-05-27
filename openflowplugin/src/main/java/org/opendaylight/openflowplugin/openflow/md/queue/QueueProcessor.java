@@ -7,13 +7,19 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.queue;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
 import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
+import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
+import org.opendaylight.openflowplugin.openflow.md.core.TranslatorKey;
 
 /**
  * This processing mechanism based on queue. Processing consists of 2 steps: translate and publish. 
  * Proposed workflow (might slightly deviate in implementations):
  * <ol>
- * <li>messages of input type are pushed in (via {@link QueueKeeper#push(Object, ConnectionConductor)} and similar)</li>
+ * <li>messages of input type are pushed in (via {@link QueueProcessor#push(Object, ConnectionConductor)} and similar)</li>
  * <li>ticket (executable task) is build upon each pushed message and enqueued</li>
  * <li>ticket is translated using appropriate translator</li>
  * <li>ticket is dequeued and result is published by appropriate popListener</li>
@@ -22,25 +28,15 @@ import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
  * @param <IN> source type
  * @param <OUT> result type
  */
-public interface QueueKeeper<IN> extends AutoCloseable {
+public interface QueueProcessor<IN, OUT> extends MessageSourcePollRegistrator<QueueKeeper<IN>>, Enqueuer<QueueItem<IN>> {
     
-    /** type of message enqueue */
-    public enum QueueType {
-        /** ordered processing */
-        DEFAULT,
-        /** unordered processing - bypass fair processing */
-        UNORDERED}
+    /**
+     * @param translatorMapping translators for message processing
+     */
+    void setTranslatorMapping(Map<TranslatorKey, Collection<IMDMessageTranslator<IN, List<OUT>>>> translatorMapping);
 
     /**
-     * enqueue message for processing
-     * @param message
-     * @param conductor source of message
-     * @param queueType - {@link QueueType#DEFAULT} if message order matters, {@link QueueType#UNORDERED} otherwise
+     * @param popListenersMapping listeners invoked when processing done
      */
-    void push(IN message, ConnectionConductor conductor, QueueType queueType);
-
-    /**
-     * @return oldest item from queue - if available and remove it from queue
-     */
-    QueueItem<IN> poll();
+    void setPopListenersMapping(Map<Class<? extends OUT>, Collection<PopListener<OUT>>> popListenersMapping);
 }
