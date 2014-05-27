@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
@@ -26,8 +27,31 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
 /**
- * @author mirehak
+ * {@link QueueKeeper} implementation focused to keep order and use up mutiple threads for translation phase.
+ * <br/>
+ * There is internal thread pool of limited size ({@link QueueKeeperLightImpl#setPoolSize(int)}) 
+ * dedicated to translation. Then there is singleThreadPool dedicated to publishing (via popListeners)
+ * <br/>
+ * Workflow:
+ * <ol>
+ * <li>upon message push ticket is created and enqueued</li>
+ * <li>available threads from internal pool translate the massage wrapped in ticket</li>
+ * <li>when translation of particular message is finished, result is set in future result of wrapping ticket</br>
+ *     (order of tickets in queue is not touched during translate)
+ * </li>
+ * <li>at the end of queue there is {@link TicketFinisher} running in singleThreadPool and for each ticket it does:
+ *    <ol>
+ *      <li>invoke blocking {@link BlockingQueue#take()} method in order to get the oldest ticket</li>
+ *      <li>invoke blocking {@link Future#get()} on the dequeued ticket</li>
+ *      <li>as soon as the result of translation is available, appropriate popListener is invoked</li>
+ *    </ol>
+ *    and this way the order of messages is preserved and also multiple threads are used by translating 
+ * </li>
+ * </ol>
+ * 
+ * 
  */
 public class QueueKeeperLightImpl implements QueueKeeper<OfHeader, DataObject> {
 
