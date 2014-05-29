@@ -112,12 +112,13 @@ public class DropTestCommandProvider implements CommandProvider {
     
     @Override
     public String getHelp() {
-        String helpString = "----------------- dropAllPackets--------------\n"
-                + " dropAllPackets on - begin dropping all packets \n"
-                + " dropAllPackets on - stop dropping all packets \n"
-                + " dropAllPacketsRpc on - begin dropping all packets but bypassing dataStore \n"
-                + "                      - add flow goes directly to rpc provided OFPlugin \n"
-                + " dropAllPacketsRpc on - stop dropping all packets but bypassing dataStore \n";
-        return helpString;
+        StringBuffer help = new StringBuffer();
+        help.append("---dropAllPackets---\n");
+        help.append("\t dropAllPackets on     - Start dropping all packets\n");
+        help.append("\t dropAllPackets off    - Stop dropping all packets\n");
+        help.append("\t dropAllPacketsRpc on  - Start dropping all packets but bypassing dataStore\n");
+        help.append("\t                       - add flow goes directly to RPC provided OFPlugin\n");
+        help.append("\t dropAllPacketsRpc off - Stop dropping all packets but bypassing dataStore\n");
+        return help.toString();
     }
 }
