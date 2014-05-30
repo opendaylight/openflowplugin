@@ -18,36 +18,33 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Res
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetNwDstActionCase;
 
 /**
- * 
+ *
  */
 public class ActionSetNwDstReactor extends ConvertReactor<SetNwDstActionCase> {
-    
-    private static ActionSetNwDstReactor instance;
-    
+
+    private static ActionSetNwDstReactor INSTANCE = new ActionSetNwDstReactor();
+
     private ActionSetNwDstReactor() {
         //NOOP
     }
-    
+
     /**
      * @return singleton
      */
-    public static synchronized ActionSetNwDstReactor getInstance() {
-        if (instance == null) {
-            instance = new ActionSetNwDstReactor();
-        }
-        return instance;
+    public static ActionSetNwDstReactor getInstance() {
+        return INSTANCE;
     }
-    
+
     @Override
-    protected void initMappings(Map<Short, Convertor<SetNwDstActionCase,?>> conversions, 
-            Map<InjectionKey, ResultInjector<?,?>> injections) {
+    protected void initMappings(final Map<Short, Convertor<SetNwDstActionCase,?>> conversions,
+            final Map<InjectionKey, ResultInjector<?,?>> injections) {
         ActionSetNwDstReactorMappingFactory.addSetNwDstConvertors(conversions);
         ActionSetNwDstReactorMappingFactory.addSetNwDstInjectors(injections);
     }
-    
+
     @Override
-    protected InjectionKey buildInjectionKey(short version,
-            Object convertedItem, Object target) {
+    protected InjectionKey buildInjectionKey(final short version,
+            final Object convertedItem, final Object target) {
         InjectionResultTargetKey key = null;
         if (convertedItem != null) {
              key = new InjectionResultTargetKey(version, target.getClass().getName(), convertedItem.getClass().getName());

@@ -17,29 +17,26 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Res
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags;
 
 /**
- * 
+ *
  */
 public class FlowFlagReactor extends ConvertReactor<FlowModFlags> {
-    
-    private static FlowFlagReactor instance;
-    
+
+    private static FlowFlagReactor INSTANCE = new FlowFlagReactor();
+
     private FlowFlagReactor() {
         //NOOP
     }
-    
+
     /**
      * @return singleton
      */
-    public static synchronized FlowFlagReactor getInstance() {
-        if (instance == null) {
-            instance = new FlowFlagReactor();
-        }
-        return instance;
+    public static FlowFlagReactor getInstance() {
+        return INSTANCE;
     }
-    
+
     @Override
-    protected void initMappings(Map<Short, Convertor<FlowModFlags, ?>> conversions, 
-            Map<InjectionKey, ResultInjector<?,?>> injections) {
+    protected void initMappings(final Map<Short, Convertor<FlowModFlags, ?>> conversions,
+            final Map<InjectionKey, ResultInjector<?,?>> injections) {
         FlowFlagReactorMappingFactory.addFlowFlagsConvertors(conversions);
         FlowFlagReactorMappingFactory.addFlowFlagsIjectors(injections);
     }
