@@ -17,31 +17,27 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Res
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
 
 /**
- * 
+ *
  */
 public class MatchReactor extends ConvertReactor<Match> {
-    
-    private static MatchReactor instance;
-    
+
+    private static MatchReactor INSTANCE = new MatchReactor();
+
     private MatchReactor() {
         //NOOP
     }
-    
+
     /**
      * @return singleton
      */
-    public static synchronized MatchReactor getInstance() {
-        if (instance == null) {
-            instance = new MatchReactor();
-        }
-        return instance;
+    public static MatchReactor getInstance() {
+        return INSTANCE;
     }
-    
+
     @Override
-    protected void initMappings(Map<Short, Convertor<Match,?>> conversions, 
-            Map<InjectionKey, ResultInjector<?,?>> injections) {
+    protected void initMappings(final Map<Short, Convertor<Match,?>> conversions,
+            final Map<InjectionKey, ResultInjector<?,?>> injections) {
         MatchReactorMappingFactory.addMatchConvertors(conversions);
         MatchReactorMappingFactory.addMatchIjectors(injections);
     }
-
 }
