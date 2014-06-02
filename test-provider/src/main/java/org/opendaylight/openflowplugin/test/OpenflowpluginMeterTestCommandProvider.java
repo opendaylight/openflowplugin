@@ -480,8 +480,8 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
     @Override
     public String getHelp() {
         StringBuffer help = new StringBuffer();
-        help.append("---FRM MD-SAL Group test module---\n");
-        help.append("\t addMeter <node id>        - node ref\n");
+        help.append("---FRM MD-SAL Meter test module---\n");
+        help.append("\t addMeter <node id>           - node ref\n");
         help.append("\t modifyMeter <node id>        - node ref\n");
         help.append("\t removeMeter <node id>        - node ref\n");
 
