@@ -78,6 +78,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.PbbI
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.SctpDst;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.SctpSrc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TcpDst;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TcpFlag;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TcpSrc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TunnelId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.UdpDst;
@@ -473,6 +474,8 @@ public class TableFeaturesReplyConvertor {
                 salMatchField = org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.VlanPcp.class;
             } else if (ofMatchField.equals(VlanVid.class)) {
                 salMatchField = org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.VlanVid.class;
+            } else if (ofMatchField.equals(TcpFlag.class)) {
+                salMatchField = org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TcpFlag.class;
             }
 
             setFieldMatchBuilder.setMatchType(salMatchField);
