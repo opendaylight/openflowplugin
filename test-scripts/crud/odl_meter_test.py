@@ -45,16 +45,16 @@ class OF_CRUD_Test_Meters( OF_CRUD_Test_Base ):
         self.oper_url_upd = 'http://%s:%d/restconf/operations/sal-meter:update-meter' % data
         self.oper_url_del = 'http://%s:%d/restconf/operations/sal-meter:remove-meter' % data
         # Modify input data
-        data_from_file_input = ''
+        self.data_from_file_input = ''
         for node in self.xml_input_DOM.documentElement.childNodes :
-            data_from_file_input += node.toxml( encoding = 'utf-8' )
+            self.data_from_file_input += node.toxml( encoding = 'utf-8' )
 
         # The xml body without data - data come from file (all meter subtags)
         self.oper_input_stream = '<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n' \
                                     '<input xmlns="urn:opendaylight:meter:service">\n' \
                                         '%s' \
                                         '<node xmlns:inv="urn:opendaylight:inventory">/inv:nodes/inv:node[inv:id="openflow:1"]</node>\n' \
-                                    '</input>' % data_from_file_input
+                                    '</input>' % self.data_from_file_input
 
 
     def tearDown( self ) :
@@ -162,15 +162,20 @@ class OF_CRUD_Test_Meters( OF_CRUD_Test_Base ):
         xml_updated_stream = self.__update_meter_input();
         xml_updated_DOM = md.parseString( xml_updated_stream )
         data_from_updated_stream = ''
-        for node in self.xml_input_DOM.documentElement.childNodes :
+        for node in xml_updated_DOM.documentElement.childNodes :
             data_from_updated_stream += node.toxml( encoding = 'utf-8' )
 
         # The xml body without data - data come from file (all meters's subtags)
         oper_update_stream = '<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n' \
                                 '<input xmlns="urn:opendaylight:meter:service">\n' \
-                                    '%s' \
+                                    '<original-meter>\n' \
+                                        '%s' \
+                                    '</original-meter>\n' \
+                                    '<updated-meter>\n'\
+                                        '%s'\
+                                    '</updated-meter>\n'\
                                     '<node xmlns:inv="urn:opendaylight:inventory">/inv:nodes/inv:node[inv:id="openflow:1"]</node>\n' \
-                                '</input>' % data_from_updated_stream
+                                '</input>' % ( self.data_from_file_input, data_from_updated_stream )
 
         self.post_REST_XML_request( self.oper_url_upd, oper_update_stream )
         # TODO : check no empty transaction_id from post add_service

@@ -26,7 +26,6 @@ class ColorEnum ( object ):
     '''
     BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE = range( 8 )
 
-
 class OF_CRUD_Test_Base( unittest.TestCase ):
 
 
@@ -155,7 +154,7 @@ class OF_CRUD_Test_Base( unittest.TestCase ):
             self.log.error( self._paint_msg_red( err_msg ) )
             raise AssertionError( err_msg )
 
-        time.sleep( self.CONTROLLER_DELAY )
+        self.__time_wait_conf()
         return response
 
 
@@ -169,7 +168,7 @@ class OF_CRUD_Test_Base( unittest.TestCase ):
         @raise AssertionError: if response code is not 200
         '''
         self.__log_request( get_url )
-        time.sleep( self.CONTROLLER_OPERATION_DELAY )
+        self.__time_wait_oper()
         response = requests.get( get_url,
                                 auth = self._get_auth(),
                                 headers = self._get_xml_result_header() )
@@ -179,7 +178,7 @@ class OF_CRUD_Test_Base( unittest.TestCase ):
             self.log.error( self._paint_msg_red( err_msg ) )
             raise AssertionError( err_msg )
 
-        time.sleep( self.CONTROLLER_DELAY )
+        self.__time_wait_conf()
         return response
 
 
@@ -202,7 +201,7 @@ class OF_CRUD_Test_Base( unittest.TestCase ):
             self.log.error( self._paint_msg_red( err_msg ) )
             raise AssertionError( err_msg )
 
-        time.sleep( self.CONTROLLER_DELAY )
+        self.__time_wait_conf()
         return response
 
 
@@ -225,7 +224,7 @@ class OF_CRUD_Test_Base( unittest.TestCase ):
             self.log.error( self._paint_msg_red( err_msg ) )
             raise AssertionError( err_msg )
 
-        time.sleep( self.CONTROLLER_DELAY )
+        self.__time_wait_conf()
         return response
 
 
@@ -249,7 +248,7 @@ class OF_CRUD_Test_Base( unittest.TestCase ):
             self.log.error( err_msg )
             raise AssertionError( err_msg )
 
-        time.sleep( self.CONTROLLER_DELAY )
+        self.__time_wait_conf()
         return response
 
 
@@ -275,7 +274,7 @@ class OF_CRUD_Test_Base( unittest.TestCase ):
             self.log.error( self._paint_msg_red( err_msg ) )
             raise AssertionError( err_msg )
 
-        time.sleep( self.CONTROLLER_DELAY )
+        self.__time_wait_conf()
         return response
 
 
@@ -293,6 +292,16 @@ class OF_CRUD_Test_Base( unittest.TestCase ):
         self.log.info( ' Running method is "%s" ' % sys._getframe( 1 ).f_code.co_name )
         self.log.info( ' RECEIVED status code: {0} '.format( self._paint_msg_magenta( response.status_code ) ) )
         self.log.debug( ' RECEIVED data : \n\n%s\n' % self._paint_msg_green( response.content ) )
+
+
+    def __time_wait_oper( self ):
+        self.log.info( '......... Waiting for operational DataStore %s sec. ......... ' % self.CONTROLLER_OPERATION_DELAY )
+        time.sleep( self.CONTROLLER_OPERATION_DELAY )
+
+
+    def __time_wait_conf( self ):
+        self.log.info( '......... Waiting for controller %s sec. ......... ' % self.CONTROLLER_DELAY )
+        time.sleep( self.CONTROLLER_DELAY )
 
 
     def _paint_msg_green( self, msg ):
