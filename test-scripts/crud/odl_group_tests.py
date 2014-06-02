@@ -45,29 +45,29 @@ class OF_CRUD_Test_Groups( OF_CRUD_Test_Base ):
         self.oper_url_upd = 'http://%s:%d/restconf/operations/sal-group:update-group' % data
         self.oper_delete_url = 'http://%s:%d/restconf/operations/sal-group:remove-group' % data
         # Modify input data
-        data_from_file_input = ''
+        self.data_from_file_input = ''
         for node in self.xml_input_DOM.documentElement.childNodes :
-            data_from_file_input += node.toxml( encoding = 'utf-8' )
+            self.data_from_file_input += node.toxml( encoding = 'utf-8' )
 
         # The xml body without data - data come from file (all meter subtags)
         self.oper_input_stream = '<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n' \
-                                    '<input xmlns="urn:opendaylight:meter:service">\n' \
+                                    '<input xmlns="urn:opendaylight:group:service">\n' \
                                         '%s' \
                                         '<node xmlns:inv="urn:opendaylight:inventory">/inv:nodes/inv:node[inv:id="openflow:1"]</node>\n' \
-                                    '</input>' % data_from_file_input
+                                    '</input>' % self.data_from_file_input
         # Modify input data for delete
-        data_from_file_input = ''
+        data_from_file_input_del = ''
         for node in self.xml_input_DOM.documentElement.childNodes :
             nodeKey = None if node.localName == None else ( node.localName ).encode( 'utf-8', 'ignore' )
             if ( nodeKey is None or nodeKey != 'buckets' ) :
-                data_from_file_input += node.toxml( encoding = 'utf-8' )
+                data_from_file_input_del += node.toxml( encoding = 'utf-8' )
 
         # The xml body without data - data come from file (all group subtags)
         self.oper_delete_input_stream = '<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n' \
                                         '<input xmlns="urn:opendaylight:group:service">\n' \
                                             '%s' \
                                             '<node xmlns:inv="urn:opendaylight:inventory">/inv:nodes/inv:node[inv:id="openflow:1"]</node>\n' \
-                                        '</input>' % data_from_file_input
+                                        '</input>' % data_from_file_input_del
 
 
     def tearDown( self ) :
@@ -176,15 +176,20 @@ class OF_CRUD_Test_Groups( OF_CRUD_Test_Base ):
         xml_updated_stream = self.__update_group_input();
         xml_updated_DOM = md.parseString( xml_updated_stream )
         data_from_updated_stream = ''
-        for node in self.xml_input_DOM.documentElement.childNodes :
+        for node in xml_updated_DOM.documentElement.childNodes :
             data_from_updated_stream += node.toxml( encoding = 'utf-8' )
 
         # The xml body without data - data come from file (all groups's subtags)
         oper_update_stream = '<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n' \
-                                '<input xmlns="urn:opendaylight:meter:service">\n' \
-                                    '%s' \
+                                '<input xmlns="urn:opendaylight:group:service">\n' \
+                                    '<original-group>\n'\
+                                        '%s' \
+                                    '</original-group>\n'\
+                                    '<updated-group>\n'\
+                                        '%s' \
+                                    '</updated-group>\n'\
                                     '<node xmlns:inv="urn:opendaylight:inventory">/inv:nodes/inv:node[inv:id="openflow:1"]</node>\n' \
-                                '</input>' % data_from_updated_stream
+                                '</input>' % ( self.data_from_file_input, data_from_updated_stream )
 
         self.post_REST_XML_request( self.oper_url_upd, oper_update_stream )
         # TODO : check no empty transaction_id from post add_service
@@ -201,7 +206,7 @@ class OF_CRUD_Test_Groups( OF_CRUD_Test_Base ):
         # -------------- DELETE -------------------
         self.log.info( self._paint_msg_yellow( " DELETE Group by remove-sal-service" ) )
         # Delte data from config DataStore
-        response = self.post_REST_XML_request( self.oper_delete_url, self.__get_oper_delete_input_stream() )
+        response = self.post_REST_XML_request( self.oper_delete_url, self.oper_delete_input_stream )
         # Data never been added, so we expect the 404 response code
         response = self.get_REST_XML_deleted_response( self.conf_url )
         # Group operational data has a specific content

@@ -45,18 +45,18 @@ class OF_CRUD_Test_Flows( OF_CRUD_Test_Base ):
         self.oper_url_upd = 'http://%s:%d/restconf/operations/sal-flow:update-flow' % data
         self.oper_url_del = 'http://%s:%d/restconf/operations/sal-flow:remove-flow' % data
         # Modify input operations data
-        data_from_file_input = ''
+        self.data_from_file_input = ''
         for node in self.xml_input_DOM.documentElement.childNodes:
             nodeKey = None if node.localName == None else ( node.localName ).encode( 'utf-8', 'ignore' )
             if ( nodeKey is None or nodeKey != 'id' ) :
-                data_from_file_input += node.toxml( encoding = 'utf-8' )
+                self.data_from_file_input += node.toxml( encoding = 'utf-8' )
 
         # The xml body without data - data come from file (all flow's subtags)
         self.oper_input_stream = '<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n' \
                                     '<input xmlns="urn:opendaylight:flow:service">\n' \
                                         '%s' \
                                         '<node xmlns:inv="urn:opendaylight:inventory" xmlns:finv="urn:opendaylight:flow:inventory">/inv:nodes/inv:node[inv:id="openflow:1"]</node>\n' \
-                                    '</input>' % data_from_file_input
+                                    '</input>' % self.data_from_file_input
 
 
     def tearDown( self ) :
@@ -153,8 +153,8 @@ class OF_CRUD_Test_Flows( OF_CRUD_Test_Base ):
         # so we expect 404 response code (same as a check after delete
         self.get_REST_XML_deleted_response( self.conf_url )
         # check request content against restconf's operational datastore
-        # operational Data Store has to present new flow
-        response = self.get_REST_XML_response( self.oper_url )
+        # operational Data Store has to present new flow, but with generated key
+        response = self.get_REST_XML_response( self.oper_url_get )
         self.__validate_contain_flow( response, self.xml_input_DOM )
 
         # -------------- UPDATE -------------------
@@ -170,9 +170,14 @@ class OF_CRUD_Test_Flows( OF_CRUD_Test_Base ):
         # The xml body without data - data come from file (all flow's subtags)
         oper_update_stream = '<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n' \
                                 '<input xmlns="urn:opendaylight:flow:service">\n' \
-                                    '%s' \
-                                    '<node xmlns:inv="urn:opendaylight:inventory" xmlns:finv="urn:opendaylight:flow:inventory">/inv:nodes/inv:node[inv:id="openflow:1"]</node>\n' \
-                                '</input>' % data_from_updated_stream
+                                    '<original-flow>\n' \
+                                        '%s' \
+                                    '</original-flow>\n' \
+                                    '<updated-flow>\n' \
+                                        '%s' \
+                                    '</updated-flow>\n' \
+                                    '<node xmlns:inv="urn:opendaylight:inventory">/inv:nodes/inv:node[inv:id="openflow:1"]</node>\n' \
+                                '</input>' % ( self.data_from_file_input, data_from_updated_stream )
 
         self.post_REST_XML_request( self.oper_url_upd, oper_update_stream )
         # TODO : check no empty transaction_id from post add_service
@@ -183,7 +188,7 @@ class OF_CRUD_Test_Flows( OF_CRUD_Test_Base ):
         self.get_REST_XML_deleted_response( self.conf_url )
         # check request content against restconf's operational datastore
         # operational Data Store has to present updated flow
-        response = self.get_REST_XML_response( self.oper_url )
+        response = self.get_REST_XML_response( self.oper_url_get )
         self.__validate_contain_flow( response, xml_updated_DOM )
 
         # -------------- DELETE -------------------
@@ -194,7 +199,7 @@ class OF_CRUD_Test_Flows( OF_CRUD_Test_Base ):
         response = self.get_REST_XML_deleted_response( self.conf_url )
         # Flow operational data has a specific content
         # and the comparable data has to be filtered before comparison
-        response = self.get_REST_XML_response( self.oper_url )
+        response = self.get_REST_XML_response( self.oper_url_get )
         self.__validate_contain_flow( response, self.xml_input_DOM, False )
 
 

@@ -93,8 +93,8 @@ if __name__ == "__main__":
                          '(default = 0 second) Increase this value is important for a weaker controller machine' )
     parser.add_argument( '--operresp', type = int, default = 3, help = 'delay to the Operational Data Store ' \
                          '(default = 3 second) Increase this value is important for a weaker controller machine' )
-    parser.add_argument( '--coloring', type = int, default = 1, help = 'coloring output '
-                        'definition (coloring enabled = 1 | coloring disabled = 0 )  (default = 1)' )
+    parser.add_argument( '--coloring', type = int, default = 0, help = 'coloring output '
+                        'definition (coloring enabled = 1 | coloring disabled = 0 )  (default = 0)' )
 
     in_args = parser.parse_args()
 
