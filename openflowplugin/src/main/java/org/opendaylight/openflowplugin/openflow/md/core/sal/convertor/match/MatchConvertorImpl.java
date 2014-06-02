@@ -55,6 +55,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.MetadataBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.ProtocolMatchFields;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.ProtocolMatchFieldsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.TcpFlagMatch;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.TcpFlagMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.TunnelBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatchBuilder;
@@ -118,6 +120,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.PseudoFieldMatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.TcMatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.TcMatchEntryBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.TcpFlagMatchEntry;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.TcpFlagMatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.VlanPcpMatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.VlanPcpMatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.VlanVidMatchEntry;
@@ -157,11 +161,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Meta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.MplsBos;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.MplsLabel;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.MplsTc;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Nxm1Class;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.OpenflowBasicClass;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.PbbIsid;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.SctpDst;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.SctpSrc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TcpDst;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TcpFlag;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TcpSrc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TunnelId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.UdpDst;
@@ -397,6 +403,14 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
             }
         }
 
+        //FIXME: move to extensible support
+        TcpFlagMatch tcpFlagMatch = match.getTcpFlagMatch();
+        if (tcpFlagMatch != null) {
+            if (tcpFlagMatch.getTcpFlag() != null) {
+                matchEntriesList.add(toOfTcpFlag(tcpFlagMatch.getTcpFlag()));
+            }
+        }
+
         org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Tunnel tunnel = match
                 .getTunnel();
         if (tunnel != null) {
@@ -552,6 +566,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
         ArpMatchBuilder arpMatchBuilder = new ArpMatchBuilder();
         Ipv6MatchBuilder ipv6MatchBuilder = new Ipv6MatchBuilder();
         ProtocolMatchFieldsBuilder protocolMatchFieldsBuilder = new ProtocolMatchFieldsBuilder();
+        TcpFlagMatchBuilder tcpFlagMatchBuilder = new TcpFlagMatchBuilder();
 
         List<MatchEntries> swMatchList = swMatch.getMatchEntries();
 
@@ -885,6 +900,13 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
                     }
                     matchBuilder.setTunnel(tunnelBuilder.build());
                 }
+            } else if (ofMatch.getOxmMatchField().equals(TcpFlag.class)) {
+                //FIXME: move to extensible support
+                TcpFlagMatchEntry tcpFlagMatch = ofMatch.getAugmentation(TcpFlagMatchEntry.class);
+                if (tcpFlagMatch != null) {
+                    tcpFlagMatchBuilder.setTcpFlag(tcpFlagMatch.getTcpFlag());
+                    matchBuilder.setTcpFlagMatch(tcpFlagMatchBuilder.build());
+                }
             }
         }
         return matchBuilder.build();
@@ -1204,6 +1226,18 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
         ipv6AddressBuilder.setIpv6Address(address);
         matchEntriesBuilder.addAugmentation(Ipv6AddressMatchEntry.class, ipv6AddressBuilder.build());
         return matchEntriesBuilder.build();
+    }
+
+    //FIXME: move to extensible support
+    private static MatchEntries toOfTcpFlag(Integer tcpFlag) {
+        MatchEntriesBuilder matchBuilder = new MatchEntriesBuilder();
+        matchBuilder.setOxmClass(Nxm1Class.class);
+        matchBuilder.setHasMask(false);
+        matchBuilder.setOxmMatchField(TcpFlag.class);
+        TcpFlagMatchEntryBuilder tcpFlagBuilder = new TcpFlagMatchEntryBuilder();
+        tcpFlagBuilder.setTcpFlag(tcpFlag);
+        matchBuilder.addAugmentation(TcpFlagMatchEntry.class, tcpFlagBuilder.build());
+        return matchBuilder.build();
     }
 
     private static void addMaskAugmentation(final MatchEntriesBuilder builder, final byte[] mask) {
