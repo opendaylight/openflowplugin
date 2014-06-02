@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa82b9bf_c8f1aace",
+        "filename": "drop-test/src/main/java/org/opendaylight/openflowplugin/droptest/DropTestCommandProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2014-06-02T06:59:13Z",
+      "side": 1,
+      "message": "StringBuffer is not needed here - compilator concatenates all those strings as there is no variable among them.",
+      "revId": "f914519969e22e9885e51f103cc467a72be0cdc1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
