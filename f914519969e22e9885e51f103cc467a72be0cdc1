@@ -16,6 +16,24 @@
       "revId": "f914519969e22e9885e51f103cc467a72be0cdc1",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_39218a9f",
+        "filename": "drop-test/src/main/java/org/opendaylight/openflowplugin/droptest/DropTestCommandProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 1723
+      },
+      "writtenOn": "2014-06-02T15:04:58Z",
+      "side": 1,
+      "message": "Yeah, definitely true. While I was fixing the incorrect help message I went ahead and dug through the codebase to figure out the standard style for building help messages. It was pretty clear that the StringBuffer method is prevalent, so I converted this function to follow the same paradigm. Via my notes, here are some examples that use this style:\n\nopenflowplugin/test-provider/src/main/java/org/opendaylight/openflowplugin/test/OpenflowpluginMeterTestCommandProvider.java\n\nopenflowplugin/test-provider/src/main/java/org/opendaylight/openflowplugin/test/OpenflowpluginGroupTestCommandProvider.java\n\nopenflowplugin/test-provider/src/main/java/org/opendaylight/openflowplugin/test/OpenflowpluginStatsTestCommandProvider.java\n\nopenflowplugin/test-provider/src/main/java/org/opendaylight/openflowplugin/test/OpenflowpluginTableFeaturesTestCommandProvider.java\n\ncontroller/opendaylight/protocol_plugins/openflow/src/main/java/org/opendaylight/controller/protocol_plugin/openflow/internal/DiscoveryService.java\n\ncontroller/opendaylight/protocol_plugins/openflow/src/main/java/org/opendaylight/controller/protocol_plugin/openflow/core/internal/Controller.java\n\ncontroller/opendaylight/northboundtest/unit_test_suite/src/main/java/org/opendaylight/controller/northboundtest/unittestsuite/internal/API3UnitTest.java\n\ncontroller/opendaylight/containermanager/implementation/src/main/java/org/opendaylight/controller/containermanager/internal/ContainerManager.java\n\ncontroller/opendaylight/clustering/test/src/main/java/org/opendaylight/controller/clustering/test/internal/SimpleClient.java\n\ncontroller/opendaylight/connectionmanager/implementation/src/main/java/org/opendaylight/controller/connectionmanager/internal/ConnectionManager.java\n\novsdb/ovsdb/src/main/java/org/opendaylight/ovsdb/plugin/ConfigurationService.java",
+      "parentUuid": "fa82b9bf_c8f1aace",
+      "revId": "f914519969e22e9885e51f103cc467a72be0cdc1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
