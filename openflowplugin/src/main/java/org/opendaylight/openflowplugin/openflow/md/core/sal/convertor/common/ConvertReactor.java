@@ -24,11 +24,12 @@ public abstract class ConvertReactor<FROM> {
 
     protected ConvertReactor() {
         final Map<Short, Convertor<FROM, ?>> conversions = new HashMap<>();
-        injectionMapping = new HashMap<>();
-        initMappings(conversions, injectionMapping);
+        final Map<InjectionKey, ResultInjector<?, ?>> injections = new HashMap<>();
+        initMappings(conversions, injections);
 
-        // Create optimized view of conversion mapping
+        // Create optimized view of mappings
         this.conversionMapping = ImmutableMap.copyOf(conversions);
+        this.injectionMapping = ImmutableMap.copyOf(injections);
     }
 
     /**
@@ -71,7 +72,7 @@ public abstract class ConvertReactor<FROM> {
      * @return
      */
     protected InjectionKey buildInjectionKey(final short version, final Object convertedItem, final Object target) {
-        return new InjectionKey(version, target.getClass().getName());
+        return new InjectionKey(version, target.getClass());
     }
 
 }

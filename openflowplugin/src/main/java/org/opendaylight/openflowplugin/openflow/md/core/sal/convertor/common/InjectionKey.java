@@ -8,53 +8,57 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common;
 
+import com.google.common.base.Objects;
+import com.google.common.base.Objects.ToStringHelper;
+import com.google.common.base.Preconditions;
+
+
 /**
  * injection lookup key based on version and target object
  */
 public class InjectionKey {
 
-    private int version;
-    private String targetClazz;
-    
+    private final int version;
+    private final Class<?> targetClazz;
+
     /**
      * @param version
      * @param targetClazz
      */
-    public InjectionKey(int version, String targetClazz) {
+    public InjectionKey(final int version, final Class<?> targetClazz) {
         this.version = version;
-        this.targetClazz = targetClazz;
+        this.targetClazz = Preconditions.checkNotNull(targetClazz);
     }
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + version;
-        return result;
+        return 31 * version + targetClazz.hashCode();
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
+    public boolean equals(final Object obj) {
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
-        InjectionKey other = (InjectionKey) obj;
-        if (targetClazz == null) {
-            if (other.targetClazz != null)
-                return false;
-        } else if (!targetClazz.equals(other.targetClazz))
+        }
+        final InjectionKey other = (InjectionKey) obj;
+        if (version != other.version) {
             return false;
-        if (version != other.version)
-            return false;
-        return true;
+        }
+        return targetClazz.equals(other.targetClazz);
     }
 
     @Override
-    public String toString() {
-        return "InjectionKey [version=" + version + ", targetClazz="
-                + targetClazz + "]";
+    public final String toString() {
+        return addToStringAttributes(Objects.toStringHelper(this)).toString();
+    }
+
+    protected ToStringHelper addToStringAttributes(final ToStringHelper toStringHelper) {
+        return toStringHelper.add("version", version).add("targetClazz", targetClazz);
     }
 }
