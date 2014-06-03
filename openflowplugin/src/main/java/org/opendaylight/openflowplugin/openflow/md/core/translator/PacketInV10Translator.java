@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.openflow.md.core.translator;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
@@ -34,11 +33,11 @@ public class PacketInV10Translator implements IMDMessageTranslator<OfHeader, Lis
     protected static final Logger LOG = LoggerFactory
             .getLogger(PacketInV10Translator.class);
     @Override
-    public List<DataObject> translate(SwitchConnectionDistinguisher cookie,
-            SessionContext sc, OfHeader msg) {
-        
+    public List<DataObject> translate(final SwitchConnectionDistinguisher cookie,
+            final SessionContext sc, final OfHeader msg) {
+
         List<DataObject> salPacketIn = Collections.emptyList();
-        
+
         if (sc != null && msg instanceof PacketInMessage) {
             PacketInMessage message = (PacketInMessage)msg;
             LOG.trace("PacketIn[v{}]: InPort: {}",
@@ -70,11 +69,10 @@ public class PacketInV10Translator implements IMDMessageTranslator<OfHeader, Lis
                     pktInBuilder.setPacketInReason(PacketInUtil.getMdSalPacketInReason(message.getReason()));
                     pktInBuilder.setIngress(InventoryDataServiceUtil.nodeConnectorRefFromDatapathIdPortno(dpid, port));
                     PacketReceived pktInEvent = pktInBuilder.build();
-                    salPacketIn = new CopyOnWriteArrayList<DataObject>();
-                    salPacketIn.add(pktInEvent);
+                    salPacketIn = Collections.<DataObject>singletonList(pktInEvent);
                 }
-            } 
-        } 
+            }
+        }
         return salPacketIn;
     }
 }
