@@ -8,46 +8,45 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common;
 
+import com.google.common.base.Objects.ToStringHelper;
+import com.google.common.base.Preconditions;
+
 /**
- * 
+ *
  */
 public class InjectionResultTargetKey extends InjectionKey {
 
-    private String resultClazz;
-    
+    private final Class<?> resultClazz;
+
     /**
      * @param version
      * @param targetClazz
-     * @param resultClazz 
+     * @param resultClazz
      */
-    public InjectionResultTargetKey(int version, String targetClazz, String resultClazz) {
+    public InjectionResultTargetKey(final int version, final Class<?> targetClazz, final Class<?> resultClazz) {
         super(version, targetClazz);
-        this.resultClazz = resultClazz;
+        this.resultClazz = Preconditions.checkNotNull(resultClazz);
     }
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = super.hashCode();
-        result = prime * result
-                + ((resultClazz == null) ? 0 : resultClazz.hashCode());
-        return result;
+        return super.hashCode() ^ resultClazz.hashCode();
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
+    public boolean equals(final Object obj) {
+        if (this == obj) {
             return true;
-        if (!super.equals(obj))
+        }
+        if (!super.equals(obj)) {
             return false;
-        if (getClass() != obj.getClass())
-            return false;
-        InjectionResultTargetKey other = (InjectionResultTargetKey) obj;
-        if (resultClazz == null) {
-            if (other.resultClazz != null)
-                return false;
-        } else if (!resultClazz.equals(other.resultClazz))
-            return false;
-        return true;
+        }
+        final InjectionResultTargetKey other = (InjectionResultTargetKey) obj;
+        return resultClazz.equals(other.resultClazz);
+    }
+
+    @Override
+    protected ToStringHelper addToStringAttributes(final ToStringHelper toStringHelper) {
+        return super.addToStringAttributes(toStringHelper).add("resultClazz", resultClazz);
     }
 }

@@ -47,7 +47,7 @@ public class ActionSetNwSrcReactor extends ConvertReactor<SetNwSrcActionCase> {
             final Object convertedItem, final Object target) {
         InjectionResultTargetKey key = null;
         if (convertedItem != null) {
-             key = new InjectionResultTargetKey(version, target.getClass().getName(), convertedItem.getClass().getName());
+             key = new InjectionResultTargetKey(version, target.getClass(), convertedItem.getClass());
         }
         return key;
     }

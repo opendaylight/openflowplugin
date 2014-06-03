@@ -23,39 +23,39 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * @see FlowFlagReactor
  */
 public class FlowFlagReactorMappingFactory {
-    
+
     /**
      * @param conversionMapping
      */
-    public static void addFlowFlagsConvertors(Map<Short, Convertor<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags, ?>> conversionMapping) {
+    public static void addFlowFlagsConvertors(final Map<Short, Convertor<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags, ?>> conversionMapping) {
         conversionMapping.put(OFConstants.OFP_VERSION_1_3, new FlowFlagsConvertorImpl());
         conversionMapping.put(OFConstants.OFP_VERSION_1_0, new FlowFlagsConvertorV10Impl());
     }
-    
+
     /**
-     * @param injectionMapping 
+     * @param injectionMapping
      */
-    public static void addFlowFlagsIjectors(Map<InjectionKey, ResultInjector<?, ?>> injectionMapping) {
+    public static void addFlowFlagsIjectors(final Map<InjectionKey, ResultInjector<?, ?>> injectionMapping) {
         // OF-1.3|FlowModFlags --> FlowModInputBuilder
-        injectionMapping.put(new InjectionKey(OFConstants.OFP_VERSION_1_3, FlowModInputBuilder.class.getName()), 
+        injectionMapping.put(new InjectionKey(OFConstants.OFP_VERSION_1_3, FlowModInputBuilder.class),
                 new ResultInjector<FlowModFlags, FlowModInputBuilder>() {
             @Override
-            public void inject(FlowModFlags value,
-                    FlowModInputBuilder target) {
+            public void inject(final FlowModFlags value,
+                    final FlowModInputBuilder target) {
                 target.setFlags(value);
             }
         });
-        
+
         // OF-1.3|FlowModFlagsV10 --> FlowModInputBuilder
-        injectionMapping.put(new InjectionKey(OFConstants.OFP_VERSION_1_0, FlowModInputBuilder.class.getName()), 
+        injectionMapping.put(new InjectionKey(OFConstants.OFP_VERSION_1_0, FlowModInputBuilder.class),
                 new ResultInjector<FlowModFlagsV10, FlowModInputBuilder>() {
             @Override
-            public void inject(FlowModFlagsV10 value,
-                    FlowModInputBuilder target) {
+            public void inject(final FlowModFlagsV10 value,
+                    final FlowModInputBuilder target) {
                 target.setFlagsV10(value);
             }
         });
-        
+
     }
 
 }
