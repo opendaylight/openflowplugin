@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 
 import java.math.BigInteger;
+import java.util.Iterator;
 
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
@@ -28,10 +29,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.match.v10.grouping.MatchV10Builder;
 
 /**
- * 
+ *
  */
 public class MatchConvertorV10Impl implements MatchConvertor<MatchV10> {
-    
+
     /** default MAC */
     public static final MacAddress zeroMac = new MacAddress("00:00:00:00:00:00");
     /** default IPv4 */
@@ -44,7 +45,7 @@ public class MatchConvertorV10Impl implements MatchConvertor<MatchV10> {
      * @author avishnoi@in.ibm.com
      */
     @Override
-    public MatchV10 convert(Match match,BigInteger datapathid) {
+    public MatchV10 convert(final Match match,final BigInteger datapathid) {
         MatchV10Builder matchBuilder = new MatchV10Builder();
         boolean _dLDST = true;
         boolean _dLSRC = true;
@@ -56,7 +57,7 @@ public class MatchConvertorV10Impl implements MatchConvertor<MatchV10> {
         boolean _nWTOS = true;
         boolean _tPDST = true;
         boolean _tPSRC = true;
-        
+
         matchBuilder.setInPort(0);
         matchBuilder.setDlDst(zeroMac);
         matchBuilder.setDlSrc(zeroMac);
@@ -71,7 +72,7 @@ public class MatchConvertorV10Impl implements MatchConvertor<MatchV10> {
         matchBuilder.setNwTos((short) 0);
         matchBuilder.setTpSrc(0);
         matchBuilder.setTpDst(0);
-        
+
         EthernetMatch ethernetMatch = match.getEthernetMatch();
         if(ethernetMatch!= null){
             _dLDST = convertEthernetDlDst(matchBuilder, ethernetMatch);
@@ -112,12 +113,12 @@ public class MatchConvertorV10Impl implements MatchConvertor<MatchV10> {
                 _tPDST = convertL4UdpDstMatch(matchBuilder, udpMatch);
             }
         }
-        
+
         FlowWildcardsV10 wildCards = new FlowWildcardsV10(
-                _dLDST, _dLSRC, _dLTYPE, _dLVLAN, 
+                _dLDST, _dLSRC, _dLTYPE, _dLVLAN,
                 _dLVLANPCP, _iNPORT, _nWPROTO, _nWTOS, _tPDST, _tPSRC);
         matchBuilder.setWildcards(wildCards);
-        
+
         return matchBuilder.build();
     }
 
@@ -126,8 +127,8 @@ public class MatchConvertorV10Impl implements MatchConvertor<MatchV10> {
      * @param udpMatch
      * @return is wildCard
      */
-    private static boolean convertL4UdpDstMatch(MatchV10Builder matchBuilder,
-            UdpMatch udpMatch) {
+    private static boolean convertL4UdpDstMatch(final MatchV10Builder matchBuilder,
+            final UdpMatch udpMatch) {
         if (udpMatch.getUdpDestinationPort() != null) {
             matchBuilder.setTpDst(udpMatch.getUdpDestinationPort().getValue());
             return false;
@@ -140,8 +141,8 @@ public class MatchConvertorV10Impl implements MatchConvertor<MatchV10> {
      * @param udpMatch
      * @return is wildCard
      */
-    private static boolean convertL4UdpSrcMatch(MatchV10Builder matchBuilder,
-            UdpMatch udpMatch) {
+    private static boolean convertL4UdpSrcMatch(final MatchV10Builder matchBuilder,
+            final UdpMatch udpMatch) {
         if (udpMatch.getUdpSourcePort() != null) {
             matchBuilder.setTpSrc(udpMatch.getUdpSourcePort().getValue());
             return false;
@@ -154,8 +155,8 @@ public class MatchConvertorV10Impl implements MatchConvertor<MatchV10> {
      * @param tcpMatch
      * @return is wildCard
      */
-    private static boolean convertL4TpDstMatch(MatchV10Builder matchBuilder,
-            TcpMatch tcpMatch) {
+    private static boolean convertL4TpDstMatch(final MatchV10Builder matchBuilder,
+            final TcpMatch tcpMatch) {
         if (tcpMatch.getTcpDestinationPort() != null) {
             matchBuilder.setTpDst(tcpMatch.getTcpDestinationPort().getValue());
             return false;
@@ -168,8 +169,8 @@ public class MatchConvertorV10Impl implements MatchConvertor<MatchV10> {
      * @param tcpMatch
      * @return is wildCard
      */
-    private static boolean convertL4TpSrcMatch(MatchV10Builder matchBuilder,
-            TcpMatch tcpMatch) {
+    private static boolean convertL4TpSrcMatch(final MatchV10Builder matchBuilder,
+            final TcpMatch tcpMatch) {
         if (tcpMatch.getTcpSourcePort() != null) {
             matchBuilder.setTpSrc(tcpMatch.getTcpSourcePort().getValue());
             return false;
@@ -182,8 +183,8 @@ public class MatchConvertorV10Impl implements MatchConvertor<MatchV10> {
      * @param ipMatch
      * @return is wildCard
      */
-    private static boolean convertNwTos(MatchV10Builder matchBuilder,
-            IpMatch ipMatch) {
+    private static boolean convertNwTos(final MatchV10Builder matchBuilder,
+            final IpMatch ipMatch) {
         if (ipMatch.getIpDscp() != null) {
             matchBuilder.setNwTos(ipMatch.getIpDscp().getValue());
             return false;
@@ -196,7 +197,7 @@ public class MatchConvertorV10Impl implements MatchConvertor<MatchV10> {
      * @param ipMatch
      * @return is wildCard
      */
-    private static boolean convertNwProto(MatchV10Builder matchBuilder, IpMatch ipMatch) {
+    private static boolean convertNwProto(final MatchV10Builder matchBuilder, final IpMatch ipMatch) {
         if (ipMatch.getIpProtocol() != null) {
             matchBuilder.setNwProto(ipMatch.getIpProtocol());
             return false;
@@ -209,13 +210,12 @@ public class MatchConvertorV10Impl implements MatchConvertor<MatchV10> {
      * @param ipv4
      * @return is wildCard
      */
-    private static boolean convertL3Ipv4DstMatch(MatchV10Builder matchBuilder,
-            Ipv4Match ipv4) {
+    private static boolean convertL3Ipv4DstMatch(final MatchV10Builder matchBuilder,
+            final Ipv4Match ipv4) {
         if(ipv4.getIpv4Destination()!=null){
-            String[] addressParts = ipv4.getIpv4Destination().getValue().split("/");
+            Iterator<String> addressParts = MatchConvertorImpl.PREFIX_SPLITTER.split(ipv4.getIpv4Destination().getValue()).iterator();
+            Ipv4Address ipv4Address = new Ipv4Address(addressParts.next());
             Integer prefix = buildPrefix(addressParts);
-
-            Ipv4Address ipv4Address = new Ipv4Address(addressParts[0]);
             matchBuilder.setNwDst(ipv4Address);
             matchBuilder.setNwDstMask(prefix.shortValue());
             return false;
@@ -228,13 +228,13 @@ public class MatchConvertorV10Impl implements MatchConvertor<MatchV10> {
      * @param ipv4
      * @return is wildCard
      */
-    private static boolean convertL3Ipv4SrcMatch(MatchV10Builder matchBuilder,
-            Ipv4Match ipv4) {
+    private static boolean convertL3Ipv4SrcMatch(final MatchV10Builder matchBuilder,
+            final Ipv4Match ipv4) {
         if(ipv4.getIpv4Source()!=null){
-            String[] addressParts = ipv4.getIpv4Source().getValue().split(MatchConvertorImpl.PREFIX_SEPARATOR);
-            Ipv4Address ipv4Address = new Ipv4Address(addressParts[0]);
+            Iterator<String> addressParts = MatchConvertorImpl.PREFIX_SPLITTER.split(ipv4.getIpv4Source().getValue()).iterator();
+            Ipv4Address ipv4Address = new Ipv4Address(addressParts.next());
             int prefix = buildPrefix(addressParts);
-            
+
             matchBuilder.setNwSrc(ipv4Address);
             matchBuilder.setNwSrcMask((short) prefix);
             return false;
@@ -246,10 +246,10 @@ public class MatchConvertorV10Impl implements MatchConvertor<MatchV10> {
      * @param addressParts
      * @return
      */
-    private static int buildPrefix(String[] addressParts) {
+    private static int buildPrefix(final Iterator<String> addressParts) {
         int prefix = 32;
-        if (addressParts.length > 1) {
-            prefix = Integer.parseInt(addressParts[1]);
+        if (addressParts.hasNext()) {
+            prefix = Integer.parseInt(addressParts.next());
         }
         return prefix;
     }
@@ -257,10 +257,10 @@ public class MatchConvertorV10Impl implements MatchConvertor<MatchV10> {
     /**
      * @param matchBuilder
      * @param vlanMatch
-     * @return 
+     * @return
      */
-    private static boolean convertDlVlanPcp(MatchV10Builder matchBuilder,
-            VlanMatch vlanMatch) {
+    private static boolean convertDlVlanPcp(final MatchV10Builder matchBuilder,
+            final VlanMatch vlanMatch) {
         if (vlanMatch.getVlanPcp() != null) {
             matchBuilder.setDlVlanPcp(vlanMatch.getVlanPcp().getValue());
             return false;
@@ -271,9 +271,9 @@ public class MatchConvertorV10Impl implements MatchConvertor<MatchV10> {
     /**
      * @param matchBuilder
      * @param vlanMatch
-     * @return 
+     * @return
      */
-    private static boolean convertDlVlan(MatchV10Builder matchBuilder, VlanMatch vlanMatch) {
+    private static boolean convertDlVlan(final MatchV10Builder matchBuilder, final VlanMatch vlanMatch) {
         if (vlanMatch.getVlanId() != null) {
             matchBuilder.setDlVlan(vlanMatch.getVlanId().getVlanId().getValue());
             return false;
@@ -286,8 +286,8 @@ public class MatchConvertorV10Impl implements MatchConvertor<MatchV10> {
      * @param ethernetMatch
      * @return is wildCard
      */
-    private static boolean convertEthernetDlType(MatchV10Builder matchBuilder,
-            EthernetMatch ethernetMatch) {
+    private static boolean convertEthernetDlType(final MatchV10Builder matchBuilder,
+            final EthernetMatch ethernetMatch) {
         if (ethernetMatch.getEthernetType() != null) {
             matchBuilder.setDlType(ethernetMatch.getEthernetType().getType().getValue().intValue());
             return false;
@@ -300,8 +300,8 @@ public class MatchConvertorV10Impl implements MatchConvertor<MatchV10> {
      * @param ethernetMatch
      * @return is wildCard
      */
-    private static boolean convertEthernetDlSrc(MatchV10Builder matchBuilder,
-            EthernetMatch ethernetMatch) {
+    private static boolean convertEthernetDlSrc(final MatchV10Builder matchBuilder,
+            final EthernetMatch ethernetMatch) {
         if (ethernetMatch.getEthernetSource() != null) {
             matchBuilder.setDlSrc(ethernetMatch.getEthernetSource().getAddress());
             return false;
@@ -314,8 +314,8 @@ public class MatchConvertorV10Impl implements MatchConvertor<MatchV10> {
      * @param ethernetMatch
      * @return is wildCard
      */
-    private static boolean convertEthernetDlDst(MatchV10Builder matchBuilder,
-            EthernetMatch ethernetMatch) {
+    private static boolean convertEthernetDlDst(final MatchV10Builder matchBuilder,
+            final EthernetMatch ethernetMatch) {
         if (ethernetMatch.getEthernetDestination() != null) {
             matchBuilder.setDlDst(ethernetMatch.getEthernetDestination().getAddress());
             return false;
@@ -327,7 +327,7 @@ public class MatchConvertorV10Impl implements MatchConvertor<MatchV10> {
      * @param matchBuilder
      * @param inPort
      */
-    private static boolean convertInPortMatch(MatchV10Builder matchBuilder, NodeConnectorId inPort) {
+    private static boolean convertInPortMatch(final MatchV10Builder matchBuilder, final NodeConnectorId inPort) {
         if (inPort != null) {
             matchBuilder.setInPort(InventoryDataServiceUtil.portNumberfromNodeConnectorId(inPort).intValue());
             return false;

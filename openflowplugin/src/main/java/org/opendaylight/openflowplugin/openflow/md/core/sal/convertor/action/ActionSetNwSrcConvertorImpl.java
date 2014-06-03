@@ -18,22 +18,24 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.addr
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.address.address.Ipv4;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.address.address.Ipv6;
 
+import com.google.common.base.Splitter;
+
 /**
  * Utility class for converting a MD-SAL action subelement into the OF subelement
  */
 public class ActionSetNwSrcConvertorImpl implements Convertor<SetNwSrcActionCase, Object> {
-    
-    private static final String PREFIX_SEPARATOR = "/";
-    
+
+    private static final Splitter PREFIX_SPLITTER = Splitter.on('/');
+
     @Override
-    public Object convert(SetNwSrcActionCase source, BigInteger datapathid) {
+    public Object convert(final SetNwSrcActionCase source, final BigInteger datapathid) {
         Address address = source.getSetNwSrcAction().getAddress();
         if (address instanceof Ipv4) {
-            String[] addressParts = ((Ipv4) address).getIpv4Address().getValue().split(PREFIX_SEPARATOR);
-            return new Ipv4Address(addressParts[0]);
+            Iterable<String> addressParts = PREFIX_SPLITTER.split(((Ipv4) address).getIpv4Address().getValue());
+            return new Ipv4Address(addressParts.iterator().next());
         } else if (address instanceof Ipv6) {
-            String[] addressParts = ((Ipv6) address).getIpv6Address().getValue().split(PREFIX_SEPARATOR);
-            return new Ipv6Address(addressParts[0]);
+            Iterable<String> addressParts = PREFIX_SPLITTER.split(((Ipv6) address).getIpv6Address().getValue());
+            return new Ipv6Address(addressParts.iterator().next());
         } else {
             throw new IllegalArgumentException("Address is not supported: "+address.getClass().getName());
         }
