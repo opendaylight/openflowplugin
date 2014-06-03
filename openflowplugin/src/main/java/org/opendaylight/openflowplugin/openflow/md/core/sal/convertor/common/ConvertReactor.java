@@ -12,45 +12,49 @@ import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.common.collect.ImmutableMap;
+
 /**
  * @param <FROM> source type for conversion
- * 
+ *
  */
 public abstract class ConvertReactor<FROM> {
-    
-    private Map<Short, Convertor<FROM, ?>> conversionMapping;
-    private Map<InjectionKey, ResultInjector<?, ?>> injectionMapping;
-    
+    private final Map<InjectionKey, ResultInjector<?, ?>> injectionMapping;
+    private final Map<Short, Convertor<FROM, ?>> conversionMapping;
+
     protected ConvertReactor() {
-        conversionMapping = new HashMap<>();
+        final Map<Short, Convertor<FROM, ?>> conversions = new HashMap<>();
         injectionMapping = new HashMap<>();
-        initMappings(conversionMapping, injectionMapping);
+        initMappings(conversions, injectionMapping);
+
+        // Create optimized view of conversion mapping
+        this.conversionMapping = ImmutableMap.copyOf(conversions);
     }
-    
+
     /**
      * fill conversion and injection mappings
-     * @param conversions 
-     * @param injections 
+     * @param conversions
+     * @param injections
      */
-    protected abstract void initMappings(Map<Short, Convertor<FROM, ?>> conversions, 
+    protected abstract void initMappings(Map<Short, Convertor<FROM, ?>> conversions,
             Map<InjectionKey, ResultInjector<?, ?>> injections);
-    
+
     /**
      * @param source
      * @param version
-     * @param target 
-     * @param datapathid 
+     * @param target
+     * @param datapathid
      */
     @SuppressWarnings("unchecked")
-    public <RESULT, TARGET> void convert(FROM source, short version, TARGET target, BigInteger datapathid) {
-        
+    public <RESULT, TARGET> void convert(final FROM source, final short version, final TARGET target, final BigInteger datapathid) {
+
         //lookup converter
         Convertor<FROM, RESULT> convertor = (Convertor<FROM, RESULT>) conversionMapping.get(version);
         if (convertor == null) {
             throw new IllegalArgumentException("convertor for given version ["+version+"] not found");
         }
         RESULT convertedItem = convertor.convert(source,datapathid);
-        
+
         //lookup injection
         InjectionKey key = buildInjectionKey(version, convertedItem, target);
         ResultInjector<RESULT, TARGET> injection = (ResultInjector<RESULT, TARGET>) injectionMapping.get(key);
@@ -62,11 +66,11 @@ public abstract class ConvertReactor<FROM> {
 
     /**
      * @param version
-     * @param convertedItem to be injected 
+     * @param convertedItem to be injected
      * @param target object
      * @return
      */
-    protected InjectionKey buildInjectionKey(short version, Object convertedItem, Object target) {
+    protected InjectionKey buildInjectionKey(final short version, final Object convertedItem, final Object target) {
         return new InjectionKey(version, target.getClass().getName());
     }
 
