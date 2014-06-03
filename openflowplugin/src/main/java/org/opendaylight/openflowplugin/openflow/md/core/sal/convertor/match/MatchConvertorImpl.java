@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.opendaylight.openflowjava.protocol.impl.util.ByteBufUtils;
 import org.opendaylight.openflowplugin.openflow.md.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.util.ByteUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
@@ -776,7 +777,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
                         arpSourceHardwareAddressBuilder.setAddress(macAddressMatchEntry.getMacAddress());
                         MaskMatchEntry maskMatchEntry = ofMatch.getAugmentation(MaskMatchEntry.class);
                         if (maskMatchEntry != null) {
-                            arpSourceHardwareAddressBuilder.setMask(new MacAddress(ByteUtil
+                            arpSourceHardwareAddressBuilder.setMask(new MacAddress(ByteBufUtils
                                     .macAddressToString(maskMatchEntry.getMask())));
                         }
                         arpMatchBuilder.setArpSourceHardwareAddress(arpSourceHardwareAddressBuilder.build());
@@ -787,7 +788,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
                         arpTargetHardwareAddressBuilder.setAddress(macAddressMatchEntry.getMacAddress());
                         MaskMatchEntry maskMatchEntry = ofMatch.getAugmentation(MaskMatchEntry.class);
                         if (maskMatchEntry != null) {
-                            arpTargetHardwareAddressBuilder.setMask(new MacAddress(ByteUtil
+                            arpTargetHardwareAddressBuilder.setMask(new MacAddress(ByteBufUtils
                                     .macAddressToString(maskMatchEntry.getMask())));
                         }
                         arpMatchBuilder.setArpTargetHardwareAddress(arpTargetHardwareAddressBuilder.build());
@@ -1044,7 +1045,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
         addMacAddressAugmentation(matchEntriesBuilder, macAddress);
         if (mask != null) {
             hasmask = true;
-            addMaskAugmentation(matchEntriesBuilder, ByteUtil.macAddressToBytes(mask));
+            addMaskAugmentation(matchEntriesBuilder, ByteBufUtils.macAddressToBytes(mask.getValue()));
         }
         matchEntriesBuilder.setHasMask(hasmask);
         return matchEntriesBuilder.build();
