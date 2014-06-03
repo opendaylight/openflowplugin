@@ -38,6 +38,8 @@
       <project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
       <slf4j.version>1.7.2</slf4j.version>
       <logback.version>1.0.9</logback.version>
+      <karaf.version>3.0.1</karaf.version>
+      <mdsal.version>1.1-SNAPSHOT</mdsal.version>
       <nexusproxy>http://nexus.opendaylight.org/content</nexusproxy>
       <openflowjava.version>0.5-SNAPSHOT</openflowjava.version>
       <controller.model.version>1.1-SNAPSHOT</controller.model.version>
@@ -507,6 +509,7 @@
       <module>openflowplugin-it</module>
       <module>test-provider</module>
       <module>drop-test</module>
+      <module>features</module>
       <module>samples/sample-consumer</module>
       <module>samples/learning-switch</module>
     </modules>
