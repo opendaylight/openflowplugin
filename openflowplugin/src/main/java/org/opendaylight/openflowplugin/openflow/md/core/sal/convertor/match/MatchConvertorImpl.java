@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.opendaylight.openflowplugin.openflow.md.OFConstants;
@@ -173,12 +174,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Splitter;
+
 /**
  * Utility class for converting a MD-SAL Flow into the OF flow mod
  */
 public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
     private static final Logger logger = LoggerFactory.getLogger(MatchConvertorImpl.class);
     static final String PREFIX_SEPARATOR = "/";
+    static final Splitter PREFIX_SPLITTER = Splitter.on('/');
     private static final byte[] VLAN_VID_MASK = new byte[] { 16, 0 };
     private static final short PROTO_TCP = 6;
     private static final short PROTO_UDP = 17;
@@ -186,7 +190,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
 
     @Override
     public List<MatchEntries> convert(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match match, BigInteger datapathid) {
+            final org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match match, final BigInteger datapathid) {
         List<MatchEntries> matchEntriesList = new ArrayList<>();
 
         if (match.getInPort() != null) {
@@ -410,7 +414,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
      * @return
      * @author avishnoi@in.ibm.com
      */
-    public static Match fromOFMatchV10ToSALMatch(MatchV10 swMatch, BigInteger datapathid) {
+    public static Match fromOFMatchV10ToSALMatch(final MatchV10 swMatch, final BigInteger datapathid) {
         MatchBuilder matchBuilder = new MatchBuilder();
         EthernetMatchBuilder ethMatchBuilder = new EthernetMatchBuilder();
         VlanMatchBuilder vlanMatchBuilder = new VlanMatchBuilder();
@@ -478,31 +482,37 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
         }
         if (!swMatch.getWildcards().isNWPROTO().booleanValue() && swMatch.getNwProto() == PROTO_TCP) {
             TcpMatchBuilder tcpMatchBuilder = new TcpMatchBuilder();
-            if (!swMatch.getWildcards().isTPSRC().booleanValue() && swMatch.getTpSrc() != null)
+            if (!swMatch.getWildcards().isTPSRC().booleanValue() && swMatch.getTpSrc() != null) {
                 tcpMatchBuilder
                         .setTcpSourcePort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber(
                                 swMatch.getTpSrc()));
-            if (!swMatch.getWildcards().isTPDST().booleanValue() && swMatch.getTpDst() != null)
+            }
+            if (!swMatch.getWildcards().isTPDST().booleanValue() && swMatch.getTpDst() != null) {
                 tcpMatchBuilder
                         .setTcpDestinationPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber(
                                 swMatch.getTpDst()));
+            }
 
-            if (!swMatch.getWildcards().isTPSRC().booleanValue() || !swMatch.getWildcards().isTPDST().booleanValue())
+            if (!swMatch.getWildcards().isTPSRC().booleanValue() || !swMatch.getWildcards().isTPDST().booleanValue()) {
                 matchBuilder.setLayer4Match(tcpMatchBuilder.build());
+            }
         }
         if (!swMatch.getWildcards().isNWPROTO().booleanValue() && swMatch.getNwProto() == PROTO_UDP) {
             UdpMatchBuilder udpMatchBuilder = new UdpMatchBuilder();
-            if (!swMatch.getWildcards().isTPSRC().booleanValue() && swMatch.getTpSrc() != null)
+            if (!swMatch.getWildcards().isTPSRC().booleanValue() && swMatch.getTpSrc() != null) {
                 udpMatchBuilder
                         .setUdpSourcePort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber(
                                 swMatch.getTpSrc()));
-            if (!swMatch.getWildcards().isTPDST().booleanValue() && swMatch.getTpDst() != null)
+            }
+            if (!swMatch.getWildcards().isTPDST().booleanValue() && swMatch.getTpDst() != null) {
                 udpMatchBuilder
                         .setUdpDestinationPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber(
                                 swMatch.getTpDst()));
+            }
 
-            if (!swMatch.getWildcards().isTPSRC().booleanValue() || !swMatch.getWildcards().isTPDST().booleanValue())
+            if (!swMatch.getWildcards().isTPSRC().booleanValue() || !swMatch.getWildcards().isTPDST().booleanValue()) {
                 matchBuilder.setLayer4Match(udpMatchBuilder.build());
+            }
         }
         if (!swMatch.getWildcards().isNWTOS().booleanValue() && swMatch.getNwTos() != null) {
             // DSCP default value is 0 from the library but controller side it
@@ -526,8 +536,8 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
      * @author avishnoi@in.ibm.com
      */
     public static Match fromOFMatchToSALMatch(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.match.grouping.Match swMatch,
-            BigInteger datapathid) {
+            final org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.match.grouping.Match swMatch,
+            final BigInteger datapathid) {
 
         MatchBuilder matchBuilder = new MatchBuilder();
         EthernetMatchBuilder ethMatchBuilder = new EthernetMatchBuilder();
@@ -704,7 +714,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
                         }
                         ipv4PrefixStr += PREFIX_SEPARATOR + (32-shiftCount);
                     }else{
-                        //Openflow Spec : 1.3.2 
+                        //Openflow Spec : 1.3.2
                         //An all-one-bits oxm_mask is equivalent to specifying 0 for oxm_hasmask and omitting oxm_mask.
                         // So when user specify 32 as a mast, switch omit that mast and we get null as a mask in flow
                         // statistics response.
@@ -880,7 +890,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
         return matchBuilder.build();
     }
 
-    private static MatchEntries toOfMplsPbb(Pbb pbb) {
+    private static MatchEntries toOfMplsPbb(final Pbb pbb) {
         MatchEntriesBuilder matchEntriesBuilder = new MatchEntriesBuilder();
         boolean hasmask = false;
         matchEntriesBuilder.setOxmClass(OpenflowBasicClass.class);
@@ -896,7 +906,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
         return matchEntriesBuilder.build();
     }
 
-    private static MatchEntries toOfMplsTc(Short mplsTc) {
+    private static MatchEntries toOfMplsTc(final Short mplsTc) {
         MatchEntriesBuilder matchEntriesBuilder = new MatchEntriesBuilder();
         matchEntriesBuilder.setOxmClass(OpenflowBasicClass.class);
         matchEntriesBuilder.setHasMask(false);
@@ -907,7 +917,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
         return matchEntriesBuilder.build();
     }
 
-    private static MatchEntries toOfMplsBos(Short mplsBos) {
+    private static MatchEntries toOfMplsBos(final Short mplsBos) {
         MatchEntriesBuilder matchEntriesBuilder = new MatchEntriesBuilder();
         matchEntriesBuilder.setOxmClass(OpenflowBasicClass.class);
         matchEntriesBuilder.setHasMask(false);
@@ -922,7 +932,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
         return matchEntriesBuilder.build();
     }
 
-    private static MatchEntries toOfMplsLabel(Long mplsLabel) {
+    private static MatchEntries toOfMplsLabel(final Long mplsLabel) {
         MatchEntriesBuilder matchEntriesBuilder = new MatchEntriesBuilder();
         matchEntriesBuilder.setOxmClass(OpenflowBasicClass.class);
         matchEntriesBuilder.setHasMask(false);
@@ -933,7 +943,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
         return matchEntriesBuilder.build();
     }
 
-    private static MatchEntries toOfIpv6ExtHeader(Ipv6ExtHeader ipv6ExtHeader) {
+    private static MatchEntries toOfIpv6ExtHeader(final Ipv6ExtHeader ipv6ExtHeader) {
         MatchEntriesBuilder matchEntriesBuilder = new MatchEntriesBuilder();
         boolean hasmask = false;
         matchEntriesBuilder.setOxmClass(OpenflowBasicClass.class);
@@ -959,7 +969,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
         return matchEntriesBuilder.build();
     }
 
-    private static MatchEntries toOfIpv6FlowLabel(Ipv6Label ipv6Label) {
+    private static MatchEntries toOfIpv6FlowLabel(final Ipv6Label ipv6Label) {
         MatchEntriesBuilder matchEntriesBuilder = new MatchEntriesBuilder();
         boolean hasmask = false;
         matchEntriesBuilder.setOxmClass(OpenflowBasicClass.class);
@@ -975,7 +985,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
         return matchEntriesBuilder.build();
     }
 
-    private static MatchEntries toOfPort(Class<? extends MatchField> field, Long portNumber) {
+    private static MatchEntries toOfPort(final Class<? extends MatchField> field, final Long portNumber) {
         MatchEntriesBuilder matchEntriesBuilder = new MatchEntriesBuilder();
         matchEntriesBuilder.setOxmClass(OpenflowBasicClass.class);
         matchEntriesBuilder.setHasMask(false);
@@ -986,8 +996,8 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
         return matchEntriesBuilder.build();
     }
 
-    private static MatchEntries toOfMetadata(Class<? extends MatchField> field, BigInteger metadata,
-            BigInteger metadataMask) {
+    private static MatchEntries toOfMetadata(final Class<? extends MatchField> field, final BigInteger metadata,
+            final BigInteger metadataMask) {
         MatchEntriesBuilder matchEntriesBuilder = new MatchEntriesBuilder();
         boolean hasmask = false;
         matchEntriesBuilder.setOxmClass(OpenflowBasicClass.class);
@@ -1002,9 +1012,9 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
         return matchEntriesBuilder.build();
     }
 
-    public static MatchEntries toOfMacAddress(Class<? extends MatchField> field,
-            org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress macAddress,
-            org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress mask) {
+    public static MatchEntries toOfMacAddress(final Class<? extends MatchField> field,
+            final org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress macAddress,
+            final org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress mask) {
         MatchEntriesBuilder matchEntriesBuilder = new MatchEntriesBuilder();
         boolean hasmask = false;
         matchEntriesBuilder.setOxmClass(OpenflowBasicClass.class);
@@ -1018,7 +1028,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
         return matchEntriesBuilder.build();
     }
 
-    private static MatchEntries toOfEthernetType(EthernetType ethernetType) {
+    private static MatchEntries toOfEthernetType(final EthernetType ethernetType) {
         MatchEntriesBuilder matchEntriesBuilder = new MatchEntriesBuilder();
         matchEntriesBuilder.setOxmClass(OpenflowBasicClass.class);
         matchEntriesBuilder.setHasMask(false);
@@ -1029,8 +1039,8 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
         return matchEntriesBuilder.build();
     }
 
-    private static MatchEntries toOfLayer3Port(Class<? extends MatchField> field,
-            org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber portNumber) {
+    private static MatchEntries toOfLayer3Port(final Class<? extends MatchField> field,
+            final org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber portNumber) {
         MatchEntriesBuilder matchEntriesBuilder = new MatchEntriesBuilder();
         matchEntriesBuilder.setOxmClass(OpenflowBasicClass.class);
         matchEntriesBuilder.setHasMask(false);
@@ -1041,7 +1051,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
         return matchEntriesBuilder.build();
     }
 
-    private static MatchEntries toOfIcmpv4Type(Short icmpv4Type) {
+    private static MatchEntries toOfIcmpv4Type(final Short icmpv4Type) {
         MatchEntriesBuilder matchEntriesBuilder = new MatchEntriesBuilder();
         matchEntriesBuilder.setOxmClass(OpenflowBasicClass.class);
         matchEntriesBuilder.setHasMask(false);
@@ -1052,7 +1062,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
         return matchEntriesBuilder.build();
     }
 
-    private static MatchEntries toOfIcmpv4Code(Short icmpv4Code) {
+    private static MatchEntries toOfIcmpv4Code(final Short icmpv4Code) {
         MatchEntriesBuilder matchEntriesBuilder = new MatchEntriesBuilder();
         matchEntriesBuilder.setOxmClass(OpenflowBasicClass.class);
         matchEntriesBuilder.setHasMask(false);
@@ -1063,7 +1073,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
         return matchEntriesBuilder.build();
     }
 
-    private static MatchEntries toOfIcmpv6Type(Short icmpv6Type) {
+    private static MatchEntries toOfIcmpv6Type(final Short icmpv6Type) {
         MatchEntriesBuilder matchEntriesBuilder = new MatchEntriesBuilder();
         matchEntriesBuilder.setOxmClass(OpenflowBasicClass.class);
         matchEntriesBuilder.setHasMask(false);
@@ -1074,7 +1084,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
         return matchEntriesBuilder.build();
     }
 
-    private static MatchEntries toOfIcmpv6Code(Short icmpv6Code) {
+    private static MatchEntries toOfIcmpv6Code(final Short icmpv6Code) {
         MatchEntriesBuilder matchEntriesBuilder = new MatchEntriesBuilder();
         matchEntriesBuilder.setOxmClass(OpenflowBasicClass.class);
         matchEntriesBuilder.setHasMask(false);
@@ -1085,7 +1095,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
         return matchEntriesBuilder.build();
     }
 
-    public static MatchEntries toOfIpv4Prefix(Class<? extends MatchField> field, Ipv4Prefix ipv4Prefix) {
+    public static MatchEntries toOfIpv4Prefix(final Class<? extends MatchField> field, final Ipv4Prefix ipv4Prefix) {
         MatchEntriesBuilder matchEntriesBuilder = new MatchEntriesBuilder();
         matchEntriesBuilder.setOxmClass(OpenflowBasicClass.class);
         matchEntriesBuilder.setOxmMatchField(field);
@@ -1094,7 +1104,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
         return matchEntriesBuilder.build();
     }
 
-    private static MatchEntries toOfIpv6Prefix(Class<? extends MatchField> field, Ipv6Prefix ipv6Prefix) {
+    private static MatchEntries toOfIpv6Prefix(final Class<? extends MatchField> field, final Ipv6Prefix ipv6Prefix) {
         MatchEntriesBuilder matchEntriesBuilder = new MatchEntriesBuilder();
         matchEntriesBuilder.setOxmClass(OpenflowBasicClass.class);
         matchEntriesBuilder.setOxmMatchField(field);
@@ -1103,7 +1113,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
         return matchEntriesBuilder.build();
     }
 
-    public static MatchEntries toOfIpDscp(Dscp ipDscp) {
+    public static MatchEntries toOfIpDscp(final Dscp ipDscp) {
         MatchEntriesBuilder matchEntriesBuilder = new MatchEntriesBuilder();
         matchEntriesBuilder.setOxmClass(OpenflowBasicClass.class);
         matchEntriesBuilder.setHasMask(false);
@@ -1115,7 +1125,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
     }
 
     public static MatchEntries toOfVlanPcp(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanPcp vlanPcp) {
+            final org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanPcp vlanPcp) {
         MatchEntriesBuilder matchEntriesBuilder = new MatchEntriesBuilder();
         matchEntriesBuilder.setOxmClass(OpenflowBasicClass.class);
         matchEntriesBuilder.setHasMask(false);
@@ -1126,7 +1136,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
         return matchEntriesBuilder.build();
     }
 
-    private static MatchEntries toOfVlanVid(VlanId vlanId) {
+    private static MatchEntries toOfVlanVid(final VlanId vlanId) {
         // TODO: verify
         MatchEntriesBuilder matchEntriesBuilder = new MatchEntriesBuilder();
         boolean hasmask = false;
@@ -1152,7 +1162,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
         return matchEntriesBuilder.build();
     }
 
-    private static MatchEntries toOfIpProto(Short ipProtocol) {
+    private static MatchEntries toOfIpProto(final Short ipProtocol) {
         MatchEntriesBuilder matchEntriesBuilder = new MatchEntriesBuilder();
         matchEntriesBuilder.setOxmClass(OpenflowBasicClass.class);
         matchEntriesBuilder.setHasMask(false);
@@ -1163,7 +1173,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
         return matchEntriesBuilder.build();
     }
 
-    private static MatchEntries toOfIpEcn(Short ipEcn) {
+    private static MatchEntries toOfIpEcn(final Short ipEcn) {
         MatchEntriesBuilder matchEntriesBuilder = new MatchEntriesBuilder();
         matchEntriesBuilder.setOxmClass(OpenflowBasicClass.class);
         matchEntriesBuilder.setHasMask(false);
@@ -1174,7 +1184,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
         return matchEntriesBuilder.build();
     }
 
-    private static MatchEntries toOfArpOpCode(Integer arpOp) {
+    private static MatchEntries toOfArpOpCode(final Integer arpOp) {
         MatchEntriesBuilder matchEntriesBuilder = new MatchEntriesBuilder();
         matchEntriesBuilder.setOxmClass(OpenflowBasicClass.class);
         matchEntriesBuilder.setHasMask(false);
@@ -1185,7 +1195,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
         return matchEntriesBuilder.build();
     }
 
-    private static MatchEntries toOfIpv6Address(Ipv6Address address) {
+    private static MatchEntries toOfIpv6Address(final Ipv6Address address) {
         MatchEntriesBuilder matchEntriesBuilder = new MatchEntriesBuilder();
         matchEntriesBuilder.setOxmClass(OpenflowBasicClass.class);
         matchEntriesBuilder.setHasMask(false);
@@ -1196,21 +1206,22 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
         return matchEntriesBuilder.build();
     }
 
-    private static void addMaskAugmentation(MatchEntriesBuilder builder, byte[] mask) {
+    private static void addMaskAugmentation(final MatchEntriesBuilder builder, final byte[] mask) {
         MaskMatchEntryBuilder maskBuilder = new MaskMatchEntryBuilder();
         maskBuilder.setMask(mask);
         builder.addAugmentation(MaskMatchEntry.class, maskBuilder.build());
     }
 
-    private static boolean addIpv6PrefixAugmentation(MatchEntriesBuilder builder, Ipv6Prefix address) {
+    private static boolean addIpv6PrefixAugmentation(final MatchEntriesBuilder builder, final Ipv6Prefix address) {
         boolean hasMask = false;
-        String[] addressParts = address.getValue().split(PREFIX_SEPARATOR);
+        Iterator<String> addressParts = PREFIX_SPLITTER.split(address.getValue()).iterator();
+        Ipv6Address ipv6Address = new Ipv6Address(addressParts.next());
+
         Integer prefix = null;
-        if (addressParts.length == 2) {
-            prefix = Integer.parseInt(addressParts[1]);
+        if (addressParts.hasNext()) {
+            prefix = Integer.parseInt(addressParts.next());
         }
 
-        Ipv6Address ipv6Address = new Ipv6Address(addressParts[0]);
         Ipv6AddressMatchEntryBuilder ipv6AddressBuilder = new Ipv6AddressMatchEntryBuilder();
         ipv6AddressBuilder.setIpv6Address(ipv6Address);
         builder.addAugmentation(Ipv6AddressMatchEntry.class, ipv6AddressBuilder.build());
@@ -1221,7 +1232,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
         return hasMask;
     }
 
-    private static byte[] convertIpv6PrefixToByteArray(int prefix) {
+    private static byte[] convertIpv6PrefixToByteArray(final int prefix) {
         // TODO: Temporary fix. Has performance impacts.
         byte[] mask = new byte[16];
         int oneCount = prefix;
@@ -1240,7 +1251,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
         return mask;
     }
 
-    private static void addMetadataAugmentation(MatchEntriesBuilder builder, BigInteger metadata) {
+    private static void addMetadataAugmentation(final MatchEntriesBuilder builder, final BigInteger metadata) {
         MetadataMatchEntryBuilder metadataMatchEntry = new MetadataMatchEntryBuilder();
         metadataMatchEntry.setMetadata(ByteUtil.convertBigIntegerToNBytes(metadata, OFConstants.SIZE_OF_LONG_IN_BYTES));
         builder.addAugmentation(MetadataMatchEntry.class, metadataMatchEntry.build());
@@ -1250,17 +1261,18 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
      * @return true if Ipv4Prefix contains prefix (and it is used in mask),
      *         false otherwise
      */
-    private static boolean addIpv4PrefixAugmentation(MatchEntriesBuilder builder, Ipv4Prefix address) {
+    private static boolean addIpv4PrefixAugmentation(final MatchEntriesBuilder builder, final Ipv4Prefix address) {
         boolean hasMask = false;
-        String[] addressParts = address.getValue().split(PREFIX_SEPARATOR);
-        Integer prefix = null;
-        if (addressParts.length < 2) {
-            prefix = 0;
+        Iterator<String> addressParts = PREFIX_SPLITTER.split(address.getValue()).iterator();
+        Ipv4Address ipv4Address = new Ipv4Address(addressParts.next());
+
+        final int prefix;
+        if (addressParts.hasNext()) {
+            prefix = Integer.parseInt(addressParts.next());
         } else {
-            prefix = Integer.parseInt(addressParts[1]);
+            prefix = 0;
         }
 
-        Ipv4Address ipv4Address = new Ipv4Address(addressParts[0]);
         Ipv4AddressMatchEntryBuilder ipv4AddressBuilder = new Ipv4AddressMatchEntryBuilder();
         ipv4AddressBuilder.setIpv4Address(ipv4Address);
         builder.addAugmentation(Ipv4AddressMatchEntry.class, ipv4AddressBuilder.build());
@@ -1274,7 +1286,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
         return hasMask;
     }
 
-    private static void addMacAddressAugmentation(MatchEntriesBuilder builder, MacAddress address) {
+    private static void addMacAddressAugmentation(final MatchEntriesBuilder builder, final MacAddress address) {
         MacAddressMatchEntryBuilder macAddress = new MacAddressMatchEntryBuilder();
         macAddress.setMacAddress(address);
         builder.addAugmentation(MacAddressMatchEntry.class, macAddress.build());
@@ -1288,7 +1300,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
      * @return
      */
     public static SetField ofToSALSetField(
-            Action action) {
+            final Action action) {
         logger.debug("OF SetField match to SAL SetField match converstion begins");
         SetFieldBuilder setField = new SetFieldBuilder();
         /*
