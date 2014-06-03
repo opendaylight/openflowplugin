@@ -7,12 +7,10 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.opendaylight.controller.sal.common.util.Arguments;
 import org.opendaylight.openflowplugin.openflow.md.OFConstants;
+import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
+import org.opendaylight.openflowplugin.openflow.md.util.OpenflowVersion;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.MaxLengthAction;
@@ -29,6 +27,10 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier.PathArgument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PacketOutConvertor {
     private static final Logger logger = LoggerFactory.getLogger(MeterConvertor.class);
@@ -58,7 +60,7 @@ public class PacketOutConvertor {
             inArgs = inputPacket.getIngress().getValue().getPath();
         }
         if (inArgs != null && inArgs.size() >= 3) {
-            inPortNr = getPortNumber(inArgs.get(2));
+            inPortNr = getPortNumber(inArgs.get(2), version);
         } else {
             // The packetOut originated from the controller
             inPortNr = new PortNumber(0xfffffffdL);
@@ -73,7 +75,7 @@ public class PacketOutConvertor {
         NodeConnectorRef outRef = inputPacket.getEgress();
         List<PathArgument> outArgs = outRef.getValue().getPath();
         if (outArgs.size() >= 3) {
-            outPort = getPortNumber(outArgs.get(2));
+            outPort = getPortNumber(outArgs.get(2), version);
         } else {
             new Exception("PORT NR not exist in Egress"); // TODO : P4 search
                                                           // for some normal
@@ -108,13 +110,13 @@ public class PacketOutConvertor {
         return builder.build();
     }
 
-    private static PortNumber getPortNumber(PathArgument pathArgument) {
+    private static PortNumber getPortNumber(PathArgument pathArgument, Short ofVersion) {
         // FIXME VD P! find InstanceIdentifier helper
         InstanceIdentifier.IdentifiableItem item = Arguments.checkInstanceOf(pathArgument,
                 InstanceIdentifier.IdentifiableItem.class);
         NodeConnectorKey key = Arguments.checkInstanceOf(item.getKey(), NodeConnectorKey.class);
         String[] split = key.getId().getValue().split(":");
-        Long port = Long.decode(split[split.length - 1]);
+        Long port = OpenflowPortsUtil.getPortFromLogicalName(OpenflowVersion.get(ofVersion), split[split.length - 1]);
         return new PortNumber(port);
     }
 }

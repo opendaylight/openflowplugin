@@ -7,14 +7,6 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.lldp;
 
-import java.math.BigInteger;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.opendaylight.controller.sal.packet.Ethernet;
 import org.opendaylight.controller.sal.packet.LLDP;
 import org.opendaylight.controller.sal.packet.LLDPTLV;
@@ -23,6 +15,7 @@ import org.opendaylight.controller.sal.utils.EtherTypes;
 import org.opendaylight.controller.sal.utils.HexEncode;
 import org.opendaylight.openflowplugin.openflow.md.ModelDrivenSwitch;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
+import org.opendaylight.openflowplugin.openflow.md.util.OpenflowVersion;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
@@ -37,6 +30,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.Tr
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.math.BigInteger;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 public class LLDPSpeaker {
@@ -72,6 +73,8 @@ public class LLDPSpeaker {
 
 	public  void addNodeConnector(InstanceIdentifier<NodeConnector> nodeConnectorInstanceId, NodeConnector nodeConnector) {
     	InstanceIdentifier<Node> nodeInstanceId = nodeConnectorInstanceId.firstIdentifierOf(Node.class);
+        ModelDrivenSwitch md = nodeMap.get(nodeInstanceId);
+
     	NodeKey nodeKey = InstanceIdentifier.keyOf(nodeInstanceId);
     	NodeId nodeId = nodeKey.getId();
     	NodeConnectorId nodeConnectorId = nodeConnector.getId();
@@ -79,9 +82,10 @@ public class LLDPSpeaker {
     	TransmitPacketInputBuilder tpib = new TransmitPacketInputBuilder();
     	tpib.setEgress(new NodeConnectorRef(nodeConnectorInstanceId));
     	tpib.setNode(new NodeRef(nodeInstanceId));
-    	tpib.setPayload(lldpDataFrom(nodeInstanceId,nodeConnectorInstanceId,flowConnector.getHardwareAddress()));
+    	tpib.setPayload(lldpDataFrom(nodeInstanceId,nodeConnectorInstanceId,flowConnector.getHardwareAddress(),
+                md.getSessionContext().getPrimaryConductor().getVersion()));
     	nodeConnectorMap.put(nodeConnectorInstanceId, tpib.build());
-        ModelDrivenSwitch md = nodeMap.get(nodeInstanceId);
+
         md.transmitPacket(nodeConnectorMap.get(nodeConnectorInstanceId));
 	}
 
@@ -91,7 +95,8 @@ public class LLDPSpeaker {
 		nodeConnectorMap.remove(nodeConnectorInstanceId);		
 	}
 	
-	private  byte[] lldpDataFrom(InstanceIdentifier<Node> nodeInstanceId,InstanceIdentifier<NodeConnector> nodeConnectorInstanceId,MacAddress src) {
+	private  byte[] lldpDataFrom(InstanceIdentifier<Node> nodeInstanceId,InstanceIdentifier<NodeConnector> nodeConnectorInstanceId,MacAddress src,
+                                 Short version) {
 		
 	    NodeId nodeId = InstanceIdentifier.keyOf(nodeInstanceId).getId();
 	    NodeConnectorId nodeConnectorId = InstanceIdentifier.keyOf(nodeConnectorInstanceId).getId();
@@ -117,7 +122,8 @@ public class LLDPSpeaker {
                 .setValue(snValue);
 
         // Create LLDP PortID TL
-        Long portNo = InventoryDataServiceUtil.portNumberfromNodeConnectorId(nodeConnectorId);
+        Long portNo = InventoryDataServiceUtil.portNumberfromNodeConnectorId(OpenflowVersion.get(version), nodeConnectorId);
+
         String hexString = Long.toHexString(portNo);
         byte[] pidValue = LLDPTLV.createPortIDTLVValue(hexString);
         LLDPTLV portIdTlv = new LLDPTLV();

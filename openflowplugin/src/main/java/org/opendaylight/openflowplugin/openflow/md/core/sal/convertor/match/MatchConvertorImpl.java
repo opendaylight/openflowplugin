@@ -8,14 +8,10 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 
-import java.math.BigInteger;
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.opendaylight.openflowplugin.openflow.md.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.util.ByteUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
+import org.opendaylight.openflowplugin.openflow.md.util.OpenflowVersion;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Dscp;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
@@ -173,6 +169,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigInteger;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Utility class for converting a MD-SAL Flow into the OF flow mod
  */
@@ -190,13 +191,15 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
         List<MatchEntries> matchEntriesList = new ArrayList<>();
 
         if (match.getInPort() != null) {
+            //TODO: currently this matchconverter is mapped to OF1.3 in MatchReactorMappingFactory. Will need to revisit during 1.4+
             matchEntriesList.add(toOfPort(InPort.class,
-                    InventoryDataServiceUtil.portNumberfromNodeConnectorId(match.getInPort())));
+                    InventoryDataServiceUtil.portNumberfromNodeConnectorId(OpenflowVersion.OF13, match.getInPort())));
         }
 
         if (match.getInPhyPort() != null) {
+            //TODO: currently this matchconverter is mapped to OF1.3 in MatchReactorMappingFactory. Will need to revisit during 1.4+
             matchEntriesList.add(toOfPort(InPhyPort.class,
-                    InventoryDataServiceUtil.portNumberfromNodeConnectorId(match.getInPhyPort())));
+                    InventoryDataServiceUtil.portNumberfromNodeConnectorId(OpenflowVersion.OF13, match.getInPhyPort())));
         }
 
         org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Metadata metadata = match
@@ -410,7 +413,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
      * @return
      * @author avishnoi@in.ibm.com
      */
-    public static Match fromOFMatchV10ToSALMatch(MatchV10 swMatch, BigInteger datapathid) {
+    public static Match fromOFMatchV10ToSALMatch(MatchV10 swMatch, BigInteger datapathid, OpenflowVersion ofVersion) {
         MatchBuilder matchBuilder = new MatchBuilder();
         EthernetMatchBuilder ethMatchBuilder = new EthernetMatchBuilder();
         VlanMatchBuilder vlanMatchBuilder = new VlanMatchBuilder();
@@ -418,7 +421,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
         IpMatchBuilder ipMatchBuilder = new IpMatchBuilder();
         if (!swMatch.getWildcards().isINPORT().booleanValue() && swMatch.getInPort() != null) {
             matchBuilder.setInPort(InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(datapathid,
-                    (long) swMatch.getInPort()));
+                    (long) swMatch.getInPort(), ofVersion));
         }
 
         if (!swMatch.getWildcards().isDLSRC().booleanValue() && swMatch.getDlSrc() != null) {
@@ -527,7 +530,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
      */
     public static Match fromOFMatchToSALMatch(
             org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.match.grouping.Match swMatch,
-            BigInteger datapathid) {
+            BigInteger datapathid, OpenflowVersion ofVersion) {
 
         MatchBuilder matchBuilder = new MatchBuilder();
         EthernetMatchBuilder ethMatchBuilder = new EthernetMatchBuilder();
@@ -550,11 +553,11 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
             if (ofMatch.getOxmMatchField().equals(InPort.class)) {
                 PortNumberMatchEntry portNumber = ofMatch.getAugmentation(PortNumberMatchEntry.class);
                 matchBuilder.setInPort(InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(datapathid,
-                        portNumber.getPortNumber().getValue()));
+                        portNumber.getPortNumber().getValue(), ofVersion));
             } else if (ofMatch.getOxmMatchField().equals(InPhyPort.class)) {
                 PortNumberMatchEntry portNumber = ofMatch.getAugmentation(PortNumberMatchEntry.class);
                 matchBuilder.setInPhyPort(InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(datapathid,
-                        portNumber.getPortNumber().getValue()));
+                        portNumber.getPortNumber().getValue(), ofVersion));
             } else if (ofMatch.getOxmMatchField().equals(Metadata.class)) {
                 MetadataBuilder metadataBuilder = new MetadataBuilder();
                 MetadataMatchEntry metadataMatchEntry = ofMatch.getAugmentation(MetadataMatchEntry.class);

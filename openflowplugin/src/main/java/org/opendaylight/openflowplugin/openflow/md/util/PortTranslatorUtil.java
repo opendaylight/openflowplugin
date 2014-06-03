@@ -7,9 +7,6 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.util;
 
-import java.math.BigInteger;
-
-import org.opendaylight.openflowplugin.openflow.md.OFConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnectorUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnectorUpdatedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.flow.capable.port.State;
@@ -23,6 +20,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortState;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortStateV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
+
+import java.math.BigInteger;
 
 public abstract class PortTranslatorUtil {
     public static  org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures translatePortFeatures(PortFeatures apf) {
@@ -87,18 +86,20 @@ public abstract class PortTranslatorUtil {
         return npc;
     }
     
-    public static NodeConnectorUpdated translatePort(Short version,BigInteger datapathId,Long portNo, PortGrouping port) {
+    public static NodeConnectorUpdated translatePort(Short version, BigInteger datapathId,Long portNumber, PortGrouping port) {
+        OpenflowVersion ofVersion =  OpenflowVersion.get(version);
         NodeConnectorUpdatedBuilder builder = InventoryDataServiceUtil
-                .nodeConnectorUpdatedBuilderFromDatapathIdPortNo(datapathId,port.getPortNo());
+                .nodeConnectorUpdatedBuilderFromDatapathIdPortNo(datapathId, port.getPortNo(), ofVersion);
         FlowCapableNodeConnectorUpdatedBuilder fcncub = new FlowCapableNodeConnectorUpdatedBuilder();
-        if(version == OFConstants.OFP_VERSION_1_3) {
+        if(ofVersion == OpenflowVersion.OF13) {
             fcncub.setAdvertisedFeatures(PortTranslatorUtil.translatePortFeatures(port.getAdvertisedFeatures()));
             fcncub.setConfiguration(PortTranslatorUtil.translatePortConfig(port.getConfig()));
             fcncub.setCurrentFeature(PortTranslatorUtil.translatePortFeatures(port.getCurrentFeatures()));
             fcncub.setPeerFeatures(PortTranslatorUtil.translatePortFeatures(port.getPeerFeatures()));
             fcncub.setState(PortTranslatorUtil.translatePortState(port.getState()));
             fcncub.setSupported(PortTranslatorUtil.translatePortFeatures(port.getSupportedFeatures()));
-        } else if (version == OFConstants.OFP_VERSION_1_0) {
+
+        } else if (ofVersion == OpenflowVersion.OF10) {
             fcncub.setAdvertisedFeatures(PortTranslatorUtil.translatePortFeatures(port.getAdvertisedFeaturesV10()));
             fcncub.setConfiguration(PortTranslatorUtil.translatePortConfig(port.getConfigV10()));
             fcncub.setCurrentFeature(PortTranslatorUtil.translatePortFeatures(port.getCurrentFeaturesV10()));
@@ -110,7 +111,7 @@ public abstract class PortTranslatorUtil {
         fcncub.setHardwareAddress(port.getHwAddr());
         fcncub.setMaximumSpeed(port.getMaxSpeed());
         fcncub.setName(port.getName());
-        fcncub.setPortNumber(port.getPortNo());
+        fcncub.setPortNumber(OpenflowPortsUtil.getProtocolAgnosticPort(ofVersion, portNumber));
         builder.addAugmentation(FlowCapableNodeConnectorUpdated.class, fcncub.build());
         return builder.build();
     }

@@ -7,11 +7,8 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchConvertorImpl;
+import org.opendaylight.openflowplugin.openflow.md.util.OpenflowVersion;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.Counter32;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.Counter64;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.flow.and.statistics.map.list.FlowAndStatisticsMapList;
@@ -20,6 +17,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCo
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.statistics.types.rev130925.duration.DurationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.flow._case.multipart.reply.flow.FlowStats;
+
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class is an utility class for converting flow related statistics messages coming from openflow 
@@ -35,12 +36,12 @@ public class FlowStatsResponseConvertor {
      * @param allFlowStats
      * @return
      */
-    public List<FlowAndStatisticsMapList> toSALFlowStatsList(List<FlowStats> allFlowStats,BigInteger datapathid){
+    public List<FlowAndStatisticsMapList> toSALFlowStatsList(List<FlowStats> allFlowStats, BigInteger datapathid, OpenflowVersion ofVersion){
         
         List<FlowAndStatisticsMapList> convertedSALFlowStats = new ArrayList<FlowAndStatisticsMapList>();
         
         for(FlowStats flowStats : allFlowStats){
-            convertedSALFlowStats.add(toSALFlowStats(flowStats, datapathid));
+            convertedSALFlowStats.add(toSALFlowStats(flowStats, datapathid, ofVersion));
         }
         
         return convertedSALFlowStats;
@@ -52,7 +53,7 @@ public class FlowStatsResponseConvertor {
      * @param flowStats
      * @return
      */
-    public FlowAndStatisticsMapList toSALFlowStats(FlowStats flowStats,BigInteger datapathid){
+    public FlowAndStatisticsMapList toSALFlowStats(FlowStats flowStats,BigInteger datapathid, OpenflowVersion ofVersion){
         FlowAndStatisticsMapListBuilder salFlowStatsBuilder = new FlowAndStatisticsMapListBuilder();
         salFlowStatsBuilder.setByteCount(new Counter64(flowStats.getByteCount()));
         salFlowStatsBuilder.setCookie(new FlowCookie(flowStats.getCookie()));
@@ -68,13 +69,13 @@ public class FlowStatsResponseConvertor {
         salFlowStatsBuilder.setPriority(flowStats.getPriority());
         salFlowStatsBuilder.setTableId(flowStats.getTableId());
         if(flowStats.getMatchV10() != null){
-            salFlowStatsBuilder.setMatch(MatchConvertorImpl.fromOFMatchV10ToSALMatch(flowStats.getMatchV10(),datapathid));
+            salFlowStatsBuilder.setMatch(MatchConvertorImpl.fromOFMatchV10ToSALMatch(flowStats.getMatchV10(),datapathid, OpenflowVersion.OF10));
             if(flowStats.getAction().size()!=0){
                 salFlowStatsBuilder.setInstructions(OFToMDSalFlowConvertor.wrapOF10ActionsToInstruction(flowStats.getAction()));
             }
         }
         if(flowStats.getMatch() != null){
-            salFlowStatsBuilder.setMatch(MatchConvertorImpl.fromOFMatchToSALMatch(flowStats.getMatch(),datapathid));
+            salFlowStatsBuilder.setMatch(MatchConvertorImpl.fromOFMatchToSALMatch(flowStats.getMatch(),datapathid, ofVersion));
             salFlowStatsBuilder.setFlags(
                     new FlowModFlags(flowStats.getFlags().isOFPFFCHECKOVERLAP(),
                             flowStats.getFlags().isOFPFFRESETCOUNTS(),

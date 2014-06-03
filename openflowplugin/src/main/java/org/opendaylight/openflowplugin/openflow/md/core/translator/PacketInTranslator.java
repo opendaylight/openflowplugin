@@ -7,16 +7,12 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.translator;
 
-import java.math.BigInteger;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchConvertorImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
+import org.opendaylight.openflowplugin.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.util.PacketInUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
@@ -32,6 +28,11 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigInteger;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 /**
  * translates packetIn from OF-API model to MD-SAL model, supports OF-1.3
  */
@@ -40,8 +41,7 @@ public class PacketInTranslator implements IMDMessageTranslator<OfHeader, List<D
     protected static final Logger LOG = LoggerFactory
             .getLogger(PacketInTranslator.class);
     @Override
-    public List<DataObject> translate(SwitchConnectionDistinguisher cookie,
-            SessionContext sc, OfHeader msg) {
+    public List<DataObject> translate(SwitchConnectionDistinguisher cookie, SessionContext sc, OfHeader msg) {
         
         List<DataObject> salPacketIn = Collections.emptyList();
         
@@ -94,14 +94,15 @@ public class PacketInTranslator implements IMDMessageTranslator<OfHeader, List<D
                    LOG.warn("Received packet_in, but couldn't find an input port");
                } else {
                    LOG.trace("Received packet_in from {} on port {}", dpid, port);
-                   
-                   Match match = MatchConvertorImpl.fromOFMatchToSALMatch(message.getMatch(),dpid);
+
+                   OpenflowVersion ofVersion = OpenflowVersion.get(sc.getPrimaryConductor().getVersion());
+                   Match match = MatchConvertorImpl.fromOFMatchToSALMatch(message.getMatch(),dpid, ofVersion);
                    MatchBuilder matchBuilder = new MatchBuilder(match);
                    pktInBuilder.setMatch(matchBuilder.build());
                    
                    pktInBuilder.setPacketInReason(PacketInUtil.getMdSalPacketInReason(message.getReason()));
                    pktInBuilder.setTableId(new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableId(message.getTableId().getValue().shortValue()));
-                   pktInBuilder.setIngress(InventoryDataServiceUtil.nodeConnectorRefFromDatapathIdPortno(dpid,port));
+                   pktInBuilder.setIngress(InventoryDataServiceUtil.nodeConnectorRefFromDatapathIdPortno(dpid, port, ofVersion));
                    PacketReceived pktInEvent = pktInBuilder.build();
                    salPacketIn = new CopyOnWriteArrayList<DataObject>();
                    salPacketIn.add(pktInEvent);

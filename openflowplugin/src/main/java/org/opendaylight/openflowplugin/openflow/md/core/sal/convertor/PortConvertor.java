@@ -9,6 +9,8 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
+import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
+import org.opendaylight.openflowplugin.openflow.md.util.OpenflowVersion;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortConfigV10;
@@ -52,7 +54,8 @@ public final class PortConvertor {
 
         PortModInputBuilder portModInputBuilder = new PortModInputBuilder();
         portModInputBuilder.setAdvertise(getPortFeatures(source.getAdvertisedFeatures()));
-        portModInputBuilder.setPortNo(new PortNumber(source.getPortNumber()));
+        portModInputBuilder.setPortNo(new PortNumber(
+                OpenflowPortsUtil.getProtocolPortNumber(OpenflowVersion.get(version), source.getPortNumber())));
 
         portModInputBuilder.setConfig(config);
         portModInputBuilder.setMask(config);
@@ -119,13 +122,16 @@ public final class PortConvertor {
      * @return OF:Ports
      */
     public static Ports toPortDesc(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.FlowCapablePort source) {
+            org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.FlowCapablePort source,
+            short version) {
 
         PortConfig config = null;
         PortState portState = null;
 
         PortsBuilder OFPortDescDataBuilder = new PortsBuilder();
-        OFPortDescDataBuilder.setPortNo(source.getPortNumber()); // portNO
+
+        OFPortDescDataBuilder.setPortNo(
+                OpenflowPortsUtil.getProtocolPortNumber(OpenflowVersion.get(version), source.getPortNumber())); // portNO
 
         OFPortDescDataBuilder.setHwAddr(source.getHardwareAddress());
         OFPortDescDataBuilder.setName(source.getName());

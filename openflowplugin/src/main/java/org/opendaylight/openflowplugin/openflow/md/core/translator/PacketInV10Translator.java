@@ -7,15 +7,11 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.translator;
 
-import java.math.BigInteger;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
+import org.opendaylight.openflowplugin.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.util.PacketInUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
@@ -25,6 +21,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.Pa
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.math.BigInteger;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * translates packetIn from OF-API model to MD-SAL model, supports OF-1.0
@@ -68,7 +69,8 @@ public class PacketInV10Translator implements IMDMessageTranslator<OfHeader, Lis
                 } else {
                     LOG.trace("Received packet_in from {} on port {}", dpid, port);
                     pktInBuilder.setPacketInReason(PacketInUtil.getMdSalPacketInReason(message.getReason()));
-                    pktInBuilder.setIngress(InventoryDataServiceUtil.nodeConnectorRefFromDatapathIdPortno(dpid, port));
+                    pktInBuilder.setIngress(InventoryDataServiceUtil.nodeConnectorRefFromDatapathIdPortno(dpid, port,
+                            OpenflowVersion.get(sc.getPrimaryConductor().getVersion())));
                     PacketReceived pktInEvent = pktInBuilder.build();
                     salPacketIn = new CopyOnWriteArrayList<DataObject>();
                     salPacketIn.add(pktInEvent);
