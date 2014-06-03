@@ -156,10 +156,10 @@ public class DropTestRpcSender implements PacketProcessingListener {
 
             fb.setPriority(4);
             fb.setBufferId(0L);
-            final BigInteger value = new BigInteger("10", 10);
+            final BigInteger value = BigInteger.valueOf(10);
             fb.setCookie(new FlowCookie(value));
             fb.setCookieMask(new FlowCookie(value));
-            fb.setTableId(Short.valueOf(((short) 0)));
+            fb.setTableId((short) 0);
             fb.setHardTimeout(300);
             fb.setIdleTimeout(240);
             fb.setFlags(new FlowModFlags(false, false, false, false, false));

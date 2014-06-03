@@ -7,13 +7,29 @@
  */
 package org.opendaylight.openflowplugin.droptest;
 
+import com.google.common.base.Preconditions;
+import com.google.common.primitives.UnsignedBytes;
+
 public class DropTestUtils {
-    public static String macToString(byte[] mac) {
-        StringBuilder b = new StringBuilder();
-        for (int i = 0; i < mac.length; i++) {
-            b.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? ":" : ""));
+    private static final char[] HEX = "0123456789ABCDEF".toCharArray();
+
+    private static final void appendByte(final StringBuilder sb, final byte b) {
+        int v = UnsignedBytes.toInt(b);
+        sb.append(HEX[v >> 4]);
+        sb.append(HEX[v & 15]);
+    }
+
+    public static String macToString(final byte[] mac) {
+        Preconditions.checkArgument(mac.length == 6);
+
+        final StringBuilder sb = new StringBuilder(17);
+        appendByte(sb, mac[0]);
+
+        for (int i = 1; i < mac.length; i++) {
+            sb.append(':');
+            appendByte(sb, mac[i]);
         }
 
-        return b.toString();
+        return sb.toString();
     }
 }
