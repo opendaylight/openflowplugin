@@ -15,7 +15,7 @@ public class DropTestUtils {
 
     private static final void appendByte(final StringBuilder sb, final byte b) {
         int v = UnsignedBytes.toInt(b);
-        sb.append(HEX[v >> 4]);
+        sb.append(HEX[v >>> 4]);
         sb.append(HEX[v & 15]);
     }
 
