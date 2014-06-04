@@ -38,18 +38,18 @@ public class OutputTestCommandProvider implements CommandProvider {
     private boolean sessionInitiated = false;
     private static Logger LOG = LoggerFactory.getLogger(OutputTestCommandProvider.class);
 
-    public OutputTestCommandProvider(BundleContext ctx) {
+    public OutputTestCommandProvider(final BundleContext ctx) {
         this.ctx = ctx;
     }
 
-    public void onSessionInitiated(ProviderContext session) {
+    public void onSessionInitiated(final ProviderContext session) {
         pc = session;
         packetProcessingService = session.getRpcService(PacketProcessingService.class);
         ctx.registerService(CommandProvider.class.getName(), this, null);
         this.sessionInitiated = true;
     }
 
-    public void _sendOutputMsg(CommandInterpreter ci) {
+    public void _sendOutputMsg(final CommandInterpreter ci) {
         /* Sending package OUT */
         LOG.debug("SendOutMsg");
         if (sessionInitiated) {
@@ -69,7 +69,7 @@ public class OutputTestCommandProvider implements CommandProvider {
         }
     }
 
-    public void _sendPacketOutputMsg(CommandInterpreter ci) {
+    public void _sendPacketOutputMsg(final CommandInterpreter ci) {
         /* Sending package OUT with action */
         LOG.debug("SendOutMsgWithAction");
         if (sessionInitiated) {
@@ -98,8 +98,7 @@ public class OutputTestCommandProvider implements CommandProvider {
             boolean _while = _lessThan;
             while (_while) {
                 {
-                    Byte _byte = new Byte("0");
-                    list.add(_byte);
+                    list.add((byte)0);
                     int _plus = (index + 1);
                     index = _plus;
                 }
@@ -125,7 +124,7 @@ public class OutputTestCommandProvider implements CommandProvider {
             ActionBuilder ab = new ActionBuilder();
 
             OutputActionBuilder output = new OutputActionBuilder();
-            output.setMaxLength(new Integer(0xffff));
+            output.setMaxLength(Integer.valueOf(0xffff));
             Uri value = new Uri(OutputPortValues.CONTROLLER.toString());
             output.setOutputNodeConnector(value);
             ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
@@ -139,7 +138,7 @@ public class OutputTestCommandProvider implements CommandProvider {
             packet_out.setNode(ref);
             packet_out.setIngress(nIngressConRef);
             packet_out.setEgress(nEngressConRef);
-            packet_out.setBufferId(new Long(0xffffffffL));
+            packet_out.setBufferId(Long.valueOf(0xffffffffL));
 
             packetProcessingService.transmitPacket(packet_out.build());
         } else {
@@ -147,7 +146,7 @@ public class OutputTestCommandProvider implements CommandProvider {
         }
     }
 
-    public void _sendOutTopologyMsg(CommandInterpreter ci) {
+    public void _sendOutTopologyMsg(final CommandInterpreter ci) {
         /* Sending package OUT */
         LOG.debug("SendOutTopologyMsg");
 
