@@ -33,6 +33,25 @@ import com.google.common.base.Preconditions;
 public class DropTestCommiter extends AbstractDropTest {
     private final static Logger LOG = LoggerFactory.getLogger(DropTestProvider.class);
 
+    private static final ThreadLocal<FlowBuilder> BUILDER = new ThreadLocal<FlowBuilder>() {
+        @Override
+        protected FlowBuilder initialValue() {
+            final FlowBuilder fb = new FlowBuilder();
+
+            fb.setPriority(4);
+            fb.setBufferId(0L);
+            final FlowCookie cookie = new FlowCookie(BigInteger.valueOf(10));
+            fb.setCookie(cookie);
+            fb.setCookieMask(cookie);
+
+            fb.setTableId((short) 0);
+            fb.setHardTimeout(300);
+            fb.setIdleTimeout(240);
+            fb.setFlags(new FlowModFlags(false, false, false, false, false));
+            return fb;
+        }
+    };
+
     private final DropTestProvider manager;
 
     public DropTestCommiter(final DropTestProvider manager) {
@@ -43,25 +62,15 @@ public class DropTestCommiter extends AbstractDropTest {
     protected void processPacket(final NodeKey node, final Match match, final Instructions instructions) {
 
         // Finally build our flow
-        final FlowBuilder fb = new FlowBuilder();
+        final FlowBuilder fb = BUILDER.get();
         fb.setMatch(match);
         fb.setInstructions(instructions);
-        fb.setId(new FlowId(Long.toString(fb.hashCode())));
-        fb.setPriority(4);
-        fb.setBufferId(0L);
-        final BigInteger value = new BigInteger("10", 10);
-        fb.setCookie(new FlowCookie(value));
-        fb.setCookieMask(new FlowCookie(value));
-
-        fb.setTableId(Short.valueOf(((short) 0)));
-        fb.setHardTimeout(300);
-        fb.setIdleTimeout(240);
-        fb.setFlags(new FlowModFlags(false, false, false, false, false));
+        fb.setId(new FlowId(String.valueOf(fb.hashCode())));
 
         // Construct the flow instance id
         final InstanceIdentifier<Flow> flowInstanceId =
                 InstanceIdentifier.builder(Nodes.class) // File under nodes
-                        .child(Node.class, node) // A particular node indentified by nodeKey
+                        .child(Node.class, node) // A particular node identified by nodeKey
                         .augmentation(FlowCapableNode.class) // That is flow capable, only FlowCapableNodes have tables
                         .child(Table.class, new TableKey((short) 0)) // In the table identified by TableKey
                         .child(Flow.class, new FlowKey(fb.getId())) // A flow identified by flowKey
@@ -70,9 +79,9 @@ public class DropTestCommiter extends AbstractDropTest {
         final Flow flow = fb.build();
         final DataModificationTransaction transaction = manager.getDataService().beginTransaction();
 
-        // LOG.debug("onPacketReceived - About to write flow - " + flow);
+        LOG.debug("onPacketReceived - About to write flow {}", flow);
         transaction.putConfigurationData(flowInstanceId, flow);
         transaction.commit();
-        // LOG.debug("onPacketReceived - About to write flow commited");
+        LOG.debug("onPacketReceived - About to write flow commited");
     }
 }
