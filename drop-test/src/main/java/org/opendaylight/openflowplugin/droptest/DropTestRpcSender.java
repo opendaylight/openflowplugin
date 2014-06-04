@@ -32,11 +32,31 @@ public class DropTestRpcSender extends AbstractDropTest {
         this.flowService = flowService;
     }
 
+    private static final ThreadLocal<AddFlowInputBuilder> BUILDER = new ThreadLocal<AddFlowInputBuilder>() {
+        @Override
+        protected AddFlowInputBuilder initialValue() {
+            final AddFlowInputBuilder fb = new AddFlowInputBuilder();
+
+            fb.setPriority(4);
+            fb.setBufferId(0L);
+
+            final FlowCookie cookie = new FlowCookie(BigInteger.valueOf(10));
+            fb.setCookie(cookie);
+            fb.setCookieMask(cookie);
+            fb.setTableId((short) 0);
+            fb.setHardTimeout(300);
+            fb.setIdleTimeout(240);
+            fb.setFlags(new FlowModFlags(false, false, false, false, false));
+
+            return fb;
+        }
+    };
+
     @Override
     protected void processPacket(final NodeKey node, final Match match, final Instructions instructions) {
+        final AddFlowInputBuilder fb = BUILDER.get();
 
         // Finally build our flow
-        final AddFlowInputBuilder fb = new AddFlowInputBuilder();
         fb.setMatch(match);
         fb.setInstructions(instructions);
         //fb.setId(new FlowId(Long.toString(fb.hashCode)));
@@ -46,16 +66,6 @@ public class DropTestRpcSender extends AbstractDropTest {
                 .builder(Nodes.class) // File under nodes
                 .child(Node.class, node).toInstance(); // A particular node identified by nodeKey
         fb.setNode(new NodeRef(flowInstanceId));
-
-        fb.setPriority(4);
-        fb.setBufferId(0L);
-        final BigInteger value = BigInteger.valueOf(10);
-        fb.setCookie(new FlowCookie(value));
-        fb.setCookieMask(new FlowCookie(value));
-        fb.setTableId((short) 0);
-        fb.setHardTimeout(300);
-        fb.setIdleTimeout(240);
-        fb.setFlags(new FlowModFlags(false, false, false, false, false));
 
         // Add flow
         flowService.addFlow(fb.build());
