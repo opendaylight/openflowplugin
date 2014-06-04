@@ -54,7 +54,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.Tr
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
-@SuppressWarnings("all")
 public class OutputTestUtil {
 
     private OutputTestUtil() {
@@ -73,7 +72,7 @@ public class OutputTestUtil {
         }
 
         while (index < 8) {
-            list.add(new Byte("0"));
+            list.add((byte)0);
             index++;
         }
         NodeRef ref = createNodeRef(nodeId);
@@ -83,7 +82,7 @@ public class OutputTestUtil {
 
         TransmitPacketInputBuilder tPackBuilder = new TransmitPacketInputBuilder();
 
-        final ArrayList<Byte> _converted_list = (ArrayList<Byte>) list;
+        final ArrayList<Byte> _converted_list = list;
         byte[] _primitive = ArrayUtils.toPrimitive(_converted_list.toArray(new Byte[0]));
         tPackBuilder.setPayload(_primitive);
 
@@ -135,7 +134,7 @@ public class OutputTestUtil {
     }
 
     public static NodeConnectorRef createNodeConnRef(final String nodeId, final String port) {
-        StringBuilder sBuild = new StringBuilder(nodeId).append(":").append(port);
+        StringBuilder sBuild = new StringBuilder(nodeId).append(':').append(port);
         NodeConnectorId _nodeConnectorId = new NodeConnectorId(sBuild.toString());
 
         NodeConnectorKey nConKey = new NodeConnectorKey(new NodeConnectorId(sBuild.toString()));
@@ -164,7 +163,7 @@ public class OutputTestUtil {
         FlowKey key = new FlowKey(new FlowId(Long.toString(flowId)));
         fBuild.setBarrier(false);
         // flow.setBufferId(new Long(12));
-        BigInteger value = new BigInteger("10", 10);
+        final BigInteger value = BigInteger.valueOf(10);
         fBuild.setCookie(new FlowCookie(value));
         fBuild.setCookieMask(new FlowCookie(value));
         fBuild.setHardTimeout(0);
@@ -175,7 +174,7 @@ public class OutputTestUtil {
         fBuild.setFlags(new FlowModFlags(false, false, false, false, false));
         fBuild.setId(new FlowId("12"));
         fBuild.setTableId(checkTableId(tableId));
-        fBuild.setOutGroup(new Long(2));
+        fBuild.setOutGroup(2L);
         fBuild.setOutPort(value);
 
         fBuild.setKey(key);
@@ -213,7 +212,7 @@ public class OutputTestUtil {
         try {
             return Short.parseShort(tableId);
         } catch (Exception ex) {
-            return Short.parseShort("2");
+            return 2;
         }
     }
 }
