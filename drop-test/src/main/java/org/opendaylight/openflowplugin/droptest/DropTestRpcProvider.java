@@ -40,25 +40,26 @@ public class DropTestRpcProvider implements AutoCloseable {
     }
 
     public void start() {
-        this.commiter = new DropTestRpcSender(this, this.getFlowService());;
+        this.commiter = new DropTestRpcSender(this.getFlowService());
         this.listenerRegistration = this.getNotificationService().registerNotificationListener(this.commiter);
         LOG.debug("DropTestProvider Started.");
     }
-    
+
     public DropTestStats getStats() {
-    	if(this.commiter != null) {
-    		return this.commiter.getStats();
-    	} else {
-        	return new DropTestStats("Not initialized yet."); 		
-    	}
-    }
-    
-    public void clearStats() {
-    	if(this.commiter != null) {
-    		this.commiter.clearStats();
-    	}
+        if(this.commiter != null) {
+            return this.commiter.getStats();
+        } else {
+            return new DropTestStats("Not initialized yet.");
+        }
     }
 
+    public void clearStats() {
+        if(this.commiter != null) {
+            this.commiter.clearStats();
+        }
+    }
+
+    @Override
     public void close() {
         try {
             LOG.debug("DropTestProvider stopped.");
