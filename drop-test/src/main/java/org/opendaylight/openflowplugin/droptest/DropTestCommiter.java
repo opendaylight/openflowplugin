@@ -7,14 +7,9 @@
  */
 package org.opendaylight.openflowplugin.droptest;
 
-import org.apache.commons.codec.binary.Hex;
+import java.math.BigInteger;
+
 import org.opendaylight.controller.sal.binding.api.data.DataModificationTransaction;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DropActionCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.drop.action._case.DropAction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.drop.action._case.DropActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
@@ -24,124 +19,33 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.InstructionsBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.apply.actions._case.ApplyActionsBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Instructions;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetSourceBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatchBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingListener;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Arrays;
+import com.google.common.base.Preconditions;
 
-@SuppressWarnings("all")
-public class DropTestCommiter implements PacketProcessingListener {
+public class DropTestCommiter extends AbstractDropTest {
     private final static Logger LOG = LoggerFactory.getLogger(DropTestProvider.class);
 
-    private final DropTestProvider _manager;
-
-    private int _sent;
-    private int _rcvd;
-    
-    public DropTestStats getStats(){
-    	return new DropTestStats(this._sent, this._rcvd);
-    }
-    
-    public void clearStats(){
-    	this._sent = 0;
-    	this._rcvd = 0;
-   }
-
-    public DropTestProvider getManager() {
-        return this._manager;
-    }
+    private final DropTestProvider manager;
 
     public DropTestCommiter(final DropTestProvider manager) {
-        this._manager = manager;
+        this.manager = Preconditions.checkNotNull(manager);
     }
 
-    public void onPacketReceived(final PacketReceived notification) {
-        // LOG.debug("onPacketReceived - Entering - " + notification);
-
-    	synchronized(this) {
-    		this._rcvd++;
-    	}
-    	
-       // Get the Ingress nodeConnectorRef
-        final NodeConnectorRef ncr = notification.getIngress();
-
-        // Get the instance identifier for the nodeConnectorRef
-        final InstanceIdentifier<NodeConnector> ncri = (InstanceIdentifier<NodeConnector>) ncr.getValue();
-
-        final NodeConnectorKey ncKey = InstanceIdentifier.<NodeConnector, NodeConnectorKey>keyOf(ncri);
-
-        // Get the instanceID for the Node in the tree above us
-        final InstanceIdentifier<Node> nodeInstanceId = ncri.<Node>firstIdentifierOf(Node.class);
-        final NodeKey nodeKey = InstanceIdentifier.<Node, NodeKey>keyOf(nodeInstanceId);
-        final byte[] rawPacket = notification.getPayload();
-
-        // LOG.debug("onPacketReceived - received Packet on Node {} and NodeConnector {} payload {}",
-        //        nodeKey.getId(), ncKey.getId(), Hex.encodeHexString(rawPacket));
-
-        final byte[] srcMac = Arrays.copyOfRange(rawPacket, 6, 12);
-
-        //LOG.debug("onPacketReceived - received Packet on Node {} and NodeConnector {} srcMac {}",
-        //        nodeKey.getId(), ncKey.getId(), Hex.encodeHexString(srcMac));
-
-        final MatchBuilder match = new MatchBuilder();
-        final EthernetMatchBuilder ethernetMatch = new EthernetMatchBuilder();
-        final EthernetSourceBuilder ethSourceBuilder = new EthernetSourceBuilder();
-
-        //TODO: use HEX, use binary form
-        //Hex.decodeHex("000000000001".toCharArray());
-
-        ethSourceBuilder.setAddress(new MacAddress(DropTestUtils.macToString(srcMac)));
-        ethernetMatch.setEthernetSource(ethSourceBuilder.build());
-        match.setEthernetMatch(ethernetMatch.build());
-
-        final DropActionBuilder dab = new DropActionBuilder();
-        final DropAction dropAction = dab.build();
-        final ActionBuilder ab = new ActionBuilder();
-        ab.setOrder(0);
-        ab.setAction(new DropActionCaseBuilder().setDropAction(dropAction).build());
-
-        // Add our drop action to a list
-        final ArrayList<Action> actionList = new ArrayList<Action>();
-        actionList.add(ab.build());
-
-        // Create an Apply Action
-        final ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        // Wrap our Apply Action in an Instruction
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.setOrder(0);
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final ArrayList<Instruction> instructions = new ArrayList<Instruction>();
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
+    @Override
+    protected void processPacket(final NodeKey node, final Match match, final Instructions instructions) {
 
         // Finally build our flow
         final FlowBuilder fb = new FlowBuilder();
-        fb.setMatch(match.build());
-        fb.setInstructions(isb.build());
+        fb.setMatch(match);
+        fb.setInstructions(instructions);
         fb.setId(new FlowId(Long.toString(fb.hashCode())));
         fb.setPriority(4);
         fb.setBufferId(0L);
@@ -157,22 +61,18 @@ public class DropTestCommiter implements PacketProcessingListener {
         // Construct the flow instance id
         final InstanceIdentifier<Flow> flowInstanceId =
                 InstanceIdentifier.builder(Nodes.class) // File under nodes
-                        .child(Node.class, nodeKey) // A particular node indentified by nodeKey
+                        .child(Node.class, node) // A particular node indentified by nodeKey
                         .augmentation(FlowCapableNode.class) // That is flow capable, only FlowCapableNodes have tables
-                        .child(Table.class, new TableKey(new Short(((short) 0)))) // In the table identified by TableKey
+                        .child(Table.class, new TableKey((short) 0)) // In the table identified by TableKey
                         .child(Flow.class, new FlowKey(fb.getId())) // A flow identified by flowKey
                         .build();
 
         final Flow flow = fb.build();
-        final DataModificationTransaction transaction = this._manager.getDataService().beginTransaction();
+        final DataModificationTransaction transaction = manager.getDataService().beginTransaction();
 
         // LOG.debug("onPacketReceived - About to write flow - " + flow);
         transaction.putConfigurationData(flowInstanceId, flow);
         transaction.commit();
         // LOG.debug("onPacketReceived - About to write flow commited");
-    	synchronized(this) {
-    		this._sent++;
-    	}
-
     }
 }
