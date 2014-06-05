@@ -171,6 +171,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6MatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.TunnelIpv4MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.SctpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.TcpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.UdpMatchBuilder;
@@ -670,6 +671,16 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
             id += 84;
             flow.setMatch(createVlanMatch().build()); // match vlan=10,dl_vlan_pcp=3
             flow.setInstructions(createAppyActionInstruction88().build()); // vlan_pcp=4
+            break;
+        case "f85":
+            id += 85; // Test Tunnel IPv4 Src (e.g. set_field:172.16.100.200->tun_src)
+            flow.setMatch(createMatch3().build());
+            flow.setInstructions(createTunnelIpv4SrcInstructions().build());
+            break;
+        case "f86":
+            id += 86; // Test Tunnel IPv4 Dst (e.g. set_field:172.16.100.100->tun_dst)
+            flow.setMatch(createMatch1().build());
+            flow.setInstructions(createTunnelIpv4DstInstructions().build());
             break;
         default:
             LOG.warn("flow type not understood: {}", flowType);
@@ -2664,6 +2675,70 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         ib.setKey(new InstructionKey(0));
         ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
 
+        // Put our Instruction in a list of Instructions
+        InstructionsBuilder isb = new InstructionsBuilder();
+        List<Instruction> instructions = new ArrayList<Instruction>();
+        instructions.add(ib.build());
+        isb.setInstruction(instructions);
+        return isb;
+    }
+
+    private static InstructionsBuilder createTunnelIpv4DstInstructions() {
+
+        List<Action> actionList = new ArrayList<Action>();
+        ActionBuilder ab = new ActionBuilder();
+        // Build the tunnel endpoint destination IPv4 address
+        SetFieldBuilder setFieldBuilder = new SetFieldBuilder();
+        Ipv4Prefix dstIp = new Ipv4Prefix("172.16.100.100");
+        // Add the mew IPv4 object as the tunnel destination
+        TunnelIpv4MatchBuilder tunnelIpv4DstMatchBuilder = new TunnelIpv4MatchBuilder();
+        tunnelIpv4DstMatchBuilder.setTunnelIpv4Destination(dstIp);
+        setFieldBuilder.setLayer3Match(tunnelIpv4DstMatchBuilder.build());
+        // Add the IPv4 tunnel dst to the set_field value
+        ab.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder.build()).build());
+        ab.setOrder(0);
+        ab.setKey(new ActionKey(0));
+        actionList.add(ab.build());
+        // Resulting action is a per/flow src TEP (set_field:172.16.100.100->tun_dst)
+        ApplyActionsBuilder aab = new ApplyActionsBuilder();
+        aab.setAction(actionList);
+        // Add the action to the ordered list of Instructions
+        InstructionBuilder ib = new InstructionBuilder();
+        ib.setOrder(0);
+        ib.setKey(new InstructionKey(0));
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
+        // Add the Instruction in a list of Instructions
+        InstructionsBuilder isb = new InstructionsBuilder();
+        List<Instruction> instructions = new ArrayList<Instruction>();
+        instructions.add(ib.build());
+        isb.setInstruction(instructions);
+        return isb;
+    }
+
+    private static InstructionsBuilder createTunnelIpv4SrcInstructions() {
+
+        List<Action> actionList = new ArrayList<Action>();
+        ActionBuilder ab = new ActionBuilder();
+        // Build the tunnel endpoint source IPv4 address
+        SetFieldBuilder setFieldBuilder = new SetFieldBuilder();
+        Ipv4Prefix dstIp = new Ipv4Prefix("172.16.100.200");
+        // Add the new IPv4 object as the tunnel destination
+        TunnelIpv4MatchBuilder tunnelIpv4MatchBuilder = new TunnelIpv4MatchBuilder();
+        tunnelIpv4MatchBuilder.setTunnelIpv4Source(dstIp);
+        setFieldBuilder.setLayer3Match(tunnelIpv4MatchBuilder.build());
+        // Add the IPv4 tunnel src to the set_field value
+        ab.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder.build()).build());
+        ab.setOrder(0);
+        ab.setKey(new ActionKey(0));
+        actionList.add(ab.build());
+        // Resulting action is a per/flow src TEP (set_field:172.16.100.100->tun_src)
+        ApplyActionsBuilder aab = new ApplyActionsBuilder();
+        aab.setAction(actionList);
+        // Add the action to the ordered list of Instructions
+        InstructionBuilder ib = new InstructionBuilder();
+        ib.setOrder(0);
+        ib.setKey(new InstructionKey(0));
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
         List<Instruction> instructions = new ArrayList<Instruction>();
