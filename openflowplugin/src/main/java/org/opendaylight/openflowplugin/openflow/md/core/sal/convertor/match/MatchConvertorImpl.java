@@ -68,6 +68,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6MatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.TunnelIpv4Match;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.TunnelIpv4MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.SctpMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.SctpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.TcpMatch;
@@ -124,7 +126,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.TcMatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.TcMatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.TcpFlagMatchEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.TcpFlagMatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.VlanPcpMatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.VlanPcpMatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.VlanVidMatchEntry;
@@ -164,7 +165,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Meta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.MplsBos;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.MplsLabel;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.MplsTc;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Nxm1Class;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.OpenflowBasicClass;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.PbbIsid;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.SctpDst;
@@ -173,6 +173,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TcpD
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TcpFlag;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TcpSrc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TunnelId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TunnelIpv4Dst;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TunnelIpv4Src;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.UdpDst;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.UdpSrc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.VlanPcp;
@@ -330,6 +332,15 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
                 if (ipv4Match.getIpv4Destination() != null) {
                     matchEntriesList.add(toOfIpv4Prefix(Ipv4Dst.class, ipv4Match.getIpv4Destination()));
                 }
+            }
+            if (layer3Match instanceof TunnelIpv4Match) {
+                TunnelIpv4Match tunnelIpv4Src = (TunnelIpv4Match) layer3Match;
+                if (tunnelIpv4Src.getTunnelIpv4Source() != null) {
+                    matchEntriesList.add(NxmExtensionsConvertor.toNxmIpv4Tunnel(TunnelIpv4Src.class, tunnelIpv4Src.getTunnelIpv4Source()));
+                }
+                if (tunnelIpv4Src.getTunnelIpv4Destination() != null) {
+                    matchEntriesList.add(NxmExtensionsConvertor.toNxmIpv4Tunnel(TunnelIpv4Dst.class, tunnelIpv4Src.getTunnelIpv4Destination()));
+                }
             } else if (layer3Match instanceof ArpMatch) {
                 ArpMatch arpMatch = (ArpMatch) layer3Match;
                 if (arpMatch.getArpOp() != null) {
@@ -409,10 +420,11 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
         }
 
         //FIXME: move to extensible support
+        // TODO: Move to seperate bundle as soon as OF extensibility is supported by ofplugin/java
         TcpFlagMatch tcpFlagMatch = match.getTcpFlagMatch();
         if (tcpFlagMatch != null) {
             if (tcpFlagMatch.getTcpFlag() != null) {
-                matchEntriesList.add(toOfTcpFlag(tcpFlagMatch.getTcpFlag()));
+                matchEntriesList.add(NxmExtensionsConvertor.toNxmTcpFlag(tcpFlagMatch.getTcpFlag()));
             }
         }
 
@@ -578,6 +590,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
         Ipv6MatchBuilder ipv6MatchBuilder = new Ipv6MatchBuilder();
         ProtocolMatchFieldsBuilder protocolMatchFieldsBuilder = new ProtocolMatchFieldsBuilder();
         TcpFlagMatchBuilder tcpFlagMatchBuilder = new TcpFlagMatchBuilder();
+        TunnelIpv4MatchBuilder tunnelIpv4MatchBuilder = new TunnelIpv4MatchBuilder();
 
         for (MatchEntries ofMatch : swMatchList) {
 
@@ -753,7 +766,27 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
                     }
                     matchBuilder.setLayer3Match(ipv4MatchBuilder.build());
                 }
-            } else if (ofMatch.getOxmMatchField().equals(ArpOp.class)) {
+            }
+
+            else if (ofMatch.getOxmMatchField().equals(TunnelIpv4Dst.class)
+                    || ofMatch.getOxmMatchField().equals(TunnelIpv4Src.class)) {
+                Ipv4AddressMatchEntry ipv4AddressMatchEntry = ofMatch.getAugmentation(Ipv4AddressMatchEntry.class);
+                if (ipv4AddressMatchEntry != null) {
+                    String ipv4PrefixStr = ipv4AddressMatchEntry.getIpv4Address().getValue();
+                    MaskMatchEntry maskMatchEntry = ofMatch.getAugmentation(MaskMatchEntry.class);
+                    if (maskMatchEntry != null) {
+                        ipv4PrefixStr += PREFIX_SEPARATOR + ByteBuffer.wrap(maskMatchEntry.getMask()).getInt();
+                    }
+                    if (ofMatch.getOxmMatchField().equals(TunnelIpv4Dst.class)) {
+                        tunnelIpv4MatchBuilder.setTunnelIpv4Destination(new Ipv4Prefix(ipv4PrefixStr));
+                    }
+                    if (ofMatch.getOxmMatchField().equals(TunnelIpv4Src.class)) {
+                        tunnelIpv4MatchBuilder.setTunnelIpv4Source(new Ipv4Prefix(ipv4PrefixStr));
+                    }
+                    matchBuilder.setLayer3Match(tunnelIpv4MatchBuilder.build());
+                }
+            }
+            else if (ofMatch.getOxmMatchField().equals(ArpOp.class)) {
                 OpCodeMatchEntry opCodeMatchEntry = ofMatch.getAugmentation(OpCodeMatchEntry.class);
                 if (opCodeMatchEntry != null) {
                     arpMatchBuilder.setArpOp(opCodeMatchEntry.getOpCode());
@@ -1236,18 +1269,6 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
         ipv6AddressBuilder.setIpv6Address(address);
         matchEntriesBuilder.addAugmentation(Ipv6AddressMatchEntry.class, ipv6AddressBuilder.build());
         return matchEntriesBuilder.build();
-    }
-
-    //FIXME: move to extensible support
-    private static MatchEntries toOfTcpFlag(Integer tcpFlag) {
-        MatchEntriesBuilder matchBuilder = new MatchEntriesBuilder();
-        matchBuilder.setOxmClass(Nxm1Class.class);
-        matchBuilder.setHasMask(false);
-        matchBuilder.setOxmMatchField(TcpFlag.class);
-        TcpFlagMatchEntryBuilder tcpFlagBuilder = new TcpFlagMatchEntryBuilder();
-        tcpFlagBuilder.setTcpFlag(tcpFlag);
-        matchBuilder.addAugmentation(TcpFlagMatchEntry.class, tcpFlagBuilder.build());
-        return matchBuilder.build();
     }
 
     private static void addMaskAugmentation(final MatchEntriesBuilder builder, final byte[] mask) {
