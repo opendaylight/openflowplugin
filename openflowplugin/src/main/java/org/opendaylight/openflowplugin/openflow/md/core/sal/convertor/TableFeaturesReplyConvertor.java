@@ -81,6 +81,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TcpD
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TcpFlag;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TcpSrc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TunnelId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TunnelIpv4Dst;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TunnelIpv4Src;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.UdpDst;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.UdpSrc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.VlanPcp;
@@ -474,9 +476,15 @@ public class TableFeaturesReplyConvertor {
                 salMatchField = org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.VlanPcp.class;
             } else if (ofMatchField.equals(VlanVid.class)) {
                 salMatchField = org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.VlanVid.class;
-            } else if (ofMatchField.equals(TcpFlag.class)) {
+            }
+            // TODO: Move to seperate bundle as soon as extensions are supported in openflowplugin/java
+            else if (ofMatchField.equals(TcpFlag.class)) {
                 //FIXME: move to extensible support
                 salMatchField = org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TcpFlag.class;
+            } else if (ofMatchField.equals(TunnelIpv4Dst.class)) {
+                salMatchField = org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TunnelIpv4Dst.class;
+            } else if (ofMatchField.equals(TunnelIpv4Src.class)) {
+                salMatchField = org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TunnelIpv4Src.class;
             }
 
             setFieldMatchBuilder.setMatchType(salMatchField);
