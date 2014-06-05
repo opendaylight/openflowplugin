@@ -88,6 +88,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TcpD
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TcpFlag;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TcpSrc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TunnelId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TunnelIpv4Dst;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TunnelIpv4Src;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.UdpDst;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.UdpSrc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.VlanPcp;
@@ -542,8 +544,16 @@ public class TableFeaturesConvertor {
                 setMatchEntry(matchEntryBuilder, VlanVid.class, currMatch.isHasMask());
             } else if (currMatchType
                     .equals(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TcpFlag.class)) {
+
                 //FIXME: move to extensible support
+                // TODO: Move to seperate bundle as soon as extensions are supported
                 setMatchEntry(matchEntryBuilder, TcpFlag.class, currMatch.isHasMask());
+            } else if (currMatchType
+                    .equals(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TunnelIpv4Dst.class)) {
+                setMatchEntry(matchEntryBuilder, TunnelIpv4Dst.class, currMatch.isHasMask());
+            } else if (currMatchType
+                    .equals(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TunnelIpv4Src.class)) {
+                setMatchEntry(matchEntryBuilder, TunnelIpv4Src.class, currMatch.isHasMask());
             }
             matchEntriesList.add(matchEntryBuilder.build());
         }

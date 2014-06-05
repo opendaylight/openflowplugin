@@ -123,6 +123,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Sctp
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TcpDst;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TcpSrc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TunnelId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TunnelIpv4Dst;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TunnelIpv4Src;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.UdpDst;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.UdpSrc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.VlanPcp;
@@ -364,6 +366,15 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
                         arpTha.setMask(new MacAddress(ByteUtil.bytesToHexstring(entry.getAugmentation(MaskMatchEntry.class).getMask(),":")));
                     }
                     arpMatch.setArpTargetHardwareAddress(arpTha.build());
+                }
+            } else if (field.equals(TunnelIpv4Src.class) || field.equals(TunnelIpv4Dst.class)) {
+                if (ipv4Match == null) {
+                    ipv4Match = new Ipv4MatchBuilder();
+                }
+                if (field.equals(TunnelIpv4Src.class)) {
+                    ipv4Match.setIpv4Source(toIpv4Prefix(entry));
+                } else if (field.equals(TunnelIpv4Dst.class)) {
+                    ipv4Match.setIpv4Destination(toIpv4Prefix(entry));
                 }
             } else if (field.equals(Ipv6Src.class) || field.equals(Ipv6Dst.class) || field.equals(Ipv6Flabel.class)
                     || field.equals(Ipv6NdTarget.class) || field.equals(Ipv6NdSll.class)
