@@ -40,8 +40,10 @@
       <logback.version>1.0.9</logback.version>
       <nexusproxy>http://nexus.opendaylight.org/content</nexusproxy>
       <openflowjava.version>0.5-SNAPSHOT</openflowjava.version>
+      <karaf.version>3.0.1</karaf.version>
       <controller.model.version>1.1-SNAPSHOT</controller.model.version>
       <osgi.core.version>5.0.0</osgi.core.version>
+      <mdsal.version>1.1-SNAPSHOT</mdsal.version>
       <sal.api.version>0.8.1-SNAPSHOT</sal.api.version>
       <sal.connection.api.version>0.1.2-SNAPSHOT</sal.connection.api.version>
       <netconf.parent.version>0.2.5-SNAPSHOT</netconf.parent.version>
@@ -509,5 +511,6 @@
       <module>drop-test</module>
       <module>samples/sample-consumer</module>
       <module>samples/learning-switch</module>
+      <module>features</module>
     </modules>
 </project>
