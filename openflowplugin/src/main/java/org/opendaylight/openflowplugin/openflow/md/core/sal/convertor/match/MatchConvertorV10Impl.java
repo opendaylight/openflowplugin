@@ -8,9 +8,6 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 
-import java.math.BigInteger;
-import java.util.Iterator;
-
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
@@ -28,6 +25,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.match.v10.grouping.MatchV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.match.v10.grouping.MatchV10Builder;
 
+import java.math.BigInteger;
+import java.util.Iterator;
+
 /**
  *
  */
@@ -37,6 +37,12 @@ public class MatchConvertorV10Impl implements MatchConvertor<MatchV10> {
     public static final MacAddress zeroMac = new MacAddress("00:00:00:00:00:00");
     /** default IPv4 */
     public static final Ipv4Address zeroIPv4 = new Ipv4Address("0.0.0.0");
+
+    /*
+     * The value 0xffff (OFP_VLAN_NONE) is used to indicate
+     * that no VLAN ID is set for OF Flow.
+     */
+    private static final int OFP_VLAN_NONE = (int) 0xffff;
 
     /**
      * Method builds openflow 1.0 specific match (MatchV10) from MD-SAL match.
@@ -62,7 +68,7 @@ public class MatchConvertorV10Impl implements MatchConvertor<MatchV10> {
         matchBuilder.setDlDst(zeroMac);
         matchBuilder.setDlSrc(zeroMac);
         matchBuilder.setDlType(0);
-        matchBuilder.setDlVlan(0);
+        matchBuilder.setDlVlan(OFP_VLAN_NONE);
         matchBuilder.setDlVlanPcp((short) 0);
         matchBuilder.setNwDst(zeroIPv4);
         matchBuilder.setNwDstMask((short) 0);
@@ -275,7 +281,8 @@ public class MatchConvertorV10Impl implements MatchConvertor<MatchV10> {
      */
     private static boolean convertDlVlan(final MatchV10Builder matchBuilder, final VlanMatch vlanMatch) {
         if (vlanMatch.getVlanId() != null) {
-            matchBuilder.setDlVlan(vlanMatch.getVlanId().getVlanId().getValue());
+            int vlanId = vlanMatch.getVlanId().getVlanId().getValue() ;
+            matchBuilder.setDlVlan((vlanId == 0 ? OFP_VLAN_NONE : vlanId));
             return false;
         }
         return true;
