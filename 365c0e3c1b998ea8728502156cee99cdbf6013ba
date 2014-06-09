@@ -104,6 +104,24 @@
     },
     {
       "key": {
+        "uuid": "fa82b9bf_c05ad34f",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/queue/QueueKeeperFairImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2014-06-09T12:32:38Z",
+      "side": 1,
+      "message": "I am afraid we can\u0027t - registration object is created after QueueKeeper instance.",
+      "parentUuid": "fa82b9bf_c0c65349",
+      "revId": "365c0e3c1b998ea8728502156cee99cdbf6013ba",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fa82b9bf_40e243d6",
         "filename": "openflowplugin/src/test/java/org/opendaylight/openflowplugin/openflow/md/core/session/MessageDispatchServiceImplTest.java",
         "patchSetId": 5
