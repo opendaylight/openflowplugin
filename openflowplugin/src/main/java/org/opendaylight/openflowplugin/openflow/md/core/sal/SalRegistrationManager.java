@@ -19,6 +19,10 @@ import org.opendaylight.openflowplugin.openflow.md.core.session.SessionListener;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionManager;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SwitchSessionKeyOF;
 import org.opendaylight.openflowplugin.openflow.md.lldp.LLDPSpeaker;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.reconcil.rev140616.NodeReconcilAdd;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.reconcil.rev140616.NodeReconcilAddBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.reconcil.rev140616.NodeReconcilDel;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.reconcil.rev140616.NodeReconcilDelBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeUpdatedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -49,9 +53,9 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
     private NotificationProviderService publishService;
 
     private DataProviderService dataService;
-    
-    private SwitchFeaturesUtil swFeaturesUtil;
-    
+
+    private final SwitchFeaturesUtil swFeaturesUtil;
+
     public SalRegistrationManager() {
         swFeaturesUtil = SwitchFeaturesUtil.getInstance();
     }
@@ -95,6 +99,7 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
         LOG.debug("ModelDrivenSwitch for {} registered to MD-SAL.", datapathId.toString());
 
         publishService.publish(nodeAdded(ofSwitch, features,nodeRef));
+        publishService.publish( prepareAddNodeReconciliation( nodeRef ) );
     }
 
     @Override
@@ -107,20 +112,34 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
         LLDPSpeaker.getInstance().removeModelDrivenSwitch(identifier);
         CompositeObjectRegistration<ModelDrivenSwitch> registration = context.getProviderRegistration();
         registration.close();
-        
+
         LOG.debug("ModelDrivenSwitch for {} unregistered from MD-SAL.", datapathId.toString());
+        publishService.publish( prepareDelNodeReconciliation( nodeRef ) );
         publishService.publish(nodeRemoved);
     }
 
+    private NodeReconcilAdd prepareAddNodeReconciliation( final NodeRef nodeRef ) {
+        final NodeReconcilAddBuilder nodeReconcil = new NodeReconcilAddBuilder();
+        nodeReconcil.setNodeRef( nodeRef );
+        return nodeReconcil.build();
+    }
+
+    private NodeReconcilDel prepareDelNodeReconciliation( final NodeRef nodeRef ) {
+        final NodeReconcilDelBuilder nodeReconcil = new NodeReconcilDelBuilder();
+        nodeReconcil.setNodeRef( nodeRef );
+        return nodeReconcil.build();
+    }
+
     private NodeUpdated nodeAdded(ModelDrivenSwitch sw, GetFeaturesOutput features, NodeRef nodeRef) {
+
+        FlowCapableNodeUpdatedBuilder flowCapNodeBuilder = new FlowCapableNodeUpdatedBuilder();
+        flowCapNodeBuilder.setSwitchFeatures(swFeaturesUtil.buildSwitchFeatures(features));
+
         NodeUpdatedBuilder builder = new NodeUpdatedBuilder();
         builder.setId(sw.getNodeId());
         builder.setNodeRef(nodeRef);
-        
-        FlowCapableNodeUpdatedBuilder builder2 = new FlowCapableNodeUpdatedBuilder();
-        builder2.setSwitchFeatures(swFeaturesUtil.buildSwitchFeatures(features));
-        builder.addAugmentation(FlowCapableNodeUpdated.class, builder2.build());
-        
+        builder.addAugmentation(FlowCapableNodeUpdated.class, flowCapNodeBuilder.build());
+
         return builder.build();
     }
 
@@ -149,7 +168,7 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
     public SessionManager getSessionManager() {
         return OFSessionUtil.getSessionManager();
     }
-    
+
     @Override
     public void close() {
         LOG.debug("close");
