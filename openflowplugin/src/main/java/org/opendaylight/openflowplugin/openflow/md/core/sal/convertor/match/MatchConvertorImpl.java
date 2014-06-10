@@ -460,8 +460,9 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
         }
         if (!swMatch.getWildcards().isDLVLAN().booleanValue() && swMatch.getDlVlan() != null) {
             VlanIdBuilder vlanIdBuilder = new VlanIdBuilder();
-            vlanIdBuilder.setVlanId(new org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId(swMatch
-                    .getDlVlan()));
+            int vlanId = (swMatch.getDlVlan() == ((int) 0xffff)) ? 0 : swMatch.getDlVlan();
+            vlanIdBuilder.setVlanId(new org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId(vlanId));
+            vlanIdBuilder.setVlanIdPresent(vlanId == 0 ? false: true);
             vlanMatchBuilder.setVlanId(vlanIdBuilder.build());
             matchBuilder.setVlanMatch(vlanMatchBuilder.build());
         }
