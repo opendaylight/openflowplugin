@@ -648,7 +648,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
             break;
         case "f80":
             id += 80;
-            flow.setMatch(createMatch1().build());
+            flow.setMatch(createVlanMatch().build());
             flow.setInstructions(createAppyActionInstruction88().build());
             break;
         case "f81":
@@ -665,6 +665,11 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
             id += 83; // Test TCP_Flag Match
             flow.setMatch(createTcpFlagMatch().build());
             flow.setInstructions(createDropInstructions().build());
+            break;
+        case "f84":
+            id += 84;
+            flow.setMatch(createVlanMatch().build()); // match vlan=10,dl_vlan_pcp=3
+            flow.setInstructions(createAppyActionInstruction88().build()); // vlan_pcp=4
             break;
         default:
             LOG.warn("flow type not understood: {}", flowType);
