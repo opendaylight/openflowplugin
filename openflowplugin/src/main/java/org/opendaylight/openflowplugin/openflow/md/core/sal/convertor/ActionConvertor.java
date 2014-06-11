@@ -123,7 +123,8 @@ public final class ActionConvertor {
             else if (action instanceof PushVlanActionCase)
                 ofAction = SalToOFPushVlanAction(action, actionBuilder);
             else if (action instanceof PopVlanActionCase)
-                ofAction = SalToOFPopVlan(actionBuilder);
+                ofAction = (version == OFConstants.OFP_VERSION_1_0) ? SalToOFStripVlan(actionBuilder, version)
+                        : SalToOFPopVlan(actionBuilder);
             else if (action instanceof PushMplsActionCase)
                 ofAction = SalToOFPushMplsAction(action, actionBuilder);
             else if (action instanceof PopMplsActionCase)
