@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa82b9bf_67d756ee",
+        "filename": "feature/pom.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1788
+      },
+      "writtenOn": "2014-06-12T14:35:02Z",
+      "side": 1,
+      "message": "Please add KAR packaging (see features/base) on how to do that...",
+      "revId": "8dda7b9e403f680e1ad7ce1ebe120385178bbd96",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_67c0b62a",
+        "filename": "feature/src/main/resources/features.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1788
+      },
+      "writtenOn": "2014-06-12T14:35:02Z",
+      "side": 1,
+      "message": "config-xxx should be openflowplugin-${project.version}",
+      "revId": "8dda7b9e403f680e1ad7ce1ebe120385178bbd96",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_47c5723a",
+        "filename": "feature/src/main/resources/features.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1788
+      },
+      "writtenOn": "2014-06-12T14:35:02Z",
+      "side": 1,
+      "message": "should depend on \u003cfeature version\u003d\"${mdsal.version}\"\u003eodl-mdsal-all\u003c/feature\u003e if it requires MD-SAL to run... it might only rely on subsystem but I had the impression it needed MD-SAL too..",
+      "revId": "8dda7b9e403f680e1ad7ce1ebe120385178bbd96",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_07df6a0e",
+        "filename": "pom.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 510,
+      "author": {
+        "id": 1788
+      },
+      "writtenOn": "2014-06-12T14:35:02Z",
+      "side": 1,
+      "message": "if possible features? not that it matters just is more inline with similar folders elsewhere",
+      "revId": "8dda7b9e403f680e1ad7ce1ebe120385178bbd96",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
