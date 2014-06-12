@@ -802,9 +802,10 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
                 if (ipv6AddressMatchEntry != null) {
                     String ipv6PrefixStr = ipv6AddressMatchEntry.getIpv6Address().getValue();
                     MaskMatchEntry maskMatchEntry = ofMatch.getAugmentation(MaskMatchEntry.class);
-                    if (maskMatchEntry != null) {
-                        ipv6PrefixStr += PREFIX_SEPARATOR + ByteBuffer.wrap(maskMatchEntry.getMask()).getInt();
-                    }
+
+                    ipv6PrefixStr += PREFIX_SEPARATOR
+                            + MatchConvertorUtil.ipv6NetmaskArrayToCIDRValue(maskMatchEntry.getMask());
+                        
                     if (ofMatch.getOxmMatchField().equals(Ipv6Src.class)) {
                         ipv6MatchBuilder.setIpv6Source(new Ipv6Prefix(ipv6PrefixStr));
                     }

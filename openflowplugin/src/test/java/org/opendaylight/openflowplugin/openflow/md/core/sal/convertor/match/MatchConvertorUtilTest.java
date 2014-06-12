@@ -8,9 +8,11 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 
 import java.lang.reflect.Constructor;
+import java.math.BigInteger;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.opendaylight.openflowjava.protocol.impl.util.ByteBufUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Ipv6ExthdrFlags;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,6 +63,27 @@ public class MatchConvertorUtilTest {
         Boolean[] flags = new Boolean[]{false, false, false, false, false, false, false, false, false};
         flags[trueIndex] = true;
         return flags;
+    }
+
+    /**
+     * Test method for {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchConvertorUtil#ipv6NetmaskArrayToCIDRValue(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.MaskMatchEntry)}.
+     * @throws Exception
+     */
+    @Test
+    public void testIpv6NetmaskArrayToCIDRValue() throws Exception {
+        BigInteger maskSeed = new BigInteger("1ffffffffffffffffffffffffffffffff", 16);
+        byte[] maskArray = new byte[16];
+        LOG.debug("maskSeed= {}", ByteBufUtils.bytesToHexString(maskSeed.toByteArray()));
+
+        for (int i = 0; i <= 128; i++) {
+            System.arraycopy(maskSeed.toByteArray(), 1, maskArray, 0, 16);
+            LOG.debug("maskHex[{}] = {}", i, ByteBufUtils.bytesToHexString(maskArray));
+            int cidr = MatchConvertorUtil.ipv6NetmaskArrayToCIDRValue(maskArray);
+            LOG.debug("cidr = {}", cidr);
+            Assert.assertEquals(128-i, cidr);
+
+            maskSeed = maskSeed.clearBit(i);
+        }
     }
 
 }
