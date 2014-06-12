@@ -269,7 +269,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         case "f5":
             id += 5;
             flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction().build());
+            flow.setInstructions(createApplyActionInstruction().build());
             break;
         case "f6":
             id += 6;
@@ -284,99 +284,99 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         case "f8":
             id += 8;
             flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction1().build());
+            flow.setInstructions(createApplyActionInstruction1().build());
             break;
         case "f9":
             id += 9;
             flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction2().build());
+            flow.setInstructions(createApplyActionInstruction2().build());
             break;
         case "f10":
             id += 10;
             flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction3().build());
+            flow.setInstructions(createApplyActionInstruction3().build());
             break;
         case "f11":
             id += 11;
             flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction4().build());
+            flow.setInstructions(createApplyActionInstruction4().build());
             break;
         case "f12":
             id += 12;
             flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction5().build());
+            flow.setInstructions(createApplyActionInstruction5().build());
             break;
         case "f13":
             id += 13;
             flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction6().build());
+            flow.setInstructions(createApplyActionInstruction6().build());
             break;
         case "f14":
             id += 14;
             flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction7().build());
+            flow.setInstructions(createApplyActionInstruction7().build());
             break;
         case "f15":
             id += 15;
             flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction8().build());
+            flow.setInstructions(createApplyActionInstruction8().build());
             break;
         case "f16":
             id += 16;
             flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction9().build());
+            flow.setInstructions(createApplyActionInstruction9().build());
             break;
         case "f17":
             id += 17;
             flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction10().build());
+            flow.setInstructions(createApplyActionInstruction10().build());
             break;
         case "f18":
             id += 18;
             flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction11().build());
+            flow.setInstructions(createApplyActionInstruction11().build());
             break;
         case "f19":
             id += 19;
             flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction12().build());
+            flow.setInstructions(createApplyActionInstruction12().build());
             break;
         case "f20":
             id += 20;
             flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction13().build());
+            flow.setInstructions(createApplyActionInstruction13().build());
             break;
         case "f21":
             id += 21;
             flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction14().build());
+            flow.setInstructions(createApplyActionInstruction14().build());
             break;
         case "f22":
             id += 22;
             flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction15().build());
+            flow.setInstructions(createApplyActionInstruction15().build());
             break;
         case "f23":
             id += 23;
             // f23 can be used as test-case for generating error notification
             // if the particular group is not configured - tested
             flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction16().build());
+            flow.setInstructions(createApplyActionInstruction16().build());
             break;
         case "f24":
             id += 24;
             flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction17().build());
+            flow.setInstructions(createApplyActionInstruction17().build());
             break;
         case "f25":
             id += 25;
             flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction18().build());
+            flow.setInstructions(createApplyActionInstruction18().build());
             break;
         case "f26":
             id += 26;
             flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction19().build());
+            flow.setInstructions(createApplyActionInstruction19().build());
             break;
         case "f27":
             id += 27;
@@ -386,77 +386,77 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         case "f28":
             id += 28;
             flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction20().build());
+            flow.setInstructions(createApplyActionInstruction20().build());
             break;
         case "f29":
             id += 29;
             flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction21().build());
+            flow.setInstructions(createApplyActionInstruction21().build());
             break;
         case "f30":
             id += 30;
             flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction22().build());
+            flow.setInstructions(createApplyActionInstruction22().build());
             break;
         case "f31":
             id += 31;
             flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction23(nodeBuilder.getId()).build());
+            flow.setInstructions(createApplyActionInstruction23(nodeBuilder.getId()).build());
             break;
         case "f32":
             id += 32;
             flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction24().build());
+            flow.setInstructions(createApplyActionInstruction24().build());
             break;
         case "f33":
             id += 33;
             flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction25().build());
+            flow.setInstructions(createApplyActionInstruction25().build());
             break;
         case "f34":
             id += 34;
             flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction26().build());
+            flow.setInstructions(createApplyActionInstruction26().build());
             break;
         case "f35":
             id += 35;
             flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction27().build());
+            flow.setInstructions(createApplyActionInstruction27().build());
             break;
         case "f36":
             id += 36;
             flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction28().build());
+            flow.setInstructions(createApplyActionInstruction28().build());
             break;
         case "f37":
             id += 37;
             flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction29().build());
+            flow.setInstructions(createApplyActionInstruction29().build());
             break;
         case "f38":
             id += 38;
             flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction30().build());
+            flow.setInstructions(createApplyActionInstruction30().build());
             break;
         case "f39":
             id += 39;
             flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction31().build());
+            flow.setInstructions(createApplyActionInstruction31().build());
             break;
         case "f40":
             id += 40;
             flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction32().build());
+            flow.setInstructions(createApplyActionInstruction32().build());
             break;
         case "f41":
             id += 41;
             flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction33().build());
+            flow.setInstructions(createApplyActionInstruction33().build());
             break;
         case "f42":
             id += 42;
             flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction34().build());
+            flow.setInstructions(createApplyActionInstruction34().build());
             break;
         case "f43":
             id += 43;
@@ -481,7 +481,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         case "f47":
             id += 47;
             flow.setMatch(createL4SCTPMatch().build());
-            flow.setInstructions(createAppyActionInstruction().build());
+            flow.setInstructions(createApplyActionInstruction().build());
             break;
         case "f48":
             id += 48;
@@ -569,72 +569,72 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         case "f64":
             id += 64;
             flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction35().build());
+            flow.setInstructions(createApplyActionInstruction35().build());
             break;
         case "f65":
             id += 65;
             flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction36().build());
+            flow.setInstructions(createApplyActionInstruction36().build());
             break;
         case "f66":
             id += 66;
             flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction37().build());
+            flow.setInstructions(createApplyActionInstruction37().build());
             break;
         case "f67":
             id += 67;
             flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction38().build());
+            flow.setInstructions(createApplyActionInstruction38().build());
             break;
         case "f68":
             id += 68;
             flow.setMatch(createL4TCPMatch().build());
-            flow.setInstructions(createAppyActionInstruction39().build());
+            flow.setInstructions(createApplyActionInstruction39().build());
             break;
         case "f69":
             id += 69;
             flow.setMatch(createL4UDPMatch().build());
-            flow.setInstructions(createAppyActionInstruction40().build());
+            flow.setInstructions(createApplyActionInstruction40().build());
             break;
         case "f70":
             id += 70;
             flow.setMatch(createL4SCTPMatch().build());
-            flow.setInstructions(createAppyActionInstruction41().build());
+            flow.setInstructions(createApplyActionInstruction41().build());
             break;
         case "f71":
             id += 71;
             flow.setMatch(createICMPv4Match().build());
-            flow.setInstructions(createAppyActionInstruction42().build());
+            flow.setInstructions(createApplyActionInstruction42().build());
             break;
         case "f72":
             id += 72;
             flow.setMatch(createArpMatch().build());
-            flow.setInstructions(createAppyActionInstruction43().build());
+            flow.setInstructions(createApplyActionInstruction43().build());
             break;
         case "f73":
             id += 73;
             flow.setMatch(createL3IPv6Match().build());
-            flow.setInstructions(createAppyActionInstruction44().build());
+            flow.setInstructions(createApplyActionInstruction44().build());
             break;
         case "f74":
             id += 74;
             flow.setMatch(createICMPv6Match().build());
-            flow.setInstructions(createAppyActionInstruction45().build());
+            flow.setInstructions(createApplyActionInstruction45().build());
             break;
         case "f75":
             id += 75;
             flow.setMatch(createMplsMatch().build());
-            flow.setInstructions(createAppyActionInstruction46().build());
+            flow.setInstructions(createApplyActionInstruction46().build());
             break;
         case "f76":
             id += 76;
             flow.setMatch(createPbbMatch().build());
-            flow.setInstructions(createAppyActionInstruction47().build());
+            flow.setInstructions(createApplyActionInstruction47().build());
             break;
         case "f77":
             id += 77;
             flow.setMatch(createTunnelIDMatch().build());
-            flow.setInstructions(createAppyActionInstruction48().build());
+            flow.setInstructions(createApplyActionInstruction48().build());
             break;
         case "f78":
             id += 78;
@@ -649,7 +649,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         case "f80":
             id += 80;
             flow.setMatch(createVlanMatch().build());
-            flow.setInstructions(createAppyActionInstruction88().build());
+            flow.setInstructions(createApplyActionInstruction88().build());
             break;
         case "f81":
             id += 81;
@@ -669,7 +669,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         case "f84":
             id += 84;
             flow.setMatch(createVlanMatch().build()); // match vlan=10,dl_vlan_pcp=3
-            flow.setInstructions(createAppyActionInstruction88().build()); // vlan_pcp=4
+            flow.setInstructions(createApplyActionInstruction88().build()); // vlan_pcp=4
             break;
         default:
             LOG.warn("flow type not understood: {}", flowType);
@@ -899,7 +899,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return isb;
     }
 
-    private static InstructionsBuilder createAppyActionInstruction() {
+    private static InstructionsBuilder createApplyActionInstruction() {
 
         List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
@@ -925,7 +925,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return isb;
     }
 
-    private static InstructionsBuilder createAppyActionInstruction1() {
+    private static InstructionsBuilder createApplyActionInstruction1() {
 
         List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
@@ -1074,7 +1074,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return isb;
     }
 
-    private static InstructionsBuilder createAppyActionInstruction2() {
+    private static InstructionsBuilder createApplyActionInstruction2() {
 
         List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
@@ -1101,7 +1101,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return isb;
     }
 
-    private static InstructionsBuilder createAppyActionInstruction3() {
+    private static InstructionsBuilder createApplyActionInstruction3() {
 
         List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
@@ -1128,7 +1128,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return isb;
     }
 
-    private static InstructionsBuilder createAppyActionInstruction4() {
+    private static InstructionsBuilder createApplyActionInstruction4() {
 
         List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
@@ -1156,7 +1156,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return isb;
     }
 
-    private static InstructionsBuilder createAppyActionInstruction5() {
+    private static InstructionsBuilder createApplyActionInstruction5() {
 
         List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
@@ -1183,7 +1183,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return isb;
     }
 
-    private static InstructionsBuilder createAppyActionInstruction6() {
+    private static InstructionsBuilder createApplyActionInstruction6() {
 
         List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
@@ -1211,7 +1211,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return isb;
     }
 
-    private static InstructionsBuilder createAppyActionInstruction7() {
+    private static InstructionsBuilder createApplyActionInstruction7() {
 
         List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
@@ -1239,7 +1239,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return isb;
     }
 
-    private static InstructionsBuilder createAppyActionInstruction8() {
+    private static InstructionsBuilder createApplyActionInstruction8() {
 
         List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
@@ -1267,7 +1267,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return isb;
     }
 
-    private static InstructionsBuilder createAppyActionInstruction88() {
+    private static InstructionsBuilder createApplyActionInstruction88() {
 
         List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
@@ -1296,7 +1296,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return isb;
     }
 
-    private static InstructionsBuilder createAppyActionInstruction9() {
+    private static InstructionsBuilder createApplyActionInstruction9() {
 
         List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
@@ -1322,7 +1322,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return isb;
     }
 
-    private static InstructionsBuilder createAppyActionInstruction10() {
+    private static InstructionsBuilder createApplyActionInstruction10() {
 
         List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
@@ -1348,7 +1348,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return isb;
     }
 
-    private static InstructionsBuilder createAppyActionInstruction11() {
+    private static InstructionsBuilder createApplyActionInstruction11() {
 
         List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
@@ -1375,7 +1375,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return isb;
     }
 
-    private static InstructionsBuilder createAppyActionInstruction12() {
+    private static InstructionsBuilder createApplyActionInstruction12() {
 
         List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
@@ -1402,7 +1402,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return isb;
     }
 
-    private static InstructionsBuilder createAppyActionInstruction13() {
+    private static InstructionsBuilder createApplyActionInstruction13() {
 
         List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
@@ -1429,7 +1429,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return isb;
     }
 
-    private static InstructionsBuilder createAppyActionInstruction14() {
+    private static InstructionsBuilder createApplyActionInstruction14() {
 
         List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
@@ -1455,7 +1455,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return isb;
     }
 
-    private static InstructionsBuilder createAppyActionInstruction15() {
+    private static InstructionsBuilder createApplyActionInstruction15() {
 
         List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
@@ -1481,7 +1481,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return isb;
     }
 
-    private static InstructionsBuilder createAppyActionInstruction16() {
+    private static InstructionsBuilder createApplyActionInstruction16() {
 
         List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
@@ -1510,7 +1510,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return isb;
     }
 
-    private static InstructionsBuilder createAppyActionInstruction17() {
+    private static InstructionsBuilder createApplyActionInstruction17() {
 
         List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
@@ -1536,7 +1536,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return isb;
     }
 
-    private static InstructionsBuilder createAppyActionInstruction18() {
+    private static InstructionsBuilder createApplyActionInstruction18() {
 
         List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
@@ -1563,7 +1563,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return isb;
     }
 
-    private static InstructionsBuilder createAppyActionInstruction19() {
+    private static InstructionsBuilder createApplyActionInstruction19() {
 
         List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
@@ -1590,7 +1590,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return isb;
     }
 
-    private static InstructionsBuilder createAppyActionInstruction20() {
+    private static InstructionsBuilder createApplyActionInstruction20() {
 
         List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
@@ -1616,7 +1616,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return isb;
     }
 
-    private static InstructionsBuilder createAppyActionInstruction21() {
+    private static InstructionsBuilder createApplyActionInstruction21() {
 
         List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
@@ -1643,7 +1643,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return isb;
     }
 
-    private static InstructionsBuilder createAppyActionInstruction22() {
+    private static InstructionsBuilder createApplyActionInstruction22() {
 
         List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
@@ -1671,7 +1671,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return isb;
     }
 
-    private static InstructionsBuilder createAppyActionInstruction23(NodeId nodeId) {
+    private static InstructionsBuilder createApplyActionInstruction23(NodeId nodeId) {
 
         List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
@@ -1698,7 +1698,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return isb;
     }
 
-    private static InstructionsBuilder createAppyActionInstruction24() {
+    private static InstructionsBuilder createApplyActionInstruction24() {
 
         List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
@@ -1726,7 +1726,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return isb;
     }
 
-    private static InstructionsBuilder createAppyActionInstruction25() {
+    private static InstructionsBuilder createApplyActionInstruction25() {
 
         List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
@@ -1757,7 +1757,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return isb;
     }
 
-    private static InstructionsBuilder createAppyActionInstruction26() {
+    private static InstructionsBuilder createApplyActionInstruction26() {
 
         List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
@@ -1788,7 +1788,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return isb;
     }
 
-    private static InstructionsBuilder createAppyActionInstruction27() {
+    private static InstructionsBuilder createApplyActionInstruction27() {
 
         List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
@@ -1819,7 +1819,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return isb;
     }
 
-    private static InstructionsBuilder createAppyActionInstruction28() {
+    private static InstructionsBuilder createApplyActionInstruction28() {
 
         List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
@@ -1846,7 +1846,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return isb;
     }
 
-    private static InstructionsBuilder createAppyActionInstruction29() {
+    private static InstructionsBuilder createApplyActionInstruction29() {
 
         List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
@@ -1874,7 +1874,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return isb;
     }
 
-    private static InstructionsBuilder createAppyActionInstruction30() {
+    private static InstructionsBuilder createApplyActionInstruction30() {
 
         List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
@@ -1901,7 +1901,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return isb;
     }
 
-    private static InstructionsBuilder createAppyActionInstruction31() {
+    private static InstructionsBuilder createApplyActionInstruction31() {
 
         List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
@@ -1929,7 +1929,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return isb;
     }
 
-    private static InstructionsBuilder createAppyActionInstruction32() {
+    private static InstructionsBuilder createApplyActionInstruction32() {
 
         List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
@@ -1957,7 +1957,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return isb;
     }
 
-    private static InstructionsBuilder createAppyActionInstruction33() {
+    private static InstructionsBuilder createApplyActionInstruction33() {
 
         List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
@@ -1985,7 +1985,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return isb;
     }
 
-    private static InstructionsBuilder createAppyActionInstruction34() {
+    private static InstructionsBuilder createApplyActionInstruction34() {
 
         List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
@@ -2012,7 +2012,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return isb;
     }
 
-    private static InstructionsBuilder createAppyActionInstruction35() {
+    private static InstructionsBuilder createApplyActionInstruction35() {
 
         List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
@@ -2068,7 +2068,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return isb;
     }
 
-    private static InstructionsBuilder createAppyActionInstruction36() {
+    private static InstructionsBuilder createApplyActionInstruction36() {
 
         List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
@@ -2109,7 +2109,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return isb;
     }
 
-    private static InstructionsBuilder createAppyActionInstruction37() {
+    private static InstructionsBuilder createApplyActionInstruction37() {
 
         List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
@@ -2157,7 +2157,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return isb;
     }
 
-    private static InstructionsBuilder createAppyActionInstruction38() {
+    private static InstructionsBuilder createApplyActionInstruction38() {
 
         List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
@@ -2197,7 +2197,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return isb;
     }
 
-    private static InstructionsBuilder createAppyActionInstruction39() {
+    private static InstructionsBuilder createApplyActionInstruction39() {
 
         List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
@@ -2238,7 +2238,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return isb;
     }
 
-    private static InstructionsBuilder createAppyActionInstruction40() {
+    private static InstructionsBuilder createApplyActionInstruction40() {
 
         List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
@@ -2279,7 +2279,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return isb;
     }
 
-    private static InstructionsBuilder createAppyActionInstruction41() {
+    private static InstructionsBuilder createApplyActionInstruction41() {
 
         List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
@@ -2320,7 +2320,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return isb;
     }
 
-    private static InstructionsBuilder createAppyActionInstruction42() {
+    private static InstructionsBuilder createApplyActionInstruction42() {
 
         List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
@@ -2358,7 +2358,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return isb;
     }
 
-    private static InstructionsBuilder createAppyActionInstruction43() {
+    private static InstructionsBuilder createApplyActionInstruction43() {
 
         List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
@@ -2433,7 +2433,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return isb;
     }
 
-    private static InstructionsBuilder createAppyActionInstruction44() {
+    private static InstructionsBuilder createApplyActionInstruction44() {
 
         List<Action> actionLists = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
@@ -2532,7 +2532,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return isb;
     }
 
-    private static InstructionsBuilder createAppyActionInstruction45() {
+    private static InstructionsBuilder createApplyActionInstruction45() {
 
         List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
@@ -2570,7 +2570,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return isb;
     }
 
-    private static InstructionsBuilder createAppyActionInstruction46() {
+    private static InstructionsBuilder createApplyActionInstruction46() {
 
         List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
@@ -2617,7 +2617,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return isb;
     }
 
-    private static InstructionsBuilder createAppyActionInstruction47() {
+    private static InstructionsBuilder createApplyActionInstruction47() {
 
         List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
@@ -2644,7 +2644,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return isb;
     }
 
-    private static InstructionsBuilder createAppyActionInstruction48() {
+    private static InstructionsBuilder createApplyActionInstruction48() {
 
         List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
@@ -3337,13 +3337,13 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
     public String getHelp() {
         return "No help";
     }
-    
+
     /*
      * usage testSwitchFlows <numberOfSwitches> <numberOfFlows> <warmup iterations> <Number Of Threads>
      * ex: _perfFlowTest 10 5 1 2
      */
     public void _perfFlowTest(CommandInterpreter ci) {
-    	
+
         String numberOfSwtichesStr = ci.nextArgument();
         String numberOfFlowsStr = ci.nextArgument();
         String warmupIterationsStr = ci.nextArgument();
@@ -3352,9 +3352,9 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         
         Collection<String> testResults = null;
         if(testResults == null){
-        	testResults = new ArrayList<String>();
+            testResults = new ArrayList<String>();
         }
-         
+
         int numberOfSwtiches = 0;
         int numberOfFlows = 0;
         int warmupIterations = 0;
@@ -3362,27 +3362,27 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         int threadCount = 0;
         if(numberOfSwtichesStr !=null && !numberOfSwtichesStr.trim().equals("")){
-        	numberOfSwtiches = new Integer(numberOfSwtichesStr).intValue();
+            numberOfSwtiches = new Integer(numberOfSwtichesStr).intValue();
         }else {
-        	numberOfSwtiches = 2;
+            numberOfSwtiches = 2;
         }
-        
+
         if(numberOfFlowsStr !=null && !numberOfFlowsStr.trim().equals("")){
-        	numberOfFlows = new Integer(numberOfFlowsStr).intValue();
+            numberOfFlows = new Integer(numberOfFlowsStr).intValue();
         }else {
-        	numberOfFlows = 2;
+            numberOfFlows = 2;
         }
-        
+
         if(warmupIterationsStr !=null && !warmupIterationsStr.trim().equals("")){
-        	warmupIterations = new Integer(warmupIterationsStr).intValue();
+            warmupIterations = new Integer(warmupIterationsStr).intValue();
         }else {
-        	warmupIterations = 2;
+            warmupIterations = 2;
         }
-        
+
         if(threadCountStr !=null && !threadCountStr.trim().equals("")){
-        	threadCount = new Integer(threadCountStr).intValue();
+            threadCount = new Integer(threadCountStr).intValue();
         }else {
-        	threadCount = 2; 
+            threadCount = 2;
         }
          if(warmUpStr !=null && !warmUpStr.trim().equals("") && warmUpStr.trim().equals("true")){
              warmUpIterations = true;
@@ -3402,36 +3402,36 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         FlowBuilder tf;
         String tableId = "0";
         if(warmUpIterations){
-        ci.println("----Warmup Started-----");
-        for(int j =1; j<= warmupIterations; j++){
-	        for(int i =1;i<=numberOfSwtiches;i++){
-	        	 dataPath = "openflow:"+i;
-	        	 tn = createTestNode(dataPath);
-	        	for (int flow=1;flow<numberOfFlows;flow++){
-	                         tf = createTestFlow_perfTest(tn, "f1", tableId, flow);
-	        		 writeFlow(ci, tf, tn);
-	        	}
-	        }
-         }
+            ci.println("----Warmup Started-----");
+            for(int j =1; j<= warmupIterations; j++){
+                for(int i =1;i<=numberOfSwtiches;i++){
+                    dataPath = "openflow:"+i;
+                    tn = createTestNode(dataPath);
+                    for (int flow=1;flow<numberOfFlows;flow++){
+                        tf = createTestFlow_perfTest(tn, "f1", tableId, flow);
+                        writeFlow(ci, tf, tn);
+                    }
+                }
+            }
 
-       ci.println("----Warmup Done-----");
+            ci.println("----Warmup Done-----");
         }
-       try{
-	       ExecutorService executor = Executors.newFixedThreadPool(threadCount);
-	       int flowID = 0;
-               int tableID = 0;
-	       for ( int t=0;t< threadCount;t++){
-	    	   tableID = t+1;
-	    	   Runnable tRunnable = new TestFlowThread(numberOfSwtiches, numberOfFlows, ci, t, tableID);
-	    	   executor.execute(tRunnable);
-	       }
-	       executor.shutdown();
-	       executor.awaitTermination(1, TimeUnit.SECONDS);
-       } catch(Exception e){
-    	  ci.println("Exception:"+e.getMessage());
-       }
+        try{
+            ExecutorService executor = Executors.newFixedThreadPool(threadCount);
+            int flowID = 0;
+            int tableID = 0;
+            for ( int t=0;t< threadCount;t++){
+                tableID = t+1;
+                Runnable tRunnable = new TestFlowThread(numberOfSwtiches, numberOfFlows, ci, t, tableID);
+                executor.execute(tRunnable);
+            }
+            executor.shutdown();
+            executor.awaitTermination(1, TimeUnit.SECONDS);
+        } catch(Exception e){
+            ci.println("Exception:"+e.getMessage());
+        }
     }
-    
+
     public class TestFlowThread implements Runnable {
 
         int numberOfSwitches;
@@ -3492,11 +3492,11 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
      * ex: _perfFlowTest 1
      */
     public void _testAllFlows(CommandInterpreter ci) {
-    	String dataPathID = ci.nextArgument();
-    	int numberOfFlows = 82;
+        String dataPathID = ci.nextArgument();
+        int numberOfFlows = 82;
         int threadCount = 0;
         if(dataPathID ==null || dataPathID.trim().equals("")){
-        	dataPathID = "1";
+            dataPathID = "1";
         }
         ci.println("*     Test All Flows	*");
         ci.println("*     dataPathID:::"+dataPathID+"");
@@ -3504,15 +3504,15 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         String tableId = "0";
         NodeBuilder tn = createTestNode(dataPath);
         FlowBuilder tf;
-        	for (int flow=1;flow<numberOfFlows;flow++){
-        		String flowID = "f"+flow;
-        		try{
-        			tf = createTestFlow(tn, flowID, tableId);
-        			writeFlow(ci, tf, tn);
-        		} catch(Exception e){
-        			ci.println("--Test Failed--Issue found while adding flow"+ flow);
-        			break;
-        		}
-        	}
+        for (int flow=1;flow<numberOfFlows;flow++){
+            String flowID = "f"+flow;
+            try{
+                tf = createTestFlow(tn, flowID, tableId);
+                writeFlow(ci, tf, tn);
+            } catch(Exception e){
+                ci.println("--Test Failed--Issue found while adding flow"+ flow);
+                break;
+            }
+        }
     }
 }
