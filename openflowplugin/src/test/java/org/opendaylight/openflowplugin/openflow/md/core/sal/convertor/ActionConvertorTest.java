@@ -69,6 +69,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Output
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.EthertypeAction;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.EthertypeActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.GroupIdAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.IpAddressAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.Ipv4AddressMatchEntry;
@@ -89,6 +90,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.SetNwSrc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.SetNwTtl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.SetQueue;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.EtherType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Ipv4Dst;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Ipv4Src;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Ipv6Dst;
@@ -415,6 +417,24 @@ public class ActionConvertorTest {
         AB1.setAction(new PopMplsActionCaseBuilder().setPopMplsAction(popMB.build()).build());
 
         actions.add(actionItem++, AB1.build());
+    }
+
+    /**
+     * testing {@link ActionConvertor#ofToSALPushMplsAction(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action)}
+     * with OF-1.3, IPv6 
+     */
+    @Test
+    public void testOFtoSALPushMplsAction() {
+        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder actionBuilder 
+        = new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder();
+        
+        actionBuilder.setType(PushVlan.class);
+        EthertypeActionBuilder ethertypeActionBuilder = new EthertypeActionBuilder();
+        ethertypeActionBuilder.setEthertype(new EtherType(new Integer(34888)));
+        actionBuilder.addAugmentation(EthertypeAction.class, ethertypeActionBuilder.build());
+        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action action = actionBuilder.build(); 
+
+        Assert.assertEquals(34888, ActionConvertor.ofToSALPushMplsAction(action).getPushMplsAction().getEthernetType().intValue());
     }
 
     private void setQueueActionData() {
