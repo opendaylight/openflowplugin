@@ -735,12 +735,11 @@ public final class ActionConvertor {
 
             } else if (action.getType().equals(
                     org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.PushMpls.class)) {
-                bucketActions.add(ofToSALPushVlanAction(action));
+                bucketActions.add(ofToSALPushMplsAction(action));
 
             } else if (action.getType().equals(
                     org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.PopMpls.class)) {
-                PopMplsActionBuilder popMpls = new PopMplsActionBuilder();
-                bucketActions.add(new PopMplsActionCaseBuilder().setPopMplsAction(popMpls.build()).build());
+                bucketActions.add(ofToSALPopMplsAction(action));
 
             } else if (action.getType().equals(
                     org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.SetQueue.class)) {
@@ -868,6 +867,22 @@ public final class ActionConvertor {
         pushMplsAction.setEthernetType(etherType.getEthertype().getValue());
 
         return new PushMplsActionCaseBuilder().setPushMplsAction(pushMplsAction.build()).build();
+    }
+
+    /**
+     * Method converts OF PopMpls action to SAL PopMpls action.
+     *
+     * @param action
+     * @return PopMplsActionCase
+     */
+    public static PopMplsActionCase ofToSALPopMplsAction(Action action) {
+
+        PopMplsActionBuilder popMplsAction = new PopMplsActionBuilder();
+
+        EthertypeAction etherType = action.getAugmentation(EthertypeAction.class);
+        popMplsAction.setEthernetType(etherType.getEthertype().getValue());
+
+        return new PopMplsActionCaseBuilder().setPopMplsAction(popMplsAction.build()).build();
     }
 
     /**
