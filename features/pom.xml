@@ -8,7 +8,7 @@
   </parent>
   <artifactId>openflowplugin-features</artifactId>
   <name>Openflow Protocol Plugin - Karaf Features</name>
-  <packaging>kar</packaging>
+  <packaging>pom</packaging>
   
   <properties>
     <features.file>features.xml</features.file>
