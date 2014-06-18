@@ -15,12 +15,12 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.opendaylight.controller.sal.packet.Ethernet;
-import org.opendaylight.controller.sal.packet.LLDP;
-import org.opendaylight.controller.sal.packet.LLDPTLV;
-import org.opendaylight.controller.sal.packet.PacketException;
-import org.opendaylight.controller.sal.utils.EtherTypes;
-import org.opendaylight.controller.sal.utils.HexEncode;
+import org.opendaylight.openflowplugin.md.packet.Ethernet;
+import org.opendaylight.openflowplugin.md.packet.LLDP;
+import org.opendaylight.openflowplugin.md.packet.LLDPTLV;
+import org.opendaylight.openflowplugin.md.packet.PacketException;
+import org.opendaylight.openflowplugin.md.packet.EtherTypes;
+import org.opendaylight.openflowplugin.md.packet.HexEncode;
 import org.opendaylight.openflowplugin.openflow.md.ModelDrivenSwitch;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;

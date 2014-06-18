@@ -10,7 +10,6 @@
 
     <artifactId>openflowplugin</artifactId>
     <packaging>bundle</packaging>
-
     <properties>
         <yangtools.version>0.6.2-SNAPSHOT</yangtools.version>
         <yangtools.generator.version>0.6.2-SNAPSHOT</yangtools.generator.version>
@@ -78,14 +77,6 @@
         </plugins>
     </build>
     <dependencies>
-        <dependency>
-            <groupId>org.opendaylight.controller</groupId>
-            <artifactId>sal</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.controller</groupId>
-            <artifactId>sal.connection</artifactId>
-        </dependency>
         <dependency>
             <groupId>org.opendaylight.controller.model</groupId>
             <artifactId>model-flow-base</artifactId>
