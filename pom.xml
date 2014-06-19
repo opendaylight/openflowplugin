@@ -512,5 +512,6 @@
       <module>features</module>
       <module>samples/sample-consumer</module>
       <module>samples/learning-switch</module>
+      <module>openflowplugin-experimenter</module>
     </modules>
 </project>
