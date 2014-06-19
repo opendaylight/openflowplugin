@@ -28,6 +28,13 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
           <name>openflow-switch-connection-provider-default-impl</name>
           <port>6633</port>
           <switch-idle-timeout>15000</switch-idle-timeout>
+          <tls>
+            <supported>false</supported>
+            <keystore>ctl.jks</keystore>
+            <keystore-type>JKS</keystore-type>
+            <truststore>truststore.jks</truststore>
+            <truststore-type>JKS</truststore-type>
+          </tls>
         </module>
         <!-- default OF-switch-connection-provider (port 6653) -->
         <module>
@@ -35,8 +42,15 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
           <name>openflow-switch-connection-provider-legacy-impl</name>
           <port>6653</port>
           <switch-idle-timeout>15000</switch-idle-timeout>
+          
+          <tls>
+            <supported>false</supported>
+            <keystore>ctl.jks</keystore>
+            <keystore-type>JKS</keystore-type>
+            <truststore>truststore.jks</truststore>
+            <truststore-type>JKS</truststore-type>
+          </tls>
         </module>
-
 
         <module>
           <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:openflow:common:config:impl">prefix:openflow-provider-impl</type>
