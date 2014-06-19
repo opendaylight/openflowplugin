@@ -7,10 +7,6 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey;
@@ -37,6 +33,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.MeterIdInstruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.TableIdInstruction;
 
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
+
 public class OFToMDSalFlowConvertor {
     
     /**
@@ -60,11 +60,7 @@ public class OFToMDSalFlowConvertor {
                 ApplyActionsBuilder applyActionsBuilder = new ApplyActionsBuilder();
                 
                 
-                applyActionsBuilder.setAction(
-                            wrapActionList(
-                                    ActionConvertor.toMDSalActions(actionsInstruction.getAction()
-                                            )
-                                            ));
+                applyActionsBuilder.setAction(wrapActionList(ActionConvertor.toMDSalActions(actionsInstruction.getAction())));
                 
                 applyActionsCaseBuilder.setApplyActions(applyActionsBuilder.build());
                 
@@ -194,11 +190,7 @@ public class OFToMDSalFlowConvertor {
         ApplyActionsCaseBuilder applyActionsCaseBuilder = new ApplyActionsCaseBuilder();
         ApplyActionsBuilder applyActionsBuilder = new ApplyActionsBuilder();
 
-        applyActionsBuilder.setAction(
-                    wrapActionList(
-                                ActionConvertor.toMDSalActions(actionsList
-                                        )
-                            ));
+        applyActionsBuilder.setAction(wrapActionList(ActionConvertor.toMDSalActions(actionsList)));
                 
         applyActionsCaseBuilder.setApplyActions(applyActionsBuilder.build());
                 

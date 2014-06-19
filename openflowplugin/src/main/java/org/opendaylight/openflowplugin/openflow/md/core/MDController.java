@@ -44,6 +44,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.translator.PortStatusMes
 import org.opendaylight.openflowplugin.openflow.md.lldp.LLDPSpeakerPopListener;
 import org.opendaylight.openflowplugin.openflow.md.queue.MessageSpy;
 import org.opendaylight.openflowplugin.openflow.md.queue.PopListener;
+import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.NodeErrorNotification;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SwitchFlowRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.AggregateFlowStatisticsUpdate;
@@ -127,6 +128,9 @@ public class MDController implements IMDController, AutoCloseable {
      */
     public void init() {
         LOG.debug("init");
+
+        OpenflowPortsUtil.init();
+
         messageTranslators = new ConcurrentHashMap<>();
         popListeners = new ConcurrentHashMap<>();
         //TODO: move registration to factory
@@ -402,6 +406,7 @@ public class MDController implements IMDController, AutoCloseable {
             switchConnectionPrv.setSwitchConnectionHandler(null);
         }
         switchConnectionProviders = null;
+        OpenflowPortsUtil.close();
         OFSessionUtil.releaseSessionManager();
         errorHandler = null;
     }
