@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.opendaylight.openflowplugin</groupId>
+        <artifactId>openflowplugin-parent</artifactId>
+        <version>0.0.3-SNAPSHOT</version>
+        <relativePath>../</relativePath>
+    </parent>
+
+    <artifactId>openflowplugin-experimenter</artifactId>
+    <packaging>bundle</packaging>
+
+  <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>2.3.6</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-Activator>
+                            org.opendaylight.openflowplugin.experimenter.OpenflowpluginExperimenterActivator
+                        </Bundle-Activator>
+                        <Private-Package>
+                            org.opendaylight.openflowplugin.md.*
+                        </Private-Package>
+                    </instructions>
+                    <manifestLocation>${project.build.directory}/META-INF</manifestLocation>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+
+<dependencies>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.controller</groupId>
+            <artifactId>sal-binding-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.controller.model</groupId>
+            <artifactId>model-flow-service</artifactId>
+        </dependency>    
+	    <dependency>
+	      <groupId>org.opendaylight.controller.model</groupId>
+	      <artifactId>model-flow-base</artifactId>
+	    </dependency>
+	   <dependency>
+	      <groupId>org.opendaylight.controller.model</groupId>
+	      <artifactId>model-flow-management</artifactId>
+	    </dependency>    
+        <dependency>
+            <groupId>org.opendaylight.controller.model</groupId>
+            <artifactId>model-inventory</artifactId>
+        </dependency>
+		<dependency>
+            <groupId>org.opendaylight.controller.model</groupId>
+            <artifactId>model-flow-statistics</artifactId>
+        </dependency>   
+        <dependency>
+            <groupId>org.eclipse.xtend</groupId>
+            <artifactId>org.eclipse.xtend.lib</artifactId>
+            <version>${xtend.version}</version>
+        </dependency>
+         <dependency>
+	        <groupId>equinoxSDK381</groupId>
+	        <artifactId>org.eclipse.osgi</artifactId>
+	      </dependency>
+	      <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+          </dependency>
+          <dependency>
+            <version>0.0.3-SNAPSHOT</version>
+            <groupId>org.opendaylight.openflowplugin</groupId>
+            <artifactId>openflowplugin</artifactId>
+          </dependency>
+          <dependency>
+            <version>1.1-SNAPSHOT</version>
+            <groupId>org.opendaylight.controller</groupId>
+            <artifactId>sal-binding-api</artifactId>
+          </dependency> 
+          <dependency>
+            <groupId>org.opendaylight.openflowjava</groupId>
+            <artifactId>openflow-protocol-api</artifactId>
+          </dependency>
+
+ </dependencies>
+</project>
+
