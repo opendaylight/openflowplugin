@@ -46,6 +46,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.tp.src.action._case.SetTpSrcAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.vlan.id.action._case.SetVlanIdAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.vlan.pcp.action._case.SetVlanPcpAction;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.action.types.rev140613.action.types.action.action.ExperimenterActionType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.OutputPortValues;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.*;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.*;
@@ -165,6 +166,16 @@ public final class ActionConvertor {
                 ofAction = SalToOFSetTpDst(action, actionBuilder, version);
             else if (action instanceof SetNwTosActionCase)
                 ofAction = SalToOFSetNwTos(action, actionBuilder, version);
+
+                // Experimenter
+            else if(action instanceof ExperimenterActionType) {
+                ExperimenterConverter converter = ExperimenterConverterHooks.getInstance().getConverter(ExperimenterActionType.class);
+                if (converter != null) {
+                    ofAction = converter.SalToExampleAction(action, actionBuilder);
+                } else {
+                    logger.warn("No correct Converter found in Experimenter Converter.");
+                }
+            }
 
             if (ofAction != null) {
                 actionsList.add(ofAction);

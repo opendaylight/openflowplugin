@@ -42,8 +42,15 @@ see https://git.opendaylight.org/gerrit/#/c/390/
       <artifactId>test-provider</artifactId>
       <version>${project.version}</version>
     </dependency>
-    
-    <!-- drop-test provider -->
+
+    <!-- openflowplugin-experimenter -->
+    <dependency>
+      <groupId>org.opendaylight.openflowplugin</groupId>
+      <artifactId>openflowplugin-experimenter</artifactId>
+      <version>0.0.3-SNAPSHOT</version>
+    </dependency>
+
+      <!-- drop-test provider -->
     <dependency>
       <groupId>org.opendaylight.openflowplugin</groupId>
       <artifactId>drop-test</artifactId>
