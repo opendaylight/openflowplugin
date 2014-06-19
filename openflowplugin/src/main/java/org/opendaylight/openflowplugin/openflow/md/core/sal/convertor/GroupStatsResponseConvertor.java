@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opendaylight.openflowplugin.openflow.md.util.OpenflowVersion;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.Counter32;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.Counter64;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
@@ -107,11 +108,11 @@ public class GroupStatsResponseConvertor {
     
     
     public List<GroupDescStats> toSALGroupDescStatsList(
-            List<GroupDesc> allGroupDescStats){
+            List<GroupDesc> allGroupDescStats, OpenflowVersion ofVersion){
         
         List<GroupDescStats> convertedSALGroupsDesc = new ArrayList<>();
         for(GroupDesc groupDesc: allGroupDescStats){
-            convertedSALGroupsDesc.add(toSALGroupDescStats(groupDesc));
+            convertedSALGroupsDesc.add(toSALGroupDescStats(groupDesc, ofVersion));
         }
         return convertedSALGroupsDesc;
         
@@ -119,13 +120,14 @@ public class GroupStatsResponseConvertor {
     /**
      * Method convert GroupStats message from library to MD SAL defined GroupStats  
      * @param groupDesc GroupStats from library
+     * @param ofVersion TODO
      * @return GroupStats -- GroupStats defined in MD-SAL
      */
-    public GroupDescStats toSALGroupDescStats(GroupDesc groupDesc){
+    public GroupDescStats toSALGroupDescStats(GroupDesc groupDesc, OpenflowVersion ofVersion){
         
         GroupDescStatsBuilder salGroupDescStats = new GroupDescStatsBuilder();
         
-        salGroupDescStats.setBuckets(toSALBucketsDesc(groupDesc.getBucketsList()));
+        salGroupDescStats.setBuckets(toSALBucketsDesc(groupDesc.getBucketsList(), ofVersion));
         salGroupDescStats.setGroupId(new GroupId(groupDesc.getGroupId().getValue()));
         salGroupDescStats.setGroupType(GroupTypes.forValue(groupDesc.getType().getIntValue()));
         salGroupDescStats.setKey(new GroupDescStatsKey(salGroupDescStats.getGroupId()));
@@ -134,7 +136,7 @@ public class GroupStatsResponseConvertor {
     }
     
     public  org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.Buckets toSALBucketsDesc(
-            List<BucketsList> bucketDescStats ){
+            List<BucketsList> bucketDescStats, OpenflowVersion ofVersion ){
         
         org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.BucketsBuilder salBucketsDesc  = 
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.BucketsBuilder();
@@ -143,7 +145,7 @@ public class GroupStatsResponseConvertor {
         for(BucketsList bucketDetails : bucketDescStats){
             BucketBuilder bucketDesc = new BucketBuilder();
             List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action> convertedSalActions = 
-                    ActionConvertor.toMDSalActions (bucketDetails.getAction());
+                    ActionConvertor.toMDSalActions (bucketDetails.getAction(), ofVersion);
             
             List<Action> actions = new ArrayList<>(); 
             int actionKey = 0;

@@ -153,52 +153,55 @@ public abstract class InventoryDataServiceUtil {
         return nodeKeyToInstanceIdentifier(new NodeKey(nodeId));
     }
 
-    public static NodeConnectorId nodeConnectorIdfromDatapathPortNo(BigInteger datapathid, Long portNo) {
-        return new NodeConnectorId(OF_URI_PREFIX + datapathid + ":" + portNo);
+    public static NodeConnectorId nodeConnectorIdfromDatapathPortNo(BigInteger datapathid, Long portNo,
+            OpenflowVersion ofVersion) {
+        String logicalName = OpenflowPortsUtil.getPortLogicalName(ofVersion, portNo);
+        return new NodeConnectorId(OF_URI_PREFIX + datapathid + ":" + (logicalName == null? portNo : logicalName));
     }
     
-    public static Long portNumberfromNodeConnectorId(NodeConnectorId ncId) {
-        return portNumberfromNodeConnectorId(ncId.getValue());
+    public static Long portNumberfromNodeConnectorId(OpenflowVersion ofVersion, NodeConnectorId ncId) {
+        return portNumberfromNodeConnectorId(ofVersion, ncId.getValue());
     }
 
-    public static Long portNumberfromNodeConnectorId(String ncId){
+    public static Long portNumberfromNodeConnectorId(OpenflowVersion ofVersion, String ncId){
         String[] split = ncId.split(":");
 
+        // It can happen that token length will be just 1 i.e 2 or CONTROLLER
         // If the length is just one then this cannot be the new MD-SAL style node connector Id which
         // is of the form openflow:1:3.
-        if(split.length == 1){
-            return Long.decode(ncId);
-        }
+
         String portNoString = split[split.length-1];
-        Long portNo = Long.decode(portNoString);
+        Long portNo = OpenflowPortsUtil.getPortFromLogicalName(ofVersion, portNoString);
         return portNo;
     }
 
 
 
-    public static NodeConnectorRef nodeConnectorRefFromDatapathIdPortno(BigInteger datapathId, Long portNo) {
-        return new NodeConnectorRef(nodeConnectorInstanceIdentifierFromDatapathIdPortno(datapathId, portNo));
+    public static NodeConnectorRef nodeConnectorRefFromDatapathIdPortno(BigInteger datapathId, Long portNo, OpenflowVersion ofVersion) {
+        return new NodeConnectorRef(nodeConnectorInstanceIdentifierFromDatapathIdPortno(datapathId, portNo, ofVersion));
     }
 
     public static InstanceIdentifier<NodeConnector> nodeConnectorInstanceIdentifierFromDatapathIdPortno(
-            BigInteger datapathId, Long portNo) {
+            BigInteger datapathId, Long portNo, OpenflowVersion ofVersion) {
         NodeId nodeId = nodeIdFromDatapathId(datapathId);
-        NodeConnectorId nodeConnectorId = nodeConnectorIdfromDatapathPortNo(datapathId, portNo);
+        NodeConnectorId nodeConnectorId = nodeConnectorIdfromDatapathPortNo(datapathId, portNo, ofVersion);
         return InstanceIdentifier.builder(Nodes.class) //
                 .child(Node.class, new NodeKey(nodeId)) //
                 .child(NodeConnector.class, new NodeConnectorKey(nodeConnectorId)).toInstance();
     }
 
-    public static NodeConnectorUpdatedBuilder nodeConnectorUpdatedBuilderFromDatapathIdPortNo(BigInteger datapathId, Long portNo) {
+    public static NodeConnectorUpdatedBuilder nodeConnectorUpdatedBuilderFromDatapathIdPortNo(BigInteger datapathId,
+            Long portNo, OpenflowVersion ofVersion) {
         NodeConnectorUpdatedBuilder builder = new NodeConnectorUpdatedBuilder();
-        builder.setId(InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(datapathId,portNo));
-        builder.setNodeConnectorRef(InventoryDataServiceUtil.nodeConnectorRefFromDatapathIdPortno(datapathId,portNo));
+        builder.setId(InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(datapathId, portNo, ofVersion));
+        builder.setNodeConnectorRef(InventoryDataServiceUtil.nodeConnectorRefFromDatapathIdPortno(datapathId,portNo, ofVersion));
         return builder;
     }
 
-    public static NodeConnectorBuilder nodeConnectorBuilderFromDatapathIdPortNo(BigInteger datapathId, Long portNo) {
+    public static NodeConnectorBuilder nodeConnectorBuilderFromDatapathIdPortNo(BigInteger datapathId,
+            Long portNo, OpenflowVersion ofVersion) {
         NodeConnectorBuilder builder = new NodeConnectorBuilder();
-        builder.setId(InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(datapathId,portNo));
+        builder.setId(InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(datapathId,portNo, ofVersion));
         return builder;
     }
 

@@ -7,10 +7,7 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-
+import org.opendaylight.openflowplugin.openflow.md.util.OpenflowVersion;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey;
@@ -37,16 +34,21 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.MeterIdInstruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.TableIdInstruction;
 
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
+
 public class OFToMDSalFlowConvertor {
     
     /**
      * Method convert Openflow 1.3+ specific instructions to MD-SAL format
      * flow instruction
      * @param instructions
+     * @param ofVersion current ofp version
      * @return
      */
     public static Instructions toSALInstruction(
-            List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping.Instruction> instructions) {
+            List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping.Instruction> instructions, OpenflowVersion ofVersion) {
         
         InstructionsBuilder instructionsBuilder = new InstructionsBuilder();
         
@@ -60,11 +62,7 @@ public class OFToMDSalFlowConvertor {
                 ApplyActionsBuilder applyActionsBuilder = new ApplyActionsBuilder();
                 
                 
-                applyActionsBuilder.setAction(
-                            wrapActionList(
-                                    ActionConvertor.toMDSalActions(actionsInstruction.getAction()
-                                            )
-                                            ));
+                applyActionsBuilder.setAction(wrapActionList(ActionConvertor.toMDSalActions(actionsInstruction.getAction(), ofVersion)));
                 
                 applyActionsCaseBuilder.setApplyActions(applyActionsBuilder.build());
                 
@@ -126,7 +124,7 @@ public class OFToMDSalFlowConvertor {
                 
                 WriteActionsCaseBuilder writeActionsCaseBuilder = new WriteActionsCaseBuilder();
                 WriteActionsBuilder writeActionsBuilder = new WriteActionsBuilder();
-                writeActionsBuilder.setAction(wrapActionList(ActionConvertor.toMDSalActions(actionsInstruction.getAction())));
+                writeActionsBuilder.setAction(wrapActionList(ActionConvertor.toMDSalActions(actionsInstruction.getAction(), ofVersion)));
                 writeActionsCaseBuilder.setWriteActions(writeActionsBuilder.build());
                 
                 InstructionBuilder instBuilder = new InstructionBuilder();
@@ -183,10 +181,11 @@ public class OFToMDSalFlowConvertor {
 
     /**
      * Method wraps openflow 1.0 actions list to Apply Action Instructions
+     * @param ofVersion current ofp version
      */
     
     public static Instructions wrapOF10ActionsToInstruction(
-            List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action> actionsList) {
+            List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action> actionsList, OpenflowVersion ofVersion) {
         InstructionsBuilder instructionsBuilder = new InstructionsBuilder();
         
         List<Instruction> salInstructionList = new ArrayList<Instruction>();
@@ -194,11 +193,7 @@ public class OFToMDSalFlowConvertor {
         ApplyActionsCaseBuilder applyActionsCaseBuilder = new ApplyActionsCaseBuilder();
         ApplyActionsBuilder applyActionsBuilder = new ApplyActionsBuilder();
 
-        applyActionsBuilder.setAction(
-                    wrapActionList(
-                                ActionConvertor.toMDSalActions(actionsList
-                                        )
-                            ));
+        applyActionsBuilder.setAction(wrapActionList(ActionConvertor.toMDSalActions(actionsList, ofVersion)));
                 
         applyActionsCaseBuilder.setApplyActions(applyActionsBuilder.build());
                 

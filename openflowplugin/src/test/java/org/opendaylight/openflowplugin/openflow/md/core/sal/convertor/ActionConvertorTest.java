@@ -13,10 +13,11 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.Assert;
-
+import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.controller.sal.action.PopVlan;
+import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
@@ -97,10 +98,21 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Ipv6
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Ipv6Src;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.grouping.MatchEntries;
 
+/**
+ * test for {@link ActionConvertor}
+ */
 public class ActionConvertorTest {
 
     List<Action> actions = new ArrayList<>();
     static Integer actionItem = 0;
+
+    /**
+     * prepare OpenflowPortsUtil util class
+     */
+    @Before
+    public void setUp() {
+        OpenflowPortsUtil.init();
+    }
 
     @Test
     public void testActionConvertorwithallParameters() {
@@ -116,7 +128,7 @@ public class ActionConvertorTest {
         setFieldData();
         setExperimenterData();
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731
-        .actions.grouping.Action> OFActionsList = ActionConvertor.getActions(actions, (short) 0X4,BigInteger.valueOf(1));
+        .actions.grouping.Action> OFActionsList = ActionConvertor.getActions(actions, (short) 0X4, BigInteger.ONE);
 
        // OutputActions(OFActionsList);
 

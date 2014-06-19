@@ -7,14 +7,10 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-
+import com.google.common.base.Objects;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.JdkFutureAdapters;
+import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.controller.sal.common.util.Rpcs;
 import org.opendaylight.openflowjava.protocol.api.util.BinContent;
@@ -33,6 +29,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SwitchConnectionCookieOFImpl;
 import org.opendaylight.openflowplugin.openflow.md.util.FlowCreatorUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
+import org.opendaylight.openflowplugin.openflow.md.util.OpenflowVersion;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowRemovedBuilder;
@@ -172,10 +169,13 @@ import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 
-import com.google.common.base.Objects;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.JdkFutureAdapters;
-import com.google.common.util.concurrent.ListenableFuture;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 /**
  * RPC implementation of MD-switch
@@ -950,7 +950,8 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 
         // Set specific port
         mprPortStatsBuilder
-                .setPortNo(InventoryDataServiceUtil.portNumberfromNodeConnectorId(arg0.getNodeConnectorId()));
+                .setPortNo(InventoryDataServiceUtil.portNumberfromNodeConnectorId(
+                        OpenflowVersion.get(version), arg0.getNodeConnectorId()));
         caseBuilder.setMultipartRequestPortStats(mprPortStatsBuilder.build());
 
         // Set request body to main multipart request
@@ -1442,7 +1443,9 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         // Select all queues
         mprQueueBuilder.setQueueId(OFConstants.OFPQ_ANY);
         // Select specific port
-        mprQueueBuilder.setPortNo(InventoryDataServiceUtil.portNumberfromNodeConnectorId(arg0.getNodeConnectorId()));
+        mprQueueBuilder.setPortNo(InventoryDataServiceUtil.portNumberfromNodeConnectorId(
+                OpenflowVersion.get(version),
+                arg0.getNodeConnectorId()));
 
         caseBuilder.setMultipartRequestQueue(mprQueueBuilder.build());
 
@@ -1488,7 +1491,8 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         // Select specific queue
         mprQueueBuilder.setQueueId(arg0.getQueueId().getValue());
         // Select specific port
-        mprQueueBuilder.setPortNo(InventoryDataServiceUtil.portNumberfromNodeConnectorId(arg0.getNodeConnectorId()));
+        mprQueueBuilder.setPortNo(InventoryDataServiceUtil.portNumberfromNodeConnectorId(OpenflowVersion.get(version),
+                arg0.getNodeConnectorId()));
 
         caseBuilder.setMultipartRequestQueue(mprQueueBuilder.build());
 

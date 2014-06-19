@@ -15,6 +15,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
+import org.opendaylight.openflowplugin.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.util.PacketInUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
@@ -67,7 +68,8 @@ public class PacketInV10Translator implements IMDMessageTranslator<OfHeader, Lis
                 } else {
                     LOG.trace("Received packet_in from {} on port {}", dpid, port);
                     pktInBuilder.setPacketInReason(PacketInUtil.getMdSalPacketInReason(message.getReason()));
-                    pktInBuilder.setIngress(InventoryDataServiceUtil.nodeConnectorRefFromDatapathIdPortno(dpid, port));
+                    pktInBuilder.setIngress(InventoryDataServiceUtil.nodeConnectorRefFromDatapathIdPortno(dpid, port,
+                            OpenflowVersion.get(sc.getPrimaryConductor().getVersion())));
                     PacketReceived pktInEvent = pktInBuilder.build();
                     salPacketIn = Collections.<DataObject>singletonList(pktInEvent);
                 }

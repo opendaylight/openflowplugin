@@ -7,11 +7,6 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.translator;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.FlowStatsResponseConvertor;
@@ -19,6 +14,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.GroupStats
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.MeterStatsResponseConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
+import org.opendaylight.openflowplugin.openflow.md.util.OpenflowVersion;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.Counter32;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.Counter64;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.AggregateFlowStatisticsUpdateBuilder;
@@ -66,11 +62,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyMeterCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyMeterConfigCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyMeterFeaturesCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyPortStatsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyQueueCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyTableCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.aggregate._case.MultipartReplyAggregate;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.flow._case.MultipartReplyFlow;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyPortStatsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group._case.MultipartReplyGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group.desc._case.MultipartReplyGroupDesc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group.features._case.MultipartReplyGroupFeatures;
@@ -95,6 +91,11 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 /**
  * Class converts multipart reply messages to the notification objects defined
  * by statistics provider (manager ).
@@ -116,6 +117,8 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
         
         List<DataObject> listDataObject = new CopyOnWriteArrayList<DataObject>();
 
+        OpenflowVersion ofVersion = OpenflowVersion.get(sc.getPrimaryConductor().getVersion());
+
         if(msg instanceof MultipartReplyMessage){
             MultipartReplyMessage mpReply = (MultipartReplyMessage)msg;
             NodeId node = this.nodeIdFromDatapathId(sc.getFeatures().getDatapathId());
@@ -128,7 +131,7 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                 message.setTransactionId(generateTransactionId(mpReply.getXid()));
                 MultipartReplyFlowCase caseBody = (MultipartReplyFlowCase)mpReply.getMultipartReplyBody();
                 MultipartReplyFlow replyBody = caseBody.getMultipartReplyFlow();
-                message.setFlowAndStatisticsMapList(flowStatsConvertor.toSALFlowStatsList(replyBody.getFlowStats(),sc.getFeatures().getDatapathId()));
+                message.setFlowAndStatisticsMapList(flowStatsConvertor.toSALFlowStatsList(replyBody.getFlowStats(),sc.getFeatures().getDatapathId(), ofVersion));
                 
                 logger.debug("Converted flow statistics : {}",message.build().toString());
                 listDataObject.add(message.build());
@@ -171,7 +174,7 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                             new NodeConnectorStatisticsAndPortNumberMapBuilder();
                     statsBuilder.setNodeConnectorId(
                             InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(sc.getFeatures().getDatapathId(),
-                                    portStats.getPortNo()));
+                                    portStats.getPortNo(), ofVersion));
                     
                     BytesBuilder bytesBuilder = new BytesBuilder();
                     bytesBuilder.setReceived(portStats.getRxBytes());
@@ -230,7 +233,7 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                 MultipartReplyGroupDescCase caseBody = (MultipartReplyGroupDescCase)mpReply.getMultipartReplyBody();
                 MultipartReplyGroupDesc replyBody = caseBody.getMultipartReplyGroupDesc();
 
-                message.setGroupDescStats(groupStatsConvertor.toSALGroupDescStatsList(replyBody.getGroupDesc()));
+                message.setGroupDescStats(groupStatsConvertor.toSALGroupDescStatsList(replyBody.getGroupDesc(), ofVersion));
                 
                 logger.debug("Converted group statistics : {}",message.toString());
                 listDataObject.add(message.build());
@@ -409,7 +412,7 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                             new QueueIdAndStatisticsMapBuilder();
                     statsBuilder.setNodeConnectorId(
                             InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(sc.getFeatures().getDatapathId(),
-                                    queueStats.getPortNo()));
+                                    queueStats.getPortNo(), ofVersion));
                     statsBuilder.setTransmissionErrors(new Counter64(queueStats.getTxErrors()));
                     statsBuilder.setTransmittedBytes(new Counter64(queueStats.getTxBytes()));
                     statsBuilder.setTransmittedPackets(new Counter64(queueStats.getTxPackets()));
@@ -420,7 +423,8 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                     statsBuilder.setDuration(durationBuilder.build());
                     
                     statsBuilder.setQueueId(new QueueId(queueStats.getQueueId()));
-                    statsBuilder.setNodeConnectorId(InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(sc.getFeatures().getDatapathId(), queueStats.getPortNo()));
+                    statsBuilder.setNodeConnectorId(InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(sc.getFeatures().getDatapathId(),
+                            queueStats.getPortNo(), ofVersion));
                     
                     statsMap.add(statsBuilder.build());
                 }
