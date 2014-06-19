@@ -1,0 +1,7 @@
+Code-Review+2: michal rehak <mirehak@cisco.com>
+Verified+1: jenkins-openflowplugin <jenkins-openflowplugin@opendaylight.org>
+Submitted-by: michal rehak <mirehak@cisco.com>
+Submitted-at: Thu, 19 Jun 2014 12:02:09 +0000
+Reviewed-on: https://git.opendaylight.org/gerrit/8138
+Project: openflowplugin
+Branch: refs/heads/stable/hydrogen
