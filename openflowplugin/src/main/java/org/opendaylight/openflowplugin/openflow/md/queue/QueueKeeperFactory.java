@@ -19,7 +19,6 @@ public abstract class QueueKeeperFactory {
      * @param capacity blocking queue capacity
      * @return fair reading implementation of {@link QueueKeeper}
      */
-    @SuppressWarnings("resource")
     public static QueueKeeper<OfHeader> createFairQueueKeeper(
             MessageSourcePollRegistrator<QueueKeeper<OfHeader>> sourceRegistrator, int capacity) {
         QueueKeeperFairImpl queueKeeper = new QueueKeeperFairImpl();

@@ -27,12 +27,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInput;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier.PathArgument;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class PacketOutConvertor {
-    private static final Logger logger = LoggerFactory.getLogger(MeterConvertor.class);
-    private static final String PREFIX_SEPARATOR = "/";
 
     private PacketOutConvertor() {
 
@@ -108,6 +104,7 @@ public class PacketOutConvertor {
         return builder.build();
     }
 
+    @SuppressWarnings("rawtypes")
     private static PortNumber getPortNumber(PathArgument pathArgument) {
         // FIXME VD P! find InstanceIdentifier helper
         InstanceIdentifier.IdentifiableItem item = Arguments.checkInstanceOf(pathArgument,

@@ -149,8 +149,7 @@ public abstract class OFRpcTaskFactory {
                         FlowModInputBuilder ofFlowRemoveInput = FlowConvertor.toFlowModInput(removeflow.build(),
                                 getVersion(),getSession().getFeatures().getDatapathId());
                         ofFlowRemoveInput.setXid(xId);
-                        Future<RpcResult<UpdateFlowOutput>> resultFromOFLibRemove = getMessageService().
-                                flowMod(ofFlowRemoveInput.build(), getCookie());
+                        getMessageService().flowMod(ofFlowRemoveInput.build(), getCookie());
                         //add flow
                         AddFlowInputBuilder addFlow = new AddFlowInputBuilder(getInput().getUpdatedFlow());
                         flow = addFlow.build();

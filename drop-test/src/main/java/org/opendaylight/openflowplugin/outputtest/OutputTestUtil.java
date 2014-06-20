@@ -135,7 +135,6 @@ public class OutputTestUtil {
 
     public static NodeConnectorRef createNodeConnRef(final String nodeId, final String port) {
         StringBuilder sBuild = new StringBuilder(nodeId).append(':').append(port);
-        NodeConnectorId _nodeConnectorId = new NodeConnectorId(sBuild.toString());
 
         NodeConnectorKey nConKey = new NodeConnectorKey(new NodeConnectorId(sBuild.toString()));
 

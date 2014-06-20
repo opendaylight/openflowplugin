@@ -33,7 +33,6 @@ import org.slf4j.LoggerFactory;
 public class OutputTestCommandProvider implements CommandProvider {
 
     private PacketProcessingService packetProcessingService;
-    private ProviderContext pc;
     private final BundleContext ctx;
     private boolean sessionInitiated = false;
     private static Logger LOG = LoggerFactory.getLogger(OutputTestCommandProvider.class);
@@ -43,7 +42,6 @@ public class OutputTestCommandProvider implements CommandProvider {
     }
 
     public void onSessionInitiated(final ProviderContext session) {
-        pc = session;
         packetProcessingService = session.getRpcService(PacketProcessingService.class);
         ctx.registerService(CommandProvider.class.getName(), this, null);
         this.sessionInitiated = true;

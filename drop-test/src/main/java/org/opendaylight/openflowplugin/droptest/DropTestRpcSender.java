@@ -20,12 +20,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class DropTestRpcSender extends AbstractDropTest {
-    private final static Logger LOG = LoggerFactory.getLogger(DropTestProvider.class);
-
     private final SalFlowService flowService;
 
     public DropTestRpcSender(final SalFlowService flowService) {

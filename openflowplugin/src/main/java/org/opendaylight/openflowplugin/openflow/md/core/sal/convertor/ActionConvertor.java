@@ -78,7 +78,6 @@ import java.util.List;
  */
 public final class ActionConvertor {
     private static final Logger logger = LoggerFactory.getLogger(ActionConvertor.class);
-    private static final String PREFIX_SEPARATOR = "/";
     final private static Long MAXPortOF13 = new Long(4294967040L); // 0xffffff00
     final private static Long MAXPortOF10 = new Long(0xff00);
 
@@ -269,6 +268,7 @@ public final class ActionConvertor {
         return emtpyAction(actionBuilder);
     }
 
+    @SuppressWarnings("unchecked")
     private static Action SalToOFExperimenter(
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
             ActionBuilder actionBuilder) {
@@ -934,7 +934,7 @@ public final class ActionConvertor {
 
     public static Object ofToSALExperimenter(Action action) {
 
-        ExperimenterAction ExperimenterAction = action.getAugmentation(ExperimenterAction.class);
+        //action.getAugmentation(ExperimenterAction.class);
 
         return null;
         /*

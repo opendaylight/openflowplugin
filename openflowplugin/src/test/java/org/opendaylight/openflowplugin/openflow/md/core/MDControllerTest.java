@@ -51,6 +51,7 @@ public class MDControllerTest {
      * {@link org.opendaylight.openflowplugin.openflow.md.core.MDController#addMessageListeners}
      * .
      */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Test
     public void testAddMessageListeners() {
         //clean translators

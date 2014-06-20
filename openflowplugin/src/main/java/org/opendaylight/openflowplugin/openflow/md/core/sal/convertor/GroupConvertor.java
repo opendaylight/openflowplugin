@@ -39,7 +39,6 @@ import org.slf4j.LoggerFactory;
 public final class GroupConvertor {
 
     private static final Logger logger = LoggerFactory.getLogger(GroupConvertor.class);
-    private static final String PREFIX_SEPARATOR = "/";
 
     private static final  Integer DEFAULT_WEIGHT = new Integer(0);
     private static final Long OFPP_ANY = Long.parseLong("ffffffff", 16);
