@@ -8,8 +8,6 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.session;
 
-import java.security.MessageDigest;
-
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
 
 import com.google.common.hash.HashFunction;
