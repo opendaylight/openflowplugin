@@ -24,6 +24,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.ConnectionCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceivedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.MatchBuilder;
@@ -53,8 +54,7 @@ public class PacketInTranslator implements IMDMessageTranslator<OfHeader, List<D
            // create a packet received event builder
            PacketReceivedBuilder pktInBuilder = new PacketReceivedBuilder();
            pktInBuilder.setPayload(message.getData());
-           //TODO: add connection cookie
-           //pktInBuilder.setConnectionCookie(new ConnectionCookie(cookie.getId()));
+           pktInBuilder.setConnectionCookie(new ConnectionCookie(cookie.getCookie()));
 
            // get the DPID
            GetFeaturesOutput features = sc.getFeatures();
@@ -68,8 +68,6 @@ public class PacketInTranslator implements IMDMessageTranslator<OfHeader, List<D
                if(message.getCookie() != null) {
                    pktInBuilder.setFlowCookie(new FlowCookie(message.getCookie()));
                }
-               //TODO: use either canonical mapping or suitable hash -> 32b
-               //pktInBuilder.setConnectionCookie(cookie);
 
                // extract the port number
                Long port = null;
