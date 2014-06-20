@@ -65,6 +65,7 @@ public abstract class InventoryDataServiceUtil {
         return (Node) OFSessionUtil.getSessionManager().getDataProviderService().readOperationalData(instance);
     }
 
+    @SuppressWarnings("unchecked")
     public static Node readNode(NodeRef nodeRef) {
         return readNode((InstanceIdentifier<Node>) nodeRef.getValue());
     }

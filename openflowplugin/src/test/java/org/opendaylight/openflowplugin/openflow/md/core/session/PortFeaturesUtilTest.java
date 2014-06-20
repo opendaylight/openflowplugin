@@ -8,7 +8,7 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.session;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.junit.After;
 import org.junit.Before;

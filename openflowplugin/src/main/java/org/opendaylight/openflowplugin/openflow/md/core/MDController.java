@@ -17,7 +17,6 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.RejectedExecutionHandler;
@@ -25,7 +24,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.opendaylight.openflowjava.protocol.api.connection.ConnectionConfiguration;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.openflowplugin.openflow.md.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
@@ -90,7 +88,6 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ForwardingBlockingQueue;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -282,26 +279,10 @@ public class MDController implements IMDController, AutoCloseable {
         switchConnectionHandler.setErrorHandler(errorHandler);
         switchConnectionHandler.init();
 
-        List<ListenableFuture<Boolean>> starterChain = new ArrayList<>(switchConnectionProviders.size());
         for (SwitchConnectionProvider switchConnectionPrv : switchConnectionProviders) {
             switchConnectionPrv.setSwitchConnectionHandler(switchConnectionHandler);
-            ListenableFuture<Boolean> isOnlineFuture = switchConnectionPrv.startup();
-            starterChain.add(isOnlineFuture);
+            switchConnectionPrv.startup();
         }
-
-        Future<List<Boolean>> srvStarted = Futures.allAsList(starterChain);
-    }
-
-    /**
-     * @return wished connections configurations
-     * @deprecated use configSubsystem
-     */
-    @Deprecated
-    private static Collection<ConnectionConfiguration> getConnectionConfiguration() {
-        // TODO:: get config from state manager
-        ConnectionConfiguration configuration = ConnectionConfigurationFactory.getDefault();
-        ConnectionConfiguration configurationLegacy = ConnectionConfigurationFactory.getLegacy();
-        return Lists.newArrayList(configuration, configurationLegacy);
     }
 
     /**

@@ -115,16 +115,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.match.MatchSetfield;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.next.table.miss.TablesMiss;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.wildcards.WildcardSetfield;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Utility class for converting a MD-SAL Table features into the OF library table
  * features.
  */
 public class TableFeaturesConvertor {
-    private static final Logger logger = LoggerFactory.getLogger(TableFeaturesConvertor.class);
-
     public static List<TableFeatures> toTableFeaturesRequest(
             org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableFeatures salTableFeaturesList) {
         List<TableFeatures> ofTableFeaturesList = new ArrayList<>();

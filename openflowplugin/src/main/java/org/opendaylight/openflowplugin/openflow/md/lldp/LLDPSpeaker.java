@@ -31,7 +31,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInputBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -72,9 +71,6 @@ public class LLDPSpeaker {
 
 	public  void addNodeConnector(InstanceIdentifier<NodeConnector> nodeConnectorInstanceId, NodeConnector nodeConnector) {
     	InstanceIdentifier<Node> nodeInstanceId = nodeConnectorInstanceId.firstIdentifierOf(Node.class);
-    	NodeKey nodeKey = InstanceIdentifier.keyOf(nodeInstanceId);
-    	NodeId nodeId = nodeKey.getId();
-    	NodeConnectorId nodeConnectorId = nodeConnector.getId();
     	FlowCapableNodeConnector flowConnector = nodeConnector.<FlowCapableNodeConnector>getAugmentation(FlowCapableNodeConnector.class);
     	TransmitPacketInputBuilder tpib = new TransmitPacketInputBuilder();
     	tpib.setEgress(new NodeConnectorRef(nodeConnectorInstanceId));

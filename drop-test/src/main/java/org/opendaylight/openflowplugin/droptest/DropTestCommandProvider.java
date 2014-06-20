@@ -11,13 +11,10 @@ package org.opendaylight.openflowplugin.droptest;
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
-import org.opendaylight.controller.sal.binding.api.data.DataBrokerService;
 import org.osgi.framework.BundleContext;
 
 public class DropTestCommandProvider implements CommandProvider {
 
-    private DataBrokerService dataBrokerService;
-    private ProviderContext pc;
     private BundleContext ctx;
     private DropTestProvider provider;
     private DropTestRpcProvider rpcProvider;
@@ -32,8 +29,6 @@ public class DropTestCommandProvider implements CommandProvider {
     }
 
     public void onSessionInitiated(ProviderContext session) {
-        pc = session;
-        dataBrokerService = session.getSALService(DataBrokerService.class);
         ctx.registerService(CommandProvider.class.getName(), this, null);
         this.sessionInitiated = true;
 

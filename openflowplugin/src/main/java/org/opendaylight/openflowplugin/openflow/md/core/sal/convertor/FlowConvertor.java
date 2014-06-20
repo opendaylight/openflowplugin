@@ -27,7 +27,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.WriteActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.WriteMetadataCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.apply.actions._case.ApplyActions;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.clear.actions._case.ClearActions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.go.to.table._case.GoToTable;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.meter._case.Meter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.write.actions._case.WriteActions;
@@ -50,8 +49,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.OxmMatchType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.grouping.MatchEntries;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Objects;
 
@@ -59,8 +56,6 @@ import com.google.common.base.Objects;
  * Utility class for converting a MD-SAL Flow into the OF flow mod
  */
 public class FlowConvertor {
-    private static final Logger logger = LoggerFactory.getLogger(FlowConvertor.class);
-
     // Default values for when things are null
     private static final BigInteger DEFAULT_COOKIE = BigInteger.ZERO;
     private static final BigInteger DEFAULT_COOKIE_MASK = BigInteger.ZERO;
@@ -234,10 +229,11 @@ public class FlowConvertor {
             }
 
             else if (curInstruction instanceof ClearActionsCase) {
-                ClearActionsCase clearActionscase = (ClearActionsCase) curInstruction;
-                ClearActions clearActions = clearActionscase.getClearActions();
+                // ClearActionsCase clearActionscase = (ClearActionsCase) curInstruction;
+                // ClearActions clearActions = clearActionscase.getClearActions();
                 instructionBuilder
                         .setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.ClearActions.class);
+                // XXX - Bug - should do something here
                 instructionsList.add(instructionBuilder.build());
             }
 

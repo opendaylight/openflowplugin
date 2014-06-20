@@ -30,7 +30,6 @@ public class MessageSpyCounterImpl implements MessageObservatory<DataContainer> 
 
     private static final class MessageCounters {
         private static final AtomicLongFieldUpdater<MessageCounters> UPDATER = AtomicLongFieldUpdater.newUpdater(MessageCounters.class, "current");
-        private volatile long current;
         private long cumulative;
 
         public synchronized long accumulate() {

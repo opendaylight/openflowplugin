@@ -21,6 +21,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 public class LLDPSpeakerPopListener<T> implements PopListener<T> {
 
 
+    @SuppressWarnings("unchecked")
     @Override
     public void onPop(T processedMessage) {
         if(processedMessage instanceof NodeConnectorUpdated) {
