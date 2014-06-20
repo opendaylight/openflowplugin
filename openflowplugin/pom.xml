@@ -65,7 +65,7 @@
                     <dependency>
                         <groupId>org.opendaylight.controller</groupId>
                         <artifactId>yang-jmx-generator-plugin</artifactId>
-                        <version>0.2.5-SNAPSHOT</version>
+                        <version>${config.parent.version}</version>
                     </dependency>
                     <dependency>
                         <groupId>org.opendaylight.yangtools</groupId>
@@ -127,7 +127,6 @@
         <dependency>
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>config-api</artifactId>
-            <version>0.2.5-SNAPSHOT</version>
         </dependency>
 
         <dependency>
@@ -137,7 +136,6 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.1</version>
         </dependency>
         <dependency>
             <groupId>equinoxSDK381</groupId>
