@@ -109,6 +109,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.MplsLabelMatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.OpCodeMatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.OpCodeMatchEntryBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.OxmFieldsAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.PortMatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.PortMatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.PortNumberMatchEntry;
@@ -540,7 +541,13 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
     public static Match fromOFMatchToSALMatch(
             final org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.match.grouping.Match swMatch,
             final BigInteger datapathid) {
+        
+        return OfMatchToSALMatchConvertor(swMatch.getMatchEntries(), datapathid);
 
+    }
+
+    private static Match OfMatchToSALMatchConvertor(List<MatchEntries> swMatchList, final BigInteger datapathid){
+        
         MatchBuilder matchBuilder = new MatchBuilder();
         EthernetMatchBuilder ethMatchBuilder = new EthernetMatchBuilder();
         VlanMatchBuilder vlanMatchBuilder = new VlanMatchBuilder();
@@ -554,8 +561,6 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
         ArpMatchBuilder arpMatchBuilder = new ArpMatchBuilder();
         Ipv6MatchBuilder ipv6MatchBuilder = new Ipv6MatchBuilder();
         ProtocolMatchFieldsBuilder protocolMatchFieldsBuilder = new ProtocolMatchFieldsBuilder();
-
-        List<MatchEntries> swMatchList = swMatch.getMatchEntries();
 
         for (MatchEntries ofMatch : swMatchList) {
 
@@ -787,9 +792,10 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
                 if (ipv6AddressMatchEntry != null) {
                     String ipv6PrefixStr = ipv6AddressMatchEntry.getIpv6Address().getValue();
                     MaskMatchEntry maskMatchEntry = ofMatch.getAugmentation(MaskMatchEntry.class);
-
-                    ipv6PrefixStr += PREFIX_SEPARATOR
-                            + MatchConvertorUtil.ipv6NetmaskArrayToCIDRValue(maskMatchEntry.getMask());
+                    if(maskMatchEntry != null){
+                        ipv6PrefixStr += PREFIX_SEPARATOR
+                                + MatchConvertorUtil.ipv6NetmaskArrayToCIDRValue(maskMatchEntry.getMask());
+                    }
                         
                     if (ofMatch.getOxmMatchField().equals(Ipv6Src.class)) {
                         ipv6MatchBuilder.setIpv6Source(new Ipv6Prefix(ipv6PrefixStr));
@@ -892,7 +898,6 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
         }
         return matchBuilder.build();
     }
-
     private static MatchEntries toOfMplsPbb(final Pbb pbb) {
         MatchEntriesBuilder matchEntriesBuilder = new MatchEntriesBuilder();
         boolean hasmask = false;
@@ -1296,426 +1301,18 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
     }
 
     /**
-     * Method converts OF SetField Match to SAL SetFiled matches TODO: enable or
-     * delete
+     * Method converts OF SetField action to SAL SetFiled action.
      *
      * @param action
      * @return
      */
-    public static SetField ofToSALSetField(
+    public static SetField fromOFSetFieldToSALSetFieldAction(
             final Action action) {
-        logger.debug("OF SetField match to SAL SetField match converstion begins");
+        logger.debug("Converting OF SetField action to SAL SetField action");
         SetFieldBuilder setField = new SetFieldBuilder();
-        /*
-         * OxmFieldsAction oxmFields =
-         * action.getAugmentation(OxmFieldsAction.class);
-         *
-         * List<MatchEntries> matchEntries = oxmFields.getMatchEntries();
-         * org.opendaylight
-         * .yang.gen.v1.urn.opendaylight.action.types.rev131112.action
-         * .action.set.field.MatchBuilder match =new
-         * org.opendaylight.yang.gen.v1
-         * .urn.opendaylight.action.types.rev131112.action
-         * .action.set.field.MatchBuilder();
-         *
-         * EthernetMatchBuilder ethernetMatchBuilder = null; VlanMatchBuilder
-         * vlanMatchBuilder = null; IpMatchBuilder ipMatchBuilder = null;
-         * TcpMatchBuilder tcpMatchBuilder = null; UdpMatchBuilder
-         * udpMatchBuilder = null; SctpMatchBuilder sctpMatchBuilder = null;
-         * Icmpv4MatchBuilder icmpv4MatchBuilder = null; Icmpv6MatchBuilder
-         * icmpv6MatchBuilder = null; Ipv4MatchBuilder ipv4MatchBuilder = null;
-         * ArpMatchBuilder arpMatchBuilder = null; Ipv6MatchBuilder
-         * ipv6MatchBuilder = null; ProtocolMatchFieldsBuilder
-         * protocolMatchFieldsBuilder = null;
-         *
-         * for(MatchEntries matchEntry : matchEntries){ if(matchEntry instanceof
-         * InPort){ PortNumberMatchEntry inPort =
-         * matchEntry.getAugmentation(PortNumberMatchEntry.class);
-         * match.setInPort(inPort.getPortNumber().getValue()); }else if
-         * (matchEntry instanceof InPhyPort){ PortNumberMatchEntry phyPort =
-         * matchEntry.getAugmentation(PortNumberMatchEntry.class);
-         * match.setInPhyPort(phyPort.getPortNumber().getValue()); }else if
-         * (matchEntry instanceof Metadata){ MetadataMatchEntry metadataMatch =
-         * matchEntry.getAugmentation(MetadataMatchEntry.class); MetadataBuilder
-         * metadataBuilder = new MetadataBuilder();
-         * metadataBuilder.setMetadata(new
-         * BigInteger(metadataMatch.getMetadata())); MaskMatchEntry maskMatch =
-         * matchEntry.getAugmentation(MaskMatchEntry.class); if (maskMatch !=
-         * null){ metadataBuilder.setMetadataMask(maskMatch.getMask()); }
-         * match.setMetadata(metadataBuilder.build()); }else if (matchEntry
-         * instanceof EthDst){
-         *
-         * if(ethernetMatchBuilder == null) ethernetMatchBuilder = new
-         * EthernetMatchBuilder();
-         *
-         * MacAddressMatchEntry macAddressMatch =
-         * matchEntry.getAugmentation(MacAddressMatchEntry.class);
-         * MaskMatchEntry maskMatch =
-         * matchEntry.getAugmentation(MaskMatchEntry.class);
-         * EthernetDestinationBuilder ethernetDestination = new
-         * EthernetDestinationBuilder();
-         * ethernetDestination.setAddress(macAddressMatch.getMacAddress());
-         * if(maskMatch != null){
-         * ethernetDestination.setMask(maskMatch.getMask()); }
-         * ethernetMatchBuilder
-         * .setEthernetDestination(ethernetDestination.build()); }else if
-         * (matchEntry instanceof EthSrc){ if(ethernetMatchBuilder == null)
-         * ethernetMatchBuilder = new EthernetMatchBuilder();
-         *
-         * MacAddressMatchEntry macAddressMatch =
-         * matchEntry.getAugmentation(MacAddressMatchEntry.class);
-         * MaskMatchEntry maskMatch =
-         * matchEntry.getAugmentation(MaskMatchEntry.class);
-         * EthernetSourceBuilder ethernetSource = new EthernetSourceBuilder();
-         * ethernetSource.setAddress(macAddressMatch.getMacAddress());
-         * if(maskMatch != null){ ethernetSource.setMask(maskMatch.getMask()); }
-         * ethernetMatchBuilder.setEthernetSource(ethernetSource.build()); }else
-         * if (matchEntry instanceof EthType){ if(ethernetMatchBuilder == null)
-         * ethernetMatchBuilder = new EthernetMatchBuilder();
-         *
-         * EthTypeMatchEntry etherTypeMatch =
-         * matchEntry.getAugmentation(EthTypeMatchEntry.class);
-         * EthernetTypeBuilder ethernetType= new EthernetTypeBuilder();
-         * org.opendaylight
-         * .yang.gen.v1.urn.opendaylight.l2.types.rev130827.EtherType etherType
-         * = new
-         * org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827
-         * .EtherType((long)etherTypeMatch.getEthType().getValue());
-         * ethernetType.setType(etherType);
-         * ethernetMatchBuilder.setEthernetType(ethernetType.build()); }else if
-         * (matchEntry instanceof VlanVid){ if(vlanMatchBuilder == null)
-         * vlanMatchBuilder = new VlanMatchBuilder();
-         *
-         * VlanVidMatchEntry vlanVidMatch =
-         * matchEntry.getAugmentation(VlanVidMatchEntry.class); MaskMatchEntry
-         * maskMatch = matchEntry.getAugmentation(MaskMatchEntry.class);
-         *
-         * VlanIdBuilder vlanIdBuilder = new VlanIdBuilder();
-         * vlanIdBuilder.setVlanId( new
-         * org.opendaylight.yang.gen.v1.urn.opendaylight
-         * .l2.types.rev130827.VlanId(vlanVidMatch.getVlanVid())); if(maskMatch
-         * != null){ vlanIdBuilder.setMask(maskMatch.getMask()); }
-         * vlanMatchBuilder.setVlanId(vlanIdBuilder.build());
-         *
-         * }else if (matchEntry instanceof VlanPcp){ if(vlanMatchBuilder ==
-         * null) vlanMatchBuilder = new VlanMatchBuilder();
-         *
-         * VlanPcpMatchEntry vlanPcpMatch =
-         * matchEntry.getAugmentation(VlanPcpMatchEntry.class);
-         * vlanMatchBuilder.setVlanPcp( new
-         * org.opendaylight.yang.gen.v1.urn.opendaylight
-         * .l2.types.rev130827.VlanPcp(vlanPcpMatch.getVlanPcp())); }else if
-         * (matchEntry instanceof IpDscp){ if(ipMatchBuilder == null)
-         * ipMatchBuilder = new IpMatchBuilder();
-         *
-         * DscpMatchEntry dscpMatchEntry =
-         * matchEntry.getAugmentation(DscpMatchEntry.class);
-         * ipMatchBuilder.setIpDscp(dscpMatchEntry.getDscp());
-         *
-         * }else if (matchEntry instanceof IpEcn){ if(ipMatchBuilder == null)
-         * ipMatchBuilder = new IpMatchBuilder();
-         *
-         * EcnMatchEntry ecnMatchEntry =
-         * matchEntry.getAugmentation(EcnMatchEntry.class);
-         * ipMatchBuilder.setIpEcn(ecnMatchEntry.getEcn());
-         *
-         * }else if (matchEntry instanceof IpProto){ if(ipMatchBuilder == null)
-         * ipMatchBuilder = new IpMatchBuilder();
-         *
-         * ProtocolNumberMatchEntry protocolNumberMatch =
-         * matchEntry.getAugmentation(ProtocolNumberMatchEntry.class);
-         * ipMatchBuilder
-         * .setIpProtocol(protocolNumberMatch.getProtocolNumber()); }else if
-         * (matchEntry instanceof TcpSrc){ if(tcpMatchBuilder == null)
-         * tcpMatchBuilder = new TcpMatchBuilder();
-         *
-         * PortMatchEntry portMatchEntry =
-         * matchEntry.getAugmentation(PortMatchEntry.class);
-         * tcpMatchBuilder.setTcpSourcePort(portMatchEntry.getPort());
-         *
-         * }else if (matchEntry instanceof TcpDst){ if(tcpMatchBuilder == null)
-         * tcpMatchBuilder = new TcpMatchBuilder();
-         *
-         * PortMatchEntry portMatchEntry =
-         * matchEntry.getAugmentation(PortMatchEntry.class);
-         * tcpMatchBuilder.setTcpDestinationPort(portMatchEntry.getPort());
-         *
-         * }else if (matchEntry instanceof UdpSrc){ if(udpMatchBuilder == null)
-         * udpMatchBuilder = new UdpMatchBuilder();
-         *
-         * PortMatchEntry portMatchEntry =
-         * matchEntry.getAugmentation(PortMatchEntry.class);
-         * udpMatchBuilder.setUdpSourcePort(portMatchEntry.getPort());
-         *
-         *
-         * }else if (matchEntry instanceof UdpDst){ if(udpMatchBuilder == null)
-         * udpMatchBuilder = new UdpMatchBuilder();
-         *
-         * PortMatchEntry portMatchEntry =
-         * matchEntry.getAugmentation(PortMatchEntry.class);
-         * udpMatchBuilder.setUdpDestinationPort(portMatchEntry.getPort());
-         * }else if (matchEntry instanceof SctpSrc){ if(sctpMatchBuilder ==
-         * null) sctpMatchBuilder = new SctpMatchBuilder();
-         *
-         * PortMatchEntry portMatchEntry =
-         * matchEntry.getAugmentation(PortMatchEntry.class);
-         * sctpMatchBuilder.setSctpSourcePort(portMatchEntry.getPort());
-         *
-         * }else if (matchEntry instanceof SctpDst){ if(sctpMatchBuilder ==
-         * null) sctpMatchBuilder = new SctpMatchBuilder();
-         *
-         * PortMatchEntry portMatchEntry =
-         * matchEntry.getAugmentation(PortMatchEntry.class);
-         * sctpMatchBuilder.setSctpDestinationPort(portMatchEntry.getPort());
-         * }else if (matchEntry instanceof Icmpv4Type){ if(icmpv4MatchBuilder ==
-         * null) icmpv4MatchBuilder = new Icmpv4MatchBuilder();
-         *
-         * Icmpv4TypeMatchEntry icmpv4TypeMatchEntry =
-         * matchEntry.getAugmentation(Icmpv4TypeMatchEntry.class);
-         * icmpv4MatchBuilder
-         * .setIcmpv4Type(icmpv4TypeMatchEntry.getIcmpv4Type());
-         *
-         * }else if (matchEntry instanceof Icmpv4Code){ if(icmpv4MatchBuilder ==
-         * null) icmpv4MatchBuilder = new Icmpv4MatchBuilder();
-         *
-         * Icmpv4CodeMatchEntry icmpv4CodeMatchEntry =
-         * matchEntry.getAugmentation(Icmpv4CodeMatchEntry.class);
-         * icmpv4MatchBuilder
-         * .setIcmpv4Code(icmpv4CodeMatchEntry.getIcmpv4Code());
-         *
-         * }else if (matchEntry instanceof Icmpv6Type){ if(icmpv6MatchBuilder ==
-         * null) icmpv6MatchBuilder = new Icmpv6MatchBuilder();
-         *
-         * Icmpv6TypeMatchEntry icmpv6TypeMatchEntry =
-         * matchEntry.getAugmentation(Icmpv6TypeMatchEntry.class);
-         * icmpv6MatchBuilder
-         * .setIcmpv6Type(icmpv6TypeMatchEntry.getIcmpv6Type()); }else if
-         * (matchEntry instanceof Icmpv6Code){ if(icmpv6MatchBuilder == null)
-         * icmpv6MatchBuilder = new Icmpv6MatchBuilder();
-         *
-         * Icmpv6CodeMatchEntry icmpv6CodeMatchEntry =
-         * matchEntry.getAugmentation(Icmpv6CodeMatchEntry.class);
-         * icmpv6MatchBuilder
-         * .setIcmpv6Code(icmpv6CodeMatchEntry.getIcmpv6Code()); }else if
-         * (matchEntry instanceof Ipv4Src){ if(ipv4MatchBuilder == null)
-         * ipv4MatchBuilder = new Ipv4MatchBuilder();
-         *
-         * Ipv4AddressMatchEntry ipv4AddressMatchEntry =
-         * matchEntry.getAugmentation(Ipv4AddressMatchEntry.class);
-         * MaskMatchEntry maskMatchEntry =
-         * matchEntry.getAugmentation(MaskMatchEntry.class);
-         * ipv4MatchBuilder.setIpv4Source( new
-         * Ipv4Prefix(ipv4AddressMatchEntry.getIpv4Address().getValue() +"/"+new
-         * String(maskMatchEntry.getMask())));
-         *
-         * }else if (matchEntry instanceof Ipv4Dst){ if(ipv4MatchBuilder ==
-         * null) ipv4MatchBuilder = new Ipv4MatchBuilder();
-         *
-         * Ipv4AddressMatchEntry ipv4AddressMatchEntry =
-         * matchEntry.getAugmentation(Ipv4AddressMatchEntry.class);
-         * MaskMatchEntry maskMatchEntry =
-         * matchEntry.getAugmentation(MaskMatchEntry.class);
-         * ipv4MatchBuilder.setIpv4Destination( new
-         * Ipv4Prefix(ipv4AddressMatchEntry.getIpv4Address().getValue() +"/"+new
-         * String(maskMatchEntry.getMask()))); }else if (matchEntry instanceof
-         * ArpOp){ if(arpMatchBuilder == null) arpMatchBuilder = new
-         * ArpMatchBuilder();
-         *
-         * OpCodeMatchEntry opCodeMatchEntry =
-         * matchEntry.getAugmentation(OpCodeMatchEntry.class);
-         * arpMatchBuilder.setArpOp(opCodeMatchEntry.getOpCode());
-         *
-         * }else if (matchEntry instanceof ArpSpa){ if(arpMatchBuilder == null)
-         * arpMatchBuilder = new ArpMatchBuilder();
-         *
-         * Ipv4AddressMatchEntry ipv4AddressMatchEntry =
-         * matchEntry.getAugmentation(Ipv4AddressMatchEntry.class);
-         * MaskMatchEntry maskMatchEntry =
-         * matchEntry.getAugmentation(MaskMatchEntry.class);
-         * arpMatchBuilder.setArpSourceTransportAddress( new
-         * Ipv4Prefix(ipv4AddressMatchEntry.getIpv4Address().getValue() +"/"+new
-         * String(maskMatchEntry.getMask())));
-         *
-         * }else if (matchEntry instanceof ArpTpa){ if(arpMatchBuilder == null)
-         * arpMatchBuilder = new ArpMatchBuilder();
-         *
-         * Ipv4AddressMatchEntry ipv4AddressMatchEntry =
-         * matchEntry.getAugmentation(Ipv4AddressMatchEntry.class);
-         * MaskMatchEntry maskMatchEntry =
-         * matchEntry.getAugmentation(MaskMatchEntry.class);
-         * arpMatchBuilder.setArpTargetTransportAddress( new
-         * Ipv4Prefix(ipv4AddressMatchEntry.getIpv4Address().getValue() +"/"+new
-         * String(maskMatchEntry.getMask())));
-         *
-         * }else if (matchEntry instanceof ArpSha){ if(arpMatchBuilder == null)
-         * arpMatchBuilder = new ArpMatchBuilder();
-         *
-         * MacAddressMatchEntry macAddressMatchEntry =
-         * matchEntry.getAugmentation(MacAddressMatchEntry.class);
-         * MaskMatchEntry maskMatchEntry =
-         * matchEntry.getAugmentation(MaskMatchEntry.class);
-         * ArpSourceHardwareAddressBuilder arpSourceHardwareAddressBuilder = new
-         * ArpSourceHardwareAddressBuilder();
-         * arpSourceHardwareAddressBuilder.setAddress
-         * (macAddressMatchEntry.getMacAddress());
-         * arpSourceHardwareAddressBuilder.setMask(maskMatchEntry.getMask());
-         * arpMatchBuilder
-         * .setArpSourceHardwareAddress(arpSourceHardwareAddressBuilder
-         * .build());
-         *
-         * }else if (matchEntry instanceof ArpTha){ if(arpMatchBuilder == null)
-         * arpMatchBuilder = new ArpMatchBuilder();
-         *
-         * MacAddressMatchEntry macAddressMatchEntry =
-         * matchEntry.getAugmentation(MacAddressMatchEntry.class);
-         * MaskMatchEntry maskMatchEntry =
-         * matchEntry.getAugmentation(MaskMatchEntry.class);
-         * ArpTargetHardwareAddressBuilder arpTargetHardwareAddressBuilder = new
-         * ArpTargetHardwareAddressBuilder();
-         * arpTargetHardwareAddressBuilder.setAddress
-         * (macAddressMatchEntry.getMacAddress());
-         * arpTargetHardwareAddressBuilder.setMask(maskMatchEntry.getMask());
-         * arpMatchBuilder
-         * .setArpTargetHardwareAddress(arpTargetHardwareAddressBuilder
-         * .build()); }else if (matchEntry instanceof Ipv6Src){
-         * if(ipv6MatchBuilder == null) ipv6MatchBuilder = new
-         * Ipv6MatchBuilder();
-         *
-         * Ipv6AddressMatchEntry ipv6AddressMatchEntry =
-         * matchEntry.getAugmentation(Ipv6AddressMatchEntry.class);
-         * MaskMatchEntry maskMatchEntry =
-         * matchEntry.getAugmentation(MaskMatchEntry.class);
-         * ipv6MatchBuilder.setIpv6Source(new Ipv6Prefix
-         * (ipv6AddressMatchEntry.getIpv6Address().getValue()+ "/"+new
-         * String(maskMatchEntry.getMask())));
-         *
-         * }else if (matchEntry instanceof Ipv6Dst){ if(ipv6MatchBuilder ==
-         * null) ipv6MatchBuilder = new Ipv6MatchBuilder();
-         *
-         * Ipv6AddressMatchEntry ipv6AddressMatchEntry =
-         * matchEntry.getAugmentation(Ipv6AddressMatchEntry.class);
-         * MaskMatchEntry maskMatchEntry =
-         * matchEntry.getAugmentation(MaskMatchEntry.class);
-         * ipv6MatchBuilder.setIpv6Destination(new Ipv6Prefix
-         * (ipv6AddressMatchEntry.getIpv6Address().getValue()+ "/"+new
-         * String(maskMatchEntry.getMask())));
-         *
-         * }else if (matchEntry instanceof Ipv6Flabel){ if(ipv6MatchBuilder ==
-         * null) ipv6MatchBuilder = new Ipv6MatchBuilder();
-         *
-         * Ipv6FlabelMatchEntry ipv6FlabelMatchEntry =
-         * matchEntry.getAugmentation(Ipv6FlabelMatchEntry.class);
-         * MaskMatchEntry maskMatchEntry =
-         * matchEntry.getAugmentation(MaskMatchEntry.class); Ipv6LabelBuilder
-         * ipv6LabelBuilder = new Ipv6LabelBuilder();
-         * ipv6LabelBuilder.setIpv6Flabel(ipv6FlabelMatchEntry.getIpv6Flabel());
-         * ipv6LabelBuilder.setFlabelMask(maskMatchEntry.getMask());
-         * ipv6MatchBuilder.setIpv6Label(ipv6LabelBuilder.build());
-         *
-         * }else if (matchEntry instanceof Ipv6NdTarget){ if(ipv6MatchBuilder ==
-         * null) ipv6MatchBuilder = new Ipv6MatchBuilder();
-         * Ipv6AddressMatchEntry ipv6AddressMatchEntry =
-         * matchEntry.getAugmentation(Ipv6AddressMatchEntry.class);
-         * ipv6MatchBuilder
-         * .setIpv6NdTarget(ipv6AddressMatchEntry.getIpv6Address());
-         *
-         * }else if (matchEntry instanceof Ipv6NdSll){ if(ipv6MatchBuilder ==
-         * null) ipv6MatchBuilder = new Ipv6MatchBuilder();
-         *
-         * MacAddressMatchEntry macAddressMatchEntry =
-         * matchEntry.getAugmentation(MacAddressMatchEntry.class);
-         * ipv6MatchBuilder.setIpv6NdSll(macAddressMatchEntry.getMacAddress());
-         * }else if (matchEntry instanceof Ipv6NdTll){ if(ipv6MatchBuilder ==
-         * null) ipv6MatchBuilder = new Ipv6MatchBuilder();
-         *
-         * MacAddressMatchEntry macAddressMatchEntry =
-         * matchEntry.getAugmentation(MacAddressMatchEntry.class);
-         * ipv6MatchBuilder.setIpv6NdTll(macAddressMatchEntry.getMacAddress());
-         *
-         * }else if (matchEntry instanceof Ipv6Exthdr){ if(ipv6MatchBuilder ==
-         * null) ipv6MatchBuilder = new Ipv6MatchBuilder();
-         *
-         * PseudoFieldMatchEntry pseudoFieldMatchEntry =
-         * matchEntry.getAugmentation(PseudoFieldMatchEntry.class); PseudoField
-         * pseudoField = pseudoFieldMatchEntry.getPseudoField(); int
-         * pseudoFieldInt = 0; pseudoFieldInt |= pseudoField.isNonext()?(1 <<
-         * 0):~(1 << 0); pseudoFieldInt |= pseudoField.isEsp()?(1 << 1):~(1 <<
-         * 1); pseudoFieldInt |= pseudoField.isAuth()?(1 << 2):~(1 << 2);
-         * pseudoFieldInt |= pseudoField.isDest()?(1 << 3):~(1 << 3);
-         * pseudoFieldInt |= pseudoField.isFrag()?(1 << 4):~(1 << 4);
-         * pseudoFieldInt |= pseudoField.isRouter()?(1 << 5):~(1 << 5);
-         * pseudoFieldInt |= pseudoField.isHop()?(1 << 6):~(1 << 6);
-         * pseudoFieldInt |= pseudoField.isUnrep()?(1 << 7):~(1 << 7);
-         * pseudoFieldInt |= pseudoField.isUnseq()?(1 << 8):~(1 << 8);
-         *
-         * ipv6MatchBuilder.setIpv6Exthdr(pseudoFieldInt); }else if (matchEntry
-         * instanceof MplsLabel){ if(protocolMatchFieldsBuilder == null)
-         * protocolMatchFieldsBuilder = new ProtocolMatchFieldsBuilder();
-         *
-         * MplsLabelMatchEntry MplsLabelMatchEntry =
-         * matchEntry.getAugmentation(MplsLabelMatchEntry.class);
-         * protocolMatchFieldsBuilder
-         * .setMplsLabel(MplsLabelMatchEntry.getMplsLabel());
-         *
-         * }else if (matchEntry instanceof MplsBos){
-         * if(protocolMatchFieldsBuilder == null) protocolMatchFieldsBuilder =
-         * new ProtocolMatchFieldsBuilder();
-         *
-         * BosMatchEntry bosMatchEntry =
-         * matchEntry.getAugmentation(BosMatchEntry.class);
-         * protocolMatchFieldsBuilder
-         * .setMplsBos(bosMatchEntry.isBos()?(short)1:(short)0);
-         *
-         * }else if (matchEntry instanceof MplsTc) {
-         * if(protocolMatchFieldsBuilder == null) protocolMatchFieldsBuilder =
-         * new ProtocolMatchFieldsBuilder();
-         *
-         * TcMatchEntry tcMatchEntry =
-         * matchEntry.getAugmentation(TcMatchEntry.class);
-         * protocolMatchFieldsBuilder.setMplsTc(tcMatchEntry.getTc());
-         *
-         * }else if (matchEntry instanceof PbbIsid){
-         * if(protocolMatchFieldsBuilder == null) protocolMatchFieldsBuilder =
-         * new ProtocolMatchFieldsBuilder();
-         *
-         * IsidMatchEntry isidMatchEntry =
-         * matchEntry.getAugmentation(IsidMatchEntry.class); PbbBuilder
-         * pbbBuilder = new PbbBuilder();
-         * pbbBuilder.setPbbIsid(isidMatchEntry.getIsid()); MaskMatchEntry
-         * maskMatchEntry = matchEntry.getAugmentation(MaskMatchEntry.class);
-         * if(maskMatchEntry != null)
-         * pbbBuilder.setPbbMask(maskMatchEntry.getMask());
-         *
-         * protocolMatchFieldsBuilder.setPbb(pbbBuilder.build()); }else if
-         * (matchEntry instanceof TunnelId){ MetadataMatchEntry
-         * metadataMatchEntry =
-         * matchEntry.getAugmentation(MetadataMatchEntry.class); MaskMatchEntry
-         * maskMatchEntry = matchEntry.getAugmentation(MaskMatchEntry.class);
-         * TunnelBuilder tunnelBuilder = new TunnelBuilder();
-         * tunnelBuilder.setTunnelId(new
-         * BigInteger(metadataMatchEntry.getMetadata()));
-         * tunnelBuilder.setTunnelMask(maskMatchEntry.getMask());
-         * match.setTunnel(tunnelBuilder.build()); } } if(ethernetMatchBuilder
-         * != null){ match.setEthernetMatch(ethernetMatchBuilder.build()); } if
-         * (vlanMatchBuilder != null){
-         * match.setVlanMatch(vlanMatchBuilder.build()); } if(ipMatchBuilder !=
-         * null){ match.setIpMatch(ipMatchBuilder.build()); } if(tcpMatchBuilder
-         * != null){ match.setLayer4Match(tcpMatchBuilder.build()); }
-         * if(udpMatchBuilder != null){
-         * match.setLayer4Match(udpMatchBuilder.build()); } if(sctpMatchBuilder
-         * != null){ match.setLayer4Match(sctpMatchBuilder.build()); }
-         * if(icmpv4MatchBuilder != null){
-         * match.setIcmpv4Match(icmpv4MatchBuilder.build()); }
-         * if(icmpv6MatchBuilder != null){
-         * match.setIcmpv6Match(icmpv6MatchBuilder.build()); }
-         * if(ipv4MatchBuilder != null){
-         * match.setLayer3Match(ipv4MatchBuilder.build()); } if(arpMatchBuilder
-         * != null){ match.setLayer3Match(arpMatchBuilder.build()); }
-         * if(ipv6MatchBuilder != null){
-         * match.setLayer3Match(ipv6MatchBuilder.build()); }
-         * if(protocolMatchFieldsBuilder != null){
-         * match.setProtocolMatchFields(protocolMatchFieldsBuilder.build()); }
-         * setField.setMatch(match.build());
-         */return setField.build();
+        OxmFieldsAction oxmFields = action.getAugmentation(OxmFieldsAction.class);
+        Match match = OfMatchToSALMatchConvertor(oxmFields.getMatchEntries(), null);
+        setField.fieldsFrom(match);
+        return setField.build();
     }
 }

@@ -746,7 +746,7 @@ public final class ActionConvertor {
                 bucketActions.add(new DecNwTtlCaseBuilder().setDecNwTtl(decNwTtl.build()).build());
             } else if (action.getType().equals(
                     org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.SetField.class)) {
-                bucketActions.add(new SetFieldCaseBuilder().setSetField(MatchConvertorImpl.ofToSALSetField(action))
+                bucketActions.add(new SetFieldCaseBuilder().setSetField(MatchConvertorImpl.fromOFSetFieldToSALSetFieldAction(action))
                         .build());
 
             } else if (action.getType().equals(
