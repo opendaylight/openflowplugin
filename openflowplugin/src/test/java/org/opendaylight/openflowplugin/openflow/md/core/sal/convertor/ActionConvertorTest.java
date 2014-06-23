@@ -587,6 +587,24 @@ public class ActionConvertorTest {
         Assert.assertEquals("2001:0db8:85a3:0042:1000:8a2e:0370:7334", matchEntry.getAugmentation(Ipv6AddressMatchEntry.class).getIpv6Address().getValue());
     }
 
+    /**
+     * testing {@link ActionConvertor#ofToSALPopMplsAction(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action)}
+     * with OF-1.3, IPv6 
+     */
+    @Test
+    public void testOFtoSALPopMplsAction() {
+        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder actionBuilder 
+        = new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder();
+        
+        actionBuilder.setType(PopMpls.class);
+        EthertypeActionBuilder ethertypeActionBuilder = new EthertypeActionBuilder();
+        ethertypeActionBuilder.setEthertype(new EtherType(new Integer(34888)));
+        actionBuilder.addAugmentation(EthertypeAction.class, ethertypeActionBuilder.build());
+        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action action = actionBuilder.build(); 
+
+        Assert.assertEquals(34888, ActionConvertor.ofToSALPopMplsAction(action).getPopMplsAction().getEthernetType().intValue());
+    }
+
     private static SetNwDstActionCase provisionNwDstActionBuilder(Address address) {
         SetNwDstAction nwDstAction = new SetNwDstActionBuilder().setAddress(address).build();
         SetNwDstActionCase action = new SetNwDstActionCaseBuilder()
