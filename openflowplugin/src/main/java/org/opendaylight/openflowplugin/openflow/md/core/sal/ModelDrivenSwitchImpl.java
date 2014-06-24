@@ -143,8 +143,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
                 OFRpcTaskFactory.createAddFlowTask(rpcTaskContext, input, cookie);
         ListenableFuture<RpcResult<UpdateFlowOutput>> result = task.submit();
         
-        return Futures.transform(JdkFutureAdapters.listenInPoolThread(result), 
-                OFRpcFutureResultTransformFactory.createForAddFlowOutput());
+        return Futures.transform(result, OFRpcFutureResultTransformFactory.createForAddFlowOutput());
     }
 
 
@@ -159,8 +158,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
                 OFRpcTaskFactory.createAddGroupTask(rpcTaskContext, input, cookie);
         ListenableFuture<RpcResult<UpdateGroupOutput>> result = task.submit();
         
-        return Futures.transform(JdkFutureAdapters.listenInPoolThread(result), 
-                OFRpcFutureResultTransformFactory.createForAddGroupOutput());
+        return Futures.transform(result, OFRpcFutureResultTransformFactory.createForAddGroupOutput());
     }
 
     @Override
@@ -174,8 +172,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
                 OFRpcTaskFactory.createAddMeterTask(rpcTaskContext, input, cookie);
         ListenableFuture<RpcResult<UpdateMeterOutput>> result = task.submit();
         
-        return Futures.transform(JdkFutureAdapters.listenInPoolThread(result), 
-                OFRpcFutureResultTransformFactory.createForAddMeterOutput());
+        return Futures.transform(result, OFRpcFutureResultTransformFactory.createForAddMeterOutput());
     }
 
     @Override
@@ -188,8 +185,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
                 OFRpcTaskFactory.createRemoveFlowTask(rpcTaskContext, input, cookie);
         ListenableFuture<RpcResult<UpdateFlowOutput>> result = task.submit();
 
-        return Futures.transform(JdkFutureAdapters.listenInPoolThread(result), 
-                OFRpcFutureResultTransformFactory.createForRemoveFlowOutput());
+        return Futures.transform(result, OFRpcFutureResultTransformFactory.createForRemoveFlowOutput());
     }
 
     @Override
@@ -201,8 +197,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
                 OFRpcTaskFactory.createRemoveGroupTask(rpcTaskContext, input, cookie);
         ListenableFuture<RpcResult<UpdateGroupOutput>> result = task.submit();
         
-        return Futures.transform(JdkFutureAdapters.listenInPoolThread(result), 
-                OFRpcFutureResultTransformFactory.createForRemoveGroupOutput());
+        return Futures.transform(result, OFRpcFutureResultTransformFactory.createForRemoveGroupOutput());
     }
 
     @Override
@@ -214,8 +209,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
                 OFRpcTaskFactory.createRemoveMeterTask(rpcTaskContext, input, cookie);
         ListenableFuture<RpcResult<UpdateMeterOutput>> result = task.submit();
         
-        return Futures.transform(JdkFutureAdapters.listenInPoolThread(result), 
-                OFRpcFutureResultTransformFactory.createForRemoveMeterOutput());
+        return Futures.transform(result, OFRpcFutureResultTransformFactory.createForRemoveMeterOutput());
     }
 
     @Override
@@ -233,31 +227,6 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 
         LOG.debug("Calling the transmitPacket RPC method");
         return messageService.packetOut(message, cookie);
-    }
-
-    private FlowModInputBuilder toFlowModInputBuilder(final Flow source) {
-        FlowModInputBuilder target = new FlowModInputBuilder();
-        target.setCookie(source.getCookie().getValue());
-        target.setIdleTimeout(source.getIdleTimeout());
-        target.setHardTimeout(source.getHardTimeout());
-        target.setMatch(toMatch(source.getMatch()));
-
-        return target;
-    }
-
-    private Match toMatch(final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match match) {
-        MatchBuilder target = new MatchBuilder();
-
-        target.setMatchEntries(toMatchEntries(match));
-
-        return null;
-    }
-
-    private List<MatchEntries> toMatchEntries(
-            final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match match) {
-        List<MatchEntries> entries = new ArrayList<>();
-
-        return null;
     }
 
     @Override
@@ -425,11 +394,6 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
                 OFRpcTaskFactory.createGetNodeConnectorStatisticsTask(rpcTaskContext, input, cookie);
         ListenableFuture<RpcResult<GetNodeConnectorStatisticsOutput>> result = task.submit();
         return result;
-    }
-
-    private static TransactionId generateTransactionId(final Long xid) {
-        BigInteger bigIntXid = BigInteger.valueOf(xid);
-        return new TransactionId(bigIntXid);
     }
     
     @Override
