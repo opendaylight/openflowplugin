@@ -12,12 +12,18 @@ import java.util.Collection;
 import org.opendaylight.controller.sal.common.util.Rpcs;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeterOutput;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -69,13 +75,36 @@ public abstract class OFRpcFutureResultTransformFactory {
     }
     
     /**
+     * @return translator from {@link UpdateFlowOutput} to {@link RemoveFlowOutput}
+     */
+    public static Function<RpcResult<UpdateFlowOutput>,RpcResult<RemoveFlowOutput>> createForRemoveFlowOutput() {
+        return new Function<RpcResult<UpdateFlowOutput>,RpcResult<RemoveFlowOutput>>() {
+
+            @Override
+            public RpcResult<RemoveFlowOutput> apply(RpcResult<UpdateFlowOutput> input) {
+
+                UpdateFlowOutput updateFlowOutput = input.getResult();
+
+                RemoveFlowOutputBuilder removeFlowOutput = new RemoveFlowOutputBuilder();
+                removeFlowOutput.setTransactionId(updateFlowOutput.getTransactionId());
+                RemoveFlowOutput result = removeFlowOutput.build();
+
+                RpcResult<RemoveFlowOutput> rpcResult = assembleRpcResult(input, result);
+                LOG.debug("Returning the Add Flow RPC result to MD-SAL");
+                return rpcResult;
+            }
+
+        };
+    }
+    
+    /**
      * @return translator from {@link UpdateGroupOutput} to {@link AddGroupOutput}
      */
     public static Function<RpcResult<UpdateGroupOutput>, RpcResult<AddGroupOutput>> createForAddGroupOutput() {
         return new Function<RpcResult<UpdateGroupOutput>,RpcResult<AddGroupOutput>>() {
 
             @Override
-            public RpcResult<AddGroupOutput> apply(RpcResult<UpdateGroupOutput> input) {
+            public RpcResult<AddGroupOutput> apply(final RpcResult<UpdateGroupOutput> input) {
                 UpdateGroupOutput updateGroupOutput = input.getResult();
                 
                 AddGroupOutputBuilder addGroupOutput = new AddGroupOutputBuilder();
@@ -90,7 +119,30 @@ public abstract class OFRpcFutureResultTransformFactory {
     }
     
     /**
-     * @return translator from {@link UpdateGroupOutput} to {@link AddGroupOutput}
+     * @return
+     */
+    public static Function<RpcResult<UpdateGroupOutput>,RpcResult<RemoveGroupOutput>> createForRemoveGroupOutput() {
+        return new Function<RpcResult<UpdateGroupOutput>,RpcResult<RemoveGroupOutput>>() {
+
+            @Override
+            public RpcResult<RemoveGroupOutput> apply(RpcResult<UpdateGroupOutput> input) {
+
+                UpdateGroupOutput updateGroupOutput = input.getResult();
+
+                RemoveGroupOutputBuilder removeGroupOutput = new RemoveGroupOutputBuilder();
+                removeGroupOutput.setTransactionId(updateGroupOutput.getTransactionId());
+                RemoveGroupOutput result = removeGroupOutput.build();
+
+                RpcResult<RemoveGroupOutput> rpcResult = assembleRpcResult(input, result);
+                LOG.debug("Returning the Add Flow RPC result to MD-SAL");
+                return rpcResult;
+            }
+
+        };
+    }
+    
+    /**
+     * @return translator from {@link UpdateMeterOutput} to {@link AddMeterOutput}
      */
     public static Function<RpcResult<UpdateMeterOutput>, RpcResult<AddMeterOutput>> createForAddMeterOutput() {
         return new Function<RpcResult<UpdateMeterOutput>,RpcResult<AddMeterOutput>>() {
@@ -104,6 +156,28 @@ public abstract class OFRpcFutureResultTransformFactory {
                 AddMeterOutput result = addMeterOutput.build();
 
                 RpcResult<AddMeterOutput> rpcResult = assembleRpcResult(input, result);
+                LOG.debug("Returning the Add Meter RPC result to MD-SAL");
+                return rpcResult;
+            }
+        };
+    }
+    
+    
+    /**
+     * @return
+     */
+    public static Function<RpcResult<UpdateMeterOutput>, RpcResult<RemoveMeterOutput>> createForRemoveMeterOutput() {
+        return new Function<RpcResult<UpdateMeterOutput>,RpcResult<RemoveMeterOutput>>() {
+
+            @Override
+            public RpcResult<RemoveMeterOutput> apply(final RpcResult<UpdateMeterOutput> input) {
+                UpdateMeterOutput updateMeterOutput = input.getResult();
+                
+                RemoveMeterOutputBuilder removeMeterOutput = new RemoveMeterOutputBuilder();
+                removeMeterOutput.setTransactionId(updateMeterOutput.getTransactionId());
+                RemoveMeterOutput result = removeMeterOutput.build();
+
+                RpcResult<RemoveMeterOutput> rpcResult = assembleRpcResult(input, result);
                 LOG.debug("Returning the Add Meter RPC result to MD-SAL");
                 return rpcResult;
             }
