@@ -20,9 +20,6 @@ import org.opendaylight.controller.sal.common.util.Rpcs;
 import org.opendaylight.openflowjava.protocol.api.util.BinContent;
 import org.opendaylight.openflowplugin.openflow.md.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.FlowConvertor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.GroupConvertor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.MeterConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.PacketOutConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.PortConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.TableFeaturesConvertor;
@@ -35,10 +32,8 @@ import org.opendaylight.openflowplugin.openflow.md.util.FlowCreatorUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowRemovedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForAllFlowsInput;
@@ -64,10 +59,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.p
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.GroupRemovedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetAllGroupStatisticsInput;
@@ -86,10 +79,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.MeterRemovedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeterOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.GetAllMeterConfigStatisticsInput;
@@ -113,11 +104,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.match.grouping.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.match.grouping.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.grouping.MatchEntries;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GroupModInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MeterModInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOutInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortModInput;
@@ -172,7 +159,6 @@ import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 
-import com.google.common.base.Objects;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -259,166 +245,41 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     @Override
     public Future<RpcResult<RemoveFlowOutput>> removeFlow(final RemoveFlowInput input) {
         LOG.debug("Calling the removeFlow RPC method on MessageDispatchService");
-        Long xId = null;
-        // For Flow provisioning, the SwitchConnectionDistinguisher is set to
-        // null so
-        // the request can be routed through any connection to the switch
-
+        
+        // use primary connection
         SwitchConnectionDistinguisher cookie = null;
-        if (Objects.firstNonNull(input.isBarrier(), Boolean.FALSE)) {
-            BarrierInputBuilder barrierInput = new BarrierInputBuilder();
-            xId = sessionContext.getNextXid();
-            barrierInput.setXid(xId);
-            barrierInput.setVersion(version);
-            @SuppressWarnings("unused")
-            Future<RpcResult<BarrierOutput>> barrierOFLib = messageService.barrier(barrierInput.build(), cookie);
-        }
+        OFRpcTask<RemoveFlowInput, RpcResult<UpdateFlowOutput>> task = 
+                OFRpcTaskFactory.createRemoveFlowTask(rpcTaskContext, input, cookie);
+        ListenableFuture<RpcResult<UpdateFlowOutput>> result = task.submit();
 
-        // Convert the RemoveFlowInput to FlowModInput
-        FlowModInputBuilder ofFlowModInput = FlowConvertor.toFlowModInput(input, version, sessionContext
-                .getFeatures().getDatapathId());
-        xId = sessionContext.getNextXid();
-        ofFlowModInput.setXid(xId);
-
-        if (null != rpcNotificationProviderService) {
-            FlowRemovedBuilder removeFlow = new FlowRemovedBuilder(
-                    (org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow) input);
-            removeFlow.setTransactionId(new TransactionId(BigInteger.valueOf(xId.intValue())));
-            removeFlow.setFlowRef(input.getFlowRef());
-            rpcNotificationProviderService.publish(removeFlow.build());
-        }
-
-        Future<RpcResult<UpdateFlowOutput>> resultFromOFLib = messageService.flowMod(ofFlowModInput.build(), cookie);
-
-        RpcResult<UpdateFlowOutput> rpcResultFromOFLib = null;
-
-        try {
-            rpcResultFromOFLib = resultFromOFLib.get();
-        } catch (Exception ex) {
-            LOG.error(" Error while getting result for remove Flow RPC" + ex.getMessage());
-        }
-
-        UpdateFlowOutput updateFlowOutput = rpcResultFromOFLib.getResult();
-
-        RemoveFlowOutputBuilder removeFlowOutput = new RemoveFlowOutputBuilder();
-        removeFlowOutput.setTransactionId(updateFlowOutput.getTransactionId());
-        RemoveFlowOutput result = removeFlowOutput.build();
-
-        Collection<RpcError> errors = rpcResultFromOFLib.getErrors();
-        RpcResult<RemoveFlowOutput> rpcResult = Rpcs.getRpcResult(true, result, errors);
-
-        LOG.debug("Returning the Remove Flow RPC result to MD-SAL");
-        return Futures.immediateFuture(rpcResult);
+        return Futures.transform(JdkFutureAdapters.listenInPoolThread(result), 
+                OFRpcFutureResultTransformFactory.createForRemoveFlowOutput());
     }
 
     @Override
     public Future<RpcResult<RemoveGroupOutput>> removeGroup(final RemoveGroupInput input) {
         LOG.debug("Calling the Remove Group RPC method on MessageDispatchService");
-        Long xId = null;
-
-        // For Flow provisioning, the SwitchConnectionDistinguisher is set to
-        // null so
-        // the request can be routed through any connection to the switch
 
         SwitchConnectionDistinguisher cookie = null;
-        if (Objects.firstNonNull(input.isBarrier(), Boolean.FALSE)) {
-            xId = sessionContext.getNextXid();
-            BarrierInputBuilder barrierInput = new BarrierInputBuilder();
-            barrierInput.setVersion(version);
-            barrierInput.setXid(xId);
-            @SuppressWarnings("unused")
-            Future<RpcResult<BarrierOutput>> barrierOFLib = messageService.barrier(barrierInput.build(), cookie);
-        }
-
-        // Convert the RemoveGroupInput to GroupModInput
-        GroupModInputBuilder ofGroupModInput = GroupConvertor.toGroupModInput(input, version, this.getSessionContext()
-                .getFeatures().getDatapathId());
-        xId = sessionContext.getNextXid();
-        ofGroupModInput.setXid(xId);
-
-        if (null != rpcNotificationProviderService) {
-            GroupRemovedBuilder groupMod = new GroupRemovedBuilder(
-                    (org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group) input);
-            groupMod.setTransactionId(new TransactionId(BigInteger.valueOf(xId.intValue())));
-            groupMod.setGroupRef(input.getGroupRef());
-            rpcNotificationProviderService.publish(groupMod.build());
-        }
-
-        Future<RpcResult<UpdateGroupOutput>> resultFromOFLib = messageService.groupMod(ofGroupModInput.build(), cookie);
-
-        RpcResult<UpdateGroupOutput> rpcResultFromOFLib = null;
-
-        try {
-            rpcResultFromOFLib = resultFromOFLib.get();
-        } catch (Exception ex) {
-            LOG.error(" Error while getting result for RemoveGroup RPC" + ex.getMessage());
-        }
-
-        UpdateGroupOutput updateGroupOutput = rpcResultFromOFLib.getResult();
-
-        RemoveGroupOutputBuilder removeGroupOutput = new RemoveGroupOutputBuilder();
-        removeGroupOutput.setTransactionId(updateGroupOutput.getTransactionId());
-        RemoveGroupOutput result = removeGroupOutput.build();
-
-        Collection<RpcError> errors = rpcResultFromOFLib.getErrors();
-        RpcResult<RemoveGroupOutput> rpcResult = Rpcs.getRpcResult(true, result, errors);
-
-        LOG.debug("Returning the Remove Group RPC result to MD-SAL");
-        return Futures.immediateFuture(rpcResult);
+        OFRpcTask<RemoveGroupInput, RpcResult<UpdateGroupOutput>> task = 
+                OFRpcTaskFactory.createRemoveGroupTask(rpcTaskContext, input, cookie);
+        ListenableFuture<RpcResult<UpdateGroupOutput>> result = task.submit();
+        
+        return Futures.transform(JdkFutureAdapters.listenInPoolThread(result), 
+                OFRpcFutureResultTransformFactory.createForRemoveGroupOutput());
     }
 
     @Override
     public Future<RpcResult<RemoveMeterOutput>> removeMeter(final RemoveMeterInput input) {
         LOG.debug("Calling the Remove MeterMod RPC method on MessageDispatchService");
-        Long xId = null;
 
-        // For Meter provisioning, the SwitchConnectionDistinguisher is set to
-        // null so
-        // the request can be routed through any connection to the switch
         SwitchConnectionDistinguisher cookie = null;
-        if (Objects.firstNonNull(input.isBarrier(), Boolean.FALSE)) {
-            xId = sessionContext.getNextXid();
-            BarrierInputBuilder barrierInput = new BarrierInputBuilder();
-            barrierInput.setVersion(version);
-            barrierInput.setXid(xId);
-            @SuppressWarnings("unused")
-            Future<RpcResult<BarrierOutput>> barrierOFLib = messageService.barrier(barrierInput.build(), cookie);
-        }
-
-        // Convert the RemoveMeterInput to MeterModInput
-        MeterModInputBuilder ofMeterModInput = MeterConvertor.toMeterModInput(input, version);
-        xId = sessionContext.getNextXid();
-        ofMeterModInput.setXid(xId);
-
-        if (null != rpcNotificationProviderService) {
-            MeterRemovedBuilder meterMod = new MeterRemovedBuilder(
-                    (org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter) input);
-            meterMod.setTransactionId(new TransactionId(BigInteger.valueOf(xId.intValue())));
-            meterMod.setMeterRef(input.getMeterRef());
-            rpcNotificationProviderService.publish(meterMod.build());
-        }
-
-        Future<RpcResult<UpdateMeterOutput>> resultFromOFLib = messageService.meterMod(ofMeterModInput.build(), cookie);
-
-        RpcResult<UpdateMeterOutput> rpcResultFromOFLib = null;
-
-        try {
-            rpcResultFromOFLib = resultFromOFLib.get();
-        } catch (Exception ex) {
-            LOG.error(" Error while getting result for RemoveMeter RPC" + ex.getMessage());
-        }
-
-        UpdateMeterOutput updatemeterOutput = rpcResultFromOFLib.getResult();
-
-        RemoveMeterOutputBuilder removeMeterOutput = new RemoveMeterOutputBuilder();
-        removeMeterOutput.setTransactionId(updatemeterOutput.getTransactionId());
-        RemoveMeterOutput result = removeMeterOutput.build();
-
-        Collection<RpcError> errors = rpcResultFromOFLib.getErrors();
-        RpcResult<RemoveMeterOutput> rpcResult = Rpcs.getRpcResult(true, result, errors);
-
-        LOG.debug("Returning the Remove Meter RPC result to MD-SAL");
-        return Futures.immediateFuture(rpcResult);
+        OFRpcTask<RemoveMeterInput, RpcResult<UpdateMeterOutput>> task = 
+                OFRpcTaskFactory.createRemoveMeterTask(rpcTaskContext, input, cookie);
+        ListenableFuture<RpcResult<UpdateMeterOutput>> result = task.submit();
+        
+        return Futures.transform(JdkFutureAdapters.listenInPoolThread(result), 
+                OFRpcFutureResultTransformFactory.createForRemoveMeterOutput());
     }
 
     @Override
@@ -510,527 +371,143 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         return nodeId;
     }
 
-    /*
-     * Methods for requesting statistics from switch
-     */
+    
     @Override
     public Future<RpcResult<GetAllGroupStatisticsOutput>> getAllGroupStatistics(final GetAllGroupStatisticsInput input) {
-
-        GetAllGroupStatisticsOutputBuilder output = new GetAllGroupStatisticsOutputBuilder();
-        Collection<RpcError> errors = Collections.emptyList();
-
-        if (version == OFConstants.OFP_VERSION_1_0) {
-            output.setTransactionId(null);
-            output.setGroupStats(null);
-
-            RpcResult<GetAllGroupStatisticsOutput> rpcResult = Rpcs.getRpcResult(true, output.build(), errors);
-            return Futures.immediateFuture(rpcResult);
-        }
-        // Generate xid to associate it with the request
-        Long xid = this.getSessionContext().getNextXid();
-
-        LOG.debug("Prepare statistics request for all the groups - Transaction id - {}", xid);
-
-        // Create multipart request header
-        MultipartRequestInputBuilder mprInput = new MultipartRequestInputBuilder();
-        mprInput.setType(MultipartType.OFPMPGROUP);
-        mprInput.setVersion(version);
-        mprInput.setXid(xid);
-        mprInput.setFlags(new MultipartRequestFlags(false));
-
-        // Create multipart request body for fetch all the group stats
-        MultipartRequestGroupCaseBuilder caseBuilder = new MultipartRequestGroupCaseBuilder();
-        MultipartRequestGroupBuilder mprGroupBuild = new MultipartRequestGroupBuilder();
-        mprGroupBuild.setGroupId(new GroupId(BinContent.intToUnsignedLong(Group.OFPGALL.getIntValue())));
-        caseBuilder.setMultipartRequestGroup(mprGroupBuild.build());
-
-        // Set request body to main multipart request
-        mprInput.setMultipartRequestBody(caseBuilder.build());
-
-        // Send the request, no cookies associated, use any connection
-        LOG.debug("Send group statistics request to the switch :{}", mprGroupBuild);
-        this.messageService.multipartRequest(mprInput.build(), null);
-
-        // Prepare rpc return output. Set xid and send it back.
-        LOG.debug("Return results and transaction id back to caller");
-        output.setTransactionId(generateTransactionId(xid));
-        output.setGroupStats(null);
-
-        RpcResult<GetAllGroupStatisticsOutput> rpcResult = Rpcs.getRpcResult(true, output.build(), errors);
-        return Futures.immediateFuture(rpcResult);
+     // use primary connection
+        LOG.debug("Calling the getAllGroupStatistics RPC method on MessageDispatchService");
+        SwitchConnectionDistinguisher cookie = null;
+        
+        OFRpcTask<GetAllGroupStatisticsInput, RpcResult<GetAllGroupStatisticsOutput>> task = 
+                OFRpcTaskFactory.createGetAllGroupStatisticsTask(rpcTaskContext, input, cookie);
+        ListenableFuture<RpcResult<GetAllGroupStatisticsOutput>> result = task.submit();
+        
+        return result;
 
     }
 
     @Override
     public Future<RpcResult<GetGroupDescriptionOutput>> getGroupDescription(final GetGroupDescriptionInput input) {
-
-        GetGroupDescriptionOutputBuilder output = new GetGroupDescriptionOutputBuilder();
-        Collection<RpcError> errors = Collections.emptyList();
-
-        if (version == OFConstants.OFP_VERSION_1_0) {
-            output.setTransactionId(null);
-            output.setGroupDescStats(null);
-
-            RpcResult<GetGroupDescriptionOutput> rpcResult = Rpcs.getRpcResult(true, output.build(), errors);
-            return Futures.immediateFuture(rpcResult);
-        }
-        // Generate xid to associate it with the request
-        Long xid = this.getSessionContext().getNextXid();
-
-        LOG.debug("Prepare group description statistics request - Transaction id - {}", xid);
-
-        // Create multipart request header
-        MultipartRequestInputBuilder mprInput = new MultipartRequestInputBuilder();
-        mprInput.setType(MultipartType.OFPMPGROUPDESC);
-        mprInput.setVersion(version);
-        mprInput.setXid(xid);
-        mprInput.setFlags(new MultipartRequestFlags(false));
-
-        // Create multipart request body for fetch all the group description
-        // stats
-        MultipartRequestGroupDescCaseBuilder mprGroupDescBuild = new MultipartRequestGroupDescCaseBuilder();
-
-        // Set request body to main multipart request
-        mprInput.setMultipartRequestBody(mprGroupDescBuild.build());
-
-        // Send the request, no cookies associated, use any connection
-        LOG.debug("Send group desciption statistics request to switch : {}", mprGroupDescBuild);
-        this.messageService.multipartRequest(mprInput.build(), null);
-
-        // Prepare rpc return output. Set xid and send it back.
-        LOG.debug("Return results and transaction id back to caller");
-        output.setTransactionId(generateTransactionId(xid));
-        output.setGroupDescStats(null);
-
-        RpcResult<GetGroupDescriptionOutput> rpcResult = Rpcs.getRpcResult(true, output.build(), errors);
-        return Futures.immediateFuture(rpcResult);
-
+        LOG.debug("Calling the getGroupDescription RPC method on MessageDispatchService");
+        SwitchConnectionDistinguisher cookie = null;
+        
+        OFRpcTask<GetGroupDescriptionInput, RpcResult<GetGroupDescriptionOutput>> task = 
+                OFRpcTaskFactory.createGetGroupDescriptionTask(rpcTaskContext, input, cookie);
+        ListenableFuture<RpcResult<GetGroupDescriptionOutput>> result = task.submit();
+        return result;
     }
-
+    
     @Override
     public Future<RpcResult<GetGroupFeaturesOutput>> getGroupFeatures(final GetGroupFeaturesInput input) {
-
-        GetGroupFeaturesOutputBuilder output = new GetGroupFeaturesOutputBuilder();
-        Collection<RpcError> errors = Collections.emptyList();
-
-        if (version == OFConstants.OFP_VERSION_1_0) {
-            output.setTransactionId(null);
-
-            RpcResult<GetGroupFeaturesOutput> rpcResult = Rpcs.getRpcResult(true, output.build(), errors);
-            return Futures.immediateFuture(rpcResult);
-        }
-        // Generate xid to associate it with the request
-        Long xid = this.getSessionContext().getNextXid();
-
-        LOG.debug("Prepare group features statistics request - Transaction id - {}", xid);
-
-        // Create multipart request header
-        MultipartRequestInputBuilder mprInput = new MultipartRequestInputBuilder();
-        mprInput.setType(MultipartType.OFPMPGROUPFEATURES);
-        mprInput.setVersion(version);
-        mprInput.setXid(xid);
-        mprInput.setFlags(new MultipartRequestFlags(false));
-
-        // Create multipart request body for fetch all the group description
-        // stats
-        MultipartRequestGroupFeaturesCaseBuilder mprGroupFeaturesBuild = new MultipartRequestGroupFeaturesCaseBuilder();
-
-        // Set request body to main multipart request
-        mprInput.setMultipartRequestBody(mprGroupFeaturesBuild.build());
-
-        // Send the request, no cookies associated, use any connection
-        LOG.debug("Send group features statistics request :{}", mprGroupFeaturesBuild);
-        this.messageService.multipartRequest(mprInput.build(), null);
-
-        // Prepare rpc return output. Set xid and send it back.
-        LOG.debug("Return results and transaction id back to caller");
-        output.setTransactionId(generateTransactionId(xid));
-
-        RpcResult<GetGroupFeaturesOutput> rpcResult = Rpcs.getRpcResult(true, output.build(), errors);
-        return Futures.immediateFuture(rpcResult);
+        LOG.debug("Calling the getGroupFeatures RPC method on MessageDispatchService");
+        SwitchConnectionDistinguisher cookie = null;
+        
+        OFRpcTask<GetGroupFeaturesInput, RpcResult<GetGroupFeaturesOutput>> task = 
+                OFRpcTaskFactory.createGetGroupFeaturesTask(rpcTaskContext, input, cookie);
+        ListenableFuture<RpcResult<GetGroupFeaturesOutput>> result = task.submit();
+        return result;
     }
-
+    
     @Override
     public Future<RpcResult<GetGroupStatisticsOutput>> getGroupStatistics(final GetGroupStatisticsInput input) {
-
-        GetGroupStatisticsOutputBuilder output = new GetGroupStatisticsOutputBuilder();
-        Collection<RpcError> errors = Collections.emptyList();
-
-        if (version == OFConstants.OFP_VERSION_1_0) {
-            output.setTransactionId(null);
-            output.setGroupStats(null);
-
-            RpcResult<GetGroupStatisticsOutput> rpcResult = Rpcs.getRpcResult(true, output.build(), errors);
-            return Futures.immediateFuture(rpcResult);
-        }
-        // Generate xid to associate it with the request
-        Long xid = this.getSessionContext().getNextXid();
-
-        LOG.debug("Prepare statistics request for node {} group ({}) - Transaction id - {}", input.getNode(),
-                input.getGroupId(), xid);
-
-        // Create multipart request header
-        MultipartRequestInputBuilder mprInput = new MultipartRequestInputBuilder();
-        mprInput.setType(MultipartType.OFPMPGROUP);
-        mprInput.setVersion(version);
-        mprInput.setXid(xid);
-        mprInput.setFlags(new MultipartRequestFlags(false));
-
-        // Create multipart request body for fetch all the group stats
-        MultipartRequestGroupCaseBuilder caseBuilder = new MultipartRequestGroupCaseBuilder();
-        MultipartRequestGroupBuilder mprGroupBuild = new MultipartRequestGroupBuilder();
-        mprGroupBuild.setGroupId(new GroupId(input.getGroupId().getValue()));
-        caseBuilder.setMultipartRequestGroup(mprGroupBuild.build());
-
-        // Set request body to main multipart request
-        mprInput.setMultipartRequestBody(caseBuilder.build());
-
-        // Send the request, no cookies associated, use any connection
-        LOG.debug("Send group statistics request :{}", mprGroupBuild);
-        this.messageService.multipartRequest(mprInput.build(), null);
-
-        // Prepare rpc return output. Set xid and send it back.
-        LOG.debug("Return results and transaction id back to caller");
-        output.setTransactionId(generateTransactionId(xid));
-        output.setGroupStats(null);
-
-        RpcResult<GetGroupStatisticsOutput> rpcResult = Rpcs.getRpcResult(true, output.build(), errors);
-        return Futures.immediateFuture(rpcResult);
+        LOG.debug("Calling the getGroupStatistics RPC method on MessageDispatchService");
+        SwitchConnectionDistinguisher cookie = null;
+        
+        OFRpcTask<GetGroupStatisticsInput, RpcResult<GetGroupStatisticsOutput>> task = 
+                OFRpcTaskFactory.createGetGroupStatisticsTask(rpcTaskContext, input, cookie);
+        ListenableFuture<RpcResult<GetGroupStatisticsOutput>> result = task.submit();
+        return result;
     }
 
     @Override
     public Future<RpcResult<GetAllMeterConfigStatisticsOutput>> getAllMeterConfigStatistics(
             final GetAllMeterConfigStatisticsInput input) {
-
-        GetAllMeterConfigStatisticsOutputBuilder output = new GetAllMeterConfigStatisticsOutputBuilder();
-        Collection<RpcError> errors = Collections.emptyList();
-
-        if (version == OFConstants.OFP_VERSION_1_0) {
-            output.setTransactionId(null);
-            output.setMeterConfigStats(null);
-
-            RpcResult<GetAllMeterConfigStatisticsOutput> rpcResult = Rpcs.getRpcResult(true, output.build(), errors);
-            return Futures.immediateFuture(rpcResult);
-
-        }
-        // Generate xid to associate it with the request
-        Long xid = this.getSessionContext().getNextXid();
-
-        LOG.debug("Prepare config request for all the meters - Transaction id - {}", xid);
-
-        // Create multipart request header
-        MultipartRequestInputBuilder mprInput = new MultipartRequestInputBuilder();
-        mprInput.setType(MultipartType.OFPMPMETERCONFIG);
-        mprInput.setVersion(version);
-        mprInput.setXid(xid);
-        mprInput.setFlags(new MultipartRequestFlags(false));
-
-        // Create multipart request body for fetch all the meter stats
-        MultipartRequestMeterConfigCaseBuilder caseBuilder = new MultipartRequestMeterConfigCaseBuilder();
-        MultipartRequestMeterConfigBuilder mprMeterConfigBuild = new MultipartRequestMeterConfigBuilder();
-        mprMeterConfigBuild.setMeterId(new MeterId(BinContent.intToUnsignedLong(Meter.OFPMALL.getIntValue())));
-        caseBuilder.setMultipartRequestMeterConfig(mprMeterConfigBuild.build());
-
-        // Set request body to main multipart request
-        mprInput.setMultipartRequestBody(caseBuilder.build());
-
-        // Send the request, no cookies associated, use any connection
-        LOG.debug("Send meter statistics request :{}", mprMeterConfigBuild);
-        this.messageService.multipartRequest(mprInput.build(), null);
-
-        // Prepare rpc return output. Set xid and send it back.
-        LOG.debug("Return results and transaction id back to caller");
-        output.setTransactionId(generateTransactionId(xid));
-        output.setMeterConfigStats(null);
-
-        RpcResult<GetAllMeterConfigStatisticsOutput> rpcResult = Rpcs.getRpcResult(true, output.build(), errors);
-        return Futures.immediateFuture(rpcResult);
+        LOG.debug("Calling the getAllMeterConfigStatistics RPC method on MessageDispatchService");
+        SwitchConnectionDistinguisher cookie = null;
+        
+        OFRpcTask<GetAllMeterConfigStatisticsInput, RpcResult<GetAllMeterConfigStatisticsOutput>> task = 
+                OFRpcTaskFactory.createGetAllMeterConfigStatisticsTask(rpcTaskContext, input, cookie);
+        ListenableFuture<RpcResult<GetAllMeterConfigStatisticsOutput>> result = task.submit();
+        return result;
     }
-
+    
     @Override
-    public Future<RpcResult<GetAllMeterStatisticsOutput>> getAllMeterStatistics(final GetAllMeterStatisticsInput input) {
-
-        GetAllMeterStatisticsOutputBuilder output = new GetAllMeterStatisticsOutputBuilder();
-        Collection<RpcError> errors = Collections.emptyList();
-
-        if (version == OFConstants.OFP_VERSION_1_0) {
-            output.setTransactionId(null);
-            output.setMeterStats(null);
-
-            RpcResult<GetAllMeterStatisticsOutput> rpcResult = Rpcs.getRpcResult(true, output.build(), errors);
-            return Futures.immediateFuture(rpcResult);
-        }
-        // Generate xid to associate it with the request
-        Long xid = this.getSessionContext().getNextXid();
-
-        LOG.debug("Prepare statistics request for all the meters - Transaction id - {}", xid);
-
-        // Create multipart request header
-        MultipartRequestInputBuilder mprInput = new MultipartRequestInputBuilder();
-        mprInput.setType(MultipartType.OFPMPMETER);
-        mprInput.setVersion(version);
-        mprInput.setXid(xid);
-        mprInput.setFlags(new MultipartRequestFlags(false));
-
-        // Create multipart request body for fetch all the meter stats
-        MultipartRequestMeterCaseBuilder caseBuilder = new MultipartRequestMeterCaseBuilder();
-        MultipartRequestMeterBuilder mprMeterBuild = new MultipartRequestMeterBuilder();
-        mprMeterBuild.setMeterId(new MeterId(BinContent.intToUnsignedLong(Meter.OFPMALL.getIntValue())));
-        caseBuilder.setMultipartRequestMeter(mprMeterBuild.build());
-
-        // Set request body to main multipart request
-        mprInput.setMultipartRequestBody(caseBuilder.build());
-
-        // Send the request, no cookies associated, use any connection
-        LOG.debug("Send meter statistics request :{}", mprMeterBuild);
-        this.messageService.multipartRequest(mprInput.build(), null);
-
-        // Prepare rpc return output. Set xid and send it back.
-        LOG.debug("Return results and transaction id back to caller");
-        output.setTransactionId(generateTransactionId(xid));
-        output.setMeterStats(null);
-
-        RpcResult<GetAllMeterStatisticsOutput> rpcResult = Rpcs.getRpcResult(true, output.build(), errors);
-        return Futures.immediateFuture(rpcResult);
+    public Future<RpcResult<GetAllMeterStatisticsOutput>> getAllMeterStatistics(
+            final GetAllMeterStatisticsInput input) {
+        LOG.debug("Calling the getAllMeterStatistics RPC method on MessageDispatchService");
+        SwitchConnectionDistinguisher cookie = null;
+        
+        OFRpcTask<GetAllMeterStatisticsInput, RpcResult<GetAllMeterStatisticsOutput>> task = 
+                OFRpcTaskFactory.createGetAllMeterStatisticsTask(rpcTaskContext, input, cookie);
+        ListenableFuture<RpcResult<GetAllMeterStatisticsOutput>> result = task.submit();
+        return result;
     }
-
+    
     @Override
-    public Future<RpcResult<GetMeterFeaturesOutput>> getMeterFeatures(final GetMeterFeaturesInput input) {
-
-        GetMeterFeaturesOutputBuilder output = new GetMeterFeaturesOutputBuilder();
-        Collection<RpcError> errors = Collections.emptyList();
-
-        if (version == OFConstants.OFP_VERSION_1_0) {
-            output.setTransactionId(null);
-
-            RpcResult<GetMeterFeaturesOutput> rpcResult = Rpcs.getRpcResult(true, output.build(), errors);
-            return Futures.immediateFuture(rpcResult);
-        }
-        // Generate xid to associate it with the request
-        Long xid = this.getSessionContext().getNextXid();
-
-        LOG.debug("Prepare features statistics request for all the meters - Transaction id - {}", xid);
-
-        // Create multipart request header
-        MultipartRequestInputBuilder mprInput = new MultipartRequestInputBuilder();
-        mprInput.setType(MultipartType.OFPMPMETERFEATURES);
-        mprInput.setVersion(version);
-        mprInput.setXid(xid);
-        mprInput.setFlags(new MultipartRequestFlags(false));
-
-        // Create multipart request body for fetch all the group description
-        // stats
-        MultipartRequestMeterFeaturesCaseBuilder mprMeterFeaturesBuild = new MultipartRequestMeterFeaturesCaseBuilder();
-
-        // Set request body to main multipart request
-        mprInput.setMultipartRequestBody(mprMeterFeaturesBuild.build());
-
-        // Send the request, no cookies associated, use any connection
-        LOG.debug("Send meter features statistics request :{}", mprMeterFeaturesBuild);
-        this.messageService.multipartRequest(mprInput.build(), null);
-
-        // Prepare rpc return output. Set xid and send it back.
-        LOG.debug("Return results and transaction id back to caller");
-        output.setTransactionId(generateTransactionId(xid));
-
-        RpcResult<GetMeterFeaturesOutput> rpcResult = Rpcs.getRpcResult(true, output.build(), errors);
-        return Futures.immediateFuture(rpcResult);
+    public Future<RpcResult<GetMeterFeaturesOutput>> getMeterFeatures(
+            final GetMeterFeaturesInput input) {
+        LOG.debug("Calling the getMeterFeatures RPC method on MessageDispatchService");
+        SwitchConnectionDistinguisher cookie = null;
+        
+        OFRpcTask<GetMeterFeaturesInput, RpcResult<GetMeterFeaturesOutput>> task = 
+                OFRpcTaskFactory.createGetMeterFeaturesTask(rpcTaskContext, input, cookie);
+        ListenableFuture<RpcResult<GetMeterFeaturesOutput>> result = task.submit();
+        return result;
     }
-
+    
     @Override
-    public Future<RpcResult<GetMeterStatisticsOutput>> getMeterStatistics(final GetMeterStatisticsInput input) {
-
-        GetMeterStatisticsOutputBuilder output = new GetMeterStatisticsOutputBuilder();
-        Collection<RpcError> errors = Collections.emptyList();
-
-        if (version == OFConstants.OFP_VERSION_1_0) {
-            output.setTransactionId(null);
-            output.setMeterStats(null);
-
-            RpcResult<GetMeterStatisticsOutput> rpcResult = Rpcs.getRpcResult(true, output.build(), errors);
-            return Futures.immediateFuture(rpcResult);
-
-        }
-        // Generate xid to associate it with the request
-        Long xid = this.getSessionContext().getNextXid();
-
-        LOG.debug("Preprae statistics request for Meter ({}) - Transaction id - {}", input.getMeterId().getValue(), xid);
-
-        // Create multipart request header
-        MultipartRequestInputBuilder mprInput = new MultipartRequestInputBuilder();
-        mprInput.setType(MultipartType.OFPMPMETER);
-        mprInput.setVersion(version);
-        mprInput.setXid(xid);
-        mprInput.setFlags(new MultipartRequestFlags(false));
-
-        // Create multipart request body for fetch all the meter stats
-        MultipartRequestMeterCaseBuilder caseBuilder = new MultipartRequestMeterCaseBuilder();
-        MultipartRequestMeterBuilder mprMeterBuild = new MultipartRequestMeterBuilder();
-        // Select specific meter
-        mprMeterBuild.setMeterId(new MeterId(input.getMeterId().getValue()));
-        caseBuilder.setMultipartRequestMeter(mprMeterBuild.build());
-
-        // Set request body to main multipart request
-        mprInput.setMultipartRequestBody(caseBuilder.build());
-
-        // Send the request, no cookies associated, use any connection
-        LOG.debug("Send meter statistics request :{}", mprMeterBuild);
-        this.messageService.multipartRequest(mprInput.build(), null);
-
-        // Prepare rpc return output. Set xid and send it back.
-        LOG.debug("Return results and transaction id back to caller");
-        output.setTransactionId(generateTransactionId(xid));
-        output.setMeterStats(null);
-
-        RpcResult<GetMeterStatisticsOutput> rpcResult = Rpcs.getRpcResult(true, output.build(), errors);
-        return Futures.immediateFuture(rpcResult);
+    public Future<RpcResult<GetMeterStatisticsOutput>> getMeterStatistics(
+            final GetMeterStatisticsInput input) {
+        LOG.debug("Calling the getMeterStatistics RPC method on MessageDispatchService");
+        SwitchConnectionDistinguisher cookie = null;
+        
+        OFRpcTask<GetMeterStatisticsInput, RpcResult<GetMeterStatisticsOutput>> task = 
+                OFRpcTaskFactory.createGetMeterStatisticsTask(rpcTaskContext, input, cookie);
+        ListenableFuture<RpcResult<GetMeterStatisticsOutput>> result = task.submit();
+        return result;
     }
-
+    
     @Override
     public Future<RpcResult<GetAllNodeConnectorsStatisticsOutput>> getAllNodeConnectorsStatistics(
-            final GetAllNodeConnectorsStatisticsInput arg0) {
-
-        // Generate xid to associate it with the request
-        Long xid = this.getSessionContext().getNextXid();
-
-        LOG.debug("Prepare port statistics request for all ports of node {} - TrasactionId - {}", arg0.getNode()
-                .getValue(), xid);
-
-        // Create multipart request header
-        MultipartRequestInputBuilder mprInput = new MultipartRequestInputBuilder();
-        mprInput.setType(MultipartType.OFPMPPORTSTATS);
-        mprInput.setVersion(version);
-        mprInput.setXid(xid);
-        mprInput.setFlags(new MultipartRequestFlags(false));
-
-        // Create multipart request body to fetch stats for all the port of the
-        // node
-        MultipartRequestPortStatsCaseBuilder caseBuilder = new MultipartRequestPortStatsCaseBuilder();
-        MultipartRequestPortStatsBuilder mprPortStatsBuilder = new MultipartRequestPortStatsBuilder();
-        // Select all ports
-        mprPortStatsBuilder.setPortNo(OFConstants.OFPP_ANY);
-        caseBuilder.setMultipartRequestPortStats(mprPortStatsBuilder.build());
-
-        // Set request body to main multipart request
-        mprInput.setMultipartRequestBody(caseBuilder.build());
-
-        // Send the request, no cookies associated, use any connection
-        LOG.debug("Send port statistics request :{}", mprPortStatsBuilder.build().toString());
-        this.messageService.multipartRequest(mprInput.build(), null);
-
-        // Prepare rpc return output. Set xid and send it back.
-        GetAllNodeConnectorsStatisticsOutputBuilder output = new GetAllNodeConnectorsStatisticsOutputBuilder();
-        output.setTransactionId(generateTransactionId(xid));
-
-        Collection<RpcError> errors = Collections.emptyList();
-        RpcResult<GetAllNodeConnectorsStatisticsOutput> rpcResult = Rpcs.getRpcResult(true, output.build(), errors);
-        return Futures.immediateFuture(rpcResult);
+            final GetAllNodeConnectorsStatisticsInput input) {
+        LOG.debug("Calling the getAllNodeConnectorsStatistics RPC method on MessageDispatchService");
+        SwitchConnectionDistinguisher cookie = null;
+        
+        OFRpcTask<GetAllNodeConnectorsStatisticsInput, RpcResult<GetAllNodeConnectorsStatisticsOutput>> task = 
+                OFRpcTaskFactory.createGetAllNodeConnectorsStatisticsTask(rpcTaskContext, input, cookie);
+        ListenableFuture<RpcResult<GetAllNodeConnectorsStatisticsOutput>> result = task.submit();
+        return result;
     }
-
+    
     @Override
     public Future<RpcResult<GetNodeConnectorStatisticsOutput>> getNodeConnectorStatistics(
-            final GetNodeConnectorStatisticsInput arg0) {
-        // Generate xid to associate it with the request
-        Long xid = this.getSessionContext().getNextXid();
-
-        LOG.debug("Prepare port statistics request for port {} of node {} - TrasactionId - {}",
-                arg0.getNodeConnectorId(), arg0.getNode().getValue(), xid);
-
-        // Create multipart request header
-        MultipartRequestInputBuilder mprInput = new MultipartRequestInputBuilder();
-        mprInput.setType(MultipartType.OFPMPPORTSTATS);
-        mprInput.setVersion(version);
-        mprInput.setXid(xid);
-        mprInput.setFlags(new MultipartRequestFlags(false));
-
-        // Create multipart request body to fetch stats for all the port of the
-        // node
-        MultipartRequestPortStatsCaseBuilder caseBuilder = new MultipartRequestPortStatsCaseBuilder();
-        MultipartRequestPortStatsBuilder mprPortStatsBuilder = new MultipartRequestPortStatsBuilder();
-
-        // Set specific port
-        mprPortStatsBuilder
-                .setPortNo(InventoryDataServiceUtil.portNumberfromNodeConnectorId(arg0.getNodeConnectorId()));
-        caseBuilder.setMultipartRequestPortStats(mprPortStatsBuilder.build());
-
-        // Set request body to main multipart request
-        mprInput.setMultipartRequestBody(caseBuilder.build());
-
-        // Send the request, no cookies associated, use any connection
-        LOG.debug("Send port statistics request :{}", mprPortStatsBuilder.build().toString());
-        this.messageService.multipartRequest(mprInput.build(), null);
-
-        // Prepare rpc return output. Set xid and send it back.
-        GetNodeConnectorStatisticsOutputBuilder output = new GetNodeConnectorStatisticsOutputBuilder();
-        output.setTransactionId(generateTransactionId(xid));
-
-        Collection<RpcError> errors = Collections.emptyList();
-        RpcResult<GetNodeConnectorStatisticsOutput> rpcResult = Rpcs.getRpcResult(true, output.build(), errors);
-        return Futures.immediateFuture(rpcResult);
+            final GetNodeConnectorStatisticsInput input) {
+        LOG.debug("Calling the getNodeConnectorStatistics RPC method on MessageDispatchService");
+        SwitchConnectionDistinguisher cookie = null;
+        
+        OFRpcTask<GetNodeConnectorStatisticsInput, RpcResult<GetNodeConnectorStatisticsOutput>> task = 
+                OFRpcTaskFactory.createGetNodeConnectorStatisticsTask(rpcTaskContext, input, cookie);
+        ListenableFuture<RpcResult<GetNodeConnectorStatisticsOutput>> result = task.submit();
+        return result;
     }
 
     private static TransactionId generateTransactionId(final Long xid) {
         BigInteger bigIntXid = BigInteger.valueOf(xid);
         return new TransactionId(bigIntXid);
-
     }
-
+    
     @Override
     public Future<RpcResult<UpdatePortOutput>> updatePort(final UpdatePortInput input) {
-        PortModInput ofPortModInput = null;
-        RpcResult<UpdatePortOutput> rpcResultFromOFLib = null;
-
-        // For Flow provisioning, the SwitchConnectionDistinguisher is set to
-        // null so
-        // the request can be routed through any connection to the switch
-
+        LOG.debug("Calling the updatePort RPC method on MessageDispatchService");
+        
+        // use primary connection
         SwitchConnectionDistinguisher cookie = null;
-
-        // NSF sends a list of port and the ModelDrivenSwitch will
-        // send one port at a time towards the switch ( mutiple RPCs calls)
-        List<Port> inputPorts = input.getUpdatedPort().getPort().getPort();
-
-        // Get the Xid. The same Xid has to be sent in all the RPCs
-        Long Xid = sessionContext.getNextXid();
-
-        for (Port inputPort : inputPorts) {
-
-            // Convert the UpdateGroupInput to GroupModInput
-            ofPortModInput = PortConvertor.toPortModInput(inputPort, version);
-
-            // Insert the Xid ( transaction Id) before calling the RPC on the
-            // OFLibrary
-
-            PortModInputBuilder mdInput = new PortModInputBuilder(ofPortModInput);
-            mdInput.setXid(Xid);
-
-            LOG.debug("Calling the PortMod RPC method on MessageDispatchService");
-            Future<RpcResult<UpdatePortOutput>> resultFromOFLib = messageService.portMod(mdInput.build(), cookie);
-
-            try {
-                rpcResultFromOFLib = resultFromOFLib.get();
-            } catch (Exception ex) {
-                LOG.error(" Error while getting result for updatePort RPC" + ex.getMessage());
-            }
-
-            // The Future response value for all the RPCs except the last one is
-            // ignored
-
-        }
-        // Extract the Xid only from the Future for the last RPC and
-        // send it back to the NSF
-        UpdatePortOutput updatePortOutputOFLib = rpcResultFromOFLib.getResult();
-
-        UpdatePortOutputBuilder updatePortOutput = new UpdatePortOutputBuilder();
-        updatePortOutput.setTransactionId(updatePortOutputOFLib.getTransactionId());
-        UpdatePortOutput result = updatePortOutput.build();
-
-        Collection<RpcError> errors = rpcResultFromOFLib.getErrors();
-        RpcResult<UpdatePortOutput> rpcResult = Rpcs.getRpcResult(true, result, errors);
-
-        LOG.debug("Returning the Update Group RPC result to MD-SAL");
-        return Futures.immediateFuture(rpcResult);
-
+        
+        OFRpcTask<UpdatePortInput, RpcResult<UpdatePortOutput>> task = 
+                OFRpcTaskFactory.createUpdatePortTask(rpcTaskContext, input, cookie);
+        ListenableFuture<RpcResult<UpdatePortOutput>> result = task.submit();
+        
+        return result;
     }
 
     @Override
@@ -1047,6 +524,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         mprInput.setType(MultipartType.OFPMPTABLEFEATURES);
         mprInput.setVersion((short) 0x04);
         mprInput.setXid(xid);
+        mprInput.setFlags(new MultipartRequestFlags(false));
 
         // Convert the list of all MD-SAL table feature object into OF library
         // object
@@ -1054,8 +532,6 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 
         MultipartRequestTableFeaturesCaseBuilder caseRequest = new MultipartRequestTableFeaturesCaseBuilder();
         MultipartRequestTableFeaturesBuilder tableFeaturesRequest = new MultipartRequestTableFeaturesBuilder();
-
-        mprInput.setFlags(new MultipartRequestFlags(false));
 
         tableFeaturesRequest.setTableFeatures(ofTableFeatureList);
 
@@ -1081,431 +557,109 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 
     @Override
     public Future<RpcResult<GetAllFlowStatisticsFromFlowTableOutput>> getAllFlowStatisticsFromFlowTable(
-            final GetAllFlowStatisticsFromFlowTableInput arg0) {
-
-        // Generate xid to associate it with the request
-        Long xid = this.getSessionContext().getNextXid();
-
-        LOG.debug("Prepare statistics request to get flow stats for switch tables {} - Transaction id - {}", arg0
-                .getTableId().getValue(), xid);
-
-        // Create multipart request header
-        MultipartRequestInputBuilder mprInput = new MultipartRequestInputBuilder();
-        mprInput.setType(MultipartType.OFPMPFLOW);
-        mprInput.setVersion(version);
-        mprInput.setXid(xid);
-        mprInput.setFlags(new MultipartRequestFlags(false));
-
-        // Create multipart request body for fetch all the group stats
-        MultipartRequestFlowCaseBuilder multipartRequestFlowCaseBuilder = new MultipartRequestFlowCaseBuilder();
-        MultipartRequestFlowBuilder mprFlowRequestBuilder = new MultipartRequestFlowBuilder();
-        mprFlowRequestBuilder.setTableId(arg0.getTableId().getValue());
-        mprFlowRequestBuilder.setOutPort(OFConstants.OFPP_ANY);
-        mprFlowRequestBuilder.setOutGroup(OFConstants.OFPG_ANY);
-        mprFlowRequestBuilder.setCookie(OFConstants.DEFAULT_COOKIE);
-        mprFlowRequestBuilder.setCookieMask(OFConstants.DEFAULT_COOKIE_MASK);
-        FlowCreatorUtil.setWildcardedFlowMatch(version, mprFlowRequestBuilder);
-
-        // Set request body to main multipart request
-        multipartRequestFlowCaseBuilder.setMultipartRequestFlow(mprFlowRequestBuilder.build());
-        mprInput.setMultipartRequestBody(multipartRequestFlowCaseBuilder.build());
-
-        // Send the request, no cookies associated, use any connection
-        LOG.debug("Send flow statistics request to the switch :{}", mprFlowRequestBuilder);
-        this.messageService.multipartRequest(mprInput.build(), null);
-
-        // Prepare rpc return output. Set xid and send it back.
-        LOG.debug("Return results and transaction id back to caller");
-        GetAllFlowStatisticsFromFlowTableOutputBuilder output = new GetAllFlowStatisticsFromFlowTableOutputBuilder();
-        output.setTransactionId(generateTransactionId(xid));
-        output.setFlowAndStatisticsMapList(null);
-
-        Collection<RpcError> errors = Collections.emptyList();
-        RpcResult<GetAllFlowStatisticsFromFlowTableOutput> rpcResult = Rpcs.getRpcResult(true, output.build(), errors);
-        return Futures.immediateFuture(rpcResult);
+            final GetAllFlowStatisticsFromFlowTableInput input) {
+        LOG.debug("Calling the getAllFlowStatisticsFromFlowTable RPC method on MessageDispatchService");
+        SwitchConnectionDistinguisher cookie = null;
+        
+        OFRpcTask<GetAllFlowStatisticsFromFlowTableInput, RpcResult<GetAllFlowStatisticsFromFlowTableOutput>> task = 
+                OFRpcTaskFactory.createGetAllFlowStatisticsFromFlowTableTask(rpcTaskContext, input, cookie);
+        ListenableFuture<RpcResult<GetAllFlowStatisticsFromFlowTableOutput>> result = task.submit();
+        return result;
     }
-
+    
     @Override
     public Future<RpcResult<GetAllFlowsStatisticsFromAllFlowTablesOutput>> getAllFlowsStatisticsFromAllFlowTables(
-            final GetAllFlowsStatisticsFromAllFlowTablesInput arg0) {
-
-        // Generate xid to associate it with the request
-        Long xid = this.getSessionContext().getNextXid();
-
-        LOG.debug("Prepare statistics request to get flow stats of all switch tables - Transaction id - {}", xid);
-
-        // Create multipart request header
-        MultipartRequestInputBuilder mprInput = new MultipartRequestInputBuilder();
-        mprInput.setType(MultipartType.OFPMPFLOW);
-        mprInput.setVersion(version);
-        mprInput.setXid(xid);
-        mprInput.setFlags(new MultipartRequestFlags(false));
-
-        // Create multipart request body for fetch all the group stats
-        MultipartRequestFlowCaseBuilder multipartRequestFlowCaseBuilder = new MultipartRequestFlowCaseBuilder();
-        MultipartRequestFlowBuilder mprFlowRequestBuilder = new MultipartRequestFlowBuilder();
-        mprFlowRequestBuilder.setTableId(OFConstants.OFPTT_ALL);
-        mprFlowRequestBuilder.setOutPort(OFConstants.OFPP_ANY);
-        mprFlowRequestBuilder.setOutGroup(OFConstants.OFPG_ANY);
-        mprFlowRequestBuilder.setCookie(OFConstants.DEFAULT_COOKIE);
-        mprFlowRequestBuilder.setCookieMask(OFConstants.DEFAULT_COOKIE_MASK);
-        mprFlowRequestBuilder.setCookieMask(OFConstants.DEFAULT_COOKIE_MASK);
-
-        FlowCreatorUtil.setWildcardedFlowMatch(version, mprFlowRequestBuilder);
-
-        // Set request body to main multipart request
-        multipartRequestFlowCaseBuilder.setMultipartRequestFlow(mprFlowRequestBuilder.build());
-        mprInput.setMultipartRequestBody(multipartRequestFlowCaseBuilder.build());
-
-        // Send the request, no cookies associated, use any connection
-        LOG.debug("Send flow statistics request to the switch :{}", mprFlowRequestBuilder);
-        this.messageService.multipartRequest(mprInput.build(), null);
-
-        // Prepare rpc return output. Set xid and send it back.
-        GetAllFlowsStatisticsFromAllFlowTablesOutputBuilder output = new GetAllFlowsStatisticsFromAllFlowTablesOutputBuilder();
-        output.setTransactionId(generateTransactionId(xid));
-        output.setFlowAndStatisticsMapList(null);
-
-        Collection<RpcError> errors = Collections.emptyList();
-        RpcResult<GetAllFlowsStatisticsFromAllFlowTablesOutput> rpcResult = Rpcs.getRpcResult(true, output.build(),
-                errors);
-        return Futures.immediateFuture(rpcResult);
-
+            final GetAllFlowsStatisticsFromAllFlowTablesInput input) {
+        LOG.debug("Calling the getAllFlowsStatisticsFromAllFlowTables RPC method on MessageDispatchService");
+        SwitchConnectionDistinguisher cookie = null;
+        
+        OFRpcTask<GetAllFlowsStatisticsFromAllFlowTablesInput, RpcResult<GetAllFlowsStatisticsFromAllFlowTablesOutput>> task = 
+                OFRpcTaskFactory.createGetAllFlowsStatisticsFromAllFlowTablesTask(rpcTaskContext, input, cookie);
+        ListenableFuture<RpcResult<GetAllFlowsStatisticsFromAllFlowTablesOutput>> result = task.submit();
+        return result;
     }
-
+    
     @Override
     public Future<RpcResult<GetFlowStatisticsFromFlowTableOutput>> getFlowStatisticsFromFlowTable(
-            final GetFlowStatisticsFromFlowTableInput arg0) {
-        // Generate xid to associate it with the request
-        Long xid = this.getSessionContext().getNextXid();
-
-        LOG.debug("Prepare statistics request to get stats for flow {} for switch tables {} - Transaction id - {}",
-                arg0.getMatch().toString(), arg0.getTableId(), xid);
-
-        // Create multipart request header
-        MultipartRequestInputBuilder mprInput = new MultipartRequestInputBuilder();
-        mprInput.setType(MultipartType.OFPMPFLOW);
-        mprInput.setVersion(version);
-        mprInput.setXid(xid);
-        mprInput.setFlags(new MultipartRequestFlags(false));
-
-        // Create multipart request body for fetch all the group stats
-        MultipartRequestFlowCaseBuilder multipartRequestFlowCaseBuilder = new MultipartRequestFlowCaseBuilder();
-        MultipartRequestFlowBuilder mprFlowRequestBuilder = new MultipartRequestFlowBuilder();
-        mprFlowRequestBuilder.setTableId(arg0.getTableId());
-
-        if (arg0.getOutPort() != null)
-            mprFlowRequestBuilder.setOutPort(arg0.getOutPort().longValue());
-        else
-            mprFlowRequestBuilder.setOutPort(OFConstants.OFPP_ANY);
-
-        if (arg0.getOutGroup() != null)
-            mprFlowRequestBuilder.setOutGroup(arg0.getOutGroup());
-        else
-            mprFlowRequestBuilder.setOutGroup(OFConstants.OFPG_ANY);
-
-        if (arg0.getCookie() != null)
-            mprFlowRequestBuilder.setCookie(arg0.getCookie().getValue());
-        else
-            mprFlowRequestBuilder.setCookie(OFConstants.DEFAULT_COOKIE);
-
-        if (arg0.getCookieMask() != null)
-            mprFlowRequestBuilder.setCookieMask(arg0.getCookieMask().getValue());
-        else
-            mprFlowRequestBuilder.setCookieMask(OFConstants.DEFAULT_COOKIE_MASK);
-
-        // convert and inject match
-        MatchReactor.getInstance().convert(arg0.getMatch(), version, mprFlowRequestBuilder,
-                this.getSessionContext().getFeatures().getDatapathId());
-
-        // Set request body to main multipart request
-        multipartRequestFlowCaseBuilder.setMultipartRequestFlow(mprFlowRequestBuilder.build());
-        mprInput.setMultipartRequestBody(multipartRequestFlowCaseBuilder.build());
-
-        // Send the request, no cookies associated, use any connection
-        LOG.debug("Send flow statistics request to the switch :{}", mprFlowRequestBuilder);
-        this.messageService.multipartRequest(mprInput.build(), null);
-
-        // Prepare rpc return output. Set xid and send it back.
-        GetFlowStatisticsFromFlowTableOutputBuilder output = new GetFlowStatisticsFromFlowTableOutputBuilder();
-        output.setTransactionId(generateTransactionId(xid));
-        output.setFlowAndStatisticsMapList(null);
-
-        Collection<RpcError> errors = Collections.emptyList();
-        RpcResult<GetFlowStatisticsFromFlowTableOutput> rpcResult = Rpcs.getRpcResult(true, output.build(), errors);
-        return Futures.immediateFuture(rpcResult);
+            final GetFlowStatisticsFromFlowTableInput input) {
+        LOG.debug("Calling the getFlowStatisticsFromFlowTable RPC method on MessageDispatchService");
+        SwitchConnectionDistinguisher cookie = null;
+        
+        OFRpcTask<GetFlowStatisticsFromFlowTableInput, RpcResult<GetFlowStatisticsFromFlowTableOutput>> task = 
+                OFRpcTaskFactory.createGetFlowStatisticsFromFlowTableTask(rpcTaskContext, input, cookie);
+        ListenableFuture<RpcResult<GetFlowStatisticsFromFlowTableOutput>> result = task.submit();
+        return result;
     }
-
+    
     @Override
     public Future<RpcResult<GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput>> getAggregateFlowStatisticsFromFlowTableForAllFlows(
-            final GetAggregateFlowStatisticsFromFlowTableForAllFlowsInput arg0) {
-        // Generate xid to associate it with the request
-        Long xid = this.getSessionContext().getNextXid();
-
-        LOG.debug(
-                "Prepare aggregate flow statistics request to get aggregate flow stats for all the flow installed on switch table {} - Transaction id - {}",
-                arg0.getTableId().getValue(), xid);
-
-        // Create multipart request header
-        MultipartRequestInputBuilder mprInput = new MultipartRequestInputBuilder();
-        mprInput.setType(MultipartType.OFPMPAGGREGATE);
-        mprInput.setVersion(version);
-        mprInput.setXid(xid);
-        mprInput.setFlags(new MultipartRequestFlags(false));
-
-        // Create multipart request body for fetch all the group stats
-        MultipartRequestAggregateCaseBuilder multipartRequestAggregateCaseBuilder = new MultipartRequestAggregateCaseBuilder();
-        MultipartRequestAggregateBuilder mprAggregateRequestBuilder = new MultipartRequestAggregateBuilder();
-        mprAggregateRequestBuilder.setTableId(arg0.getTableId().getValue());
-        mprAggregateRequestBuilder.setOutPort(OFConstants.OFPP_ANY);
-        mprAggregateRequestBuilder.setOutGroup(OFConstants.OFPG_ANY);
-        mprAggregateRequestBuilder.setCookie(OFConstants.DEFAULT_COOKIE);
-        mprAggregateRequestBuilder.setCookieMask(OFConstants.DEFAULT_COOKIE_MASK);
-
-        FlowCreatorUtil.setWildcardedFlowMatch(version, mprAggregateRequestBuilder);
-
-        // Set request body to main multipart request
-        multipartRequestAggregateCaseBuilder.setMultipartRequestAggregate(mprAggregateRequestBuilder.build());
-        mprInput.setMultipartRequestBody(multipartRequestAggregateCaseBuilder.build());
-
-        // Send the request, no cookies associated, use any connection
-        LOG.debug("Send request to the switch :{}", multipartRequestAggregateCaseBuilder.build().toString());
-        this.messageService.multipartRequest(mprInput.build(), null);
-
-        // Prepare rpc return output. Set xid and send it back.
-        GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutputBuilder output = new GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutputBuilder();
-        output.setTransactionId(generateTransactionId(xid));
-
-        Collection<RpcError> errors = Collections.emptyList();
-        RpcResult<GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput> rpcResult = Rpcs.getRpcResult(true,
-                output.build(), errors);
-        return Futures.immediateFuture(rpcResult);
+            final GetAggregateFlowStatisticsFromFlowTableForAllFlowsInput input) {
+        LOG.debug("Calling the getAggregateFlowStatisticsFromFlowTableForAllFlows RPC method on MessageDispatchService");
+        SwitchConnectionDistinguisher cookie = null;
+        
+        OFRpcTask<GetAggregateFlowStatisticsFromFlowTableForAllFlowsInput, RpcResult<GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput>> task = 
+                OFRpcTaskFactory.createGetAggregateFlowStatisticsFromFlowTableForAllFlowsTask(rpcTaskContext, input, cookie);
+        ListenableFuture<RpcResult<GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput>> result = task.submit();
+        return result;
     }
-
+    
     @Override
     public Future<RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>> getAggregateFlowStatisticsFromFlowTableForGivenMatch(
-            final GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput arg0) {
-
-        // Generate xid to associate it with the request
-        Long xid = this.getSessionContext().getNextXid();
-
-        LOG.debug(
-                "Prepare aggregate statistics request to get aggregate stats for flows matching {} and installed in flow tables {} - Transaction id - {}",
-                arg0.getMatch().toString(), arg0.getTableId(), xid);
-
-        // Create multipart request header
-        MultipartRequestInputBuilder mprInput = new MultipartRequestInputBuilder();
-        mprInput.setType(MultipartType.OFPMPAGGREGATE);
-        mprInput.setVersion(version);
-        mprInput.setXid(xid);
-        mprInput.setFlags(new MultipartRequestFlags(false));
-
-        // Create multipart request body for fetch all the group stats
-        MultipartRequestAggregateCaseBuilder multipartRequestAggregateCaseBuilder = new MultipartRequestAggregateCaseBuilder();
-        MultipartRequestAggregateBuilder mprAggregateRequestBuilder = new MultipartRequestAggregateBuilder();
-        mprAggregateRequestBuilder.setTableId(arg0.getTableId());
-        mprAggregateRequestBuilder.setOutPort(arg0.getOutPort().longValue());
-        mprAggregateRequestBuilder.setOutGroup(OFConstants.OFPG_ANY);
-        mprAggregateRequestBuilder.setCookie(OFConstants.DEFAULT_COOKIE);
-        mprAggregateRequestBuilder.setCookieMask(OFConstants.DEFAULT_COOKIE_MASK);
-
-        MatchReactor.getInstance().convert(arg0.getMatch(), version, mprAggregateRequestBuilder,
-                this.getSessionContext().getFeatures().getDatapathId());
-        // TODO: repeating code
-        if (version == OFConstants.OFP_VERSION_1_3) {
-            mprAggregateRequestBuilder.setCookie(arg0.getCookie().getValue());
-            mprAggregateRequestBuilder.setCookieMask(arg0.getCookieMask().getValue());
-            mprAggregateRequestBuilder.setOutGroup(arg0.getOutGroup());
-        }
-
-        // Set request body to main multipart request
-        multipartRequestAggregateCaseBuilder.setMultipartRequestAggregate(mprAggregateRequestBuilder.build());
-        mprInput.setMultipartRequestBody(multipartRequestAggregateCaseBuilder.build());
-
-        // Send the request, no cookies associated, use any connection
-        LOG.debug("Send request to the switch :{}", multipartRequestAggregateCaseBuilder.build().toString());
-        this.messageService.multipartRequest(mprInput.build(), null);
-
-        // Prepare rpc return output. Set xid and send it back.
-        GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutputBuilder output = new GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutputBuilder();
-        output.setTransactionId(generateTransactionId(xid));
-
-        Collection<RpcError> errors = Collections.emptyList();
-        RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput> rpcResult = Rpcs.getRpcResult(true,
-                output.build(), errors);
-        return Futures.immediateFuture(rpcResult);
+            final GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput input) {
+        LOG.debug("Calling the getAggregateFlowStatisticsFromFlowTableForGivenMatch RPC method on MessageDispatchService");
+        SwitchConnectionDistinguisher cookie = null;
+        
+        OFRpcTask<GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput, RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>> task = 
+                OFRpcTaskFactory.createGetAggregateFlowStatisticsFromFlowTableForGivenMatchTask(rpcTaskContext, input, cookie);
+        ListenableFuture<RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>> result = task.submit();
+        return result;
     }
-
+    
     @Override
-    public Future<RpcResult<GetFlowTablesStatisticsOutput>> getFlowTablesStatistics(final GetFlowTablesStatisticsInput arg0) {
-        // Generate xid to associate it with the request
-        Long xid = this.getSessionContext().getNextXid();
-
-        LOG.debug("Prepare flow table statistics request to get flow table stats for all tables "
-                + "from node {}- Transaction id - {}", arg0.getNode(), xid);
-
-        // Create multipart request header
-        MultipartRequestInputBuilder mprInput = new MultipartRequestInputBuilder();
-        mprInput.setType(MultipartType.OFPMPTABLE);
-        mprInput.setVersion(version);
-        mprInput.setXid(xid);
-        mprInput.setFlags(new MultipartRequestFlags(false));
-
-        // Create multipart request body for fetch all the group stats
-        MultipartRequestTableCaseBuilder multipartRequestTableCaseBuilder = new MultipartRequestTableCaseBuilder();
-        MultipartRequestTableBuilder multipartRequestTableBuilder = new MultipartRequestTableBuilder();
-        multipartRequestTableBuilder.setEmpty(true);
-        multipartRequestTableCaseBuilder.setMultipartRequestTable(multipartRequestTableBuilder.build());
-
-        // Set request body to main multipart request
-        mprInput.setMultipartRequestBody(multipartRequestTableCaseBuilder.build());
-
-        // Send the request, no cookies associated, use any connection
-        LOG.debug("Send request to the switch :{}", multipartRequestTableCaseBuilder.build().toString());
-        this.messageService.multipartRequest(mprInput.build(), null);
-
-        // Prepare rpc return output. Set xid and send it back.
-        GetFlowTablesStatisticsOutputBuilder output = new GetFlowTablesStatisticsOutputBuilder();
-        output.setTransactionId(generateTransactionId(xid));
-
-        Collection<RpcError> errors = Collections.emptyList();
-        RpcResult<GetFlowTablesStatisticsOutput> rpcResult = Rpcs.getRpcResult(true, output.build(), errors);
-        return Futures.immediateFuture(rpcResult);
+    public Future<RpcResult<GetFlowTablesStatisticsOutput>> getFlowTablesStatistics(
+            final GetFlowTablesStatisticsInput input) {
+        LOG.debug("Calling the getFlowTablesStatistics RPC method on MessageDispatchService");
+        SwitchConnectionDistinguisher cookie = null;
+        
+        OFRpcTask<GetFlowTablesStatisticsInput, RpcResult<GetFlowTablesStatisticsOutput>> task = 
+                OFRpcTaskFactory.createGetFlowTablesStatisticsTask(rpcTaskContext, input, cookie);
+        ListenableFuture<RpcResult<GetFlowTablesStatisticsOutput>> result = task.submit();
+        return result;
     }
-
+    
     @Override
     public Future<RpcResult<GetAllQueuesStatisticsFromAllPortsOutput>> getAllQueuesStatisticsFromAllPorts(
-            final GetAllQueuesStatisticsFromAllPortsInput arg0) {
-        // Generate xid to associate it with the request
-        Long xid = this.getSessionContext().getNextXid();
-
-        LOG.debug(
-                "Prepare queue statistics request to collect stats for all queues attached to all the ports of node {} - TrasactionId - {}",
-                arg0.getNode().getValue(), xid);
-
-        // Create multipart request header
-        MultipartRequestInputBuilder mprInput = new MultipartRequestInputBuilder();
-        mprInput.setType(MultipartType.OFPMPQUEUE);
-        mprInput.setVersion(version);
-        mprInput.setXid(xid);
-        mprInput.setFlags(new MultipartRequestFlags(false));
-
-        // Create multipart request body to fetch stats for all the port of the
-        // node
-        MultipartRequestQueueCaseBuilder caseBuilder = new MultipartRequestQueueCaseBuilder();
-        MultipartRequestQueueBuilder mprQueueBuilder = new MultipartRequestQueueBuilder();
-        // Select all ports
-        mprQueueBuilder.setPortNo(OFConstants.OFPP_ANY);
-        // Select all the ports
-        mprQueueBuilder.setQueueId(OFConstants.OFPQ_ANY);
-
-        caseBuilder.setMultipartRequestQueue(mprQueueBuilder.build());
-
-        // Set request body to main multipart request
-        mprInput.setMultipartRequestBody(caseBuilder.build());
-
-        // Send the request, no cookies associated, use any connection
-        LOG.debug("Send queue statistics request :{}", mprQueueBuilder.build().toString());
-        this.messageService.multipartRequest(mprInput.build(), null);
-
-        // Prepare rpc return output. Set xid and send it back.
-        GetAllQueuesStatisticsFromAllPortsOutputBuilder output = new GetAllQueuesStatisticsFromAllPortsOutputBuilder();
-        output.setTransactionId(generateTransactionId(xid));
-        output.setQueueIdAndStatisticsMap(null);
-
-        Collection<RpcError> errors = Collections.emptyList();
-        RpcResult<GetAllQueuesStatisticsFromAllPortsOutput> rpcResult = Rpcs.getRpcResult(true, output.build(), errors);
-        return Futures.immediateFuture(rpcResult);
+            final GetAllQueuesStatisticsFromAllPortsInput input) {
+        LOG.debug("Calling the getAllQueuesStatisticsFromAllPorts RPC method on MessageDispatchService");
+        SwitchConnectionDistinguisher cookie = null;
+        
+        OFRpcTask<GetAllQueuesStatisticsFromAllPortsInput, RpcResult<GetAllQueuesStatisticsFromAllPortsOutput>> task = 
+                OFRpcTaskFactory.createGetAllQueuesStatisticsFromAllPortsTask(rpcTaskContext, input, cookie);
+        ListenableFuture<RpcResult<GetAllQueuesStatisticsFromAllPortsOutput>> result = task.submit();
+        return result;
     }
-
+    
     @Override
     public Future<RpcResult<GetAllQueuesStatisticsFromGivenPortOutput>> getAllQueuesStatisticsFromGivenPort(
-            final GetAllQueuesStatisticsFromGivenPortInput arg0) {
-        // Generate xid to associate it with the request
-        Long xid = this.getSessionContext().getNextXid();
-
-        LOG.debug("Prepare queue statistics request to collect stats for "
-                + "all queues attached to given port {} of node {} - TrasactionId - {}", arg0.getNodeConnectorId()
-                .toString(), arg0.getNode().getValue(), xid);
-
-        // Create multipart request header
-        MultipartRequestInputBuilder mprInput = new MultipartRequestInputBuilder();
-        mprInput.setType(MultipartType.OFPMPQUEUE);
-        mprInput.setVersion(version);
-        mprInput.setXid(xid);
-        mprInput.setFlags(new MultipartRequestFlags(false));
-
-        // Create multipart request body to fetch stats for all the port of the
-        // node
-        MultipartRequestQueueCaseBuilder caseBuilder = new MultipartRequestQueueCaseBuilder();
-        MultipartRequestQueueBuilder mprQueueBuilder = new MultipartRequestQueueBuilder();
-        // Select all queues
-        mprQueueBuilder.setQueueId(OFConstants.OFPQ_ANY);
-        // Select specific port
-        mprQueueBuilder.setPortNo(InventoryDataServiceUtil.portNumberfromNodeConnectorId(arg0.getNodeConnectorId()));
-
-        caseBuilder.setMultipartRequestQueue(mprQueueBuilder.build());
-
-        // Set request body to main multipart request
-        mprInput.setMultipartRequestBody(caseBuilder.build());
-
-        // Send the request, no cookies associated, use any connection
-        LOG.debug("Send queue statistics request :{}", mprQueueBuilder.build().toString());
-        this.messageService.multipartRequest(mprInput.build(), null);
-
-        // Prepare rpc return output. Set xid and send it back.
-        GetAllQueuesStatisticsFromGivenPortOutputBuilder output = new GetAllQueuesStatisticsFromGivenPortOutputBuilder();
-        output.setTransactionId(generateTransactionId(xid));
-        output.setQueueIdAndStatisticsMap(null);
-
-        Collection<RpcError> errors = Collections.emptyList();
-        RpcResult<GetAllQueuesStatisticsFromGivenPortOutput> rpcResult = Rpcs
-                .getRpcResult(true, output.build(), errors);
-        return Futures.immediateFuture(rpcResult);
+            final GetAllQueuesStatisticsFromGivenPortInput input) {
+        LOG.debug("Calling the getAllQueuesStatisticsFromGivenPort RPC method on MessageDispatchService");
+        SwitchConnectionDistinguisher cookie = null;
+        
+        OFRpcTask<GetAllQueuesStatisticsFromGivenPortInput, RpcResult<GetAllQueuesStatisticsFromGivenPortOutput>> task = 
+                OFRpcTaskFactory.createGetAllQueuesStatisticsFromGivenPortTask(rpcTaskContext, input, cookie);
+        ListenableFuture<RpcResult<GetAllQueuesStatisticsFromGivenPortOutput>> result = task.submit();
+        return result;
     }
-
+    
     @Override
     public Future<RpcResult<GetQueueStatisticsFromGivenPortOutput>> getQueueStatisticsFromGivenPort(
-            final GetQueueStatisticsFromGivenPortInput arg0) {
-        // Generate xid to associate it with the request
-        Long xid = this.getSessionContext().getNextXid();
-
-        LOG.debug("Prepare queue statistics request to collect stats for "
-                + "given queue attached to given port {} of node {} - TrasactionId - {}", arg0.getQueueId().toString(),
-                arg0.getNodeConnectorId().toString(), arg0.getNode().getValue(), xid);
-
-        // Create multipart request header
-        MultipartRequestInputBuilder mprInput = new MultipartRequestInputBuilder();
-        mprInput.setType(MultipartType.OFPMPQUEUE);
-        mprInput.setVersion(version);
-        mprInput.setXid(xid);
-        mprInput.setFlags(new MultipartRequestFlags(false));
-
-        // Create multipart request body to fetch stats for all the port of the
-        // node
-        MultipartRequestQueueCaseBuilder caseBuilder = new MultipartRequestQueueCaseBuilder();
-        MultipartRequestQueueBuilder mprQueueBuilder = new MultipartRequestQueueBuilder();
-        // Select specific queue
-        mprQueueBuilder.setQueueId(arg0.getQueueId().getValue());
-        // Select specific port
-        mprQueueBuilder.setPortNo(InventoryDataServiceUtil.portNumberfromNodeConnectorId(arg0.getNodeConnectorId()));
-
-        caseBuilder.setMultipartRequestQueue(mprQueueBuilder.build());
-
-        // Set request body to main multipart request
-        mprInput.setMultipartRequestBody(caseBuilder.build());
-
-        // Send the request, no cookies associated, use any connection
-        LOG.debug("Send queue statistics request :{}", mprQueueBuilder.build().toString());
-        this.messageService.multipartRequest(mprInput.build(), null);
-
-        // Prepare rpc return output. Set xid and send it back.
-        GetQueueStatisticsFromGivenPortOutputBuilder output = new GetQueueStatisticsFromGivenPortOutputBuilder();
-        output.setTransactionId(generateTransactionId(xid));
-        output.setQueueIdAndStatisticsMap(null);
-
-        Collection<RpcError> errors = Collections.emptyList();
-        RpcResult<GetQueueStatisticsFromGivenPortOutput> rpcResult = Rpcs.getRpcResult(true, output.build(), errors);
-        return Futures.immediateFuture(rpcResult);
+            final GetQueueStatisticsFromGivenPortInput input) {
+        LOG.debug("Calling the getQueueStatisticsFromGivenPort RPC method on MessageDispatchService");
+        SwitchConnectionDistinguisher cookie = null;
+        
+        OFRpcTask<GetQueueStatisticsFromGivenPortInput, RpcResult<GetQueueStatisticsFromGivenPortOutput>> task = 
+                OFRpcTaskFactory.createGetQueueStatisticsFromGivenPortTask(rpcTaskContext, input, cookie);
+        ListenableFuture<RpcResult<GetQueueStatisticsFromGivenPortOutput>> result = task.submit();
+        return result;
     }
 }
