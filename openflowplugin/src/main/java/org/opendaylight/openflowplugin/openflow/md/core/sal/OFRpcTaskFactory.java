@@ -28,7 +28,6 @@ import org.opendaylight.openflowplugin.openflow.md.util.FlowCreatorUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowVersion;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowAdded;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowAddedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowRemoved;
@@ -163,6 +162,7 @@ import org.opendaylight.yangtools.yang.common.RpcError.ErrorSeverity;
 import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
+import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
@@ -207,11 +207,9 @@ public abstract class OFRpcTaskFactory {
                     OFRpcTaskUtil.hookFutureNotification(this, result, 
                             getRpcNotificationProviderService(), createFlowAddedNotification(xId, getInput()));
                 }
-
                 return result;
             }
         };
-        
         return task;
     }
 
@@ -239,7 +237,7 @@ public abstract class OFRpcTaskFactory {
      * @return UpdateFlow task
      */
     public static OFRpcTask<UpdateFlowInput, RpcResult<UpdateFlowOutput>> createUpdateFlowTask(
-            OFRpcTaskContext taskContext, UpdateFlowInput input, 
+            final OFRpcTaskContext taskContext, UpdateFlowInput input, 
             SwitchConnectionDistinguisher cookie) {
         
         OFRpcTask<UpdateFlowInput, RpcResult<UpdateFlowOutput>> task = 
@@ -259,7 +257,6 @@ public abstract class OFRpcTaskFactory {
                     boolean updatedFlow = (getInput().getUpdatedFlow().getMatch().equals(getInput().getOriginalFlow().getMatch())) &&
                             (getInput().getUpdatedFlow().getPriority().equals(getInput().getOriginalFlow().getPriority()));
 
-
                     if (updatedFlow == false) {
                         // if neither match nor priority matches, then we would need to remove the flow and add it
                         //remove flow
@@ -269,23 +266,15 @@ public abstract class OFRpcTaskFactory {
                         ofFlowRemoveInput.setXid(xId);
                         Future<RpcResult<UpdateFlowOutput>> resultFromOFLibRemove = getMessageService().
                                 flowMod(ofFlowRemoveInput.build(), getCookie());
-                        //add flow
-                        AddFlowInputBuilder addFlow = new AddFlowInputBuilder(getInput().getUpdatedFlow());
-                        flow = addFlow.build();
+                        
+                        result = Futures.transform(JdkFutureAdapters.listenInPoolThread(resultFromOFLibRemove),
+                                          decodeRemoveFlowAndCreateFlow(taskContext, getCookie()));
                     } else {
                         //update flow
                         flow = getInput().getUpdatedFlow();
+                        result = JdkFutureAdapters.listenInPoolThread(createResultForAddFlow(
+                                                              taskContext, flow, getCookie()));
                     }
-
-                    FlowModInputBuilder ofFlowModInput = FlowConvertor.toFlowModInput(flow, getVersion(),
-                            getSession().getFeatures().getDatapathId());
-
-                    ofFlowModInput.setXid(xId);
-
-                    Future<RpcResult<UpdateFlowOutput>> resultFromOFLib =
-                            getMessageService().flowMod(ofFlowModInput.build(), getCookie());
-                    result = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
-
                     OFRpcTaskUtil.hookFutureNotification(this, result,
                             getRpcNotificationProviderService(), createFlowUpdatedNotification(xId, getInput()));
                 }
@@ -294,7 +283,48 @@ public abstract class OFRpcTaskFactory {
         };
         return task;
     }
-
+    
+    /**
+     * Helper method for {@link OFRpcTaskFactory#createUpdateFlowTask()}. Decides whether flow 
+     * removing ends successfully and if yes, it performs adding of new flow. 
+     * 
+     * @param taskContext
+     * @param cookie
+     * @return asyncFunction
+     */
+    protected static AsyncFunction<RpcResult<UpdateFlowOutput>, RpcResult<UpdateFlowOutput>> 
+            decodeRemoveFlowAndCreateFlow(final OFRpcTaskContext taskContext, final SwitchConnectionDistinguisher cookie) { 
+        return new AsyncFunction<RpcResult<UpdateFlowOutput>, RpcResult<UpdateFlowOutput>>() {
+            @Override
+            public ListenableFuture<RpcResult<UpdateFlowOutput>> apply(
+                    RpcResult<UpdateFlowOutput> input) throws Exception {
+                if(input.isSuccessful()) {
+                    return JdkFutureAdapters.listenInPoolThread(createResultForAddFlow(taskContext, null, cookie));
+                } else {
+                    return Futures.immediateFuture(input);
+                }            
+            }
+        };
+    }
+    
+    /**
+     * Helper method for {@link OFRpcTaskFactory#createUpdateFlowTask()}. It performs adding of new flow. 
+     * 
+     * @param taskContext
+     * @param flow
+     * @param cookie
+     * @return future
+     */
+    protected static Future<RpcResult<UpdateFlowOutput>> createResultForAddFlow(OFRpcTaskContext taskContext, 
+                                                                              Flow flow, 
+                                                                              SwitchConnectionDistinguisher cookie) {
+        FlowModInputBuilder ofFlowModInput = FlowConvertor.toFlowModInput(flow, 
+                                             taskContext.getSession().getFeatures().getVersion(),
+                                             taskContext.getSession().getFeatures().getDatapathId());
+        ofFlowModInput.setXid(taskContext.getSession().getFeatures().getXid());
+        return taskContext.getMessageService().flowMod(ofFlowModInput.build(), cookie);
+    }
+    
     /**
      * @param xId
      * @param input
@@ -762,7 +792,7 @@ public abstract class OFRpcTaskFactory {
                     
                     // Create multipart request header
                     MultipartRequestInputBuilder mprInput = createMultipartHeader(MultipartType.OFPMPGROUP, 
-                            taskContext);
+                            taskContext, xid);
                     
                     // Set request body to main multipart request
                     mprInput.setMultipartRequestBody(caseBuilder.build());
@@ -817,7 +847,7 @@ public abstract class OFRpcTaskFactory {
                             MultipartRequestGroupDescCaseBuilder mprGroupDescCaseBuild = 
                                                   new MultipartRequestGroupDescCaseBuilder();
                             MultipartRequestInputBuilder mprInput = 
-                                    createMultipartHeader(MultipartType.OFPMPGROUPDESC, taskContext);
+                                    createMultipartHeader(MultipartType.OFPMPGROUPDESC, taskContext, xid);
                             mprInput.setMultipartRequestBody(mprGroupDescCaseBuild.build());
                             Future<RpcResult<Void>> resultFromOFLib = getMessageService()
                                     .multipartRequest(mprInput.build(), getCookie());
@@ -866,7 +896,7 @@ public abstract class OFRpcTaskFactory {
                             MultipartRequestGroupFeaturesCaseBuilder mprGroupFeaturesBuild = 
                                                   new MultipartRequestGroupFeaturesCaseBuilder();
                             MultipartRequestInputBuilder mprInput = 
-                                    createMultipartHeader(MultipartType.OFPMPGROUPFEATURES, taskContext);
+                                    createMultipartHeader(MultipartType.OFPMPGROUPFEATURES, taskContext, xid);
                             mprInput.setMultipartRequestBody(mprGroupFeaturesBuild.build());
                             Future<RpcResult<Void>> resultFromOFLib = getMessageService()
                                     .multipartRequest(mprInput.build(), getCookie());
@@ -918,7 +948,7 @@ public abstract class OFRpcTaskFactory {
                             caseBuilder.setMultipartRequestGroup(mprGroupBuild.build());
                             
                             MultipartRequestInputBuilder mprInput = 
-                                    createMultipartHeader(MultipartType.OFPMPGROUP, taskContext);
+                                    createMultipartHeader(MultipartType.OFPMPGROUP, taskContext, xid);
                             mprInput.setMultipartRequestBody(caseBuilder.build());
                             Future<RpcResult<Void>> resultFromOFLib = getMessageService()
                                     .multipartRequest(mprInput.build(), getCookie());
@@ -975,7 +1005,7 @@ public abstract class OFRpcTaskFactory {
                             caseBuilder.setMultipartRequestMeterConfig(mprMeterConfigBuild.build());
                             
                             MultipartRequestInputBuilder mprInput = 
-                                    createMultipartHeader(MultipartType.OFPMPMETERCONFIG, taskContext);
+                                    createMultipartHeader(MultipartType.OFPMPMETERCONFIG, taskContext, xid);
                             mprInput.setMultipartRequestBody(caseBuilder.build());
                             Future<RpcResult<Void>> resultFromOFLib = getMessageService()
                                     .multipartRequest(mprInput.build(), getCookie());
@@ -1032,7 +1062,7 @@ public abstract class OFRpcTaskFactory {
                             caseBuilder.setMultipartRequestMeter(mprMeterBuild.build());
                             
                             MultipartRequestInputBuilder mprInput = 
-                                    createMultipartHeader(MultipartType.OFPMPMETER, taskContext);
+                                    createMultipartHeader(MultipartType.OFPMPMETER, taskContext, xid);
                             mprInput.setMultipartRequestBody(caseBuilder.build());
                             Future<RpcResult<Void>> resultFromOFLib = getMessageService()
                                     .multipartRequest(mprInput.build(), getCookie());
@@ -1083,7 +1113,7 @@ public abstract class OFRpcTaskFactory {
                                     new MultipartRequestMeterFeaturesCaseBuilder();
                             
                             MultipartRequestInputBuilder mprInput = 
-                                    createMultipartHeader(MultipartType.OFPMPMETERFEATURES, taskContext);
+                                    createMultipartHeader(MultipartType.OFPMPMETERFEATURES, taskContext, xid);
                             mprInput.setMultipartRequestBody(mprMeterFeaturesBuild.build());
                             Future<RpcResult<Void>> resultFromOFLib = getMessageService()
                                     .multipartRequest(mprInput.build(), getCookie());
@@ -1138,7 +1168,7 @@ public abstract class OFRpcTaskFactory {
                             caseBuilder.setMultipartRequestMeter(mprMeterBuild.build());
                             
                             MultipartRequestInputBuilder mprInput = 
-                                    createMultipartHeader(MultipartType.OFPMPMETER, taskContext);
+                                    createMultipartHeader(MultipartType.OFPMPMETER, taskContext, xid);
                             mprInput.setMultipartRequestBody(caseBuilder.build());
                             Future<RpcResult<Void>> resultFromOFLib = getMessageService()
                                     .multipartRequest(mprInput.build(), getCookie());
@@ -1189,7 +1219,7 @@ public abstract class OFRpcTaskFactory {
                             caseBuilder.setMultipartRequestPortStats(mprPortStatsBuilder.build());
                             
                             MultipartRequestInputBuilder mprInput = 
-                                    createMultipartHeader(MultipartType.OFPMPPORTSTATS, taskContext);
+                                    createMultipartHeader(MultipartType.OFPMPPORTSTATS, taskContext, xid);
                             mprInput.setMultipartRequestBody(caseBuilder.build());
                             Future<RpcResult<Void>> resultFromOFLib = getMessageService()
                                     .multipartRequest(mprInput.build(), getCookie());
@@ -1242,7 +1272,7 @@ public abstract class OFRpcTaskFactory {
                         caseBuilder.setMultipartRequestPortStats(mprPortStatsBuilder.build());
                         
                         MultipartRequestInputBuilder mprInput = 
-                                createMultipartHeader(MultipartType.OFPMPPORTSTATS, taskContext);
+                                createMultipartHeader(MultipartType.OFPMPPORTSTATS, taskContext, xid);
                         mprInput.setMultipartRequestBody(caseBuilder.build());
                         Future<RpcResult<Void>> resultFromOFLib = getMessageService()
                                 .multipartRequest(mprInput.build(), getCookie());
@@ -1294,7 +1324,7 @@ public abstract class OFRpcTaskFactory {
                                 .getPrimaryConductor().getVersion(), mprFlowRequestBuilder);
                         
                         MultipartRequestInputBuilder mprInput = 
-                                createMultipartHeader(MultipartType.OFPMPFLOW, taskContext);
+                                createMultipartHeader(MultipartType.OFPMPFLOW, taskContext, xid);
                         mprInput.setMultipartRequestBody(multipartRequestFlowCaseBuilder.build());
                         Future<RpcResult<Void>> resultFromOFLib = getMessageService()
                                 .multipartRequest(mprInput.build(), getCookie());
@@ -1351,7 +1381,7 @@ public abstract class OFRpcTaskFactory {
                             .getPrimaryConductor().getVersion(), mprFlowRequestBuilder);
                     
                     MultipartRequestInputBuilder mprInput = 
-                            createMultipartHeader(MultipartType.OFPMPFLOW, taskContext);
+                            createMultipartHeader(MultipartType.OFPMPFLOW, taskContext, xid);
                     multipartRequestFlowCaseBuilder.setMultipartRequestFlow(mprFlowRequestBuilder.build());
                     mprInput.setMultipartRequestBody(multipartRequestFlowCaseBuilder.build());
                     Future<RpcResult<Void>> resultFromOFLib = getMessageService()
@@ -1425,7 +1455,7 @@ public abstract class OFRpcTaskFactory {
                     // Set request body to main multipart request
                     multipartRequestFlowCaseBuilder.setMultipartRequestFlow(mprFlowRequestBuilder.build());
                     MultipartRequestInputBuilder mprInput = 
-                            createMultipartHeader(MultipartType.OFPMPFLOW, taskContext);
+                            createMultipartHeader(MultipartType.OFPMPFLOW, taskContext, xid);
                     mprInput.setMultipartRequestBody(multipartRequestFlowCaseBuilder.build());
                     Future<RpcResult<Void>> resultFromOFLib = getMessageService()
                             .multipartRequest(mprInput.build(), getCookie());
@@ -1480,7 +1510,7 @@ public abstract class OFRpcTaskFactory {
                 // Set request body to main multipart request
                 multipartRequestAggregateCaseBuilder.setMultipartRequestAggregate(mprAggregateRequestBuilder.build());
                 MultipartRequestInputBuilder mprInput = 
-                        createMultipartHeader(MultipartType.OFPMPAGGREGATE, taskContext);
+                        createMultipartHeader(MultipartType.OFPMPAGGREGATE, taskContext, xid);
                 mprInput.setMultipartRequestBody(multipartRequestAggregateCaseBuilder.build());
                 Future<RpcResult<Void>> resultFromOFLib = getMessageService()
                         .multipartRequest(mprInput.build(), getCookie());
@@ -1546,7 +1576,7 @@ public abstract class OFRpcTaskFactory {
                 // Set request body to main multipart request
                 multipartRequestAggregateCaseBuilder.setMultipartRequestAggregate(mprAggregateRequestBuilder.build());
                 MultipartRequestInputBuilder mprInput = 
-                        createMultipartHeader(MultipartType.OFPMPAGGREGATE, taskContext);
+                        createMultipartHeader(MultipartType.OFPMPAGGREGATE, taskContext, xid);
                 mprInput.setMultipartRequestBody(multipartRequestAggregateCaseBuilder.build());
                 Future<RpcResult<Void>> resultFromOFLib = getMessageService()
                         .multipartRequest(mprInput.build(), getCookie());
@@ -1592,7 +1622,7 @@ public abstract class OFRpcTaskFactory {
 
                 // Set request body to main multipart request
                 MultipartRequestInputBuilder mprInput = 
-                        createMultipartHeader(MultipartType.OFPMPTABLE, taskContext);
+                        createMultipartHeader(MultipartType.OFPMPTABLE, taskContext, xid);
                 mprInput.setMultipartRequestBody(multipartRequestTableCaseBuilder.build());
                 Future<RpcResult<Void>> resultFromOFLib = getMessageService()
                         .multipartRequest(mprInput.build(), getCookie());
@@ -1640,7 +1670,7 @@ public abstract class OFRpcTaskFactory {
 
             // Set request body to main multipart request
             MultipartRequestInputBuilder mprInput = 
-                    createMultipartHeader(MultipartType.OFPMPQUEUE, taskContext);
+                    createMultipartHeader(MultipartType.OFPMPQUEUE, taskContext, xid);
             mprInput.setMultipartRequestBody(caseBuilder.build());
             Future<RpcResult<Void>> resultFromOFLib = getMessageService()
                     .multipartRequest(mprInput.build(), getCookie());
@@ -1690,7 +1720,7 @@ public abstract class OFRpcTaskFactory {
 
             // Set request body to main multipart request
             MultipartRequestInputBuilder mprInput = 
-                    createMultipartHeader(MultipartType.OFPMPQUEUE, taskContext);
+                    createMultipartHeader(MultipartType.OFPMPQUEUE, taskContext, xid);
             mprInput.setMultipartRequestBody(caseBuilder.build());
             Future<RpcResult<Void>> resultFromOFLib = getMessageService()
                     .multipartRequest(mprInput.build(), getCookie());
@@ -1740,7 +1770,7 @@ public abstract class OFRpcTaskFactory {
 
             // Set request body to main multipart request
             MultipartRequestInputBuilder mprInput = 
-                    createMultipartHeader(MultipartType.OFPMPQUEUE, taskContext);
+                    createMultipartHeader(MultipartType.OFPMPQUEUE, taskContext, xid);
             mprInput.setMultipartRequestBody(caseBuilder.build());
             Future<RpcResult<Void>> resultFromOFLib = getMessageService()
                     .multipartRequest(mprInput.build(), getCookie());
@@ -1762,11 +1792,11 @@ public abstract class OFRpcTaskFactory {
     }
     
     static MultipartRequestInputBuilder createMultipartHeader(MultipartType multipart, 
-            OFRpcTaskContext taskContext) {
+            OFRpcTaskContext taskContext, Long xid) {
         MultipartRequestInputBuilder mprInput = new MultipartRequestInputBuilder();
         mprInput.setType(multipart);
         mprInput.setVersion(taskContext.getSession().getPrimaryConductor().getVersion());
-        mprInput.setXid(taskContext.getSession().getNextXid());
+        mprInput.setXid(xid);
         mprInput.setFlags(new MultipartRequestFlags(false));
         return mprInput;
     }
@@ -1863,7 +1893,7 @@ public abstract class OFRpcTaskFactory {
                 
                 // Set request body to main multipart request
                 MultipartRequestInputBuilder mprInput = 
-                        createMultipartHeader(MultipartType.OFPMPTABLEFEATURES, taskContext);
+                        createMultipartHeader(MultipartType.OFPMPTABLEFEATURES, taskContext, xid);
                 mprInput.setMultipartRequestBody(caseBuilder.build());
                 
                 Future<RpcResult<Void>> resultFromOFLib = getMessageService()
