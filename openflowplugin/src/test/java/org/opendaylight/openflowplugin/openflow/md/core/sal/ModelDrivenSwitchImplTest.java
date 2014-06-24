@@ -35,8 +35,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.Upda
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.UpdatedFlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev131103.TransactionId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GroupModInput;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
@@ -95,7 +100,7 @@ public class ModelDrivenSwitchImplTest {
                         Matchers.any(SwitchConnectionDistinguisher.class))).thenReturn(Futures.immediateFuture(result));
 
         AddFlowInputBuilder input = new AddFlowInputBuilder();
-        input.setMatch(new MatchBuilder().build());
+//        input.setMatch(new MatchBuilder().build());
 
         mdSwitchOF10.addFlow(input.build());
         mdSwitchOF13.addFlow(input.build());
@@ -145,5 +150,53 @@ public class ModelDrivenSwitchImplTest {
 
         mdSwitchOF10.updateFlow(input.build());
         mdSwitchOF13.updateFlow(input.build());
+    }
+    
+    /**
+     * Test method for
+     * {@link org.opendaylight.openflowplugin.openflow.md.core.sal.ModelDrivenSwitchImpl#
+     * addGroup(org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.
+     * AddGroupInput)}
+     * .
+     */
+    @Test
+    public void testAddGroup() {
+        UpdateGroupOutputBuilder updateGroupOutput = new UpdateGroupOutputBuilder();
+        updateGroupOutput.setTransactionId(new TransactionId(new BigInteger("42")));
+        Set<RpcError> errorSet = Collections.emptySet();
+        RpcResult<UpdateGroupOutput> result = Rpcs.getRpcResult(true, updateGroupOutput.build(), errorSet);
+        Mockito.when(
+                messageDispatchService.groupMod(Matchers.any(GroupModInput.class),
+                        Matchers.any(SwitchConnectionDistinguisher.class))).thenReturn(Futures.immediateFuture(result));
+
+        AddGroupInputBuilder input = new AddGroupInputBuilder();
+//        input.setMatch(new MatchBuilder().build());
+
+        mdSwitchOF10.addGroup(input.build());
+        mdSwitchOF13.addGroup(input.build());
+    }
+    
+    /**
+     * Test method for
+     * {@link org.opendaylight.openflowplugin.openflow.md.core.sal.ModelDrivenSwitchImpl#
+     * updateGroup(org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.
+     * UpdateGroupInput)}
+     * .
+     */
+    @Test
+    public void testUpdateGroup() {
+        UpdateGroupOutputBuilder updateGroupOutput = new UpdateGroupOutputBuilder();
+        updateGroupOutput.setTransactionId(new TransactionId(new BigInteger("42")));
+        Set<RpcError> errorSet = Collections.emptySet();
+        RpcResult<UpdateGroupOutput> result = Rpcs.getRpcResult(true, updateGroupOutput.build(), errorSet);
+        Mockito.when(
+                messageDispatchService.groupMod(Matchers.any(GroupModInput.class),
+                        Matchers.any(SwitchConnectionDistinguisher.class))).thenReturn(Futures.immediateFuture(result));
+
+        UpdateGroupInputBuilder input = new UpdateGroupInputBuilder();
+//        input.setMatch(new MatchBuilder().build());
+
+        mdSwitchOF10.updateGroup(input.build());
+        mdSwitchOF13.updateGroup(input.build());
     }
 }
