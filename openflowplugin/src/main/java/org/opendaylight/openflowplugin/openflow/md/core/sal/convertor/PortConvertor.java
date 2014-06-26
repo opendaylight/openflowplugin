@@ -52,7 +52,7 @@ public final class PortConvertor {
 
         PortModInputBuilder portModInputBuilder = new PortModInputBuilder();
         portModInputBuilder.setAdvertise(getPortFeatures(source.getAdvertisedFeatures()));
-        portModInputBuilder.setPortNo(new PortNumber(source.getPortNumber()));
+        portModInputBuilder.setPortNo(new PortNumber(source.getPortNumber().getUint32()));
 
         portModInputBuilder.setConfig(config);
         portModInputBuilder.setMask(config);
@@ -125,7 +125,7 @@ public final class PortConvertor {
         PortState portState = null;
 
         PortsBuilder OFPortDescDataBuilder = new PortsBuilder();
-        OFPortDescDataBuilder.setPortNo(source.getPortNumber()); // portNO
+        OFPortDescDataBuilder.setPortNo(source.getPortNumber().getUint32()); // portNO
 
         OFPortDescDataBuilder.setHwAddr(source.getHardwareAddress());
         OFPortDescDataBuilder.setName(source.getName());

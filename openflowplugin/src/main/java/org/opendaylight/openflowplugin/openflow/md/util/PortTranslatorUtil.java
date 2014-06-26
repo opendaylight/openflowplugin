@@ -12,6 +12,7 @@ import java.math.BigInteger;
 import org.opendaylight.openflowplugin.openflow.md.OFConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnectorUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnectorUpdatedBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.CommonPort.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.flow.capable.port.State;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.flow.capable.port.StateBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorUpdated;
@@ -110,7 +111,7 @@ public abstract class PortTranslatorUtil {
         fcncub.setHardwareAddress(port.getHwAddr());
         fcncub.setMaximumSpeed(port.getMaxSpeed());
         fcncub.setName(port.getName());
-        fcncub.setPortNumber(port.getPortNo());
+        fcncub.setPortNumber(new PortNumber(port.getPortNo()));
         builder.addAugmentation(FlowCapableNodeConnectorUpdated.class, fcncub.build());
         return builder.build();
     }
