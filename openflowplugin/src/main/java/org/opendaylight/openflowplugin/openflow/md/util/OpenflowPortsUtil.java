@@ -1,6 +1,7 @@
 package org.opendaylight.openflowplugin.openflow.md.util;
 
 import com.google.common.collect.ImmutableBiMap;
+
 import org.opendaylight.openflowjava.protocol.api.util.BinContent;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.CommonPort;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.OutputPortValues;
@@ -102,5 +103,38 @@ public class OpenflowPortsUtil {
 
     public static boolean isPortReserved(OpenflowVersion ofVersion, Long portNumber) {
         return versionPortMap.get(ofVersion).inverse().containsKey(portNumber);
+    }
+
+    /**
+     * @param ofVersion
+     * @param portNumber
+     * @return true if port number is valid for given protocol version
+     */
+    public static boolean checkPortValidity(OpenflowVersion ofVersion, Long portNumber) {
+        boolean portIsValid = true;
+        if (portNumber == null) {
+            portIsValid = false;
+        } else if (portNumber < 0) {
+            portIsValid = false;
+        } else if (portNumber > OpenflowPortsUtil.getMaxPortForVersion(ofVersion)) {
+            if (!OpenflowPortsUtil.isPortReserved(ofVersion, portNumber)) {
+                portIsValid = false;
+            }
+        }
+        return portIsValid;
+    }
+
+    /**
+     * @param portNumber
+     * @return string containing number or logical name
+     */
+    public static String portNumberToString(CommonPort.PortNumber portNumber) {
+        String result = null;
+        if (portNumber.getUint32() != null) {
+            result = String.valueOf(portNumber.getUint32());
+        } else if (portNumber.getString() != null) {
+            result = portNumber.getString();
+        }
+        return result;
     }
 }

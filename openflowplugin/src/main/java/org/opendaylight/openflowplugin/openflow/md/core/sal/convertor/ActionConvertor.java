@@ -88,6 +88,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.tp.src.action._case.SetTpSrcAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.vlan.id.action._case.SetVlanIdAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.vlan.pcp.action._case.SetVlanPcpAction;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.CommonPort;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.DlAddressAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.DlAddressActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.EthertypeAction;
@@ -154,9 +155,6 @@ import java.util.List;
  */
 public final class ActionConvertor {
     private static final Logger logger = LoggerFactory.getLogger(ActionConvertor.class);
-    private static final String PREFIX_SEPARATOR = "/";
-    final private static Long MAXPortOF13 = new Long(4294967040L); // 0xffffff00
-    final private static Long MAXPortOF10 = new Long(0xff00);
 
     private ActionConvertor() {
         // NOOP
@@ -693,7 +691,7 @@ public final class ActionConvertor {
 
         OpenflowVersion ofVersion = OpenflowVersion.get(version);
         Long portNumber = InventoryDataServiceUtil.portNumberfromNodeConnectorId(ofVersion, uri.getValue());
-        if (portNumber != null && (OpenflowPortsUtil.isPortReserved(ofVersion, portNumber) || portNumber < OpenflowPortsUtil.getMaxPortForVersion(ofVersion)) ) {
+        if (OpenflowPortsUtil.checkPortValidity(ofVersion, portNumber)) {
             portAction.setPort(new PortNumber(portNumber));
         } else {
             logger.error("Invalid Port specified "+ portNumber + " for Output Action for OF version:"+ ofVersion);
@@ -719,7 +717,7 @@ public final class ActionConvertor {
         for (Action action : actionList) {
             if (action.getType().equals(
                     org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.Output.class)) {
-                bucketActions.add(ofToSALOutputAction(action));
+                bucketActions.add(ofToSALOutputAction(ofVersion, action));
 
             } else if (action.getType().equals(
                     org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.Group.class)) {
@@ -801,18 +799,22 @@ public final class ActionConvertor {
 
     /**
      * Method converts OF Output action object to SAL Output action object.
-     *
+     * @param ofVersion 
+     * @param ofVersion 
      * @param action
      *            org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.
      *            action.rev130731.actions.actions.list.Action
+     *
      * @return OutputAction
      */
-    public static OutputActionCase ofToSALOutputAction(Action action) {
-
+    public static OutputActionCase ofToSALOutputAction(OpenflowVersion ofVersion, Action action) {
         OutputActionBuilder outputAction = new OutputActionBuilder();
         PortAction port = action.getAugmentation(PortAction.class);
         if (port != null) {
-            outputAction.setOutputNodeConnector(new Uri(port.getPort().getValue().toString()));
+            CommonPort.PortNumber protocolAgnosticPort = OpenflowPortsUtil.getProtocolAgnosticPort(
+                    ofVersion, port.getPort().getValue());
+            String portNumberAsString = OpenflowPortsUtil.portNumberToString(protocolAgnosticPort);
+            outputAction.setOutputNodeConnector(new Uri(portNumberAsString));
         } else {
             logger.error("Provided action is not OF Output action, no associated port found!");
         }

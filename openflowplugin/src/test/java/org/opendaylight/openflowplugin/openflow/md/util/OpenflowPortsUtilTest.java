@@ -4,6 +4,7 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.CommonPort;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.OutputPortValues;
 
 import java.util.HashMap;
@@ -18,6 +19,9 @@ public class OpenflowPortsUtilTest {
     private static Map<String, Long> mapOF13Ports;
     private static Map<OpenflowVersion, Map<String, Long>> mapVersionToPorts;
 
+    /**
+     * initiation before testing - once for all
+     */
     @BeforeClass
     public static void setupClass() {
         OpenflowPortsUtil.init();
@@ -50,6 +54,9 @@ public class OpenflowPortsUtilTest {
 
     }
 
+    /**
+     * tearing down initiated values after all tests done
+     */
     @AfterClass
     public static void tearDownClass() {
         OpenflowPortsUtil.close();
@@ -59,18 +66,21 @@ public class OpenflowPortsUtilTest {
     }
 
     //helper
-    private void matchGetLogicalName(OpenflowVersion version, String logicalName) {
+    private static void matchGetLogicalName(OpenflowVersion version, String logicalName) {
         Assert.assertEquals("Controller reserve port not matching to logical-name for "+ version,
                 logicalName,
                 OpenflowPortsUtil.getPortLogicalName(version, mapVersionToPorts.get(version).get(logicalName)));
     }
 
     //helper
-    private void matchGetPortfromLogicalName(OpenflowVersion version, String logicalName) {
+    private static void matchGetPortfromLogicalName(OpenflowVersion version, String logicalName) {
         Assert.assertEquals("Controller reserve port not matching to logical-name for "+ version,
                 mapVersionToPorts.get(version).get(logicalName), OpenflowPortsUtil.getPortFromLogicalName(version, logicalName));
     }
 
+    /**
+     * test for method {@link OpenflowPortsUtil#getPortLogicalName(OpenflowVersion, Long)}
+     */
     @Test
     public void testGetPortLogicalName() {
 
@@ -102,6 +112,9 @@ public class OpenflowPortsUtilTest {
     }
 
 
+    /**
+     * test for method {@link OpenflowPortsUtil#getPortFromLogicalName(OpenflowVersion, String)}
+     */
     @Test
     public void testGetPortFromLogicalName() {
 
@@ -131,6 +144,51 @@ public class OpenflowPortsUtilTest {
         Assert.assertNull("Invalid port logical name should return a null",
                 OpenflowPortsUtil.getPortFromLogicalName(OpenflowVersion.OF13, "abc"));
 
+    }
+
+    /**
+     * test for method {@link OpenflowPortsUtil#checkPortValidity(OpenflowVersion, Long)} - OF-1.0
+     */
+    @Test
+    public void testCheckPortValidity10() {
+        Assert.assertFalse(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF10 , -1L));
+        Assert.assertTrue(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF10 , 0L));
+        Assert.assertTrue(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF10 , 0xFF00L));
+        Assert.assertTrue(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF10 , 0xFFF8L));
+        Assert.assertFalse(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF10 , 0xFFF0L));
+        Assert.assertTrue(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF10 , 0xFFFFL));
+        Assert.assertFalse(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF10 , 0x1FFFFL));
+    }
+
+    /**
+     * test for method {@link OpenflowPortsUtil#checkPortValidity(OpenflowVersion, Long)} - OF-1.3
+     */
+    @Test
+    public void testCheckPortValidity13() {
+        Assert.assertFalse(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF13 , -1L));
+        Assert.assertTrue(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF13 , 0L));
+        Assert.assertTrue(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF13 , 0xFFFFFF00L));
+        Assert.assertTrue(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF13 , 0xFFFFFFF8L));
+        Assert.assertFalse(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF13 , 0xFFFFFFF0L));
+        Assert.assertTrue(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF13 , 0xFFFFFFFFL));
+        Assert.assertFalse(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF13 , 0x1FFFFFFFFL));
+    }
+
+    /**
+     * test for method {@link OpenflowPortsUtil#portNumberToString(CommonPort.PortNumber)}
+     */
+    @Test
+    public void testPortNumberToString() {
+        CommonPort.PortNumber portNumber;
+        
+        portNumber = new CommonPort.PortNumber(42L);
+        Assert.assertEquals("42", OpenflowPortsUtil.portNumberToString(portNumber));
+        
+        portNumber = new CommonPort.PortNumber(OutputPortValues.FLOOD.toString());
+        Assert.assertEquals("FLOOD", OpenflowPortsUtil.portNumberToString(portNumber));
+        
+        portNumber = new CommonPort.PortNumber((String) null);
+        Assert.assertNull(OpenflowPortsUtil.portNumberToString(portNumber));
     }
 
 }

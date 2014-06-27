@@ -120,7 +120,7 @@ public class GroupStatsResponseConvertor {
     /**
      * Method convert GroupStats message from library to MD SAL defined GroupStats  
      * @param groupDesc GroupStats from library
-     * @param ofVersion TODO
+     * @param ofVersion current ofp version
      * @return GroupStats -- GroupStats defined in MD-SAL
      */
     public GroupDescStats toSALGroupDescStats(GroupDesc groupDesc, OpenflowVersion ofVersion){
