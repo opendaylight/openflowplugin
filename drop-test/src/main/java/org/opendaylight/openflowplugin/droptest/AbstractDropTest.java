@@ -102,10 +102,10 @@ abstract class AbstractDropTest implements PacketProcessingListener {
 
             // Wrap our Apply Action in an Instruction
             final InstructionBuilder ib = new InstructionBuilder();
-            ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
+            ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build()).setOrder(0);
 
             // Put our Instruction in a list of Instructions
-            final InstructionsBuilder isb = new InstructionsBuilder();;
+            final InstructionsBuilder isb = new InstructionsBuilder();
             final List<Instruction> instructions = Collections.singletonList(ib.build());
             isb.setInstruction(instructions);
 
