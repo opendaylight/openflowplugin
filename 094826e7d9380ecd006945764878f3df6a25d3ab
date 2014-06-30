@@ -16,6 +16,24 @@
       "revId": "094826e7d9380ecd006945764878f3df6a25d3ab",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_a8af5429",
+        "filename": "openflowplugin/src/test/java/org/opendaylight/openflowplugin/openflow/md/util/OpenflowPortsUtilTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 168,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2014-06-30T12:40:33Z",
+      "side": 1,
+      "message": "Actually no - here we have \"-1\" extreme values of short and integer. So -1L contains 4 more bytes then we need here. By OF-1.3: OFPP_ANY \u003d 0x00000000ffffffffL and by OF-1.0: OFPP_NONE\u003d0x000000000000ffffL.",
+      "parentUuid": "fa82b9bf_2d7cb682",
+      "revId": "094826e7d9380ecd006945764878f3df6a25d3ab",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
