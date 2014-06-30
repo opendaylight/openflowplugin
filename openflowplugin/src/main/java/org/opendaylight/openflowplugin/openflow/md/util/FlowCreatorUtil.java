@@ -19,28 +19,33 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.aggregate._case.MultipartRequestAggregateBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.flow._case.MultipartRequestFlowBuilder;
 
-public abstract class FlowCreatorUtil {
-    
-    public static void setWildcardedFlowMatch(short version,MultipartRequestFlowBuilder flowBuilder){
-        if(version == OFConstants.OFP_VERSION_1_0){
+public final class FlowCreatorUtil {
+
+    private FlowCreatorUtil() {
+        throw new AssertionError("FlowCreatorUtil is not expected to be instantiated.");
+    }
+
+    public static void setWildcardedFlowMatch(short version, MultipartRequestFlowBuilder flowBuilder) {
+        if (version == OFConstants.OFP_VERSION_1_0) {
             flowBuilder.setMatchV10(createWildcardedMatchV10());
         }
-        if(version == OFConstants.OFP_VERSION_1_3){
+        if (version == OFConstants.OFP_VERSION_1_3) {
             flowBuilder.setMatch(createWildcardedMatch());
         }
     }
-    
-    public static void setWildcardedFlowMatch(short version,MultipartRequestAggregateBuilder flowBuilder){
-        if(version == OFConstants.OFP_VERSION_1_0){
-            flowBuilder.setMatchV10(createWildcardedMatchV10());
+
+    public static void setWildcardedFlowMatch(short version, MultipartRequestAggregateBuilder aggregateBuilder) {
+        if (version == OFConstants.OFP_VERSION_1_0) {
+            aggregateBuilder.setMatchV10(createWildcardedMatchV10());
         }
-        if(version == OFConstants.OFP_VERSION_1_3){
-            flowBuilder.setMatch(createWildcardedMatch());
+        if (version == OFConstants.OFP_VERSION_1_3) {
+            aggregateBuilder.setMatch(createWildcardedMatch());
         }
     }
 
     /**
      * Method creates openflow 1.0 format match, that can match all the flow entries.
+     *
      * @return
      */
     public static MatchV10 createWildcardedMatchV10() {
@@ -61,12 +66,10 @@ public abstract class FlowCreatorUtil {
         builder.setNwDst(new Ipv4Address("0.0.0.0"));
         builder.setTpSrc(0);
         builder.setTpDst(0);
-        
         return builder.build();
     }
-    
-    public static Match createWildcardedMatch(){
-        return new MatchBuilder().setType(OxmMatchType.class).build();
 
+    public static Match createWildcardedMatch() {
+        return new MatchBuilder().setType(OxmMatchType.class).build();
     }
 }
