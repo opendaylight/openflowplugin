@@ -7,12 +7,13 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.util;
 
+import com.google.common.base.Preconditions;
+
 import java.math.BigInteger;
 import java.util.Arrays;
 
 /**
  * @author mirehak
- *
  */
 public abstract class ByteUtil {
 
@@ -31,6 +32,7 @@ public abstract class ByteUtil {
 
     /**
      * Utility method to convert BigInteger to n element byte array
+     *
      * @param bigInteger
      * @return byte array containing n * 8 bits.
      */
@@ -46,70 +48,72 @@ public abstract class ByteUtil {
             Arrays.fill(outputArray, (byte) 0);
         }
         System.arraycopy(inputArray,
-                         Math.max(0, inputArray.length - outputArray.length),
-                         outputArray,
-                         Math.max(0, outputArray.length - inputArray.length),
-                         Math.min(outputArray.length, inputArray.length));
+                Math.max(0, inputArray.length - outputArray.length),
+                outputArray,
+                Math.max(0, outputArray.length - inputArray.length),
+                Math.min(outputArray.length, inputArray.length));
         return outputArray;
     }
 
     /**
      * Converts a 4 byte array of unsigned bytes to unsigned int
+     *
      * @param bytes an array of 4 unsigned bytes
      * @return a long representing the unsigned int
      */
-    public static final long bytesToUnsignedInt(final byte[] bytes)
-    {
-      long unsignedInt = 0;
-      unsignedInt |= bytes[0] & 0xFF;
-      unsignedInt <<= 8;
-      unsignedInt |= bytes[1] & 0xFF;
-      unsignedInt <<= 8;
-      unsignedInt |= bytes[2] & 0xFF;
-      unsignedInt <<= 8;
-      unsignedInt |= bytes[3] & 0xFF;
-      return unsignedInt;
+    public static final long bytesToUnsignedInt(final byte[] bytes) {
+        Preconditions.checkArgument(bytes.length == 4, "Input byte array must be exactly two bytes long.");
+        long unsignedInt = 0;
+        unsignedInt |= bytes[0] & 0xFF;
+        unsignedInt <<= 8;
+        unsignedInt |= bytes[1] & 0xFF;
+        unsignedInt <<= 8;
+        unsignedInt |= bytes[2] & 0xFF;
+        unsignedInt <<= 8;
+        unsignedInt |= bytes[3] & 0xFF;
+        return unsignedInt;
     }
 
     /**
      * Converts a 2 byte array of unsigned bytes to unsigned short
+     *
      * @param bytes an array of 2 unsigned bytes
      * @return an int representing the unsigned short
      */
-    public static final int bytesToUnsignedShort(final byte[] bytes)
-    {
-      int unsignedShort = 0;
-      unsignedShort |= bytes[0] & 0xFF;
-      unsignedShort <<= 8;
-      unsignedShort |= bytes[1] & 0xFF;
-      return unsignedShort;
+    public static final int bytesToUnsignedShort(final byte[] bytes) {
+        Preconditions.checkArgument(bytes.length == 2, "Input byte array must be exactly two bytes long.");
+        int unsignedShort = 0;
+        unsignedShort |= bytes[0] & 0xFF;
+        unsignedShort <<= 8;
+        unsignedShort |= bytes[1] & 0xFF;
+        return unsignedShort;
     }
 
     /**
      * Converts unsigned integer to a 4 byte array of unsigned bytes
+     *
      * @param unsignedInt representing the unsigned integer
      * @return bytes an array of 4 unsigned bytes
      */
-    public static byte[] unsignedIntToBytes(final Long unsignedInt)
-    {
-      byte[] bytes = new byte[4];
-      bytes[3] = (byte) (unsignedInt & 0xFF);
-      bytes[2] = (byte) ((unsignedInt >> 8) & 0xFF);
-      bytes[1] = (byte) ((unsignedInt >> 16) & 0xFF);
-      bytes[0] = (byte) ((unsignedInt >> 24) & 0xFF);
-      return bytes;
+    public static byte[] unsignedIntToBytes(final Long unsignedInt) {
+        byte[] bytes = new byte[4];
+        bytes[3] = (byte) (unsignedInt & 0xFF);
+        bytes[2] = (byte) ((unsignedInt >> 8) & 0xFF);
+        bytes[1] = (byte) ((unsignedInt >> 16) & 0xFF);
+        bytes[0] = (byte) ((unsignedInt >> 24) & 0xFF);
+        return bytes;
     }
 
     /**
      * Converts unsigned short to a 2 byte array of unsigned bytes
+     *
      * @param unsignedShort representing the unsigned short
      * @return bytes an array of 2 unsigned bytes
      */
-    public static byte[] unsignedShortToBytes(final Integer unsignedShort)
-    {
-      byte[] bytes = new byte[2];
-      bytes[1] = (byte) (unsignedShort & 0xFF);
-      bytes[0] = (byte) ((unsignedShort >> 8) & 0xFF);
-      return bytes;
+    public static byte[] unsignedShortToBytes(final Integer unsignedShort) {
+        byte[] bytes = new byte[2];
+        bytes[1] = (byte) (unsignedShort & 0xFF);
+        bytes[0] = (byte) ((unsignedShort >> 8) & 0xFF);
+        return bytes;
     }
 }
