@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.openflow.md.core;
 import java.net.InetAddress;
 
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionConfiguration;
+import org.opendaylight.openflowjava.protocol.api.connection.TlsConfiguration;
 
 /**
  * @deprecated use configSubsystem
@@ -41,11 +42,6 @@ public abstract class ConnectionConfigurationFactory {
             }
 
             @Override
-            public FEATURE_SUPPORT getTlsSupport() {
-                return FEATURE_SUPPORT.NOT_SUPPORTED;
-            }
-
-            @Override
             public Object getTransferProtocol() {
                 // TODO:: TCP/UDP ...
                 return null;
@@ -58,6 +54,11 @@ public abstract class ConnectionConfigurationFactory {
 
             @Override
             public Object getSslContext() {
+                return null;
+            }
+
+            @Override
+            public TlsConfiguration getTlsConfiguration() {
                 return null;
             }
         };
@@ -81,11 +82,6 @@ public abstract class ConnectionConfigurationFactory {
             }
 
             @Override
-            public FEATURE_SUPPORT getTlsSupport() {
-                return FEATURE_SUPPORT.NOT_SUPPORTED;
-            }
-
-            @Override
             public Object getTransferProtocol() {
                 // TODO:: TCP/UDP ...
                 return null;
@@ -98,6 +94,11 @@ public abstract class ConnectionConfigurationFactory {
 
             @Override
             public Object getSslContext() {
+                return null;
+            }
+
+            @Override
+            public TlsConfiguration getTlsConfiguration() {
                 return null;
             }
         };
