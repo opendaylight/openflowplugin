@@ -13,7 +13,7 @@ import org.opendaylight.openflowjava.protocol.impl.clients.ClientEvent;
 import org.opendaylight.openflowjava.protocol.impl.clients.SendEvent;
 import org.opendaylight.openflowjava.protocol.impl.clients.SleepEvent;
 import org.opendaylight.openflowjava.protocol.impl.clients.WaitForMessageEvent;
-import org.opendaylight.openflowjava.protocol.impl.util.ByteBufUtils;
+import org.opendaylight.openflowjava.util.ByteBufUtils;
 
 /**
  * provisioning of most common scenarios used by testing of integration between OFLibrary, OFPlugin and MD-SAL 
