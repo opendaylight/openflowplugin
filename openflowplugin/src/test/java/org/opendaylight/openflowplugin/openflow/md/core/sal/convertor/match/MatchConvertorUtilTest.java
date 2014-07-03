@@ -85,5 +85,4 @@ public class MatchConvertorUtilTest {
             maskSeed = maskSeed.clearBit(i);
         }
     }
-
 }

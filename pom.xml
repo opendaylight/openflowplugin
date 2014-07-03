@@ -82,6 +82,11 @@
         </dependency>
         <dependency>
           <groupId>org.opendaylight.openflowjava</groupId>
+          <artifactId>util</artifactId>
+          <version>${openflowjava.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.opendaylight.openflowjava</groupId>
           <artifactId>simple-client</artifactId>
           <version>${openflowjava.version}</version>
         </dependency>
