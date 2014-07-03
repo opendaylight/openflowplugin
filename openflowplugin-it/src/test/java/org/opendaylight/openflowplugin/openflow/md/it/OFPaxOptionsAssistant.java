@@ -61,6 +61,7 @@ public abstract class OFPaxOptionsAssistant {
      */
     public static Option ofLibraryBundles() {
         return new DefaultCompositeOption(
+                mavenBundle(OFLIBRARY, "util").versionAsInProject(),
                 mavenBundle(OFLIBRARY, "openflow-protocol-impl").versionAsInProject(),
                 mavenBundle(OFLIBRARY, "openflow-protocol-api").versionAsInProject(),
                 mavenBundle(OFLIBRARY, "openflow-protocol-spi").versionAsInProject(),
