@@ -62,6 +62,11 @@
       <dependencies>
         <dependency>
           <groupId>org.opendaylight.openflowjava</groupId>
+          <artifactId>util</artifactId>
+          <version>${openflowjava.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.opendaylight.openflowjava</groupId>
           <artifactId>openflow-protocol-impl</artifactId>
           <version>${openflowjava.version}</version>
         </dependency>
