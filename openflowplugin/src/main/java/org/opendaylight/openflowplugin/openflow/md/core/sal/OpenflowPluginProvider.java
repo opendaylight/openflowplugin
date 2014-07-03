@@ -48,6 +48,14 @@ public class OpenflowPluginProvider implements BindingAwareProvider, AutoCloseab
     private SalRegistrationManager registrationManager;
 
     /**
+     * Initialization of services and msgSpy counter
+     */
+    public void initialization() {
+        messageCountProvider = new MessageSpyCounterImpl();
+        this.registerProvider();
+    }
+
+    /**
      * @param switchConnectionProvider
      */
     public void setSwitchConnectionProviders(Collection<SwitchConnectionProvider> switchConnectionProvider) {
@@ -145,13 +153,12 @@ public class OpenflowPluginProvider implements BindingAwareProvider, AutoCloseab
     /**
      * register providers for md-sal
      */
-    public void registerProvider() {
-        // TODO : create normal init
-        messageCountProvider = new MessageSpyCounterImpl();
+    private void registerProvider() {
         if(hasAllDependencies()) {
             this.broker.registerProvider(this,context);
         }
     }
+
     public MessageCountDumper getMessageCountDumper() {
         return messageCountProvider;
     }
