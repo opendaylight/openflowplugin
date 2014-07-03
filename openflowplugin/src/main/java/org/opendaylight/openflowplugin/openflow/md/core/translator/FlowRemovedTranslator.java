@@ -150,7 +150,9 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
 
             SwitchFlowRemovedBuilder salFlowRemoved = new SwitchFlowRemovedBuilder();
 
-            salFlowRemoved.setCookie(new FlowCookie(ofFlow.getCookie()));
+            if (ofFlow.getCookie() != null) {
+                salFlowRemoved.setCookie(new FlowCookie(ofFlow.getCookie()));
+            }
             salFlowRemoved.setPriority(ofFlow.getPriority());
 
             if (ofFlow.getTableId() != null) {
