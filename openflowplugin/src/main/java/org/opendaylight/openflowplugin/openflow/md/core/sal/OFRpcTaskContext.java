@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.openflowplugin.openflow.md.core.session.IMessageDispatchService;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
-import org.opendaylight.openflowplugin.openflow.md.queue.MessageSpy;
+import org.opendaylight.openflowplugin.statistics.MessageSpy;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 
 import com.google.common.util.concurrent.ListeningExecutorService;

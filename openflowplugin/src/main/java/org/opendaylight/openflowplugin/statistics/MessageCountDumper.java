@@ -6,14 +6,18 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.openflowplugin.openflow.md.queue;
+package org.opendaylight.openflowplugin.statistics;
+
+import java.util.List;
 
 /**
- * @param <MSG_TYPE> 
- * 
+ * simple message counters dumper
  */
-public interface MessageObservatory<MSG_TYPE> extends MessageSpy<MSG_TYPE>, MessageCountDumper {
+public interface MessageCountDumper {
 
-    // just unifying iface
-    
+    /**
+     * @return list of counter items
+     */
+    List<String> dumpMessageCounts();
+
 }
