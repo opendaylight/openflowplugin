@@ -187,10 +187,11 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                     statsBuilder.setPackets(packetsBuilder.build());
                     
                     DurationBuilder durationBuilder = new DurationBuilder();
-                    durationBuilder.setSecond(new Counter32(portStats.getDurationSec()));
-                    durationBuilder.setNanosecond(new Counter32(portStats.getDurationNsec()));
+                    if (portStats.getDurationSec() != null)
+                        durationBuilder.setSecond(new Counter32(portStats.getDurationSec()));
+                    if (portStats.getDurationNsec() != null)
+                        durationBuilder.setNanosecond(new Counter32(portStats.getDurationNsec()));
                     statsBuilder.setDuration(durationBuilder.build());
-                    
                     statsBuilder.setCollisionCount(portStats.getCollisions());
                     statsBuilder.setKey(new NodeConnectorStatisticsAndPortNumberMapKey(statsBuilder.getNodeConnectorId()));
                     statsBuilder.setReceiveCrcError(portStats.getRxCrcErr());
@@ -200,6 +201,7 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                     statsBuilder.setReceiveOverRunError(portStats.getRxOverErr());
                     statsBuilder.setTransmitDrops(portStats.getTxDropped());
                     statsBuilder.setTransmitErrors(portStats.getTxErrors());
+                    
                     statsMap.add(statsBuilder.build());
                 }
                 message.setNodeConnectorStatisticsAndPortNumberMap(statsMap);
