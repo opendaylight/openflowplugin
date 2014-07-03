@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.openflowplugin.openflow.md.queue;
+package org.opendaylight.openflowplugin.statistics;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,10 +23,9 @@ import org.slf4j.LoggerFactory;
 /**
  * message counter (by type)
  */
-public class MessageSpyCounterImpl implements MessageObservatory<DataContainer> {
+public class MessageSpyCounterImpl implements MessageObservatory<DataContainer>  {
 
-    private static final Logger LOG = LoggerFactory
-            .getLogger(MessageSpyCounterImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MessageSpyCounterImpl.class);
 
     private static final class MessageCounters {
         private static final AtomicLongFieldUpdater<MessageCounters> UPDATER = AtomicLongFieldUpdater.newUpdater(MessageCounters.class, "current");

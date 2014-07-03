@@ -57,6 +57,16 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
             <name>binding-osgi-broker</name>
           </binding-aware-broker>
         </module>
+
+        <module>
+            <type xmlns:msgspy="urn:opendaylight:params:xml:ns:yang:openflow:common:config:impl">msgspy:msg-spy-service-impl</type>
+            <name>msg-spy-service-impl</name>
+
+            <openflow-plugin-provider>
+                <type xmlns:opfprov="urn:opendaylight:params:xml:ns:yang:openflow:common:config">opfprov:openflow-provider</type>
+                <name>openflow-provider</name>
+            </openflow-plugin-provider>
+        </module>
       </modules>
 
       <services xmlns="urn:opendaylight:params:xml:ns:yang:controller:config">
@@ -77,6 +87,14 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
           <instance>
             <name>openflow-provider</name>
             <provider>/modules/module[type='openflow-provider-impl'][name='openflow-provider-impl']</provider>
+          </instance>
+        </service>
+        
+        <service>
+          <type xmlns:msgspy="urn:opendaylight:params:xml:ns:yang:openflow:common:config:impl">msgspy:msg-spy-service</type>
+          <instance>
+            <name>msg-spy-service</name>
+            <provider>/modules/module[type='msg-spy-service-impl'][name='msg-spy-service-impl']</provider>
           </instance>
         </service>
       </services>
