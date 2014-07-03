@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.MaskMatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Ipv6ExthdrFlags;
 
 /**
