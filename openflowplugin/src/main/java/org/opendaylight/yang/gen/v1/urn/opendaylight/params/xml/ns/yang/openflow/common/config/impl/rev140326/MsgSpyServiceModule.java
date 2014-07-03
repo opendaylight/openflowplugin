@@ -38,10 +38,8 @@ public class MsgSpyServiceModule extends org.opendaylight.yang.gen.v1.urn.openda
 
     @Override
     public void customValidation() {
-        /* OpenflowPluginProvider provides MessageCountDumper implementation, so it can not be null */
-        if (getOpenflowPluginProviderDependency() == null) {
-            throw new IllegalStateException("OpenflowPluginProvider is not accessible!");
-        }
+        // No need to validate dependencies, since all dependencies are mandatory
+        // config-subsystem will perform the validation
     }
 
     @Override
