@@ -23,32 +23,32 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Class is an utility class for converting flow related statistics messages coming from openflow 
+ * Class is an utility class for converting flow related statistics messages coming from openflow
  * switch to MD-SAL messages.
  * @author avishnoi@in.ibm.com
  *
  */
 public class FlowStatsResponseConvertor {
-    
+
     /**
      * Method returns the list of MD-SAL format flow statistics, converted flow Openflow
-     * specific flow statistics. 
+     * specific flow statistics.
      * @param allFlowStats
      * @return
      */
     public List<FlowAndStatisticsMapList> toSALFlowStatsList(List<FlowStats> allFlowStats, BigInteger datapathid, OpenflowVersion ofVersion){
-        
+
         List<FlowAndStatisticsMapList> convertedSALFlowStats = new ArrayList<FlowAndStatisticsMapList>();
-        
+
         for(FlowStats flowStats : allFlowStats){
             convertedSALFlowStats.add(toSALFlowStats(flowStats, datapathid, ofVersion));
         }
-        
+
         return convertedSALFlowStats;
     }
 
     /**
-     * Method convert Openflow switch specific flow statistics to the MD-SAL format 
+     * Method convert Openflow switch specific flow statistics to the MD-SAL format
      * flow statistics.
      * @param flowStats
      * @return
@@ -56,13 +56,14 @@ public class FlowStatsResponseConvertor {
     public FlowAndStatisticsMapList toSALFlowStats(FlowStats flowStats, BigInteger datapathid, OpenflowVersion ofVersion){
         FlowAndStatisticsMapListBuilder salFlowStatsBuilder = new FlowAndStatisticsMapListBuilder();
         salFlowStatsBuilder.setByteCount(new Counter64(flowStats.getByteCount()));
-        salFlowStatsBuilder.setCookie(new FlowCookie(flowStats.getCookie()));
-
+        if(flowStats.getCookie() != null) {
+            salFlowStatsBuilder.setCookie(new FlowCookie(flowStats.getCookie()));
+        }
         DurationBuilder time = new DurationBuilder();
         time.setSecond(new Counter32(flowStats.getDurationSec()));
         time.setNanosecond(new Counter32(flowStats.getDurationNsec()));
         salFlowStatsBuilder.setDuration(time.build());
-        
+
         salFlowStatsBuilder.setHardTimeout(flowStats.getHardTimeout());
         salFlowStatsBuilder.setIdleTimeout(flowStats.getIdleTimeout());
         salFlowStatsBuilder.setPacketCount(new Counter64(flowStats.getPacketCount()));
@@ -86,7 +87,7 @@ public class FlowStatsResponseConvertor {
         if(flowStats.getInstruction()!= null){
             salFlowStatsBuilder.setInstructions(OFToMDSalFlowConvertor.toSALInstruction(flowStats.getInstruction(), ofVersion));
         }
-        
+
         return salFlowStatsBuilder.build();
     }
 }
