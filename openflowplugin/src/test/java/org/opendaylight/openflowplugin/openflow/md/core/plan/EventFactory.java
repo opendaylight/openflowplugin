@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.concurrent.Callable;
 
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionReadyListener;
+import org.opendaylight.openflowplugin.openflow.md.OFConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.binding.Notification;
 import org.slf4j.Logger;
@@ -27,7 +28,7 @@ public abstract class EventFactory {
             .getLogger(EventFactory.class);
 
     /** default protocol version */
-    public static final Short DEFAULT_VERSION = 4;
+    public static final Short DEFAULT_VERSION = OFConstants.OFP_VERSION_1_3 ;
 
     /**
      * @param xid

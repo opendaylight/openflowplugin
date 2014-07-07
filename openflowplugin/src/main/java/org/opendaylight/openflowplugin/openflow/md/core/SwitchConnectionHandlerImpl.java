@@ -24,12 +24,12 @@ import org.opendaylight.yangtools.yang.binding.DataContainer;
  */
 public class SwitchConnectionHandlerImpl implements SwitchConnectionHandler {
     
-    private ScheduledThreadPoolExecutor spyPool; 
+    private final ScheduledThreadPoolExecutor spyPool; 
 
-    private QueueProcessorLightImpl queueProcessor;
+    private final QueueProcessorLightImpl queueProcessor;
     private ErrorHandler errorHandler;
     private MessageSpy<DataContainer> messageSpy;
-    private int spyRate = 10;
+    private final int spyRate = 10;
 
     /**
      *

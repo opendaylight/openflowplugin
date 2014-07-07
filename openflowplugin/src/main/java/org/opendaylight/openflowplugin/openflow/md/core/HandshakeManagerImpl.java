@@ -27,115 +27,171 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class HandshakeManagerImpl implements HandshakeManager {
-    
+
     private static final Logger LOG = LoggerFactory
             .getLogger(HandshakeManagerImpl.class);
-    
+
+    protected volatile HANDSHAKE state = HANDSHAKE.INITIAL;
+
     private Short lastProposedVersion;
     private Short lastReceivedVersion;
     private final List<Short> versionOrder;
-    
+
     private HelloMessage receivedHello;
     private final ConnectionAdapter connectionAdapter;
     private GetFeaturesOutput features;
     private Short version;
     private ErrorHandler errorHandler;
-    
-    private long maxTimeout = 8000;
-    private TimeUnit maxTimeoutUnit = TimeUnit.MILLISECONDS;
-    private Short highestVersion;
 
-    private Long activeXid;
+    private final long maxTimeout = 8000;
+    private final TimeUnit maxTimeoutUnit = TimeUnit.MILLISECONDS;
+    private final Short highestVersion;
+
+    private Long activeXid = 20L;
 
     private HandshakeListener handshakeListener;
 
-    private boolean useVersionBitmap;
-    
     @Override
     public void setReceivedHello(HelloMessage receivedHello) {
         this.receivedHello = receivedHello;
     }
-    
+
     /**
-     * @param connectionAdapter 
-     * @param highestVersion 
+     * @param connectionAdapter
+     * @param highestVersion
      * @param versionOrder
      */
-    public HandshakeManagerImpl(ConnectionAdapter connectionAdapter, Short highestVersion, 
-            List<Short> versionOrder) {
+    public HandshakeManagerImpl(ConnectionAdapter connectionAdapter,
+            Short highestVersion, List<Short> versionOrder) {
         this.highestVersion = highestVersion;
         this.versionOrder = versionOrder;
         this.connectionAdapter = connectionAdapter;
     }
-    
+
+    @Override
+    public ConnectionAdapter getConnectionAdapter() {
+        return connectionAdapter;
+    }
+
     @Override
     public void setHandshakeListener(HandshakeListener handshakeListener) {
         this.handshakeListener = handshakeListener;
     }
 
     @Override
-    public void shake() {
-        LOG.trace("handshake STARTED");
-        setActiveXid(20L);
-        HelloMessage receivedHelloLoc = receivedHello;
-        
-        try {
-            if (receivedHelloLoc == null) {
-                // first Hello sending
-                sendHelloMessage(highestVersion, getNextXid());
-                lastProposedVersion = highestVersion;
-                LOG.trace("ret - firstHello+wait");
-                return;
-            }
+    public void startHandshake() {
 
-            // process the 2. and later hellos
+        if (!state.equals(HANDSHAKE.INITIAL)) {
+            LOG.debug(
+                    "startHandshake() called after already started. state {} ",
+                    state.toString());
+            return;
+        }
+
+        if (connectionAdapter.isAlive() == false) {
+            LOG.debug("startHandshake() called on a dead connection. aborting. ");
+            return;
+        }
+
+        try {
+            LOG.debug("handshake STARTED ... sending first HELLO . ");
+
+            sendHelloMessage(highestVersion, getNextXid());
+            state = HANDSHAKE.STARTED;
+
+            lastProposedVersion = highestVersion;
+
+            return;
+        } catch (Exception ex) {
+            state = HANDSHAKE.FAILED;
+
+            LOG.debug("startHandshake() failed: {}remote={} ", ex.getMessage());
+
+            errorHandler.handleException(ex, null);
+            connectionAdapter.disconnect();
+        }
+    }
+
+    /**
+     * A handshake session can include multiple steps starting with a connection
+     * notification and followed by one or more HELLO receptions.
+     */
+    @Override
+    public void continueHandshake() {
+        LOG.debug("Entered continueHandshake(). ");
+
+        if (connectionAdapter.isAlive() == false) {
+            LOG.debug("continueHandshake() called on a dead connection. aborting. ");
+            return;
+        }
+        if (!state.equals(HANDSHAKE.STARTED)) {
+            LOG.warn(
+                    "continueHandshake() called in state {}.  Ignoring this HELLO message. ",
+                    state.toString());
+            return;
+        }
+
+        HelloMessage receivedHelloLoc = receivedHello;
+
+        try {
             Short remoteVersion = receivedHelloLoc.getVersion();
+
             List<Elements> elements = receivedHelloLoc.getElements();
+
             setActiveXid(receivedHelloLoc.getXid());
-            List<Boolean> remoteVersionBitmap = MessageFactory.digVersions(elements);
-            LOG.debug("Hello message: version={}, bitmap={}, xid={}", remoteVersion, 
-                    remoteVersionBitmap, receivedHelloLoc.getXid());
-        
-            if (useVersionBitmap && remoteVersionBitmap != null) {
+
+            List<Boolean> remoteVersionBitmap = MessageFactory
+                    .digVersions(elements);
+
+            LOG.debug("Received Hello message: version={}, bitmap={}, xid={}.",
+                    remoteVersion, remoteVersionBitmap,
+                    receivedHelloLoc.getXid());
+
+            if (remoteVersionBitmap != null) {
                 // versionBitmap on both sides -> ONE STEP DECISION
-                handleVersionBitmapNegotiation(elements);
-            } else { 
-                // versionBitmap missing at least on one side -> STEP-BY-STEP NEGOTIATION applying 
+                postHandshake(proposeCommonBitmapVersion(elements),
+                        getNextXid());
+
+            } else {
+                // versionBitmap missing at least on one side -> STEP-BY-STEP
+                // NEGOTIATION applying
                 handleStepByStepVersionNegotiation(remoteVersion);
             }
         } catch (Exception ex) {
+            state = HANDSHAKE.FAILED;
+
+            LOG.trace("ret - shake fail: {}.", ex.getMessage());
+
             errorHandler.handleException(ex, null);
             connectionAdapter.disconnect();
-            LOG.trace("ret - shake fail: {}", ex.getMessage());
         }
     }
 
     /**
      * @param remoteVersion
-     * @throws Exception 
+     * @throws Exception
      */
-    private void handleStepByStepVersionNegotiation(Short remoteVersion) throws Exception {
-        LOG.debug("remoteVersion:{} lastProposedVersion:{}, highestVersion:{}", 
+    private void handleStepByStepVersionNegotiation(Short remoteVersion)
+            throws Exception {
+        LOG.debug(
+                "remoteVersion:{} lastProposedVersion:{}, highestVersion:{}.",
+
                 remoteVersion, lastProposedVersion, highestVersion);
-        
-        if (lastProposedVersion == null) {
-            // first hello has not been sent yet, send it and either wait for next remote 
-            // version or proceed
-            lastProposedVersion = proposeNextVersion(remoteVersion);
-            sendHelloMessage(lastProposedVersion, getNextXid());
-        }
-        
+
         if (remoteVersion == lastProposedVersion) {
+            LOG.trace("ret - OK - switch answered with lastProposedVersion. ");
+
             postHandshake(lastProposedVersion, getNextXid());
-            LOG.trace("ret - OK - switch answered with lastProposedVersion");
+
         } else {
             checkNegotiationStalling(remoteVersion);
 
-            if (remoteVersion > (lastProposedVersion == null ? highestVersion : lastProposedVersion)) {
+            if (remoteVersion > (lastProposedVersion == null ? highestVersion
+                    : lastProposedVersion)) {
                 // wait for next version
-                LOG.trace("ret - wait");
+                LOG.trace("ret - wait. ");
             } else {
-                //propose lower version
+                // propose lower version
                 handleLowerVersionProposal(remoteVersion);
             }
         }
@@ -143,44 +199,30 @@ public class HandshakeManagerImpl implements HandshakeManager {
 
     /**
      * @param remoteVersion
-     * @throws Exception 
+     * @throws Exception
      */
-    private void handleLowerVersionProposal(Short remoteVersion) throws Exception {
-        Short proposedVersion;
+    private void handleLowerVersionProposal(Short remoteVersion)
+            throws Exception {
+
         // find the version from header version field
-        proposedVersion = proposeNextVersion(remoteVersion);
+        Short proposedVersion = proposeNextVersion(remoteVersion);
         lastProposedVersion = proposedVersion;
         sendHelloMessage(proposedVersion, getNextXid());
 
         if (proposedVersion != remoteVersion) {
-            LOG.trace("ret - sent+wait");
+            LOG.trace("ret - sent+wait. ");
         } else {
-            LOG.trace("ret - sent+OK");
+            LOG.trace("ret - sent+OK. ");
             postHandshake(proposedVersion, getNextXid());
         }
     }
 
     /**
-     * @param elements
-     * @throws Exception 
-     */
-    private void handleVersionBitmapNegotiation(List<Elements> elements) throws Exception {
-        Short proposedVersion;
-        proposedVersion = proposeCommonBitmapVersion(elements);
-        if (lastProposedVersion == null) {
-            // first hello has not been sent yet
-            sendHelloMessage(proposedVersion, getNextXid());
-        }
-        postHandshake(proposedVersion, getNextXid());
-        LOG.trace("ret - OK - versionBitmap");
-    }
-    
-    /**
-     * 
+     *
      * @return
      */
     private Long getNextXid() {
-        activeXid += 1; 
+        activeXid += 1;
         return activeXid;
     }
 
@@ -190,13 +232,15 @@ public class HandshakeManagerImpl implements HandshakeManager {
     private void setActiveXid(Long xid) {
         this.activeXid = xid;
     }
-    
+
     /**
      * @param remoteVersion
      */
     private void checkNegotiationStalling(Short remoteVersion) {
-        if (lastReceivedVersion != null && lastReceivedVersion.equals(remoteVersion)) {
-            throw new IllegalStateException("version negotiation stalled: version = "+remoteVersion);
+        if (lastReceivedVersion != null
+                && lastReceivedVersion.equals(remoteVersion)) {
+            throw new IllegalStateException(
+                    "version negotiation stalled: version = " + remoteVersion);
         }
         lastReceivedVersion = remoteVersion;
     }
@@ -205,7 +249,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
     public GetFeaturesOutput getFeatures() {
         return features;
     }
-    
+
     @Override
     public Short getVersion() {
         return version;
@@ -213,26 +257,28 @@ public class HandshakeManagerImpl implements HandshakeManager {
 
     /**
      * find common highest supported bitmap version
+     *
      * @param list
      * @return
      */
     protected Short proposeCommonBitmapVersion(List<Elements> list) {
         Short supportedHighestVersion = null;
-        if((null != list) && (0 != list.size())) {
-            for(Elements element : list) {
+        if ((null != list) && (0 != list.size())) {
+            for (Elements element : list) {
                 List<Boolean> bitmap = element.getVersionBitmap();
                 // check for version bitmap
-                for(short bitPos : ConnectionConductor.versionOrder) {
+                for (short bitPos : ConnectionConductor.versionOrder) {
                     // with all the version it should work.
-                    if(bitmap.get(bitPos % Integer.SIZE)) {
+                    if (bitmap.get(bitPos % Integer.SIZE)) {
                         supportedHighestVersion = bitPos;
                         break;
                     }
                 }
             }
-            
-            if(null == supportedHighestVersion) {
-                throw new IllegalArgumentException("no common version found in versionBitmap");
+
+            if (null == supportedHighestVersion) {
+                throw new IllegalArgumentException(
+                        "no common version found in versionBitmap");
             }
         }
 
@@ -241,6 +287,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
 
     /**
      * find supported version based on remoteVersion
+     *
      * @param remoteVersion
      * @return
      */
@@ -253,44 +300,58 @@ public class HandshakeManagerImpl implements HandshakeManager {
             }
         }
         if (proposal == null) {
-            throw new IllegalArgumentException("no equal or lower version found, unsupported version: "
-                    + remoteVersion);
+            throw new IllegalArgumentException(
+                    "no equal or lower version found, unsupported version: "
+                            + remoteVersion);
         }
         return proposal;
     }
-    
+
     /**
      * send hello reply without versionBitmap
+     *
      * @param helloVersion
      * @param helloXid
-     * @throws Exception 
+     * @throws Exception
      */
-    private void sendHelloMessage(Short helloVersion, Long helloXid) throws Exception {
-        //Short highestVersion = ConnectionConductor.versionOrder.get(0);
-        //final Long helloXid = 21L;
-        HelloInput helloInput = MessageFactory.createHelloInput(helloVersion, helloXid, versionOrder);
-        
-        LOG.debug("sending hello message: version{}, xid={}, version bitmap={}", 
-                helloVersion, helloXid, MessageFactory.digVersions(helloInput.getElements()));
-        
+    private void sendHelloMessage(Short helloVersion, Long helloXid)
+            throws Exception {
+
+        HelloInput helloInput = MessageFactory.createHelloInput(helloVersion,
+                helloXid, versionOrder);
+
+        LOG.debug(
+                "sending hello message: version{}, xid={}, version bitmap={}.",
+                helloVersion, helloXid,
+                MessageFactory.digVersions(helloInput.getElements()));
+
         try {
-            RpcResult<Void> helloResult = connectionAdapter.hello(helloInput).get(maxTimeout, maxTimeoutUnit);
+            RpcResult<Void> helloResult = connectionAdapter.hello(helloInput)
+                    .get(maxTimeout, maxTimeoutUnit);
             RpcUtil.smokeRpc(helloResult);
-            LOG.debug("FIRST HELLO sent.");
+            LOG.debug("HELLO xid={} sent.", helloXid);
         } catch (Exception e) {
-            LOG.debug("FIRST HELLO sending failed.");
+            LOG.debug("HELLO xid={} sending failed.", helloXid);
             throw e;
         }
     }
 
-
     /**
      * after handshake set features, register to session
+     *
      * @param proposedVersion
      * @param xId
-     * @throws Exception 
+     * @throws Exception
      */
-    protected void postHandshake(Short proposedVersion, Long xid) throws Exception {
+    protected void postHandshake(Short proposedVersion, Long xid)
+            throws Exception {
+
+        if (state != HANDSHAKE.STARTED) {
+            LOG.debug("postHandshake() called in state {} nothing to do here.",
+                    state.toString());
+            return;
+        }
+
         // set version
         version = proposedVersion;
 
@@ -298,45 +359,51 @@ public class HandshakeManagerImpl implements HandshakeManager {
         // request features
         GetFeaturesInputBuilder featuresBuilder = new GetFeaturesInputBuilder();
         featuresBuilder.setVersion(version).setXid(xid);
-        LOG.debug("sending feature request for version={} and xid={}", version, xid);
+        LOG.debug("sending feature request for version={} and xid={}.",
+                version, xid);
         Future<RpcResult<GetFeaturesOutput>> featuresFuture = connectionAdapter
                 .getFeatures(featuresBuilder.build());
         LOG.debug("waiting for features");
         try {
-            RpcResult<GetFeaturesOutput> rpcFeatures = 
-                    featuresFuture.get(maxTimeout, maxTimeoutUnit);
+            RpcResult<GetFeaturesOutput> rpcFeatures = featuresFuture.get(
+                    maxTimeout, maxTimeoutUnit);
             RpcUtil.smokeRpc(rpcFeatures);
-            
-            GetFeaturesOutput featureOutput =  rpcFeatures.getResult();
-            
-            LOG.debug("obtained features: datapathId={}",
+
+            GetFeaturesOutput featureOutput = rpcFeatures.getResult();
+
+            LOG.debug("obtained features: datapathId={}.",
                     featureOutput.getDatapathId());
-            LOG.debug("obtained features: auxiliaryId={}",
+            LOG.debug("obtained features: auxiliaryId={}.",
                     featureOutput.getAuxiliaryId());
-            LOG.trace("handshake SETTLED: version={}, datapathId={}, auxiliaryId={}", 
-                    version, featureOutput.getDatapathId(), featureOutput.getAuxiliaryId());
-            
-            handshakeListener.onHandshakeSuccessfull(featureOutput, proposedVersion);
+            LOG.trace(
+                    "handshake SETTLED: version={}, datapathId={}, auxiliaryId={}.",
+                    version, featureOutput.getDatapathId(),
+                    featureOutput.getAuxiliaryId());
+
+            handshakeListener.onHandshakeSuccessfull(featureOutput,
+                    proposedVersion);
+
         } catch (TimeoutException e) {
-            // handshake failed
-            LOG.warn("issuing disconnect during handshake, reason: future expired", e);
+            state = HANDSHAKE.FAILED;
+
+            LOG.warn(
+                    "issuing disconnect during handshake, reason: future expired.",
+                    e);
             connectionAdapter.disconnect();
             throw e;
         } catch (Exception e) {
-            // handshake failed
-            LOG.warn("issuing disconnect during handshake, reason - RPC: {}", e.getMessage(), e);
+            state = HANDSHAKE.FAILED;
+
+            LOG.warn("issuing disconnect during handshake, reason - RPC: {}.",
+                    e.getMessage(), e);
             connectionAdapter.disconnect();
             throw e;
         }
-        
-        LOG.debug("postHandshake DONE");
+
+        state = HANDSHAKE.SUCCEEDED;
+        LOG.debug("postHandshake DONE.");
     }
 
-    @Override
-    public void setUseVersionBitmap(boolean useVersionBitmap) {
-        this.useVersionBitmap = useVersionBitmap;
-    }
-    
     @Override
     public void setErrorHandler(ErrorHandler errorHandler) {
         this.errorHandler = errorHandler;

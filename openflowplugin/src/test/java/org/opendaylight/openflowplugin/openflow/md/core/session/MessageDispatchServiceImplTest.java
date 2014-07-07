@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.session;
 
+import java.net.SocketAddress;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -84,7 +85,7 @@ public class MessageDispatchServiceImplTest {
     @Test
     public void testBarrierMessageForPrimary() throws Exception {
         MockConnectionConductor conductor = new MockConnectionConductor(1);
-        SwitchConnectionDistinguisher cookie = conductor.getAuxiliaryKey();       
+        SwitchConnectionDistinguisher cookie = conductor.getAuxiliaryKey();
         BarrierInputBuilder barrierMsg = new BarrierInputBuilder();
         session.getMessageDispatchService().barrier(barrierMsg.build(), cookie);
         Assert.assertEquals(MessageType.BARRIER, session.getPrimaryConductor().getMessageType());
@@ -169,9 +170,9 @@ public class MessageDispatchServiceImplTest {
 }
 
 class MockSessionContext implements SessionContext {
-    private MockConnectionConductor conductor;
-    private Map<SwitchConnectionDistinguisher, ConnectionConductor> map;
-    private IMessageDispatchService messageService;
+    private final MockConnectionConductor conductor;
+    private final Map<SwitchConnectionDistinguisher, ConnectionConductor> map;
+    private final IMessageDispatchService messageService;
     private boolean isValid = true;
     private CompositeObjectRegistration<ModelDrivenSwitch> registration;
     private int seed;
@@ -232,7 +233,7 @@ class MockSessionContext implements SessionContext {
         // TODO Auto-generated method stub
         return null;
     }
-    
+
     @Override
     public IMessageDispatchService getMessageDispatchService() {
         // TODO Auto-generated method stub
@@ -308,7 +309,7 @@ class MockSessionContext implements SessionContext {
     public int getSeed() {
         return seed;
     }
-    
+
     /**
      * @param seed the seed to set
      */
@@ -319,8 +320,8 @@ class MockSessionContext implements SessionContext {
 
 class MockConnectionConductor implements ConnectionConductor {
 
-    private int conductorNum;
-    private MockConnectionAdapter adapter;
+    private final int conductorNum;
+    private final MockConnectionAdapter adapter;
 
     public MockConnectionConductor(int conductorNumber) {
         conductorNum = conductorNumber;
@@ -595,4 +596,9 @@ class MockConnectionAdapter implements ConnectionAdapter {
         // TODO Auto-generated method stub
         return null;
     }
+
+	@Override
+	public SocketAddress remoteAddress() {
+		return null;
+	}
 }

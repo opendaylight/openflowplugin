@@ -232,47 +232,60 @@ public class ConnectionConductorImplTest {
      * @throws Exception
      */
     @Test
-    public void testHandshake1() throws Exception {
-        eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L,
-                EventFactory.DEFAULT_VERSION, new HelloMessageBuilder()));
-        eventPlan.add(0, EventFactory.createDefaultWaitForAllEvent(
-                EventFactory.createDefaultWaitForRpcEvent(43, "helloReply"),
-                EventFactory.createDefaultWaitForRpcEvent(44, "getFeatures")));
-        eventPlan.add(0, EventFactory.createDefaultRpcResponseEvent(44,
-                EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
+    public void testHandshakeSameVersion() throws Exception {
+    	
+    	eventPlan.add(0, EventFactory.createConnectionReadyCallback(connectionConductor)) ;
+        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(21L, "helloReply") );
         
-        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(1, "multipartRequestInput"));
-        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(2, "multipartRequestInput"));
-        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(3, "multipartRequestInput"));
-        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(4, "multipartRequestInput"));
-        executeNow();
-
-        Assert.assertEquals(ConnectionConductor.CONDUCTOR_STATE.WORKING,
-                connectionConductor.getConductorState());
-        Assert.assertEquals((short) 0x04, connectionConductor.getVersion()
-                .shortValue());
-    }
-    
-    /**
-     * Test of handshake, covering version negotiation and features.
-     * Controller sends first helloMessage with default version 
-     * @throws Exception
-     */
-    @Test
-    public void testHandshake1SwitchStarts() throws Exception {
-        eventPlan.add(0, EventFactory.createConnectionReadyCallback(connectionConductor));
-        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(21, "helloReply"));
         eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L,
-                EventFactory.DEFAULT_VERSION, new HelloMessageBuilder()));
-        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(43, "getFeatures"));
+        		OFConstants.OFP_VERSION_1_3, new HelloMessageBuilder()));
+        
+        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(43, "getFeatures") );
+        
         eventPlan.add(0, EventFactory.createDefaultRpcResponseEvent(43,
-                EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
+        		OFConstants.OFP_VERSION_1_3, getFeatureResponseMsg()));
         
+        // OFConstants.OFP_VERSION_1_3 will issue four RPC's
         eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(1, "multipartRequestInput"));
         eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(2, "multipartRequestInput"));
         eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(3, "multipartRequestInput"));
         eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(4, "multipartRequestInput"));
+        executeNow();
 
+        Assert.assertEquals(ConnectionConductor.CONDUCTOR_STATE.WORKING,
+                connectionConductor.getConductorState());
+        Assert.assertEquals((short) 0x04, connectionConductor.getVersion()
+                .shortValue());
+    }
+    
+    /**
+     * Test of handshake, covering version negotiation and features.
+     * Switch delivers first helloMessage with default version.
+     * @throws Exception
+     */
+    @Test
+    public void testHandshakeSameVersionMultipleConnectionNotifications() throws Exception {
+    	
+    	eventPlan.add(0, EventFactory.createConnectionReadyCallback(connectionConductor)) ;
+        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(21L, "helloReply") );
+        
+        // This additional connection notification shouldn't cause another hello message.
+    	eventPlan.add(0, EventFactory.createConnectionReadyCallback(connectionConductor)) ;
+
+        
+        eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L,
+        		OFConstants.OFP_VERSION_1_3, new HelloMessageBuilder()));
+        
+        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(43, "getFeatures") );
+        
+        eventPlan.add(0, EventFactory.createDefaultRpcResponseEvent(43,
+        		OFConstants.OFP_VERSION_1_3, getFeatureResponseMsg()));
+        
+        // OFConstants.OFP_VERSION_1_3 will issue four RPC's
+        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(1, "multipartRequestInput"));
+        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(2, "multipartRequestInput"));
+        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(3, "multipartRequestInput"));
+        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(4, "multipartRequestInput"));
         executeNow();
 
         Assert.assertEquals(ConnectionConductor.CONDUCTOR_STATE.WORKING,
@@ -281,68 +294,76 @@ public class ConnectionConductorImplTest {
                 .shortValue());
     }
 
+    
     /**
-     * Test of handshake, covering version negotiation and features.
-     * Switch delivers first helloMessage with version 0x05 
-     * and negotiates following versions: 0x03, 0x01 
+     * Test of handshake with switch at higher revision OFP_VERSION_1_3+1 but supporting
+     * controllers lower version OFP_VERSION_1_3.
      * @throws Exception
      */
     @Test
-    public void testHandshake2() throws Exception {
-        connectionConductor.setBitmapNegotiationEnable(false);
-        eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L,
-                (short) 0x05, new HelloMessageBuilder()));
-        eventPlan.add(0,
-                EventFactory.createDefaultWaitForRpcEvent(43, "helloReply"));
-        eventPlan.add(0, EventFactory.createDefaultNotificationEvent(43L,
-                (short) 0x03, new HelloMessageBuilder()));
-        eventPlan.add(0,
-                EventFactory.createDefaultWaitForRpcEvent(44, "helloReply"));
-        eventPlan.add(0, EventFactory.createDefaultNotificationEvent(44L,
-                (short) 0x01, new HelloMessageBuilder()));
-        eventPlan.add(0,
-                EventFactory.createDefaultWaitForRpcEvent(45, "getFeatures"));
-
-        eventPlan.add(0, EventFactory.createDefaultRpcResponseEvent(45,
-                EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
+    public void testHandshakeSwitchHigherVersion() throws Exception {
+    	
+    	// on connection ready controller immediately sends default hello
+    	eventPlan.add(0, EventFactory.createConnectionReadyCallback(connectionConductor)) ;
+        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(21L, "helloReply") );
         
+        // switch sends first hello at version OFP_VERSION_1_3
+        eventPlan.add(0, EventFactory.createDefaultNotificationEvent(40L,
+        		(short)(OFConstants.OFP_VERSION_1_3+1), new HelloMessageBuilder()));
+        
+        // controller should now send error  TODO: add this
+        
+        // switch sends updated hello at version OFP_VERSION_1_3
+        eventPlan.add(0, EventFactory.createDefaultNotificationEvent(41L,
+        		OFConstants.OFP_VERSION_1_3, new HelloMessageBuilder()));
+        
+        // controller negotiates version 0x04 and proceeds.
+        eventPlan.add(0,
+                EventFactory.createDefaultWaitForRpcEvent(42, "getFeatures"));
+        eventPlan.add(0, EventFactory.createDefaultRpcResponseEvent(42,
+        		OFConstants.OFP_VERSION_1_3, getFeatureResponseMsg()));
+        
+        // OFConstants.OFP_VERSION_1_3 will issue four RPC's
         eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(1, "multipartRequestInput"));
         eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(2, "multipartRequestInput"));
-
+        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(3, "multipartRequestInput"));
+        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(4, "multipartRequestInput"));
         executeNow();
 
         Assert.assertEquals(ConnectionConductor.CONDUCTOR_STATE.WORKING,
                 connectionConductor.getConductorState());
-        Assert.assertEquals((short) 0x01, connectionConductor.getVersion()
+        Assert.assertEquals(OFConstants.OFP_VERSION_1_3, connectionConductor.getVersion()
                 .shortValue());
     }
     
     /**
-     * Test of handshake, covering version negotiation and features.
-     * Controller sends first helloMessage with default version 
-     * and switch negotiates following versions: 0x05, 0x03, 0x01 
+     * Test of handshake with switch at lower revision OFP_VERSION_1_0
+     * which is supported.
      * @throws Exception
      */
     @Test
-    public void testHandshake2SwitchStarts() throws Exception {
-        connectionConductor.setBitmapNegotiationEnable(false);
-        eventPlan.add(0, EventFactory.createConnectionReadyCallback(connectionConductor));
-        eventPlan.add(0,
-                EventFactory.createDefaultWaitForRpcEvent(21, "helloReply"));
-        eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L,
-                (short) 0x05, new HelloMessageBuilder()));
-        eventPlan.add(0, EventFactory.createDefaultNotificationEvent(43L,
-                (short) 0x03, new HelloMessageBuilder()));
-        eventPlan.add(0,
-                EventFactory.createDefaultWaitForRpcEvent(44, "helloReply"));
-        eventPlan.add(0, EventFactory.createDefaultNotificationEvent(44L,
-                (short) 0x01, new HelloMessageBuilder()));
-        eventPlan.add(0,
-                EventFactory.createDefaultWaitForRpcEvent(45, "getFeatures"));
-
-        eventPlan.add(0, EventFactory.createDefaultRpcResponseEvent(45,
-                EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
+    public void testHandshakeSwitchLowerSupportedVersion() throws Exception {
+    	
+    	// on connection ready controller immediately sends default hello
+    	eventPlan.add(0, EventFactory.createConnectionReadyCallback(connectionConductor)) ;
+        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(21L, "helloReply") );
         
+        // switch sends first hello at version OFP_VERSION_1_0
+        eventPlan.add(0, EventFactory.createDefaultNotificationEvent(40L,
+        		OFConstants.OFP_VERSION_1_0, new HelloMessageBuilder()));
+        
+        // switch should now send error  TODO: add this
+        
+        // Controller sends updated hello at version OFP_VERSION_1_0
+        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(41L, "helloReply") );
+        
+        // controller negotiates version OFP_VERSION_1_0 and proceeds.
+        eventPlan.add(0,
+                EventFactory.createDefaultWaitForRpcEvent(42, "getFeatures"));
+        eventPlan.add(0, EventFactory.createDefaultRpcResponseEvent(42,
+        		OFConstants.OFP_VERSION_1_0, getFeatureResponseMsg()));
+        
+        // OFConstants.OFP_VERSION_1_0 will issue two RPC's
         eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(1, "multipartRequestInput"));
         eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(2, "multipartRequestInput"));
 
@@ -350,9 +371,10 @@ public class ConnectionConductorImplTest {
 
         Assert.assertEquals(ConnectionConductor.CONDUCTOR_STATE.WORKING,
                 connectionConductor.getConductorState());
-        Assert.assertEquals((short) 0x01, connectionConductor.getVersion()
+        Assert.assertEquals(OFConstants.OFP_VERSION_1_0, connectionConductor.getVersion()
                 .shortValue());
     }
+    
 
     /**
      * Test method for
