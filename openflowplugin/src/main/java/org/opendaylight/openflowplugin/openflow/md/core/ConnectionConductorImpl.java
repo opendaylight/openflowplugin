@@ -74,7 +74,6 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
      * it will help while testing and isolating issues related to processing of
      * BitMaps from switches.
      */
-    private boolean isBitmapNegotiationEnable = true;
     protected ErrorHandler errorHandler;
 
     private final ConnectionAdapter connectionAdapter;
@@ -90,7 +89,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     private ThreadPoolExecutor hsPool;
     private HandshakeManager handshakeManager;
 
-    private boolean firstHelloProcessed;
+    private boolean firstHelloSent;
     
     private PortFeaturesUtil portFeaturesUtils;
 
@@ -114,10 +113,9 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         this.connectionAdapter = connectionAdapter;
         this.ingressMaxQueueSize = ingressMaxQueueSize;
         conductorState = CONDUCTOR_STATE.HANDSHAKING;
-        firstHelloProcessed = false;
+        firstHelloSent = false;
         handshakeManager = new HandshakeManagerImpl(connectionAdapter,
                 ConnectionConductor.versionOrder.get(0), ConnectionConductor.versionOrder);
-        handshakeManager.setUseVersionBitmap(isBitmapNegotiationEnable);
         handshakeManager.setHandshakeListener(this);
         portFeaturesUtils = PortFeaturesUtil.getInstance();
     }
@@ -209,10 +207,9 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     @Override
     public void onHelloMessage(final HelloMessage hello) {
         LOG.debug("processing HELLO.xid: {}", hello.getXid());
-        firstHelloProcessed = true;
         checkState(CONDUCTOR_STATE.HANDSHAKING);
         HandshakeStepWrapper handshakeStepWrapper = new HandshakeStepWrapper(
-                hello, handshakeManager, connectionAdapter);
+                hello, handshakeManager );
         hsPool.submit(handshakeStepWrapper);
     }
 
@@ -403,21 +400,28 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     @Override
     public void onConnectionReady() {
         LOG.debug("connection is ready-to-use");
-        if (! firstHelloProcessed) {
+        if (! firstHelloSent) {
+        	// Passing a null hello reference will cause the "first" HELLO to be sent.
             HandshakeStepWrapper handshakeStepWrapper = new HandshakeStepWrapper(
-                    null, handshakeManager, connectionAdapter);
+                    null, handshakeManager );
             hsPool.execute(handshakeStepWrapper);
-            firstHelloProcessed = true;
+            firstHelloSent = true;
         } else {
-            LOG.debug("already touched by hello message");
+            LOG.debug("already sent first hello message");
         }
     }
 
     @Override
     public void onHandshakeSuccessfull(GetFeaturesOutput featureOutput,
             Short negotiatedVersion) {
-        postHandshakeBasic(featureOutput, negotiatedVersion);
+    	
+        if ( conductorState == CONDUCTOR_STATE.WORKING ) {
+        	LOG.debug("extraneous onHandshakeSuccessfull notification ignored.");
+        	return;
+        }
         
+        postHandshakeBasic(featureOutput, negotiatedVersion);
+ 
         // post-handshake actions
         if(version == OFConstants.OFP_VERSION_1_3){
             requestGroupFeatures();
@@ -499,13 +503,6 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         LOG.debug("Send meter features statistics request :{}",mprMeterFeaturesBuild);
         getConnectionAdapter().multipartRequest(mprInput.build());
         
-    }
-    /**
-     * @param isBitmapNegotiationEnable the isBitmapNegotiationEnable to set
-     */
-    public void setBitmapNegotiationEnable(
-            boolean isBitmapNegotiationEnable) {
-        this.isBitmapNegotiationEnable = isBitmapNegotiationEnable;
     }
 
     protected void shutdownPool() {

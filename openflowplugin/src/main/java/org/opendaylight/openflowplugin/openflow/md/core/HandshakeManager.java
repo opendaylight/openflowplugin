@@ -16,7 +16,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  */
 public interface HandshakeManager {
 
-    /**
+    enum HANDSHAKE {
+    	INITIAL
+    	,STARTED
+    	,FAILED
+    	,SUCCEEDED
+    }
+
+	/**
      * @return negotiated version
      */
     Short getVersion();
@@ -40,14 +47,14 @@ public interface HandshakeManager {
      * @param handshakeListener the handshakeListener to set
      */
     void setHandshakeListener(HandshakeListener handshakeListener);
-
+    
     /**
-     * @param isBitmapNegotiationEnable
+     * start this handshake
      */
-    void setUseVersionBitmap(boolean isBitmapNegotiationEnable);
-
+    void startHandshake();
+    
     /**
-     * process current handshake step
+     * process next handshake hello
      */
-    void shake();
+    void continueHandshake();
 }
