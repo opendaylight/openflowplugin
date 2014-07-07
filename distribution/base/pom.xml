@@ -35,7 +35,14 @@ see https://git.opendaylight.org/gerrit/#/c/390/
       <artifactId>openflowplugin</artifactId>
       <version>${project.version}</version>
     </dependency>
-    
+
+    <!-- initial config -->
+    <dependency>
+      <groupId>org.opendaylight.openflowplugin</groupId>
+      <artifactId>openflowplugin-controller-config</artifactId>
+      <version>0.0.3-SNAPSHOT</version>
+    </dependency>
+
     <!-- debug provider -->
     <dependency>
       <groupId>org.opendaylight.openflowplugin</groupId>
@@ -95,6 +102,21 @@ see https://git.opendaylight.org/gerrit/#/c/390/
              <outputDirectory>${project.build.directory}/generated-resources</outputDirectory>
              <includeArtifactIds>distribution.opendaylight</includeArtifactIds>
              <includeGroupIds>org.opendaylight.controller</includeGroupIds>
+             <excludeTransitive>true</excludeTransitive>
+             <ignorePermissions>false</ignorePermissions>
+            </configuration>
+          </execution>
+          <execution>
+            <id>unpack-provided-configs</id>
+            <goals>
+              <goal>unpack-dependencies</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+             <outputDirectory>${project.build.directory}/generated-resources/opendaylight/configuration</outputDirectory>
+             <includeArtifactIds>openflowplugin-controller-config</includeArtifactIds>
+             <includes>**\/*.xml</includes>
+             <excludes>META-INF</excludes>
              <excludeTransitive>true</excludeTransitive>
              <ignorePermissions>false</ignorePermissions>
             </configuration>
