@@ -8,7 +8,6 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core;
 
-import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,36 +17,39 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class HandshakeStepWrapper implements Runnable {
-    
+
     private static final Logger LOG = LoggerFactory
             .getLogger(HandshakeStepWrapper.class);
-    
-    private HelloMessage helloMessage;
-    private HandshakeManager handshakeManager;
-    private ConnectionAdapter connectionAdapter;
-    
-    
-    
+
+    private final HelloMessage helloMessage;
+    private final HandshakeManager handshakeManager;
+
+
     /**
      * @param helloMessage
      * @param handshakeManager
-     * @param connectionAdapter 
      */
     public HandshakeStepWrapper(HelloMessage helloMessage,
-            HandshakeManager handshakeManager, ConnectionAdapter connectionAdapter) {
+            HandshakeManager handshakeManager ) {
         this.helloMessage = helloMessage;
         this.handshakeManager = handshakeManager;
-        this.connectionAdapter = connectionAdapter;
     }
 
     @Override
-    public void run() {
-        if (connectionAdapter.isAlive()) {
-            handshakeManager.setReceivedHello(helloMessage);
-            handshakeManager.shake();
-        } else {
-            LOG.debug("connection is down - skipping handshake step");
-        }
-    }
+	public void run() {
+		if (handshakeManager.getConnectionAdapter().isAlive()) {
+			if (helloMessage == null) {
+				handshakeManager.startHandshake();
+
+			} else {
+				handshakeManager.setReceivedHello(helloMessage);
+				handshakeManager.continueHandshake();
+			}
+		} else {
+			LOG.debug(
+					"Connection has broken ... handshake aborting for remote={}",
+					handshakeManager.getConnectionAdapter().remoteAddress());
+		}
+	}
 
 }

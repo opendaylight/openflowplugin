@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.plan;
 
+import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -612,4 +613,9 @@ public class ConnectionAdapterStackImpl implements ConnectionAdapter, Runnable {
         SettableFuture<RpcResult<Void>> result = createOneWayRpcResult();
         return result;
     }
+
+	@Override
+	public SocketAddress remoteAddress() {
+		return null;
+	}
 }

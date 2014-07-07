@@ -12,6 +12,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionReadyListener;
@@ -62,459 +63,543 @@ import com.google.common.util.concurrent.Futures;
  * @author mirehak
  */
 public class ConnectionConductorImpl implements OpenflowProtocolListener,
-        SystemNotificationsListener, ConnectionConductor, ConnectionReadyListener, HandshakeListener {
+		SystemNotificationsListener, ConnectionConductor,
+		ConnectionReadyListener, HandshakeListener {
 
-    /** ingress queue limit */
-    private static final int INGRESS_QUEUE_MAX_SIZE = 200;
+	/** ingress queue limit */
+	private static final int INGRESS_QUEUE_MAX_SIZE = 200;
 
-    protected static final Logger LOG = LoggerFactory
-            .getLogger(ConnectionConductorImpl.class);
+	protected static final Logger LOG = LoggerFactory
+			.getLogger(ConnectionConductorImpl.class);
 
-    /* variable to make BitMap-based negotiation enabled / disabled.
-     * it will help while testing and isolating issues related to processing of
-     * BitMaps from switches.
-     */
-    private boolean isBitmapNegotiationEnable = true;
-    protected ErrorHandler errorHandler;
+	/*
+	 * variable to make BitMap-based negotiation enabled / disabled. it will
+	 * help while testing and isolating issues related to processing of BitMaps
+	 * from switches.
+	 */
+	protected ErrorHandler errorHandler;
 
-    private final ConnectionAdapter connectionAdapter;
-    private ConnectionConductor.CONDUCTOR_STATE conductorState;
-    private Short version;
+	private final ConnectionAdapter connectionAdapter;
+	private ConnectionConductor.CONDUCTOR_STATE conductorState;
+	private final AtomicBoolean firstHelloSent;
+	private volatile Short version;
 
-    protected SwitchConnectionDistinguisher auxiliaryKey;
-
-    protected SessionContext sessionContext;
-
-    private QueueProcessor<OfHeader, DataObject> queueProcessor;
-    private QueueKeeper<OfHeader> queue;
-    private ThreadPoolExecutor hsPool;
-    private HandshakeManager handshakeManager;
-
-    private boolean firstHelloProcessed;
-    
-    private PortFeaturesUtil portFeaturesUtils;
-
-    private int conductorId;
-
-    private int ingressMaxQueueSize;
-
-    
-    /**
-     * @param connectionAdapter
-     */
-    public ConnectionConductorImpl(ConnectionAdapter connectionAdapter) {
-        this(connectionAdapter, INGRESS_QUEUE_MAX_SIZE);
-    }
-
-    /**
-     * @param connectionAdapter
-     * @param ingressMaxQueueSize ingress queue limit (blocking)
-     */
-    public ConnectionConductorImpl(ConnectionAdapter connectionAdapter, int ingressMaxQueueSize) {
-        this.connectionAdapter = connectionAdapter;
-        this.ingressMaxQueueSize = ingressMaxQueueSize;
-        conductorState = CONDUCTOR_STATE.HANDSHAKING;
-        firstHelloProcessed = false;
-        handshakeManager = new HandshakeManagerImpl(connectionAdapter,
-                ConnectionConductor.versionOrder.get(0), ConnectionConductor.versionOrder);
-        handshakeManager.setUseVersionBitmap(isBitmapNegotiationEnable);
-        handshakeManager.setHandshakeListener(this);
-        portFeaturesUtils = PortFeaturesUtil.getInstance();
-    }
-
-    @Override
-    public void init() {
-        int handshakeThreadLimit = 1;
-        hsPool = new ThreadPoolLoggingExecutor(handshakeThreadLimit , handshakeThreadLimit, 0L, 
-                TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(), 
-                "OFHandshake-"+conductorId);
-        
-        connectionAdapter.setMessageListener(this);
-        connectionAdapter.setSystemListener(this);
-        connectionAdapter.setConnectionReadyListener(this);
-        queue = QueueKeeperFactory.createFairQueueKeeper(queueProcessor, ingressMaxQueueSize);
-    }
-
-    @Override
-    public void setQueueProcessor(QueueProcessor<OfHeader, DataObject> queueProcessor) {
-        this.queueProcessor = queueProcessor;
-    }
-
-    /**
-     * @param errorHandler the errorHandler to set
-     */
-    @Override
-    public void setErrorHandler(ErrorHandler errorHandler) {
-        this.errorHandler = errorHandler;
-        handshakeManager.setErrorHandler(errorHandler);
-    }
-
-    @Override
-    public void onEchoRequestMessage(final EchoRequestMessage echoRequestMessage) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                LOG.debug("echo request received: " + echoRequestMessage.getXid());
-                EchoReplyInputBuilder builder = new EchoReplyInputBuilder();
-                builder.setVersion(echoRequestMessage.getVersion());
-                builder.setXid(echoRequestMessage.getXid());
-                builder.setData(echoRequestMessage.getData());
-
-                getConnectionAdapter().echoReply(builder.build());
-            }
-        }).start();
-    }
-
-    @Override
-    public void onErrorMessage(ErrorMessage errorMessage) {
-        enqueueMessage(errorMessage);
-    }
-
-    
-    /**
-     * @param message
-     */
-    private void enqueueMessage(OfHeader message) {
-        enqueueMessage(message, QueueType.DEFAULT);
-    }
-
-    /**
-     * @param message
-     * @param queueType enqueue type
-     */
-    private void enqueueMessage(OfHeader message, QueueType queueType) {
-        queue.push(message, this, queueType);
-    }
-
-    @Override
-    public void onExperimenterMessage(ExperimenterMessage experimenterMessage) {
-        enqueueMessage(experimenterMessage);
-    }
-
-    @Override
-    public void onFlowRemovedMessage(FlowRemovedMessage message) {
-        enqueueMessage(message);
-    }
+	protected volatile SessionContext sessionContext;
+	protected volatile SwitchConnectionDistinguisher auxiliaryKey;
 
 
-    /**
-     * version negotiation happened as per following steps:
-     * 1. If HelloMessage version field has same version, continue connection processing.
-     *    If HelloMessage version is lower than supported versions, just disconnect.
-     * 2. If HelloMessage contains bitmap and common version found in bitmap
-     *    then continue connection processing. if no common version found, just disconnect.
-     * 3. If HelloMessage version is not supported, send HelloMessage with lower supported version.
-     * 4. If Hello message received again with not supported version, just disconnect.
-     */
-    @Override
-    public void onHelloMessage(final HelloMessage hello) {
-        LOG.debug("processing HELLO.xid: {}", hello.getXid());
-        firstHelloProcessed = true;
-        checkState(CONDUCTOR_STATE.HANDSHAKING);
-        HandshakeStepWrapper handshakeStepWrapper = new HandshakeStepWrapper(
-                hello, handshakeManager, connectionAdapter);
-        hsPool.submit(handshakeStepWrapper);
-    }
+	private QueueProcessor<OfHeader, DataObject> queueProcessor;
+	private QueueKeeper<OfHeader> queue;
+	private ThreadPoolExecutor hsPool;
+	private final HandshakeManager handshakeManager;
 
-    /**
-     * @return rpc-response timeout in [ms]
-     */
-    protected long getMaxTimeout() {
-        // TODO:: get from configuration
-        return 2000;
-    }
 
-    /**
-     * @return milliseconds
-     */
-    protected TimeUnit getMaxTimeoutUnit() {
-        // TODO:: get from configuration
-        return TimeUnit.MILLISECONDS;
-    }
 
-    @Override
-    public void onMultipartReplyMessage(MultipartReplyMessage message) {
-        enqueueMessage(message);
-    }
+	private final PortFeaturesUtil portFeaturesUtils;
 
-    @Override
-    public void onPacketInMessage(PacketInMessage message) {
-        enqueueMessage(message, QueueKeeper.QueueType.UNORDERED);
-    }
+	private int conductorId;
 
-    @Override
-    public void onPortStatusMessage(PortStatusMessage message) {
-        processPortStatusMsg(message);
-        enqueueMessage(message);
-    }
-    
-    protected void processPortStatusMsg(PortStatus msg) {
-        if (msg.getReason().getIntValue() == 2) {
-            updatePort(msg);
-        } else if (msg.getReason().getIntValue() == 0) {
-            updatePort(msg);
-        } else if (msg.getReason().getIntValue() == 1) {
-            deletePort(msg);
-        }
-    }
-    
-    protected void updatePort(PortStatus msg) {
-        Long portNumber = msg.getPortNo();        
-        Boolean portBandwidth = portFeaturesUtils.getPortBandwidth(msg);
-        
-        if(portBandwidth == null) {
-            LOG.debug("can't get bandwidth info from port: {}, aborting port update", msg.toString());
-        } else {
-            this.getSessionContext().getPhysicalPorts().put(portNumber, msg);
-            this.getSessionContext().getPortsBandwidth().put(portNumber, portBandwidth);                   
-        }            
-    }
-    
-    protected void deletePort(PortGrouping port) {
-        Long portNumber = port.getPortNo();
-        
-        this.getSessionContext().getPhysicalPorts().remove(portNumber);
-        this.getSessionContext().getPortsBandwidth().remove(portNumber);
-    }
+	private final int ingressMaxQueueSize;
 
-    @Override
-    public void onSwitchIdleEvent(SwitchIdleEvent notification) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                if (!CONDUCTOR_STATE.WORKING.equals(getConductorState())) {
-                    // idle state in any other conductorState than WORKING means real
-                    // problem and wont be handled by echoReply, but disconnection
-                    disconnect();
-                    OFSessionUtil.getSessionManager().invalidateOnDisconnect(ConnectionConductorImpl.this);
-                } else {
-                    LOG.debug("first idle state occured, sessionCtx={}|auxId={}", sessionContext, auxiliaryKey);
-                    EchoInputBuilder builder = new EchoInputBuilder();
-                    builder.setVersion(getVersion());
-                    builder.setXid(getSessionContext().getNextXid());
+	/**
+	 * @param connectionAdapter
+	 */
+	public ConnectionConductorImpl(ConnectionAdapter connectionAdapter) {
+		this(connectionAdapter, INGRESS_QUEUE_MAX_SIZE);
+	}
 
-                    Future<RpcResult<EchoOutput>> echoReplyFuture = getConnectionAdapter()
-                            .echo(builder.build());
+	/**
+	 * @param connectionAdapter
+	 * @param ingressMaxQueueSize
+	 *            ingress queue limit (blocking)
+	 */
+	public ConnectionConductorImpl(ConnectionAdapter connectionAdapter,
+			int ingressMaxQueueSize) {
+		this.connectionAdapter = connectionAdapter;
+		this.ingressMaxQueueSize = ingressMaxQueueSize;
+		conductorState = CONDUCTOR_STATE.HANDSHAKING;
+		firstHelloSent = new AtomicBoolean(false);
+		handshakeManager = new HandshakeManagerImpl(connectionAdapter,
+				ConnectionConductor.versionOrder.get(0),
+				ConnectionConductor.versionOrder);
+		handshakeManager.setHandshakeListener(this);
+		portFeaturesUtils = PortFeaturesUtil.getInstance();
+	}
 
-                    try {
-                        RpcResult<EchoOutput> echoReplyValue = echoReplyFuture.get(getMaxTimeout(),
-                                getMaxTimeoutUnit());
-                        if (echoReplyValue.isSuccessful()) {
-                            setConductorState(CONDUCTOR_STATE.WORKING);
-                        } else {
-                            for (RpcError replyError : echoReplyValue.getErrors()) {
-                                Throwable cause = replyError.getCause();
-                                LOG.error(
-                                        "while receiving echoReply in TIMEOUTING state: "
-                                                + cause.getMessage(), cause);
-                            }
-                            //switch issue occurred
-                            throw new Exception("switch issue occurred");
-                        }
-                    } catch (Exception e) {
-                        LOG.error("while waiting for echoReply in TIMEOUTING state: "
-                                + e.getMessage());
-                        errorHandler.handleException(e, sessionContext);
-                        //switch is not responding
-                        disconnect();
-                        OFSessionUtil.getSessionManager().invalidateOnDisconnect(ConnectionConductorImpl.this);
-                    }
-                }
-            }
+	/*
+	 * Sets up the connection adapter and handshake executor as a single thread
+	 * pool.
+	 *
+	 * Sets the thread name to include the remote socket address if available.
+	 *
+	 * (non-Javadoc)
+	 *
+	 * @see
+	 * org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor#
+	 * init()
+	 */
+	@Override
+	public void init() {
+		int handshakeThreadLimit = 1;
+		String suffix = new String("");
+		if (connectionAdapter.remoteAddress() != null) {
+			suffix = connectionAdapter.remoteAddress().toString();
+		}
+		hsPool = new ThreadPoolLoggingExecutor(handshakeThreadLimit,
+				handshakeThreadLimit, 0L, TimeUnit.MILLISECONDS,
+				new LinkedBlockingQueue<Runnable>(), "OFHandshake-"
+						+ conductorId + suffix);
 
-        }).start();
-    }
+		connectionAdapter.setMessageListener(this);
+		connectionAdapter.setSystemListener(this);
+		connectionAdapter.setConnectionReadyListener(this);
+		queue = QueueKeeperFactory.createFairQueueKeeper(queueProcessor,
+				ingressMaxQueueSize);
+	}
 
-    /**
-     * @param conductorState
-     *            the connectionState to set
-     */
-    @Override
-    public void setConductorState(CONDUCTOR_STATE conductorState) {
-        this.conductorState = conductorState;
-    }
+	@Override
+	public void setQueueProcessor(
+			QueueProcessor<OfHeader, DataObject> queueProcessor) {
+		this.queueProcessor = queueProcessor;
+	}
 
-    @Override
-    public CONDUCTOR_STATE getConductorState() {
-        return conductorState;
-    }
+	/**
+	 * @param errorHandler
+	 *            the errorHandler to set
+	 */
+	@Override
+	public void setErrorHandler(ErrorHandler errorHandler) {
+		this.errorHandler = errorHandler;
+		handshakeManager.setErrorHandler(errorHandler);
+	}
 
-    /**
-     * @param handshaking
-     */
-    protected void checkState(CONDUCTOR_STATE expectedState) {
-        if (!conductorState.equals(expectedState)) {
-            throw new IllegalStateException("Expected state: " + expectedState
-                    + ", actual state:" + conductorState);
-        }
-    }
+	@Override
+	public void onEchoRequestMessage(final EchoRequestMessage echoRequestMessage) {
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				LOG.debug("echo request received "
+						+ echoRequestMessage.getXid());
+				EchoReplyInputBuilder builder = new EchoReplyInputBuilder();
+				builder.setVersion(echoRequestMessage.getVersion());
+				builder.setXid(echoRequestMessage.getXid());
+				builder.setData(echoRequestMessage.getData());
 
-    @Override
-    public void onDisconnectEvent(DisconnectEvent arg0) {
-        SessionManager sessionManager = OFSessionUtil.getSessionManager();
-        sessionManager.invalidateOnDisconnect(this);
-    }
+				getConnectionAdapter().echoReply(builder.build());
+			}
+		}).start();
+	}
 
-    @Override
-    public Short getVersion() {
-        return version;
-    }
+	@Override
+	public void onErrorMessage(ErrorMessage errorMessage) {
+		enqueueMessage(errorMessage);
+	}
 
-    @Override
-    public Future<Boolean> disconnect() {
-        LOG.trace("disconnecting: sessionCtx={}|auxId={}", sessionContext, auxiliaryKey);
+	/**
+	 * @param message
+	 */
+	private void enqueueMessage(OfHeader message) {
+		enqueueMessage(message, QueueType.DEFAULT);
+	}
 
-        Future<Boolean> result = null;
-        if (connectionAdapter.isAlive()) {
-            result = connectionAdapter.disconnect();
-        } else {
-            LOG.debug("connection already disconnected");
-            result = Futures.immediateFuture(true);
-        }
+	/**
+	 * @param message
+	 * @param queueType
+	 *            enqueue type
+	 */
+	private void enqueueMessage(OfHeader message, QueueType queueType) {
+		queue.push(message, this, queueType);
+	}
 
-        return result;
-    }
+	@Override
+	public void onExperimenterMessage(ExperimenterMessage experimenterMessage) {
+		enqueueMessage(experimenterMessage);
+	}
 
-    @Override
-    public void setConnectionCookie(SwitchConnectionDistinguisher auxiliaryKey) {
-        this.auxiliaryKey = auxiliaryKey;
-    }
+	@Override
+	public void onFlowRemovedMessage(FlowRemovedMessage message) {
+		enqueueMessage(message);
+	}
 
-    @Override
-    public void setSessionContext(SessionContext sessionContext) {
-        this.sessionContext = sessionContext;
-    }
+	/**
+	 * @return rpc-response timeout in [ms]
+	 */
+	protected long getMaxTimeout() {
+		// TODO:: get from configuration
+		return 2000;
+	}
 
-    @Override
-    public SwitchConnectionDistinguisher getAuxiliaryKey() {
-        return auxiliaryKey;
-    }
+	/**
+	 * @return milliseconds
+	 */
+	protected TimeUnit getMaxTimeoutUnit() {
+		// TODO:: get from configuration
+		return TimeUnit.MILLISECONDS;
+	}
 
-    @Override
-    public SessionContext getSessionContext() {
-        return sessionContext;
-    }
+	@Override
+	public void onMultipartReplyMessage(MultipartReplyMessage message) {
+		enqueueMessage(message);
+	}
 
-    @Override
-    public ConnectionAdapter getConnectionAdapter() {
-        return connectionAdapter;
-    }
+	@Override
+	public void onPacketInMessage(PacketInMessage message) {
+		enqueueMessage(message, QueueKeeper.QueueType.UNORDERED);
+	}
 
-    @Override
-    public void onConnectionReady() {
-        LOG.debug("connection is ready-to-use");
-        if (! firstHelloProcessed) {
-            HandshakeStepWrapper handshakeStepWrapper = new HandshakeStepWrapper(
-                    null, handshakeManager, connectionAdapter);
-            hsPool.execute(handshakeStepWrapper);
-            firstHelloProcessed = true;
-        } else {
-            LOG.debug("already touched by hello message");
-        }
-    }
+	@Override
+	public void onPortStatusMessage(PortStatusMessage message) {
+		processPortStatusMsg(message);
+		enqueueMessage(message);
+	}
 
-    @Override
-    public void onHandshakeSuccessfull(GetFeaturesOutput featureOutput,
-            Short negotiatedVersion) {
-        postHandshakeBasic(featureOutput, negotiatedVersion);
-        
-        // post-handshake actions
-        if(version == OFConstants.OFP_VERSION_1_3){
-            requestGroupFeatures();
-            requestMeterFeatures();
-        } else if (version == OFConstants.OFP_VERSION_1_0) {
-            //  Because the GetFeaturesOutput contains information about the port
-            //  in OF1.0 (that we would otherwise get from the PortDesc) we have to pass
-            //  it up for parsing to convert into a NodeConnectorUpdate
-            enqueueMessage(featureOutput);
-        }
-        
-        requestDesc();
-        requestPorts();
-    }
+	protected void processPortStatusMsg(PortStatus msg) {
+		if (msg.getReason().getIntValue() == 2) {
+			updatePort(msg);
+		} else if (msg.getReason().getIntValue() == 0) {
+			updatePort(msg);
+		} else if (msg.getReason().getIntValue() == 1) {
+			deletePort(msg);
+		}
+	}
 
-    /**
-     * used by tests
-     * @param featureOutput
-     * @param negotiatedVersion
-     */
-    protected void postHandshakeBasic(GetFeaturesOutput featureOutput,
-            Short negotiatedVersion) {
-        version = negotiatedVersion;
-        conductorState = CONDUCTOR_STATE.WORKING;
-        OFSessionUtil.registerSession(this, featureOutput, negotiatedVersion);
-        hsPool.shutdown();
-        hsPool.purge();
-    }
+	protected void updatePort(PortStatus msg) {
+		Long portNumber = msg.getPortNo();
+		Boolean portBandwidth = portFeaturesUtils.getPortBandwidth(msg);
 
-    /*
-     *  Send an OFPMP_DESC request message to the switch
-     */
+		if (portBandwidth == null) {
+			LOG.debug(
+					"can't get bandwidth info from port: {}, aborting port update",
+					msg.toString());
+		} else {
+			this.getSessionContext().getPhysicalPorts().put(portNumber, msg);
+			this.getSessionContext().getPortsBandwidth()
+					.put(portNumber, portBandwidth);
+		}
+	}
 
-    private void requestDesc() {
-        MultipartRequestInputBuilder builder = new MultipartRequestInputBuilder();
-        builder.setType(MultipartType.OFPMPDESC);
-        builder.setVersion(getVersion());
-        builder.setFlags(new MultipartRequestFlags(false));
-        builder.setMultipartRequestBody(new MultipartRequestDescCaseBuilder().build());
-        builder.setXid(getSessionContext().getNextXid());
-        getConnectionAdapter().multipartRequest(builder.build());
-    }
+	protected void deletePort(PortGrouping port) {
+		Long portNumber = port.getPortNo();
 
-    private void requestPorts() {
-        MultipartRequestInputBuilder builder = new MultipartRequestInputBuilder();
-        builder.setType(MultipartType.OFPMPPORTDESC);
-        builder.setVersion(getVersion());
-        builder.setFlags(new MultipartRequestFlags(false));
-        builder.setMultipartRequestBody(new MultipartRequestPortDescCaseBuilder().build());
-        builder.setXid(getSessionContext().getNextXid());
-        getConnectionAdapter().multipartRequest(builder.build());
-    }
-    private void requestGroupFeatures(){
-        MultipartRequestInputBuilder mprInput = new MultipartRequestInputBuilder();
-        mprInput.setType(MultipartType.OFPMPGROUPFEATURES);
-        mprInput.setVersion(getVersion());
-        mprInput.setFlags(new MultipartRequestFlags(false));
-        mprInput.setXid(getSessionContext().getNextXid());
+		this.getSessionContext().getPhysicalPorts().remove(portNumber);
+		this.getSessionContext().getPortsBandwidth().remove(portNumber);
+	}
 
-        MultipartRequestGroupFeaturesCaseBuilder mprGroupFeaturesBuild = 
-                new MultipartRequestGroupFeaturesCaseBuilder();
-        mprInput.setMultipartRequestBody(mprGroupFeaturesBuild.build());
+	@Override
+	public void onSwitchIdleEvent(SwitchIdleEvent notification) {
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				if (!CONDUCTOR_STATE.WORKING.equals(getConductorState())) {
+					// idle state in any other conductorState than WORKING means
+					// real
+					// problem and wont be handled by echoReply, but
+					// disconnection
+					disconnect();
+					OFSessionUtil.getSessionManager().invalidateOnDisconnect(
+							ConnectionConductorImpl.this);
+				} else {
+					LOG.debug(
+							"first idle state occured, sessionCtx={}|auxId={}",
+							sessionContext, auxiliaryKey);
+					EchoInputBuilder builder = new EchoInputBuilder();
+					builder.setVersion(getVersion());
+					builder.setXid(getSessionContext().getNextXid());
 
-        LOG.debug("Send group features statistics request :{}",mprGroupFeaturesBuild);
-        getConnectionAdapter().multipartRequest(mprInput.build());
-        
-    }
-    private void requestMeterFeatures(){
-        MultipartRequestInputBuilder mprInput = new MultipartRequestInputBuilder();
-        mprInput.setType(MultipartType.OFPMPMETERFEATURES);
-        mprInput.setVersion(getVersion());
-        mprInput.setFlags(new MultipartRequestFlags(false));
-        mprInput.setXid(getSessionContext().getNextXid());
+					Future<RpcResult<EchoOutput>> echoReplyFuture = getConnectionAdapter()
+							.echo(builder.build());
 
-        MultipartRequestMeterFeaturesCaseBuilder mprMeterFeaturesBuild =
-                new MultipartRequestMeterFeaturesCaseBuilder();
-        mprInput.setMultipartRequestBody(mprMeterFeaturesBuild.build());
+					try {
+						RpcResult<EchoOutput> echoReplyValue = echoReplyFuture
+								.get(getMaxTimeout(), getMaxTimeoutUnit());
+						if (echoReplyValue.isSuccessful()) {
+							setConductorState(CONDUCTOR_STATE.WORKING);
+						} else {
+							for (RpcError replyError : echoReplyValue
+									.getErrors()) {
+								Throwable cause = replyError.getCause();
+								LOG.error(
+										"while receiving echoReply in TIMEOUTING state: "
+												+ cause.getMessage(), cause);
+							}
+							// switch issue occurred
+							throw new Exception("switch issue occurred");
+						}
+					} catch (Exception e) {
+						LOG.error("while waiting for echoReply in TIMEOUTING state : "
+								+ e.getMessage());
+						errorHandler.handleException(e, sessionContext);
+						// switch is not responding
+						disconnect();
+						OFSessionUtil.getSessionManager()
+								.invalidateOnDisconnect(
+										ConnectionConductorImpl.this);
+					}
+				}
+			}
 
-        LOG.debug("Send meter features statistics request :{}",mprMeterFeaturesBuild);
-        getConnectionAdapter().multipartRequest(mprInput.build());
-        
-    }
-    /**
-     * @param isBitmapNegotiationEnable the isBitmapNegotiationEnable to set
-     */
-    public void setBitmapNegotiationEnable(
-            boolean isBitmapNegotiationEnable) {
-        this.isBitmapNegotiationEnable = isBitmapNegotiationEnable;
-    }
+		}).start();
+	}
 
-    protected void shutdownPool() {
-        hsPool.shutdownNow();
-        LOG.debug("pool is terminated: {}", hsPool.isTerminated());
-    }
-    
-    @Override
-    public void setId(int conductorId) {
-        this.conductorId = conductorId;
-    }
+	/**
+	 * @param conductorState
+	 *            the connectionState to set
+	 */
+	@Override
+	public void setConductorState(CONDUCTOR_STATE conductorState) {
+		this.conductorState = conductorState;
+	}
+
+	@Override
+	public CONDUCTOR_STATE getConductorState() {
+		return conductorState;
+	}
+
+	@Override
+	public void onDisconnectEvent(DisconnectEvent arg0) {
+		SessionManager sessionManager = OFSessionUtil.getSessionManager();
+		sessionManager.invalidateOnDisconnect(this);
+	}
+
+	@Override
+	public Short getVersion() {
+		return version;
+	}
+
+	@Override
+	public Future<Boolean> disconnect() {
+		LOG.trace("disconnecting: sessionCtx={}|auxId={}",
+				sessionContext, auxiliaryKey);
+
+		Future<Boolean> result = null;
+		if (connectionAdapter.isAlive()) {
+			result = connectionAdapter.disconnect();
+		} else {
+			LOG.debug("connection already disconnected");
+			result = Futures.immediateFuture(true);
+		}
+
+		return result;
+	}
+
+	@Override
+	public void setConnectionCookie(SwitchConnectionDistinguisher auxiliaryKey) {
+		this.auxiliaryKey = auxiliaryKey;
+	}
+
+	@Override
+	public void setSessionContext(SessionContext sessionContext) {
+		this.sessionContext = sessionContext;
+	}
+
+	@Override
+	public SwitchConnectionDistinguisher getAuxiliaryKey() {
+		return auxiliaryKey;
+	}
+
+	@Override
+	public SessionContext getSessionContext() {
+		return sessionContext;
+	}
+
+	@Override
+	public ConnectionAdapter getConnectionAdapter() {
+		return connectionAdapter;
+	}
+
+	/**
+	 * ConnectionReady and HelloMessage notifications are sent from separate
+	 * threads and so it's a race. We handle a handshake where either arrives
+	 * first.
+	 *
+	 * Multiple connectionReady notifications can occur on one handshake
+	 * session. Multiple helloMessage notification can occur ... each with
+	 * unique data.
+	 *
+	 */
+	@Override
+	public void onConnectionReady() {
+		String remoteName = null;
+		if (LOG.isInfoEnabled() && connectionAdapter.remoteAddress() != null) {
+			remoteName = connectionAdapter.remoteAddress().toString();
+		}
+		LOG.debug("connection is ready-to-use for {}", remoteName);
+		startHandshake();
+	}
+
+	/**
+	 * ConnectionReady and HelloMessage notifications are sent from separate
+	 * threads and so it's a race. We handle a handshake where either arrives
+	 * first.
+	 *
+	 * Multiple connectionReady notifications can occur on one handshake
+	 * session. Multiple helloMessage notification can occur ... each with
+	 * unique data.
+	 *
+	 * @param hello
+	 *            message object to be processed during handshake
+	 */
+	@Override
+	public void onHelloMessage(final HelloMessage hello) {
+
+		LOG.debug("processing HELLO.xid : {} state : {}",
+				hello.getXid(), conductorState.toString());
+
+		if (conductorState.equals(CONDUCTOR_STATE.HANDSHAKING)) {
+			startHandshake();
+			HandshakeStepWrapper handshakeStepWrapper = new HandshakeStepWrapper(
+					hello, handshakeManager);
+
+			hsPool.submit(handshakeStepWrapper);
+		}
+	}
+
+	/*
+	 * Private method to start the handshake if it isn't yet started.
+	 *
+	 * Queues a runnable wrapper to envoke HandshakeManager's startHandshake()
+	 * method on the single thread hspool.
+	 */
+	private void startHandshake() {
+		if (firstHelloSent.compareAndSet(false, true)) {
+			// Passing a null hello to will cause the "first" HELLO sending
+			HandshakeStepWrapper handshakeStepWrapper = new HandshakeStepWrapper(
+					null, handshakeManager);
+			hsPool.submit(handshakeStepWrapper);
+
+		} else {
+			LOG.debug("already sent first hello message.");
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 *
+	 * Called from HandshakeManager upon a successful handshake meaning this is
+	 * running on the single thread hspool.
+	 *
+	 * @see org.opendaylight.openflowplugin.openflow.md.core.HandshakeListener#
+	 * onHandshakeSuccessfull
+	 * (org.opendaylight.yang.gen.v1.urn.opendaylight.openflow
+	 * .protocol.rev130731.GetFeaturesOutput, java.lang.Short)
+	 */
+	@Override
+	public void onHandshakeSuccessfull(GetFeaturesOutput featureOutput,
+			Short negotiatedVersion) {
+
+		if (conductorState == CONDUCTOR_STATE.WORKING) {
+			LOG.warn("extraneous onHandshakeSuccessfull notification ignored.");
+			return;
+		}
+
+		postHandshakeBasic(featureOutput, negotiatedVersion);
+
+		// post-handshake actions
+		if (version == OFConstants.OFP_VERSION_1_3) {
+			requestGroupFeatures();
+			requestMeterFeatures();
+		} else if (version == OFConstants.OFP_VERSION_1_0) {
+			// Because the GetFeaturesOutput contains information about the port
+			// in OF1.0 (that we would otherwise get from the PortDesc) we have
+			// to pass
+			// it up for parsing to convert into a NodeConnectorUpdate
+			enqueueMessage(featureOutput);
+		}
+
+		requestDesc();
+		requestPorts();
+	}
+
+	/**
+	 * protected to be used by tests
+	 *
+	 * This method is called from onHandshakeSuccessful() which is on the
+	 * one-thread hspool executor at the time of this writing.
+	 *
+	 * @param featureOutput
+	 *            contains the datapathId needed for registration.
+	 * @param negotiatedVersion
+	 *            the final version negotiated by the handshake
+	 *
+	 */
+	protected void postHandshakeBasic(GetFeaturesOutput featureOutput,
+			Short negotiatedVersion) {
+		version = negotiatedVersion;
+		conductorState = CONDUCTOR_STATE.WORKING;
+		OFSessionUtil.registerSession(this, featureOutput, negotiatedVersion);
+
+		// Stop further queuing to our executor ... late connection or hello
+		// notifications will be ignored.
+		hsPool.shutdown();
+		hsPool.purge();
+	}
+
+	/*
+	 * Send an OFPMP_DESC request message to the switch
+	 */
+
+	private void requestDesc() {
+		MultipartRequestInputBuilder builder = new MultipartRequestInputBuilder();
+		builder.setType(MultipartType.OFPMPDESC);
+		builder.setVersion(getVersion());
+		builder.setFlags(new MultipartRequestFlags(false));
+		builder.setMultipartRequestBody(new MultipartRequestDescCaseBuilder()
+				.build());
+		builder.setXid(getSessionContext().getNextXid());
+		getConnectionAdapter().multipartRequest(builder.build());
+	}
+
+	private void requestPorts() {
+		MultipartRequestInputBuilder builder = new MultipartRequestInputBuilder();
+		builder.setType(MultipartType.OFPMPPORTDESC);
+		builder.setVersion(getVersion());
+		builder.setFlags(new MultipartRequestFlags(false));
+		builder.setMultipartRequestBody(new MultipartRequestPortDescCaseBuilder()
+				.build());
+		builder.setXid(getSessionContext().getNextXid());
+		getConnectionAdapter().multipartRequest(builder.build());
+	}
+
+	private void requestGroupFeatures() {
+		MultipartRequestInputBuilder mprInput = new MultipartRequestInputBuilder();
+		mprInput.setType(MultipartType.OFPMPGROUPFEATURES);
+		mprInput.setVersion(getVersion());
+		mprInput.setFlags(new MultipartRequestFlags(false));
+		mprInput.setXid(getSessionContext().getNextXid());
+
+		MultipartRequestGroupFeaturesCaseBuilder mprGroupFeaturesBuild = new MultipartRequestGroupFeaturesCaseBuilder();
+		mprInput.setMultipartRequestBody(mprGroupFeaturesBuild.build());
+
+		LOG.debug("Send group features statistics request :{}",
+				mprGroupFeaturesBuild);
+		getConnectionAdapter().multipartRequest(mprInput.build());
+
+	}
+
+	private void requestMeterFeatures() {
+		MultipartRequestInputBuilder mprInput = new MultipartRequestInputBuilder();
+		mprInput.setType(MultipartType.OFPMPMETERFEATURES);
+		mprInput.setVersion(getVersion());
+		mprInput.setFlags(new MultipartRequestFlags(false));
+		mprInput.setXid(getSessionContext().getNextXid());
+
+		MultipartRequestMeterFeaturesCaseBuilder mprMeterFeaturesBuild = new MultipartRequestMeterFeaturesCaseBuilder();
+		mprInput.setMultipartRequestBody(mprMeterFeaturesBuild.build());
+
+		LOG.debug("Send meter features statistics request :{}",
+				mprMeterFeaturesBuild);
+		getConnectionAdapter().multipartRequest(mprInput.build());
+
+	}
+
+	protected void shutdownPool() {
+		hsPool.shutdownNow();
+		LOG.debug("pool is terminated : {}",
+				hsPool.isTerminated());
+	}
+
+	@Override
+	public void setId(int conductorId) {
+		this.conductorId = conductorId;
+	}
 }
