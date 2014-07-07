@@ -23,31 +23,32 @@ public class HandshakeStepWrapper implements Runnable {
             .getLogger(HandshakeStepWrapper.class);
     
     private HelloMessage helloMessage;
-    private HandshakeManager handshakeManager;
-    private ConnectionAdapter connectionAdapter;
-    
+    private HandshakeManager handshakeManager;    
     
     
     /**
      * @param helloMessage
      * @param handshakeManager
-     * @param connectionAdapter 
      */
     public HandshakeStepWrapper(HelloMessage helloMessage,
-            HandshakeManager handshakeManager, ConnectionAdapter connectionAdapter) {
+            HandshakeManager handshakeManager ) {
         this.helloMessage = helloMessage;
         this.handshakeManager = handshakeManager;
-        this.connectionAdapter = connectionAdapter;
     }
 
     @Override
-    public void run() {
-        if (connectionAdapter.isAlive()) {
-            handshakeManager.setReceivedHello(helloMessage);
-            handshakeManager.shake();
-        } else {
-            LOG.debug("connection is down - skipping handshake step");
-        }
-    }
+	public void run() {
+		if (handshakeManager.getConnectionAdapter().isAlive()) {
+			if (helloMessage == null) {
+				handshakeManager.startHandshake();
+
+			} else {
+				handshakeManager.setReceivedHello(helloMessage);
+				handshakeManager.continueHandshake();
+			}
+		} else {
+			LOG.debug("Connection has broken ... handshake aborting.");
+		}
+	}
 
 }
