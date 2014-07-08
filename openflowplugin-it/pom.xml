@@ -87,6 +87,12 @@
         </dependency>
         <dependency>
             <groupId>org.opendaylight.openflowplugin</groupId>
+            <artifactId>openflowplugin-api</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin</groupId>
             <artifactId>openflowplugin</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>

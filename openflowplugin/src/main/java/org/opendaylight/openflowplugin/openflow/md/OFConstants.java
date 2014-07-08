@@ -12,6 +12,7 @@ import java.math.BigInteger;
 /**
  * OFP related constants
  */
+//FIXME move this class to openflowplugin-api
 public class OFConstants {
 
     /** reserved port: process with normal L2/L3 switching  */

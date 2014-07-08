@@ -7,58 +7,27 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.session;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.concurrent.Future;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionReadyListener;
 import org.opendaylight.openflowplugin.openflow.md.ModelDrivenSwitch;
+import org.opendaylight.openflowplugin.openflow.md.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.openflow.md.core.ErrorHandler;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.openflow.md.queue.QueueProcessor;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoReplyInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetAsyncInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetAsyncOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetConfigInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetConfigOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetQueueConfigInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetQueueConfigOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GroupModInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MeterModInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OpenflowProtocolListener;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOutInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOutInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortModInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.RoleRequestInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.RoleRequestOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetAsyncInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetConfigInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.TableModInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.*;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SystemNotificationsListener;
 import org.opendaylight.yangtools.concepts.CompositeObjectRegistration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.Future;
 
 /**
  * test for {@link MessageDispatchServiceImpl}
@@ -84,7 +53,7 @@ public class MessageDispatchServiceImplTest {
     @Test
     public void testBarrierMessageForPrimary() throws Exception {
         MockConnectionConductor conductor = new MockConnectionConductor(1);
-        SwitchConnectionDistinguisher cookie = conductor.getAuxiliaryKey();       
+        SwitchConnectionDistinguisher cookie = conductor.getAuxiliaryKey();
         BarrierInputBuilder barrierMsg = new BarrierInputBuilder();
         session.getMessageDispatchService().barrier(barrierMsg.build(), cookie);
         Assert.assertEquals(MessageType.BARRIER, session.getPrimaryConductor().getMessageType());
@@ -158,11 +127,17 @@ public class MessageDispatchServiceImplTest {
     @Test
     public void testInvalidSession() throws Exception {
         session.setValid(false);
-        try {
-            session.getMessageDispatchService().packetOut(null, null);
-            Assert.assertTrue(false);
-        } catch (IllegalArgumentException ex) {
-            Assert.assertTrue(true);
+        Future<RpcResult<Void>> resultFuture = session.getMessageDispatchService().packetOut(null, null);
+        if (resultFuture.isDone()) {
+            RpcResult<Void> rpcResult = resultFuture.get();
+            Assert.assertTrue(!rpcResult.getErrors().isEmpty());
+
+            Iterator<RpcError> it = rpcResult.getErrors().iterator();
+            RpcError rpcError = it.next();
+
+            Assert.assertTrue(rpcError.getApplicationTag().equals(OFConstants.APPLICATION_TAG));
+            Assert.assertTrue(rpcError.getTag().equals(OFConstants.ERROR_TAG_TIMEOUT));
+            Assert.assertTrue(rpcError.getErrorType().equals(RpcError.ErrorType.TRANSPORT));
         }
     }
 
@@ -232,7 +207,7 @@ class MockSessionContext implements SessionContext {
         // TODO Auto-generated method stub
         return null;
     }
-    
+
     @Override
     public IMessageDispatchService getMessageDispatchService() {
         // TODO Auto-generated method stub
@@ -308,7 +283,7 @@ class MockSessionContext implements SessionContext {
     public int getSeed() {
         return seed;
     }
-    
+
     /**
      * @param seed the seed to set
      */
@@ -571,8 +546,7 @@ class MockConnectionAdapter implements ConnectionAdapter {
     }
 
     /**
-     * @param messageType
-     *            the messageType to set
+     * @param messageType the messageType to set
      */
     public void setMessageType(MessageType messageType) {
         this.messageType = messageType;
@@ -580,7 +554,7 @@ class MockConnectionAdapter implements ConnectionAdapter {
 
     @Override
     public void fireConnectionReadyNotification() {
-            connectionReadyListener.onConnectionReady();
+        connectionReadyListener.onConnectionReady();
     }
 
     @Override
