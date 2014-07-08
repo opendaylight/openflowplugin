@@ -499,6 +499,13 @@
           </plugins>
         </reporting>
       </profile>
+
+      <profile>
+        <id>cbench</id>
+        <modules>
+          <module>distribution/cbench</module>            
+        </modules>
+      </profile>
     </profiles>
 
     <repositories>
