@@ -1,0 +1,84 @@
+<!--
+Adapted from David Erickson's Distribution pom.xml
+see https://git.opendaylight.org/gerrit/#/c/390/
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.opendaylight.openflowplugin</groupId>
+    <artifactId>openflowplugin-parent</artifactId>
+    <version>0.0.3-SNAPSHOT</version>
+    <!-- <relativePath>../../</relativePath> -->
+  </parent>
+
+  <artifactId>distributions-openflowplugin-cbech</artifactId>
+  <packaging>pom</packaging>
+  <name>Opendaylight OpenflowPlugin CBENCH Edition </name>
+
+  <dependencies>
+
+    <!-- base distribution -->
+    <dependency>
+      <groupId>org.opendaylight.openflowplugin</groupId>
+      <artifactId>distributions-openflowplugin-base</artifactId>
+      <version>${project.version}</version>
+      <type>zip</type>
+      <classifier>osgipackage</classifier>
+      <!-- Make sure this isn't included on any classpath-->
+      <scope>provided</scope>
+    </dependency>
+
+  </dependencies>
+
+  <build>
+    <resources>
+      <resource>
+        <directory>${basedir}/src/main/resources</directory>
+      </resource>
+      <resource>
+        <directory>${project.build.directory}/generated-resources</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>2.8</version>
+        <executions>
+          <execution>
+            <id>unpack-shared-resources</id>
+            <goals>
+              <goal>unpack-dependencies</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+             <outputDirectory>${project.build.directory}/generated-resources</outputDirectory>
+             <includeGroupIds>org.opendaylight.openflowplugin</includeGroupIds>
+             <includeArtifactIds>distributions-openflowplugin-base</includeArtifactIds>
+             <excludeTransitive>true</excludeTransitive>
+             <ignorePermissions>false</ignorePermissions>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>distro-assembly</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <descriptors>
+                <descriptor>src/assemble/bin.xml</descriptor>
+              </descriptors>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>
