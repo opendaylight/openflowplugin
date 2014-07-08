@@ -29,6 +29,13 @@ see https://git.opendaylight.org/gerrit/#/c/390/
       <scope>provided</scope>
     </dependency>
 
+    <!-- openflowplugin-api -->
+    <dependency>
+        <groupId>org.opendaylight.openflowplugin</groupId>
+        <artifactId>openflowplugin-api</artifactId>
+        <version>${project.version}</version>
+    </dependency>
+
     <!-- openflowplugin -->
     <dependency>
       <groupId>org.opendaylight.openflowplugin</groupId>
@@ -49,7 +56,7 @@ see https://git.opendaylight.org/gerrit/#/c/390/
       <artifactId>test-provider</artifactId>
       <version>${project.version}</version>
     </dependency>
-    
+
     <!-- drop-test provider -->
     <dependency>
       <groupId>org.opendaylight.openflowplugin</groupId>

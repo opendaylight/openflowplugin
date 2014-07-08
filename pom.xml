@@ -421,6 +421,7 @@
     </pluginRepositories>
 
     <modules>
+      <module>openflowplugin-api</module>
       <module>openflowplugin</module>
       <module>distribution/base</module>
       <module>openflowplugin-controller-config</module>
