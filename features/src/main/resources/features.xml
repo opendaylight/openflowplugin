@@ -5,7 +5,6 @@
    xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.2.0 http://karaf.apache.org/xmlns/features/v1.2.0">
 
     <feature name='odl-openflowplugin' description="OpenDaylight :: Openflow Plugin :: Plugin" version='${project.version}'>
-        <feature version='${config.version}'>odl-config-subsystem</feature>
         <feature version="${mdsal.version}">odl-mdsal-all</feature>
         <feature version="${openflowjava.version}">odl-openflowjava</feature>
         <bundle>mvn:org.opendaylight.openflowplugin/openflowplugin/${project.version}</bundle>
