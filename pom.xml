@@ -56,6 +56,7 @@
       <salGeneratorPath>src/main/yang-gen-sal</salGeneratorPath>
       <exi.nagasena.version>0000.0002.0038.0</exi.nagasena.version>
       <controller.distribution.version>0.1.2-SNAPSHOT</controller.distribution.version>
+      <yangtools.version>0.6.2-SNAPSHOT</yangtools.version>
 
       <!-- Sonar config -->
       <sonar-jacoco-listeners.version>2.4</sonar-jacoco-listeners.version>
@@ -349,7 +350,7 @@
             <plugin>
               <groupId>org.opendaylight.yangtools</groupId>
               <artifactId>yang-maven-plugin</artifactId>
-              <version>0.6.2-SNAPSHOT</version>
+              <version>${yangtools.version}</version>
             </plugin>
             <plugin>
               <groupId>org.apache.felix</groupId>

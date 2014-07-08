@@ -1,14 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <features name="openflowplugin-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.2.0"
-   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-   xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.2.0 http://karaf.apache.org/xmlns/features/v1.2.0">
-
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.2.0 http://karaf.apache.org/xmlns/features/v1.2.0">
+    <repository>mvn:org.opendaylight.controller/features-mdsal/${mdsal.version}/xml/features</repository>
     <feature name='odl-openflowplugin' description="OpenDaylight :: Openflow Plugin :: Plugin" version='${project.version}'>
-        <feature version='${config.version}'>odl-config-subsystem</feature>
         <feature version="${mdsal.version}">odl-mdsal-all</feature>
-        <feature version="${openflowjava.version}">odl-openflowjava</feature>
-        <bundle>mvn:org.opendaylight.openflowplugin/openflowplugin/${project.version}</bundle>
-        <bundle>mvn:org.opendaylight.openflowplugin/openflowplugin-controller-config/${project.version}</bundle>
+        <feature version='${config.parent.version}'>odl-config-core</feature>
+        <feature version='${config.parent.version}'>odl-config-manager</feature>
+        <feature version='${config.parent.version}'>odl-config-api</feature>
+        <feature version='${config.parent.version}'>odl-config-persister</feature>
+        <feature version='${yangtools.version}'>odl-yangtools-common</feature>
+        <feature version='${yangtools.version}'>odl-yangtools-binding</feature>
+        <feature version='${yangtools.version}'>odl-yangtools-binding-generator</feature>
+        <feature version='${yangtools.version}'>odl-yangtools-models</feature> 
+        <bundle>mvn:io.netty/netty-buffer/${netty.version}</bundle>
+        <bundle>mvn:io.netty/netty-common/${netty.version}</bundle>
+        <bundle>mvn:io.netty/netty-transport/${netty.version}</bundle>
+        <bundle>mvn:io.netty/netty-codec/${netty.version}</bundle>
+        <bundle>mvn:io.netty/netty-handler/${netty.version}</bundle>
+        <bundle>mvn:com.google.guava/guava/${guava.version}</bundle>
+        <bundle>mvn:org.opendaylight.openflowjava/openflow-protocol-api/${openflowjava.version}</bundle>
+        <bundle>mvn:org.opendaylight.openflowjava/openflow-protocol-spi/${openflowjava.version}</bundle>
+        <bundle>mvn:org.opendaylight.openflowjava/openflow-protocol-impl/${openflowjava.version}</bundle>
+        <bundle>mvn:org.opendaylight.openflowjava/util/${openflowjava.version}</bundle>
+        <bundle>mvn:org.opendaylight.openflowplugin/openflowplugin/${project.version}</bundle>   
+        <configfile finalname="classes/initial/42-openflowplugin.xml">mvn:org.opendaylight.openflowplugin/openflowplugin-controller-config/${project.version}/xml/config</configfile>     
     </feature>
 </features>
