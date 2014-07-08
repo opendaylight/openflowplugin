@@ -544,6 +544,7 @@
       <module>openflowplugin-api</module>
       <module>openflowplugin</module>
       <module>distribution/base</module>
+      <module>distribution/cbench</module>            
       <module>openflowplugin-controller-config</module>
       <module>openflowplugin-it</module>
       <module>test-provider</module>
