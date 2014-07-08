@@ -8,12 +8,10 @@
   </parent>
   <artifactId>features-openflowplugin</artifactId>
   <name>Openflow Protocol Plugin - Karaf Features</name>
-  <packaging>kar</packaging>
-  
+  <packaging>pom</packaging>
   <properties>
     <features.file>features.xml</features.file>
-  </properties> 
-
+  </properties>
   <build>
     <resources>
       <resource>
@@ -35,9 +33,9 @@
                 </goals>
                 <configuration>
                     <featuresFile>${project.build.directory}/classes/${features.file}</featuresFile>
-                </configuration>                
+                </configuration>
             </execution>
-        </executions>            
+        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
