@@ -1181,7 +1181,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         Long xid = this.getSessionContext().getNextXid();
 
         LOG.debug("Prepare statistics request to get stats for flow {} for switch tables {} - Transaction id - {}",
-                arg0.getMatch().toString(), arg0.getTableId(), xid);
+                  arg0.getMatch() == null ? null : arg0.getMatch().toString(), arg0.getTableId(), xid);
 
         // Create multipart request header
         MultipartRequestInputBuilder mprInput = new MultipartRequestInputBuilder();

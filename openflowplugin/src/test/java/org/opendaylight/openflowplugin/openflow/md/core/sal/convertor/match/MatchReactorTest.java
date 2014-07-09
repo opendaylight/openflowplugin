@@ -9,8 +9,7 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 
 import java.math.BigInteger;
 
-import junit.framework.Assert;
-
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowplugin.openflow.md.OFConstants;
@@ -97,7 +96,15 @@ public class MatchReactorTest {
                 OFConstants.OFP_VERSION_1_0, target,BigInteger.valueOf(1));
         Assert.assertNotNull(target.getMatchV10());
     }
-    
+
+    @Test
+    public void testMatchConvertorV10_null() {
+        MultipartRequestAggregateBuilder target = new MultipartRequestAggregateBuilder();
+        MatchReactor.getInstance().convert(null, 
+                OFConstants.OFP_VERSION_1_0, target,BigInteger.valueOf(1));
+        Assert.assertNotNull(target.getMatchV10());
+    }
+
     /**
      * convert for OF-1.3, inject into {@link MultipartRequestAggregateBuilder}
      */
@@ -109,6 +116,15 @@ public class MatchReactorTest {
         Assert.assertNotNull(target.getMatch());
     }
     
+    @Test
+    public void testMatchConvertorV13_null() {
+        MultipartRequestAggregateBuilder target = new MultipartRequestAggregateBuilder();
+        MatchReactor.getInstance().convert(null, 
+                OFConstants.OFP_VERSION_1_3, target,BigInteger.valueOf(1));
+        Assert.assertNotNull(target.getMatch());
+        Assert.assertEquals(0, target.getMatch().getMatchEntries().size());
+    }
+
     /**
      * convert for OF-1.0, inject into {@link MultipartRequestAggregateBuilder}
      */
