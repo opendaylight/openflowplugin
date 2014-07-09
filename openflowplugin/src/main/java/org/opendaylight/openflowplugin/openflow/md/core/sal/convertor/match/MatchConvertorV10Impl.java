@@ -80,44 +80,46 @@ public class MatchConvertorV10Impl implements MatchConvertor<MatchV10> {
         matchBuilder.setTpSrc(0);
         matchBuilder.setTpDst(0);
 
-        EthernetMatch ethernetMatch = match.getEthernetMatch();
-        if(ethernetMatch!= null){
-            _dLDST = convertEthernetDlDst(matchBuilder, ethernetMatch);
-            _dLSRC = convertEthernetDlSrc(matchBuilder, ethernetMatch);
-            _dLTYPE = convertEthernetDlType(matchBuilder, ethernetMatch);
-        }
-        VlanMatch vlanMatch = match.getVlanMatch();
-        if(vlanMatch!= null){
-            _dLVLAN = convertDlVlan(matchBuilder, vlanMatch);
-            _dLVLANPCP = convertDlVlanPcp(matchBuilder, vlanMatch);
-        }
-        NodeConnectorId inPort = match.getInPort();
-        if(inPort!=null){
-            _iNPORT = convertInPortMatch(matchBuilder, inPort);
-        }
-        Layer3Match l3Match = match.getLayer3Match();
-        if(l3Match != null){
-            if(l3Match instanceof Ipv4Match){
-                Ipv4Match ipv4 = (Ipv4Match)l3Match;
-                _tPSRC = convertL3Ipv4SrcMatch(matchBuilder, ipv4);
-                _tPDST = convertL3Ipv4DstMatch(matchBuilder, ipv4);
+        if (match != null) {
+            EthernetMatch ethernetMatch = match.getEthernetMatch();
+            if(ethernetMatch!= null){
+                _dLDST = convertEthernetDlDst(matchBuilder, ethernetMatch);
+                _dLSRC = convertEthernetDlSrc(matchBuilder, ethernetMatch);
+                _dLTYPE = convertEthernetDlType(matchBuilder, ethernetMatch);
             }
-        }
-        IpMatch ipMatch = match.getIpMatch();
-        if(ipMatch!=null){
-            _nWPROTO = convertNwProto(matchBuilder, ipMatch);
-            _nWTOS = convertNwTos(matchBuilder, ipMatch);
-        }
-        Layer4Match layer4Match = match.getLayer4Match();
-        if (layer4Match != null) {
-            if (layer4Match instanceof TcpMatch) {
-                TcpMatch tcpMatch = (TcpMatch) layer4Match;
-                _tPSRC = convertL4TpSrcMatch(matchBuilder, tcpMatch);
-                _tPDST = convertL4TpDstMatch(matchBuilder, tcpMatch);
-            } else if (layer4Match instanceof UdpMatch) {
-                UdpMatch udpMatch = (UdpMatch) layer4Match;
-                _tPSRC = convertL4UdpSrcMatch(matchBuilder, udpMatch);
-                _tPDST = convertL4UdpDstMatch(matchBuilder, udpMatch);
+            VlanMatch vlanMatch = match.getVlanMatch();
+            if(vlanMatch!= null){
+                _dLVLAN = convertDlVlan(matchBuilder, vlanMatch);
+                _dLVLANPCP = convertDlVlanPcp(matchBuilder, vlanMatch);
+            }
+            NodeConnectorId inPort = match.getInPort();
+            if(inPort!=null){
+                _iNPORT = convertInPortMatch(matchBuilder, inPort);
+            }
+            Layer3Match l3Match = match.getLayer3Match();
+            if(l3Match != null){
+                if(l3Match instanceof Ipv4Match){
+                    Ipv4Match ipv4 = (Ipv4Match)l3Match;
+                    _tPSRC = convertL3Ipv4SrcMatch(matchBuilder, ipv4);
+                    _tPDST = convertL3Ipv4DstMatch(matchBuilder, ipv4);
+                }
+            }
+            IpMatch ipMatch = match.getIpMatch();
+            if(ipMatch!=null){
+                _nWPROTO = convertNwProto(matchBuilder, ipMatch);
+                _nWTOS = convertNwTos(matchBuilder, ipMatch);
+            }
+            Layer4Match layer4Match = match.getLayer4Match();
+            if (layer4Match != null) {
+                if (layer4Match instanceof TcpMatch) {
+                    TcpMatch tcpMatch = (TcpMatch) layer4Match;
+                    _tPSRC = convertL4TpSrcMatch(matchBuilder, tcpMatch);
+                    _tPDST = convertL4TpDstMatch(matchBuilder, tcpMatch);
+                } else if (layer4Match instanceof UdpMatch) {
+                    UdpMatch udpMatch = (UdpMatch) layer4Match;
+                    _tPSRC = convertL4UdpSrcMatch(matchBuilder, udpMatch);
+                    _tPDST = convertL4UdpDstMatch(matchBuilder, udpMatch);
+                }
             }
         }
 

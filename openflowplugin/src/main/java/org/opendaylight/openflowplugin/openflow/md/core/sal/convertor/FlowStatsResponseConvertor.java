@@ -71,7 +71,7 @@ public class FlowStatsResponseConvertor {
         salFlowStatsBuilder.setTableId(flowStats.getTableId());
         if(flowStats.getMatchV10() != null){
             salFlowStatsBuilder.setMatch(MatchConvertorImpl.fromOFMatchV10ToSALMatch(flowStats.getMatchV10(),datapathid, OpenflowVersion.OF10));
-            if(flowStats.getAction().size()!=0){
+            if(flowStats.getAction() != null && flowStats.getAction().size()!=0){
                 salFlowStatsBuilder.setInstructions(OFToMDSalFlowConvertor.wrapOF10ActionsToInstruction(flowStats.getAction(), ofVersion));
             }
         }

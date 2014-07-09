@@ -201,7 +201,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
     public List<MatchEntries> convert(
             final org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match match, final BigInteger datapathid) {
         List<MatchEntries> matchEntriesList = new ArrayList<>();
-
+        if (match == null) return matchEntriesList;
         if (match.getInPort() != null) {
             //TODO: currently this matchconverter is mapped to OF1.3 in MatchReactorMappingFactory. Will need to revisit during 1.4+
             matchEntriesList.add(toOfPort(InPort.class,
