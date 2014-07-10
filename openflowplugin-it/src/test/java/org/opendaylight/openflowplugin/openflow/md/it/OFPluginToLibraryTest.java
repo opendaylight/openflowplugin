@@ -48,7 +48,7 @@ public class OFPluginToLibraryTest {
 
     @Inject @Filter(timeout=5000)
     OpenflowPluginProvider openflowPluginProvider;
-    
+
     @Inject
     BundleContext ctx;
 
@@ -56,12 +56,12 @@ public class OFPluginToLibraryTest {
 
     /**
      * test setup
-     * @throws InterruptedException 
+     * @throws InterruptedException
      */
     @Before
     public void setUp() throws InterruptedException {
         LOG.debug("openflowPluginProvider: "+openflowPluginProvider);
-        //FIXME: plugin should provide service exposing startup result via future 
+        //FIXME: plugin should provide service exposing startup result via future
         Thread.sleep(5000);
     }
 
@@ -80,7 +80,7 @@ public class OFPluginToLibraryTest {
         }
 
         //TODO: dump errors of plugin (by exploiting ErrorHandler)
-        
+
         try {
             LOG.debug("checking if simulator succeeded to connect to controller");
             boolean simulatorWasOnline = switchSim.getIsOnlineFuture().get(100, TimeUnit.MILLISECONDS);
@@ -89,7 +89,7 @@ public class OFPluginToLibraryTest {
             String message = "simulator probably failed to connect to controller";
             LOG.error(message, e);
             Assert.fail(message);
-        } 
+        }
     }
 
     /**
@@ -169,6 +169,55 @@ public class OFPluginToLibraryTest {
     }
 
     /**
+     * test with MLX running OF10 and OFP running OF13/OF10
+     *
+     * MLX issues an OFPT_ERROR on the version compatability MLX issues a second
+     * HELLO after the second OFP HELLO
+     *
+     * @throws Exception
+     */
+    @Test
+    public void handshakeOkNoVBM_OF10_TwoHello() throws Exception {
+        LOG.debug("handshakeOkMLX10 integration test");
+        LOG.debug("openflowPluginProvider: " + openflowPluginProvider);
+
+        switchSim = createSimpleClient();
+        switchSim.setSecuredClient(false);
+        Stack<ClientEvent> handshakeScenario = ScenarioFactory
+                .createHandshakeScenarioNoVBM_OF10_TwoHello();
+        // handshakeScenario.setElementAt(new SleepEvent(5000),
+        // handshakeScenario
+        // .size());
+
+        ScenarioHandler scenario = new ScenarioHandler(handshakeScenario);
+        switchSim.setScenarioHandler(scenario);
+        switchSim.start();
+    }
+
+    /**
+     * test with Mininet running OF10 and OFP running OF13/OF10
+     *
+     * Mininet issues an OFPT_ERROR on the version compatability Mininet doesn't
+     * issue a second HELLO
+     *
+     * @throws Exception
+     */
+    @Test
+    public void handshakeOkNoVBM_OF10_SingleHello() throws Exception {
+        LOG.debug("handshakeOkMLX10 integration test");
+        LOG.debug("openflowPluginProvider: " + openflowPluginProvider);
+
+        switchSim = createSimpleClient();
+        switchSim.setSecuredClient(false);
+        Stack<ClientEvent> handshakeScenario = ScenarioFactory
+                .createHandshakeScenarioNOVBM_OF10_OneHello();
+
+        ScenarioHandler scenario = new ScenarioHandler(handshakeScenario);
+        switchSim.setScenarioHandler(scenario);
+        switchSim.start();
+    }
+
+    /**
      * @return
      */
     private static SimpleClient createSimpleClient() {
@@ -196,13 +245,13 @@ public class OFPluginToLibraryTest {
 
                 OFPaxOptionsAssistant.osgiConsoleBundles(),
                 OFPaxOptionsAssistant.loggingBudles(),
-                
+
                 TestHelper.junitAndMockitoBundles(),
-                TestHelper.mdSalCoreBundles(), 
+                TestHelper.mdSalCoreBundles(),
                 TestHelper.configMinumumBundles(),
                 TestHelper.baseModelBundles(),
-                TestHelper.flowCapableModelBundles(), 
-                
+                TestHelper.flowCapableModelBundles(),
+
                 OFPaxOptionsAssistant.ofPluginBundles());
     }
 

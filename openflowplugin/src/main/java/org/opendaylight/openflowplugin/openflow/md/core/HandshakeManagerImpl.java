@@ -75,6 +75,15 @@ public class HandshakeManagerImpl implements HandshakeManager {
 
     @Override
     public void shake() {
+
+        if (version != null) {
+            // Some switches respond with a second HELLO acknowledging our HELLO
+            // but we've already completed the handshake based on the negotiated
+            // version and have registered this switch.
+            LOG.debug("Hello recieved after handshake already settled ... ignoring.");
+            return;
+        }
+
         LOG.trace("handshake STARTED");
         setActiveXid(20L);
         HelloMessage receivedHelloLoc = receivedHello;
