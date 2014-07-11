@@ -18,6 +18,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.openflow.md.core.TranslatorKey;
+import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.openflow.md.queue.PopListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
@@ -170,6 +171,13 @@ public abstract class OFSessionUtil {
      */
     public static Map<Class<? extends DataObject>, Collection<PopListener<DataObject>>> getPopListenerMapping() {
         return getSessionManager().getPopListenerMapping();
+    }
+
+    /**
+     * @return extension converters provider
+     */
+    public static ExtensionConverterProvider getExtensionConvertorProvider() {
+        return getSessionManager().getExtensionConverterProvider();
     }
 
 }
