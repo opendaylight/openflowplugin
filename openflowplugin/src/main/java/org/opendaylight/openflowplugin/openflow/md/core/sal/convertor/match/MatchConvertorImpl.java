@@ -14,8 +14,14 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.opendaylight.openflowjava.protocol.api.extensibility.EnhancedMessageTypeKey;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
+import org.opendaylight.openflowplugin.extension.api.ConverterExtensionKey;
+import org.opendaylight.openflowplugin.extension.api.ConverterExtensionMatchKey;
+import org.opendaylight.openflowplugin.extension.api.ConvertorFromOFJava;
+import org.opendaylight.openflowplugin.extension.api.ConvertorToOFJava;
 import org.opendaylight.openflowplugin.openflow.md.OFConstants;
+import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.ByteUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowVersion;
@@ -54,6 +60,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.IpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Layer3Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Layer4Match;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.MatchExtensions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.MetadataBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.ProtocolMatchFields;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.ProtocolMatchFieldsBuilder;
@@ -139,6 +146,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.ArpS
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.ArpSpa;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.ArpTha;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.ArpTpa;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Clazz;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.EthDst;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.EthSrc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.EthType;
@@ -432,6 +440,21 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
                 .getTunnel();
         if (tunnel != null) {
             matchEntriesList.add(toOfMetadata(TunnelId.class, tunnel.getTunnelId(), tunnel.getTunnelMask()));
+        }
+        
+        
+        /**
+         * TODO:
+         * EXTENSION PROPOSAL
+         * - we might need version for conversion and for key
+         */
+        if (match.getMatchExtensions() != null) {
+            // TODO: matchExtensions are about to be abandoned and match will be augmented directtly
+            ConverterExtensionMatchKey key = new ConverterExtensionMatchKey(match.getClass());
+            ConvertorToOFJava<org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match, MatchEntries> convertor = 
+                    OFSessionUtil.getExtensionConvertorProvider().getConverter(key);
+            MatchEntries ofMatch = convertor.convert(match, null);
+            matchEntriesList.add(ofMatch);
         }
 
         return matchEntriesList;
@@ -951,6 +974,28 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
                     tcpFlagMatchBuilder.setTcpFlag(tcpFlagMatch.getTcpFlag());
                     matchBuilder.setTcpFlagMatch(tcpFlagMatchBuilder.build());
                 }
+            } else {
+                
+                
+                /**
+                 * TODO:
+                 * EXTENSION PROPOSAL
+                 * - we might need version for conversion and for key
+                 * - we might also need a way on how to identify exact type of augmentation to be 
+                 *   used as match can be bound to multiple models
+                 */
+                EnhancedMessageTypeKey<Clazz, MatchField> key = new EnhancedMessageTypeKey(
+                        (short) 4, ofMatch.getOxmClass(), ofMatch.getOxmMatchField());
+                ConvertorFromOFJava<MatchEntries, MatchExtensions> convertor = OFSessionUtil.getExtensionConvertorProvider().getConverter(key);
+                MatchExtensions extensionMatch = convertor.convert(ofMatch, null, null);
+                List<MatchExtensions> mxBag = matchBuilder.getMatchExtensions(); 
+                if (matchBuilder.getMatchExtensions() == null) {
+                    mxBag = new ArrayList<>();
+                    matchBuilder.setMatchExtensions(mxBag);
+                }
+                mxBag.add(extensionMatch);
+                
+                
             }
         }
         return matchBuilder.build();
