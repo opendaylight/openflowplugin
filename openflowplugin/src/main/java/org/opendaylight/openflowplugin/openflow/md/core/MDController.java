@@ -28,6 +28,7 @@ import java.util.concurrent.TimeoutException;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionConfiguration;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.openflowplugin.openflow.md.OFConstants;
+import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.translator.ErrorTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.translator.ErrorV10Translator;
@@ -115,6 +116,8 @@ public class MDController implements IMDController, AutoCloseable {
     final private int OF13 = OFConstants.OFP_VERSION_1_3;
 
     private ErrorHandlerSimpleImpl errorHandler;
+
+    private ExtensionConverterProvider extensionConverterProvider;
 
     /**
      * @return translator mapping
@@ -218,6 +221,7 @@ public class MDController implements IMDController, AutoCloseable {
         int rpcThreadLimit = 10;
         ListeningExecutorService rpcPoolDelegator = createRpcPoolSpyDecorated(rpcThreadLimit, messageSpyCounter);
         OFSessionUtil.getSessionManager().setRpcPool(rpcPoolDelegator);
+        OFSessionUtil.getSessionManager().setExtensionConverterProvider(extensionConverterProvider);
 
     }
 
@@ -409,5 +413,12 @@ public class MDController implements IMDController, AutoCloseable {
         OpenflowPortsUtil.close();
         OFSessionUtil.releaseSessionManager();
         errorHandler = null;
+    }
+
+    /**
+     * @param extensionConverterProvider
+     */
+    public void setExtensionConverterProvider(ExtensionConverterProvider extensionConverterProvider) {
+        this.extensionConverterProvider = extensionConverterProvider;
     }
 }
