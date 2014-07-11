@@ -21,6 +21,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.openflow.md.core.TranslatorKey;
+import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.openflow.md.queue.PopListener;
 import org.opendaylight.openflowplugin.statistics.MessageSpy;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
@@ -211,6 +212,7 @@ public class SessionManagerOFImpl implements SessionManager {
         }
     };
     private MessageSpy<DataContainer> messageSpy;
+    private ExtensionConverterProvider extensionConverterProvider;
     
 
     @Override
@@ -283,5 +285,19 @@ public class SessionManagerOFImpl implements SessionManager {
     @Override
     public MessageSpy<DataContainer> getMessageSpy() {
         return messageSpy;
+    }
+    
+    @Override
+    public void setExtensionConverterProvider(
+            ExtensionConverterProvider extensionConverterProvider) {
+                this.extensionConverterProvider = extensionConverterProvider;
+    }
+    
+    /**
+     * @return the extensionConverterProvider
+     */
+    @Override
+    public ExtensionConverterProvider getExtensionConverterProvider() {
+        return extensionConverterProvider;
     }
 }

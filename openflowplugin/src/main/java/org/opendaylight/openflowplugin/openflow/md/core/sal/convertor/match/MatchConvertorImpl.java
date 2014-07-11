@@ -15,7 +15,11 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.opendaylight.openflowjava.util.ByteBufUtils;
+import org.opendaylight.openflowplugin.extension.api.ConverterExtensionKey;
+import org.opendaylight.openflowplugin.extension.api.ConvertorToOFJava;
 import org.opendaylight.openflowplugin.openflow.md.OFConstants;
+import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionResolvers;
+import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.ByteUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowVersion;
@@ -166,6 +170,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Mpls
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.MplsLabel;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.MplsTc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.OpenflowBasicClass;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.OxmClassBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.PbbIsid;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.SctpDst;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.SctpSrc;
@@ -182,9 +187,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Vlan
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.match.v10.grouping.MatchV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.grouping.MatchEntries;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.grouping.MatchEntriesBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.ExtensionKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralExtensionListGrouping;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.list.grouping.ExtensionList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Splitter;
 
 /**
@@ -433,6 +442,24 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
         if (tunnel != null) {
             matchEntriesList.add(toOfMetadata(TunnelId.class, tunnel.getTunnelId(), tunnel.getTunnelMask()));
         }
+        
+        
+        /**
+         * TODO: EXTENSION PROPOSAL (match, MD-SAL to OFJava)
+         * - we might need version for conversion and for key
+         * - sanitize NPE
+         */
+        Optional<GeneralExtensionListGrouping> extensionListOpt = ExtensionResolvers.getMatchExtensionResolver().getExtension(match);
+        if (extensionListOpt.isPresent()) {
+            for (ExtensionList extensionItem : extensionListOpt.get().getExtensionList()) {
+                // TODO: get real version
+                ConverterExtensionKey<? extends ExtensionKey> key = new ConverterExtensionKey<>(extensionItem.getExtensionKey(), OFConstants.OFP_VERSION_1_3);
+                ConvertorToOFJava<MatchEntries> convertor = 
+                        OFSessionUtil.getExtensionConvertorProvider().getConverter(key);
+                MatchEntries ofMatch = convertor.convert(extensionItem.getExtension());
+                matchEntriesList.add(ofMatch);
+            }
+        }
 
         return matchEntriesList;
     }
@@ -564,16 +591,19 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
      * match
      *
      * @param match
-     * @return
+     * @param swMatch 
+     * @param datapathid 
+     * @param ofVersion 
+     * @return md-sal match instance
      * @author avishnoi@in.ibm.com
      */
-    public static Match fromOFMatchToSALMatch(
+    public static MatchBuilder fromOFMatchToSALMatch(
             final org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.match.grouping.Match swMatch,
             final BigInteger datapathid, final OpenflowVersion ofVersion) {
         return OfMatchToSALMatchConvertor(swMatch.getMatchEntries(), datapathid, ofVersion);
     }
 
-    private static Match OfMatchToSALMatchConvertor(List<MatchEntries> swMatchList, final BigInteger datapathid, 
+    private static MatchBuilder OfMatchToSALMatchConvertor(List<MatchEntries> swMatchList, final BigInteger datapathid, 
             OpenflowVersion ofVersion){
         
         MatchBuilder matchBuilder = new MatchBuilder();
@@ -951,9 +981,9 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
                     tcpFlagMatchBuilder.setTcpFlag(tcpFlagMatch.getTcpFlag());
                     matchBuilder.setTcpFlagMatch(tcpFlagMatchBuilder.build());
                 }
-            }
+            } 
         }
-        return matchBuilder.build();
+        return matchBuilder;
     }
     private static MatchEntries toOfMplsPbb(final Pbb pbb) {
         MatchEntriesBuilder matchEntriesBuilder = new MatchEntriesBuilder();
@@ -1369,8 +1399,8 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
         logger.debug("Converting OF SetField action to SAL SetField action");
         SetFieldBuilder setField = new SetFieldBuilder();
         OxmFieldsAction oxmFields = action.getAugmentation(OxmFieldsAction.class);
-        Match match = OfMatchToSALMatchConvertor(oxmFields.getMatchEntries(), null, ofVersion);
-        setField.fieldsFrom(match);
+        MatchBuilder match = OfMatchToSALMatchConvertor(oxmFields.getMatchEntries(), null, ofVersion);
+        setField.fieldsFrom(match.build());
         return setField.build();
     }
 }

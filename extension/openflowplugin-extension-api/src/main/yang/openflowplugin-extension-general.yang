@@ -1,0 +1,107 @@
+module openflowplugin-extension-general {
+    yang-version 1;
+
+    namespace "urn:opendaylight:openflowplugin:extension:general";
+    prefix "openflowplugin-extension-general";
+    
+    import yang-ext {prefix ext; revision-date "2013-07-09";}
+    import flow-node-inventory {prefix fni; revision-date 2013-08-19; }
+    import opendaylight-inventory {prefix inv;revision-date "2013-08-19";}
+    import sal-flow {prefix sal-flow;revision-date "2013-08-19";}
+    import sal-group {prefix sal-group;revision-date "2013-09-18";}
+    import packet-processing {prefix sal-packet;revision-date "2013-07-09";}
+    import opendaylight-flow-statistics {prefix odl-flow-stats;revision-date "2013-08-19";}
+    import opendaylight-group-statistics {prefix odl-group-stats;revision-date "2013-11-11";}
+
+
+    description 
+        "Everything for a vendor who want to implement openflow extensions.";
+
+    revision "2014-07-14" {
+        description "Initial revision";
+    }
+
+    identity extension-key {
+        description "Base identity for all extension keys.";
+    }
+
+    grouping general-extension-grouping {
+        leaf extension-key {
+            type identityref {
+                base extension-key;
+            }
+        }
+        container extension {
+            description "A vendor has to augment this container.";
+        }
+    }
+    
+    grouping general-extension-list-grouping {
+        list extension-list {
+            key extension-key;
+            uses general-extension-grouping;
+        }
+    }
+    
+
+    
+
+    // MATCH augmentations
+    // RPCS
+    augment "/sal-flow:add-flow/sal-flow:input/sal-flow:match" {
+        ext:augment-identifier "general-aug-match-rpc-add-flow";
+        uses general-extension-list-grouping;
+    }
+    augment "/sal-flow:remove-flow/sal-flow:input/sal-flow:match" {
+        ext:augment-identifier "general-aug-match-rpc-remove-flow";
+        uses general-extension-list-grouping;
+    }
+    augment "/sal-flow:update-flow/sal-flow:input/sal-flow:original-flow/sal-flow:match" {
+        ext:augment-identifier "general-aug-match-rpc-update-flow-original";
+        uses general-extension-list-grouping;
+    }
+    augment "/sal-flow:update-flow/sal-flow:input/sal-flow:updated-flow/sal-flow:match" {
+        ext:augment-identifier "general-aug-match-rpc-update-flow-updated";
+        uses general-extension-list-grouping;
+    }
+    
+    // DATA
+    augment "/inv:nodes/inv:node/fni:table/fni:flow/fni:match" {
+        ext:augment-identifier "general-aug-match-nodes-node-table-flow";
+        uses general-extension-list-grouping;
+    }
+    
+    // NOTIFICATIONS
+    augment "/sal-flow:switch-flow-removed/sal-flow:match" {
+        ext:augment-identifier "general-aug-match-notif-switch-flow-removed";
+        uses general-extension-list-grouping;
+    }
+    augment "/sal-packet:packet-received/sal-packet:match" {
+        ext:augment-identifier "general-aug-match-notif-packet-in";
+        uses general-extension-list-grouping;
+    }
+    augment "/odl-flow-stats:flows-statistics-update/odl-flow-stats:flow-and-statistics-map-list/odl-flow-stats:match" {
+        ext:augment-identifier "general-aug-match-notif-update-flow-stats";
+        uses general-extension-list-grouping;
+    }
+
+    
+    
+    
+    
+    // VENDOR EXAMPLE -- testing purposes -> remove later!
+    augment "/inv:nodes/inv:node/fni:table/fni:flow/fni:match/extension-list/extension" {
+        ext:augment-identifier "vendor-xxx1";
+        uses vendor-xxx-grouping;
+    }
+    augment "/sal-flow:add-flow/sal-flow:input/sal-flow:match/extension-list/extension" {
+        ext:augment-identifier "vendor-xxx2";
+        uses vendor-xxx-grouping;
+    }
+    grouping vendor-xxx-grouping {
+        leaf dos-ekis {
+            type string;
+        }
+    }
+    // -----^^^^-----
+}
