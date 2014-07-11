@@ -37,6 +37,32 @@
             <groupId>org.opendaylight.openflowjava</groupId>
             <artifactId>openflow-protocol-api</artifactId>
         </dependency>
+        
+        <!-- MD-SAL models -->
+        <dependency>
+            <groupId>org.opendaylight.controller.model</groupId>
+            <artifactId>model-flow-base</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.controller.model</groupId>
+            <artifactId>model-flow-service</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.controller.model</groupId>
+            <artifactId>model-flow-statistics</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.controller.model</groupId>
+            <artifactId>model-inventory</artifactId>
+        </dependency>
+        
+        <!-- junit -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        
     </dependencies>
 
 </project>

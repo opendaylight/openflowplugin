@@ -543,6 +543,7 @@
     <modules>
       <module>openflowplugin-api</module>
       <module>openflowplugin</module>
+      <module>extension</module>
       <module>distribution/base</module>
       <module>distribution/cbench</module>            
       <module>openflowplugin-controller-config</module>
