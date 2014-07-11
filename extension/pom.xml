@@ -13,5 +13,6 @@
     <packaging>pom</packaging>
     <modules>
       <module>openflowplugin-extension-api</module>
+      <module>openflowplugin-nicira-extension</module>
     </modules>
 </project>
