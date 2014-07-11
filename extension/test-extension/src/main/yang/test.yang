@@ -1,0 +1,31 @@
+module test {
+    namespace "urn:opendaylight:test";
+    prefix test;
+
+    import yang-ext {prefix ext; revision-date "2013-07-09";}
+
+    revision "2013-08-19" {
+        description "Initial revision of flow service";
+    }
+
+    rpc test-flow {
+        input {
+            leaf dummy {
+                type string;
+            }
+        }
+    /*
+        input {
+            uses tr:transaction-metadata;
+            leaf flow-ref {
+                type types:flow-ref;
+            }
+            uses node-flow;            
+        }
+        output {
+            uses tr:transaction-aware;
+        }
+    */
+    }
+    
+}

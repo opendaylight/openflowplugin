@@ -10,9 +10,13 @@ package org.opendaylight.openflowplugin.openflow.md.core.translator;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map.Entry;
 
+import org.opendaylight.openflowplugin.extension.api.AugmentTuple;
+import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
 import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
+import org.opendaylight.openflowplugin.openflow.md.core.extension.MatchExtensionHelper;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchConvertorImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
@@ -25,10 +29,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNotifPacketIn;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNotifPacketInBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNotifUpdateFlowStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.ConnectionCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceivedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.MatchBuilder;
+import org.opendaylight.yangtools.yang.binding.Augmentation;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,10 +104,18 @@ public class PacketInTranslator implements IMDMessageTranslator<OfHeader, List<D
                    LOG.trace("Received packet_in from {} on port {}", dpid, port);
 
                    OpenflowVersion ofVersion = OpenflowVersion.get(sc.getPrimaryConductor().getVersion());
-                   Match match = MatchConvertorImpl.fromOFMatchToSALMatch(message.getMatch(),dpid, ofVersion);
+                   Match match = MatchConvertorImpl.fromOFMatchToSALMatch(message.getMatch(),dpid, ofVersion).build();
                    MatchBuilder matchBuilder = new MatchBuilder(match);
-                   pktInBuilder.setMatch(matchBuilder.build());
 
+                   AugmentTuple<org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match> matchExtensionWrap = 
+                           MatchExtensionHelper.processAllExtensions(
+                                   message.getMatch().getMatchEntries(), ofVersion, MatchPath.PACKETRECEIVED_MATCH);
+                   if (matchExtensionWrap != null) {
+                       matchBuilder.addAugmentation(matchExtensionWrap.getAugmentationClass(), matchExtensionWrap.getAugmentationObject());
+                   }
+                   
+                   org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match packetInMatch = matchBuilder.build();
+                   pktInBuilder.setMatch(packetInMatch);
                    pktInBuilder.setPacketInReason(PacketInUtil.getMdSalPacketInReason(message.getReason()));
                    pktInBuilder.setTableId(new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableId(message.getTableId().getValue().shortValue()));
                    pktInBuilder.setIngress(InventoryDataServiceUtil.nodeConnectorRefFromDatapathIdPortno(dpid, port, ofVersion));

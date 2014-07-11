@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- vi: set et smarttab sw=4 tabstop=4: -->
+<snapshot>
+  <required-capabilities>
+    <capability>urn:opendaylight:params:xml:ns:yang:openflowplugin:ofjava:nx:api:config?module=openflowjava-nx-api-config&amp;revision=2014-07-11</capability>
+  </required-capabilities>
+
+  <configuration>
+
+    <data xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+      <modules xmlns="urn:opendaylight:params:xml:ns:yang:controller:config">
+        <module>
+          <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:openflowplugin:ofjava:nx:api:config">prefix:openflowjava-extension-nicira-api</type>
+          <name>openflowjava-extension-nx-api-bundle</name>
+          <openflow-switch-connection-provider>
+            <type xmlns:ofSwitch="urn:opendaylight:params:xml:ns:yang:openflow:switch:connection:provider">ofSwitch:openflow-switch-connection-provider</type>
+            <name>openflow-switch-connection-provider-legacy</name>
+          </openflow-switch-connection-provider>
+          <openflow-switch-connection-provider>
+            <type xmlns:ofSwitch="urn:opendaylight:params:xml:ns:yang:openflow:switch:connection:provider">ofSwitch:openflow-switch-connection-provider</type>
+            <name>openflow-switch-connection-provider-default</name>
+          </openflow-switch-connection-provider>
+        </module>
+      </modules>
+
+      <services xmlns="urn:opendaylight:params:xml:ns:yang:controller:config">
+        <service>
+          <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:openflowplugin:ofjava:nx:api:config">prefix:nicira-extension-codec-registrator</type>
+          <instance>
+            <name>openflowjava-nicira-ext-registrator</name>
+            <provider>/modules/module[type='openflowjava-extension-nicira-api'][name='openflowjava-extension-nx-api-bundle']</provider>
+          </instance>
+        </service>
+      </services>
+    </data>
+
+  </configuration>
+</snapshot>
