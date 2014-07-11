@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- vi: set et smarttab sw=4 tabstop=4: -->
+<!--
+Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
+
+This program and the accompanying materials are made available under the
+terms of the Eclipse Public License v1.0 which accompanies this distribution,
+and is available at http://www.eclipse.org/legal/epl-v10.html
+-->
+<snapshot>
+  <required-capabilities>
+  <capability>urn:opendaylight:params:xml:ns:yang:openflowplugin:nx:config:impl?module=nicira-extension-impl&amp;revision=2014-07-11</capability>
+    <!-- openflowplugin -->
+    <capability>urn:opendaylight:params:xml:ns:yang:openflow:common:config?module=openflow-provider&amp;revision=2014-03-26</capability>
+  </required-capabilities>
+
+  <configuration>
+
+    <data xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+      <modules xmlns="urn:opendaylight:params:xml:ns:yang:controller:config">
+        <module>
+          <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:openflowplugin:nx:config:impl">prefix:nicira-extension-provider-impl</type>
+          <name>nicira-extension-provider-default-impl</name>
+          
+          <openflow-plugin-provider>
+            <type xmlns:opfprov="urn:opendaylight:params:xml:ns:yang:openflow:common:config">opfprov:openflow-provider</type>
+            <name>openflow-provider</name>
+          </openflow-plugin-provider>
+        </module>
+      </modules>
+    </data>
+
+  </configuration>
+</snapshot>

@@ -1,0 +1,20 @@
+module nicira-extension {
+	yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:controller:config:openflowplugin:nx:config";
+    prefix "niciraExt-cfg";
+
+    import config {prefix config; revision-date 2013-04-05; }
+
+    description
+        "openflow extension for nicira - config";
+
+    revision "2014-07-11" {
+        description
+            "Initial revision";
+    }
+
+    identity nicira-extension-provider {
+        base config:service-type;
+        config:java-class "org.opendaylight.openflowplugin.extension.vendor.nicira.NiciraExtensionProvider";
+    }
+}

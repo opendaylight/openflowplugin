@@ -36,6 +36,30 @@ see https://git.opendaylight.org/gerrit/#/c/390/
         <version>${project.version}</version>
     </dependency>
 
+    <!-- openflowplugin-extension-api -->
+    <dependency>
+        <groupId>org.opendaylight.openflowplugin</groupId>
+        <artifactId>openflowplugin-extension-api</artifactId>
+        <version>${project.version}</version>
+    </dependency>
+
+    <!-- nicira extension -->
+    <dependency>
+        <groupId>org.opendaylight.openflowplugin</groupId>
+        <artifactId>openflowplugin-extension-nicira</artifactId>
+        <version>${project.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.opendaylight.openflowplugin</groupId>
+        <artifactId>openflowjava-extension-nicira-api</artifactId>
+        <version>${project.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.opendaylight.openflowplugin</groupId>
+        <artifactId>openflowjava-extension-nicira</artifactId>
+        <version>${project.version}</version>
+    </dependency>
+
     <!-- openflowplugin -->
     <dependency>
       <groupId>org.opendaylight.openflowplugin</groupId>
@@ -56,6 +80,14 @@ see https://git.opendaylight.org/gerrit/#/c/390/
       <artifactId>test-provider</artifactId>
       <version>${project.version}</version>
     </dependency>
+
+    <!-- extension test -->
+    <dependency>
+      <groupId>org.opendaylight.openflowplugin</groupId>
+      <artifactId>test-extension</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
 
     <!-- drop-test provider -->
     <dependency>
@@ -121,7 +153,9 @@ see https://git.opendaylight.org/gerrit/#/c/390/
             <phase>generate-resources</phase>
             <configuration>
              <outputDirectory>${project.build.directory}/generated-resources/opendaylight/configuration</outputDirectory>
-             <includeArtifactIds>openflowplugin-controller-config</includeArtifactIds>
+             <includeArtifactIds>openflowplugin-controller-config, 
+             test-extension, openflowjava-extension-nicira, openflowjava-extension-nicira-api, openflowplugin-extension-nicira
+             </includeArtifactIds>
              <includes>**\/*.xml</includes>
              <excludes>META-INF</excludes>
              <excludeTransitive>true</excludeTransitive>
