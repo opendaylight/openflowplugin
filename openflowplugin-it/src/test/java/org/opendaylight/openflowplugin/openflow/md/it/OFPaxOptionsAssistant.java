@@ -76,6 +76,7 @@ public abstract class OFPaxOptionsAssistant {
                 baseSalBundles(),
                 ofLibraryBundles(),
                 mavenBundle(CONTROLLER_MODEL, "model-flow-statistics").versionAsInProject(),
+                mavenBundle(OFPLUGIN, "openflowplugin-extension-api").versionAsInProject(),
                 mavenBundle(OFPLUGIN, "openflowplugin").versionAsInProject(),
                 mavenBundle("org.openexi", "nagasena").versionAsInProject()
                 );
