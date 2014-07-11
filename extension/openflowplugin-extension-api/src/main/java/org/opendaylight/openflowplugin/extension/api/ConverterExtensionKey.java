@@ -19,5 +19,5 @@ public interface ConverterExtensionKey<TYPE extends DataContainer> {
     /**
      * @return key type
      */
-    TYPE getType();
+    Class<TYPE> getType();
 }

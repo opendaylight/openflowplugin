@@ -15,7 +15,10 @@ import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ConsumerCo
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.BindingAwareProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
+import org.opendaylight.openflowplugin.extension.api.ExtensionConverterRegistrator;
 import org.opendaylight.openflowplugin.openflow.md.core.MDController;
+import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionConverterManagerImpl;
+import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionConverterManager;
 import org.opendaylight.openflowplugin.statistics.MessageCountCommandProvider;
 import org.opendaylight.openflowplugin.statistics.MessageCountDumper;
 import org.opendaylight.openflowplugin.statistics.MessageObservatory;
@@ -46,12 +49,15 @@ public class OpenflowPluginProvider implements BindingAwareProvider, AutoCloseab
     private MessageObservatory<DataContainer> messageCountProvider;
 
     private SalRegistrationManager registrationManager;
+    
+    private ExtensionConverterManager extensionConverterManager;  
 
     /**
      * Initialization of services and msgSpy counter
      */
     public void initialization() {
         messageCountProvider = new MessageSpyCounterImpl();
+        extensionConverterManager = new ExtensionConverterManagerImpl();
         this.registerProvider();
     }
 
@@ -88,6 +94,7 @@ public class OpenflowPluginProvider implements BindingAwareProvider, AutoCloseab
         mdController = new MDController();
         mdController.setSwitchConnectionProviders(switchConnectionProviders);
         mdController.setMessageSpyCounter(messageCountProvider);
+        mdController.setExtensionConverterProvider(extensionConverterManager);
         mdController.init();
         mdController.start();
         messageCountCommandProvider = new MessageCountCommandProvider(context, messageCountProvider);
@@ -161,5 +168,12 @@ public class OpenflowPluginProvider implements BindingAwareProvider, AutoCloseab
 
     public MessageCountDumper getMessageCountDumper() {
         return messageCountProvider;
+    }
+    
+    /**
+     * @return the extensionConverterRegistry
+     */
+    public ExtensionConverterRegistrator getExtensionConverterRegistrator() {
+        return extensionConverterManager;
     }
  }
