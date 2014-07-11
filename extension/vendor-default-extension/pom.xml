@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.opendaylight.openflowplugin</groupId>
+        <artifactId>openflowplugin-extension-parent</artifactId>
+        <version>0.0.3-SNAPSHOT</version>
+        <relativePath>../</relativePath>
+    </parent>
+
+    <artifactId>vendor-default-extension</artifactId>
+    <packaging>bundle</packaging>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin</groupId>
+            <artifactId>openflowplugin-extension-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- MD-SAL models -->
+        <dependency>
+            <groupId>org.opendaylight.controller.model</groupId>
+            <artifactId>model-flow-base</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.controller.model</groupId>
+            <artifactId>model-flow-service</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.controller.model</groupId>
+            <artifactId>model-flow-statistics</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.controller.model</groupId>
+            <artifactId>model-inventory</artifactId>
+        </dependency>
+
+        <!-- OpenFlowJava-API models -->
+        <dependency>
+            <groupId>org.opendaylight.openflowjava</groupId>
+            <artifactId>openflow-protocol-api</artifactId>
+        </dependency>
+    </dependencies>
+
+</project>
