@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa82b9bf_68d4d3bc",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/match/MatchConvertorImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 336,
+      "author": {
+        "id": 397
+      },
+      "writtenOn": "2014-07-14T11:33:20Z",
+      "side": 1,
+      "message": "Are these vendor extensions?",
+      "revId": "51d2e0e6632c05fa6941a48f6de82ab212578123",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
