@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
     <parent>
@@ -9,10 +10,26 @@
         <relativePath>../</relativePath>
     </parent>
 
+    <properties>
+        <yangtools.version>0.6.2-SNAPSHOT</yangtools.version>
+        <ofjava.extension.nicira.version>0.5-SNAPSHOT</ofjava.extension.nicira.version>
+    </properties>
+
     <artifactId>openflowplugin-extension-parent</artifactId>
     <packaging>pom</packaging>
     <modules>
-      <module>openflowplugin-extension-api</module>
-      <module>openflowplugin-nicira-extension</module>
+        <module>openflowplugin-extension-api</module>
+        <module>openflowplugin-nicira-extension</module>
+        <module>test-extension</module>
     </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.opendaylight.openflowjava</groupId>
+                <artifactId>openflow-extension-nicira</artifactId>
+                <version>${ofjava.extension.nicira.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 </project>

@@ -1,0 +1,194 @@
+module openflowplugin-extension-nicira-match {
+    yang-version 1;
+
+    namespace "urn:opendaylight:openflowplugin:extension:nicira:match";
+    prefix "openflowplugin-nicira-match";
+	
+	import yang-ext {prefix ext; revision-date "2013-07-09";}
+	import flow-node-inventory {prefix fni; revision-date 2013-08-19; }
+	import opendaylight-inventory {prefix inv;revision-date "2013-08-19";}
+	import sal-flow {prefix sal-flow;revision-date "2013-08-19";}
+    import packet-processing {prefix sal-packet;revision-date "2013-07-09";}
+    import openflowplugin-extension-general {prefix ext-gen;revision-date "2014-07-14";}
+    import opendaylight-flow-statistics {prefix odl-flow-stats;revision-date "2013-08-19";}
+    import nicira-match {prefix nicira-match;revision-date "2014-04-21";}
+    import ietf-inet-types {prefix inet; revision-date "2010-09-24";}
+    import ietf-yang-types {prefix yang; revision-date "2010-09-24";}
+
+    description 
+        "Nicira openflow match extensions.";
+
+    revision "2014-07-14" {
+        description "Initial revision";
+    }
+    
+    identity nxm-nx-reg-key {
+        base ext-gen:extension-key;
+    }
+    identity nxm-nx-tun-id-key {
+        base ext-gen:extension-key;
+    }
+    identity nxm-nx-arp-sha-key {
+        base ext-gen:extension-key;
+    }
+    identity nxm-nx-arp-tha-key {
+        base ext-gen:extension-key;
+    }
+    identity nxm-of-arp-op-key {
+        base ext-gen:extension-key;
+    }
+    identity nxm-of-arp-spa-key {
+        base ext-gen:extension-key;
+    }
+    identity nxm-of-arp-tpa-key {
+        base ext-gen:extension-key;
+    }
+    identity nxm-nx-tun-ipv4-dst-key {
+        base ext-gen:extension-key;
+    }
+    identity nxm-nx-tun-ipv4-src-key {
+        base ext-gen:extension-key;
+    }
+    identity nxm-of-eth-src-key {
+        base ext-gen:extension-key;
+    }
+    identity nxm-of-eth-dst-key {
+        base ext-gen:extension-key;
+    }
+    
+    grouping ipv4-address-grouping {
+        leaf ipv4-address {
+            type inet:ipv4-address;
+        }
+    }
+    grouping mac-address-grouping {
+        leaf mac-address {
+            type yang:mac-address;
+        }
+    }
+
+	grouping nxm-nx-reg-grouping {
+		container nxm-nx-reg {
+			leaf reg {
+                type identityref {
+                    base nicira-match:nxm-nx-reg;
+                }
+            }
+			leaf value {
+                type uint32;
+            }
+		}
+	}
+    grouping nxm-nx-tun-id-grouping {
+        container nxm-nx-tun-id {
+            leaf value {
+                type uint64;
+            }
+        }
+    }
+    grouping nxm-nx-arp-sha-grouping {
+        container nxm-nx-arp-sha {
+            uses mac-address-grouping;
+        }
+    }
+    grouping nxm-nx-arp-tha-grouping {
+        container nxm-nx-arp-tha {
+            uses mac-address-grouping;
+        }
+    }
+    grouping nxm-of-arp-op-grouping {
+        container nxm-of-arp-op {
+            leaf value {
+                type uint16;
+            }
+        }
+    }
+    grouping nxm-of-arp-spa-grouping {
+        container nxm-of-arp-spa {
+            leaf value {
+                type uint32;
+            }
+        }
+    }
+    grouping nxm-of-arp-tpa-grouping {
+        container nxm-of-arp-tpa {
+            leaf value {
+                type uint32;
+            }
+        }
+    }
+    grouping nxm-nx-tun-ipv4-dst-grouping {
+        container nxm-nx-tun-ipv4-dst {
+            uses ipv4-address-grouping;
+        }
+    }
+    grouping nxm-nx-tun-ipv4-src-grouping {
+        container nxm-nx-tun-ipv4-src {
+            uses ipv4-address-grouping;
+        }
+    }
+    grouping nxm-of-eth-src-grouping {
+        container nxm-of-eth-src {
+            uses mac-address-grouping;
+        }
+    }
+    grouping nxm-of-eth-dst-grouping {
+        container nxm-of-eth-dst {
+            uses mac-address-grouping;
+        }
+    }
+    
+    grouping all-matches-grouping {
+        uses nxm-nx-reg-grouping;
+        uses nxm-nx-tun-id-grouping;
+        uses nxm-nx-arp-sha-grouping;
+        uses nxm-nx-arp-tha-grouping;
+        uses nxm-of-arp-op-grouping;
+        uses nxm-of-arp-spa-grouping;
+        uses nxm-of-arp-tpa-grouping;
+        uses nxm-nx-tun-ipv4-dst-grouping;
+        uses nxm-nx-tun-ipv4-src-grouping;
+        uses nxm-of-eth-src-grouping;
+        uses nxm-of-eth-dst-grouping;
+    }
+    
+    // MATCH augmentations
+    // RPCS
+    augment "/sal-flow:add-flow/sal-flow:input/sal-flow:match/ext-gen:extension-list/ext-gen:extension" {
+        ext:augment-identifier "nx-aug-match-rpc-add-flow";
+        uses all-matches-grouping;
+    }
+    augment "/sal-flow:remove-flow/sal-flow:input/sal-flow:match/ext-gen:extension-list/ext-gen:extension" {
+        ext:augment-identifier "nx-aug-match-rpc-remove-flow";
+        uses all-matches-grouping;
+    }
+    augment "/sal-flow:update-flow/sal-flow:input/sal-flow:original-flow/sal-flow:match/ext-gen:extension-list/ext-gen:extension" {
+        ext:augment-identifier "nx-aug-match-rpc-update-flow-original";
+        uses all-matches-grouping;
+    }
+    augment "/sal-flow:update-flow/sal-flow:input/sal-flow:updated-flow/sal-flow:match/ext-gen:extension-list/ext-gen:extension" {
+        ext:augment-identifier "nx-aug-match-rpc-update-flow-updated";
+        uses all-matches-grouping;
+    }
+    
+    // DATA
+    augment "/inv:nodes/inv:node/fni:table/fni:flow/fni:match/ext-gen:extension-list/ext-gen:extension" {
+        ext:augment-identifier "nx-aug-match-nodes-node-table-flow";
+        uses all-matches-grouping;
+    }
+    
+    // NOTIFICATIONS
+    augment "/sal-flow:switch-flow-removed/sal-flow:match/ext-gen:extension-list/ext-gen:extension" {
+        ext:augment-identifier "nx-aug-match-notif-switch-flow-removed";
+        uses all-matches-grouping;
+    }
+    augment "/sal-packet:packet-received/sal-packet:match/ext-gen:extension-list/ext-gen:extension" {
+        ext:augment-identifier "nx-aug-match-notif-packet-in";
+        uses all-matches-grouping;
+    }
+    augment "/odl-flow-stats:flows-statistics-update/odl-flow-stats:flow-and-statistics-map-list/odl-flow-stats:match/ext-gen:extension-list/ext-gen:extension" {
+        ext:augment-identifier "nx-aug-match-notif-update-flow-stats";
+        uses all-matches-grouping;
+    }
+
+}
