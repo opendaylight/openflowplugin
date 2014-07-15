@@ -12,10 +12,6 @@
     <artifactId>openflowplugin-nicira-extension</artifactId>
     <packaging>bundle</packaging>
     
-    <properties>
-        <yangtools.version>0.6.2-SNAPSHOT</yangtools.version>
-    </properties>
-    
     <build>
         <plugins>
             <plugin>

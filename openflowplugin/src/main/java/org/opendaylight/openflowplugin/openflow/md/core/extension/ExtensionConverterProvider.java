@@ -11,6 +11,7 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.MessageTypeKey;
 import org.opendaylight.openflowplugin.extension.api.ConverterExtensionKey;
 import org.opendaylight.openflowplugin.extension.api.ConvertorFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorToOFJava;
+import org.opendaylight.openflowplugin.extension.api.path.AugmentationPath;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 
 /**
@@ -23,12 +24,12 @@ public interface ExtensionConverterProvider {
      * @param key
      * @return found converter
      */
-    <FROM extends DataContainer, TO extends DataContainer> ConvertorFromOFJava<FROM, TO> getConverter(MessageTypeKey<?> key);
+    <FROM extends DataContainer, TO extends DataContainer, PATH extends AugmentationPath> ConvertorFromOFJava<FROM, TO, PATH> getConverter(MessageTypeKey<?> key);
     
     /**
      * lookup converter
      * @param key
      * @return found converter
      */
-    <FROM extends DataContainer, TO extends DataContainer> ConvertorToOFJava<FROM, TO> getConverter(ConverterExtensionKey<?> key);
+    <FROM extends DataContainer, TO extends DataContainer, PATH extends AugmentationPath> ConvertorToOFJava<FROM, TO, PATH> getConverter(ConverterExtensionKey<?> key);
 }

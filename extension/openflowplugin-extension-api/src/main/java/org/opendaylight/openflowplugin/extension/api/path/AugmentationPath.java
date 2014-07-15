@@ -5,22 +5,17 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.openflowplugin.extension.api;
+package org.opendaylight.openflowplugin.extension.api.path;
 
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.extension.grouping.Extension;
-import org.opendaylight.yangtools.yang.binding.DataContainer;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 /**
- * convert message from MD-SAL model into OFJava-API model
- * 
- * @param <TO> output message model - OFJava-API
+ * @author msunal
+ *
  */
-public interface ConvertorToOFJava<TO extends DataContainer> {
+public interface AugmentationPath {
 
-    /**
-     * @param extension where is vendor's augmentation
-     * @return message converted to OFJava-API
-     */
-    TO convert(Extension extension);
+    InstanceIdentifier<Extension> getInstanceIdentifier();
 
 }
