@@ -7,21 +7,20 @@
  */
 package org.opendaylight.openflowplugin.extension.api;
 
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.grouping.Extension;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 
 /**
  * convert message from MD-SAL model into OFJava-API model
- * @param <FROM> input message model - MD-SAL
- * @param <TO> output message model - OFJava-API
  * 
- * TODO: consider creating of specialized subinterfaces
+ * @param <TO> output message model - OFJava-API
  */
-public interface ConvertorToOFJava<FROM extends DataContainer, TO extends DataContainer> {
-    
+public interface ConvertorToOFJava<TO extends DataContainer> {
+
     /**
-     * @param input
-     * @param sessionContext TODO: fix type when moved to API
+     * @param extension where is vendor's augmentation
      * @return message converted to OFJava-API
      */
-    TO convert(FROM input, Object sessionContext);
+    TO convert(Extension extension);
+
 }
