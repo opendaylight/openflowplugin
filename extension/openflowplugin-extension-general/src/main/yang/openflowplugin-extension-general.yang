@@ -1,0 +1,83 @@
+module openflowplugin-extension-general {
+    yang-version 1;
+
+    namespace "urn:opendaylight:openflowplugin:extension:general";
+    prefix "openflowplugin-extension-general";
+	
+	import yang-ext {prefix ext; revision-date "2013-07-09";}
+	import flow-node-inventory {prefix fni; revision-date 2013-08-19; }
+	import opendaylight-inventory {prefix inv;revision-date "2013-08-19";}
+	import sal-flow {prefix sal-flow;revision-date "2013-08-19";}
+
+    description 
+        "Everything for a vendor who want to implement openflow extensions.";
+
+    revision "2014-07-14" {
+        description "Initial revision";
+    }
+	
+	grouping general-extension-grouping {
+		list extension-list {
+			key type;
+			leaf type {
+				type identityref {
+					base extension-key;
+				}
+			}
+			container extension {
+				description "A vendor has to augment this container.";
+			}
+		}
+	}
+	
+	identity extension-key {
+		description "Base identity for all extension keys.";
+	}
+	
+	// Action augmentations
+	augment "/inv:nodes/inv:node/fni:table/fni:flow/fni:instructions/fni:instruction/fni:instruction/fni:write-actions-case/fni:write-actions/fni:action/fni:action" {
+        ext:augment-identifier "general-aug-extension-action";
+		case extension-case {
+			uses general-extension-grouping;
+		}
+    }
+
+	// Match augmentations
+	augment "/inv:nodes/inv:node/fni:table/fni:flow/fni:match" {
+        ext:augment-identifier "general-aug_nx_match_node_table_flow";
+		uses general-extension-grouping;
+    }
+	augment "/sal-flow:add-flow/sal-flow:input/sal-flow:match" {
+        ext:augment-identifier "general-aug_nx_match_rpc_add_flow";
+		uses general-extension-grouping;
+    }
+	augment "/sal-flow:remove-flow/sal-flow:input/sal-flow:match" {
+        ext:augment-identifier "general-aug_nx_match_rpc_remove_flow";
+		uses general-extension-grouping;
+    }
+	augment "/sal-flow:update-flow/sal-flow:input/sal-flow:original-flow/sal-flow:match" {
+        ext:augment-identifier "general-aug_nx_match_rpc_update_flow_original";
+		uses general-extension-grouping;
+    }
+	augment "/sal-flow:update-flow/sal-flow:input/sal-flow:updated-flow/sal-flow:match" {
+        ext:augment-identifier "general-aug_nx_match_rpc_update_flow_updated";
+		uses general-extension-grouping;
+    }
+	augment "/sal-flow:flow-added/sal-flow:match" {
+        ext:augment-identifier "general-aug_nx_match_notif_flow_added";
+		uses general-extension-grouping;
+    }
+	augment "/sal-flow:flow-updated/sal-flow:match" {
+        ext:augment-identifier "general-aug_nx_match_notif_flow_updated";
+		uses general-extension-grouping;
+    }
+	augment "/sal-flow:flow-removed/sal-flow:match" {
+        ext:augment-identifier "general-aug_nx_match_notif_flow_removed";
+		uses general-extension-grouping;
+    }
+	augment "/sal-flow:switch-flow-removed/sal-flow:match" {
+        ext:augment-identifier "general-aug_nx_match_notif_switch_flow_removed";
+		uses general-extension-grouping;
+    }
+
+}
