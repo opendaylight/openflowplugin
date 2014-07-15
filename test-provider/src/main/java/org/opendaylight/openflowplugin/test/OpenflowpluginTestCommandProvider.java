@@ -13,14 +13,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.Collection;
-import java.util.Iterator;
 
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
@@ -29,6 +25,10 @@ import org.opendaylight.controller.md.sal.common.api.data.DataModification;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.NotificationService;
 import org.opendaylight.controller.sal.binding.api.data.DataBrokerService;
+import org.opendaylight.openflowplugin.test.ForwardingConsumer.FlowClientBuild;
+import org.opendaylight.openflowplugin.test.ForwardingConsumer.OvsFlowParams;
+import org.opendaylight.openflowplugin.test.ForwardingConsumer.OvsFlowInstruction;
+import org.opendaylight.openflowplugin.test.ForwardingConsumer.OvsFlowMatch;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Dscp;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Address;
@@ -465,6 +465,12 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
             break;
         case "f44":
             id += 44;
+
+            LOG.info("getKey ====> " + nodeBuilder.getKey());
+//            LOG.info("getNodeConnector ====> " + nodeBuilder.getNodeConnector());
+            LOG.info("getNodeKey ====> " + nodeBuilder.getId());
+            LOG.info("Foo Start" );
+
             flow.setMatch(createInphyportMatch(nodeBuilder.getId()).build());
             flow.setInstructions(createDropInstructions().build());
             break;
@@ -671,7 +677,40 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
             flow.setMatch(createVlanMatch().build()); // match vlan=10,dl_vlan_pcp=3
             flow.setInstructions(createAppyActionInstruction88().build()); // vlan_pcp=4
             break;
-        default:
+        //Test OVSDB OF
+        case "f86":
+            id += 86;
+
+            OvsFlowMatch ovsFlowMatch = new OvsFlowMatch();
+            OvsFlowInstruction ovsFlowInstruction = new OvsFlowInstruction();
+            OvsFlowParams ovsFlowParams = new OvsFlowParams();
+            FlowClientBuild ovsFlow = new FlowClientBuild();
+
+            ovsFlowMatch
+                    .etherType(0x0800L)
+                    .ipProtocol(6)
+                    .dstTcpPort(80)
+                    .nodeId(nodeBuilder.getId())
+                    .inPortNumber(12);
+            ovsFlowInstruction
+                    .goToTableId("100")
+                    .nodeId(nodeBuilder.getId())
+                    .ofpOutputPort(20L);
+            ovsFlowParams
+                    .priority(8192)
+                    .hardTimeout(0)
+                    .idleTimeout(0)
+                    .installHW(false)
+                    .strict(false);
+            ovsFlow.installFlow(ovsFlowMatch, ovsFlowInstruction, ovsFlowParams, flow);
+
+            flow.build();
+            break;
+        //Test OVSDB OF
+        case "f87":
+            id += 87;
+
+            default:
             LOG.warn("flow type not understood: {}", flowType);
         }
 
@@ -2812,7 +2851,8 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
     private static MatchBuilder createInphyportMatch(NodeId nodeId) {
         MatchBuilder match = new MatchBuilder();
         match.setInPort(new NodeConnectorId(nodeId + ":202"));
-        match.setInPhyPort(new NodeConnectorId(nodeId + ":10122"));
+        LOG.info("createInphyportMatch -> {}, -> {}", nodeId, match.getInPort());
+//        match.setInPhyPort(new NodeConnectorId(nodeId + ":10122"));
         return match;
     }
 
