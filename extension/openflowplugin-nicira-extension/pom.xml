@@ -12,10 +12,6 @@
     <artifactId>openflowplugin-nicira-extension</artifactId>
     <packaging>bundle</packaging>
     
-    <properties>
-        <yangtools.version>0.6.2-SNAPSHOT</yangtools.version>
-    </properties>
-    
     <build>
         <plugins>
             <plugin>
@@ -111,6 +107,10 @@
         <dependency>
             <groupId>org.opendaylight.openflowjava</groupId>
             <artifactId>openflow-protocol-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowjava</groupId>
+            <artifactId>openflow-protocol-impl</artifactId>
         </dependency>
     </dependencies>
 

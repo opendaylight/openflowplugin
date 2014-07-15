@@ -11,18 +11,20 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.MessageTypeKey;
 import org.opendaylight.openflowplugin.extension.api.ConverterExtensionKey;
 import org.opendaylight.openflowplugin.extension.api.ConvertorFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorToOFJava;
+import org.opendaylight.openflowplugin.extension.api.path.AugmentationPath;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.ExtensionKey;
+import org.opendaylight.yangtools.concepts.ObjectRegistration;
+import org.opendaylight.yangtools.yang.binding.DataContainer;
 
 /**
  * @param <KEY> converter key
  * @param <CONVERTER> converter instance
  */
-public abstract class RegistrationCloser<KEY, CONVERTER> implements AutoCloseable {
+public abstract class RegistrationCloser<KEY, CONVERTER> implements ObjectRegistration<CONVERTER> {
     
     private ExtensionConverterManagerImpl registrator;
     private KEY key;
     private CONVERTER converter;
-    
-    
     
     /**
      * @param registrator the registrator to set
@@ -61,29 +63,34 @@ public abstract class RegistrationCloser<KEY, CONVERTER> implements AutoCloseabl
         return converter;
     }
     
-    /**
-     * standalone deregistrator
-     */
-    public static class RegistrationCloserToOFJava extends RegistrationCloser<ConverterExtensionKey<?>, ConvertorToOFJava<?, ?>> {
-        
-        @Override
-        public void close() throws Exception {
-            // TODO Auto-generated method stub
-            getRegistrator().unregister(getKey(), getConverter());
-        }
-        
+    @Override
+    public CONVERTER getInstance() {
+        return getConverter();
     }
     
     /**
      * standalone deregistrator
+     * @param <TO> target type of wrapped convertor
      */
-    public static class RegistrationCloserFromOFJava extends RegistrationCloser<MessageTypeKey<?>, ConvertorFromOFJava<?, ?>> {
+    public static class RegistrationCloserToOFJava<TO extends DataContainer> extends 
+            RegistrationCloser<ConverterExtensionKey<? extends ExtensionKey>, ConvertorToOFJava<TO>> {
         
         @Override
         public void close() throws Exception {
-            // TODO Auto-generated method stub
             getRegistrator().unregister(getKey(), getConverter());
         }
+    }
+    
+    /**
+     * standalone deregistrator
+     * @param <FROM> source type of wrapped convertor
+     * @param <PATH> associated augmentation path
+     */
+    public static class RegistrationCloserFromOFJava<FROM extends DataContainer, PATH extends AugmentationPath> extends RegistrationCloser<MessageTypeKey<?>, ConvertorFromOFJava<FROM, PATH>> {
         
+        @Override
+        public void close() throws Exception {
+            getRegistrator().unregister(getKey(), getConverter());
+        }
     }
 }
