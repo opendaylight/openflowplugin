@@ -1,0 +1,53 @@
+/*
+ * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ */
+
+module test-provider-impl {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:controller:config:test-provider:impl";
+    prefix "test-provider-impl";
+
+    import config { prefix config; revision-date 2013-04-05; }
+    import opendaylight-md-sal-binding { prefix mdsal; revision-date 2013-10-28; }
+
+    revision "2014-06-11" {
+        description
+            "Initial revision.";
+    }
+
+    identity test-provider-impl {
+        base "config:module-type";
+
+        config:java-name-prefix TestProvider;
+    }
+
+    // Augments the 'configuration' choice node under modules/module.  
+    augment "/config:modules/config:module/config:configuration" {
+        case test-provider-impl {
+            when "/config:modules/config:module/config:type = 'test-provider-impl'";
+
+            //wires in the data-broker service 
+            container data-broker {
+                uses config:service-ref {
+                    refine type {
+                        mandatory true;
+                        config:required-identity mdsal:binding-async-data-broker;
+                    }
+                }
+            }
+            // RPC Registry
+            container rpc-registry {
+                uses config:service-ref {
+                    refine type {
+                        mandatory true;
+                        config:required-identity mdsal:binding-rpc-registry;
+                    }
+                }
+            }
+        }
+    }
+}
