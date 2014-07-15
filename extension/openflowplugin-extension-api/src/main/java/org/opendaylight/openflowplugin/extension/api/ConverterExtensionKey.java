@@ -7,7 +7,7 @@
  */
 package org.opendaylight.openflowplugin.extension.api;
 
-import org.opendaylight.yangtools.yang.binding.DataContainer;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.ExtensionKey;
 
 /**
  * lookup and register key for extension converters, basic case expects this to correlate with input model type
@@ -17,21 +17,21 @@ import org.opendaylight.yangtools.yang.binding.DataContainer;
  * TODO: we probably need version here and one more class in case that for example actions would be handled 
  * multiple times and differently
  */
-public abstract class ConverterExtensionKey<TYPE extends DataContainer> {
+public class ConverterExtensionKey<TYPE extends ExtensionKey> {
     
-    private Class<? extends TYPE> type;
+    private Class<TYPE> type;
     
     /**
      * @param type
      */
-    public ConverterExtensionKey(Class<? extends TYPE> type) {
+    public ConverterExtensionKey(Class<TYPE> type) {
         this.type = type;
     }
 
     /**
      * @return key type
      */
-    public Class<? extends TYPE> getType() {
+    public Class<TYPE> getType() {
         return type;
     }
 

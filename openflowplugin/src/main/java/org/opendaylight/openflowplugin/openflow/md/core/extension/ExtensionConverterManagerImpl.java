@@ -16,66 +16,49 @@ import org.opendaylight.openflowplugin.extension.api.ConvertorFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorToOFJava;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.RegistrationCloser.RegistrationCloserFromOFJava;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.RegistrationCloser.RegistrationCloserToOFJava;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.grouping.MatchEntries;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.ExtensionKey;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 
 /**
  * simple map-based registration engine implementation
  */
-public class ExtensionConverterManagerImpl implements
-        ExtensionConverterManager {
-    
+public class ExtensionConverterManagerImpl implements ExtensionConverterManager {
+
     private Map<MessageTypeKey<?>, ConvertorFromOFJava<?, ?>> registryFromOFJAva;
     private Map<ConverterExtensionKey<?>, ConvertorToOFJava<?, ?>> registryToOFJAva;
-    
+
     /**
-     * default ctor 
+     * default ctor
      */
     public ExtensionConverterManagerImpl() {
         registryFromOFJAva = new ConcurrentHashMap<>();
         registryToOFJAva = new ConcurrentHashMap<>();
     }
 
-    @Override
-    public AutoCloseable registerConvertor(
-            ConverterExtensionKey<? extends DataContainer> key,
-            ConvertorToOFJava<? extends DataContainer, ? extends DataContainer> extConvertor) {
-        registryToOFJAva.put(key, extConvertor);
-        return hireJanitor(key, extConvertor);
-    }
-
-    @Override
-    public AutoCloseable registerConvertor(
-            MessageTypeKey<? extends DataContainer> key,
-            ConvertorFromOFJava<? extends DataContainer, ? extends DataContainer> extConvertor) {
-        registryFromOFJAva.put(key, extConvertor);
-        return hireJanitor(key, extConvertor);
-    }
-    
     /**
      * @param key
      * @param extConvertor
      * @return
      */
-    private AutoCloseable hireJanitor(
-            MessageTypeKey<?> key,
-            ConvertorFromOFJava<?, ?> extConvertor) {
-        
+    private AutoCloseable hireJanitor(MessageTypeKey<?> key, ConvertorFromOFJava<?, ?> extConvertor) {
+
         RegistrationCloserFromOFJava janitor = new RegistrationCloser.RegistrationCloserFromOFJava();
         janitor.setConverter(extConvertor);
         janitor.setKey(key);
         janitor.setRegistrator(this);
         return janitor;
     }
-    
+
     /**
      * @param key
      * @param extConvertor
      * @return
      */
-    private AutoCloseable hireJanitor(
-            ConverterExtensionKey<?> key,
-            ConvertorToOFJava<?, ?> extConvertor) {
-        
+    private AutoCloseable hireJanitor(ConverterExtensionKey<?> key, ConvertorToOFJava<?, ?> extConvertor) {
+
         RegistrationCloserToOFJava janitor = new RegistrationCloser.RegistrationCloserToOFJava();
         janitor.setConverter(extConvertor);
         janitor.setKey(key);
@@ -85,6 +68,7 @@ public class ExtensionConverterManagerImpl implements
 
     /**
      * cancel registration of given converter
+     * 
      * @param key
      * @param converter
      */
@@ -94,9 +78,10 @@ public class ExtensionConverterManagerImpl implements
             registryToOFJAva.remove(key);
         }
     }
-    
+
     /**
      * cancel registration of given converter
+     * 
      * @param key
      * @param converter
      */
@@ -106,19 +91,49 @@ public class ExtensionConverterManagerImpl implements
             registryFromOFJAva.remove(key);
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     @Override
     public <FROM extends DataContainer, TO extends DataContainer> ConvertorToOFJava<FROM, TO> getConverter(
             ConverterExtensionKey<?> key) {
         return (ConvertorToOFJava<FROM, TO>) registryToOFJAva.get(key);
     }
-    
+
     @SuppressWarnings("unchecked")
     @Override
     public <FROM extends DataContainer, TO extends DataContainer> ConvertorFromOFJava<FROM, TO> getConverter(
             MessageTypeKey<?> key) {
         return (ConvertorFromOFJava<FROM, TO>) registryFromOFJAva.get(key);
+    }
+
+    @Override
+    public AutoCloseable registerActionConvertor(
+            ConverterExtensionKey<? extends ExtensionKey> key,
+            ConvertorToOFJava<Action, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action> convertor) {
+        registryToOFJAva.put(key, convertor);
+        return hireJanitor(key, convertor);
+    }
+
+    @Override
+    public AutoCloseable registerActionConvertor(
+            MessageTypeKey<? extends DataContainer> key,
+            ConvertorFromOFJava<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action, Action> convertor) {
+        registryFromOFJAva.put(key, convertor);
+        return hireJanitor(key, convertor);
+    }
+
+    @Override
+    public AutoCloseable registerMatchConvertor(ConverterExtensionKey<? extends ExtensionKey> key,
+            ConvertorToOFJava<Match, MatchEntries> convertor) {
+        registryToOFJAva.put(key, convertor);
+        return hireJanitor(key, convertor);
+    }
+
+    @Override
+    public AutoCloseable registerMatchConvertor(MessageTypeKey<? extends DataContainer> key,
+            ConvertorFromOFJava<MatchEntries, Match> convertor) {
+        registryFromOFJAva.put(key, convertor);
+        return hireJanitor(key, convertor);
     }
 
 }

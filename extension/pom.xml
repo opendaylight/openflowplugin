@@ -8,11 +8,16 @@
         <version>0.0.3-SNAPSHOT</version>
         <relativePath>../</relativePath>
     </parent>
+    
+    <properties>
+        <yangtools.version>0.6.2-SNAPSHOT</yangtools.version>
+    </properties>
 
     <artifactId>openflowplugin-extension-parent</artifactId>
     <packaging>pom</packaging>
     <modules>
+      <module>openflowplugin-extension-general</module>
       <module>openflowplugin-extension-api</module>
       <module>openflowplugin-nicira-extension</module>
-    </modules>
+  </modules>
 </project>
