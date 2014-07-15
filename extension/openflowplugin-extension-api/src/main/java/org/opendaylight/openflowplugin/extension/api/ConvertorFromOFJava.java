@@ -7,25 +7,23 @@
  */
 package org.opendaylight.openflowplugin.extension.api;
 
+import org.opendaylight.openflowplugin.extension.api.path.AugmentationPath;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
-import org.opendaylight.yangtools.yang.binding.DataObject;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 /**
- * convert message from OFJava-API model into MD-SAL model 
+ * convert message from OFJava-API model into MD-SAL model
+ * 
  * @param <FROM> input message model - OFJava-API
  * @param <TO> output message model - MD-SAL
- * 
- * TODO: consider creating of specialized subinterfaces
+ * @param <PATH> represents possible paths in yang schema for augmentations
  */
-public interface ConvertorFromOFJava<FROM extends DataContainer, TO extends DataContainer> {
-    
+public interface ConvertorFromOFJava<FROM extends DataContainer, TO extends DataContainer, PATH extends AugmentationPath> {
+
     /**
      * @param input
-     * @param path
-     * @param sessionContext TODO: fix type when moved to API
+     * @param path in yang schema where a converted value has to be augmented
      * @return message converted to MD-SAL
      */
-    TO convert(FROM input, InstanceIdentifier<DataObject> path, Object sessionContext);
+    TO convert(FROM input, PATH path);
 
 }
