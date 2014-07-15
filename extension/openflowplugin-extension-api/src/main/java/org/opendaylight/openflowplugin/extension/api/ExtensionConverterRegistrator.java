@@ -7,32 +7,34 @@
  */
 package org.opendaylight.openflowplugin.extension.api;
 
-import org.opendaylight.openflowjava.protocol.api.extensibility.MessageTypeKey;
-import org.opendaylight.yangtools.yang.binding.DataContainer;
+import org.opendaylight.openflowjava.protocol.api.keys.ActionSerializerKey;
+import org.opendaylight.openflowjava.protocol.api.keys.MatchEntrySerializerKey;
+import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
+import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ActionBase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.MatchField;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.OxmClassBase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.grouping.MatchEntries;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.ExtensionKey;
+import org.opendaylight.yangtools.concepts.ObjectRegistration;
 
 /**
  * registration place for message converters provided by vendor extensions
  */
 public interface ExtensionConverterRegistrator {
 
-    /**
-     * register converter for direction from MD-SAL to OFJava
-     * @param key
-     * @param extConvertor
-     * @return closable registration
-     */
-    public AutoCloseable registerConvertor(
-            ConverterExtensionKey<? extends DataContainer> key,
-            ConvertorToOFJava<? extends DataContainer, ? extends DataContainer> extConvertor);
+    ObjectRegistration<ConvertorToOFJava<Action>> registerActionConvertor(
+            ConverterExtensionKey<? extends ExtensionKey> key, ConvertorToOFJava<Action> convertor);
 
-    /**
-     * register converter for direction from OFJava to MD-SAL
-     * @param key
-     * @param extConvertor
-     * @return closable registration
-     */
-    public AutoCloseable registerConvertor(
-            MessageTypeKey<? extends DataContainer> key,
-            ConvertorFromOFJava<? extends DataContainer, ? extends DataContainer> extConvertor);
+    ObjectRegistration<ConvertorFromOFJava<Action, ActionPath>> registerActionConvertor(
+            ActionSerializerKey<? extends ActionBase> key, ConvertorFromOFJava<Action, ActionPath> convertor);
+
+    ObjectRegistration<ConvertorToOFJava<MatchEntries>> registerMatchConvertor(
+            ConverterExtensionKey<? extends ExtensionKey> key, ConvertorToOFJava<MatchEntries> convertor);
+
+    ObjectRegistration<ConvertorFromOFJava<MatchEntries, MatchPath>> registerMatchConvertor(
+            MatchEntrySerializerKey<? extends OxmClassBase, ? extends MatchField> key,
+            ConvertorFromOFJava<MatchEntries, MatchPath> convertor);
 
 }

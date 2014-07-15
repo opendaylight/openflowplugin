@@ -25,5 +25,12 @@ public enum OpenflowVersion {
         }
         return UNSUPPORTED;
     }
+    
+    /**
+     * @return the version
+     */
+    public short getVersion() {
+        return version;
+    }
 
 }
