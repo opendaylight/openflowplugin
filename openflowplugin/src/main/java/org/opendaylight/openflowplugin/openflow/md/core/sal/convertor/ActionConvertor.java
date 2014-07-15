@@ -13,9 +13,11 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.opendaylight.openflowplugin.extension.api.ConverterExtensionActionKey;
+import org.opendaylight.openflowplugin.extension.api.ConverterExtensionKey;
 import org.opendaylight.openflowplugin.extension.api.ConvertorToOFJava;
+import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
 import org.opendaylight.openflowplugin.openflow.md.OFConstants;
+import org.opendaylight.openflowplugin.openflow.md.core.extension.ActionExtensionHelper;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.ActionSetNwDstReactor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.ActionSetNwSrcReactor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchConvertorImpl;
@@ -142,6 +144,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Open
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.VlanVid;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.grouping.MatchEntries;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.grouping.MatchEntriesBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.ExtensionKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralExtensionGrouping;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.grouping.Extension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -236,18 +241,21 @@ public final class ActionConvertor {
                 ofAction = SalToOFSetTpDst(action, actionBuilder, version);
             else if (action instanceof SetNwTosActionCase)
                 ofAction = SalToOFSetNwTos(action, actionBuilder, version);
-            else {
+            else if (action instanceof GeneralExtensionGrouping) {
                 
                 /**
-                 * TODO:
-                 * EXTENSION PROPOSAL
-                 * - we might need version for conversion and for key
+                 * TODO: EXTENSION PROPOSAL (action, MD-SAL to OFJava)
+                 * - we might need sessionContext as converter input
+                 * 
                  */
-                ConverterExtensionActionKey key = new ConverterExtensionActionKey(action.getClass());
-                ConvertorToOFJava<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, Action> convertor = 
+                
+                GeneralExtensionGrouping extensionCaseGrouping = (GeneralExtensionGrouping) action;
+                Extension extAction = extensionCaseGrouping.getExtension();
+                ConverterExtensionKey<? extends ExtensionKey> key = new ConverterExtensionKey<>(extensionCaseGrouping.getExtensionKey(), version);
+                ConvertorToOFJava<Action> convertor = 
                         OFSessionUtil.getExtensionConvertorProvider().getConverter(key);
                 if (convertor != null) {
-                    ofAction = convertor.convert(action, null);
+                    ofAction = convertor.convert(extAction);
                 }
             }
             
@@ -708,10 +716,11 @@ public final class ActionConvertor {
      *
      * @param actionList
      * @param ofVersion  current ofp version
+     * @param actionPath TODO
      * @return List of converted SAL Actions.
      */
     public static List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action> toMDSalActions(
-            List<Action> actionList, OpenflowVersion ofVersion) {
+            List<Action> actionList, OpenflowVersion ofVersion, ActionPath actionPath) {
 
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action> bucketActions = new ArrayList<>();
         for (Action action : actionList) {
@@ -788,11 +797,16 @@ public final class ActionConvertor {
 
             } else if (action.getType().equals(
                     org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.Experimenter.class)) {
-                // bucketActions.add(ofToSALExperimenter(action));
-                // TODO: Need to explore/discuss on how to handle experimenter
-                // case.
+                /**
+                 * TODO: EXTENSION PROPOSAL (action, OFJava to MD-SAL)
+                 * - we might also need a way on how to identify exact type of augmentation to be 
+                 *   used as match can be bound to multiple models
+                 */
+                org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action processedExtension = ActionExtensionHelper.processAllExtensions(action, ofVersion, actionPath);
+                if (processedExtension != null) {
+                    bucketActions.add(processedExtension);
+                }
             }
-
         }
         return bucketActions;
     }

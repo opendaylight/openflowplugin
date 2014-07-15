@@ -1,0 +1,311 @@
+module openflowplugin-extension-nicira-action {
+    yang-version 1;
+
+    namespace "urn:opendaylight:openflowplugin:extension:nicira:action";
+    prefix "openflowplugin-nicira-action";
+    
+    import yang-ext {prefix ext; revision-date "2013-07-09";}
+    import flow-node-inventory {prefix fni; revision-date 2013-08-19; }
+    import opendaylight-inventory {prefix inv;revision-date "2013-08-19";}
+    import sal-flow {prefix sal-flow;revision-date "2013-08-19";}
+    import sal-group {prefix sal-group;revision-date "2013-09-18";}
+    import packet-processing {prefix sal-packet;revision-date "2013-07-09";}
+    import opendaylight-flow-statistics {prefix odl-flow-stats;revision-date "2013-08-19";}
+    import opendaylight-group-statistics {prefix odl-group-stats;revision-date "2013-11-11";}
+    import nicira-match {prefix nicira-match;revision-date "2014-04-21";}
+    import openflowplugin-extension-general {prefix ext-gen;revision-date "2014-07-14";}
+    import openflow-action {prefix ofaction;revision-date "2013-07-31";}
+
+    description 
+        "Nicira openflow action extensions.";
+
+    revision "2014-07-14" {
+        description "Initial revision";
+    }
+    
+    identity nx-action-reg-load-key {
+        base ext-gen:extension-key;
+    }
+    identity nx-action-reg-move-key {
+        base ext-gen:extension-key;
+    }
+
+    grouping nxm-nx-reg-grouping {
+        leaf nx-reg {
+            type identityref {
+                base nicira-match:nxm-nx-reg;
+            }
+        }
+    }
+    grouping nxm-nx-tun-id-grouping {
+        leaf nx-tun-id {
+            type empty;
+        }
+    }
+    grouping nxm-nx-arp-sha-grouping {
+        leaf nx-arp-sha {
+            type empty;
+        }
+    }
+    grouping nxm-nx-arp-tha-grouping {
+        leaf nx-arp-tha {
+            type empty;
+        }
+    }
+    grouping nxm-of-arp-op-grouping {
+        leaf of-arp-op {
+            type empty;
+        }
+    }
+    grouping nxm-of-arp-spa-grouping {
+        leaf of-arp-spa {
+            type empty;
+        }
+    }
+    grouping nxm-of-arp-tpa-grouping {
+        leaf of-arp-tpa {
+            type empty;
+        }
+    }
+    grouping nxm-nx-tun-ipv4-dst-grouping {
+        leaf nx-tun-ipv4-dst {
+            type empty;
+        }
+    }
+    grouping nxm-nx-tun-ipv4-src-grouping {
+        leaf nx-tun-ipv4-src {
+            type empty;
+        }
+    }
+    grouping nxm-of-eth-src-grouping {
+        leaf of-eth-src {
+            type empty;
+        }
+    }
+    grouping nxm-of-eth-dst-grouping {
+        leaf of-eth-dst {
+            type empty;
+        }
+    }
+    grouping nxm-of-eth-type-grouping {
+        leaf of-eth-type {
+            type empty;
+        }
+    }
+
+    grouping dst-choice-grouping {
+        choice dst-choice {
+            case dst-nx-reg-case {
+                uses nxm-nx-reg-grouping;
+            }
+            case dst-nx-tun-id-case {
+                uses nxm-nx-tun-id-grouping;
+            }
+            case dst-nx-arp-sha-case {
+                uses nxm-nx-arp-sha-grouping;
+            }
+            case dst-nx-arp-tha-case {
+                uses nxm-nx-arp-tha-grouping;
+            }
+            case dst-of-arp-op-case {
+                uses nxm-of-arp-op-grouping;
+            }
+            case dst-of-arp-spa-case {
+                uses nxm-of-arp-spa-grouping;
+            }
+            case dst-of-arp-tpa-case {
+                uses nxm-of-arp-tpa-grouping;
+            }
+            case dst-nx-tun-ipv4-dst-case {
+                uses nxm-nx-tun-ipv4-dst-grouping;
+            }
+            case dst-nx-tun-ipv4-src-case {
+                uses nxm-nx-tun-ipv4-src-grouping;
+            }
+            case dst-of-eth-src-case {
+                uses nxm-of-eth-src-grouping;
+            }
+            case dst-of-eth-dst-case {
+                uses nxm-of-eth-dst-grouping;
+            }
+        }
+    }
+    
+    grouping src-choice-grouping {
+        choice src-choice {
+            case src-nx-reg-case {
+                uses nxm-nx-reg-grouping;
+            }
+            case src-nx-tun-id-case {
+                uses nxm-nx-tun-id-grouping;
+            }
+            case src-nx-arp-sha-case {
+                uses nxm-nx-arp-sha-grouping;
+            }
+            case src-nx-arp-tha-case {
+                uses nxm-nx-arp-tha-grouping;
+            }
+            case src-of-arp-op-case {
+                uses nxm-of-arp-op-grouping;
+            }
+            case src-of-arp-spa-case {
+                uses nxm-of-arp-spa-grouping;
+            }
+            case src-of-arp-tpa-case {
+                uses nxm-of-arp-tpa-grouping;
+            }
+            case src-nx-tun-ipv4-dst-case {
+                uses nxm-nx-tun-ipv4-dst-grouping;
+            }
+            case src-nx-tun-ipv4-src-case {
+                uses nxm-nx-tun-ipv4-src-grouping;
+            }
+            case src-of-eth-src-case {
+                uses nxm-of-eth-src-grouping;
+            }
+            case src-of-eth-dst-case {
+                uses nxm-of-eth-dst-grouping;
+            }
+            case src-of-eth-type-case {
+                uses nxm-of-eth-type-grouping;
+            }
+        }
+    }
+    
+    grouping range-grouping {
+        leaf start {
+            description "Include value.";
+            type uint16;
+        }
+        leaf end {
+            description "Include value.";
+            type uint16;
+        }
+    }
+    
+    grouping nx-action-reg-load-grouping {
+        container nx-reg-load {
+            container dst {
+                description "Writes value to bits start through end, inclusive, in field dst.";
+                uses dst-choice-grouping;
+                uses range-grouping;
+            }
+            leaf value {
+                type uint64;
+            }
+        }
+    }
+    
+    grouping nx-action-reg-move-grouping {
+        container nx-reg-move {
+            container src {
+                description "Writes value to bits start through end, inclusive, in field src.";
+                uses src-choice-grouping;
+                uses range-grouping;
+            }
+            container dst {
+                description "Writes value to bits start through end, inclusive, in field dst.";
+                uses dst-choice-grouping;
+                uses range-grouping;
+            }
+        }
+    }
+    
+    // ACTION augmentations
+    // RPCS
+    augment "/sal-flow:add-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action/ext-gen:extension-rpc-add-flow-write-actions-case/ext-gen:extension" {
+        ext:augment-identifier "nx-aug-action-rpc-add-flow-write-actions";
+        uses nx-action-reg-load-grouping;
+        uses nx-action-reg-move-grouping;
+    }
+    augment "/sal-flow:add-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action/ext-gen:extension-rpc-add-flow-apply-actions-case/ext-gen:extension" {
+        ext:augment-identifier "nx-aug-action-rpc-add-flow-apply-actions";
+        uses nx-action-reg-load-grouping;
+        uses nx-action-reg-move-grouping;
+    }
+    augment "/sal-flow:remove-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action/ext-gen:extension-rpc-remove-flow-write-actions-case/ext-gen:extension" {
+        ext:augment-identifier "nx-aug-action-rpc-remove-flow-write-actions";
+        uses nx-action-reg-load-grouping;
+        uses nx-action-reg-move-grouping;
+    }
+    augment "/sal-flow:remove-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action/ext-gen:extension-rpc-remove-flow-apply-actions-case/ext-gen:extension" {
+        ext:augment-identifier "nx-aug-action-rpc-remove-flow-apply-actions";
+        uses nx-action-reg-load-grouping;
+        uses nx-action-reg-move-grouping;
+    }
+    augment "/sal-flow:update-flow/sal-flow:input/sal-flow:original-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action/ext-gen:extension-rpc-update-flow-original-write-actions-case/ext-gen:extension" {
+        ext:augment-identifier "nx-aug-action-rpc-update-flow-original-write-actions";
+        uses nx-action-reg-load-grouping;
+        uses nx-action-reg-move-grouping;
+    }
+    augment "/sal-flow:update-flow/sal-flow:input/sal-flow:original-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action/ext-gen:extension-rpc-update-flow-original-apply-actions-case/ext-gen:extension" {
+        ext:augment-identifier "nx-aug-action-rpc-update-flow-original-apply-actions";
+        uses nx-action-reg-load-grouping;
+        uses nx-action-reg-move-grouping;
+    }
+    augment "/sal-flow:update-flow/sal-flow:input/sal-flow:updated-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action/ext-gen:extension-rpc-update-flow-updated-write-actions-case/ext-gen:extension" {
+        ext:augment-identifier "nx-aug-action-rpc-update-flow-updated-write-actions";
+        uses nx-action-reg-load-grouping;
+        uses nx-action-reg-move-grouping;
+    }
+    augment "/sal-flow:update-flow/sal-flow:input/sal-flow:updated-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action/ext-gen:extension-rpc-update-flow-updated-apply-actions-case/ext-gen:extension" {
+        ext:augment-identifier "nx-aug-action-rpc-update-flow-updated-apply-actions";
+        uses nx-action-reg-load-grouping;
+        uses nx-action-reg-move-grouping;
+    }
+    augment "/sal-group:add-group/sal-group:input/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action/ext-gen:extension-rpc-add-group-case/ext-gen:extension" {
+        ext:augment-identifier "nx-aug-action-rpc-add-group";
+        uses nx-action-reg-load-grouping;
+        uses nx-action-reg-move-grouping;
+    }
+    augment "/sal-group:remove-group/sal-group:input/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action/ext-gen:extension-rpc-remove-group-case/ext-gen:extension" {
+        ext:augment-identifier "nx-aug-action-rpc-remove-group";
+        uses nx-action-reg-load-grouping;
+        uses nx-action-reg-move-grouping;
+    }
+    augment "/sal-group:update-group/sal-group:input/sal-group:original-group/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action/ext-gen:extension-rpc-update-group-original-case/ext-gen:extension" {
+        ext:augment-identifier "nx-aug-action-rpc-update-group-original";
+        uses nx-action-reg-load-grouping;
+        uses nx-action-reg-move-grouping;
+    }
+    augment "/sal-group:update-group/sal-group:input/sal-group:updated-group/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action/ext-gen:extension-rpc-update-group-updated-case/ext-gen:extension" {
+        ext:augment-identifier "nx-aug-action-rpc-update-group-updated";
+        uses nx-action-reg-load-grouping;
+        uses nx-action-reg-move-grouping;
+    }
+    augment "/sal-packet:transmit-packet/sal-packet:input/sal-packet:action/sal-packet:action/ext-gen:extension-rpc-transmit-packet-case/ext-gen:extension" {
+        ext:augment-identifier "nx-aug-action-rpc-transmit-packet";
+        uses nx-action-reg-load-grouping;
+        uses nx-action-reg-move-grouping;
+    }
+    
+    // DATA
+    augment "/inv:nodes/inv:node/fni:table/fni:flow/fni:instructions/fni:instruction/fni:instruction/fni:write-actions-case/fni:write-actions/fni:action/fni:action/ext-gen:extension-nodes-node-table-flow-write-actions-case/ext-gen:extension" {
+        ext:augment-identifier "nx-aug-action-nodes-node-table-flow-write-actions";
+        uses nx-action-reg-load-grouping;
+        uses nx-action-reg-move-grouping;
+    }
+    augment "/inv:nodes/inv:node/fni:table/fni:flow/fni:instructions/fni:instruction/fni:instruction/fni:apply-actions-case/fni:apply-actions/fni:action/fni:action/ext-gen:extension-nodes-node-table-flow-apply-actions-case/ext-gen:extension" {
+        ext:augment-identifier "nx-aug-action-nodes-node-table-flow-apply-actions";
+        uses nx-action-reg-load-grouping;
+        uses nx-action-reg-move-grouping;
+    }
+    
+    // NOTIFICATIONS
+    augment "/odl-flow-stats:flows-statistics-update/odl-flow-stats:flow-and-statistics-map-list/odl-flow-stats:instructions/odl-flow-stats:instruction/odl-flow-stats:instruction/odl-flow-stats:write-actions-case/odl-flow-stats:write-actions/odl-flow-stats:action/odl-flow-stats:action/ext-gen:extension-notif-flows-statistics-update-write-actions-case/ext-gen:extension" {
+        ext:augment-identifier "nx-aug-action-notif-flows-statistics-update-write-actions";
+        uses nx-action-reg-load-grouping;
+        uses nx-action-reg-move-grouping;
+    }
+    augment "/odl-flow-stats:flows-statistics-update/odl-flow-stats:flow-and-statistics-map-list/odl-flow-stats:instructions/odl-flow-stats:instruction/odl-flow-stats:instruction/odl-flow-stats:apply-actions-case/odl-flow-stats:apply-actions/odl-flow-stats:action/odl-flow-stats:action/ext-gen:extension-notif-flows-statistics-update-apply-actions-case/ext-gen:extension" {
+        ext:augment-identifier "nx-aug-action-notif-flows-statistics-update-apply-actions";
+        uses nx-action-reg-load-grouping;
+        uses nx-action-reg-move-grouping;
+    }
+    augment "/odl-group-stats:group-desc-stats-updated/odl-group-stats:group-desc-stats/odl-group-stats:buckets/odl-group-stats:bucket/odl-group-stats:action/odl-group-stats:action/ext-gen:extension-notif-group-desc-stats-updated-case/ext-gen:extension" {
+        ext:augment-identifier "nx-aug-action-notif-group-desc-stats-updated";
+        uses nx-action-reg-load-grouping;
+        uses nx-action-reg-move-grouping;
+    }
+
+}
