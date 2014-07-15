@@ -16,6 +16,24 @@
       "revId": "51d2e0e6632c05fa6941a48f6de82ab212578123",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_43e530da",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/match/MatchConvertorImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 336,
+      "author": {
+        "id": 207
+      },
+      "writtenOn": "2014-07-15T05:08:08Z",
+      "side": 1,
+      "message": "-Yes they are NXMs. If you see the commit notes they are temporary to prevent blocking until the options for extensibility are solidified. If you look at openflowjava and controller these components have already been merged. (openflowjava) https://git.opendaylight.org/gerrit/#/c/7633/ and (controller) https://git.opendaylight.org/gerrit/#/c/7634/ \n\n-Also if you look at the bug attached in the commit we are just as eager to have a clear mechanism to instantiate OVS specific extensions without having any dependencies on any of MDSAL openflow projects. OF OXM extensions came from NXMs in the OVS project. Some where not chosen mainly due to hardware vendors not being able to support the functions. We need 3 NXMs extensions, TCP flags and Tun/Src/Dst. This is the last patch for all three of those. \n\n-Here is the merged patch for the TCP Flag support last month in OpenFlowplugin https://git.opendaylight.org/gerrit/#/c/7607/ \n\n-If you look at OpenStack neutron it relies heavily on per-flow IPv4 Src/Dst Tunnel endpoint setter. It allows for a generic overlay instantiation that is independent of management protocols and is less verbose then per port TEP operations.\n\nThanks,\n-Brent",
+      "parentUuid": "fa82b9bf_68d4d3bc",
+      "revId": "51d2e0e6632c05fa6941a48f6de82ab212578123",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
