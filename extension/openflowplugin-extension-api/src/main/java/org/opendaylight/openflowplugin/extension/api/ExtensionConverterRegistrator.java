@@ -7,32 +7,33 @@
  */
 package org.opendaylight.openflowplugin.extension.api;
 
-import org.opendaylight.openflowjava.protocol.api.extensibility.MessageTypeKey;
-import org.opendaylight.yangtools.yang.binding.DataContainer;
+import org.opendaylight.openflowjava.protocol.api.extensibility.keys.ActionSerializerKey;
+import org.opendaylight.openflowjava.protocol.api.extensibility.keys.MatchEntrySerializerKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ActionBase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Clazz;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.MatchField;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.grouping.MatchEntries;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.ExtensionKey;
 
 /**
  * registration place for message converters provided by vendor extensions
  */
 public interface ExtensionConverterRegistrator {
 
-    /**
-     * register converter for direction from MD-SAL to OFJava
-     * @param key
-     * @param extConvertor
-     * @return closable registration
-     */
-    public AutoCloseable registerConvertor(
-            ConverterExtensionKey<? extends DataContainer> key,
-            ConvertorToOFJava<? extends DataContainer, ? extends DataContainer> extConvertor);
+    public AutoCloseable registerActionConvertor(
+            ConverterExtensionKey<? extends ExtensionKey> key,
+            ConvertorToOFJava<Action, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action> convertor);
 
-    /**
-     * register converter for direction from OFJava to MD-SAL
-     * @param key
-     * @param extConvertor
-     * @return closable registration
-     */
-    public AutoCloseable registerConvertor(
-            MessageTypeKey<? extends DataContainer> key,
-            ConvertorFromOFJava<? extends DataContainer, ? extends DataContainer> extConvertor);
+    public AutoCloseable registerActionConvertor(
+            ActionSerializerKey<? extends ActionBase> key,
+            ConvertorFromOFJava<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action, Action> convertor);
+
+    public AutoCloseable registerMatchConvertor(ConverterExtensionKey<? extends ExtensionKey> key,
+            ConvertorToOFJava<Match, MatchEntries> convertor);
+
+    public AutoCloseable registerMatchConvertor(MatchEntrySerializerKey<? extends Clazz, ? extends MatchField> key,
+            ConvertorFromOFJava<MatchEntries, Match> convertor);
 
 }
