@@ -22,20 +22,20 @@ public class ConverterExtensionActionKeyTest {
     /**
      * Test method for {@link org.opendaylight.openflowplugin.extension.api.ConverterExtensionKey#equals(java.lang.Object)}.
      */
-    @Test
-    public void testEqualsObject() {
-        ConverterExtensionMatchKey key1 = new ConverterExtensionMatchKey(Match.class);
-        ConverterExtensionMatchKey key2 = new ConverterExtensionMatchKey(Match.class);
-        ConverterExtensionMatchKey key3 = new ConverterExtensionMatchKey(SpecialMatch.class);
-        ConverterExtensionMatchKey key4 = new ConverterExtensionMatchKey(SpecialMatch.class);
-        
-        Assert.assertEquals(key1, key2);
-        Assert.assertEquals(key3, key4);
-        Assert.assertNotEquals(key1, key4);
-    }
-    
-    private static interface SpecialMatch extends Match {
-        // nobody
-    }
+//    @Test
+//    public void testEqualsObject() {
+//        ConverterExtensionMatchKey key1 = new ConverterExtensionMatchKey(Match.class);
+//        ConverterExtensionMatchKey key2 = new ConverterExtensionMatchKey(Match.class);
+//        ConverterExtensionMatchKey key3 = new ConverterExtensionMatchKey(SpecialMatch.class);
+//        ConverterExtensionMatchKey key4 = new ConverterExtensionMatchKey(SpecialMatch.class);
+//        
+//        Assert.assertEquals(key1, key2);
+//        Assert.assertEquals(key3, key4);
+//        Assert.assertNotEquals(key1, key4);
+//    }
+//    
+//    private static interface SpecialMatch extends Match {
+//        // nobody
+//    }
 
 }
