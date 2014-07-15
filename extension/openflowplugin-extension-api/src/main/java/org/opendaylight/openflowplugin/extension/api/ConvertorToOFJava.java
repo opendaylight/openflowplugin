@@ -20,8 +20,9 @@ public interface ConvertorToOFJava<FROM extends DataContainer, TO extends DataCo
     
     /**
      * @param input
-     * @param sessionContext TODO: fix type when moved to API
+     * @param path in yang schema where a converted value has to be augmented
      * @return message converted to OFJava-API
      */
-    TO convert(FROM input, Object sessionContext);
+    TO convert(FROM input, AugmentationPath path);
+
 }
