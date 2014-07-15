@@ -7,31 +7,31 @@
  */
 package org.opendaylight.openflowplugin.extension.api;
 
-import org.opendaylight.yangtools.yang.binding.DataContainer;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.ExtensionKey;
 
 /**
- * lookup and register key for extension converters, basic case expects this to correlate with input model type
+ * lookup and register key for extension converters, basic case expects this to
+ * correlate with input model type
  * 
  * @param <TYPE> type of key
- * 
- * TODO: we probably need version here and one more class in case that for example actions would be handled 
- * multiple times and differently
  */
-public abstract class ConverterExtensionKey<TYPE extends DataContainer> {
-    
-    private Class<? extends TYPE> type;
-    
+public class ConverterExtensionKey<TYPE extends ExtensionKey> {
+
+    private Class<TYPE> type;
+    private short ofVersion;
+
     /**
      * @param type
      */
-    public ConverterExtensionKey(Class<? extends TYPE> type) {
+    public ConverterExtensionKey(Class<TYPE> type, short ofVersion) {
         this.type = type;
+        this.ofVersion = ofVersion;
     }
 
     /**
      * @return key type
      */
-    public Class<? extends TYPE> getType() {
+    public Class<TYPE> getType() {
         return type;
     }
 
@@ -39,6 +39,7 @@ public abstract class ConverterExtensionKey<TYPE extends DataContainer> {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
+        result = prime * result + ofVersion;
         result = prime * result + ((type == null) ? 0 : type.hashCode());
         return result;
     }
@@ -52,6 +53,8 @@ public abstract class ConverterExtensionKey<TYPE extends DataContainer> {
         if (getClass() != obj.getClass())
             return false;
         ConverterExtensionKey<?> other = (ConverterExtensionKey<?>) obj;
+        if (ofVersion != other.ofVersion)
+            return false;
         if (type == null) {
             if (other.type != null)
                 return false;
@@ -59,6 +62,5 @@ public abstract class ConverterExtensionKey<TYPE extends DataContainer> {
             return false;
         return true;
     }
-    
-    
+
 }

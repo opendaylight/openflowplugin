@@ -1,0 +1,48 @@
+module openflowplugin-extension-nicira-action {
+    yang-version 1;
+
+    namespace "urn:opendaylight:openflowplugin:extension:nicira:action";
+    prefix "openflowplugin-nicira-action";
+    
+    import yang-ext {prefix ext; revision-date "2013-07-09";}
+    import flow-node-inventory {prefix fni; revision-date 2013-08-19; }
+    import opendaylight-inventory {prefix inv;revision-date "2013-08-19";}
+    import sal-flow {prefix sal-flow;revision-date "2013-08-19";}
+    import openflowplugin-extension-nicira-match {prefix openflowplugin-nicira-match;revision-date "2014-07-14";}
+    import openflowplugin-extension-general {prefix ext-gen;revision-date "2014-07-14";}
+
+    description 
+        "Nicira openflow action extensions.";
+
+    revision "2014-07-14" {
+        description "Initial revision";
+    }
+    
+    grouping nx-action-reg-load-grouping {
+        choice dst {
+            case reg {
+                uses openflowplugin-nicira-match:nx-match-reg-index-grouping;
+            }
+        }
+        container bit-range-for-value {
+            leaf from {
+                description "Include value.";
+                type uint16;
+            }
+            leaf to {
+                description "Include value.";
+                type uint16;
+            }
+        }
+        leaf value {
+            type uint64;
+        }
+    }
+    
+    // Action augmentations
+    augment "/sal-flow:add-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action/ext-gen:extension-case/ext-gen:extension" {
+        ext:augment-identifier "nx-aug-action-nodes-node-table-flow-instructions-instruction-instruction-write-actions-case-write-actions-action-action";
+        uses nx-action-reg-load-grouping;
+    }
+
+}
