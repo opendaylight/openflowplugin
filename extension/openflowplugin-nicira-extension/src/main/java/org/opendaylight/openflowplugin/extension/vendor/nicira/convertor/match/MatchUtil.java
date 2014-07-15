@@ -1,0 +1,85 @@
+/**
+ * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
+ * 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ */
+package org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import org.opendaylight.openflowjava.nx.NiciraConstants;
+import org.opendaylight.openflowplugin.extension.api.GroupingResolver;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.groupbasedpolicy.of.extension.nicira.match.rev140421.OfjNxmNxMatchTunIdGrouping;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.ExperimenterIdMatchEntry;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.ExperimenterIdMatchEntryBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ExperimenterId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.MatchField;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.OxmClassBase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.grouping.MatchEntriesBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.grouping.Extension;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNodesNodeTableFlow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifPacketIn;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifSwitchFlowRemoved;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifUpdateFlowStats;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchRpcAddFlow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchRpcRemoveFlow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchRpcUpdateFlowOriginal;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchRpcUpdateFlowUpdated;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxMatchRegGrouping;
+import org.opendaylight.yangtools.yang.binding.Augmentation;
+
+import com.google.common.base.Optional;
+
+/**
+ * @author msunal
+ *
+ */
+public class MatchUtil {
+
+    private final static Set<Class<? extends Augmentation<Extension>>> augmentationsOfExtension = new HashSet<>();
+    private final static GroupingResolver<NxmNxMatchRegGrouping, Extension> regResolver = new GroupingResolver<>(
+            NxmNxMatchRegGrouping.class);
+    private final static GroupingResolver<OfjNxmNxMatchTunIdGrouping, Extension> tunIdResolver = new GroupingResolver<>(
+            OfjNxmNxMatchTunIdGrouping.class);
+    private final static ExperimenterIdMatchEntry EXPERIMENTER_ID_MATCH_ENTRY;
+
+    static {
+        augmentationsOfExtension.add(NxAugMatchRpcAddFlow.class);
+        augmentationsOfExtension.add(NxAugMatchRpcRemoveFlow.class);
+        augmentationsOfExtension.add(NxAugMatchRpcUpdateFlowOriginal.class);
+        augmentationsOfExtension.add(NxAugMatchRpcUpdateFlowUpdated.class);
+        augmentationsOfExtension.add(NxAugMatchNodesNodeTableFlow.class);
+        augmentationsOfExtension.add(NxAugMatchNotifSwitchFlowRemoved.class);
+        augmentationsOfExtension.add(NxAugMatchNotifPacketIn.class);
+        augmentationsOfExtension.add(NxAugMatchNotifUpdateFlowStats.class);
+        regResolver.setAugmentations(augmentationsOfExtension);
+        tunIdResolver.setAugmentations(augmentationsOfExtension);
+        ExperimenterIdMatchEntryBuilder experimenterIdMatchEntryBuilder = new ExperimenterIdMatchEntryBuilder();
+        experimenterIdMatchEntryBuilder.setExperimenter(new ExperimenterId(NiciraConstants.NX_VENDOR_ID));
+        EXPERIMENTER_ID_MATCH_ENTRY = experimenterIdMatchEntryBuilder.build();
+    }
+
+    public static Optional<NxmNxMatchRegGrouping> getNxmNxMatchRegGrouping(Extension data) {
+        return regResolver.getExtension(data);
+    }
+
+    public static Optional<OfjNxmNxMatchTunIdGrouping> getNxmNxMatchTunIdGrouping(Extension data) {
+        return tunIdResolver.getExtension(data);
+    }
+
+    public static ExperimenterIdMatchEntry getNiciraExperimenterIdMatchEntry() {
+        return EXPERIMENTER_ID_MATCH_ENTRY;
+    }
+
+    public static MatchEntriesBuilder createNiciraMatchEntriesBuilder(Class<? extends OxmClassBase> oxmClass,
+            Class<? extends MatchField> oxmMatchField, boolean hasMask) {
+        MatchEntriesBuilder matchEntriesBuilder = new MatchEntriesBuilder();
+        matchEntriesBuilder.setOxmClass(oxmClass).setOxmMatchField(oxmMatchField).setHasMask(hasMask);
+        matchEntriesBuilder.addAugmentation(ExperimenterIdMatchEntry.class, EXPERIMENTER_ID_MATCH_ENTRY);
+        return matchEntriesBuilder;
+    }
+
+}
