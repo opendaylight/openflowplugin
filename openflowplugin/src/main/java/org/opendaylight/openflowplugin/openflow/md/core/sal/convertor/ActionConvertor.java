@@ -13,7 +13,6 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.opendaylight.openflowplugin.extension.api.ConverterExtensionActionKey;
 import org.opendaylight.openflowplugin.extension.api.ConverterExtensionKey;
 import org.opendaylight.openflowplugin.extension.api.ConvertorToOFJava;
 import org.opendaylight.openflowplugin.openflow.md.OFConstants;
@@ -146,6 +145,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Open
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.VlanVid;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.grouping.MatchEntries;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.grouping.MatchEntriesBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.ExtensionKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.grouping.Extension;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.nodes.node.table.flow.instructions.instruction.instruction.write.actions._case.write.actions.action.action.ExtensionCase;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -243,17 +245,21 @@ public final class ActionConvertor {
                 ofAction = SalToOFSetTpDst(action, actionBuilder, version);
             else if (action instanceof SetNwTosActionCase)
                 ofAction = SalToOFSetNwTos(action, actionBuilder, version);
-            else {
+            else if (action instanceof ExtensionCase) {
                 
                 /**
                  * TODO:
                  * EXTENSION PROPOSAL
-                 * - we might need version for conversion and for key
+                 * - we might need sessionContext as converter input
                  */
-                ConverterExtensionActionKey key = new ConverterExtensionActionKey(action.getClass());
-                ConvertorToOFJava<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, Action> convertor = 
+                
+                ExtensionCase extensionCase = (ExtensionCase) action;
+                Extension extAction = extensionCase.getExtension();
+                ConverterExtensionKey<? extends ExtensionKey> key = new ConverterExtensionKey<>(extensionCase.getType(), version);
+                ConvertorToOFJava<Action> convertor = 
                         OFSessionUtil.getExtensionConvertorProvider().getConverter(key);
-                ofAction = convertor.convert(action, null);
+                ofAction = convertor.convert(extAction);
+                
             }
             
             if (ofAction != null) {
