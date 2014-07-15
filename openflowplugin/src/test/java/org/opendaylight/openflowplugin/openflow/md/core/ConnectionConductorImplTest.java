@@ -367,7 +367,7 @@ public class ConnectionConductorImplTest {
         eventPlan.add(0,
                 EventFactory.createDefaultWaitForRpcEvent(42, "experimenter"));
         ExperimenterMessageBuilder builder1 = new ExperimenterMessageBuilder();
-        builder1.setExperimenter(84L).setExpType(4L);
+//        builder1.setExperimenter(84L).setExpType(4L);
         eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L,
                 EventFactory.DEFAULT_VERSION, builder1));
 
@@ -378,7 +378,7 @@ public class ConnectionConductorImplTest {
             @Override
             public void run() {
                 ExperimenterInputBuilder builder2 = new ExperimenterInputBuilder();
-                builder2.setExperimenter(84L).setExpType(4L);
+//                builder2.setExperimenter(84L).setExpType(4L);
                 EventFactory.setupHeader(42L, builder2);
                 adapter.experimenter(builder2.build());
             }
@@ -413,7 +413,7 @@ public class ConnectionConductorImplTest {
             @Override
             public void run() {
                 ExperimenterInputBuilder builder2 = new ExperimenterInputBuilder();
-                builder2.setExperimenter(84L).setExpType(4L);
+//                builder2.setExperimenter(84L).setExpType(4L);
                 EventFactory.setupHeader(42L, builder2);
                 adapter.experimenter(builder2.build());
             }
@@ -648,14 +648,14 @@ public class ConnectionConductorImplTest {
         
         ExperimenterMessageBuilder builder1 = new ExperimenterMessageBuilder();
         builder1.setVersion((short) 4);
-        builder1.setExperimenter(84L).setExpType(4L);
+//        builder1.setExperimenter(84L).setExpType(4L);
         connectionConductor.onExperimenterMessage(builder1.build());
         synchronized (popListener) {
             popListener.wait(maxProcessingTimeout);
         }
         Assert.assertEquals(1, experimenterMessageCounter);
 
-        builder1.setExperimenter(85L).setExpType(4L);
+//        builder1.setExperimenter(85L).setExpType(4L);
         connectionConductor.onExperimenterMessage(builder1.build());
         synchronized (popListener) {
             popListener.wait(maxProcessingTimeout);

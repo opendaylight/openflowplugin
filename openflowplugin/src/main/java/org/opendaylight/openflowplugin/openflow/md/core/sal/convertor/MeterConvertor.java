@@ -157,7 +157,9 @@ public final class MeterConvertor {
                         Experimenter experimenter = (Experimenter) meterBandHeader.getBandType();
                         meterBandExperimenterBuilder.setBurstSize(experimenter.getExperimenterBurstSize());
                         meterBandExperimenterBuilder.setRate(experimenter.getExperimenterRate());
-                        meterBandExperimenterBuilder.setExperimenter(experimenter.getExperimenter());
+                        
+                        // TODO: implement band extension
+                        //meterBandExperimenterBuilder.setExperimenter(experimenter.getExperimenter());
                         experimenterCaseBuilder.setMeterBandExperimenter(meterBandExperimenterBuilder.build());
                         meterBandItem = experimenterCaseBuilder.build();
                         bandsB = new BandsBuilder();

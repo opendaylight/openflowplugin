@@ -36,29 +36,30 @@ public class ExperimenterTranslator implements IMDMessageTranslator<OfHeader, Li
 		if( msg instanceof ExperimenterMessage) {
 			ExperimenterMessage message = (ExperimenterMessage)msg ;
 			List<DataObject> list = new CopyOnWriteArrayList<DataObject>();
-			LOG.error(" Experimenter Error Message received: Exp type={}, Exp Id={}, data={} ",
-	                message.getExpType(), message.getExperimenter(),
-	                new String(message.getData()) ) ;
-
-			// create a Node Experimenter Error Notification event builder
-			NodeExperimenterErrorNotificationBuilder nodeErrBuilder = new NodeExperimenterErrorNotificationBuilder() ;
-
-			nodeErrBuilder.setTransactionId(new TransactionId(BigInteger.valueOf( message.getXid() ))) ;
-
-			// This is a fixed value 0xffff ( 65535 )
-			nodeErrBuilder.setType(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.errors.rev131116.ErrorType.Experimenter ) ;
-
-			// The experimenterType is defined as long in ExperimenterMessage where is just needs to be integer
-			nodeErrBuilder.setExpType(message.getExpType().intValue() ) ;
-
-			nodeErrBuilder.setExperimenterId(message.getExperimenter()) ;
-
-			nodeErrBuilder.setData(new String (message.getData()) ) ;
-
-			//Not handling Augmentation
-
-			NodeExperimenterErrorNotification nodeExpErrorEvent = nodeErrBuilder.build();
-			list.add(nodeExpErrorEvent);
+			// TODO: add extension cover
+//			LOG.error(" Experimenter Error Message received: Exp type={}, Exp Id={}, data={} ",
+//	                message.getExpType(), message.getExperimenter(),
+//	                new String(message.getData()) ) ;
+//
+//			// create a Node Experimenter Error Notification event builder
+//			NodeExperimenterErrorNotificationBuilder nodeErrBuilder = new NodeExperimenterErrorNotificationBuilder() ;
+//
+//			nodeErrBuilder.setTransactionId(new TransactionId(BigInteger.valueOf( message.getXid() ))) ;
+//
+//			// This is a fixed value 0xffff ( 65535 )
+//			nodeErrBuilder.setType(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.errors.rev131116.ErrorType.Experimenter ) ;
+//
+//			// The experimenterType is defined as long in ExperimenterMessage where is just needs to be integer
+//			nodeErrBuilder.setExpType(message.getExpType().intValue() ) ;
+//
+//			nodeErrBuilder.setExperimenterId(message.getExperimenter()) ;
+//
+//			nodeErrBuilder.setData(new String (message.getData()) ) ;
+//
+//			//Not handling Augmentation
+//
+//			NodeExperimenterErrorNotification nodeExpErrorEvent = nodeErrBuilder.build();
+//			list.add(nodeExpErrorEvent);
 			return list;
 		}else {
 			LOG.error( "Message is not of Experimenter Error Message " ) ;
