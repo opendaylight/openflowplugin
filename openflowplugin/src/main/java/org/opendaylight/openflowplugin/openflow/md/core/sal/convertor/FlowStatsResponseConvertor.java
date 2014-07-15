@@ -7,6 +7,9 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
+import org.opendaylight.openflowplugin.extension.api.AugmentTuple;
+import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
+import org.opendaylight.openflowplugin.openflow.md.core.extension.MatchExtensionHelper;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchConvertorImpl;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowVersion;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.Counter32;
@@ -15,6 +18,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.f
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.flow.and.statistics.map.list.FlowAndStatisticsMapListBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.statistics.types.rev130925.duration.DurationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.flow._case.multipart.reply.flow.FlowStats;
 
@@ -76,7 +81,17 @@ public class FlowStatsResponseConvertor {
             }
         }
         if(flowStats.getMatch() != null){
-            salFlowStatsBuilder.setMatch(MatchConvertorImpl.fromOFMatchToSALMatch(flowStats.getMatch(),datapathid, ofVersion));
+            MatchBuilder matchBuilder = MatchConvertorImpl.fromOFMatchToSALMatch(flowStats.getMatch(),datapathid, ofVersion);
+            
+            AugmentTuple<Match> matchExtensionWrap = 
+                    MatchExtensionHelper.processAllExtensions(
+                            flowStats.getMatch().getMatchEntries(), ofVersion, MatchPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH);
+            if (matchExtensionWrap != null) {
+                matchBuilder.addAugmentation(matchExtensionWrap.getAugmentationClass(), matchExtensionWrap.getAugmentationObject());
+            }
+            
+            
+            salFlowStatsBuilder.setMatch(matchBuilder.build());
             salFlowStatsBuilder.setFlags(
                     new FlowModFlags(flowStats.getFlags().isOFPFFCHECKOVERLAP(),
                             flowStats.getFlags().isOFPFFRESETCOUNTS(),
