@@ -64,11 +64,10 @@ public abstract class RegistrationCloser<KEY, CONVERTER> implements AutoCloseabl
     /**
      * standalone deregistrator
      */
-    public static class RegistrationCloserToOFJava extends RegistrationCloser<ConverterExtensionKey<?>, ConvertorToOFJava<?, ?>> {
+    public static class RegistrationCloserToOFJava extends RegistrationCloser<ConverterExtensionKey<?>, ConvertorToOFJava<?, ?, ?>> {
         
         @Override
         public void close() throws Exception {
-            // TODO Auto-generated method stub
             getRegistrator().unregister(getKey(), getConverter());
         }
         
@@ -77,11 +76,10 @@ public abstract class RegistrationCloser<KEY, CONVERTER> implements AutoCloseabl
     /**
      * standalone deregistrator
      */
-    public static class RegistrationCloserFromOFJava extends RegistrationCloser<MessageTypeKey<?>, ConvertorFromOFJava<?, ?>> {
+    public static class RegistrationCloserFromOFJava extends RegistrationCloser<MessageTypeKey<?>, ConvertorFromOFJava<?, ?, ?>> {
         
         @Override
         public void close() throws Exception {
-            // TODO Auto-generated method stub
             getRegistrator().unregister(getKey(), getConverter());
         }
         

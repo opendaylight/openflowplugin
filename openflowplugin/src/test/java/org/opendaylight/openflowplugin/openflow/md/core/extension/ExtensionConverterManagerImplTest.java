@@ -7,20 +7,22 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.extension;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.opendaylight.openflowjava.protocol.api.extensibility.MessageTypeKey;
-import org.opendaylight.openflowplugin.extension.api.ConverterExtensionActionKey;
+import org.opendaylight.openflowjava.protocol.api.extensibility.keys.ActionSerializerKey;
 import org.opendaylight.openflowplugin.extension.api.ConverterExtensionKey;
 import org.opendaylight.openflowplugin.extension.api.ConvertorFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorToOFJava;
+import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCase;
-import org.opendaylight.yangtools.yang.binding.DataContainer;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.Output;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ActionBase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.ExtensionKey;
 
 /**
  * {@link ExtensionConverterManagerImpl} test
@@ -30,11 +32,11 @@ public class ExtensionConverterManagerImplTest {
     
     private ExtensionConverterManagerImpl manager;
     @Mock
-    private ConvertorToOFJava<? extends DataContainer, ? extends DataContainer> extConvertorToOFJava;
-    private ConverterExtensionActionKey keyToOFJava;
+    private ConvertorToOFJava<Action, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action, ActionPath> extConvertorToOFJava;
+    private ConverterExtensionKey<TestingExtensionKey> keyToOFJava;
     @Mock
-    private ConvertorFromOFJava<? extends DataContainer, ? extends DataContainer> extConvertorFromOFJava;
-    private MessageTypeKey<? extends DataContainer> keyFromOFJava;
+    private ConvertorFromOFJava<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action, Action, ActionPath> extConvertorFromOFJava;
+    private ActionSerializerKey<? extends ActionBase> keyFromOFJava;
     private AutoCloseable regFromOFJava;
     private AutoCloseable regToOFJava;
     
@@ -44,12 +46,21 @@ public class ExtensionConverterManagerImplTest {
     @Before
     public void setUp() {
         manager = new ExtensionConverterManagerImpl();
-        keyFromOFJava = new MessageTypeKey<>((short) 1, DataContainer.class);
-        regFromOFJava = manager.registerConvertor(keyFromOFJava, extConvertorFromOFJava);
+        keyFromOFJava = new ActionSerializerKey<>((short) 1, Output.class, 42L);
+        regFromOFJava = manager.registerActionConvertor(keyFromOFJava, extConvertorFromOFJava);
         
-        keyToOFJava = new ConverterExtensionActionKey(OutputActionCase.class);
-        
-        regToOFJava = manager.registerConvertor(keyToOFJava, extConvertorToOFJava);
+        keyToOFJava = new ConverterExtensionKey<>(TestingExtensionKey.class, (short) 1);
+        regToOFJava = manager.registerActionConvertor(keyToOFJava, extConvertorToOFJava);
+    }
+    
+    /**
+     * tear down test case - close registrations
+     * @throws Exception 
+     */
+    @After
+    public void tearDown() throws Exception {
+        regToOFJava.close();
+        regToOFJava.close();
     }
 
     /**
@@ -86,6 +97,11 @@ public class ExtensionConverterManagerImplTest {
     @Test
     public void testGetConverterMessageTypeKeyOfQ() {
         Assert.assertEquals(extConvertorFromOFJava, manager.getConverter(keyFromOFJava));
+    }
+    
+    
+    private static class TestingExtensionKey extends ExtensionKey {
+        // nobody, just child for testing purposes 
     }
 
 }
