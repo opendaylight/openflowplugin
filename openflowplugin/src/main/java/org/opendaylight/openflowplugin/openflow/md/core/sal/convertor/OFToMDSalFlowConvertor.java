@@ -7,8 +7,14 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map.Entry;
+
 import org.opendaylight.openflowjava.protocol.api.extensibility.EnhancedMessageTypeKey;
 import org.opendaylight.openflowplugin.extension.api.ConvertorFromOFJava;
+import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowVersion;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
@@ -37,11 +43,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.MeterIdInstruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.TableIdInstruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.InstructionBase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.grouping.Extension;
+import org.opendaylight.yangtools.yang.binding.Augmentation;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
-
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
 
 public class OFToMDSalFlowConvertor {
     
@@ -157,31 +161,6 @@ public class OFToMDSalFlowConvertor {
                 instructionTreeNodekey++;
 
                 salInstructionList.add(instBuilder.build());
-            } else {
-                
-                
-                /**
-                 * TODO:
-                 * EXTENSION PROPOSAL
-                 * - we might need version for conversion and for key
-                 * - we might also need a way on how to identify exact type of augmentation to be 
-                 *   used as match can be bound to multiple models
-                 */
-                EnhancedMessageTypeKey<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action, ? extends InstructionBase> key = 
-                        new EnhancedMessageTypeKey<>((short) 4,
-                        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action.class, 
-                        switchInst.getType());
-                ConvertorFromOFJava<DataContainer, org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction> convertor = OFSessionUtil.getExtensionConvertorProvider().getConverter(key);
-                org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction extensionInstruction = convertor.convert(switchInst, null, null);
-                
-                InstructionBuilder instBuilder = new InstructionBuilder();
-                instBuilder.setInstruction(extensionInstruction);
-                instBuilder.setKey(new InstructionKey(instructionTreeNodekey));
-                instBuilder.setOrder(instructionTreeNodekey);
-                instructionTreeNodekey++;
-
-                salInstructionList.add(instBuilder.build());
-                
             }
         }
         instructionsBuilder.setInstruction(salInstructionList);

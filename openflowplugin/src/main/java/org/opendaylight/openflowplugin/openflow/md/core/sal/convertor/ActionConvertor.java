@@ -12,10 +12,13 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 
-import org.opendaylight.openflowplugin.extension.api.ConverterExtensionActionKey;
+import org.opendaylight.openflowjava.protocol.api.keys.experimenter.ExperimenterActionSerializerKey;
 import org.opendaylight.openflowplugin.extension.api.ConverterExtensionKey;
+import org.opendaylight.openflowplugin.extension.api.ConvertorFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorToOFJava;
+import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
 import org.opendaylight.openflowplugin.openflow.md.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.ActionSetNwDstReactor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.ActionSetNwSrcReactor;
@@ -101,8 +104,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.DlAddressActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.EthertypeAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.EthertypeActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.ExperimenterAction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.ExperimenterActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.ExperimenterIdAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.GroupIdAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.GroupIdActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.MaxLengthAction;
@@ -125,7 +127,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.VlanVidActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.VlanVidMatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.VlanVidMatchEntryBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.Experimenter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.Group;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.PopMpls;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.PopPbb;
@@ -146,6 +147,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Open
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.VlanVid;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.grouping.MatchEntries;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.grouping.MatchEntriesBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.ExtensionKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.grouping.Extension;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.grouping.ExtensionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.nodes.node.table.flow.instructions.instruction.instruction.write.actions._case.write.actions.action.action.ExtensionCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.nodes.node.table.flow.instructions.instruction.instruction.write.actions._case.write.actions.action.action.ExtensionCaseBuilder;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -241,17 +247,21 @@ public final class ActionConvertor {
                 ofAction = SalToOFSetTpDst(action, actionBuilder, version);
             else if (action instanceof SetNwTosActionCase)
                 ofAction = SalToOFSetNwTos(action, actionBuilder, version);
-            else {
+            else if (action instanceof ExtensionCase) {
                 
                 /**
                  * TODO:
                  * EXTENSION PROPOSAL
-                 * - we might need version for conversion and for key
+                 * - we might need sessionContext as converter input
                  */
-                ConverterExtensionActionKey key = new ConverterExtensionActionKey(action.getClass());
-                ConvertorToOFJava<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, Action> convertor = 
+                
+                ExtensionCase extensionCase = (ExtensionCase) action;
+                Extension extAction = extensionCase.getExtension();
+                ConverterExtensionKey<? extends ExtensionKey> key = new ConverterExtensionKey<>(extensionCase.getType(), version);
+                ConvertorToOFJava<Action> convertor = 
                         OFSessionUtil.getExtensionConvertorProvider().getConverter(key);
-                ofAction = convertor.convert(action, null);
+                ofAction = convertor.convert(extAction);
+                
             }
             
             if (ofAction != null) {
@@ -791,9 +801,28 @@ public final class ActionConvertor {
 
             } else if (action.getType().equals(
                     org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.Experimenter.class)) {
-                // bucketActions.add(ofToSALExperimenter(action));
-                // TODO: Need to explore/discuss on how to handle experimenter
-                // case.
+                /**
+                 * TODO:
+                 * EXTENSION PROPOSAL
+                 * - we might need version for conversion and for key
+                 * - we might also need a way on how to identify exact type of augmentation to be 
+                 *   used as match can be bound to multiple models
+                 * - use experimenterId (vendorId)
+                 */
+                ExperimenterActionSerializerKey key = new ExperimenterActionSerializerKey(
+                        ofVersion.getVersion(), action.getAugmentation(ExperimenterIdAction.class).getExperimenter().getValue());
+                        
+                ConvertorFromOFJava<Action, ActionPath> convertor = OFSessionUtil.getExtensionConvertorProvider().getConverter(key);
+                // TODO: choose path
+                Entry<Class<Augmentation<Extension>>, Augmentation<Extension>> extensionMatch = convertor.convert(
+                        action, 
+                        ActionPath.NODES_NODE_TABLE_FLOW_INSTRUCTIONS_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION_EXTENSIONLIST_EXTENSION);
+                ExtensionBuilder extBld = new ExtensionBuilder();
+                extBld.addAugmentation(extensionMatch.getKey(), extensionMatch.getValue());
+                // TODO: choose builder
+                ExtensionCaseBuilder extCaseBld = new ExtensionCaseBuilder();
+                extCaseBld.setExtension(extBld.build());
+                bucketActions.add(extCaseBld.build());
             }
 
         }

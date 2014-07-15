@@ -1,0 +1,81 @@
+module openflowplugin-extension-nicira-match {
+    yang-version 1;
+
+    namespace "urn:opendaylight:openflowplugin:extension:nicira:match";
+    prefix "openflowplugin-nicira-match";
+	
+	import yang-ext {prefix ext; revision-date "2013-07-09";}
+	import flow-node-inventory {prefix fni; revision-date 2013-08-19; }
+	import opendaylight-inventory {prefix inv;revision-date "2013-08-19";}
+	import sal-flow {prefix sal-flow;revision-date "2013-08-19";}
+    import packet-processing {prefix sal-packet;revision-date "2013-07-09";}
+    import openflowplugin-extension-general {prefix ext-gen;revision-date "2014-07-14";}
+    import opendaylight-flow-statistics {prefix odl-flow-stats;revision-date "2013-08-19";}
+    import nicira-match {prefix nicira-match;revision-date "2014-04-21";}
+
+    description 
+        "Nicira openflow match extensions.";
+
+    revision "2014-07-14" {
+        description "Initial revision";
+    }
+
+	grouping nxm-nx-match-reg-grouping {
+		container nxm-nx-reg {
+			leaf reg {
+                type identityref {
+                    base nicira-match:nxm-nx-reg;
+                }
+            }
+			uses nicira-match:ofj-nxm-nx-match-reg-grouping;
+		}
+	}
+    
+    // MATCH augmentations
+    // RPCS
+    augment "/sal-flow:add-flow/sal-flow:input/sal-flow:match/ext-gen:extension-list/ext-gen:extension" {
+        ext:augment-identifier "nx-aug-match-rpc-add-flow";
+        uses nxm-nx-match-reg-grouping;
+        uses nicira-match:ofj-nxm-nx-match-tun-id-grouping;
+    }
+    augment "/sal-flow:remove-flow/sal-flow:input/sal-flow:match/ext-gen:extension-list/ext-gen:extension" {
+        ext:augment-identifier "nx-aug-match-rpc-remove-flow";
+        uses nxm-nx-match-reg-grouping;
+        uses nicira-match:ofj-nxm-nx-match-tun-id-grouping;
+    }
+    augment "/sal-flow:update-flow/sal-flow:input/sal-flow:original-flow/sal-flow:match/ext-gen:extension-list/ext-gen:extension" {
+        ext:augment-identifier "nx-aug-match-rpc-update-flow-original";
+        uses nxm-nx-match-reg-grouping;
+        uses nicira-match:ofj-nxm-nx-match-tun-id-grouping;
+    }
+    augment "/sal-flow:update-flow/sal-flow:input/sal-flow:updated-flow/sal-flow:match/ext-gen:extension-list/ext-gen:extension" {
+        ext:augment-identifier "nx-aug-match-rpc-update-flow-updated";
+        uses nxm-nx-match-reg-grouping;
+        uses nicira-match:ofj-nxm-nx-match-tun-id-grouping;
+    }
+    
+    // DATA
+    augment "/inv:nodes/inv:node/fni:table/fni:flow/fni:match/ext-gen:extension-list/ext-gen:extension" {
+        ext:augment-identifier "nx-aug-match-nodes-node-table-flow";
+        uses nxm-nx-match-reg-grouping;
+        uses nicira-match:ofj-nxm-nx-match-tun-id-grouping;
+    }
+    
+    // NOTIFICATIONS
+    augment "/sal-flow:switch-flow-removed/sal-flow:match/ext-gen:extension-list/ext-gen:extension" {
+        ext:augment-identifier "nx-aug-match-notif-switch-flow-removed";
+        uses nxm-nx-match-reg-grouping;
+        uses nicira-match:ofj-nxm-nx-match-tun-id-grouping;
+    }
+    augment "/sal-packet:packet-received/sal-packet:match/ext-gen:extension-list/ext-gen:extension" {
+        ext:augment-identifier "nx-aug-match-notif-packet-in";
+        uses nxm-nx-match-reg-grouping;
+        uses nicira-match:ofj-nxm-nx-match-tun-id-grouping;
+    }
+    augment "/odl-flow-stats:flows-statistics-update/odl-flow-stats:flow-and-statistics-map-list/odl-flow-stats:match/ext-gen:extension-list/ext-gen:extension" {
+        ext:augment-identifier "nx-aug-match-notif-update-flow-stats";
+        uses nxm-nx-match-reg-grouping;
+        uses nicira-match:ofj-nxm-nx-match-tun-id-grouping;
+    }
+
+}
