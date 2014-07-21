@@ -356,74 +356,6 @@ public class ConnectionConductorImplTest {
 
     /**
      * Test method for
-     * {@link org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductorImpl#onExperimenterMessage(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterMessage)}
-     * .
-     * @throws InterruptedException
-     */
-    @Test
-    public void testOnExperimenterMessage1() throws InterruptedException {
-        simulateV13PostHandshakeState(connectionConductor);
-        
-        eventPlan.add(0,
-                EventFactory.createDefaultWaitForRpcEvent(42, "experimenter"));
-        ExperimenterMessageBuilder builder1 = new ExperimenterMessageBuilder();
-        builder1.setExperimenter(84L).setExpType(4L);
-        eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L,
-                EventFactory.DEFAULT_VERSION, builder1));
-
-        executeLater();
-
-        Runnable sendExperimenterCmd = new Runnable() {
-
-            @Override
-            public void run() {
-                ExperimenterInputBuilder builder2 = new ExperimenterInputBuilder();
-                builder2.setExperimenter(84L).setExpType(4L);
-                EventFactory.setupHeader(42L, builder2);
-                adapter.experimenter(builder2.build());
-            }
-        };
-        pool.schedule(sendExperimenterCmd,
-                ConnectionAdapterStackImpl.JOB_DELAY, TimeUnit.MILLISECONDS);
-    }
-
-    /**
-     * Test method for
-     * {@link org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductorImpl#onExperimenterMessage(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterMessage)}
-     * .
-     * @throws InterruptedException
-     */
-    @Test
-    public void testOnExperimenterMessage2() throws InterruptedException {
-        simulateV13PostHandshakeState(connectionConductor);
-        
-        eventPlan.add(0,
-                EventFactory.createDefaultWaitForRpcEvent(42, "experimenter"));
-        ErrorMessageBuilder builder1 = new ErrorMessageBuilder();
-        builder1.setType(ErrorType.BADREQUEST.getIntValue()).setCode(3)
-                .setData(new byte[] { 1, 2, 3 });
-
-        eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L,
-                EventFactory.DEFAULT_VERSION, builder1));
-
-        executeLater();
-
-        Runnable sendExperimenterCmd = new Runnable() {
-
-            @Override
-            public void run() {
-                ExperimenterInputBuilder builder2 = new ExperimenterInputBuilder();
-                builder2.setExperimenter(84L).setExpType(4L);
-                EventFactory.setupHeader(42L, builder2);
-                adapter.experimenter(builder2.build());
-            }
-        };
-        pool.schedule(sendExperimenterCmd,
-                ConnectionAdapterStackImpl.JOB_DELAY, TimeUnit.MILLISECONDS);
-    }
-
-    /**
-     * Test method for
      * {@link org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductorImpl#onFlowRemovedMessage(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemovedMessage)}
      * .
      * @throws InterruptedException
@@ -634,33 +566,6 @@ public class ConnectionConductorImplTest {
             ConnectionConductorImplTest.this.incrErrorMessageCounter();
             return null;
         }
-    }
-
-    /**
-     * Test method for
-     * {@link org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductorImpl#onExperimenterMessage(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterMessage)}
-     * .
-     * @throws InterruptedException
-     */
-    @Test
-    public void testOnExperimenterMessage() throws InterruptedException {
-        simulateV13PostHandshakeState(connectionConductor);
-        
-        ExperimenterMessageBuilder builder1 = new ExperimenterMessageBuilder();
-        builder1.setVersion((short) 4);
-        builder1.setExperimenter(84L).setExpType(4L);
-        connectionConductor.onExperimenterMessage(builder1.build());
-        synchronized (popListener) {
-            popListener.wait(maxProcessingTimeout);
-        }
-        Assert.assertEquals(1, experimenterMessageCounter);
-
-        builder1.setExperimenter(85L).setExpType(4L);
-        connectionConductor.onExperimenterMessage(builder1.build());
-        synchronized (popListener) {
-            popListener.wait(maxProcessingTimeout);
-        }
-        Assert.assertEquals(2, experimenterMessageCounter);
     }
 
     /**

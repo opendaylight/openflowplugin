@@ -25,6 +25,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.band.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.band.type.band.type.Experimenter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.MeterBandHeaders;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.MeterBandHeader;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.ExperimenterIdMeterBand;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.ExperimenterIdMeterBandBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ExperimenterId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterBandType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterId;
@@ -157,7 +160,10 @@ public final class MeterConvertor {
                         Experimenter experimenter = (Experimenter) meterBandHeader.getBandType();
                         meterBandExperimenterBuilder.setBurstSize(experimenter.getExperimenterBurstSize());
                         meterBandExperimenterBuilder.setRate(experimenter.getExperimenterRate());
-                        meterBandExperimenterBuilder.setExperimenter(experimenter.getExperimenter());
+                        ExperimenterIdMeterBandBuilder expBuilder = new ExperimenterIdMeterBandBuilder();
+                        expBuilder.setExperimenter(new ExperimenterId(experimenter.getExperimenter()));
+                        meterBandExperimenterBuilder.addAugmentation(ExperimenterIdMeterBand.class, expBuilder.build());
+                        // TODO - implement / finish experimenter meter band translation
                         experimenterCaseBuilder.setMeterBandExperimenter(meterBandExperimenterBuilder.build());
                         meterBandItem = experimenterCaseBuilder.build();
                         bandsB = new BandsBuilder();
