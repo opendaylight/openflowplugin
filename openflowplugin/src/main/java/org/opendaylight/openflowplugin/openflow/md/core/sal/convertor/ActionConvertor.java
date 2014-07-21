@@ -137,8 +137,6 @@ public final class ActionConvertor {
                 ofAction = SalToOFPushPbbAction(action, actionBuilder);
             else if (action instanceof PopPbbActionCase)
                 ofAction = SalToOFPopPBB(actionBuilder);
-            else if (action instanceof ExperimenterAction)
-                ofAction = SalToOFExperimenter(action, actionBuilder);
 
                 // 1.0 Actions
             else if (action instanceof SetVlanIdActionCase)
@@ -263,19 +261,6 @@ public final class ActionConvertor {
     private static Action SalToOFPopPBB(ActionBuilder actionBuilder) {
         actionBuilder.setType(PopPbb.class);
         return emtpyAction(actionBuilder);
-    }
-
-    private static Action SalToOFExperimenter(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
-            ActionBuilder actionBuilder) {
-        ExperimenterActionBuilder experimenterActionBuilder = new ExperimenterActionBuilder();
-        experimenterActionBuilder.setExperimenter(((ExperimenterAction) action).getExperimenter());
-        actionBuilder.setType(Experimenter.class);
-        actionBuilder
-                .addAugmentation(
-                        ExperimenterAction.class,
-                        (Augmentation<Action>) experimenterActionBuilder);
-        return actionBuilder.build();
     }
 
     private static Action SalToOFSetVlanId(
@@ -878,14 +863,4 @@ public final class ActionConvertor {
         return new PushPbbActionCaseBuilder().setPushPbbAction(pushPbbAction.build()).build();
     }
 
-    public static Object ofToSALExperimenter(Action action) {
-
-        ExperimenterAction ExperimenterAction = action.getAugmentation(ExperimenterAction.class);
-
-        return null;
-        /*
-         * TODO: Need to explore/discuss about how to handle experimenter
-         */
-
-    }
 }

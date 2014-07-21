@@ -30,6 +30,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.MeterBandHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.MeterBandHeaderBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.meter.band.header.MeterBandTypesBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.ExperimenterIdMeterBand;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterModCommand;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MeterModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MeterModInputBuilder;
@@ -154,7 +155,9 @@ public class MeterConvertorTest {
                         ((MeterBandExperimenterCase) meterBand).getMeterBandExperimenter().getType());
                 Assert.assertEquals((long) 12, (long) ((MeterBandExperimenterCase) meterBand).getMeterBandExperimenter().getBurstSize());
                 Assert.assertEquals((long) 22, (long) ((MeterBandExperimenterCase) meterBand).getMeterBandExperimenter().getRate());
-                Assert.assertEquals((long) 23, (long) ((MeterBandExperimenterCase) meterBand).getMeterBandExperimenter().getExperimenter());
+                ExperimenterIdMeterBand expBand = ((MeterBandExperimenterCase) meterBand).getMeterBandExperimenter()
+                        .getAugmentation(ExperimenterIdMeterBand.class);
+                Assert.assertEquals((long) 23, (long) expBand.getExperimenter().getValue());
 
             }
 
@@ -274,7 +277,9 @@ public class MeterConvertorTest {
                         ((MeterBandExperimenterCase) meterBand).getMeterBandExperimenter().getType());
                 Assert.assertEquals((long) 12, (long) ((MeterBandExperimenterCase) meterBand).getMeterBandExperimenter().getBurstSize());
                 Assert.assertEquals((long) 22, (long) ((MeterBandExperimenterCase) meterBand).getMeterBandExperimenter().getRate());
-                Assert.assertEquals((long) 23, (long) ((MeterBandExperimenterCase) meterBand).getMeterBandExperimenter().getExperimenter());
+                ExperimenterIdMeterBand expBand = ((MeterBandExperimenterCase) meterBand).getMeterBandExperimenter()
+                        .getAugmentation(ExperimenterIdMeterBand.class);
+                Assert.assertEquals((long) 23, (long) expBand.getExperimenter().getValue());
 
             }
 
@@ -415,7 +420,9 @@ public class MeterConvertorTest {
                         ((MeterBandExperimenterCase) meterBand).getMeterBandExperimenter().getType());
                 Assert.assertEquals((long) 12, (long) ((MeterBandExperimenterCase) meterBand).getMeterBandExperimenter().getBurstSize());
                 Assert.assertEquals((long) 22, (long) ((MeterBandExperimenterCase) meterBand).getMeterBandExperimenter().getRate());
-                Assert.assertEquals((long) 23, (long) ((MeterBandExperimenterCase) meterBand).getMeterBandExperimenter().getExperimenter());
+                ExperimenterIdMeterBand expBand = ((MeterBandExperimenterCase) meterBand).getMeterBandExperimenter()
+                        .getAugmentation(ExperimenterIdMeterBand.class);
+                Assert.assertEquals((long) 23, (long) expBand.getExperimenter().getValue());
 
             }
 
