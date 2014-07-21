@@ -187,8 +187,13 @@ public class OpenflowPortsUtilTest {
         portNumber = new CommonPort.PortNumber(OutputPortValues.FLOOD.toString());
         Assert.assertEquals("FLOOD", OpenflowPortsUtil.portNumberToString(portNumber));
         
-        portNumber = new CommonPort.PortNumber((String) null);
-        Assert.assertNull(OpenflowPortsUtil.portNumberToString(portNumber));
+        try {
+            portNumber = new CommonPort.PortNumber((String) null);
+            Assert.fail("NPE was expected - due to value type");
+        } catch (Exception e) {
+            // expected
+            Assert.assertEquals(NullPointerException.class, e.getClass());
+        }
     }
 
 }
