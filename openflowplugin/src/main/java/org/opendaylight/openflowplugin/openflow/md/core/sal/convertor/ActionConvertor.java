@@ -64,6 +64,8 @@ import org.opendaylight.yangtools.yang.binding.Augmentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Ordering;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
@@ -96,7 +98,7 @@ public final class ActionConvertor {
     {
         List<Action> actionsList = new ArrayList<>();
         Action ofAction;
-
+        actions = Ordering.from(ActionComparator.toInstance()).sortedCopy(actions);
         for (int actionItem = 0; actionItem < actions.size(); actionItem++) {
             ofAction = null;
             ActionBuilder actionBuilder = new ActionBuilder();
