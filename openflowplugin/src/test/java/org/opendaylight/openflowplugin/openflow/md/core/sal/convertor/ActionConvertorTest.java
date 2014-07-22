@@ -9,10 +9,6 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -98,6 +94,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Ipv6
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Ipv6Src;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.grouping.MatchEntries;
 
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * test for {@link ActionConvertor}
  */
@@ -151,7 +151,7 @@ public class ActionConvertorTest {
         SetFieldBuilder setFB = new SetFieldBuilder();
 
         ActionBuilder AB = new ActionBuilder();
-        AB.setAction(new SetFieldCaseBuilder().setSetField(setFB.build()).build());
+        AB.setOrder(actionItem).setAction(new SetFieldCaseBuilder().setSetField(setFB.build()).build());
 
         actions.add(actionItem++, AB.build());
 
@@ -162,14 +162,14 @@ public class ActionConvertorTest {
         pushpbb.setEthernetType(10);
 
         ActionBuilder AB = new ActionBuilder();
-        AB.setAction(new PushPbbActionCaseBuilder().setPushPbbAction(pushpbb.build()).build());
+        AB.setOrder(actionItem).setAction(new PushPbbActionCaseBuilder().setPushPbbAction(pushpbb.build()).build());
 
         actions.add(actionItem++, AB.build());
 
         PopPbbActionBuilder popPBB = new PopPbbActionBuilder();
 
         ActionBuilder AB1 = new ActionBuilder();
-        AB1.setAction(new PopPbbActionCaseBuilder().setPopPbbAction(popPBB.build()).build());
+        AB1.setOrder(actionItem).setAction(new PopPbbActionCaseBuilder().setPopPbbAction(popPBB.build()).build());
 
         actions.add(actionItem++, AB1.build());
 
@@ -180,7 +180,7 @@ public class ActionConvertorTest {
 
         setNwTtlActionBuilder.setNwTtl((short) 1);
         ActionBuilder AB = new ActionBuilder();
-        AB.setAction(new SetNwTtlActionCaseBuilder().setSetNwTtlAction(setNwTtlActionBuilder.build()).build());
+        AB.setOrder(actionItem).setAction(new SetNwTtlActionCaseBuilder().setSetNwTtlAction(setNwTtlActionBuilder.build()).build());
 
         actions.add(actionItem++, AB.build());
 
@@ -188,7 +188,7 @@ public class ActionConvertorTest {
 
 
         ActionBuilder AB1 = new ActionBuilder();
-        AB1.setAction(new DecNwTtlCaseBuilder().setDecNwTtl(necNwTtlBuilder.build()).build());
+        AB1.setOrder(actionItem).setAction(new DecNwTtlCaseBuilder().setDecNwTtl(necNwTtlBuilder.build()).build());
 
         actions.add(actionItem++, AB1.build());
 
@@ -200,7 +200,7 @@ public class ActionConvertorTest {
         grpIdAB.setGroup("98");
 
         ActionBuilder AB = new ActionBuilder();
-        AB.setAction(new GroupActionCaseBuilder().setGroupAction(grpIdAB.build()).build());
+        AB.setOrder(actionItem).setAction(new GroupActionCaseBuilder().setGroupAction(grpIdAB.build()).build());
 
         actions.add(actionItem++, AB.build());
 
@@ -351,7 +351,7 @@ public class ActionConvertorTest {
         outputB.setOutputNodeConnector(uri);
 
         ActionBuilder AB = new ActionBuilder();
-        AB.setAction(new OutputActionCaseBuilder().setOutputAction(outputB.build()).build());
+        AB.setOrder(actionItem).setAction(new OutputActionCaseBuilder().setOutputAction(outputB.build()).build());
 
         actions.add(actionItem++, AB.build());
 
@@ -361,14 +361,14 @@ public class ActionConvertorTest {
         CopyTtlOutBuilder copyB = new CopyTtlOutBuilder();
 
         ActionBuilder AB = new ActionBuilder();
-        AB.setAction(new CopyTtlOutCaseBuilder().setCopyTtlOut(copyB.build()).build());
+        AB.setOrder(actionItem).setAction(new CopyTtlOutCaseBuilder().setCopyTtlOut(copyB.build()).build());
 
         actions.add(actionItem++, AB.build());
 
         CopyTtlInBuilder copyTtlInBuilder = new CopyTtlInBuilder();
 
         ActionBuilder AB1 = new ActionBuilder();
-        AB1.setAction(new CopyTtlInCaseBuilder().setCopyTtlIn(copyTtlInBuilder.build()).build());
+        AB1.setOrder(actionItem).setAction(new CopyTtlInCaseBuilder().setCopyTtlIn(copyTtlInBuilder.build()).build());
 
         actions.add(actionItem++, AB1.build());
 
@@ -380,7 +380,7 @@ public class ActionConvertorTest {
 
         setMplsTtlActionB.setMplsTtl((short) 10);
         ActionBuilder AB1 = new ActionBuilder();
-        AB1.setAction(new SetMplsTtlActionCaseBuilder().setSetMplsTtlAction(setMplsTtlActionB.build()).build());
+        AB1.setOrder(actionItem).setAction(new SetMplsTtlActionCaseBuilder().setSetMplsTtlAction(setMplsTtlActionB.build()).build());
 
 
         actions.add(actionItem++, AB1.build());
@@ -388,7 +388,7 @@ public class ActionConvertorTest {
         DecMplsTtlBuilder decMplsTtlB = new DecMplsTtlBuilder();
 
         ActionBuilder AB = new ActionBuilder();
-        AB.setAction(new DecMplsTtlCaseBuilder().setDecMplsTtl(decMplsTtlB.build()).build());
+        AB.setOrder(actionItem).setAction(new DecMplsTtlCaseBuilder().setDecMplsTtl(decMplsTtlB.build()).build());
 
         actions.add(actionItem++, AB1.build());
     }
@@ -399,14 +399,14 @@ public class ActionConvertorTest {
         pvB.setVlanId(new VlanId(10));
 
         ActionBuilder AB1 = new ActionBuilder();
-        AB1.setAction(new PushVlanActionCaseBuilder().setPushVlanAction(pvB.build()).build());
+        AB1.setOrder(actionItem).setAction(new PushVlanActionCaseBuilder().setPushVlanAction(pvB.build()).build());
 
         actions.add(actionItem++, AB1.build());
 
         PopVlanActionBuilder popVAB = new PopVlanActionBuilder();
 
         ActionBuilder AB = new ActionBuilder();
-        AB.setAction(new PopVlanActionCaseBuilder().setPopVlanAction(popVAB.build()).build());
+        AB.setOrder(actionItem).setAction(new PopVlanActionCaseBuilder().setPopVlanAction(popVAB.build()).build());
 
         actions.add(actionItem++, AB.build());
 
@@ -418,7 +418,7 @@ public class ActionConvertorTest {
         pushMB.setEthernetType(10);
 
         ActionBuilder AB = new ActionBuilder();
-        AB.setAction(new PushMplsActionCaseBuilder().setPushMplsAction(pushMB.build()).build());
+        AB.setOrder(actionItem).setAction(new PushMplsActionCaseBuilder().setPushMplsAction(pushMB.build()).build());
 
         actions.add(actionItem++, AB.build());
 
@@ -426,7 +426,7 @@ public class ActionConvertorTest {
         popMB.setEthernetType(10);
 
         ActionBuilder AB1 = new ActionBuilder();
-        AB1.setAction(new PopMplsActionCaseBuilder().setPopMplsAction(popMB.build()).build());
+        AB1.setOrder(actionItem).setAction(new PopMplsActionCaseBuilder().setPopMplsAction(popMB.build()).build());
 
         actions.add(actionItem++, AB1.build());
     }
@@ -455,7 +455,7 @@ public class ActionConvertorTest {
         setQB.setQueue("99");
 
         ActionBuilder AB1 = new ActionBuilder();
-        AB1.setAction(new SetQueueActionCaseBuilder().setSetQueueAction(setQB.build()).build());
+        AB1.setOrder(actionItem).setAction(new SetQueueActionCaseBuilder().setSetQueueAction(setQB.build()).build());
 
         actions.add(actionItem++, AB1.build());
 
