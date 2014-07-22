@@ -8,6 +8,8 @@
 package org.opendaylight.openflowplugin.openflow.md.core;
 
 
+import java.util.Collections;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.HelloElementType;
@@ -31,7 +33,7 @@ public class MessageFactoryTest {
         HelloInput helloMsg = MessageFactory.createHelloInput(highestVersion, xid);
         Assert.assertEquals(highestVersion, helloMsg.getVersion().shortValue());
         Assert.assertEquals(xid, helloMsg.getXid().longValue());
-        Assert.assertNull(helloMsg.getElements());
+        Assert.assertEquals(Collections.<Elements>emptyList(), helloMsg.getElements());
     }
 
     /**
