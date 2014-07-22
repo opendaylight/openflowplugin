@@ -22,6 +22,7 @@ import org.opendaylight.openflowplugin.openflow.md.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.ActionExtensionHelper;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.ActionSetNwDstReactor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.ActionSetNwSrcReactor;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.OrderComparator;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchConvertorImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchReactor;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
@@ -152,6 +153,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ge
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Ordering;
+
 /**
  * @author usha@ericsson Action List:This class takes data from SAL layer and
  *         converts into OF Data
@@ -175,11 +178,12 @@ public final class ActionConvertor {
      */
     public static List<Action> getActions(
             List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> actions,
-            short version, BigInteger datapathid)
-
-    {
+            short version, BigInteger datapathid) {
         List<Action> actionsList = new ArrayList<>();
         Action ofAction;
+
+        actions = Ordering.from(OrderComparator.<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>toInstance())
+            .sortedCopy(actions);
 
         for (int actionItem = 0; actionItem < actions.size(); actionItem++) {
             ofAction = null;
