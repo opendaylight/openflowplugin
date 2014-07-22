@@ -55,19 +55,21 @@ public class GroupConvertorTest {
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> actionsList = new ArrayList<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>();
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> actionsList1 = new ArrayList<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>();
 
+        int actionOrder = 0;
+
         // Action1
         GroupActionBuilder groupActionBuilder = new GroupActionBuilder();
         groupActionBuilder.setGroup("005");
         GroupAction groupIdaction = groupActionBuilder.build();
         ActionBuilder actionsB = new ActionBuilder();
-        actionsB.setAction(new GroupActionCaseBuilder().setGroupAction(groupIdaction).build());
+        actionsB.setOrder(actionOrder++).setAction(new GroupActionCaseBuilder().setGroupAction(groupIdaction).build());
 
         // Action2:
         GroupActionBuilder groupActionBuilder1 = new GroupActionBuilder();
         groupActionBuilder1.setGroup("006");
         GroupAction groupIdaction1 = groupActionBuilder.build();
         ActionBuilder actionsB1 = new ActionBuilder();
-        actionsB1.setAction(new GroupActionCaseBuilder().setGroupAction(groupIdaction1).build());
+        actionsB1.setOrder(actionOrder++).setAction(new GroupActionCaseBuilder().setGroupAction(groupIdaction1).build());
 
         actionsList.add(actionsB.build());
         actionsList.add(actionsB1.build());
@@ -94,7 +96,7 @@ public class GroupConvertorTest {
         CopyTtlInBuilder copyTtlB = new CopyTtlInBuilder();
         CopyTtlIn copyTtl = copyTtlB.build();
         ActionBuilder actionsB2 = new ActionBuilder();
-        actionsB2.setAction(new CopyTtlInCaseBuilder().setCopyTtlIn(copyTtl).build());
+        actionsB2.setOrder(actionOrder++).setAction(new CopyTtlInCaseBuilder().setCopyTtlIn(copyTtl).build());
 
         // Action2:
         SetMplsTtlActionBuilder setMplsTtlActionBuilder = new SetMplsTtlActionBuilder();
@@ -102,7 +104,7 @@ public class GroupConvertorTest {
         SetMplsTtlAction setMAction = setMplsTtlActionBuilder.build();
         ActionBuilder actionsB3 = new ActionBuilder();
 
-        actionsB3.setAction(new SetMplsTtlActionCaseBuilder().setSetMplsTtlAction(setMAction).build());
+        actionsB3.setOrder(actionOrder++).setAction(new SetMplsTtlActionCaseBuilder().setSetMplsTtlAction(setMAction).build());
 
 
         actionsList1.add(actionsB2.build());
@@ -181,6 +183,8 @@ public class GroupConvertorTest {
     @Test
     public void testGroupModConvertorBucketwithNOWieghtValuesForGroupTypeFastFailure() {
 
+        int actionOrder = 0;
+
         AddGroupInputBuilder addGroupBuilder = new AddGroupInputBuilder();
 
         addGroupBuilder.setGroupId(new GroupId(10L));
@@ -191,9 +195,9 @@ public class GroupConvertorTest {
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> actionsList1 = new ArrayList<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>();
 
         // Action1: 005
-        actionsList.add(assembleActionBuilder("005").build());
+        actionsList.add(assembleActionBuilder("005", actionOrder++).build());
         // Action2: 006
-        actionsList.add(assembleActionBuilder("006").build());
+        actionsList.add(assembleActionBuilder("006", actionOrder++).build());
         // .. and mr.Bond is not coming today
 
         BucketsBuilder bucketsB = new BucketsBuilder();
@@ -210,9 +214,9 @@ public class GroupConvertorTest {
         BucketBuilder bucketB1 = new BucketBuilder();
 
         // Action1
-        actionsList1.add(assembleCopyTtlInBuilder().build());
+        actionsList1.add(assembleCopyTtlInBuilder(actionOrder++).build());
         // Action2:
-        actionsList1.add(assembleSetMplsTtlActionBuilder().build());
+        actionsList1.add(assembleSetMplsTtlActionBuilder(actionOrder++).build());
 
         bucketB1.setAction(actionsList1);
 
@@ -254,25 +258,25 @@ public class GroupConvertorTest {
     /**
      * @return
      */
-    private static ActionBuilder assembleSetMplsTtlActionBuilder() {
+    private static ActionBuilder assembleSetMplsTtlActionBuilder(int actionOrder) {
         SetMplsTtlActionBuilder setMplsTtlActionBuilder = new SetMplsTtlActionBuilder();
         setMplsTtlActionBuilder.setMplsTtl((short) 0X1);
         SetMplsTtlActionCaseBuilder setMplsTtlActionCaseBuilder = new SetMplsTtlActionCaseBuilder();
         setMplsTtlActionCaseBuilder.setSetMplsTtlAction(setMplsTtlActionBuilder.build());
         ActionBuilder actionsB3 = new ActionBuilder();
-        actionsB3.setAction(setMplsTtlActionCaseBuilder.build());
+        actionsB3.setOrder(actionOrder).setAction(setMplsTtlActionCaseBuilder.build());
         return actionsB3;
     }
 
     /**
      * @return
      */
-    private static ActionBuilder assembleCopyTtlInBuilder() {
+    private static ActionBuilder assembleCopyTtlInBuilder(int actionOrder) {
         CopyTtlInBuilder copyTtlB = new CopyTtlInBuilder();
         CopyTtlInCaseBuilder copyTtlInCaseBuilder = new CopyTtlInCaseBuilder();
         copyTtlInCaseBuilder.setCopyTtlIn(copyTtlB.build());
         ActionBuilder actionsB2 = new ActionBuilder();
-        actionsB2.setAction(copyTtlInCaseBuilder.build());
+        actionsB2.setOrder(actionOrder).setAction(copyTtlInCaseBuilder.build());
         return actionsB2;
     }
 
@@ -281,13 +285,13 @@ public class GroupConvertorTest {
      * @return 
      * 
      */
-    private static ActionBuilder assembleActionBuilder(String groupName) {
+    private static ActionBuilder assembleActionBuilder(String groupName, int actionOrder) {
         GroupActionBuilder groupActionBuilder = new GroupActionBuilder();
         groupActionBuilder.setGroup(groupName);
         GroupActionCaseBuilder groupActionCaseBuilder = new GroupActionCaseBuilder();
         groupActionCaseBuilder.setGroupAction(groupActionBuilder.build());
         ActionBuilder actionsBld = new ActionBuilder();
-        actionsBld.setAction(groupActionCaseBuilder.build());
+        actionsBld.setOrder(actionOrder).setAction(groupActionCaseBuilder.build());
         return actionsBld;
     }
 
@@ -296,6 +300,8 @@ public class GroupConvertorTest {
      */
     @Test
     public void testGroupModConvertorBucketwithNOWieghtValuesForGroupTypeAll() {
+
+        int actionOrder = 0;
 
         AddGroupInputBuilder addGroupBuilder = new AddGroupInputBuilder();
 
@@ -307,9 +313,9 @@ public class GroupConvertorTest {
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> actionsList1 = new ArrayList<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>();
 
         // Action1
-        actionsList.add(assembleActionBuilder("005").build());
+        actionsList.add(assembleActionBuilder("005", actionOrder++).build());
         // Action2:
-        actionsList.add(assembleActionBuilder("006").build());
+        actionsList.add(assembleActionBuilder("006", actionOrder++).build());
 
         BucketsBuilder bucketsB = new BucketsBuilder();
 
@@ -323,9 +329,9 @@ public class GroupConvertorTest {
         BucketBuilder bucketB1 = new BucketBuilder();
 
         // Action1
-        actionsList1.add(assembleCopyTtlInBuilder().build());
+        actionsList1.add(assembleCopyTtlInBuilder(actionOrder++).build());
         // Action2:
-        actionsList1.add(assembleSetMplsTtlActionBuilder().build());
+        actionsList1.add(assembleSetMplsTtlActionBuilder(actionOrder++).build());
 
         bucketB1.setAction(actionsList);
 
