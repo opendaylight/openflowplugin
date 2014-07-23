@@ -45,8 +45,8 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
                  <truststore-path-type>CLASSPATH</truststore-path-type>
                  <truststore-password>opendaylight</truststore-password>
                  <certificate-password>opendaylight</certificate-password>
-               </tls>
-        </module> -->
+               </tls> -->
+        </module>
         <!-- default OF-switch-connection-provider (port 6653) -->
         <module>
           <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:openflow:switch:connection:provider:impl">prefix:openflow-switch-connection-provider-impl</type>
@@ -70,8 +70,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
                  <truststore-path-type>CLASSPATH</truststore-path-type>
                  <truststore-password>opendaylight</truststore-password>
                  <certificate-password>opendaylight</certificate-password>
-               </tls>
-        </module> -->
+               </tls> -->
         </module>
 
 
