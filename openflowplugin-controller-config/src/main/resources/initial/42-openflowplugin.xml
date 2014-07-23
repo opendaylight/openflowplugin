@@ -28,6 +28,25 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
           <name>openflow-switch-connection-provider-default-impl</name>
           <port>6633</port>
           <switch-idle-timeout>15000</switch-idle-timeout>
+<!--           Exemplary TLS configuration:
+                - uncomment the <tls> tag
+                - copy exemplary-switch-privkey.pem, exemplary-switch-cert.pem and exemplary-cacert.pem
+                  files into your virtual machine
+                - set VM encryption options to use copied keys
+                - start communication
+               Please visit OpenflowPlugin or Openflow Protocol Library#Documentation wiki pages
+               for detailed information regarding TLS -->
+<!--           <tls>
+                 <keystore>/exemplary-ctlKeystore</keystore>
+                 <keystore-type>JKS</keystore-type>
+                 <keystore-path-type>CLASSPATH</keystore-path-type>
+                 <keystore-password>opendaylight</keystore-password>
+                 <truststore>/exemplary-ctlTrustStore</truststore>
+                 <truststore-type>JKS</truststore-type>
+                 <truststore-path-type>CLASSPATH</truststore-path-type>
+                 <truststore-password>opendaylight</truststore-password>
+                 <certificate-password>opendaylight</certificate-password>
+               </tls> -->
         </module>
         <!-- default OF-switch-connection-provider (port 6653) -->
         <module>
@@ -35,6 +54,25 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
           <name>openflow-switch-connection-provider-legacy-impl</name>
           <port>6653</port>
           <switch-idle-timeout>15000</switch-idle-timeout>
+<!--           Exemplary TLS configuration:
+                - uncomment the <tls> tag
+                - copy exemplary-switch-privkey.pem, exemplary-switch-cert.pem and exemplary-cacert.pem
+                  files into your virtual machine
+                - set VM encryption options to use copied keys
+                - start communication
+               Please visit OpenflowPlugin or Openflow Protocol Library#Documentation wiki pages
+               for detailed information regarding TLS -->
+<!--           <tls>
+                 <keystore>/exemplary-ctlKeystore</keystore>
+                 <keystore-type>JKS</keystore-type>
+                 <keystore-path-type>CLASSPATH</keystore-path-type>
+                 <keystore-password>opendaylight</keystore-password>
+                 <truststore>/exemplary-ctlTrustStore</truststore>
+                 <truststore-type>JKS</truststore-type>
+                 <truststore-path-type>CLASSPATH</truststore-path-type>
+                 <truststore-password>opendaylight</truststore-password>
+                 <certificate-password>opendaylight</certificate-password>
+               </tls> -->
         </module>
 
 
