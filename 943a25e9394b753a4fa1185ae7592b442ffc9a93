@@ -1,0 +1,89 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa82b9bf_2bfb17c2",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/ModelDrivenSwitchImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 237,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2014-07-25T11:05:38Z",
+      "side": 1,
+      "message": "remove unused method",
+      "revId": "943a25e9394b753a4fa1185ae7592b442ffc9a93",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_4bf8dbc2",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/ModelDrivenSwitchImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 247,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2014-07-25T11:05:38Z",
+      "side": 1,
+      "message": "remove unused method",
+      "revId": "943a25e9394b753a4fa1185ae7592b442ffc9a93",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_eb00cfac",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/ModelDrivenSwitchImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 255,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2014-07-25T11:05:38Z",
+      "side": 1,
+      "message": "remove unused method",
+      "revId": "943a25e9394b753a4fa1185ae7592b442ffc9a93",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_0bfe53ae",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/ModelDrivenSwitchImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 430,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2014-07-25T11:05:38Z",
+      "side": 1,
+      "message": "remove unused method",
+      "revId": "943a25e9394b753a4fa1185ae7592b442ffc9a93",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_ab2e4741",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/OFRpcTaskFactory.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 269,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2014-07-25T11:05:38Z",
+      "side": 1,
+      "message": "why is this not used?",
+      "revId": "943a25e9394b753a4fa1185ae7592b442ffc9a93",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
