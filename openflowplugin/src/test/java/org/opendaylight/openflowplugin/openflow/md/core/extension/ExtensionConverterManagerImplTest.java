@@ -15,12 +15,12 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.protocol.api.keys.experimenter.ExperimenterActionSerializerKey;
-import org.opendaylight.openflowplugin.extension.api.ConverterExtensionKey;
-import org.opendaylight.openflowplugin.extension.api.ConvertorFromOFJava;
-import org.opendaylight.openflowplugin.extension.api.ConvertorToOFJava;
+import org.opendaylight.openflowplugin.extension.api.ConvertorActionFromOFJava;
+import org.opendaylight.openflowplugin.extension.api.ConvertorActionToOFJava;
+import org.opendaylight.openflowplugin.extension.api.TypeVersionKey;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.ExperimenterActionSubType;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.ExtensionKey;
 
 /**
  * {@link ExtensionConverterManagerImpl} test
@@ -30,10 +30,10 @@ public class ExtensionConverterManagerImplTest {
     
     private ExtensionConverterManagerImpl manager;
     @Mock
-    private ConvertorToOFJava<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action> extConvertorToOFJava;
-    private ConverterExtensionKey<TestingExtensionKey> keyToOFJava;
+    private ConvertorActionToOFJava<Action, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action> extConvertorToOFJava;
+    private TypeVersionKey<? extends Action> keyToOFJava;
     @Mock
-    private ConvertorFromOFJava<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action, ActionPath> extConvertorFromOFJava;
+    private ConvertorActionFromOFJava<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action, ActionPath> extConvertorFromOFJava;
     private ExperimenterActionSerializerKey keyFromOFJava;
     private AutoCloseable regFromOFJava;
     private AutoCloseable regToOFJava;
@@ -47,7 +47,7 @@ public class ExtensionConverterManagerImplTest {
         keyFromOFJava = new ExperimenterActionSerializerKey((short) 1, 42L, ExpSubType.class);
         regFromOFJava = manager.registerActionConvertor(keyFromOFJava, extConvertorFromOFJava);
         
-        keyToOFJava = new ConverterExtensionKey<>(TestingExtensionKey.class, (short) 1);
+        keyToOFJava = new TypeVersionKey<>(ActionExpCase.class, (short) 1);
         regToOFJava = manager.registerActionConvertor(keyToOFJava, extConvertorToOFJava);
     }
     
@@ -94,15 +94,14 @@ public class ExtensionConverterManagerImplTest {
      */
     @Test
     public void testGetConverterMessageTypeKeyOfQ() {
-        Assert.assertEquals(extConvertorFromOFJava, manager.getConverter(keyFromOFJava));
-    }
-    
-    
-    private static class TestingExtensionKey extends ExtensionKey {
-        // nobody, just child for testing purposes 
+        Assert.assertEquals(extConvertorFromOFJava, manager.getActionConverter(keyFromOFJava));
     }
     
     private static class ExpSubType extends ExperimenterActionSubType {
+        // NOOP
+    }
+    
+    private static interface ActionExpCase extends Action {
         // NOOP
     }
 

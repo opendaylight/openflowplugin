@@ -9,12 +9,16 @@ package org.opendaylight.openflowplugin.openflow.md.core.extension;
 
 import org.opendaylight.openflowjava.protocol.api.extensibility.MessageTypeKey;
 import org.opendaylight.openflowplugin.extension.api.ConverterExtensionKey;
+import org.opendaylight.openflowplugin.extension.api.ConvertorActionFromOFJava;
+import org.opendaylight.openflowplugin.extension.api.ConvertorActionToOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorToOFJava;
+import org.opendaylight.openflowplugin.extension.api.TypeVersionKey;
 import org.opendaylight.openflowplugin.extension.api.path.AugmentationPath;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.ExtensionKey;
 import org.opendaylight.yangtools.concepts.ObjectRegistration;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
 
 /**
  * @param <KEY> converter key
@@ -87,6 +91,32 @@ public abstract class RegistrationCloser<KEY, CONVERTER> implements ObjectRegist
      * @param <PATH> associated augmentation path
      */
     public static class RegistrationCloserFromOFJava<FROM extends DataContainer, PATH extends AugmentationPath> extends RegistrationCloser<MessageTypeKey<?>, ConvertorFromOFJava<FROM, PATH>> {
+        
+        @Override
+        public void close() throws Exception {
+            getRegistrator().unregister(getKey(), getConverter());
+        }
+    }
+    
+    /**
+     * standalone deregistrator
+     * @param <TO> target type of wrapped convertor
+     */
+    public static class RegistrationCloserActionToOFJava<TO extends DataContainer> extends 
+            RegistrationCloser<TypeVersionKey<? extends Action>, ConvertorActionToOFJava<Action, TO>> {
+        
+        @Override
+        public void close() throws Exception {
+            getRegistrator().unregister(getKey(), getConverter());
+        }
+    }
+    
+    /**
+     * standalone deregistrator
+     * @param <FROM> source type of wrapped convertor
+     * @param <PATH> associated augmentation path
+     */
+    public static class RegistrationCloserActionFromOFJava<FROM extends DataContainer, PATH extends AugmentationPath> extends RegistrationCloser<MessageTypeKey<?>, ConvertorActionFromOFJava<FROM, PATH>> {
         
         @Override
         public void close() throws Exception {

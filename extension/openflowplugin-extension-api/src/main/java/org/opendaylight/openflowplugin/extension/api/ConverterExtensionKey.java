@@ -15,7 +15,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ge
  * 
  * @param <TYPE> type of key
  */
-public class ConverterExtensionKey<TYPE extends ExtensionKey> {
+public class ConverterExtensionKey<TYPE extends ExtensionKey> extends TypeVersionKey<TYPE> {
 
     private Class<TYPE> type;
     private short ofVersion;
@@ -24,43 +24,6 @@ public class ConverterExtensionKey<TYPE extends ExtensionKey> {
      * @param type
      */
     public ConverterExtensionKey(Class<TYPE> type, short ofVersion) {
-        this.type = type;
-        this.ofVersion = ofVersion;
+        super(type, ofVersion);
     }
-
-    /**
-     * @return key type
-     */
-    public Class<TYPE> getType() {
-        return type;
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ofVersion;
-        result = prime * result + ((type == null) ? 0 : type.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        ConverterExtensionKey<?> other = (ConverterExtensionKey<?>) obj;
-        if (ofVersion != other.ofVersion)
-            return false;
-        if (type == null) {
-            if (other.type != null)
-                return false;
-        } else if (!type.equals(other.type))
-            return false;
-        return true;
-    }
-
 }

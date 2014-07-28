@@ -44,12 +44,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxReg0;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.grouping.ExtensionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.nodes.node.table.flow.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.ExtensionNodesNodeTableFlowApplyActionsCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.NxActionRegLoadKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.NxAugActionNodesNodeTableFlowApplyActions;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.NxAugActionNodesNodeTableFlowApplyActionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxRegCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionRegLoadNodesNodeTableFlowApplyActionsCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.reg.load.grouping.NxRegLoadBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.reg.load.grouping.nx.reg.load.DstBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.test.rev130819.TestFlowInput;
@@ -140,15 +136,10 @@ public class Test implements TestService {
     }
 
     private static InstructionsBuilder createDecNwTtlInstructionsBld() {
-        DecNwTtlBuilder ta = new DecNwTtlBuilder();
-        DecNwTtl decNwTtl = ta.build();
-        ActionBuilder ab = new ActionBuilder();
-        ab.setAction(new DecNwTtlCaseBuilder().setDecNwTtl(decNwTtl).build());
-        ab.setKey(new ActionKey(0));
         // Add our drop action to a list
         List<Action> actionList = new ArrayList<Action>();
-        actionList.add(ab.build());
-        actionList.add(createNxActionBld().build());
+        actionList.add(createOFAction(0).build());
+        actionList.add(createNxActionBld(1).build());
         
         // Create an Apply Action
         ApplyActionsBuilder aab = new ApplyActionsBuilder();
@@ -170,9 +161,23 @@ public class Test implements TestService {
     }
 
     /**
+     * @param actionKeyVal 
      * @return
      */
-    private static ActionBuilder createNxActionBld() {
+    private static ActionBuilder createOFAction(int actionKeyVal) {
+        DecNwTtlBuilder ta = new DecNwTtlBuilder();
+        DecNwTtl decNwTtl = ta.build();
+        ActionBuilder ab = new ActionBuilder();
+        ab.setAction(new DecNwTtlCaseBuilder().setDecNwTtl(decNwTtl).build());
+        ab.setKey(new ActionKey(actionKeyVal));
+        return ab;
+    }
+
+    /**
+     * @param actionKeyVal TODO
+     * @return
+     */
+    private static ActionBuilder createNxActionBld(int actionKeyVal) {
         // vendor part
         DstNxRegCaseBuilder nxRegCaseBld = new DstNxRegCaseBuilder().setNxReg(NxmNxReg0.class);
         DstBuilder dstBld = new DstBuilder()
@@ -182,20 +187,13 @@ public class Test implements TestService {
         NxRegLoadBuilder nxRegLoadBuilder = new NxRegLoadBuilder();
         nxRegLoadBuilder.setDst(dstBld.build());
         nxRegLoadBuilder.setValue(BigInteger.valueOf(55L));
-        NxAugActionNodesNodeTableFlowApplyActionsBuilder topNxActionAugmentation = new NxAugActionNodesNodeTableFlowApplyActionsBuilder();
-        topNxActionAugmentation.setNxRegLoad(nxRegLoadBuilder.build());
+        NxActionRegLoadNodesNodeTableFlowApplyActionsCaseBuilder topNxActionCaseBld = new NxActionRegLoadNodesNodeTableFlowApplyActionsCaseBuilder();
+        topNxActionCaseBld.setNxRegLoad(nxRegLoadBuilder.build());
         
-        // general extension part
-        ExtensionBuilder extensionBuilder = new ExtensionBuilder();
-        extensionBuilder.addAugmentation(NxAugActionNodesNodeTableFlowApplyActions.class, topNxActionAugmentation.build());
-        ExtensionNodesNodeTableFlowApplyActionsCaseBuilder extCaseBld = new ExtensionNodesNodeTableFlowApplyActionsCaseBuilder()
-            .setExtensionKey(NxActionRegLoadKey.class)
-            .setExtension(extensionBuilder.build());
-
         // base part
         ActionBuilder abExt = new ActionBuilder();
-        abExt.setKey(new ActionKey(1));
-        abExt.setAction(extCaseBld.build());
+        abExt.setKey(new ActionKey(actionKeyVal));
+        abExt.setAction(topNxActionCaseBld.build());
         return abExt;
     }
     

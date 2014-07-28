@@ -213,99 +213,191 @@ module openflowplugin-extension-nicira-action {
     
     // ACTION augmentations
     // RPCS
-    augment "/sal-flow:add-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action/ext-gen:extension-rpc-add-flow-write-actions-case/ext-gen:extension" {
-        ext:augment-identifier "nx-aug-action-rpc-add-flow-write-actions";
-        uses nx-action-reg-load-grouping;
-        uses nx-action-reg-move-grouping;
+    augment "/sal-flow:add-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action" {
+        case nx-action-reg-load-rpc-add-flow-write-actions-case {
+            uses nx-action-reg-load-grouping;
+        }
     }
-    augment "/sal-flow:add-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action/ext-gen:extension-rpc-add-flow-apply-actions-case/ext-gen:extension" {
-        ext:augment-identifier "nx-aug-action-rpc-add-flow-apply-actions";
-        uses nx-action-reg-load-grouping;
-        uses nx-action-reg-move-grouping;
+    augment "/sal-flow:add-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action" {
+        case nx-action-reg-move-rpc-add-flow-write-actions-case {
+            uses nx-action-reg-move-grouping;
+        }
     }
-    augment "/sal-flow:remove-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action/ext-gen:extension-rpc-remove-flow-write-actions-case/ext-gen:extension" {
-        ext:augment-identifier "nx-aug-action-rpc-remove-flow-write-actions";
-        uses nx-action-reg-load-grouping;
-        uses nx-action-reg-move-grouping;
+    augment "/sal-flow:add-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action" {
+        case nx-action-reg-load-rpc-add-flow-apply-actions-case {
+            uses nx-action-reg-load-grouping;
+        }
     }
-    augment "/sal-flow:remove-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action/ext-gen:extension-rpc-remove-flow-apply-actions-case/ext-gen:extension" {
-        ext:augment-identifier "nx-aug-action-rpc-remove-flow-apply-actions";
-        uses nx-action-reg-load-grouping;
-        uses nx-action-reg-move-grouping;
+    augment "/sal-flow:add-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action" {
+        case nx-action-reg-move-rpc-add-flow-apply-actions-case {
+            uses nx-action-reg-move-grouping;
+        }
     }
-    augment "/sal-flow:update-flow/sal-flow:input/sal-flow:original-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action/ext-gen:extension-rpc-update-flow-original-write-actions-case/ext-gen:extension" {
-        ext:augment-identifier "nx-aug-action-rpc-update-flow-original-write-actions";
-        uses nx-action-reg-load-grouping;
-        uses nx-action-reg-move-grouping;
+    
+    augment "/sal-flow:remove-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action" {
+        case "nx-action-reg-load-rpc-remove-flow-write-actions-case" {
+            uses nx-action-reg-load-grouping;
+        }
     }
-    augment "/sal-flow:update-flow/sal-flow:input/sal-flow:original-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action/ext-gen:extension-rpc-update-flow-original-apply-actions-case/ext-gen:extension" {
-        ext:augment-identifier "nx-aug-action-rpc-update-flow-original-apply-actions";
-        uses nx-action-reg-load-grouping;
-        uses nx-action-reg-move-grouping;
+    augment "/sal-flow:remove-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action" {
+        case "nx-action-reg-move-rpc-remove-flow-write-actions-case" {
+            uses nx-action-reg-move-grouping;
+        }
     }
-    augment "/sal-flow:update-flow/sal-flow:input/sal-flow:updated-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action/ext-gen:extension-rpc-update-flow-updated-write-actions-case/ext-gen:extension" {
-        ext:augment-identifier "nx-aug-action-rpc-update-flow-updated-write-actions";
-        uses nx-action-reg-load-grouping;
-        uses nx-action-reg-move-grouping;
+    augment "/sal-flow:remove-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action" {
+        case "nx-action-reg-load-rpc-remove-flow-apply-actions-case" {
+            uses nx-action-reg-load-grouping;
+        }
     }
-    augment "/sal-flow:update-flow/sal-flow:input/sal-flow:updated-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action/ext-gen:extension-rpc-update-flow-updated-apply-actions-case/ext-gen:extension" {
-        ext:augment-identifier "nx-aug-action-rpc-update-flow-updated-apply-actions";
-        uses nx-action-reg-load-grouping;
-        uses nx-action-reg-move-grouping;
+    augment "/sal-flow:remove-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action" {
+        case "nx-action-reg-move-rpc-remove-flow-apply-actions-case" {
+            uses nx-action-reg-move-grouping;
+        }
     }
-    augment "/sal-group:add-group/sal-group:input/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action/ext-gen:extension-rpc-add-group-case/ext-gen:extension" {
-        ext:augment-identifier "nx-aug-action-rpc-add-group";
-        uses nx-action-reg-load-grouping;
-        uses nx-action-reg-move-grouping;
+    augment "/sal-flow:update-flow/sal-flow:input/sal-flow:original-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action" {
+        case "nx-action-reg-load-rpc-update-flow-original-write-actions-case" {
+            uses nx-action-reg-load-grouping;
+        }
     }
-    augment "/sal-group:remove-group/sal-group:input/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action/ext-gen:extension-rpc-remove-group-case/ext-gen:extension" {
-        ext:augment-identifier "nx-aug-action-rpc-remove-group";
-        uses nx-action-reg-load-grouping;
-        uses nx-action-reg-move-grouping;
+    augment "/sal-flow:update-flow/sal-flow:input/sal-flow:original-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action" {
+        case "nx-action-reg-move-rpc-update-flow-original-write-actions-case" {
+            uses nx-action-reg-move-grouping;
+        }
     }
-    augment "/sal-group:update-group/sal-group:input/sal-group:original-group/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action/ext-gen:extension-rpc-update-group-original-case/ext-gen:extension" {
-        ext:augment-identifier "nx-aug-action-rpc-update-group-original";
-        uses nx-action-reg-load-grouping;
-        uses nx-action-reg-move-grouping;
+    augment "/sal-flow:update-flow/sal-flow:input/sal-flow:original-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action" {
+        case "nx-action-reg-load-rpc-update-flow-original-apply-actions-case" {
+            uses nx-action-reg-load-grouping;
+        }
     }
-    augment "/sal-group:update-group/sal-group:input/sal-group:updated-group/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action/ext-gen:extension-rpc-update-group-updated-case/ext-gen:extension" {
-        ext:augment-identifier "nx-aug-action-rpc-update-group-updated";
-        uses nx-action-reg-load-grouping;
-        uses nx-action-reg-move-grouping;
+    augment "/sal-flow:update-flow/sal-flow:input/sal-flow:original-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action" {
+        case "nx-action-reg-move-rpc-update-flow-original-apply-actions-case" {
+            uses nx-action-reg-move-grouping;
+        }
     }
-    augment "/sal-packet:transmit-packet/sal-packet:input/sal-packet:action/sal-packet:action/ext-gen:extension-rpc-transmit-packet-case/ext-gen:extension" {
-        ext:augment-identifier "nx-aug-action-rpc-transmit-packet";
-        uses nx-action-reg-load-grouping;
-        uses nx-action-reg-move-grouping;
+    augment "/sal-flow:update-flow/sal-flow:input/sal-flow:updated-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action" {
+        case "nx-action-reg-load-rpc-update-flow-updated-write-actions-case" {
+            uses nx-action-reg-load-grouping;
+        }
+    }
+    augment "/sal-flow:update-flow/sal-flow:input/sal-flow:updated-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action" {
+        case "nx-action-reg-move-rpc-update-flow-updated-write-actions-case" {
+            uses nx-action-reg-move-grouping;
+        }
+    }
+    augment "/sal-flow:update-flow/sal-flow:input/sal-flow:updated-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action" {
+        case "nx-action-reg-load-rpc-update-flow-updated-apply-actions-case" {
+            uses nx-action-reg-load-grouping;
+        }
+    }
+    augment "/sal-flow:update-flow/sal-flow:input/sal-flow:updated-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action" {
+        case "nx-action-reg-move-rpc-update-flow-updated-apply-actions-case" {
+            uses nx-action-reg-move-grouping;
+        }
+    }
+    augment "/sal-group:add-group/sal-group:input/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action" {
+        case "nx-action-reg-load-rpc-add-group-case" {
+            uses nx-action-reg-load-grouping;
+        }
+    }
+    augment "/sal-group:add-group/sal-group:input/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action" {
+        case "nx-action-reg-move-rpc-add-group-case" {
+            uses nx-action-reg-move-grouping;
+        }
+    }
+    augment "/sal-group:remove-group/sal-group:input/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action" {
+        case "nx-action-reg-load-rpc-remove-group-case" {
+            uses nx-action-reg-load-grouping;
+        }
+    }
+    augment "/sal-group:remove-group/sal-group:input/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action" {
+        case "nx-action-reg-move-rpc-remove-group-case" {
+            uses nx-action-reg-move-grouping;
+        }
+    }
+    augment "/sal-group:update-group/sal-group:input/sal-group:original-group/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action" {
+        case "nx-action-reg-load-rpc-update-group-original-case" {
+            uses nx-action-reg-load-grouping;
+        }
+    }
+    augment "/sal-group:update-group/sal-group:input/sal-group:original-group/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action" {
+        case "nx-action-reg-move-rpc-update-group-original-case" {
+            uses nx-action-reg-move-grouping;
+        }
+    }
+    augment "/sal-group:update-group/sal-group:input/sal-group:updated-group/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action" {
+        case "nx-action-reg-load-rpc-update-group-updated-case" {
+            uses nx-action-reg-load-grouping;
+        }
+    }
+    augment "/sal-group:update-group/sal-group:input/sal-group:updated-group/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action" {
+        case "nx-action-reg-move-rpc-update-group-updated-case" {
+            uses nx-action-reg-move-grouping;
+        }
+    }
+    augment "/sal-packet:transmit-packet/sal-packet:input/sal-packet:action/sal-packet:action" {
+        case "nx-action-reg-load-rpc-transmit-packet-case" {
+            uses nx-action-reg-load-grouping;
+        }
+    }
+    augment "/sal-packet:transmit-packet/sal-packet:input/sal-packet:action/sal-packet:action" {
+        case "nx-action-reg-move-rpc-transmit-packet-case" {
+            uses nx-action-reg-move-grouping;
+        }
     }
     
     // DATA
-    augment "/inv:nodes/inv:node/fni:table/fni:flow/fni:instructions/fni:instruction/fni:instruction/fni:write-actions-case/fni:write-actions/fni:action/fni:action/ext-gen:extension-nodes-node-table-flow-write-actions-case/ext-gen:extension" {
-        ext:augment-identifier "nx-aug-action-nodes-node-table-flow-write-actions";
-        uses nx-action-reg-load-grouping;
-        uses nx-action-reg-move-grouping;
+    augment "/inv:nodes/inv:node/fni:table/fni:flow/fni:instructions/fni:instruction/fni:instruction/fni:write-actions-case/fni:write-actions/fni:action/fni:action" {
+        case "nx-action-reg-load-nodes-node-table-flow-write-actions-case" {
+            uses nx-action-reg-load-grouping;
+        }
     }
-    augment "/inv:nodes/inv:node/fni:table/fni:flow/fni:instructions/fni:instruction/fni:instruction/fni:apply-actions-case/fni:apply-actions/fni:action/fni:action/ext-gen:extension-nodes-node-table-flow-apply-actions-case/ext-gen:extension" {
-        ext:augment-identifier "nx-aug-action-nodes-node-table-flow-apply-actions";
-        uses nx-action-reg-load-grouping;
-        uses nx-action-reg-move-grouping;
+    augment "/inv:nodes/inv:node/fni:table/fni:flow/fni:instructions/fni:instruction/fni:instruction/fni:write-actions-case/fni:write-actions/fni:action/fni:action" {
+        case "nx-action-reg-move-nodes-node-table-flow-write-actions-case" {
+            uses nx-action-reg-move-grouping;
+        }
+    }
+    augment "/inv:nodes/inv:node/fni:table/fni:flow/fni:instructions/fni:instruction/fni:instruction/fni:apply-actions-case/fni:apply-actions/fni:action/fni:action" {
+        case "nx-action-reg-load-nodes-node-table-flow-apply-actions-case" {
+            uses nx-action-reg-load-grouping;
+        }
+    }
+    augment "/inv:nodes/inv:node/fni:table/fni:flow/fni:instructions/fni:instruction/fni:instruction/fni:apply-actions-case/fni:apply-actions/fni:action/fni:action" {
+        case "nx-action-reg-move-nodes-node-table-flow-apply-actions-case" {
+            uses nx-action-reg-move-grouping;
+        }
     }
     
     // NOTIFICATIONS
-    augment "/odl-flow-stats:flows-statistics-update/odl-flow-stats:flow-and-statistics-map-list/odl-flow-stats:instructions/odl-flow-stats:instruction/odl-flow-stats:instruction/odl-flow-stats:write-actions-case/odl-flow-stats:write-actions/odl-flow-stats:action/odl-flow-stats:action/ext-gen:extension-notif-flows-statistics-update-write-actions-case/ext-gen:extension" {
-        ext:augment-identifier "nx-aug-action-notif-flows-statistics-update-write-actions";
-        uses nx-action-reg-load-grouping;
-        uses nx-action-reg-move-grouping;
+    augment "/odl-flow-stats:flows-statistics-update/odl-flow-stats:flow-and-statistics-map-list/odl-flow-stats:instructions/odl-flow-stats:instruction/odl-flow-stats:instruction/odl-flow-stats:write-actions-case/odl-flow-stats:write-actions/odl-flow-stats:action/odl-flow-stats:action" {
+        case "nx-action-reg-load-notif-flows-statistics-update-write-actions-case" {
+            uses nx-action-reg-load-grouping;
+        }
     }
-    augment "/odl-flow-stats:flows-statistics-update/odl-flow-stats:flow-and-statistics-map-list/odl-flow-stats:instructions/odl-flow-stats:instruction/odl-flow-stats:instruction/odl-flow-stats:apply-actions-case/odl-flow-stats:apply-actions/odl-flow-stats:action/odl-flow-stats:action/ext-gen:extension-notif-flows-statistics-update-apply-actions-case/ext-gen:extension" {
-        ext:augment-identifier "nx-aug-action-notif-flows-statistics-update-apply-actions";
-        uses nx-action-reg-load-grouping;
-        uses nx-action-reg-move-grouping;
+    augment "/odl-flow-stats:flows-statistics-update/odl-flow-stats:flow-and-statistics-map-list/odl-flow-stats:instructions/odl-flow-stats:instruction/odl-flow-stats:instruction/odl-flow-stats:write-actions-case/odl-flow-stats:write-actions/odl-flow-stats:action/odl-flow-stats:action" {
+        case "nx-action-reg-move-notif-flows-statistics-update-write-actions-case" {
+            uses nx-action-reg-move-grouping;
+        }
     }
-    augment "/odl-group-stats:group-desc-stats-updated/odl-group-stats:group-desc-stats/odl-group-stats:buckets/odl-group-stats:bucket/odl-group-stats:action/odl-group-stats:action/ext-gen:extension-notif-group-desc-stats-updated-case/ext-gen:extension" {
-        ext:augment-identifier "nx-aug-action-notif-group-desc-stats-updated";
-        uses nx-action-reg-load-grouping;
-        uses nx-action-reg-move-grouping;
+    augment "/odl-flow-stats:flows-statistics-update/odl-flow-stats:flow-and-statistics-map-list/odl-flow-stats:instructions/odl-flow-stats:instruction/odl-flow-stats:instruction/odl-flow-stats:apply-actions-case/odl-flow-stats:apply-actions/odl-flow-stats:action/odl-flow-stats:action" {
+        case "nx-action-reg-load-notif-flows-statistics-update-apply-actions-case" {
+            uses nx-action-reg-load-grouping;
+        }
     }
+    augment "/odl-flow-stats:flows-statistics-update/odl-flow-stats:flow-and-statistics-map-list/odl-flow-stats:instructions/odl-flow-stats:instruction/odl-flow-stats:instruction/odl-flow-stats:apply-actions-case/odl-flow-stats:apply-actions/odl-flow-stats:action/odl-flow-stats:action" {
+        case "nx-action-reg-move-notif-flows-statistics-update-apply-actions-case" {
+            uses nx-action-reg-move-grouping;
+        }
+    }
+    augment "/odl-group-stats:group-desc-stats-updated/odl-group-stats:group-desc-stats/odl-group-stats:buckets/odl-group-stats:bucket/odl-group-stats:action/odl-group-stats:action" {
+        case "nx-action-reg-load-notif-group-desc-stats-updated-case" {
+            uses nx-action-reg-load-grouping;
+        }
+    }
+    augment "/odl-group-stats:group-desc-stats-updated/odl-group-stats:group-desc-stats/odl-group-stats:buckets/odl-group-stats:bucket/odl-group-stats:action/odl-group-stats:action" {
+        case "nx-action-reg-move-notif-group-desc-stats-updated-case" {
+            uses nx-action-reg-move-grouping;
+        }
+    }
+    
 
 }
