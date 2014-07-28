@@ -9,9 +9,11 @@ package org.opendaylight.openflowplugin.openflow.md.core.extension;
 
 import org.opendaylight.openflowjava.protocol.api.extensibility.MessageTypeKey;
 import org.opendaylight.openflowplugin.extension.api.ConverterExtensionKey;
+import org.opendaylight.openflowplugin.extension.api.ConvertorActionToOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorToOFJava;
 import org.opendaylight.openflowplugin.extension.api.path.AugmentationPath;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 
 /**
@@ -32,4 +34,10 @@ public interface ExtensionConverterProvider {
      * @return found converter
      */
     <TO extends DataContainer> ConvertorToOFJava<TO> getConverter(ConverterExtensionKey<?> key);
+
+    /**
+     * @param key
+     * @return found converter
+     */
+    <FROM extends Action, TO extends DataContainer> ConvertorActionToOFJava<FROM, TO> getConverter(Class<FROM> key);
 }
