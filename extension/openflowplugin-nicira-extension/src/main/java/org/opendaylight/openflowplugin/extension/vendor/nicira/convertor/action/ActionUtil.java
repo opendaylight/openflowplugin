@@ -23,13 +23,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.extension.nicira.a
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.grouping.Extension;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.NxActionRegLoadGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.NxActionRegMoveGrouping;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.NxAugActionNodesNodeTableFlowApplyActions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.NxAugActionNodesNodeTableFlowWriteActions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.NxAugActionNotifFlowsStatisticsUpdateApplyActions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.NxAugActionNotifFlowsStatisticsUpdateWriteActions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.NxAugActionNotifGroupDescStatsUpdated;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.NxAugActionRpcAddFlowApplyActions;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.NxAugActionRpcAddFlowWriteActions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.NxAugActionRpcAddGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.NxAugActionRpcRemoveFlowApplyActions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.NxAugActionRpcRemoveFlowWriteActions;
@@ -57,8 +54,6 @@ public class ActionUtil {
             NxActionRegMoveGrouping.class);
 
     static {
-        augmentationsOfExtension.add(NxAugActionRpcAddFlowWriteActions.class);
-        augmentationsOfExtension.add(NxAugActionRpcAddFlowApplyActions.class);
         augmentationsOfExtension.add(NxAugActionRpcRemoveFlowWriteActions.class);
         augmentationsOfExtension.add(NxAugActionRpcRemoveFlowApplyActions.class);
         augmentationsOfExtension.add(NxAugActionRpcUpdateFlowOriginalWriteActions.class);
@@ -71,7 +66,6 @@ public class ActionUtil {
         augmentationsOfExtension.add(NxAugActionRpcUpdateGroupUpdated.class);
         augmentationsOfExtension.add(NxAugActionRpcTransmitPacket.class);
         augmentationsOfExtension.add(NxAugActionNodesNodeTableFlowWriteActions.class);
-        augmentationsOfExtension.add(NxAugActionNodesNodeTableFlowApplyActions.class);
         augmentationsOfExtension.add(NxAugActionNotifFlowsStatisticsUpdateWriteActions.class);
         augmentationsOfExtension.add(NxAugActionNotifFlowsStatisticsUpdateApplyActions.class);
         augmentationsOfExtension.add(NxAugActionNotifGroupDescStatsUpdated.class);
