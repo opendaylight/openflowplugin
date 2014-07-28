@@ -9,9 +9,8 @@ package org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.action
 
 import org.opendaylight.openflowjava.nx.NiciraMatchCodecs;
 import org.opendaylight.openflowjava.nx.codec.match.NxmHeader;
-import org.opendaylight.openflowplugin.extension.api.ConvertorFromOFJava;
-import org.opendaylight.openflowplugin.extension.api.ConvertorToOFJava;
-import org.opendaylight.openflowplugin.extension.api.ExtensionAugment;
+import org.opendaylight.openflowplugin.extension.api.ConvertorActionFromOFJava;
+import org.opendaylight.openflowplugin.extension.api.ConvertorActionToOFJava;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.CodecPreconditionException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action;
@@ -29,20 +28,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev14
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxReg5;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxReg6;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxReg7;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.ExtensionKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.grouping.Extension;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.NxActionRegMoveGrouping;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.NxActionRegMoveKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.NxAugActionNodesNodeTableFlowApplyActions;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.NxAugActionNodesNodeTableFlowApplyActionsBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.NxAugActionNodesNodeTableFlowWriteActions;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.NxAugActionNodesNodeTableFlowWriteActionsBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.NxAugActionNotifFlowsStatisticsUpdateApplyActions;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.NxAugActionNotifFlowsStatisticsUpdateApplyActionsBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.NxAugActionNotifFlowsStatisticsUpdateWriteActions;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.NxAugActionNotifFlowsStatisticsUpdateWriteActionsBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.NxAugActionNotifGroupDescStatsUpdated;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.NxAugActionNotifGroupDescStatsUpdatedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.DstChoice;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxArpShaCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxArpShaCaseBuilder;
@@ -66,6 +52,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstOfEthDstCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstOfEthSrcCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstOfEthSrcCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.flows.statistics.update.flow.and.statistics.map.list.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionRegMoveNotifFlowsStatisticsUpdateApplyActionsCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.flows.statistics.update.flow.and.statistics.map.list.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionRegMoveNotifFlowsStatisticsUpdateWriteActionsCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.group.desc.stats.updated.group.desc.stats.buckets.bucket.action.action.NxActionRegMoveNotifGroupDescStatsUpdatedCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionRegMoveNodesNodeTableFlowWriteActionsCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.reg.move.grouping.NxRegMove;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.reg.move.grouping.NxRegMoveBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.reg.move.grouping.nx.reg.move.Dst;
@@ -97,26 +87,19 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.src.choice.grouping.src.choice.SrcOfEthSrcCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.src.choice.grouping.src.choice.SrcOfEthTypeCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.src.choice.grouping.src.choice.SrcOfEthTypeCaseBuilder;
-import org.opendaylight.yangtools.yang.binding.Augmentation;
 
-import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 
 /**
  * @author msunal
  *
  */
-public class RegMoveConvertor implements ConvertorToOFJava<Action>, ConvertorFromOFJava<Action, ActionPath> {
+public class RegMoveConvertor implements 
+ConvertorActionToOFJava<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, Action>,
+ConvertorActionFromOFJava<Action, ActionPath> {
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.opendaylight.openflowplugin.extension.api.ConvertorFromOFJava#convert
-     * (org.opendaylight.yangtools.yang.binding.DataContainer,
-     * org.opendaylight.openflowplugin.extension.api.path.AugmentationPath)
-     */
     @Override
-    public ExtensionAugment<? extends Augmentation<Extension>> convert(Action input, ActionPath path) {
+    public org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action convert(Action input, ActionPath path) {
         ActionRegMove actionRegMove = input.getAugmentation(OfjAugNxAction.class).getActionRegMove();
         DstBuilder dstBuilder = new DstBuilder();
         dstBuilder.setDstChoice(resolveDst(actionRegMove.getDst()));
@@ -129,7 +112,7 @@ public class RegMoveConvertor implements ConvertorToOFJava<Action>, ConvertorFro
         NxRegMoveBuilder nxRegMoveBuilder = new NxRegMoveBuilder();
         nxRegMoveBuilder.setDst(dstBuilder.build());
         nxRegMoveBuilder.setSrc(srcBuilder.build());
-        return resolveAugmentation(nxRegMoveBuilder.build(), path, NxActionRegMoveKey.class);
+        return resolveAction(nxRegMoveBuilder.build(), path);
     }
 
     public static DstChoice resolveDst(long dstValue) {
@@ -239,46 +222,29 @@ public class RegMoveConvertor implements ConvertorToOFJava<Action>, ConvertorFro
         return null;
     }
 
-    private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(NxRegMove value,
-            ActionPath path, Class<? extends ExtensionKey> key) {
+    private static org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action resolveAction(
+            NxRegMove value, ActionPath path) {
         switch (path) {
         case NODES_NODE_TABLE_FLOW_INSTRUCTIONS_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION_EXTENSIONLIST_EXTENSION:
-            return new ExtensionAugment<>(NxAugActionNodesNodeTableFlowWriteActions.class,
-                    new NxAugActionNodesNodeTableFlowWriteActionsBuilder().setNxRegMove(value).build(), key);
-        case NODES_NODE_TABLE_FLOW_INSTRUCTIONS_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION_EXTENSIONLIST_EXTENSION:
-            return new ExtensionAugment<>(NxAugActionNodesNodeTableFlowApplyActions.class,
-                    new NxAugActionNodesNodeTableFlowApplyActionsBuilder().setNxRegMove(value).build(), key);
+            return new NxActionRegMoveNodesNodeTableFlowWriteActionsCaseBuilder().setNxRegMove(value).build();
         case FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION:
-            return new ExtensionAugment<>(NxAugActionNotifFlowsStatisticsUpdateWriteActions.class,
-                    new NxAugActionNotifFlowsStatisticsUpdateWriteActionsBuilder().setNxRegMove(value).build(), key);
+            return new NxActionRegMoveNotifFlowsStatisticsUpdateWriteActionsCaseBuilder().setNxRegMove(value).build();
         case FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION:
-            return new ExtensionAugment<>(NxAugActionNotifFlowsStatisticsUpdateApplyActions.class,
-                    new NxAugActionNotifFlowsStatisticsUpdateApplyActionsBuilder().setNxRegMove(value).build(), key);
+            return new NxActionRegMoveNotifFlowsStatisticsUpdateApplyActionsCaseBuilder().setNxRegMove(value).build();
         case GROUPDESCSTATSUPDATED_GROUPDESCSTATS_BUCKETS_BUCKET_ACTION:
-            return new ExtensionAugment<>(NxAugActionNotifGroupDescStatsUpdated.class,
-                    new NxAugActionNotifGroupDescStatsUpdatedBuilder().setNxRegMove(value).build(), key);
+            return new NxActionRegMoveNotifGroupDescStatsUpdatedCaseBuilder().setNxRegMove(value).build();
         default:
             throw new CodecPreconditionException(path);
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.opendaylight.openflowplugin.extension.api.ConvertorToOFJava#convert
-     * (org
-     * .opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general
-     * .rev140714.general.extension.grouping.Extension)
-     */
     @Override
-    public Action convert(Extension extension) {
-        Optional<NxActionRegMoveGrouping> actionGrouping = ActionUtil.regMoveResolver.getExtension(extension);
-        if (!actionGrouping.isPresent()) {
-            throw new CodecPreconditionException(extension);
-        }
-        Dst dst = actionGrouping.get().getNxRegMove().getDst();
-        Src src = actionGrouping.get().getNxRegMove().getSrc();
+    public Action convert(org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action nxActionArg) {
+        Preconditions.checkArgument(nxActionArg instanceof NxActionRegMoveGrouping);
+        NxActionRegMoveGrouping nxAction = (NxActionRegMoveGrouping) nxActionArg;
+        
+        Dst dst = nxAction.getNxRegMove().getDst();
+        Src src = nxAction.getNxRegMove().getSrc();
         ActionRegMoveBuilder actionRegMoveBuilder = new ActionRegMoveBuilder();
         actionRegMoveBuilder.setDst(resolveDst(dst.getDstChoice()));
         actionRegMoveBuilder.setDstOfs(dst.getStart());

@@ -14,7 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.opendaylight.openflowplugin.extension.api.ConverterExtensionKey;
+import org.opendaylight.openflowplugin.extension.api.ConvertorActionToOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorToOFJava;
+import org.opendaylight.openflowplugin.extension.api.TypeVersionKey;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
 import org.opendaylight.openflowplugin.openflow.md.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.ActionExtensionHelper;
@@ -256,6 +258,17 @@ public final class ActionConvertor {
                         OFSessionUtil.getExtensionConvertorProvider().getConverter(key);
                 if (convertor != null) {
                     ofAction = convertor.convert(extAction);
+                }
+            } else {
+                // try vendor codecs
+                TypeVersionKey<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action> key =
+                        new TypeVersionKey<>(
+                                (Class<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action>) action.getImplementedInterface(),
+                                version);
+                ConvertorActionToOFJava<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, Action> convertor = 
+                        OFSessionUtil.getExtensionConvertorProvider().getConverter(key);
+                if (convertor != null) {
+                    ofAction = convertor.convert(action);
                 }
             }
             
@@ -802,9 +815,10 @@ public final class ActionConvertor {
                  * - we might also need a way on how to identify exact type of augmentation to be 
                  *   used as match can be bound to multiple models
                  */
-                org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action processedExtension = ActionExtensionHelper.processAllExtensions(action, ofVersion, actionPath);
-                if (processedExtension != null) {
-                    bucketActions.add(processedExtension);
+                org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action processedAction = 
+                        ActionExtensionHelper.processAlienAction(action, ofVersion, actionPath);
+                if (processedAction != null) {
+                    bucketActions.add(processedAction);
                 }
             }
         }

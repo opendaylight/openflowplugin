@@ -23,12 +23,6 @@ import org.opendaylight.yangtools.concepts.ObjectRegistration;
  */
 public interface ExtensionConverterRegistrator {
 
-    ObjectRegistration<ConvertorToOFJava<Action>> registerActionConvertor(
-            ConverterExtensionKey<? extends ExtensionKey> key, ConvertorToOFJava<Action> convertor);
-
-    ObjectRegistration<ConvertorFromOFJava<Action, ActionPath>> registerActionConvertor(
-            ExperimenterActionSerializerKey key, ConvertorFromOFJava<Action, ActionPath> convertor);
-
     ObjectRegistration<ConvertorToOFJava<MatchEntries>> registerMatchConvertor(
             ConverterExtensionKey<? extends ExtensionKey> key, ConvertorToOFJava<MatchEntries> convertor);
 
@@ -36,4 +30,21 @@ public interface ExtensionConverterRegistrator {
             MatchEntrySerializerKey<? extends OxmClassBase, ? extends MatchField> key,
             ConvertorFromOFJava<MatchEntries, MatchPath> convertor);
 
+    /**
+     * @param key action case type + ofp-version
+     * @param convertor
+     * @return closable registration 
+     */
+    ObjectRegistration<ConvertorActionToOFJava<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, Action>> 
+    registerActionConvertor(
+            TypeVersionKey<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action> key, 
+            ConvertorActionToOFJava<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, Action> convertor);
+    
+    /**
+     * @param key actionSubType, action type (Experimenter), experimenterId, version
+     * @param convertor
+     * @return closable registration 
+     */
+    ObjectRegistration<ConvertorActionFromOFJava<Action, ActionPath>> registerActionConvertor(
+            ExperimenterActionSerializerKey key, ConvertorActionFromOFJava<Action, ActionPath> convertor);
 }
