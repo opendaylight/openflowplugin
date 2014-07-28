@@ -14,6 +14,7 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.MessageTypeKey;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntrySerializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.experimenter.ExperimenterActionSerializerKey;
 import org.opendaylight.openflowplugin.extension.api.ConverterExtensionKey;
+import org.opendaylight.openflowplugin.extension.api.ConvertorActionToOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorToOFJava;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
@@ -21,6 +22,7 @@ import org.opendaylight.openflowplugin.extension.api.path.AugmentationPath;
 import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.RegistrationCloser.RegistrationCloserFromOFJava;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.RegistrationCloser.RegistrationCloserToOFJava;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.MatchField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.OxmClassBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.grouping.MatchEntries;
@@ -35,6 +37,7 @@ public class ExtensionConverterManagerImpl implements ExtensionConverterManager 
 
     private Map<MessageTypeKey<?>, ConvertorFromOFJava<?, ?>> registryFromOFJAva;
     private Map<ConverterExtensionKey<?>, ConvertorToOFJava<?>> registryToOFJAva;
+    private Map<Class<? extends Action>, ConvertorToOFJava<?>> registryActionToOFJAva;
 
     /**
      * default ctor
@@ -42,6 +45,7 @@ public class ExtensionConverterManagerImpl implements ExtensionConverterManager 
     public ExtensionConverterManagerImpl() {
         registryFromOFJAva = new ConcurrentHashMap<>();
         registryToOFJAva = new ConcurrentHashMap<>();
+        registryActionToOFJAva = new ConcurrentHashMap<>();
     }
 
     /**
@@ -72,6 +76,20 @@ public class ExtensionConverterManagerImpl implements ExtensionConverterManager 
         janitor.setRegistrator(this);
         return janitor;
     }
+    
+    /**
+     * @param key
+     * @param extConvertor
+     * @return
+     */
+    private <TO extends DataContainer> RegistrationCloserToOFJava<TO> hireJanitor(
+            Class<? extends Action> key, ConvertorToOFJava<TO> extConvertor) {
+        RegistrationCloserToOFJava<TO> janitor = new RegistrationCloser.RegistrationCloserToOFJava<>();
+        janitor.setConverter(extConvertor);
+        //janitor.setKey(key);
+        janitor.setRegistrator(this);
+        return janitor;
+    }
 
     /**
      * cancel registration of given converter
@@ -80,6 +98,19 @@ public class ExtensionConverterManagerImpl implements ExtensionConverterManager 
      * @param converter
      */
     public void unregister(ConverterExtensionKey<?> key, ConvertorToOFJava<?> converter) {
+        ConvertorToOFJava<?> registeredConverter = registryToOFJAva.get(key);
+        if (registeredConverter != null && registeredConverter == converter) {
+            registryToOFJAva.remove(key);
+        }
+    }
+    
+    /**
+     * cancel registration of given converter
+     * 
+     * @param key
+     * @param converter
+     */
+    public void unregister(Class<? extends Action> key, ConvertorToOFJava<?> converter) {
         ConvertorToOFJava<?> registeredConverter = registryToOFJAva.get(key);
         if (registeredConverter != null && registeredConverter == converter) {
             registryToOFJAva.remove(key);
@@ -105,6 +136,13 @@ public class ExtensionConverterManagerImpl implements ExtensionConverterManager 
             ConverterExtensionKey<?> key) {
         return (ConvertorToOFJava<FROM>) registryToOFJAva.get(key);
     }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public <FROM extends Action, TO extends DataContainer> ConvertorActionToOFJava<FROM, TO> getConverter(
+            Class<FROM> key) {
+        return (ConvertorActionToOFJava<FROM, TO>) registryActionToOFJAva.get(key);
+    }
 
     @SuppressWarnings("unchecked")
     @Override
@@ -114,10 +152,19 @@ public class ExtensionConverterManagerImpl implements ExtensionConverterManager 
     }
 
     @Override
+    @Deprecated
     public ObjectRegistration<ConvertorToOFJava<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action>> registerActionConvertor(
             ConverterExtensionKey<? extends ExtensionKey> key,
             ConvertorToOFJava<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action> convertor) {
         registryToOFJAva.put(key, convertor);
+        return hireJanitor(key, convertor);
+    }
+    
+    @Override
+    public ObjectRegistration<ConvertorToOFJava<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action>> registerActionConvertor(
+            Class<? extends Action> key,
+            ConvertorToOFJava<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action> convertor) {
+        registryActionToOFJAva.put(key, convertor);
         return hireJanitor(key, convertor);
     }
     
