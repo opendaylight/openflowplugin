@@ -21,7 +21,7 @@ public class DropTestRpcProvider implements AutoCloseable {
     private SalFlowService _flowService;
     private NotificationProviderService _notificationService;
     private DropTestRpcSender commiter;
-    private Registration<NotificationListener> listenerRegistration;
+    private Registration listenerRegistration;
 
     public SalFlowService getFlowService() {
         return this._flowService;

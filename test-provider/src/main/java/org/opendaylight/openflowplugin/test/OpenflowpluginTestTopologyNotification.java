@@ -34,7 +34,7 @@ public class OpenflowpluginTestTopologyNotification {
     private final BundleContext ctx;
     private final TopologyEventListener topologyEventListener = new TopologyEventListener();
     private static NotificationService notificationService;
-    private Registration<org.opendaylight.yangtools.yang.binding.NotificationListener> listenerReg;
+    private Registration listenerReg;
 
     public OpenflowpluginTestTopologyNotification(BundleContext ctx) {
         this.ctx = ctx;

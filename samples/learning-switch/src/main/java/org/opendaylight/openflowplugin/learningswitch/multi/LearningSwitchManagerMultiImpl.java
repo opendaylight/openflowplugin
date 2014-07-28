@@ -46,7 +46,7 @@ public class LearningSwitchManagerMultiImpl implements DataChangeListenerRegistr
     private PacketProcessingService packetProcessingService;
     private DataBrokerService data;
 
-    private Registration<NotificationListener> packetInRegistration;
+    private Registration packetInRegistration;
 
     private ListenerRegistration<DataChangeListener> dataChangeListenerRegistration; 
     

@@ -41,7 +41,7 @@ public class LearningSwitchManagerSimpleImpl implements DataChangeListenerRegist
     private PacketProcessingService packetProcessingService;
     private DataBrokerService data;
 
-    private Registration<NotificationListener> packetInRegistration;
+    private Registration packetInRegistration;
 
     private ListenerRegistration<DataChangeListener> dataChangeListenerRegistration; 
     

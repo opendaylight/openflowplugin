@@ -200,8 +200,8 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
     private final SalFlowListener flowEventListener = new FlowEventListenerLoggingImpl();
     private final NodeErrorListener nodeErrorListener = new NodeErrorListenerLoggingImpl();
     private static NotificationService notificationService;
-    private Registration<org.opendaylight.yangtools.yang.binding.NotificationListener> listener1Reg;
-    private Registration<org.opendaylight.yangtools.yang.binding.NotificationListener> listener2Reg;
+    private Registration listener1Reg;
+    private Registration listener2Reg;
 
     public OpenflowpluginTestCommandProvider(BundleContext ctx) {
         this.ctx = ctx;
