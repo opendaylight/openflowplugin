@@ -34,7 +34,7 @@ public class OpenflowpluginTestNodeConnectorNotification {
     private final BundleContext ctx;
     private final PortEventListener portEventListener = new PortEventListener();
     private static NotificationService notificationService;
-    private Registration<org.opendaylight.yangtools.yang.binding.NotificationListener> listenerReg;
+    private Registration listenerReg;
 
     public OpenflowpluginTestNodeConnectorNotification(BundleContext ctx) {
         this.ctx = ctx;

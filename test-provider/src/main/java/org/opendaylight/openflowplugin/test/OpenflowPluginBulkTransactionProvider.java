@@ -123,8 +123,8 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
     private FlowBuilder testFlow;
     private final String originalFlowName = "Foo";
     private final NodeErrorListener nodeErrorListener = new NodeErrorListenerLoggingImpl();
-    private Registration<org.opendaylight.yangtools.yang.binding.NotificationListener> listener1Reg;
-    private Registration<org.opendaylight.yangtools.yang.binding.NotificationListener> listener2Reg;
+    private Registration listener1Reg;
+    private Registration listener2Reg;
     private Node testNode12;
     private final String originalGroupName = "Foo";
     private static NotificationService notificationService;

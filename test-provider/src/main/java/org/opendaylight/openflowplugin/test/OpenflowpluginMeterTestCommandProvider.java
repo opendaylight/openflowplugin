@@ -68,7 +68,7 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
     private final String updatedMeterName = "Bar";
     private final MeterEventListener meterEventListener = new MeterEventListener();
     private static NotificationService notificationService;
-    private Registration<org.opendaylight.yangtools.yang.binding.NotificationListener> listener1Reg;
+    private Registration listener1Reg;
 
     public OpenflowpluginMeterTestCommandProvider(BundleContext ctx) {
         this.ctx = ctx;

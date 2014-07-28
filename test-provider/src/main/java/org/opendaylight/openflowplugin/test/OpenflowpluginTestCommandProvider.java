@@ -200,8 +200,8 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
     private final SalFlowListener flowEventListener = new FlowEventListenerLoggingImpl();
     private final NodeErrorListener nodeErrorListener = new NodeErrorListenerLoggingImpl();
     private static NotificationService notificationService;
-    private Registration<org.opendaylight.yangtools.yang.binding.NotificationListener> listener1Reg;
-    private Registration<org.opendaylight.yangtools.yang.binding.NotificationListener> listener2Reg;
+    private Registration listener1Reg;
+    private Registration listener2Reg;
 
     public OpenflowpluginTestCommandProvider(BundleContext ctx) {
         this.ctx = ctx;
@@ -243,7 +243,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         if (flowType == null) {
             flowType = "f1";
         }
-        
+
         flow.setPriority(2);
 
         switch (flowType) {
@@ -717,7 +717,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return flow;
     }
 
-    
+
     private FlowBuilder createTestFlow_perfTest(NodeBuilder nodeBuilder, String flowTypeArg, String tableId, int id) {
 
         FlowBuilder flow = new FlowBuilder();
@@ -727,7 +727,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         if (flowType == null) {
             flowType = "f1";
         }
-        
+
         flow.setPriority(id);
 
         switch (flowType) {
@@ -812,7 +812,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         // Create an Apply Action
         ApplyActionsBuilder aab = new ApplyActionsBuilder();
         aab.setAction(actionList);
-       
+
         // Wrap our Apply Action in an Instruction
         InstructionBuilder ib = new InstructionBuilder();
         ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
@@ -3354,7 +3354,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
     /**
      * @param ci arguments: switchId flowType tableNum
-     * 
+     *
      * <pre>
      * e.g.: addMDFlow openflow:1 f1 42
      * </pre>
@@ -3412,24 +3412,24 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
     public String getHelp() {
         return "No help";
     }
-    
+
     /*
      * usage testSwitchFlows <numberOfSwitches> <numberOfFlows> <warmup iterations> <Number Of Threads>
      * ex: _perfFlowTest 10 5 1 2
      */
     public void _perfFlowTest(CommandInterpreter ci) {
-    	
+
         String numberOfSwtichesStr = ci.nextArgument();
         String numberOfFlowsStr = ci.nextArgument();
         String warmupIterationsStr = ci.nextArgument();
         String threadCountStr = ci.nextArgument();
         String warmUpStr = ci.nextArgument();
-        
+
         Collection<String> testResults = null;
         if(testResults == null){
         	testResults = new ArrayList<String>();
         }
-         
+
         int numberOfSwtiches = 0;
         int numberOfFlows = 0;
         int warmupIterations = 0;
@@ -3441,36 +3441,36 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         }else {
         	numberOfSwtiches = 2;
         }
-        
+
         if(numberOfFlowsStr !=null && !numberOfFlowsStr.trim().equals("")){
         	numberOfFlows = new Integer(numberOfFlowsStr).intValue();
         }else {
         	numberOfFlows = 2;
         }
-        
+
         if(warmupIterationsStr !=null && !warmupIterationsStr.trim().equals("")){
         	warmupIterations = new Integer(warmupIterationsStr).intValue();
         }else {
         	warmupIterations = 2;
         }
-        
+
         if(threadCountStr !=null && !threadCountStr.trim().equals("")){
         	threadCount = new Integer(threadCountStr).intValue();
         }else {
-        	threadCount = 2; 
+        	threadCount = 2;
         }
          if(warmUpStr !=null && !warmUpStr.trim().equals("") && warmUpStr.trim().equals("true")){
              warmUpIterations = true;
          }else {
              warmUpIterations = false;
-         }    
+         }
         ci.println("*     Test Configurations*");
         ci.println("*     numberOfSwtiches:::"+numberOfSwtiches+"");
         ci.println("*     numberOfFlows:::"+numberOfFlows+"");
         ci.println("*     warmupIterations:::"+warmupIterations+"");
         ci.println("*     Number of Threads :::"+threadCount+"");
         ci.println("*     Warmup Required? :::"+warmUpIterations+"");
-        
+
         String dataPath="openflow:1";
         String flowType = "fTM";
         NodeBuilder tn;
@@ -3506,7 +3506,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
     	  ci.println("Exception:"+e.getMessage());
        }
     }
-    
+
     public class TestFlowThread implements Runnable {
 
         int numberOfSwitches;

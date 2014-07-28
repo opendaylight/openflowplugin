@@ -23,17 +23,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Listens to packetIn notification and 
+ * Listens to packetIn notification and
  * <ul>
  * <li>in HUB mode simply floods all switch ports (except ingress port)</li>
- * <li>in LSWITCH mode collects source MAC address of packetIn and bind it with ingress port. 
- * If target MAC address is already bound then a flow is created (for direct communication between 
+ * <li>in LSWITCH mode collects source MAC address of packetIn and bind it with ingress port.
+ * If target MAC address is already bound then a flow is created (for direct communication between
  * corresponding MACs)</li>
  * </ul>
  */
 public class LearningSwitchManagerSimpleImpl implements DataChangeListenerRegistrationHolder,
         LearningSwitchManager {
-    
+
     protected static final Logger LOG = LoggerFactory
             .getLogger(LearningSwitchManagerSimpleImpl.class);
 
@@ -41,10 +41,10 @@ public class LearningSwitchManagerSimpleImpl implements DataChangeListenerRegist
     private PacketProcessingService packetProcessingService;
     private DataBrokerService data;
 
-    private Registration<NotificationListener> packetInRegistration;
+    private Registration packetInRegistration;
 
-    private ListenerRegistration<DataChangeListener> dataChangeListenerRegistration; 
-    
+    private ListenerRegistration<DataChangeListener> dataChangeListenerRegistration;
+
     /**
      * @param notificationService the notificationService to set
      */
@@ -61,7 +61,7 @@ public class LearningSwitchManagerSimpleImpl implements DataChangeListenerRegist
             PacketProcessingService packetProcessingService) {
         this.packetProcessingService = packetProcessingService;
     }
-    
+
     /**
      * @param data the data to set
      */
@@ -83,7 +83,7 @@ public class LearningSwitchManagerSimpleImpl implements DataChangeListenerRegist
         learningSwitchHandler.setDataStoreAccessor(dataStoreAccessor);
         learningSwitchHandler.setPacketProcessingService(packetProcessingService);
         packetInRegistration = notificationService.registerNotificationListener(learningSwitchHandler);
-        
+
         WakeupOnNode wakeupListener = new WakeupOnNode();
         wakeupListener.setLearningSwitchHandler(learningSwitchHandler);
         dataChangeListenerRegistration = data.registerDataChangeListener(
@@ -94,9 +94,9 @@ public class LearningSwitchManagerSimpleImpl implements DataChangeListenerRegist
                 wakeupListener);
         LOG.debug("start() <--");
     }
-    
+
     /**
-     * stopping learning switch 
+     * stopping learning switch
      */
     @Override
     public void stop() {
@@ -114,8 +114,8 @@ public class LearningSwitchManagerSimpleImpl implements DataChangeListenerRegist
         }
         LOG.debug("stop() <--");
     }
-    
-   
+
+
     @Override
     public ListenerRegistration<DataChangeListener> getDataChangeListenerRegistration() {
         return dataChangeListenerRegistration;
