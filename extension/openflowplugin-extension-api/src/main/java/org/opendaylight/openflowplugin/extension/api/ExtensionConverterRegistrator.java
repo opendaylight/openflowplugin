@@ -23,6 +23,7 @@ import org.opendaylight.yangtools.concepts.ObjectRegistration;
  */
 public interface ExtensionConverterRegistrator {
 
+    @Deprecated
     ObjectRegistration<ConvertorToOFJava<Action>> registerActionConvertor(
             ConverterExtensionKey<? extends ExtensionKey> key, ConvertorToOFJava<Action> convertor);
 
@@ -36,4 +37,7 @@ public interface ExtensionConverterRegistrator {
             MatchEntrySerializerKey<? extends OxmClassBase, ? extends MatchField> key,
             ConvertorFromOFJava<MatchEntries, MatchPath> convertor);
 
+    ObjectRegistration<ConvertorToOFJava<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action>> registerActionConvertor(
+            Class<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action> key, 
+            ConvertorToOFJava<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action> convertor);
 }
