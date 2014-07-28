@@ -26,11 +26,11 @@ public class DropTestProvider implements AutoCloseable {
     public DropTestStats getStats() {
     	return this.commiter.getStats();
     }
-    
+
     public void clearStats() {
     	this.commiter.clearStats();
     }
-    
+
     public DataProviderService getDataService() {
         return this._dataService;
     }
