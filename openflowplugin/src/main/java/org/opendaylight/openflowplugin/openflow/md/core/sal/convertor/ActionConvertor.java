@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.opendaylight.openflowplugin.extension.api.ConverterExtensionKey;
+import org.opendaylight.openflowplugin.extension.api.ConvertorActionToOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorToOFJava;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
 import org.opendaylight.openflowplugin.openflow.md.OFConstants;
@@ -147,6 +148,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.ExtensionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralExtensionGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.grouping.Extension;
+import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -257,6 +259,12 @@ public final class ActionConvertor {
                 if (convertor != null) {
                     ofAction = convertor.convert(extAction);
                 }
+            } else {
+                // try vendor codecs
+                ConvertorActionToOFJava<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, Action> convertor = 
+                        OFSessionUtil.getExtensionConvertorProvider()
+                        .getConverter((Class<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action>) action.getImplementedInterface());
+                ofAction = convertor.convert(action);
             }
             
             if (ofAction != null) {

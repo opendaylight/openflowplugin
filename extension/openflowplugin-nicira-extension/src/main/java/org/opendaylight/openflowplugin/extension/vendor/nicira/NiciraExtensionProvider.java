@@ -50,6 +50,8 @@ import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.T
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.TunIpv4SrcConvertor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.NxActionRegLoadKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.NxActionRegMoveKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionRegLoadNodesNodeTableFlowApplyActionsCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionRegMoveNodesNodeTableFlowApplyActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxArpShaKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxArpThaKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxRegKey;
@@ -117,10 +119,14 @@ public class NiciraExtensionProvider implements AutoCloseable {
      */
     public void registerConverters() {
         registrations = new HashSet<>();
-        registrations.add(extensionConverterRegistrator.registerActionConvertor(new ConverterExtensionKey<>(NxActionRegLoadKey.class,  EncodeConstants.OF13_VERSION_ID), REG_LOAD_CONVERTOR));
+//        registrations.add(extensionConverterRegistrator.registerActionConvertor(new ConverterExtensionKey<>(NxActionRegLoadKey.class,  EncodeConstants.OF13_VERSION_ID), REG_LOAD_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerActionConvertor(RegLoadCodec.SERIALIZER_KEY, REG_LOAD_CONVERTOR));
-        registrations.add(extensionConverterRegistrator.registerActionConvertor(new ConverterExtensionKey<>(NxActionRegMoveKey.class,  EncodeConstants.OF13_VERSION_ID), REG_MOVE_CONVERTOR));
+//        registrations.add(extensionConverterRegistrator.registerActionConvertor(new ConverterExtensionKey<>(NxActionRegMoveKey.class,  EncodeConstants.OF13_VERSION_ID), REG_MOVE_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerActionConvertor(RegMoveCodec.SERIALIZER_KEY, REG_MOVE_CONVERTOR));
+        //TODO: add version
+        registrations.add(extensionConverterRegistrator.registerActionConvertor(NxActionRegLoadNodesNodeTableFlowApplyActionsCase.class, REG_LOAD_CONVERTOR));
+        registrations.add(extensionConverterRegistrator.registerActionConvertor(NxActionRegMoveNodesNodeTableFlowApplyActionsCase.class, REG_MOVE_CONVERTOR));
+
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(new ConverterExtensionKey<>(NxmNxRegKey.class, EncodeConstants.OF13_VERSION_ID), REG_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(Reg0Codec.SERIALIZER_KEY, REG_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(Reg1Codec.SERIALIZER_KEY, REG_CONVERTOR));

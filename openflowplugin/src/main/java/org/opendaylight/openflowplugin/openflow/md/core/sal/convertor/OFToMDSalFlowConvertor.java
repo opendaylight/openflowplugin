@@ -71,7 +71,7 @@ public class OFToMDSalFlowConvertor {
                 ApplyActionsBuilder applyActionsBuilder = new ApplyActionsBuilder();
                 
                 
-                applyActionsBuilder.setAction(wrapActionList(ActionConvertor.toMDSalActions(actionsInstruction.getAction(), ofVersion, ActionPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION)));
+                applyActionsBuilder.setAction(wrapActionList(ActionConvertor.toMDSalActions(actionsInstruction.getAction(), ofVersion, ActionPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION)));
                 
                 applyActionsCaseBuilder.setApplyActions(applyActionsBuilder.build());
                 
