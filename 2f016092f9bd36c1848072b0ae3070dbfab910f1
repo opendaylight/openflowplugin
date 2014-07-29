@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa82b9bf_cd69588d",
+        "filename": "extension/openflowplugin-nicira-extension/src/main/yang/openflowplugin-extension-nicira-action.yang",
+        "patchSetId": 27
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 11
+      },
+      "writtenOn": "2014-07-29T08:26:48Z",
+      "side": 1,
+      "message": "Struggling to understand the action usage patten for this and all the following fields with empty type.\n\nWhile the match for all of these fields are properly defined and is working, am unable to get the action working.",
+      "revId": "2f016092f9bd36c1848072b0ae3070dbfab910f1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
