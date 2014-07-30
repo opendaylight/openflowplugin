@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.util;
 
+import java.math.BigInteger;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnectorUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnectorUpdatedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.flow.capable.port.State;
@@ -21,45 +22,72 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortStateV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
 
-import java.math.BigInteger;
-
 public abstract class PortTranslatorUtil {
-    public static  org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures translatePortFeatures(PortFeatures apf) {
+    public static org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures translatePortFeatures(PortFeatures apf) {
         org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures napf = null;
-        if(apf != null){
-                napf = new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures(
-                        apf.is_100gbFd(),apf.is_100mbFd(),apf.is_100mbHd(),apf.is_10gbFd(),apf.is_10mbFd(),apf.is_10mbHd(),
-                        apf.is_1gbFd(),apf.is_1gbHd(),apf.is_1tbFd(),apf.is_40gbFd(),apf.isAutoneg(),apf.isCopper(),apf.isFiber(),apf.isOther(),
-                        apf.isPause(), apf.isPauseAsym());
+        if (apf != null) {
+            napf = new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures(
+                    apf.isAutoneg(), //_autoeng
+                    apf.isCopper(), //_copper
+                    apf.isFiber(), //_fiber
+                    apf.is_40gbFd(), //_fortyGbFd
+                    apf.is_100gbFd(), //_hundredGbFd
+                    apf.is_100mbFd(), //_hundredMbFd
+                    apf.is_100mbHd(), //_hundredMbHd
+                    apf.is_1gbFd(), //_oneGbFd
+                    apf.is_1gbHd(), //_oneGbHd
+                    apf.is_1tbFd(), //_oneTbFd
+                    apf.isOther(), //_other
+                    apf.isPause(), //_pause
+                    apf.isPauseAsym(), //_pauseAsym
+                    apf.is_10gbFd(), //_tenGbFd
+                    apf.is_10mbFd(), //_tenMbFd
+                    apf.is_10mbHd()//_tenMbHd
+            );
+
         }
         return napf;
     }
-    
+
     public static org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures translatePortFeatures(
             PortFeaturesV10 apf) {
         org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures napf = null;
-        if(apf != null){
-                napf = new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures(
-                        false,apf.is_100mbFd(),apf.is_100mbHd(),apf.is_10gbFd(),apf.is_10mbFd(),apf.is_10mbHd(),
-                        apf.is_1gbFd(),apf.is_1gbHd(),false,false,apf.isAutoneg(),apf.isCopper(),apf.isFiber(),false,
-                        apf.isPause(), apf.isPauseAsym());
+        if (apf != null) {
+            napf = new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures(
+                    apf.isAutoneg(), //_autoeng
+                    apf.isCopper(), //_copper
+                    apf.isFiber(), //_fiber
+                    false, //_fortyGbFd
+                    false, //_hundredGbFd
+                    apf.is_100mbFd(), //_hundredMbFd
+                    apf.is_100mbHd(), //_hundredMbHd
+                    apf.is_1gbFd(), //_oneGbFd
+                    apf.is_1gbHd(), //_oneGbHd
+                    false, //_oneTbFd
+                    false, //_other
+                    apf.isPause(), //_pause
+                    apf.isPauseAsym(), //_pauseAsym
+                    apf.is_10gbFd(), //_tenGbFd
+                    apf.is_10mbFd(), //_tenMbFd
+                    apf.is_10mbHd()//_tenMbHd
+                    );
         }
         return napf;
     }
 
-    public static  State translatePortState(PortState state) {
+    public static State translatePortState(PortState state) {
         StateBuilder nstate = new StateBuilder();
-        if(state !=null) {
+        if (state != null) {
             nstate.setBlocked(state.isBlocked());
             nstate.setLinkDown(state.isLinkDown());
             nstate.setLive(state.isLive());
         }
         return nstate.build();
     }
-    
+
     public static State translatePortState(PortStateV10 state) {
         StateBuilder nstate = new StateBuilder();
-        if(state !=null) {
+        if (state != null) {
             nstate.setBlocked(state.isBlocked());
             nstate.setLinkDown(state.isLinkDown());
             nstate.setLive(state.isLive());
@@ -69,29 +97,29 @@ public abstract class PortTranslatorUtil {
 
     public static org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortConfig translatePortConfig(PortConfig pc) {
         org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortConfig npc = null;
-        if(pc != null) {
-                npc = new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortConfig(pc.isNoFwd(),
-                        pc.isNoPacketIn(), pc.isNoRecv(), pc.isPortDown());
+        if (pc != null) {
+            npc = new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortConfig(pc.isNoFwd(),
+                    pc.isNoPacketIn(), pc.isNoRecv(), pc.isPortDown());
         }
         return npc;
     }
-    
+
     public static org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortConfig translatePortConfig(
             PortConfigV10 pc) {
         org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortConfig npc = null;
-        if(pc != null) {
-                npc = new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortConfig(pc.isNoFwd(),
-                        pc.isNoPacketIn(), pc.isNoRecv(), pc.isPortDown());
+        if (pc != null) {
+            npc = new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortConfig(pc.isNoFwd(),
+                    pc.isNoPacketIn(), pc.isNoRecv(), pc.isPortDown());
         }
         return npc;
     }
-    
-    public static NodeConnectorUpdated translatePort(Short version, BigInteger datapathId,Long portNumber, PortGrouping port) {
-        OpenflowVersion ofVersion =  OpenflowVersion.get(version);
+
+    public static NodeConnectorUpdated translatePort(Short version, BigInteger datapathId, Long portNumber, PortGrouping port) {
+        OpenflowVersion ofVersion = OpenflowVersion.get(version);
         NodeConnectorUpdatedBuilder builder = InventoryDataServiceUtil
                 .nodeConnectorUpdatedBuilderFromDatapathIdPortNo(datapathId, port.getPortNo(), ofVersion);
         FlowCapableNodeConnectorUpdatedBuilder fcncub = new FlowCapableNodeConnectorUpdatedBuilder();
-        if(ofVersion == OpenflowVersion.OF13) {
+        if (ofVersion == OpenflowVersion.OF13) {
             fcncub.setAdvertisedFeatures(PortTranslatorUtil.translatePortFeatures(port.getAdvertisedFeatures()));
             fcncub.setConfiguration(PortTranslatorUtil.translatePortConfig(port.getConfig()));
             fcncub.setCurrentFeature(PortTranslatorUtil.translatePortFeatures(port.getCurrentFeatures()));
