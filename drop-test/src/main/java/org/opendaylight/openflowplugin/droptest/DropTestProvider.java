@@ -7,10 +7,9 @@
  */
 package org.opendaylight.openflowplugin.droptest;
 
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
-import org.opendaylight.controller.sal.binding.api.data.DataProviderService;
 import org.opendaylight.yangtools.concepts.Registration;
-import org.opendaylight.yangtools.yang.binding.NotificationListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,24 +17,24 @@ import org.slf4j.LoggerFactory;
 public class DropTestProvider implements AutoCloseable {
     private final static Logger LOG = LoggerFactory.getLogger(DropTestProvider.class);
 
-    private DataProviderService _dataService;
+    private DataBroker _dataService;
     private NotificationProviderService _notificationService;
     private Registration listenerRegistration;
     private final DropTestCommiter commiter = new DropTestCommiter(this);
 
     public DropTestStats getStats() {
-    	return this.commiter.getStats();
+        return this.commiter.getStats();
     }
-    
+
     public void clearStats() {
-    	this.commiter.clearStats();
+        this.commiter.clearStats();
     }
-    
-    public DataProviderService getDataService() {
+
+    public DataBroker getDataService() {
         return this._dataService;
     }
 
-    public void setDataService(final DataProviderService dataService) {
+    public void setDataService(final DataBroker dataService) {
         this._dataService = dataService;
     }
 

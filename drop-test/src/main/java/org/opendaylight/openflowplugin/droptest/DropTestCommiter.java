@@ -7,9 +7,10 @@
  */
 package org.opendaylight.openflowplugin.droptest;
 
+import com.google.common.base.Preconditions;
 import java.math.BigInteger;
-
-import org.opendaylight.controller.sal.binding.api.data.DataModificationTransaction;
+import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
@@ -27,8 +28,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Preconditions;
 
 public class DropTestCommiter extends AbstractDropTest {
     private final static Logger LOG = LoggerFactory.getLogger(DropTestProvider.class);
@@ -77,11 +76,11 @@ public class DropTestCommiter extends AbstractDropTest {
                         .build();
 
         final Flow flow = fb.build();
-        final DataModificationTransaction transaction = manager.getDataService().beginTransaction();
+        final ReadWriteTransaction transaction = manager.getDataService().newReadWriteTransaction();
 
         LOG.debug("onPacketReceived - About to write flow {}", flow);
-        transaction.putConfigurationData(flowInstanceId, flow);
-        transaction.commit();
+        transaction.put(LogicalDatastoreType.CONFIGURATION, flowInstanceId, flow);
+        transaction.submit();
         LOG.debug("onPacketReceived - About to write flow commited");
     }
 }

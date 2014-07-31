@@ -10,13 +10,13 @@ package org.opendaylight.openflowplugin.droptest;
 
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
-import org.opendaylight.controller.sal.binding.api.data.DataBrokerService;
 import org.osgi.framework.BundleContext;
 
 public class DropTestCommandProvider implements CommandProvider {
 
-    private DataBrokerService dataBrokerService;
+    private DataBroker dataBroker;
     private ProviderContext pc;
     private BundleContext ctx;
     private DropTestProvider provider;
@@ -25,7 +25,7 @@ public class DropTestCommandProvider implements CommandProvider {
     private boolean sessionInitiated = false;
 
 
-    public DropTestCommandProvider(BundleContext ctx,DropTestProvider provider,DropTestRpcProvider rpcProvider) {
+    public DropTestCommandProvider(BundleContext ctx, DropTestProvider provider, DropTestRpcProvider rpcProvider) {
         this.ctx = ctx;
         this.provider = provider;
         this.rpcProvider = rpcProvider;
@@ -33,17 +33,17 @@ public class DropTestCommandProvider implements CommandProvider {
 
     public void onSessionInitiated(ProviderContext session) {
         pc = session;
-        dataBrokerService = session.getSALService(DataBrokerService.class);
+        dataBroker = session.getSALService(DataBroker.class);
         ctx.registerService(CommandProvider.class.getName(), this, null);
         this.sessionInitiated = true;
 
     }
 
     public void _dropAllPackets(CommandInterpreter ci) {
-        if(sessionInitiated) {
+        if (sessionInitiated) {
             String onoff = ci.nextArgument();
-            if(onoff.equals("on")) {
-                if(on == false) {
+            if (onoff.equals("on")) {
+                if (on == false) {
                     provider.start();
                     ci.println("DropAllFlows transitions to on");
                 } else {
@@ -51,7 +51,7 @@ public class DropTestCommandProvider implements CommandProvider {
                 }
                 on = true;
             } else if (onoff.equals("off")) {
-                if(on == true) {
+                if (on == true) {
                     provider.close();
                     ci.println("DropAllFlows transitions to off");
                 } else {
@@ -65,10 +65,10 @@ public class DropTestCommandProvider implements CommandProvider {
     }
 
     public void _dropAllPacketsRpc(CommandInterpreter ci) {
-        if(sessionInitiated) {
+        if (sessionInitiated) {
             String onoff = ci.nextArgument();
-            if(onoff.equals("on")) {
-                if(on == false) {
+            if (onoff.equals("on")) {
+                if (on == false) {
                     rpcProvider.start();
                     ci.println("DropAllFlows transitions to on");
                 } else {
@@ -76,7 +76,7 @@ public class DropTestCommandProvider implements CommandProvider {
                 }
                 on = true;
             } else if (onoff.equals("off")) {
-                if(on == true) {
+                if (on == true) {
                     rpcProvider.close();
                     ci.println("DropAllFlows transitions to off");
                 } else {
@@ -88,28 +88,28 @@ public class DropTestCommandProvider implements CommandProvider {
             ci.println("Session not initiated, try again in a few seconds");
         }
     }
-    
+
     public void _showDropStats(CommandInterpreter ci) {
-        if(sessionInitiated) {    	
-        	ci.println("RPC Test Statistics: " + this.rpcProvider.getStats().toString());
-        	ci.println("FRM Test Statistics: " + this.provider.getStats().toString());
-       } else {
-        	ci.println("Session not initiated, try again in a few seconds");
+        if (sessionInitiated) {
+            ci.println("RPC Test Statistics: " + this.rpcProvider.getStats().toString());
+            ci.println("FRM Test Statistics: " + this.provider.getStats().toString());
+        } else {
+            ci.println("Session not initiated, try again in a few seconds");
         }
-   }
-    
+    }
+
     public void _clearDropStats(CommandInterpreter ci) {
-        if(sessionInitiated) {    	
-        	ci.print("Clearing drop statistics... ");
-        	this.rpcProvider.clearStats();
-        	this.provider.clearStats();
-        	ci.println("Done.");
+        if (sessionInitiated) {
+            ci.print("Clearing drop statistics... ");
+            this.rpcProvider.clearStats();
+            this.provider.clearStats();
+            ci.println("Done.");
 
         } else {
-        	ci.println("Session not initiated, try again in a few seconds");
+            ci.println("Session not initiated, try again in a few seconds");
         }
-  }
-    
+    }
+
     @Override
     public String getHelp() {
         StringBuffer help = new StringBuffer();
