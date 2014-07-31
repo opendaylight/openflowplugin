@@ -10,7 +10,7 @@ package org.opendaylight.openflowplugin.test
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService
-import org.opendaylight.controller.sal.binding.api.data.DataProviderService
+import org.opendaylight.controller.md.sal.binding.api.DataBroker
 
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.SalTableService
 //import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.SalTableService

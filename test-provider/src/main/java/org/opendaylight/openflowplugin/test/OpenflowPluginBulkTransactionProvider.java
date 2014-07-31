@@ -5,14 +5,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.TransactionStatus;
-import org.opendaylight.controller.md.sal.common.api.data.DataModification;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.NotificationService;
-import org.opendaylight.controller.sal.binding.api.data.DataBrokerService;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6FlowLabel;
@@ -64,7 +64,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.OutputPortValues;
@@ -104,7 +103,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.node.error.service.rev140410.NodeErrorListener;
 import org.opendaylight.yangtools.concepts.Registration;
-import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.osgi.framework.BundleContext;
@@ -116,7 +114,7 @@ import org.slf4j.LoggerFactory;
 public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(OpenflowpluginTestCommandProvider.class);
-    private DataBrokerService dataBrokerService;
+    private DataBroker dataBroker;
     private final BundleContext ctx;
     private NodeBuilder testNode;
     private ProviderContext pc;
@@ -137,7 +135,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         pc = session;
         notificationService = session.getSALService(NotificationService.class);
         listener2Reg = notificationService.registerNotificationListener(nodeErrorListener);
-        dataBrokerService = session.getSALService(DataBrokerService.class);
+        dataBroker = session.getSALService(DataBroker.class);
         ctx.registerService(CommandProvider.class.getName(), this, null);
         createTestFlow(createTestNode(null), null, null);
     }
@@ -178,234 +176,234 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         }
 
         switch (flowType) {
-        case "f1":
-            id += 1;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createDecNwTtlInstructions().build());
-            break;
-        case "f2":
-            id += 2;
-            flow.setMatch(createMatch2().build());
-            flow.setInstructions(createDropInstructions().build());
-            break;
-        case "f3":
-            id += 3;
-            flow.setMatch(createMatch3().build());
-            flow.setInstructions(createDropInstructions().build());
-            break;
-        case "f4":
-            id += 4;
-            flow.setMatch(createEthernetMatch().build());
-            flow.setInstructions(createDropInstructions().build());
-            break;
-        case "f5":
-            id += 5;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction().build());
-            break;
-        case "f6":
-            id += 6;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createGotoTableInstructions().build());
-            break;
-        case "f7":
-            id += 7;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createMeterInstructions().build());
-            break;
-        case "f8":
-            id += 8;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction7().build());
-            break;
-        case "f9":
-            id += 9;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction2().build());
-            break;
-        case "f10":
-            id += 10;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction3().build());
-            break;
-        case "f23":
-            id += 23;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction16().build());
-            break;
-        case "f230":
-            id += 23;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction160().build());
-            break;
-        case "f34":
-            id += 34;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction26().build());
-            break;
-        case "f35":
-            id += 35;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction27().build());
-            break;
-        case "f36":
-            id += 36;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction28().build());
-            break;
-        case "f42":
-            id += 42;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction34().build());
-            break;
-        case "f43":
-            id += 43;
-            flow.setMatch(createICMPv6Match().build());
-            flow.setInstructions(createDecNwTtlInstructions().build());
-            break;
-        case "f44":
-            id += 44;
-            flow.setMatch(createInphyportMatch(nodeBuilder.getId()).build());
-            flow.setInstructions(createDropInstructions().build());
-            break;
-        case "f45":
-            id += 45;
-            flow.setMatch(createMetadataMatch().build());
-            flow.setInstructions(createDropInstructions().build());
-            break;
-        case "f46":
-            id += 46;
-            flow.setMatch(createL3IPv6Match().build());
-            flow.setInstructions(createDecNwTtlInstructions().build());
-            break;
-        case "f81":
-            id += 81;
-            flow.setMatch(createLLDPMatch().build());
-            flow.setInstructions(createSentToControllerInstructions().build());
-            break;
+            case "f1":
+                id += 1;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createDecNwTtlInstructions().build());
+                break;
+            case "f2":
+                id += 2;
+                flow.setMatch(createMatch2().build());
+                flow.setInstructions(createDropInstructions().build());
+                break;
+            case "f3":
+                id += 3;
+                flow.setMatch(createMatch3().build());
+                flow.setInstructions(createDropInstructions().build());
+                break;
+            case "f4":
+                id += 4;
+                flow.setMatch(createEthernetMatch().build());
+                flow.setInstructions(createDropInstructions().build());
+                break;
+            case "f5":
+                id += 5;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction().build());
+                break;
+            case "f6":
+                id += 6;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createGotoTableInstructions().build());
+                break;
+            case "f7":
+                id += 7;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createMeterInstructions().build());
+                break;
+            case "f8":
+                id += 8;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction7().build());
+                break;
+            case "f9":
+                id += 9;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction2().build());
+                break;
+            case "f10":
+                id += 10;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction3().build());
+                break;
+            case "f23":
+                id += 23;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction16().build());
+                break;
+            case "f230":
+                id += 23;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction160().build());
+                break;
+            case "f34":
+                id += 34;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction26().build());
+                break;
+            case "f35":
+                id += 35;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction27().build());
+                break;
+            case "f36":
+                id += 36;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction28().build());
+                break;
+            case "f42":
+                id += 42;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction34().build());
+                break;
+            case "f43":
+                id += 43;
+                flow.setMatch(createICMPv6Match().build());
+                flow.setInstructions(createDecNwTtlInstructions().build());
+                break;
+            case "f44":
+                id += 44;
+                flow.setMatch(createInphyportMatch(nodeBuilder.getId()).build());
+                flow.setInstructions(createDropInstructions().build());
+                break;
+            case "f45":
+                id += 45;
+                flow.setMatch(createMetadataMatch().build());
+                flow.setInstructions(createDropInstructions().build());
+                break;
+            case "f46":
+                id += 46;
+                flow.setMatch(createL3IPv6Match().build());
+                flow.setInstructions(createDecNwTtlInstructions().build());
+                break;
+            case "f81":
+                id += 81;
+                flow.setMatch(createLLDPMatch().build());
+                flow.setInstructions(createSentToControllerInstructions().build());
+                break;
 
-        case "f82":
-            id += 1;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createDropInstructions().build());
-            break;
-        case "f83":
-            id += 2;
-            flow.setMatch(createMatch2().build());
-            flow.setInstructions(createDecNwTtlInstructions().build());
-            break;
-        case "f84":
-            id += 3;
-            flow.setMatch(createMatch3().build());
-            flow.setInstructions(createDecNwTtlInstructions().build());
-            break;
-        case "f85":
-            id += 4;
-            flow.setMatch(createEthernetMatch().build());
-            flow.setInstructions(createMeterInstructions().build());
-            break;
-        case "f86":
-            id += 6;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createDecNwTtlInstructions().build());
-            break;
-        case "f87":
-            id += 12;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction7().build());
-            break;
-        case "f88":
-            id += 13;
-            flow.setMatch(createEthernetMatch().build());
-            flow.setInstructions(createAppyActionInstruction6().build());
-            break;
-        case "f89":
-            id += 14;
-            flow.setMatch(createEthernetMatch().build());
-            flow.setInstructions(createAppyActionInstruction7().build());
-            break;
-        case "f90":
-            id += 15;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction9().build());
-            break;
-        case "f91":
-            id += 7;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction9().build());
-            break;
-        case "f92":
-            id += 8;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction6().build());
-            break;
-        case "f93":
-            id += 9;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createDecNwTtlInstructions().build());
-            break;
-        case "f94":
-            id += 10;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createDecNwTtlInstructions().build());
-            break;
-        case "f95":
-            id += 42;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createDecNwTtlInstructions().build());
-            break;
-        case "f96":
-            id += 43;
-            flow.setMatch(createICMPv6Match().build());
-            flow.setInstructions(createDropInstructions().build());
-            break;
-        case "f97":
-            id += 44;
-            flow.setMatch(createInphyportMatch(nodeBuilder.getId()).build());
-            flow.setInstructions(createMeterInstructions().build());
-            break;
-        case "f98":
-            id += 45;
-            flow.setMatch(createMetadataMatch().build());
-            flow.setInstructions(createAppyActionInstruction6().build());
-            break;
-        case "f99":
-            id += 34;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction6().build());
-            break;
-        case "f100":
-            id += 35;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction7().build());
-            break;
-        case "f101":
-            id += 36;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction8().build());
-            break;
-        case "f700":
-            id += 3;
-            flow.setMatch(createMatch3().build());
-            flow.setInstructions(createMeterInstructions().build());
-            break;
-        case "f800":
-            id += 8;
-            flow.setMatch(createMatch1000().build());
-            flow.setInstructions(createAppyActionInstruction6().build());
-            break;
-        case "f900":
-            id += 5;
-            flow.setMatch(createMatch1000().build());
-            flow.setInstructions(createAppyActionInstruction2().build());
-            break;
-        case "f1000":
-            id += 10;
-            flow.setMatch(createMatch1000().build());
-            flow.setInstructions(createAppyActionInstruction3().build());
-            break;
-        default:
-            LOG.warn("flow type not understood: {}", flowType);
+            case "f82":
+                id += 1;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createDropInstructions().build());
+                break;
+            case "f83":
+                id += 2;
+                flow.setMatch(createMatch2().build());
+                flow.setInstructions(createDecNwTtlInstructions().build());
+                break;
+            case "f84":
+                id += 3;
+                flow.setMatch(createMatch3().build());
+                flow.setInstructions(createDecNwTtlInstructions().build());
+                break;
+            case "f85":
+                id += 4;
+                flow.setMatch(createEthernetMatch().build());
+                flow.setInstructions(createMeterInstructions().build());
+                break;
+            case "f86":
+                id += 6;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createDecNwTtlInstructions().build());
+                break;
+            case "f87":
+                id += 12;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction7().build());
+                break;
+            case "f88":
+                id += 13;
+                flow.setMatch(createEthernetMatch().build());
+                flow.setInstructions(createAppyActionInstruction6().build());
+                break;
+            case "f89":
+                id += 14;
+                flow.setMatch(createEthernetMatch().build());
+                flow.setInstructions(createAppyActionInstruction7().build());
+                break;
+            case "f90":
+                id += 15;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction9().build());
+                break;
+            case "f91":
+                id += 7;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction9().build());
+                break;
+            case "f92":
+                id += 8;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction6().build());
+                break;
+            case "f93":
+                id += 9;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createDecNwTtlInstructions().build());
+                break;
+            case "f94":
+                id += 10;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createDecNwTtlInstructions().build());
+                break;
+            case "f95":
+                id += 42;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createDecNwTtlInstructions().build());
+                break;
+            case "f96":
+                id += 43;
+                flow.setMatch(createICMPv6Match().build());
+                flow.setInstructions(createDropInstructions().build());
+                break;
+            case "f97":
+                id += 44;
+                flow.setMatch(createInphyportMatch(nodeBuilder.getId()).build());
+                flow.setInstructions(createMeterInstructions().build());
+                break;
+            case "f98":
+                id += 45;
+                flow.setMatch(createMetadataMatch().build());
+                flow.setInstructions(createAppyActionInstruction6().build());
+                break;
+            case "f99":
+                id += 34;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction6().build());
+                break;
+            case "f100":
+                id += 35;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction7().build());
+                break;
+            case "f101":
+                id += 36;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction8().build());
+                break;
+            case "f700":
+                id += 3;
+                flow.setMatch(createMatch3().build());
+                flow.setInstructions(createMeterInstructions().build());
+                break;
+            case "f800":
+                id += 8;
+                flow.setMatch(createMatch1000().build());
+                flow.setInstructions(createAppyActionInstruction6().build());
+                break;
+            case "f900":
+                id += 5;
+                flow.setMatch(createMatch1000().build());
+                flow.setInstructions(createAppyActionInstruction2().build());
+                break;
+            case "f1000":
+                id += 10;
+                flow.setMatch(createMatch1000().build());
+                flow.setInstructions(createAppyActionInstruction3().build());
+                break;
+            default:
+                LOG.warn("flow type not understood: {}", flowType);
         }
 
         FlowKey key = new FlowKey(new FlowId(Long.toString(id)));
@@ -466,45 +464,45 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         FlowBuilder tf2;
         FlowBuilder tf3;
         switch (flowcnt) {
-        case 1:
-            tf = createTestFlow(tn, "f1", "10");
-            tf1 = createTestFlow(tn, "f2", "11");
-            tf2 = createTestFlow(tn, "f3", "12");
-            tf3 = createTestFlow(tn, "f4", "13");
-            break;
-        case 2:
-            tf = createTestFlow(tn, "f3", "3");
-            tf1 = createTestFlow(tn, "f4", "4");
-            tf2 = createTestFlow(tn, "f5", "5");
-            tf3 = createTestFlow(tn, "f6", "6");
-            break;
-        case 3:
-            tf = createTestFlow(tn, "f7", "7");
-            tf1 = createTestFlow(tn, "f8", "8");
-            tf2 = createTestFlow(tn, "f9", "9");
-            tf3 = createTestFlow(tn, "f10", "10");
-            break;
-        case 4:
-            // -ve scenario
-            tf = createTestFlow(tn, "f23", "3");
-            tf1 = createTestFlow(tn, "f34", "4");
-            tf2 = createTestFlow(tn, "f35", "5");
-            tf3 = createTestFlow(tn, "f36", "6");
-            break;
-        case 5:
-            // +ve scenario
-            // modify case 6 -ve
-            tf = createTestFlow(tn, "f230", "3");
-            tf1 = createTestFlow(tn, "f34", "4");
-            tf2 = createTestFlow(tn, "f35", "5");
-            tf3 = createTestFlow(tn, "f36", "6");
-            break;
+            case 1:
+                tf = createTestFlow(tn, "f1", "10");
+                tf1 = createTestFlow(tn, "f2", "11");
+                tf2 = createTestFlow(tn, "f3", "12");
+                tf3 = createTestFlow(tn, "f4", "13");
+                break;
+            case 2:
+                tf = createTestFlow(tn, "f3", "3");
+                tf1 = createTestFlow(tn, "f4", "4");
+                tf2 = createTestFlow(tn, "f5", "5");
+                tf3 = createTestFlow(tn, "f6", "6");
+                break;
+            case 3:
+                tf = createTestFlow(tn, "f7", "7");
+                tf1 = createTestFlow(tn, "f8", "8");
+                tf2 = createTestFlow(tn, "f9", "9");
+                tf3 = createTestFlow(tn, "f10", "10");
+                break;
+            case 4:
+                // -ve scenario
+                tf = createTestFlow(tn, "f23", "3");
+                tf1 = createTestFlow(tn, "f34", "4");
+                tf2 = createTestFlow(tn, "f35", "5");
+                tf3 = createTestFlow(tn, "f36", "6");
+                break;
+            case 5:
+                // +ve scenario
+                // modify case 6 -ve
+                tf = createTestFlow(tn, "f230", "3");
+                tf1 = createTestFlow(tn, "f34", "4");
+                tf2 = createTestFlow(tn, "f35", "5");
+                tf3 = createTestFlow(tn, "f36", "6");
+                break;
 
-        default:
-            tf = createTestFlow(tn, "f42", "42");
-            tf1 = createTestFlow(tn, "f43", "43");
-            tf2 = createTestFlow(tn, "f44", "44");
-            tf3 = createTestFlow(tn, "f45", "45");
+            default:
+                tf = createTestFlow(tn, "f42", "42");
+                tf1 = createTestFlow(tn, "f43", "43");
+                tf2 = createTestFlow(tn, "f44", "44");
+                tf3 = createTestFlow(tn, "f45", "45");
 
         }
         writeFlow(ci, tf, tf1, tf2, tf3, tn);
@@ -523,45 +521,45 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         FlowBuilder tf2;
         FlowBuilder tf3;
         switch (flowcnt) {
-        case 1:
-            tf = createTestFlow(tn, "f82", "10");
-            tf1 = createTestFlow(tn, "f83", "11");
-            tf2 = createTestFlow(tn, "f84", "12");
-            tf3 = createTestFlow(tn, "f85", "13");
-            break;
-        case 2:
-            tf = createTestFlow(tn, "f700", "3");
-            tf1 = createTestFlow(tn, "f4", "4");
-            tf2 = createTestFlow(tn, "f900", "5");
-            tf3 = createTestFlow(tn, "f86", "6");
-            break;
-        case 3:
-            // +
-            tf = createTestFlow(tn, "f91", "7");
-            tf1 = createTestFlow(tn, "f92", "8");
-            tf2 = createTestFlow(tn, "f93", "9");
-            tf3 = createTestFlow(tn, "f94", "10");
-            break;
-        case 4:
-            // +ve scenario
-            tf = createTestFlow(tn, "f230", "3");
-            tf1 = createTestFlow(tn, "f99", "4");
-            tf2 = createTestFlow(tn, "f100", "5");
-            tf3 = createTestFlow(tn, "f101", "6");
-            break;
-        case 5:
-            // -
-            tf = createTestFlow(tn, "f23", "3");
-            tf1 = createTestFlow(tn, "f99", "4");
-            tf2 = createTestFlow(tn, "f100", "5");
-            tf3 = createTestFlow(tn, "f101", "6");
-            break;
+            case 1:
+                tf = createTestFlow(tn, "f82", "10");
+                tf1 = createTestFlow(tn, "f83", "11");
+                tf2 = createTestFlow(tn, "f84", "12");
+                tf3 = createTestFlow(tn, "f85", "13");
+                break;
+            case 2:
+                tf = createTestFlow(tn, "f700", "3");
+                tf1 = createTestFlow(tn, "f4", "4");
+                tf2 = createTestFlow(tn, "f900", "5");
+                tf3 = createTestFlow(tn, "f86", "6");
+                break;
+            case 3:
+                // +
+                tf = createTestFlow(tn, "f91", "7");
+                tf1 = createTestFlow(tn, "f92", "8");
+                tf2 = createTestFlow(tn, "f93", "9");
+                tf3 = createTestFlow(tn, "f94", "10");
+                break;
+            case 4:
+                // +ve scenario
+                tf = createTestFlow(tn, "f230", "3");
+                tf1 = createTestFlow(tn, "f99", "4");
+                tf2 = createTestFlow(tn, "f100", "5");
+                tf3 = createTestFlow(tn, "f101", "6");
+                break;
+            case 5:
+                // -
+                tf = createTestFlow(tn, "f23", "3");
+                tf1 = createTestFlow(tn, "f99", "4");
+                tf2 = createTestFlow(tn, "f100", "5");
+                tf3 = createTestFlow(tn, "f101", "6");
+                break;
 
-        default:
-            tf = createTestFlow(tn, "f87", "12");
-            tf1 = createTestFlow(tn, "f88", "13");
-            tf2 = createTestFlow(tn, "f89", "14");
-            tf3 = createTestFlow(tn, "f90", "15");
+            default:
+                tf = createTestFlow(tn, "f87", "12");
+                tf1 = createTestFlow(tn, "f88", "13");
+                tf2 = createTestFlow(tn, "f89", "14");
+                tf3 = createTestFlow(tn, "f90", "15");
 
         }
 
@@ -570,7 +568,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
     }
 
     public void _removeFlows(CommandInterpreter ci) {
-        DataModification<InstanceIdentifier<?>, DataObject> modification = dataBrokerService.beginTransaction();
+        ReadWriteTransaction modification = dataBroker.newReadWriteTransaction();
         NodeBuilder tn = createTestNode(ci.nextArgument());
         String flowtype = ci.nextArgument();
         Integer flowcnt = Integer.parseInt(flowtype);
@@ -579,97 +577,97 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         FlowBuilder tf2 = null;
         FlowBuilder tf3 = null;
         switch (flowcnt) {
-        case 1:
-            // add case 1
-            tf = createTestFlow(tn, "f1", "10");
-            tf1 = createTestFlow(tn, "f2", "11");
-            tf2 = createTestFlow(tn, "f3", "12");
-            tf3 = createTestFlow(tn, "f4", "13");
-            break;
-        case 2:
-            // modify case 1
-            tf = createTestFlow(tn, "f82", "10");
-            tf1 = createTestFlow(tn, "f83", "11");
-            tf2 = createTestFlow(tn, "f84", "12");
-            tf3 = createTestFlow(tn, "f85", "13");
-            break;
-        case 3:
-            // add case 2
-            tf = createTestFlow(tn, "f3", "3");
-            tf1 = createTestFlow(tn, "f4", "4");
-            tf2 = createTestFlow(tn, "f5", "5");
-            tf3 = createTestFlow(tn, "f6", "6");
-            break;
-        case 4:
-            // modify case 2
-            tf = createTestFlow(tn, "f700", "3");
-            tf1 = createTestFlow(tn, "f4", "4");
-            tf2 = createTestFlow(tn, "f900", "5");
-            tf3 = createTestFlow(tn, "f86", "6");
-            break;
-        case 5:
-            // add case 3
-            tf = createTestFlow(tn, "f7", "7");
-            tf1 = createTestFlow(tn, "f8", "8");
-            tf2 = createTestFlow(tn, "f9", "9");
-            tf3 = createTestFlow(tn, "f10", "10");
-            break;
-        case 6:
-            // modify case 3
-            tf = createTestFlow(tn, "f91", "7");
-            tf1 = createTestFlow(tn, "f92", "8");
-            tf2 = createTestFlow(tn, "f93", "9");
-            tf3 = createTestFlow(tn, "f94", "10");
-            break;
-        case 7:
-            // -ve scenario
-            tf = createTestFlow(tn, "f23", "3");
-            tf1 = createTestFlow(tn, "f34", "4");
-            tf2 = createTestFlow(tn, "f35", "5");
-            tf3 = createTestFlow(tn, "f36", "6");
-            break;
-        case 8:
-            // +ve scenario
-            // modify case 6 -ve
-            tf = createTestFlow(tn, "f23", "3");
-            tf1 = createTestFlow(tn, "f99", "4");
-            tf2 = createTestFlow(tn, "f100", "5");
-            tf3 = createTestFlow(tn, "f101", "6");
-            break;
-        case 9:
-            // modify case 6
-            tf = createTestFlow(tn, "f700", "7");
-            tf1 = createTestFlow(tn, "f230", "23");
-            tf2 = createTestFlow(tn, "f900", "9");
-            tf3 = createTestFlow(tn, "f1000", "10");
-            break;
+            case 1:
+                // add case 1
+                tf = createTestFlow(tn, "f1", "10");
+                tf1 = createTestFlow(tn, "f2", "11");
+                tf2 = createTestFlow(tn, "f3", "12");
+                tf3 = createTestFlow(tn, "f4", "13");
+                break;
+            case 2:
+                // modify case 1
+                tf = createTestFlow(tn, "f82", "10");
+                tf1 = createTestFlow(tn, "f83", "11");
+                tf2 = createTestFlow(tn, "f84", "12");
+                tf3 = createTestFlow(tn, "f85", "13");
+                break;
+            case 3:
+                // add case 2
+                tf = createTestFlow(tn, "f3", "3");
+                tf1 = createTestFlow(tn, "f4", "4");
+                tf2 = createTestFlow(tn, "f5", "5");
+                tf3 = createTestFlow(tn, "f6", "6");
+                break;
+            case 4:
+                // modify case 2
+                tf = createTestFlow(tn, "f700", "3");
+                tf1 = createTestFlow(tn, "f4", "4");
+                tf2 = createTestFlow(tn, "f900", "5");
+                tf3 = createTestFlow(tn, "f86", "6");
+                break;
+            case 5:
+                // add case 3
+                tf = createTestFlow(tn, "f7", "7");
+                tf1 = createTestFlow(tn, "f8", "8");
+                tf2 = createTestFlow(tn, "f9", "9");
+                tf3 = createTestFlow(tn, "f10", "10");
+                break;
+            case 6:
+                // modify case 3
+                tf = createTestFlow(tn, "f91", "7");
+                tf1 = createTestFlow(tn, "f92", "8");
+                tf2 = createTestFlow(tn, "f93", "9");
+                tf3 = createTestFlow(tn, "f94", "10");
+                break;
+            case 7:
+                // -ve scenario
+                tf = createTestFlow(tn, "f23", "3");
+                tf1 = createTestFlow(tn, "f34", "4");
+                tf2 = createTestFlow(tn, "f35", "5");
+                tf3 = createTestFlow(tn, "f36", "6");
+                break;
+            case 8:
+                // +ve scenario
+                // modify case 6 -ve
+                tf = createTestFlow(tn, "f23", "3");
+                tf1 = createTestFlow(tn, "f99", "4");
+                tf2 = createTestFlow(tn, "f100", "5");
+                tf3 = createTestFlow(tn, "f101", "6");
+                break;
+            case 9:
+                // modify case 6
+                tf = createTestFlow(tn, "f700", "7");
+                tf1 = createTestFlow(tn, "f230", "23");
+                tf2 = createTestFlow(tn, "f900", "9");
+                tf3 = createTestFlow(tn, "f1000", "10");
+                break;
         }
 
         InstanceIdentifier<Flow> path1 = InstanceIdentifier.builder(Nodes.class).child(Node.class, tn.getKey())
                 .augmentation(FlowCapableNode.class).child(Table.class, new TableKey(tf.getTableId()))
                 .child(Flow.class, tf.getKey()).build();
-        modification.removeOperationalData(path1);
-        modification.removeConfigurationData(nodeBuilderToInstanceId(tn));
-        modification.removeConfigurationData(path1);
+        modification.delete(LogicalDatastoreType.OPERATIONAL, path1);
+        modification.delete(LogicalDatastoreType.CONFIGURATION, nodeBuilderToInstanceId(tn));
+        modification.delete(LogicalDatastoreType.CONFIGURATION, path1);
         InstanceIdentifier<Flow> path2 = InstanceIdentifier.builder(Nodes.class).child(Node.class, tn.getKey())
                 .augmentation(FlowCapableNode.class).child(Table.class, new TableKey(tf1.getTableId()))
                 .child(Flow.class, tf1.getKey()).build();
-        modification.removeOperationalData(path2);
-        modification.removeConfigurationData(nodeBuilderToInstanceId(tn));
-        modification.removeConfigurationData(path2);
+        modification.delete(LogicalDatastoreType.OPERATIONAL, path2);
+        modification.delete(LogicalDatastoreType.CONFIGURATION, nodeBuilderToInstanceId(tn));
+        modification.delete(LogicalDatastoreType.CONFIGURATION, path2);
 
         InstanceIdentifier<Flow> path3 = InstanceIdentifier.builder(Nodes.class).child(Node.class, tn.getKey())
                 .augmentation(FlowCapableNode.class).child(Table.class, new TableKey(tf2.getTableId()))
                 .child(Flow.class, tf2.getKey()).build();
-        modification.removeOperationalData(path3);
-        modification.removeConfigurationData(nodeBuilderToInstanceId(tn));
-        modification.removeConfigurationData(path3);
+        modification.delete(LogicalDatastoreType.OPERATIONAL, path3);
+        modification.delete(LogicalDatastoreType.CONFIGURATION, nodeBuilderToInstanceId(tn));
+        modification.delete(LogicalDatastoreType.CONFIGURATION, path3);
         InstanceIdentifier<Flow> path4 = InstanceIdentifier.builder(Nodes.class).child(Node.class, tn.getKey())
                 .augmentation(FlowCapableNode.class).child(Table.class, new TableKey(tf3.getTableId()))
                 .child(Flow.class, tf3.getKey()).build();
-        modification.removeOperationalData(path4);
-        modification.removeConfigurationData(nodeBuilderToInstanceId(tn));
-        modification.removeConfigurationData(path4);
+        modification.delete(LogicalDatastoreType.OPERATIONAL, path4);
+        modification.delete(LogicalDatastoreType.CONFIGURATION, nodeBuilderToInstanceId(tn));
+        modification.delete(LogicalDatastoreType.CONFIGURATION, path4);
         Future<RpcResult<TransactionStatus>> commitFuture = modification.commit();
         try {
             RpcResult<TransactionStatus> result = commitFuture.get();
@@ -684,38 +682,38 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
     }
 
     private void writeFlow(CommandInterpreter ci, FlowBuilder flow, FlowBuilder flow1, FlowBuilder flow2,
-            FlowBuilder flow3, NodeBuilder nodeBuilder) {
-        DataModification<InstanceIdentifier<?>, DataObject> modification = dataBrokerService.beginTransaction();
+                           FlowBuilder flow3, NodeBuilder nodeBuilder) {
+        ReadWriteTransaction modification = dataBroker.newReadWriteTransaction();
         InstanceIdentifier<Flow> path1 = InstanceIdentifier.builder(Nodes.class)
                 .child(Node.class, nodeBuilder.getKey()).augmentation(FlowCapableNode.class)
                 .child(Table.class, new TableKey(flow.getTableId())).child(Flow.class, flow.getKey()).build();
-        modification.putOperationalData(nodeBuilderToInstanceId(nodeBuilder), nodeBuilder.build());
-        modification.putOperationalData(path1, flow.build());
-        modification.putConfigurationData(nodeBuilderToInstanceId(nodeBuilder), nodeBuilder.build());
-        modification.putConfigurationData(path1, flow.build());
+        modification.put(LogicalDatastoreType.OPERATIONAL, nodeBuilderToInstanceId(nodeBuilder), nodeBuilder.build());
+        modification.put(LogicalDatastoreType.OPERATIONAL, path1, flow.build());
+        modification.put(LogicalDatastoreType.CONFIGURATION, nodeBuilderToInstanceId(nodeBuilder), nodeBuilder.build());
+        modification.put(LogicalDatastoreType.CONFIGURATION, path1, flow.build());
         InstanceIdentifier<Flow> path2 = InstanceIdentifier.builder(Nodes.class)
                 .child(Node.class, nodeBuilder.getKey()).augmentation(FlowCapableNode.class)
                 .child(Table.class, new TableKey(flow1.getTableId())).child(Flow.class, flow1.getKey()).build();
-        modification.putOperationalData(nodeBuilderToInstanceId(nodeBuilder), nodeBuilder.build());
-        modification.putOperationalData(path2, flow1.build());
-        modification.putConfigurationData(nodeBuilderToInstanceId(nodeBuilder), nodeBuilder.build());
-        modification.putConfigurationData(path2, flow1.build());
+        modification.put(LogicalDatastoreType.OPERATIONAL, nodeBuilderToInstanceId(nodeBuilder), nodeBuilder.build());
+        modification.put(LogicalDatastoreType.OPERATIONAL, path2, flow1.build());
+        modification.put(LogicalDatastoreType.CONFIGURATION, nodeBuilderToInstanceId(nodeBuilder), nodeBuilder.build());
+        modification.put(LogicalDatastoreType.CONFIGURATION, path2, flow1.build());
 
         InstanceIdentifier<Flow> path3 = InstanceIdentifier.builder(Nodes.class)
                 .child(Node.class, nodeBuilder.getKey()).augmentation(FlowCapableNode.class)
                 .child(Table.class, new TableKey(flow2.getTableId())).child(Flow.class, flow2.getKey()).build();
-        modification.putOperationalData(nodeBuilderToInstanceId(nodeBuilder), nodeBuilder.build());
-        modification.putOperationalData(path3, flow2.build());
-        modification.putConfigurationData(nodeBuilderToInstanceId(nodeBuilder), nodeBuilder.build());
-        modification.putConfigurationData(path3, flow2.build());
+        modification.put(LogicalDatastoreType.OPERATIONAL, nodeBuilderToInstanceId(nodeBuilder), nodeBuilder.build());
+        modification.put(LogicalDatastoreType.OPERATIONAL, path3, flow2.build());
+        modification.put(LogicalDatastoreType.CONFIGURATION, nodeBuilderToInstanceId(nodeBuilder), nodeBuilder.build());
+        modification.put(LogicalDatastoreType.CONFIGURATION, path3, flow2.build());
 
         InstanceIdentifier<Flow> path4 = InstanceIdentifier.builder(Nodes.class)
                 .child(Node.class, nodeBuilder.getKey()).augmentation(FlowCapableNode.class)
                 .child(Table.class, new TableKey(flow3.getTableId())).child(Flow.class, flow3.getKey()).build();
-        modification.putOperationalData(nodeBuilderToInstanceId(nodeBuilder), nodeBuilder.build());
-        modification.putOperationalData(path4, flow3.build());
-        modification.putConfigurationData(nodeBuilderToInstanceId(nodeBuilder), nodeBuilder.build());
-        modification.putConfigurationData(path4, flow3.build());
+        modification.put(LogicalDatastoreType.OPERATIONAL, nodeBuilderToInstanceId(nodeBuilder), nodeBuilder.build());
+        modification.put(LogicalDatastoreType.OPERATIONAL, path4, flow3.build());
+        modification.put(LogicalDatastoreType.CONFIGURATION, nodeBuilderToInstanceId(nodeBuilder), nodeBuilder.build());
+        modification.put(LogicalDatastoreType.CONFIGURATION, path4, flow3.build());
         Future<RpcResult<TransactionStatus>> commitFuture = modification.commit();
         try {
             RpcResult<TransactionStatus> result = commitFuture.get();
@@ -1291,18 +1289,18 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
     private static MatchBuilder createEthernetMatch() {
         MatchBuilder match = new MatchBuilder();
 
-        byte[] mask1 = new byte[] { (byte) -1, (byte) -1, 0, 0, 0, 0 };
-        byte[] mask2 = new byte[] { (byte) -1, (byte) -1, (byte) -1, 0, 0, 0 };
+        byte[] mask1 = new byte[]{(byte) -1, (byte) -1, 0, 0, 0, 0};
+        byte[] mask2 = new byte[]{(byte) -1, (byte) -1, (byte) -1, 0, 0, 0};
 
         EthernetMatchBuilder ethmatch = new EthernetMatchBuilder(); // ethernettype
-                                                                    // match
+        // match
         EthernetTypeBuilder ethtype = new EthernetTypeBuilder();
         EtherType type = new EtherType(0x0800L);
         ethmatch.setEthernetType(ethtype.setType(type).build());
 
         EthernetDestinationBuilder ethdest = new EthernetDestinationBuilder(); // ethernet
-                                                                               // macaddress
-                                                                               // match
+        // macaddress
+        // match
         MacAddress macdest = new MacAddress("ff:ff:ff:ff:ff:ff");
         ethdest.setAddress(macdest);
         // ethdest.setMask(mask1);
@@ -1345,7 +1343,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         // ipv6label.setFlabelMask(new byte[] { 0, 1, -1, -1 });
 
         Icmpv6MatchBuilder icmpv6match = new Icmpv6MatchBuilder(); // icmpv6
-                                                                   // match
+        // match
         icmpv6match.setIcmpv6Type((short) 135);
         icmpv6match.setIcmpv6Code((short) 0);
         match.setIcmpv6Match(icmpv6match.build());
@@ -1381,7 +1379,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         match.setIpMatch(ipmatch.build());
 
         Icmpv6MatchBuilder icmpv6match = new Icmpv6MatchBuilder(); // icmpv6
-                                                                   // match
+        // match
         icmpv6match.setIcmpv6Type((short) 135);
         icmpv6match.setIcmpv6Code((short) 1);
         match.setIcmpv6Match(icmpv6match.build());
@@ -1394,7 +1392,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
      */
     private static MatchBuilder createMetadataMatch() {
         MatchBuilder match = new MatchBuilder();
-        byte[] metamask = new byte[] { (byte) -1, (byte) -1, (byte) -1, 0, 0, 0, (byte) 1, (byte) 1 };
+        byte[] metamask = new byte[]{(byte) -1, (byte) -1, (byte) -1, 0, 0, 0, (byte) 1, (byte) 1};
         MetadataBuilder metadata = new MetadataBuilder(); // metadata match
         metadata.setMetadata(BigInteger.valueOf(500L));
         // metadata.setMetadataMask(metamask);

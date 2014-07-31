@@ -12,9 +12,9 @@ package org.opendaylight.openflowplugin.test;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.NotificationService;
-import org.opendaylight.controller.sal.binding.api.data.DataBrokerService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRemoved;
@@ -29,7 +29,7 @@ public class OpenflowpluginTestNodeConnectorNotification {
 
     private static final Logger LOG = LoggerFactory.getLogger(OpenflowpluginTestCommandProvider.class);
 
-    private DataBrokerService dataBrokerService;
+    private DataBroker dataBroker;
     private ProviderContext pc;
     private final BundleContext ctx;
     private final PortEventListener portEventListener = new PortEventListener();
@@ -45,7 +45,7 @@ public class OpenflowpluginTestNodeConnectorNotification {
         notificationService = session.getSALService(NotificationService.class);
         // For switch events
         listenerReg = notificationService.registerNotificationListener(portEventListener);
-        dataBrokerService = session.getSALService(DataBrokerService.class);
+        dataBroker = session.getSALService(DataBroker.class);
     }
 
     final class PortEventListener implements OpendaylightInventoryListener {

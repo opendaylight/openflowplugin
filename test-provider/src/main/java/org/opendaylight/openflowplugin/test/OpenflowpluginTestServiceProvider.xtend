@@ -10,7 +10,7 @@ package org.opendaylight.openflowplugin.test
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService
-import org.opendaylight.controller.sal.binding.api.data.DataProviderService
+import org.opendaylight.controller.md.sal.binding.api.DataBroker
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInput
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService
@@ -30,7 +30,7 @@ class OpenflowpluginTestServiceProvider implements AutoCloseable, SalFlowService
     static val LOG = LoggerFactory.getLogger(OpenflowpluginTestServiceProvider);
 
     @Property
-    DataProviderService dataService;
+    DataBroker dataService;
     
     @Property
     RoutedRpcRegistration<SalFlowService> flowRegistration;

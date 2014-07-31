@@ -10,7 +10,7 @@ package org.opendaylight.openflowplugin.test
 import org.opendaylight.controller.sal.binding.api.AbstractBindingAwareProvider
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService
-import org.opendaylight.controller.sal.binding.api.data.DataProviderService
+import org.opendaylight.controller.md.sal.binding.api.DataBroker
 import org.osgi.framework.BundleContext
 
 class OpenflowpluginTestActivator extends AbstractBindingAwareProvider {
@@ -31,7 +31,7 @@ class OpenflowpluginTestActivator extends AbstractBindingAwareProvider {
     public static final String NODE_ID =  "foo:node:1";
 
     override onSessionInitiated(ProviderContext session) {
-        provider.dataService = session.getSALService(DataProviderService)
+        provider.dataService = session.getSALService(DataBroker)
         provider.notificationService = session.getSALService(NotificationProviderService)
         provider.start();
         provider.register(session);

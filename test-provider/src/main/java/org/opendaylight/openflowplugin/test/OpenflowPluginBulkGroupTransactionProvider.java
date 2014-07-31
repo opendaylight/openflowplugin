@@ -5,14 +5,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.TransactionStatus;
-import org.opendaylight.controller.md.sal.common.api.data.DataModification;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.NotificationService;
-import org.opendaylight.controller.sal.binding.api.data.DataBrokerService;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.ControllerActionCaseBuilder;
@@ -52,7 +52,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.Fl
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.InstructionsBuilder;
@@ -93,7 +92,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.node.error.service.rev140410.NodeErrorListener;
 import org.opendaylight.yangtools.concepts.Registration;
-import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.osgi.framework.BundleContext;
@@ -105,7 +103,7 @@ import org.slf4j.LoggerFactory;
 public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvider {
     private static final Logger LOG = LoggerFactory.getLogger(OpenflowPluginBulkGroupTransactionProvider.class);
     private NodeBuilder testNode;
-    private DataBrokerService dataBrokerService;
+    private DataBroker dataBroker;
     private final BundleContext ctx;
     private ProviderContext pc;
     private FlowBuilder testFlow;
@@ -127,7 +125,7 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
         pc = session;
         notificationService = session.getSALService(NotificationService.class);
         listener2Reg = notificationService.registerNotificationListener(nodeErrorListener);
-        dataBrokerService = session.getSALService(DataBrokerService.class);
+        dataBroker = session.getSALService(DataBroker.class);
         ctx.registerService(CommandProvider.class.getName(), this, null);
         createTestFlow(createTestNode(null), null, null);
     }
@@ -269,18 +267,18 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
     private static MatchBuilder createEthernetMatch() {
         MatchBuilder match = new MatchBuilder();
 
-        byte[] mask1 = new byte[] { (byte) -1, (byte) -1, 0, 0, 0, 0 };
-        byte[] mask2 = new byte[] { (byte) -1, (byte) -1, (byte) -1, 0, 0, 0 };
+        byte[] mask1 = new byte[]{(byte) -1, (byte) -1, 0, 0, 0, 0};
+        byte[] mask2 = new byte[]{(byte) -1, (byte) -1, (byte) -1, 0, 0, 0};
 
         EthernetMatchBuilder ethmatch = new EthernetMatchBuilder(); // ethernettype
-                                                                    // match
+        // match
         EthernetTypeBuilder ethtype = new EthernetTypeBuilder();
         EtherType type = new EtherType(0x0800L);
         ethmatch.setEthernetType(ethtype.setType(type).build());
 
         EthernetDestinationBuilder ethdest = new EthernetDestinationBuilder(); // ethernet
-                                                                               // macaddress
-                                                                               // match
+        // macaddress
+        // match
         MacAddress macdest = new MacAddress("ff:ff:ff:ff:ff:ff");
         ethdest.setAddress(macdest);
         // ethdest.setMask(mask1);
@@ -469,74 +467,74 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
         }
 
         switch (flowType) {
-        case "f1":
-            id += 1;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createDecNwTtlInstructions().build());
-            break;
-        case "f2":
-            id += 2;
-            flow.setMatch(createMatch2().build());
-            flow.setInstructions(createDropInstructions().build());
-            break;
-        case "f3":
-            id += 3;
-            flow.setMatch(createMatch3().build());
-            flow.setInstructions(createDropInstructions().build());
-            break;
-        case "f4":
-            id += 4;
-            flow.setMatch(createEthernetMatch().build());
-            flow.setInstructions(createDropInstructions().build());
-            break;
-        case "f82":
-            id += 1;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createDropInstructions().build());
-            break;
-        case "f5":
-            id += 5;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction().build());
-            break;
-        case "f6":
-            id += 6;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createGotoTableInstructions().build());
-            break;
-        case "f7":
-            id += 7;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createMeterInstructions().build());
-            break;
-        case "f8":
-            id += 8;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction7().build());
-            break;
-        case "f9":
-            id += 9;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction2().build());
-            break;
-        case "f10":
-            id += 10;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction3().build());
-            break;
-        case "f14":
-            id += 14;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction7().build());
-            break;
-        case "f29":
-            id += 29;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction21().build());
-            break;
+            case "f1":
+                id += 1;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createDecNwTtlInstructions().build());
+                break;
+            case "f2":
+                id += 2;
+                flow.setMatch(createMatch2().build());
+                flow.setInstructions(createDropInstructions().build());
+                break;
+            case "f3":
+                id += 3;
+                flow.setMatch(createMatch3().build());
+                flow.setInstructions(createDropInstructions().build());
+                break;
+            case "f4":
+                id += 4;
+                flow.setMatch(createEthernetMatch().build());
+                flow.setInstructions(createDropInstructions().build());
+                break;
+            case "f82":
+                id += 1;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createDropInstructions().build());
+                break;
+            case "f5":
+                id += 5;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction().build());
+                break;
+            case "f6":
+                id += 6;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createGotoTableInstructions().build());
+                break;
+            case "f7":
+                id += 7;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createMeterInstructions().build());
+                break;
+            case "f8":
+                id += 8;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction7().build());
+                break;
+            case "f9":
+                id += 9;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction2().build());
+                break;
+            case "f10":
+                id += 10;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction3().build());
+                break;
+            case "f14":
+                id += 14;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction7().build());
+                break;
+            case "f29":
+                id += 29;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction21().build());
+                break;
 
-        default:
-            LOG.warn("flow type not understood: {}", flowType);
+            default:
+                LOG.warn("flow type not understood: {}", flowType);
         }
 
         FlowKey key = new FlowKey(new FlowId(Long.toString(id)));
@@ -592,27 +590,27 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
         }
         Integer count = Integer.parseInt(ci.nextArgument());
         switch (count) {
-        case 1:
-            GroupBuilder group = createTestGroup("a7", "g1", "add", "1");
-            GroupBuilder group1 = createTestGroup("a3", "g1", "add", "2");
-            writeGroup(ci, group.build(), group1.build());
-            break;
-        case 2:
-            GroupBuilder group2 = createTestGroup("a4", "g1", "add", "4");
-            GroupBuilder group3 = createTestGroup("a5", "g1", "add", "5");
-            writeGroup(ci, group2.build(), group3.build());
-            break;
-        case 3:
-            GroupBuilder group4 = createTestGroup("a6", "g1", "add", "6");
-            GroupBuilder group5 = createTestGroup("a7", "g1", "add", "7");
-            writeGroup(ci, group4.build(), group5.build());
-            break;
-        case 4:
-            // -ve
-            GroupBuilder group6 = createTestGroup("a14", "g1", "add", "5");
-            GroupBuilder group7 = createTestGroup("a3", "g1", "add", "6");
-            writeGroup(ci, group6.build(), group7.build());
-            break;
+            case 1:
+                GroupBuilder group = createTestGroup("a7", "g1", "add", "1");
+                GroupBuilder group1 = createTestGroup("a3", "g1", "add", "2");
+                writeGroup(ci, group.build(), group1.build());
+                break;
+            case 2:
+                GroupBuilder group2 = createTestGroup("a4", "g1", "add", "4");
+                GroupBuilder group3 = createTestGroup("a5", "g1", "add", "5");
+                writeGroup(ci, group2.build(), group3.build());
+                break;
+            case 3:
+                GroupBuilder group4 = createTestGroup("a6", "g1", "add", "6");
+                GroupBuilder group5 = createTestGroup("a7", "g1", "add", "7");
+                writeGroup(ci, group4.build(), group5.build());
+                break;
+            case 4:
+                // -ve
+                GroupBuilder group6 = createTestGroup("a14", "g1", "add", "5");
+                GroupBuilder group7 = createTestGroup("a3", "g1", "add", "6");
+                writeGroup(ci, group6.build(), group7.build());
+                break;
 
         }
 
@@ -638,27 +636,27 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
         }
         Integer count = Integer.parseInt(ci.nextArgument());
         switch (count) {
-        case 1:
-            GroupBuilder group = createTestGroup("a4", "g1", "modify", "1");
-            GroupBuilder group1 = createTestGroup("a5", "g1", "modify", "2");
-            writeGroup(ci, group.build(), group1.build());
-            break;
-        case 2:
-            GroupBuilder group2 = createTestGroup("a1", "g1", "modify", "4");
-            GroupBuilder group3 = createTestGroup("a2", "g1", "modify", "5");
-            writeGroup(ci, group2.build(), group3.build());
-            break;
-        case 3:
-            GroupBuilder group4 = createTestGroup("a9", "g1", "modify", "6");
-            GroupBuilder group5 = createTestGroup("a10", "g1", "modify", "7");
-            writeGroup(ci, group4.build(), group5.build());
-            break;
+            case 1:
+                GroupBuilder group = createTestGroup("a4", "g1", "modify", "1");
+                GroupBuilder group1 = createTestGroup("a5", "g1", "modify", "2");
+                writeGroup(ci, group.build(), group1.build());
+                break;
+            case 2:
+                GroupBuilder group2 = createTestGroup("a1", "g1", "modify", "4");
+                GroupBuilder group3 = createTestGroup("a2", "g1", "modify", "5");
+                writeGroup(ci, group2.build(), group3.build());
+                break;
+            case 3:
+                GroupBuilder group4 = createTestGroup("a9", "g1", "modify", "6");
+                GroupBuilder group5 = createTestGroup("a10", "g1", "modify", "7");
+                writeGroup(ci, group4.build(), group5.build());
+                break;
 
-        case 4:
-            GroupBuilder group6 = createTestGroup("a6", "g1", "modify", "5");
-            GroupBuilder group7 = createTestGroup("a29", "g1", "modify", "6");
-            writeGroup(ci, group6.build(), group7.build());
-            break;
+            case 4:
+                GroupBuilder group6 = createTestGroup("a6", "g1", "modify", "5");
+                GroupBuilder group7 = createTestGroup("a29", "g1", "modify", "6");
+                writeGroup(ci, group6.build(), group7.build());
+                break;
         }
     }
 
@@ -687,65 +685,66 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
 
         Integer count = Integer.parseInt(ci.nextArgument());
         switch (count) {
-        case 1:
-            GroupBuilder group = createTestGroup("a2", "g1", "remove", "1");
-            GroupBuilder group1 = createTestGroup("a3", "g1", "remove", "2");
-            deleteGroup(ci, group.build(), group1.build());
-            break;
-        case 2:
-            GroupBuilder group2 = createTestGroup("a4", "g1", "remove", "4");
-            GroupBuilder group3 = createTestGroup("a5", "g1", "remove", "5");
-            deleteGroup(ci, group2.build(), group3.build());
-            break;
-        case 3:
-            GroupBuilder group4 = createTestGroup("a6", "g1", "remove", "6");
-            GroupBuilder group5 = createTestGroup("a7", "g1", "remove", "7");
-            deleteGroup(ci, group4.build(), group5.build());
-            break;
-        case 4:
-            GroupBuilder group6 = createTestGroup("a14", "g1", "remove", "5");
-            GroupBuilder group7 = createTestGroup("a3", "g1", "remove", "6");
-            deleteGroup(ci, group6.build(), group7.build());
-            break;
-        case 5:
-            GroupBuilder group8 = createTestGroup("a4", "g1", "modify", "1");
-            GroupBuilder group9 = createTestGroup("a5", "g1", "modify", "2");
-            writeGroup(ci, group8.build(), group9.build());
-            break;
-        case 6:
-            GroupBuilder group10 = createTestGroup("a1", "g1", "modify", "4");
-            GroupBuilder group11 = createTestGroup("a2", "g1", "modify", "5");
-            writeGroup(ci, group10.build(), group11.build());
-            break;
-        case 7:
-            GroupBuilder group12 = createTestGroup("a9", "g1", "modify", "6");
-            GroupBuilder group13 = createTestGroup("a10", "g1", "modify", "7");
-            writeGroup(ci, group12.build(), group13.build());
-            break;
+            case 1:
+                GroupBuilder group = createTestGroup("a2", "g1", "remove", "1");
+                GroupBuilder group1 = createTestGroup("a3", "g1", "remove", "2");
+                deleteGroup(ci, group.build(), group1.build());
+                break;
+            case 2:
+                GroupBuilder group2 = createTestGroup("a4", "g1", "remove", "4");
+                GroupBuilder group3 = createTestGroup("a5", "g1", "remove", "5");
+                deleteGroup(ci, group2.build(), group3.build());
+                break;
+            case 3:
+                GroupBuilder group4 = createTestGroup("a6", "g1", "remove", "6");
+                GroupBuilder group5 = createTestGroup("a7", "g1", "remove", "7");
+                deleteGroup(ci, group4.build(), group5.build());
+                break;
+            case 4:
+                GroupBuilder group6 = createTestGroup("a14", "g1", "remove", "5");
+                GroupBuilder group7 = createTestGroup("a3", "g1", "remove", "6");
+                deleteGroup(ci, group6.build(), group7.build());
+                break;
+            case 5:
+                GroupBuilder group8 = createTestGroup("a4", "g1", "modify", "1");
+                GroupBuilder group9 = createTestGroup("a5", "g1", "modify", "2");
+                writeGroup(ci, group8.build(), group9.build());
+                break;
+            case 6:
+                GroupBuilder group10 = createTestGroup("a1", "g1", "modify", "4");
+                GroupBuilder group11 = createTestGroup("a2", "g1", "modify", "5");
+                writeGroup(ci, group10.build(), group11.build());
+                break;
+            case 7:
+                GroupBuilder group12 = createTestGroup("a9", "g1", "modify", "6");
+                GroupBuilder group13 = createTestGroup("a10", "g1", "modify", "7");
+                writeGroup(ci, group12.build(), group13.build());
+                break;
 
-        case 8:
-            GroupBuilder group14 = createTestGroup("a6", "g1", "modify", "5");
-            GroupBuilder group15 = createTestGroup("a29", "g1", "modify", "6");
-            writeGroup(ci, group14.build(), group15.build());
-            break;
+            case 8:
+                GroupBuilder group14 = createTestGroup("a6", "g1", "modify", "5");
+                GroupBuilder group15 = createTestGroup("a29", "g1", "modify", "6");
+                writeGroup(ci, group14.build(), group15.build());
+                break;
 
         }
 
     }
 
     private void writeGroup(CommandInterpreter ci, Group group, Group group1) {
-        DataModification<InstanceIdentifier<?>, DataObject> modification = dataBrokerService.beginTransaction();
+        ReadWriteTransaction modification = dataBroker.newReadWriteTransaction();
+
         InstanceIdentifier<Group> path1 = InstanceIdentifier.builder(Nodes.class)
                 .child(Node.class, testNode12.getKey()).augmentation(FlowCapableNode.class)
                 .child(Group.class, new GroupKey(group.getGroupId())).build();
-        modification.putConfigurationData(nodeToInstanceId(testNode12), testNode12);
-        modification.putConfigurationData(path1, group);
+        modification.put(LogicalDatastoreType.CONFIGURATION, nodeToInstanceId(testNode12), testNode12);
+        modification.put(LogicalDatastoreType.CONFIGURATION, path1, group);
 
         InstanceIdentifier<Group> path2 = InstanceIdentifier.builder(Nodes.class)
                 .child(Node.class, testNode12.getKey()).augmentation(FlowCapableNode.class)
                 .child(Group.class, new GroupKey(group1.getGroupId())).build();
-        modification.putConfigurationData(nodeToInstanceId(testNode12), testNode12);
-        modification.putConfigurationData(path2, group1);
+        modification.put(LogicalDatastoreType.CONFIGURATION, nodeToInstanceId(testNode12), testNode12);
+        modification.put(LogicalDatastoreType.CONFIGURATION, path2, group1);
         Future<RpcResult<TransactionStatus>> commitFuture = modification.commit();
 
         try {
@@ -763,17 +762,17 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
     }
 
     private void deleteGroup(CommandInterpreter ci, Group group, Group group1) {
-        DataModification<InstanceIdentifier<?>, DataObject> modification = dataBrokerService.beginTransaction();
+        ReadWriteTransaction modification = dataBroker.newReadWriteTransaction();
         InstanceIdentifier<Group> path1 = InstanceIdentifier.builder(Nodes.class)
                 .child(Node.class, testNode12.getKey()).augmentation(FlowCapableNode.class)
                 .child(Group.class, new GroupKey(group.getGroupId())).build();
-        modification.removeOperationalData(path1);
-        modification.removeConfigurationData(path1);
+        modification.delete(LogicalDatastoreType.OPERATIONAL, path1);
+        modification.delete(LogicalDatastoreType.CONFIGURATION, path1);
         InstanceIdentifier<Group> path2 = InstanceIdentifier.builder(Nodes.class)
                 .child(Node.class, testNode12.getKey()).augmentation(FlowCapableNode.class)
                 .child(Group.class, new GroupKey(group1.getGroupId())).build();
-        modification.removeOperationalData(path2);
-        modification.removeConfigurationData(path2);
+        modification.delete(LogicalDatastoreType.OPERATIONAL, path2);
+        modification.delete(LogicalDatastoreType.CONFIGURATION, path2);
         Future<RpcResult<TransactionStatus>> commitFuture = modification.commit();
         try {
             RpcResult<TransactionStatus> result = commitFuture.get();
@@ -812,57 +811,57 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
         }
 
         switch (GroupType) {
-        case "g1":
-            group.setGroupType(GroupTypes.GroupSelect);
-            break;
-        case "g2":
-            group.setGroupType(GroupTypes.GroupAll);
-            break;
-        case "g3":
-            group.setGroupType(GroupTypes.GroupIndirect);
-            break;
-        case "g4":
-            group.setGroupType(GroupTypes.GroupFf);
-            break;
+            case "g1":
+                group.setGroupType(GroupTypes.GroupSelect);
+                break;
+            case "g2":
+                group.setGroupType(GroupTypes.GroupAll);
+                break;
+            case "g3":
+                group.setGroupType(GroupTypes.GroupIndirect);
+                break;
+            case "g4":
+                group.setGroupType(GroupTypes.GroupFf);
+                break;
         }
 
         switch (ActionType) {
-        case "a1":
-            bucket.setAction(createPopVlanAction());
-            break;
-        case "a2":
-            bucket.setAction(createPushVlanAction());
-            break;
-        case "a3":
-            bucket.setAction(createPushMplsAction());
-            break;
-        case "a4":
-            bucket.setAction(createPopMplsAction());
-            break;
-        case "a5":
-            bucket.setAction(createPopPbbAction());
-            break;
-        case "a6":
-            bucket.setAction(createPushPbbAction());
-            break;
-        case "a7":
-            bucket.setAction(createPushPbbAction());
-            break;
-        case "a8":
-            bucket.setAction(createCopyTtlInAction());
-            break;
-        case "a9":
-            bucket.setAction(createCopyTtlOutAction());
-            break;
-        case "a10":
-            bucket.setAction(createDecMplsTtlAction());
-            break;
-        case "a14":
-            bucket.setAction(createGroupAction());
-            break;
-        case "a29":
-            bucket.setAction(createNonAppyPushVlanAction());
-            break;
+            case "a1":
+                bucket.setAction(createPopVlanAction());
+                break;
+            case "a2":
+                bucket.setAction(createPushVlanAction());
+                break;
+            case "a3":
+                bucket.setAction(createPushMplsAction());
+                break;
+            case "a4":
+                bucket.setAction(createPopMplsAction());
+                break;
+            case "a5":
+                bucket.setAction(createPopPbbAction());
+                break;
+            case "a6":
+                bucket.setAction(createPushPbbAction());
+                break;
+            case "a7":
+                bucket.setAction(createPushPbbAction());
+                break;
+            case "a8":
+                bucket.setAction(createCopyTtlInAction());
+                break;
+            case "a9":
+                bucket.setAction(createCopyTtlOutAction());
+                break;
+            case "a10":
+                bucket.setAction(createDecMplsTtlAction());
+                break;
+            case "a14":
+                bucket.setAction(createGroupAction());
+                break;
+            case "a29":
+                bucket.setAction(createNonAppyPushVlanAction());
+                break;
 
         }
 

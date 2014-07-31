@@ -10,25 +10,21 @@ package org.opendaylight.openflowplugin.test;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.Collection;
-import java.util.Iterator;
-
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.TransactionStatus;
-import org.opendaylight.controller.md.sal.common.api.data.DataModification;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.NotificationService;
-import org.opendaylight.controller.sal.binding.api.data.DataBrokerService;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Dscp;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Address;
@@ -179,7 +175,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanIdBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.node.error.service.rev140410.NodeErrorListener;
 import org.opendaylight.yangtools.concepts.Registration;
-import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.osgi.framework.BundleContext;
@@ -190,7 +185,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(OpenflowpluginTestCommandProvider.class);
 
-    private DataBrokerService dataBrokerService;
+    private DataBroker dataBroker;
     private ProviderContext pc;
     private final BundleContext ctx;
     private FlowBuilder testFlow;
@@ -213,7 +208,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         // For switch events
         listener1Reg = notificationService.registerNotificationListener(flowEventListener);
         listener2Reg = notificationService.registerNotificationListener(nodeErrorListener);
-        dataBrokerService = session.getSALService(DataBrokerService.class);
+        dataBroker = session.getSALService(DataBroker.class);
         ctx.registerService(CommandProvider.class.getName(), this, null);
         createTestFlow(createTestNode(null), null, null);
     }
@@ -243,447 +238,447 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         if (flowType == null) {
             flowType = "f1";
         }
-        
+
         flow.setPriority(2);
 
         switch (flowType) {
-        case "f1":
-            id += 1;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createDecNwTtlInstructions().build());
-            break;
-        case "f2":
-            id += 2;
-            flow.setMatch(createMatch2().build());
-            flow.setInstructions(createDropInstructions().build());
-            break;
-        case "f3":
-            id += 3;
-            flow.setMatch(createMatch3().build());
-            flow.setInstructions(createDropInstructions().build());
-            break;
-        case "f4":
-            id += 4;
-            flow.setMatch(createEthernetMatch().build());
-            flow.setInstructions(createDropInstructions().build());
-            break;
-        case "f5":
-            id += 5;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction().build());
-            break;
-        case "f6":
-            id += 6;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createGotoTableInstructions().build());
-            break;
-        case "f7":
-            id += 7;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createMeterInstructions().build());
-            break;
-        case "f8":
-            id += 8;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction1().build());
-            break;
-        case "f9":
-            id += 9;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction2().build());
-            break;
-        case "f10":
-            id += 10;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction3().build());
-            break;
-        case "f11":
-            id += 11;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction4().build());
-            break;
-        case "f12":
-            id += 12;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction5().build());
-            break;
-        case "f13":
-            id += 13;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction6().build());
-            break;
-        case "f14":
-            id += 14;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction7().build());
-            break;
-        case "f15":
-            id += 15;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction8().build());
-            break;
-        case "f16":
-            id += 16;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction9().build());
-            break;
-        case "f17":
-            id += 17;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction10().build());
-            break;
-        case "f18":
-            id += 18;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction11().build());
-            break;
-        case "f19":
-            id += 19;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction12().build());
-            break;
-        case "f20":
-            id += 20;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction13().build());
-            break;
-        case "f21":
-            id += 21;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction14().build());
-            break;
-        case "f22":
-            id += 22;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction15().build());
-            break;
-        case "f23":
-            id += 23;
-            // f23 can be used as test-case for generating error notification
-            // if the particular group is not configured - tested
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction16().build());
-            break;
-        case "f24":
-            id += 24;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction17().build());
-            break;
-        case "f25":
-            id += 25;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction18().build());
-            break;
-        case "f26":
-            id += 26;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction19().build());
-            break;
-        case "f27":
-            id += 27;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createMetadataInstructions().build());
-            break;
-        case "f28":
-            id += 28;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction20().build());
-            break;
-        case "f29":
-            id += 29;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction21().build());
-            break;
-        case "f30":
-            id += 30;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction22().build());
-            break;
-        case "f31":
-            id += 31;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction23(nodeBuilder.getId()).build());
-            break;
-        case "f32":
-            id += 32;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction24().build());
-            break;
-        case "f33":
-            id += 33;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction25().build());
-            break;
-        case "f34":
-            id += 34;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction26().build());
-            break;
-        case "f35":
-            id += 35;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction27().build());
-            break;
-        case "f36":
-            id += 36;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction28().build());
-            break;
-        case "f37":
-            id += 37;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction29().build());
-            break;
-        case "f38":
-            id += 38;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction30().build());
-            break;
-        case "f39":
-            id += 39;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction31().build());
-            break;
-        case "f40":
-            id += 40;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction32().build());
-            break;
-        case "f41":
-            id += 41;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction33().build());
-            break;
-        case "f42":
-            id += 42;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction34().build());
-            break;
-        case "f43":
-            id += 43;
-            flow.setMatch(createICMPv6Match().build());
-            flow.setInstructions(createDecNwTtlInstructions().build());
-            break;
-        case "f44":
-            id += 44;
-            flow.setMatch(createInphyportMatch(nodeBuilder.getId()).build());
-            flow.setInstructions(createDropInstructions().build());
-            break;
-        case "f45":
-            id += 45;
-            flow.setMatch(createMetadataMatch().build());
-            flow.setInstructions(createDropInstructions().build());
-            break;
-        case "f46":
-            id += 46;
-            flow.setMatch(createL3IPv6Match().build());
-            flow.setInstructions(createDecNwTtlInstructions().build());
-            break;
-        case "f47":
-            id += 47;
-            flow.setMatch(createL4SCTPMatch().build());
-            flow.setInstructions(createAppyActionInstruction().build());
-            break;
-        case "f48":
-            id += 48;
-            flow.setMatch(createTunnelIDMatch().build());
-            flow.setInstructions(createGotoTableInstructions().build());
-            break;
-        case "f49":
-            id += 49;
-            flow.setMatch(createVlanMatch().build());
-            flow.setInstructions(createMeterInstructions().build());
-            break;
-        case "f50":
-            id += 50;
-            flow.setMatch(createPbbMatch().build());
-            flow.setInstructions(createMeterInstructions().build());
-            break;
-        case "f51":
-            id += 51;
-            flow.setMatch(createVlanMatch().build());
-            flow.setInstructions(createDropInstructions().build());
-            break;
-        case "f52":
-            id += 52;
-            flow.setMatch(createL4TCPMatch().build());
-            flow.setInstructions(createDropInstructions().build());
-            break;
+            case "f1":
+                id += 1;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createDecNwTtlInstructions().build());
+                break;
+            case "f2":
+                id += 2;
+                flow.setMatch(createMatch2().build());
+                flow.setInstructions(createDropInstructions().build());
+                break;
+            case "f3":
+                id += 3;
+                flow.setMatch(createMatch3().build());
+                flow.setInstructions(createDropInstructions().build());
+                break;
+            case "f4":
+                id += 4;
+                flow.setMatch(createEthernetMatch().build());
+                flow.setInstructions(createDropInstructions().build());
+                break;
+            case "f5":
+                id += 5;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction().build());
+                break;
+            case "f6":
+                id += 6;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createGotoTableInstructions().build());
+                break;
+            case "f7":
+                id += 7;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createMeterInstructions().build());
+                break;
+            case "f8":
+                id += 8;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction1().build());
+                break;
+            case "f9":
+                id += 9;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction2().build());
+                break;
+            case "f10":
+                id += 10;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction3().build());
+                break;
+            case "f11":
+                id += 11;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction4().build());
+                break;
+            case "f12":
+                id += 12;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction5().build());
+                break;
+            case "f13":
+                id += 13;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction6().build());
+                break;
+            case "f14":
+                id += 14;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction7().build());
+                break;
+            case "f15":
+                id += 15;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction8().build());
+                break;
+            case "f16":
+                id += 16;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction9().build());
+                break;
+            case "f17":
+                id += 17;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction10().build());
+                break;
+            case "f18":
+                id += 18;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction11().build());
+                break;
+            case "f19":
+                id += 19;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction12().build());
+                break;
+            case "f20":
+                id += 20;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction13().build());
+                break;
+            case "f21":
+                id += 21;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction14().build());
+                break;
+            case "f22":
+                id += 22;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction15().build());
+                break;
+            case "f23":
+                id += 23;
+                // f23 can be used as test-case for generating error notification
+                // if the particular group is not configured - tested
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction16().build());
+                break;
+            case "f24":
+                id += 24;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction17().build());
+                break;
+            case "f25":
+                id += 25;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction18().build());
+                break;
+            case "f26":
+                id += 26;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction19().build());
+                break;
+            case "f27":
+                id += 27;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createMetadataInstructions().build());
+                break;
+            case "f28":
+                id += 28;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction20().build());
+                break;
+            case "f29":
+                id += 29;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction21().build());
+                break;
+            case "f30":
+                id += 30;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction22().build());
+                break;
+            case "f31":
+                id += 31;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction23(nodeBuilder.getId()).build());
+                break;
+            case "f32":
+                id += 32;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction24().build());
+                break;
+            case "f33":
+                id += 33;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction25().build());
+                break;
+            case "f34":
+                id += 34;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction26().build());
+                break;
+            case "f35":
+                id += 35;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction27().build());
+                break;
+            case "f36":
+                id += 36;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction28().build());
+                break;
+            case "f37":
+                id += 37;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction29().build());
+                break;
+            case "f38":
+                id += 38;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction30().build());
+                break;
+            case "f39":
+                id += 39;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction31().build());
+                break;
+            case "f40":
+                id += 40;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction32().build());
+                break;
+            case "f41":
+                id += 41;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction33().build());
+                break;
+            case "f42":
+                id += 42;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction34().build());
+                break;
+            case "f43":
+                id += 43;
+                flow.setMatch(createICMPv6Match().build());
+                flow.setInstructions(createDecNwTtlInstructions().build());
+                break;
+            case "f44":
+                id += 44;
+                flow.setMatch(createInphyportMatch(nodeBuilder.getId()).build());
+                flow.setInstructions(createDropInstructions().build());
+                break;
+            case "f45":
+                id += 45;
+                flow.setMatch(createMetadataMatch().build());
+                flow.setInstructions(createDropInstructions().build());
+                break;
+            case "f46":
+                id += 46;
+                flow.setMatch(createL3IPv6Match().build());
+                flow.setInstructions(createDecNwTtlInstructions().build());
+                break;
+            case "f47":
+                id += 47;
+                flow.setMatch(createL4SCTPMatch().build());
+                flow.setInstructions(createAppyActionInstruction().build());
+                break;
+            case "f48":
+                id += 48;
+                flow.setMatch(createTunnelIDMatch().build());
+                flow.setInstructions(createGotoTableInstructions().build());
+                break;
+            case "f49":
+                id += 49;
+                flow.setMatch(createVlanMatch().build());
+                flow.setInstructions(createMeterInstructions().build());
+                break;
+            case "f50":
+                id += 50;
+                flow.setMatch(createPbbMatch().build());
+                flow.setInstructions(createMeterInstructions().build());
+                break;
+            case "f51":
+                id += 51;
+                flow.setMatch(createVlanMatch().build());
+                flow.setInstructions(createDropInstructions().build());
+                break;
+            case "f52":
+                id += 52;
+                flow.setMatch(createL4TCPMatch().build());
+                flow.setInstructions(createDropInstructions().build());
+                break;
 
-        case "f53":
-            id += 53;
-            flow.setMatch(createL4UDPMatch().build());
-            flow.setInstructions(createDropInstructions().build());
-            break;
-        case "f54":
-            id += 54;
-            flow.setMatch(new MatchBuilder().build());
-            flow.setInstructions(createSentToControllerInstructions().build());
-            flow.setPriority(0);
-            break;
-        case "f55":
-            id += 55;
-            flow.setMatch(createToSMatch().build());
-            flow.setInstructions(createDropInstructions().build());
-            break;
-        case "f56":
-            id += 56;
-            flow.setMatch(createToSMatch().build());
-            flow.setInstructions(createOutputInstructions("INPORT", 10).build());
-            break;
-        case "f57":
-            id += 57;
-            flow.setMatch(createToSMatch().build());
-            flow.setInstructions(createOutputInstructions("FLOOD", 20).build());
-            break;
-        case "f58":
-            id += 58;
-            flow.setMatch(createToSMatch().build());
-            flow.setInstructions(createOutputInstructions("ALL", 30).build());
-            break;
-        case "f59":
-            id += 59;
-            flow.setMatch(createToSMatch().build());
-            flow.setInstructions(createOutputInstructions("NORMAL", 40).build());
-            break;
-        case "f60":
-            id += 60;
-            flow.setMatch(createToSMatch().build());
-            flow.setInstructions(createOutputInstructions("LOCAL", 50).build());
-            break;
-        case "f61":
-            id += 61;
-            flow.setMatch(createToSMatch().build());
-            flow.setInstructions(createOutputInstructions("TABLE", 60).build());
-            break;
-        case "f62":
-            id += 62;
-            flow.setMatch(createToSMatch().build());
-            flow.setInstructions(createOutputInstructions("NONE", 70).build());
-            break;
-        case "f63":
-            id += 63;
-            flow.setMatch(createToSMatch().build());
-            flow.setInstructions(createStripVlanInstructions().build());
-            flow.setBarrier(Boolean.TRUE);
-            break;
-        case "f64":
-            id += 64;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction35().build());
-            break;
-        case "f65":
-            id += 65;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction36().build());
-            break;
-        case "f66":
-            id += 66;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction37().build());
-            break;
-        case "f67":
-            id += 67;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createAppyActionInstruction38().build());
-            break;
-        case "f68":
-            id += 68;
-            flow.setMatch(createL4TCPMatch().build());
-            flow.setInstructions(createAppyActionInstruction39().build());
-            break;
-        case "f69":
-            id += 69;
-            flow.setMatch(createL4UDPMatch().build());
-            flow.setInstructions(createAppyActionInstruction40().build());
-            break;
-        case "f70":
-            id += 70;
-            flow.setMatch(createL4SCTPMatch().build());
-            flow.setInstructions(createAppyActionInstruction41().build());
-            break;
-        case "f71":
-            id += 71;
-            flow.setMatch(createICMPv4Match().build());
-            flow.setInstructions(createAppyActionInstruction42().build());
-            break;
-        case "f72":
-            id += 72;
-            flow.setMatch(createArpMatch().build());
-            flow.setInstructions(createAppyActionInstruction43().build());
-            break;
-        case "f73":
-            id += 73;
-            flow.setMatch(createL3IPv6Match().build());
-            flow.setInstructions(createAppyActionInstruction44().build());
-            break;
-        case "f74":
-            id += 74;
-            flow.setMatch(createICMPv6Match().build());
-            flow.setInstructions(createAppyActionInstruction45().build());
-            break;
-        case "f75":
-            id += 75;
-            flow.setMatch(createMplsMatch().build());
-            flow.setInstructions(createAppyActionInstruction46().build());
-            break;
-        case "f76":
-            id += 76;
-            flow.setMatch(createPbbMatch().build());
-            flow.setInstructions(createAppyActionInstruction47().build());
-            break;
-        case "f77":
-            id += 77;
-            flow.setMatch(createTunnelIDMatch().build());
-            flow.setInstructions(createAppyActionInstruction48().build());
-            break;
-        case "f78":
-            id += 78;
-            flow.setMatch(createMatch33().build());
-            flow.setInstructions(createDropInstructions().build());
-            break;
-        case "f79":
-            id += 79;
-            flow.setMatch(createICMPv6Match1().build());
-            flow.setInstructions(createDecNwTtlInstructions().build());
-            break;
-        case "f80":
-            id += 80;
-            flow.setMatch(createVlanMatch().build());
-            flow.setInstructions(createAppyActionInstruction88().build());
-            break;
-        case "f81":
-            id += 81;
-            flow.setMatch(createLLDPMatch().build());
-            flow.setInstructions(createSentToControllerInstructions().build());
-            break;
-        case "f82":
-            id += 82;
-            flow.setMatch(createToSMatch().build());
-            flow.setInstructions(createOutputInstructions().build());
-            break;
-        case "f83":
-            id += 83; // Test TCP_Flag Match
-            flow.setMatch(createTcpFlagMatch().build());
-            flow.setInstructions(createDropInstructions().build());
-            break;
-        case "f84":
-            id += 84;
-            flow.setMatch(createVlanMatch().build()); // match vlan=10,dl_vlan_pcp=3
-            flow.setInstructions(createAppyActionInstruction88().build()); // vlan_pcp=4
-            break;
-        case "f85":
-            id += 85; // Test Tunnel IPv4 Src (e.g. set_field:172.16.100.200->tun_src)
-            flow.setMatch(createMatch3().build());
-            flow.setInstructions(createTunnelIpv4SrcInstructions().build());
-            break;
-        case "f86":
-            id += 86; // Test Tunnel IPv4 Dst (e.g. set_field:172.16.100.100->tun_dst)
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createTunnelIpv4DstInstructions().build());
-            break;
-        default:
-            LOG.warn("flow type not understood: {}", flowType);
+            case "f53":
+                id += 53;
+                flow.setMatch(createL4UDPMatch().build());
+                flow.setInstructions(createDropInstructions().build());
+                break;
+            case "f54":
+                id += 54;
+                flow.setMatch(new MatchBuilder().build());
+                flow.setInstructions(createSentToControllerInstructions().build());
+                flow.setPriority(0);
+                break;
+            case "f55":
+                id += 55;
+                flow.setMatch(createToSMatch().build());
+                flow.setInstructions(createDropInstructions().build());
+                break;
+            case "f56":
+                id += 56;
+                flow.setMatch(createToSMatch().build());
+                flow.setInstructions(createOutputInstructions("INPORT", 10).build());
+                break;
+            case "f57":
+                id += 57;
+                flow.setMatch(createToSMatch().build());
+                flow.setInstructions(createOutputInstructions("FLOOD", 20).build());
+                break;
+            case "f58":
+                id += 58;
+                flow.setMatch(createToSMatch().build());
+                flow.setInstructions(createOutputInstructions("ALL", 30).build());
+                break;
+            case "f59":
+                id += 59;
+                flow.setMatch(createToSMatch().build());
+                flow.setInstructions(createOutputInstructions("NORMAL", 40).build());
+                break;
+            case "f60":
+                id += 60;
+                flow.setMatch(createToSMatch().build());
+                flow.setInstructions(createOutputInstructions("LOCAL", 50).build());
+                break;
+            case "f61":
+                id += 61;
+                flow.setMatch(createToSMatch().build());
+                flow.setInstructions(createOutputInstructions("TABLE", 60).build());
+                break;
+            case "f62":
+                id += 62;
+                flow.setMatch(createToSMatch().build());
+                flow.setInstructions(createOutputInstructions("NONE", 70).build());
+                break;
+            case "f63":
+                id += 63;
+                flow.setMatch(createToSMatch().build());
+                flow.setInstructions(createStripVlanInstructions().build());
+                flow.setBarrier(Boolean.TRUE);
+                break;
+            case "f64":
+                id += 64;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction35().build());
+                break;
+            case "f65":
+                id += 65;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction36().build());
+                break;
+            case "f66":
+                id += 66;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction37().build());
+                break;
+            case "f67":
+                id += 67;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createAppyActionInstruction38().build());
+                break;
+            case "f68":
+                id += 68;
+                flow.setMatch(createL4TCPMatch().build());
+                flow.setInstructions(createAppyActionInstruction39().build());
+                break;
+            case "f69":
+                id += 69;
+                flow.setMatch(createL4UDPMatch().build());
+                flow.setInstructions(createAppyActionInstruction40().build());
+                break;
+            case "f70":
+                id += 70;
+                flow.setMatch(createL4SCTPMatch().build());
+                flow.setInstructions(createAppyActionInstruction41().build());
+                break;
+            case "f71":
+                id += 71;
+                flow.setMatch(createICMPv4Match().build());
+                flow.setInstructions(createAppyActionInstruction42().build());
+                break;
+            case "f72":
+                id += 72;
+                flow.setMatch(createArpMatch().build());
+                flow.setInstructions(createAppyActionInstruction43().build());
+                break;
+            case "f73":
+                id += 73;
+                flow.setMatch(createL3IPv6Match().build());
+                flow.setInstructions(createAppyActionInstruction44().build());
+                break;
+            case "f74":
+                id += 74;
+                flow.setMatch(createICMPv6Match().build());
+                flow.setInstructions(createAppyActionInstruction45().build());
+                break;
+            case "f75":
+                id += 75;
+                flow.setMatch(createMplsMatch().build());
+                flow.setInstructions(createAppyActionInstruction46().build());
+                break;
+            case "f76":
+                id += 76;
+                flow.setMatch(createPbbMatch().build());
+                flow.setInstructions(createAppyActionInstruction47().build());
+                break;
+            case "f77":
+                id += 77;
+                flow.setMatch(createTunnelIDMatch().build());
+                flow.setInstructions(createAppyActionInstruction48().build());
+                break;
+            case "f78":
+                id += 78;
+                flow.setMatch(createMatch33().build());
+                flow.setInstructions(createDropInstructions().build());
+                break;
+            case "f79":
+                id += 79;
+                flow.setMatch(createICMPv6Match1().build());
+                flow.setInstructions(createDecNwTtlInstructions().build());
+                break;
+            case "f80":
+                id += 80;
+                flow.setMatch(createVlanMatch().build());
+                flow.setInstructions(createAppyActionInstruction88().build());
+                break;
+            case "f81":
+                id += 81;
+                flow.setMatch(createLLDPMatch().build());
+                flow.setInstructions(createSentToControllerInstructions().build());
+                break;
+            case "f82":
+                id += 82;
+                flow.setMatch(createToSMatch().build());
+                flow.setInstructions(createOutputInstructions().build());
+                break;
+            case "f83":
+                id += 83; // Test TCP_Flag Match
+                flow.setMatch(createTcpFlagMatch().build());
+                flow.setInstructions(createDropInstructions().build());
+                break;
+            case "f84":
+                id += 84;
+                flow.setMatch(createVlanMatch().build()); // match vlan=10,dl_vlan_pcp=3
+                flow.setInstructions(createAppyActionInstruction88().build()); // vlan_pcp=4
+                break;
+            case "f85":
+                id += 85; // Test Tunnel IPv4 Src (e.g. set_field:172.16.100.200->tun_src)
+                flow.setMatch(createMatch3().build());
+                flow.setInstructions(createTunnelIpv4SrcInstructions().build());
+                break;
+            case "f86":
+                id += 86; // Test Tunnel IPv4 Dst (e.g. set_field:172.16.100.100->tun_dst)
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createTunnelIpv4DstInstructions().build());
+                break;
+            default:
+                LOG.warn("flow type not understood: {}", flowType);
         }
 
         FlowKey key = new FlowKey(new FlowId(Long.toString(id)));
@@ -717,7 +712,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return flow;
     }
 
-    
+
     private FlowBuilder createTestFlow_perfTest(NodeBuilder nodeBuilder, String flowTypeArg, String tableId, int id) {
 
         FlowBuilder flow = new FlowBuilder();
@@ -727,17 +722,17 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         if (flowType == null) {
             flowType = "f1";
         }
-        
+
         flow.setPriority(id);
 
         switch (flowType) {
-        case "f1":
-            id += 1;
-            flow.setMatch(createMatch1().build());
-            flow.setInstructions(createDecNwTtlInstructions().build());
-            break;
-        default:
-            LOG.warn("flow type not understood: {}", flowType);
+            case "f1":
+                id += 1;
+                flow.setMatch(createMatch1().build());
+                flow.setInstructions(createDecNwTtlInstructions().build());
+                break;
+            default:
+                LOG.warn("flow type not understood: {}", flowType);
         }
 
         FlowKey key = new FlowKey(new FlowId(Long.toString(id)));
@@ -770,6 +765,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         testFlow = flow;
         return flow;
     }
+
     private FlowBuilder createtablemiss(NodeBuilder nodeBuilder, String flowTypeArg, String tableId) {
         FlowBuilder flow = new FlowBuilder();
         long id = 456;
@@ -812,7 +808,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         // Create an Apply Action
         ApplyActionsBuilder aab = new ApplyActionsBuilder();
         aab.setAction(actionList);
-       
+
         // Wrap our Apply Action in an Instruction
         InstructionBuilder ib = new InstructionBuilder();
         ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
@@ -2635,7 +2631,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         SetFieldBuilder setFieldBuilder = new SetFieldBuilder();
         // PBB
         ProtocolMatchFieldsBuilder protomatch = new ProtocolMatchFieldsBuilder();
-        protomatch.setPbb(new PbbBuilder().setPbbIsid(4L).setPbbMask((new BigInteger(new byte[] { 0, 1, 0, 0 }).longValue())).build());
+        protomatch.setPbb(new PbbBuilder().setPbbIsid(4L).setPbbMask((new BigInteger(new byte[]{0, 1, 0, 0}).longValue())).build());
         setFieldBuilder.setProtocolMatchFields(protomatch.build());
         ab.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder.build()).build());
         actionList.add(ab.build());
@@ -2859,7 +2855,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         match.setIpMatch(ipmatch.build());
 
         Icmpv6MatchBuilder icmpv6match = new Icmpv6MatchBuilder(); // icmpv6
-                                                                   // match
+        // match
         icmpv6match.setIcmpv6Type((short) 135);
         icmpv6match.setIcmpv6Code((short) 1);
         match.setIcmpv6Match(icmpv6match.build());
@@ -2894,18 +2890,18 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
     private static MatchBuilder createEthernetMatch() {
         MatchBuilder match = new MatchBuilder();
 
-        byte[] mask1 = new byte[] { (byte) -1, (byte) -1, 0, 0, 0, 0 };
-        byte[] mask2 = new byte[] { (byte) -1, (byte) -1, (byte) -1, 0, 0, 0 };
+        byte[] mask1 = new byte[]{(byte) -1, (byte) -1, 0, 0, 0, 0};
+        byte[] mask2 = new byte[]{(byte) -1, (byte) -1, (byte) -1, 0, 0, 0};
 
         EthernetMatchBuilder ethmatch = new EthernetMatchBuilder(); // ethernettype
-                                                                    // match
+        // match
         EthernetTypeBuilder ethtype = new EthernetTypeBuilder();
         EtherType type = new EtherType(0x0800L);
         ethmatch.setEthernetType(ethtype.setType(type).build());
 
         EthernetDestinationBuilder ethdest = new EthernetDestinationBuilder(); // ethernet
-                                                                               // macaddress
-                                                                               // match
+        // macaddress
+        // match
         MacAddress macdest = new MacAddress("ff:ff:ff:ff:ff:ff");
         ethdest.setAddress(macdest);
         ethdest.setMask(new MacAddress("ff:ff:ff:00:00:00"));
@@ -2951,8 +2947,8 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         MacAddress macdest = new MacAddress("ff:ff:ff:ff:ff:ff");
         MacAddress macsrc = new MacAddress("00:00:00:00:23:ae");
 
-        byte[] mask = new byte[] { (byte) -1, (byte) -1, 0, 0, 0, 0 };
-        byte[] mask2 = new byte[] { (byte) -1, (byte) -1, (byte) -1, 0, 0, 0 };
+        byte[] mask = new byte[]{(byte) -1, (byte) -1, 0, 0, 0, 0};
+        byte[] mask2 = new byte[]{(byte) -1, (byte) -1, (byte) -1, 0, 0, 0};
 
         EthernetTypeBuilder ethtype = new EthernetTypeBuilder();
         EtherType type = new EtherType(0x0806L);
@@ -3049,7 +3045,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         ipv6label.setFlabelMask(new Ipv6FlowLabel(1L));
 
         Icmpv6MatchBuilder icmpv6match = new Icmpv6MatchBuilder(); // icmpv6
-                                                                   // match
+        // match
         icmpv6match.setIcmpv6Type((short) 135);
         icmpv6match.setIcmpv6Code((short) 0);
         match.setIcmpv6Match(icmpv6match.build());
@@ -3085,7 +3081,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         match.setIpMatch(ipmatch.build());
 
         Icmpv4MatchBuilder icmpv4match = new Icmpv4MatchBuilder(); // icmpv4
-                                                                   // match
+        // match
         icmpv4match.setIcmpv4Type((short) 8);
         icmpv4match.setIcmpv4Code((short) 0);
         match.setIcmpv4Match(icmpv4match.build());
@@ -3109,7 +3105,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         match.setIpMatch(ipmatch.build());
 
         Icmpv6MatchBuilder icmpv6match = new Icmpv6MatchBuilder(); // icmpv6
-                                                                   // match
+        // match
         icmpv6match.setIcmpv6Type((short) 135);
         icmpv6match.setIcmpv6Code((short) 1);
         match.setIcmpv6Match(icmpv6match.build());
@@ -3220,7 +3216,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
      */
     private static MatchBuilder createMetadataMatch() {
         MatchBuilder match = new MatchBuilder();
-        byte[] metamask = new byte[] { (byte) -1, (byte) -1, (byte) -1, 0, 0, 0, (byte) 1, (byte) 1 };
+        byte[] metamask = new byte[]{(byte) -1, (byte) -1, (byte) -1, 0, 0, 0, (byte) 1, (byte) 1};
         MetadataBuilder metadata = new MetadataBuilder(); // metadata match
         metadata.setMetadata(BigInteger.valueOf(500L));
         metadata.setMetadataMask(new BigInteger(metamask));
@@ -3266,7 +3262,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         ProtocolMatchFieldsBuilder protomatch = new ProtocolMatchFieldsBuilder(); // mpls
         // match
-        protomatch.setPbb(new PbbBuilder().setPbbIsid(4L).setPbbMask(new BigInteger(new byte[] { 0, 1, 0, 0 }).longValue()).build());
+        protomatch.setPbb(new PbbBuilder().setPbbIsid(4L).setPbbMask(new BigInteger(new byte[]{0, 1, 0, 0}).longValue()).build());
         match.setProtocolMatchFields(protomatch.build());
 
         return match;
@@ -3280,7 +3276,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         MatchBuilder match = new MatchBuilder();
         TunnelBuilder tunnel = new TunnelBuilder(); // tunnel id match
         tunnel.setTunnelId(BigInteger.valueOf(10668));
-        byte[] mask = new byte[] {(byte) -1, (byte) -1, (byte) -1, 0, 0, 0, (byte) 1, (byte) 1 };
+        byte[] mask = new byte[]{(byte) -1, (byte) -1, (byte) -1, 0, 0, 0, (byte) 1, (byte) 1};
         tunnel.setTunnelMask(new BigInteger(1, mask));
         match.setTunnel(tunnel.build());
 
@@ -3289,6 +3285,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
     /**
      * Test match for TCP_Flags
+     *
      * @return match containing Ethertype (0x0800), IP Protocol (TCP), TCP_Flag (SYN)
      */
     //FIXME: move to extensible support
@@ -3313,11 +3310,11 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         tcpMatch.setTcpDestinationPort(dstPort);
         match.setLayer4Match(tcpMatch.build());
         /**
-        * Defined TCP Flag values in OVS v2.1+
-        * TCP_FIN 0x001 / TCP_SYN 0x002 / TCP_RST 0x004
-        * TCP_PSH 0x008 / TCP_ACK 0x010 / TCP_URG 0x020
-        * TCP_ECE 0x040 / TCP_CWR 0x080 / TCP_NS  0x100
-        */
+         * Defined TCP Flag values in OVS v2.1+
+         * TCP_FIN 0x001 / TCP_SYN 0x002 / TCP_RST 0x004
+         * TCP_PSH 0x008 / TCP_ACK 0x010 / TCP_URG 0x020
+         * TCP_ECE 0x040 / TCP_CWR 0x080 / TCP_NS  0x100
+         */
         TcpFlagMatchBuilder tcpFlagMatch = new TcpFlagMatchBuilder();
         tcpFlagMatch.setTcpFlag(0x002);
         match.setTcpFlagMatch(tcpFlagMatch.build());
@@ -3326,7 +3323,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
     }
 
     public void _removeMDFlow(CommandInterpreter ci) {
-        DataModification<InstanceIdentifier<?>, DataObject> modification = dataBrokerService.beginTransaction();
+        ReadWriteTransaction modification = dataBroker.newReadWriteTransaction();
         NodeBuilder tn = createTestNode(ci.nextArgument());
         String flowtype = ci.nextArgument();
         FlowBuilder tf;
@@ -3338,7 +3335,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         InstanceIdentifier<Flow> path1 = InstanceIdentifier.builder(Nodes.class).child(Node.class, tn.getKey())
                 .augmentation(FlowCapableNode.class).child(Table.class, new TableKey(tf.getTableId()))
                 .child(Flow.class, tf.getKey()).build();
-        modification.removeConfigurationData(path1);
+        modification.delete(LogicalDatastoreType.CONFIGURATION, path1);
         Future<RpcResult<TransactionStatus>> commitFuture = modification.commit();
         try {
             RpcResult<TransactionStatus> result = commitFuture.get();
@@ -3354,10 +3351,10 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
     /**
      * @param ci arguments: switchId flowType tableNum
-     * 
-     * <pre>
-     * e.g.: addMDFlow openflow:1 f1 42
-     * </pre>
+     *           <p/>
+     *           <pre>
+     *           e.g.: addMDFlow openflow:1 f1 42
+     *           </pre>
      */
     public void _addMDFlow(CommandInterpreter ci) {
         NodeBuilder tn = createTestNode(ci.nextArgument());
@@ -3372,12 +3369,12 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
     }
 
     private void writeFlow(CommandInterpreter ci, FlowBuilder flow, NodeBuilder nodeBuilder) {
-        DataModification<InstanceIdentifier<?>, DataObject> modification = dataBrokerService.beginTransaction();
+        ReadWriteTransaction modification = dataBroker.newReadWriteTransaction();
         InstanceIdentifier<Flow> path1 = InstanceIdentifier.builder(Nodes.class)
                 .child(Node.class, nodeBuilder.getKey()).augmentation(FlowCapableNode.class)
                 .child(Table.class, new TableKey(flow.getTableId())).child(Flow.class, flow.getKey()).build();
-        modification.putConfigurationData(nodeBuilderToInstanceId(nodeBuilder), nodeBuilder.build());
-        modification.putConfigurationData(path1, flow.build());
+        modification.put(LogicalDatastoreType.CONFIGURATION, nodeBuilderToInstanceId(nodeBuilder), nodeBuilder.build());
+        modification.put(LogicalDatastoreType.CONFIGURATION, path1, flow.build());
         Future<RpcResult<TransactionStatus>> commitFuture = modification.commit();
         try {
             RpcResult<TransactionStatus> result = commitFuture.get();
@@ -3412,101 +3409,101 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
     public String getHelp() {
         return "No help";
     }
-    
+
     /*
      * usage testSwitchFlows <numberOfSwitches> <numberOfFlows> <warmup iterations> <Number Of Threads>
      * ex: _perfFlowTest 10 5 1 2
      */
     public void _perfFlowTest(CommandInterpreter ci) {
-    	
+
         String numberOfSwtichesStr = ci.nextArgument();
         String numberOfFlowsStr = ci.nextArgument();
         String warmupIterationsStr = ci.nextArgument();
         String threadCountStr = ci.nextArgument();
         String warmUpStr = ci.nextArgument();
-        
+
         Collection<String> testResults = null;
-        if(testResults == null){
-        	testResults = new ArrayList<String>();
+        if (testResults == null) {
+            testResults = new ArrayList<String>();
         }
-         
+
         int numberOfSwtiches = 0;
         int numberOfFlows = 0;
         int warmupIterations = 0;
         boolean warmUpIterations = false;
 
         int threadCount = 0;
-        if(numberOfSwtichesStr !=null && !numberOfSwtichesStr.trim().equals("")){
-        	numberOfSwtiches = new Integer(numberOfSwtichesStr).intValue();
-        }else {
-        	numberOfSwtiches = 2;
+        if (numberOfSwtichesStr != null && !numberOfSwtichesStr.trim().equals("")) {
+            numberOfSwtiches = new Integer(numberOfSwtichesStr).intValue();
+        } else {
+            numberOfSwtiches = 2;
         }
-        
-        if(numberOfFlowsStr !=null && !numberOfFlowsStr.trim().equals("")){
-        	numberOfFlows = new Integer(numberOfFlowsStr).intValue();
-        }else {
-        	numberOfFlows = 2;
+
+        if (numberOfFlowsStr != null && !numberOfFlowsStr.trim().equals("")) {
+            numberOfFlows = new Integer(numberOfFlowsStr).intValue();
+        } else {
+            numberOfFlows = 2;
         }
-        
-        if(warmupIterationsStr !=null && !warmupIterationsStr.trim().equals("")){
-        	warmupIterations = new Integer(warmupIterationsStr).intValue();
-        }else {
-        	warmupIterations = 2;
+
+        if (warmupIterationsStr != null && !warmupIterationsStr.trim().equals("")) {
+            warmupIterations = new Integer(warmupIterationsStr).intValue();
+        } else {
+            warmupIterations = 2;
         }
-        
-        if(threadCountStr !=null && !threadCountStr.trim().equals("")){
-        	threadCount = new Integer(threadCountStr).intValue();
-        }else {
-        	threadCount = 2; 
+
+        if (threadCountStr != null && !threadCountStr.trim().equals("")) {
+            threadCount = new Integer(threadCountStr).intValue();
+        } else {
+            threadCount = 2;
         }
-         if(warmUpStr !=null && !warmUpStr.trim().equals("") && warmUpStr.trim().equals("true")){
-             warmUpIterations = true;
-         }else {
-             warmUpIterations = false;
-         }    
+        if (warmUpStr != null && !warmUpStr.trim().equals("") && warmUpStr.trim().equals("true")) {
+            warmUpIterations = true;
+        } else {
+            warmUpIterations = false;
+        }
         ci.println("*     Test Configurations*");
-        ci.println("*     numberOfSwtiches:::"+numberOfSwtiches+"");
-        ci.println("*     numberOfFlows:::"+numberOfFlows+"");
-        ci.println("*     warmupIterations:::"+warmupIterations+"");
-        ci.println("*     Number of Threads :::"+threadCount+"");
-        ci.println("*     Warmup Required? :::"+warmUpIterations+"");
-        
-        String dataPath="openflow:1";
+        ci.println("*     numberOfSwtiches:::" + numberOfSwtiches + "");
+        ci.println("*     numberOfFlows:::" + numberOfFlows + "");
+        ci.println("*     warmupIterations:::" + warmupIterations + "");
+        ci.println("*     Number of Threads :::" + threadCount + "");
+        ci.println("*     Warmup Required? :::" + warmUpIterations + "");
+
+        String dataPath = "openflow:1";
         String flowType = "fTM";
         NodeBuilder tn;
         FlowBuilder tf;
         String tableId = "0";
-        if(warmUpIterations){
-        ci.println("----Warmup Started-----");
-        for(int j =1; j<= warmupIterations; j++){
-	        for(int i =1;i<=numberOfSwtiches;i++){
-	        	 dataPath = "openflow:"+i;
-	        	 tn = createTestNode(dataPath);
-	        	for (int flow=1;flow<numberOfFlows;flow++){
-	                         tf = createTestFlow_perfTest(tn, "f1", tableId, flow);
-	        		 writeFlow(ci, tf, tn);
-	        	}
-	        }
-         }
+        if (warmUpIterations) {
+            ci.println("----Warmup Started-----");
+            for (int j = 1; j <= warmupIterations; j++) {
+                for (int i = 1; i <= numberOfSwtiches; i++) {
+                    dataPath = "openflow:" + i;
+                    tn = createTestNode(dataPath);
+                    for (int flow = 1; flow < numberOfFlows; flow++) {
+                        tf = createTestFlow_perfTest(tn, "f1", tableId, flow);
+                        writeFlow(ci, tf, tn);
+                    }
+                }
+            }
 
-       ci.println("----Warmup Done-----");
+            ci.println("----Warmup Done-----");
         }
-       try{
-	       ExecutorService executor = Executors.newFixedThreadPool(threadCount);
-	       int flowID = 0;
-               int tableID = 0;
-	       for ( int t=0;t< threadCount;t++){
-	    	   tableID = t+1;
-	    	   Runnable tRunnable = new TestFlowThread(numberOfSwtiches, numberOfFlows, ci, t, tableID);
-	    	   executor.execute(tRunnable);
-	       }
-	       executor.shutdown();
-	       executor.awaitTermination(1, TimeUnit.SECONDS);
-       } catch(Exception e){
-    	  ci.println("Exception:"+e.getMessage());
-       }
+        try {
+            ExecutorService executor = Executors.newFixedThreadPool(threadCount);
+            int flowID = 0;
+            int tableID = 0;
+            for (int t = 0; t < threadCount; t++) {
+                tableID = t + 1;
+                Runnable tRunnable = new TestFlowThread(numberOfSwtiches, numberOfFlows, ci, t, tableID);
+                executor.execute(tRunnable);
+            }
+            executor.shutdown();
+            executor.awaitTermination(1, TimeUnit.SECONDS);
+        } catch (Exception e) {
+            ci.println("Exception:" + e.getMessage());
+        }
     }
-    
+
     public class TestFlowThread implements Runnable {
 
         int numberOfSwitches;
@@ -3547,7 +3544,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
                 dataPath = "openflow:" + i;
                 tn = createTestNode(dataPath);
                 for (int flow2 = 1; flow2 <= this.numberOfFlows; flow2++) {
-                    tf = createTestFlow_perfTest(tn, "f1", ""+this.tableID, flow2);
+                    tf = createTestFlow_perfTest(tn, "f1", "" + this.tableID, flow2);
                     writeFlow(this.ci, tf, tn);
                     totalNumberOfFlows++;
                 }
@@ -3562,32 +3559,33 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         }
 
     }
+
     /*
      * usage testAllFlows <dp>
      * ex: _perfFlowTest 1
      */
     public void _testAllFlows(CommandInterpreter ci) {
-    	String dataPathID = ci.nextArgument();
-    	int numberOfFlows = 82;
+        String dataPathID = ci.nextArgument();
+        int numberOfFlows = 82;
         int threadCount = 0;
-        if(dataPathID ==null || dataPathID.trim().equals("")){
-        	dataPathID = "1";
+        if (dataPathID == null || dataPathID.trim().equals("")) {
+            dataPathID = "1";
         }
         ci.println("*     Test All Flows	*");
-        ci.println("*     dataPathID:::"+dataPathID+"");
-        String dataPath="openflow:"+dataPathID;
+        ci.println("*     dataPathID:::" + dataPathID + "");
+        String dataPath = "openflow:" + dataPathID;
         String tableId = "0";
         NodeBuilder tn = createTestNode(dataPath);
         FlowBuilder tf;
-        	for (int flow=1;flow<numberOfFlows;flow++){
-        		String flowID = "f"+flow;
-        		try{
-        			tf = createTestFlow(tn, flowID, tableId);
-        			writeFlow(ci, tf, tn);
-        		} catch(Exception e){
-        			ci.println("--Test Failed--Issue found while adding flow"+ flow);
-        			break;
-        		}
-        	}
+        for (int flow = 1; flow < numberOfFlows; flow++) {
+            String flowID = "f" + flow;
+            try {
+                tf = createTestFlow(tn, flowID, tableId);
+                writeFlow(ci, tf, tn);
+            } catch (Exception e) {
+                ci.println("--Test Failed--Issue found while adding flow" + flow);
+                break;
+            }
+        }
     }
 }

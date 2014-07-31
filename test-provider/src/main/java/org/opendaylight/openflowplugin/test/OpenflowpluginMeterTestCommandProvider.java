@@ -11,36 +11,31 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.TransactionStatus;
-import org.opendaylight.controller.md.sal.common.api.data.DataModification;
-import org.opendaylight.controller.sal.binding.api.NotificationService;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
-import org.opendaylight.controller.sal.binding.api.data.DataBrokerService;
+import org.opendaylight.controller.sal.binding.api.NotificationService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.MeterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.MeterKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.SalGroupListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.config.rev131024.Meters;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.MeterAdded;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.MeterRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.MeterUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.SalMeterListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.BandId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.BandType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterBandType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.band.type.band.type.DscpRemark;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.band.type.band.type.DscpRemarkBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.MeterBandHeadersBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.MeterBandHeader;
@@ -57,7 +52,7 @@ import org.slf4j.LoggerFactory;
 public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(OpenflowpluginMeterTestCommandProvider.class);
-    private DataBrokerService dataBrokerService;
+    private DataBroker dataBroker;
     private ProviderContext pc;
     private final BundleContext ctx;
     private Meter testMeter;
@@ -76,7 +71,7 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
 
     public void onSessionInitiated(ProviderContext session) {
         pc = session;
-        dataBrokerService = session.getSALService(DataBrokerService.class);
+        dataBroker = session.getSALService(DataBroker.class);
         ctx.registerService(CommandProvider.class.getName(), this, null);
         notificationService = session.getSALService(NotificationService.class);
         // For switch events
@@ -131,7 +126,6 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
 
     private MeterBuilder createTestMeter() {
         // Sample data , committing to DataStore
-        DataModification<InstanceIdentifier<?>, DataObject> modification = dataBrokerService.beginTransaction();
 
         long id = 12;
         MeterKey key = new MeterKey(new MeterId(id));
@@ -231,10 +225,10 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
             createUserNode(nref);
         }
         MeterBuilder mBuilder = createTestMeter();
-        DataModification<InstanceIdentifier<?>, DataObject> modification = dataBrokerService.beginTransaction();
+        ReadWriteTransaction modification = dataBroker.newReadWriteTransaction();
         InstanceIdentifier<Meter> path1 = InstanceIdentifier.builder(Nodes.class).child(Node.class, testNode.getKey())
                 .augmentation(FlowCapableNode.class).child(Meter.class, new MeterKey(testMeter.getMeterId())).build();
-        modification.removeConfigurationData(path1);
+        modification.delete(LogicalDatastoreType.CONFIGURATION, path1);
         Future<RpcResult<TransactionStatus>> commitFuture = modification.commit();
         try {
             RpcResult<TransactionStatus> result = commitFuture.get();
@@ -263,57 +257,57 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
 
         Integer count = Integer.parseInt(ci.nextArgument());
 
-        DataModification<InstanceIdentifier<?>, DataObject> modification = dataBrokerService.beginTransaction();
+        ReadWriteTransaction modification = dataBroker.newReadWriteTransaction();
         switch (count) {
-        case 1:
-            MeterBuilder mBuilder = createTestMeters("1", "remove");
-            InstanceIdentifier<Meter> path1 = InstanceIdentifier.builder(Nodes.class)
-                    .child(Node.class, testNode.getKey()).augmentation(FlowCapableNode.class)
-                    .child(Meter.class, new MeterKey(testMeter1.getMeterId())).build();
-            modification.removeConfigurationData(path1);
-            MeterBuilder mBuilder1 = createTestMeters("2", "remove");
-            InstanceIdentifier<Meter> path2 = InstanceIdentifier.builder(Nodes.class)
-                    .child(Node.class, testNode.getKey()).augmentation(FlowCapableNode.class)
-                    .child(Meter.class, new MeterKey(testMeter2.getMeterId())).build();
-            modification.removeConfigurationData(path2);
+            case 1:
+                MeterBuilder mBuilder = createTestMeters("1", "remove");
+                InstanceIdentifier<Meter> path1 = InstanceIdentifier.builder(Nodes.class)
+                        .child(Node.class, testNode.getKey()).augmentation(FlowCapableNode.class)
+                        .child(Meter.class, new MeterKey(testMeter1.getMeterId())).build();
+                modification.delete(LogicalDatastoreType.CONFIGURATION, path1);
+                MeterBuilder mBuilder1 = createTestMeters("2", "remove");
+                InstanceIdentifier<Meter> path2 = InstanceIdentifier.builder(Nodes.class)
+                        .child(Node.class, testNode.getKey()).augmentation(FlowCapableNode.class)
+                        .child(Meter.class, new MeterKey(testMeter2.getMeterId())).build();
+                modification.delete(LogicalDatastoreType.CONFIGURATION, path2);
 
-            break;
-        case 2:
-            MeterBuilder mBuilder2 = createTestMeters("3", "remove");
-            InstanceIdentifier<Meter> path3 = InstanceIdentifier.builder(Nodes.class)
-                    .child(Node.class, testNode.getKey()).augmentation(FlowCapableNode.class)
-                    .child(Meter.class, new MeterKey(testMeter1.getMeterId())).build();
-            modification.removeConfigurationData(path3);
-            MeterBuilder mBuilder22 = createTestMeters("4", "remove");
-            InstanceIdentifier<Meter> path4 = InstanceIdentifier.builder(Nodes.class)
-                    .child(Node.class, testNode.getKey()).augmentation(FlowCapableNode.class)
-                    .child(Meter.class, new MeterKey(testMeter2.getMeterId())).build();
-            modification.removeConfigurationData(path4);
-            break;
-        case 3:
-            MeterBuilder mBuilder3 = createTestMeters("5", "remove");
-            InstanceIdentifier<Meter> path5 = InstanceIdentifier.builder(Nodes.class)
-                    .child(Node.class, testNode.getKey()).augmentation(FlowCapableNode.class)
-                    .child(Meter.class, new MeterKey(testMeter1.getMeterId())).build();
-            modification.removeConfigurationData(path5);
-            MeterBuilder mBuilder4 = createTestMeters("6", "remove");
-            InstanceIdentifier<Meter> path6 = InstanceIdentifier.builder(Nodes.class)
-                    .child(Node.class, testNode.getKey()).augmentation(FlowCapableNode.class)
-                    .child(Meter.class, new MeterKey(testMeter2.getMeterId())).build();
-            modification.removeConfigurationData(path6);
-            break;
-        case 4:
-            MeterBuilder mBuilder5 = createTestMeters("7", "remove");
-            InstanceIdentifier<Meter> path7 = InstanceIdentifier.builder(Nodes.class)
-                    .child(Node.class, testNode.getKey()).augmentation(FlowCapableNode.class)
-                    .child(Meter.class, new MeterKey(testMeter1.getMeterId())).build();
-            modification.removeConfigurationData(path7);
-            MeterBuilder mBuilder6 = createTestMeters("8", "remove");
-            InstanceIdentifier<Meter> path8 = InstanceIdentifier.builder(Nodes.class)
-                    .child(Node.class, testNode.getKey()).augmentation(FlowCapableNode.class)
-                    .child(Meter.class, new MeterKey(testMeter2.getMeterId())).build();
-            modification.removeConfigurationData(path8);
-            break;
+                break;
+            case 2:
+                MeterBuilder mBuilder2 = createTestMeters("3", "remove");
+                InstanceIdentifier<Meter> path3 = InstanceIdentifier.builder(Nodes.class)
+                        .child(Node.class, testNode.getKey()).augmentation(FlowCapableNode.class)
+                        .child(Meter.class, new MeterKey(testMeter1.getMeterId())).build();
+                modification.delete(LogicalDatastoreType.CONFIGURATION, path3);
+                MeterBuilder mBuilder22 = createTestMeters("4", "remove");
+                InstanceIdentifier<Meter> path4 = InstanceIdentifier.builder(Nodes.class)
+                        .child(Node.class, testNode.getKey()).augmentation(FlowCapableNode.class)
+                        .child(Meter.class, new MeterKey(testMeter2.getMeterId())).build();
+                modification.delete(LogicalDatastoreType.CONFIGURATION, path4);
+                break;
+            case 3:
+                MeterBuilder mBuilder3 = createTestMeters("5", "remove");
+                InstanceIdentifier<Meter> path5 = InstanceIdentifier.builder(Nodes.class)
+                        .child(Node.class, testNode.getKey()).augmentation(FlowCapableNode.class)
+                        .child(Meter.class, new MeterKey(testMeter1.getMeterId())).build();
+                modification.delete(LogicalDatastoreType.CONFIGURATION, path5);
+                MeterBuilder mBuilder4 = createTestMeters("6", "remove");
+                InstanceIdentifier<Meter> path6 = InstanceIdentifier.builder(Nodes.class)
+                        .child(Node.class, testNode.getKey()).augmentation(FlowCapableNode.class)
+                        .child(Meter.class, new MeterKey(testMeter2.getMeterId())).build();
+                modification.delete(LogicalDatastoreType.CONFIGURATION, path6);
+                break;
+            case 4:
+                MeterBuilder mBuilder5 = createTestMeters("7", "remove");
+                InstanceIdentifier<Meter> path7 = InstanceIdentifier.builder(Nodes.class)
+                        .child(Node.class, testNode.getKey()).augmentation(FlowCapableNode.class)
+                        .child(Meter.class, new MeterKey(testMeter1.getMeterId())).build();
+                modification.delete(LogicalDatastoreType.CONFIGURATION, path7);
+                MeterBuilder mBuilder6 = createTestMeters("8", "remove");
+                InstanceIdentifier<Meter> path8 = InstanceIdentifier.builder(Nodes.class)
+                        .child(Node.class, testNode.getKey()).augmentation(FlowCapableNode.class)
+                        .child(Meter.class, new MeterKey(testMeter2.getMeterId())).build();
+                modification.delete(LogicalDatastoreType.CONFIGURATION, path8);
+                break;
 
         }
 
@@ -358,26 +352,26 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
         }
         Integer count = Integer.parseInt(ci.nextArgument());
         switch (count) {
-        case 1:
-            createTestMeters("1", "add");
-            createTestMeters("2", "add");
-            writeMeter(ci, testMeter1, testMeter2);
-            break;
-        case 2:
-            createTestMeters("3", "add");
-            createTestMeters("4", "add");
-            writeMeter(ci, testMeter1, testMeter2);
-            break;
-        case 3:
-            createTestMeters("5", "add");
-            createTestMeters("6", "add");
-            writeMeter(ci, testMeter1, testMeter2);
-            break;
-        case 4:
-            createTestMeters("7", "add");
-            createTestMeters("8", "add");
-            writeMeter(ci, testMeter1, testMeter2);
-            break;
+            case 1:
+                createTestMeters("1", "add");
+                createTestMeters("2", "add");
+                writeMeter(ci, testMeter1, testMeter2);
+                break;
+            case 2:
+                createTestMeters("3", "add");
+                createTestMeters("4", "add");
+                writeMeter(ci, testMeter1, testMeter2);
+                break;
+            case 3:
+                createTestMeters("5", "add");
+                createTestMeters("6", "add");
+                writeMeter(ci, testMeter1, testMeter2);
+                break;
+            case 4:
+                createTestMeters("7", "add");
+                createTestMeters("8", "add");
+                writeMeter(ci, testMeter1, testMeter2);
+                break;
 
         }
         // createTestMeters();
@@ -385,12 +379,12 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
     }
 
     private void writeMeter(CommandInterpreter ci, Meter meter) {
-        DataModification<InstanceIdentifier<?>, DataObject> modification = dataBrokerService.beginTransaction();
+        ReadWriteTransaction modification = dataBroker.newReadWriteTransaction();
         InstanceIdentifier<Meter> path1 = InstanceIdentifier.builder(Nodes.class).child(Node.class, testNode.getKey())
                 .augmentation(FlowCapableNode.class).child(Meter.class, new MeterKey(meter.getMeterId())).build();
-        DataObject cls = modification.readConfigurationData(path1);
-        modification.putConfigurationData(nodeToInstanceId(testNode), testNode);
-        modification.putConfigurationData(path1, meter);
+        DataObject cls = (DataObject) modification.read(LogicalDatastoreType.CONFIGURATION, path1);
+        modification.put(LogicalDatastoreType.CONFIGURATION, nodeToInstanceId(testNode), testNode);
+        modification.put(LogicalDatastoreType.CONFIGURATION, path1, meter);
         Future<RpcResult<TransactionStatus>> commitFuture = modification.commit();
         try {
             RpcResult<TransactionStatus> result = commitFuture.get();
@@ -407,17 +401,17 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
     }
 
     private void writeMeter(CommandInterpreter ci, Meter meter, Meter meter1) {
-        DataModification<InstanceIdentifier<?>, DataObject> modification = dataBrokerService.beginTransaction();
+        ReadWriteTransaction modification = dataBroker.newReadWriteTransaction();
         InstanceIdentifier<Meter> path1 = InstanceIdentifier.builder(Nodes.class).child(Node.class, testNode.getKey())
                 .augmentation(FlowCapableNode.class).child(Meter.class, new MeterKey(meter.getMeterId())).build();
-        DataObject cls = modification.readConfigurationData(path1);
-        modification.putConfigurationData(nodeToInstanceId(testNode), testNode);
-        modification.putConfigurationData(path1, meter);
+        DataObject cls = (DataObject) modification.read(LogicalDatastoreType.CONFIGURATION, path1);
+        modification.put(LogicalDatastoreType.CONFIGURATION, nodeToInstanceId(testNode), testNode);
+        modification.put(LogicalDatastoreType.CONFIGURATION, path1, meter);
         InstanceIdentifier<Meter> path2 = InstanceIdentifier.builder(Nodes.class).child(Node.class, testNode.getKey())
                 .augmentation(FlowCapableNode.class).child(Meter.class, new MeterKey(meter1.getMeterId())).build();
-        DataObject cls1 = modification.readConfigurationData(path2);
-        modification.putConfigurationData(nodeToInstanceId(testNode), testNode);
-        modification.putConfigurationData(path2, meter1);
+        DataObject cls1 = (DataObject) modification.read(LogicalDatastoreType.CONFIGURATION, path2);
+        modification.put(LogicalDatastoreType.CONFIGURATION, nodeToInstanceId(testNode), testNode);
+        modification.put(LogicalDatastoreType.CONFIGURATION, path2, meter1);
 
         Future<RpcResult<TransactionStatus>> commitFuture = modification.commit();
         try {
@@ -464,16 +458,16 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
 
         Integer count = Integer.parseInt(ci.nextArgument());
         switch (count) {
-        case 1:
-            createTestMeters("1", "modify");
-            createTestMeters("2", "modify");
-            writeMeter(ci, testMeter1, testMeter2);
-            break;
-        case 2:
-            createTestMeters("3", "modify");
-            createTestMeters("4", "modify");
-            writeMeter(ci, testMeter1, testMeter2);
-            break;
+            case 1:
+                createTestMeters("1", "modify");
+                createTestMeters("2", "modify");
+                writeMeter(ci, testMeter1, testMeter2);
+                break;
+            case 2:
+                createTestMeters("3", "modify");
+                createTestMeters("4", "modify");
+                writeMeter(ci, testMeter1, testMeter2);
+                break;
         }
     }
 
