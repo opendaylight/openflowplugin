@@ -7,6 +7,9 @@
  */
 package org.opendaylight.openflowplugin.test;
 
+import com.google.common.util.concurrent.CheckedFuture;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -18,6 +21,7 @@ import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.TransactionStatus;
 import org.opendaylight.controller.md.sal.common.api.data.DataModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlInCaseBuilder;
@@ -612,7 +616,7 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
     }
 
 
-    public void _removeGroup(CommandInterpreter ci) {
+    public void _removeGroup(final CommandInterpreter ci) {
         String nref = ci.nextArgument();
 
         if (nref == null) {
@@ -627,20 +631,18 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         InstanceIdentifier<Group> path1 = InstanceIdentifier.builder(Nodes.class).child(Node.class, testNode.getKey())
                 .augmentation(FlowCapableNode.class).child(Group.class, new GroupKey(gbuilder.getGroupId())).build();
         modification.delete(LogicalDatastoreType.CONFIGURATION, path1);
-        Future<RpcResult<TransactionStatus>> commitFuture = modification.commit();
-        try {
-            RpcResult<TransactionStatus> result = commitFuture.get();
-            TransactionStatus status = result.getResult();
-            ci.println("Status of Group Data Loaded Transaction: " + status);
-            ci.println("Status of Group Data Loaded Transaction: ");
+        CheckedFuture<Void, TransactionCommitFailedException> commitFuture = modification.submit();
+        Futures.addCallback(commitFuture, new FutureCallback<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                ci.println("Status of Group Data Loaded Transaction: success.");
+            }
 
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+            @Override
+            public void onFailure(Throwable throwable) {
+                ci.println(String.format("Status of Group Data Loaded Transaction : failure. Reason : %s", throwable));
+            }
+        });
     }
 
     public void _addGroup(CommandInterpreter ci) {
@@ -657,7 +659,7 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         writeGroup(ci, testGroup);
     }
 
-    private void writeGroup(CommandInterpreter ci, Group group) {
+    private void writeGroup(final CommandInterpreter ci, Group group) {
         ReadWriteTransaction modification = dataBroker.newReadWriteTransaction();
         InstanceIdentifier<Group> path1 = InstanceIdentifier.builder(Nodes.class)
                 .child(Node.class, testNode.getKey()).augmentation(FlowCapableNode.class)
@@ -665,19 +667,18 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
                 .build();
         modification.put(LogicalDatastoreType.CONFIGURATION, nodeToInstanceId(testNode), testNode);
         modification.put(LogicalDatastoreType.CONFIGURATION, path1, group);
-        Future<RpcResult<TransactionStatus>> commitFuture = modification.commit();
-        try {
-            RpcResult<TransactionStatus> result = commitFuture.get();
-            TransactionStatus status = result.getResult();
-            ci.println("Status of Group Data Loaded Transaction: " + status);
+        CheckedFuture<Void, TransactionCommitFailedException> commitFuture = modification.submit();
+        Futures.addCallback(commitFuture, new FutureCallback<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                ci.println("Status of Group Data Loaded Transaction: success.");
+            }
 
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+            @Override
+            public void onFailure(Throwable throwable) {
+                ci.println(String.format("Status of Group Data Loaded Transaction : failure. Reason : %s", throwable));
+            }
+        });
     }
 
     public void _modifyGroup(CommandInterpreter ci) {

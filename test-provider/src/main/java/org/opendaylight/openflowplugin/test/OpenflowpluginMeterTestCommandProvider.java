@@ -7,16 +7,17 @@
  */
 package org.opendaylight.openflowplugin.test;
 
+import com.google.common.util.concurrent.CheckedFuture;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
-import org.opendaylight.controller.md.sal.common.api.TransactionStatus;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.NotificationService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -44,7 +45,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter
 import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -214,7 +214,7 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
         return meter;
     }
 
-    public void _removeMeter(CommandInterpreter ci) {
+    public void _removeMeter(final CommandInterpreter ci) {
         String nref = ci.nextArgument();
 
         if (nref == null) {
@@ -229,22 +229,21 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
         InstanceIdentifier<Meter> path1 = InstanceIdentifier.builder(Nodes.class).child(Node.class, testNode.getKey())
                 .augmentation(FlowCapableNode.class).child(Meter.class, new MeterKey(testMeter.getMeterId())).build();
         modification.delete(LogicalDatastoreType.CONFIGURATION, path1);
-        Future<RpcResult<TransactionStatus>> commitFuture = modification.commit();
-        try {
-            RpcResult<TransactionStatus> result = commitFuture.get();
-            TransactionStatus status = result.getResult();
-            ci.println("Status of Meter Data Loaded Transaction: " + status);
+        CheckedFuture<Void, TransactionCommitFailedException> commitFuture = modification.submit();
+        Futures.addCallback(commitFuture, new FutureCallback<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                ci.println("Status of Group Data Loaded Transaction: success.");
+            }
 
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+            @Override
+            public void onFailure(Throwable throwable) {
+                ci.println(String.format("Status of Group Data Loaded Transaction : failure. Reason : %s", throwable));
+            }
+        });
     }
 
-    public void _removeMeters(CommandInterpreter ci) {
+    public void _removeMeters(final CommandInterpreter ci) {
         String nref = ci.nextArgument();
 
         if (nref == null) {
@@ -311,19 +310,18 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
 
         }
 
-        Future<RpcResult<TransactionStatus>> commitFuture = modification.commit();
-        try {
-            RpcResult<TransactionStatus> result = commitFuture.get();
-            TransactionStatus status = result.getResult();
-            ci.println("Status of Meter Data Loaded Transaction: " + status);
+        CheckedFuture<Void, TransactionCommitFailedException> commitFuture = modification.submit();
+        Futures.addCallback(commitFuture, new FutureCallback<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                ci.println("Status of Group Data Loaded Transaction: success.");
+            }
 
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+            @Override
+            public void onFailure(Throwable throwable) {
+                ci.println(String.format("Status of Group Data Loaded Transaction : failure. Reason : %s", throwable));
+            }
+        });
     }
 
     public void _addMeter(CommandInterpreter ci) {
@@ -378,29 +376,28 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
         // writeMeter(ci, testMeter);
     }
 
-    private void writeMeter(CommandInterpreter ci, Meter meter) {
+    private void writeMeter(final CommandInterpreter ci, Meter meter) {
         ReadWriteTransaction modification = dataBroker.newReadWriteTransaction();
         InstanceIdentifier<Meter> path1 = InstanceIdentifier.builder(Nodes.class).child(Node.class, testNode.getKey())
                 .augmentation(FlowCapableNode.class).child(Meter.class, new MeterKey(meter.getMeterId())).build();
         DataObject cls = (DataObject) modification.read(LogicalDatastoreType.CONFIGURATION, path1);
         modification.put(LogicalDatastoreType.CONFIGURATION, nodeToInstanceId(testNode), testNode);
         modification.put(LogicalDatastoreType.CONFIGURATION, path1, meter);
-        Future<RpcResult<TransactionStatus>> commitFuture = modification.commit();
-        try {
-            RpcResult<TransactionStatus> result = commitFuture.get();
-            TransactionStatus status = result.getResult();
-            ci.println("Status of Meter Data Loaded Transaction: " + status);
+        CheckedFuture<Void, TransactionCommitFailedException> commitFuture = modification.submit();
+        Futures.addCallback(commitFuture, new FutureCallback<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                ci.println("Status of Group Data Loaded Transaction: success.");
+            }
 
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+            @Override
+            public void onFailure(Throwable throwable) {
+                ci.println(String.format("Status of Group Data Loaded Transaction : failure. Reason : %s", throwable));
+            }
+        });
     }
 
-    private void writeMeter(CommandInterpreter ci, Meter meter, Meter meter1) {
+    private void writeMeter(final CommandInterpreter ci, Meter meter, Meter meter1) {
         ReadWriteTransaction modification = dataBroker.newReadWriteTransaction();
         InstanceIdentifier<Meter> path1 = InstanceIdentifier.builder(Nodes.class).child(Node.class, testNode.getKey())
                 .augmentation(FlowCapableNode.class).child(Meter.class, new MeterKey(meter.getMeterId())).build();
@@ -413,19 +410,18 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
         modification.put(LogicalDatastoreType.CONFIGURATION, nodeToInstanceId(testNode), testNode);
         modification.put(LogicalDatastoreType.CONFIGURATION, path2, meter1);
 
-        Future<RpcResult<TransactionStatus>> commitFuture = modification.commit();
-        try {
-            RpcResult<TransactionStatus> result = commitFuture.get();
-            TransactionStatus status = result.getResult();
-            ci.println("Status of Meter Data Loaded Transaction: " + status);
+        CheckedFuture<Void, TransactionCommitFailedException> commitFuture = modification.submit();
+        Futures.addCallback(commitFuture, new FutureCallback<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                ci.println("Status of Group Data Loaded Transaction: success.");
+            }
 
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+            @Override
+            public void onFailure(Throwable throwable) {
+                ci.println(String.format("Status of Group Data Loaded Transaction : failure. Reason : %s", throwable));
+            }
+        });
     }
 
     public void _modifyMeter(CommandInterpreter ci) {
