@@ -9,6 +9,9 @@
  */
 package org.opendaylight.openflowplugin.test;
 
+import com.google.common.util.concurrent.CheckedFuture;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,6 +24,7 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.TransactionStatus;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlInCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlOutCaseBuilder;
@@ -595,7 +599,7 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
     }
 
 
-    private void writeTable(CommandInterpreter ci, Table table) {
+    private void writeTable(final CommandInterpreter ci, Table table) {
         ReadWriteTransaction modification = dataBroker.newReadWriteTransaction();
 
         InstanceIdentifier<Table> path1 = InstanceIdentifier.builder(Nodes.class)
@@ -607,19 +611,18 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
         modification.put(LogicalDatastoreType.OPERATIONAL, path1, table);
         modification.put(LogicalDatastoreType.CONFIGURATION, nodeToInstanceId(testNode), testNode);
         modification.put(LogicalDatastoreType.CONFIGURATION, path1, table);
-        Future<RpcResult<TransactionStatus>> commitFuture = modification.commit();
-        try {
-            RpcResult<TransactionStatus> result = commitFuture.get();
-            TransactionStatus status = result.getResult();
-            ci.println("Status of Table Data Loaded Transaction: " + status);
+        CheckedFuture<Void, TransactionCommitFailedException> commitFuture = modification.submit();
+        Futures.addCallback(commitFuture, new FutureCallback<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                ci.println("Status of Group Data Loaded Transaction: success.");
+            }
 
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+            @Override
+            public void onFailure(Throwable throwable) {
+                ci.println(String.format("Status of Group Data Loaded Transaction : failure. Reason : %s", throwable));
+            }
+        });
     }
 
     public void _modifyTable(CommandInterpreter ci) {
