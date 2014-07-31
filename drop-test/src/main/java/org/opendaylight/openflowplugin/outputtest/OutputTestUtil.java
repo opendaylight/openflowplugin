@@ -11,12 +11,12 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-
 import org.apache.commons.lang.ArrayUtils;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.TransactionStatus;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
-import org.opendaylight.controller.sal.binding.api.data.DataBrokerService;
-import org.opendaylight.controller.sal.binding.api.data.DataModificationTransaction;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.output.action._case.OutputActionBuilder;
@@ -61,7 +61,7 @@ public class OutputTestUtil {
     }
 
     public static TransmitPacketInput buildTransmitInputPacket(final String nodeId, final byte[] packValue,
-            final String outPort, final String inPort) {
+                                                               final String outPort, final String inPort) {
         ArrayList<Byte> list = new ArrayList<Byte>(40);
         byte[] msg = new String("sendOutputMsg_TEST").getBytes();
 
@@ -72,7 +72,7 @@ public class OutputTestUtil {
         }
 
         while (index < 8) {
-            list.add((byte)0);
+            list.add((byte) 0);
             index++;
         }
         NodeRef ref = createNodeRef(nodeId);
@@ -98,8 +98,8 @@ public class OutputTestUtil {
         NodeBuilder nodeBuilder = createNodeBuilder(nodeId);
         FlowBuilder flowBuilder = createFlowBuilder(1235, null, "ping");
 
-        DataBrokerService dataBrokerService = pc.<DataBrokerService>getSALService(DataBrokerService.class);
-        DataModificationTransaction modif = dataBrokerService.beginTransaction();
+        DataBroker dataBroker = pc.<DataBroker>getSALService(DataBroker.class);
+        ReadWriteTransaction modif = dataBroker.newReadWriteTransaction();
 
         InstanceIdentifier<Flow> path = InstanceIdentifier.<Nodes>builder(Nodes.class)
                 .<Node, NodeKey>child(Node.class, nodeBuilder.getKey())
@@ -108,7 +108,7 @@ public class OutputTestUtil {
                 .<Flow, FlowKey>child(Flow.class, flowBuilder.getKey())
                 .build();
 
-        modif.putConfigurationData(path, flowBuilder.build());
+        modif.put(LogicalDatastoreType.CONFIGURATION, path, flowBuilder.build());
         Future<RpcResult<TransactionStatus>> commitFuture = modif.commit();
 
         try {
@@ -186,7 +186,7 @@ public class OutputTestUtil {
 
     private static InstructionsBuilder createPingInstructionsBuilder() {
         ArrayList<Action> aList = new ArrayList<Action>();
-        ActionBuilder aBuild =  new ActionBuilder();
+        ActionBuilder aBuild = new ActionBuilder();
 
         OutputActionBuilder output = new OutputActionBuilder();
         output.setMaxLength(56);
