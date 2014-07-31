@@ -1,0 +1,64 @@
+module nicira-action {
+    yang-version 1;
+
+    namespace "urn:opendaylight:openflow:extension:nicira:action";
+    prefix "nicira-action";
+
+    import openflow-action {prefix ofaction;}
+    import openflow-types {prefix oft;}
+    import yang-ext {prefix ext; revision-date "2013-07-09";}
+
+    description 
+        "Nicira openflow extensions of action.";
+
+    revision "2014-04-21" {
+        description "Initial revision";
+    }
+    
+    identity nxm-nx-reg-load {
+        base ofaction:experimenter-action-sub-type;
+    }
+    identity nxm-nx-reg-move {
+        base ofaction:experimenter-action-sub-type;
+    }
+
+    grouping ofj-nx-action-reg-load-grouping {
+        container action-reg-load {
+            leaf ofs_nbits {
+                type uint16;
+            }
+            leaf dst {
+                type uint32;
+            }
+            leaf value {
+                type uint64;
+            }
+        }
+    }
+    grouping ofj-nx-action-reg-move-grouping {
+        container action-reg-move {
+            leaf n_bits {
+                type uint16;
+            }
+            leaf src_ofs {
+                type uint16;
+            }
+            leaf dst_ofs {
+                type uint16;
+            }
+            leaf src {
+                type uint32;
+            }
+            leaf dst {
+                type uint32;
+            }
+        }
+    }
+
+    augment "/ofaction:actions-container/ofaction:action" {
+        ext:augment-identifier "ofj-aug-nx-action";
+        uses ofj-nx-action-reg-load-grouping;
+        uses ofj-nx-action-reg-move-grouping;
+    }
+
+}

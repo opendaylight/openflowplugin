@@ -1,0 +1,182 @@
+module nicira-match {
+    yang-version 1;
+
+    namespace "urn:opendaylight:openflow:extension:nicira:match";
+    prefix "nicira-match";
+    
+    import openflow-extensible-match {prefix ofoxm;}
+    import openflow-types {prefix oft;}
+    import ietf-yang-types {prefix yang; revision-date "2010-09-24";}
+    import yang-ext {prefix ext; revision-date "2013-07-09";}
+
+    description 
+        "Nicira openflow extensions of match.";
+
+    revision "2014-04-21" {
+        description "Initial revision";
+    }
+
+    identity nxm-nx-reg {
+        base ofoxm:match-field;
+    }
+
+    identity nxm-nx-reg0 {
+        base nxm-nx-reg;
+    }
+    identity nxm-nx-reg1 {
+        base nxm-nx-reg;
+    }
+    identity nxm-nx-reg2 {
+        base nxm-nx-reg;
+    }
+    identity nxm-nx-reg3 {
+        base nxm-nx-reg;
+    }
+    identity nxm-nx-reg4 {
+        base nxm-nx-reg;
+    }
+    identity nxm-nx-reg5 {
+        base nxm-nx-reg;
+    }
+    identity nxm-nx-reg6 {
+        base nxm-nx-reg;
+    }
+    identity nxm-nx-reg7 {
+        base nxm-nx-reg;
+    }
+    identity nxm-nx-tun-id {
+        base ofoxm:match-field;
+    }
+    identity nxm-nx-arp-sha {
+        base ofoxm:match-field;
+    }
+    identity nxm-nx-arp-tha {
+        base ofoxm:match-field;
+    }
+    identity nxm-of-arp-op {
+        base ofoxm:match-field;
+    }
+    identity nxm-of-arp-spa {
+        base ofoxm:match-field;
+    }
+    identity nxm-of-arp-tpa {
+        base ofoxm:match-field;
+    }
+    identity nxm-nx-tun-ipv4-dst {
+        base ofoxm:match-field;
+    }
+    identity nxm-nx-tun-ipv4-src {
+        base ofoxm:match-field;
+    }
+    identity nxm-of-eth-src {
+        base ofoxm:match-field;
+    }
+    identity nxm-of-eth-dst {
+        base ofoxm:match-field;
+    }
+    identity nxm-of-eth-type {
+        base ofoxm:match-field;
+    }
+
+    grouping ofj-nxm-nx-match-reg-grouping {
+        container reg-values {
+            leaf value {
+                type uint32;
+            }
+        }
+    }
+    grouping ofj-nxm-nx-match-tun-id-grouping {
+        container tun-id-values {
+            leaf value {
+                type uint64;
+            }
+        }
+    }
+    grouping ofj-nxm-nx-match-arp-sha-grouping {
+        container arp-sha-values {
+            leaf mac-address {
+                type yang:mac-address;
+            }
+        }
+    }
+    grouping ofj-nxm-nx-match-arp-tha-grouping {
+        container arp-tha-values {
+            leaf mac-address {
+                type yang:mac-address;
+            }
+        }
+    }
+    grouping ofj-nxm-of-match-arp-op-grouping {
+        container arp-op-values {
+            leaf value {
+                type uint16;
+            }
+        }
+    }
+    grouping ofj-nxm-of-match-arp-spa-grouping {
+        container arp-spa-values {
+            leaf value {
+                type uint32;
+            }
+        }
+    }
+    grouping ofj-nxm-of-match-arp-tpa-grouping {
+        container arp-tpa-values {
+            leaf value {
+                type uint32;
+            }
+        }
+    }
+    grouping ofj-nxm-nx-match-tun-ipv4-dst-grouping {
+        container tun-ipv4-dst-values {
+            leaf value {
+                type uint32;
+            }
+        }
+    }
+    grouping ofj-nxm-nx-match-tun-ipv4-src-grouping {
+        container tun-ipv4-src-values {
+            leaf value {
+                type uint32;
+            }
+        }
+    }
+    grouping ofj-nxm-of-match-eth-src-grouping {
+        container eth-src-values {
+            leaf mac-address {
+                type yang:mac-address;
+            }
+        }
+    }
+    grouping ofj-nxm-of-match-eth-dst-grouping {
+        container eth-dst-values {
+            leaf mac-address {
+                type yang:mac-address;
+            }
+        }
+    }
+    grouping ofj-nxm-of-match-eth-type-grouping {
+        container eth-type-values {
+            leaf value {
+                type uint16;
+            }
+        }
+    }
+
+    augment "/ofoxm:oxm-container/ofoxm:match-entries" {
+        ext:augment-identifier "ofj-aug_nx_match";
+        uses ofj-nxm-nx-match-reg-grouping;
+        uses ofj-nxm-nx-match-tun-id-grouping;
+        uses ofj-nxm-nx-match-arp-sha-grouping;
+        uses ofj-nxm-nx-match-arp-tha-grouping;
+        uses ofj-nxm-of-match-arp-op-grouping;
+        uses ofj-nxm-of-match-arp-spa-grouping;
+        uses ofj-nxm-of-match-arp-tpa-grouping;
+        uses ofj-nxm-nx-match-tun-ipv4-dst-grouping;
+        uses ofj-nxm-nx-match-tun-ipv4-src-grouping;
+        uses ofj-nxm-of-match-eth-src-grouping;
+        uses ofj-nxm-of-match-eth-dst-grouping;
+        uses ofj-nxm-of-match-eth-type-grouping;
+    }
+
+}
