@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa82b9bf_9e7ff514",
+        "filename": "drop-test/src/main/java/org/opendaylight/openflowplugin/droptest/DropTestActivator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1450
+      },
+      "writtenOn": "2014-07-31T12:21:21Z",
+      "side": 1,
+      "message": "oops ;",
+      "revId": "6fa4df76936e5dae8260c6f8a8d52386f7b8a5f1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_be7af921",
+        "filename": "drop-test/src/main/java/org/opendaylight/openflowplugin/droptest/DropTestCommiter.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1450
+      },
+      "writtenOn": "2014-07-31T12:21:21Z",
+      "side": 1,
+      "message": "use submit() instead of commit() -- as commit() is now deprecated.\n\nsee: https://wiki.opendaylight.org/view/OpenDaylight_Controller:MD-SAL:Migration:Data_Broker#Commiting_Transaction",
+      "revId": "6fa4df76936e5dae8260c6f8a8d52386f7b8a5f1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
