@@ -46,7 +46,17 @@ see https://git.opendaylight.org/gerrit/#/c/390/
     <!-- nicira extension -->
     <dependency>
         <groupId>org.opendaylight.openflowplugin</groupId>
-        <artifactId>openflowplugin-nicira-extension</artifactId>
+        <artifactId>openflowplugin-extension-nicira</artifactId>
+        <version>${project.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.opendaylight.openflowplugin</groupId>
+        <artifactId>openflowjava-extension-nicira-api</artifactId>
+        <version>${project.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.opendaylight.openflowplugin</groupId>
+        <artifactId>openflowjava-extension-nicira</artifactId>
         <version>${project.version}</version>
     </dependency>
 
@@ -149,7 +159,7 @@ see https://git.opendaylight.org/gerrit/#/c/390/
             <configuration>
              <outputDirectory>${project.build.directory}/generated-resources/opendaylight/configuration</outputDirectory>
              <includeArtifactIds>openflowplugin-controller-config, openflowplugin-nicira-extension, openflow-extension-nicira, 
-             test-extension
+             test-extension, openflowjava-extension-nicira, openflowjava-extension-nicira-api, openflowplugin-extension-nicira
              </includeArtifactIds>
              <includes>**\/*.xml</includes>
              <excludes>META-INF</excludes>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- vi: set et smarttab sw=4 tabstop=4: -->
+<snapshot>
+  <required-capabilities>
+    <capability>urn:opendaylight:params:xml:ns:yang:openflowplugin:ofjava:nx:config?module=openflowjava-nx-config&amp;revision=2014-07-11</capability>
+  </required-capabilities>
+
+  <configuration>
+
+    <data xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+      <modules xmlns="urn:opendaylight:params:xml:ns:yang:controller:config">
+        <module>
+          <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:openflowplugin:ofjava:nx:config">prefix:openflowjava-extension-nicira</type>
+          <name>openflow-nx-bundle</name>
+          <nicira-extension-codec-registrator>
+            <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:openflowplugin:ofjava:nx:api:config">prefix:nicira-extension-codec-registrator</type>
+            <name>openflowjava-nicira-ext-registrator</name>
+          </nicira-extension-codec-registrator>
+        </module>
+      </modules>
+    </data>
+
+  </configuration>
+</snapshot>
