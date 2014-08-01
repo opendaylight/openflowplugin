@@ -12,23 +12,30 @@
 
     <properties>
         <yangtools.version>0.6.2-SNAPSHOT</yangtools.version>
-        <ofjava.extension.nicira.version>0.5-SNAPSHOT</ofjava.extension.nicira.version>
+        <ofjava.version>0.5-SNAPSHOT</ofjava.version>
     </properties>
 
     <artifactId>openflowplugin-extension-parent</artifactId>
     <packaging>pom</packaging>
     <modules>
+        <module>openflowjava-extension-nicira-api</module>
+        <module>openflowjava-extension-nicira</module>
         <module>openflowplugin-extension-api</module>
-        <module>openflowplugin-nicira-extension</module>
+        <module>openflowplugin-extension-nicira</module>
         <module>test-extension</module>
     </modules>
 
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.opendaylight.openflowjava</groupId>
-                <artifactId>openflow-extension-nicira</artifactId>
-                <version>${ofjava.extension.nicira.version}</version>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>openflowjava-extension-nicira</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>openflowjava-extension-nicira-api</artifactId>
+                <version>${project.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
