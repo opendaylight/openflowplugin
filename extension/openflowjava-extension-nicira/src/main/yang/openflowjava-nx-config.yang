@@ -1,0 +1,36 @@
+module openflowjava-nx-config {
+	yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:openflowplugin:ofjava:nx:config";
+    prefix "openflowjava-nx";
+
+    import config {prefix config; revision-date 2013-04-05;}
+    import openflowjava-nx-api-config {prefix openflowjava-nx-api-config;revision-date 2014-07-11;}
+
+    description
+        "Nicira extensions in openflow library.";
+
+    revision "2014-07-11" {
+        description
+            "Initial revision";
+    }
+
+    identity openflowjava-extension-nicira {
+        base config:module-type;
+        config:java-name-prefix NiciraExtensionProvider;
+    }
+
+    augment "/config:modules/config:module/config:configuration" {
+        case openflowjava-extension-nicira {
+            when "/config:modules/config:module/config:type = 'openflowjava-extension-nicira'";
+
+            container nicira-extension-codec-registrator {
+                uses config:service-ref {
+                    refine type {
+                        mandatory true;
+                        config:required-identity openflowjava-nx-api-config:nicira-extension-codec-registrator;
+                    }
+                }
+            }
+        }
+    }
+}

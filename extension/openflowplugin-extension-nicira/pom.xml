@@ -1,20 +1,16 @@
-<?xml version="1.0"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.opendaylight.openflowplugin</groupId>
-    <artifactId>openflowplugin-extension-parent</artifactId>
-    <version>0.0.3-SNAPSHOT</version>
-    <relativePath>../</relativePath>
-  </parent>
-  <artifactId>test-extension</artifactId>
-  
-  <properties>
-        <yangtools.version>0.6.2-SNAPSHOT</yangtools.version>
-    </properties>
-  
-  <packaging>bundle</packaging>
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.opendaylight.openflowplugin</groupId>
+        <artifactId>openflowplugin-extension-parent</artifactId>
+        <version>0.0.3-SNAPSHOT</version>
+        <relativePath>../</relativePath>
+    </parent>
+
+    <artifactId>openflowplugin-extension-nicira</artifactId>
+    <packaging>bundle</packaging>
     
     <build>
         <plugins>
@@ -40,7 +36,7 @@
                                     <outputBaseDir>${project.build.directory}/generated-sources/config</outputBaseDir>
                                     <additionalConfiguration>
                                         <namespaceToPackage1>
-                                            urn:opendaylight:params:xml:ns:yang:controller==org.opendaylight.controller.config.yang
+                                            urn:opendaylight:params:xml:ns:yang:controller:config==org.opendaylight.controller.config.yang
                                         </namespaceToPackage1>
                                     </additionalConfiguration>
                                 </generator>
@@ -75,22 +71,20 @@
             </plugin>
         </plugins>
     </build>
-    
+
     <dependencies>
         <dependency>
-            <groupId>org.opendaylight.openflowplugin</groupId>
-            <artifactId>openflowplugin-extension-nicira</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.openflowplugin</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>openflowplugin-extension-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.openflowplugin</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>openflowjava-extension-nicira</artifactId>
-            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>openflowjava-extension-nicira-api</artifactId>
         </dependency>
         <dependency>
             <!-- configSubsystem yang should be moved to API and this would be doomed for removal -->
@@ -127,6 +121,5 @@
             <artifactId>openflow-protocol-impl</artifactId>
         </dependency>
     </dependencies>
-    
-    
+
 </project>
