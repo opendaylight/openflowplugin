@@ -8,6 +8,7 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal;
 
 import java.math.BigInteger;
+import java.util.Collection;
 
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
@@ -21,6 +22,9 @@ import org.opendaylight.openflowplugin.openflow.md.core.session.SwitchSessionKey
 import org.opendaylight.openflowplugin.openflow.md.lldp.LLDPSpeaker;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeUpdatedBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.GetNodeIpAddressInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.GetNodeIpAddressInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.GetNodeIpAddressOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRemoved;
@@ -34,8 +38,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yangtools.concepts.CompositeObjectRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier.InstanceIdentifierBuilder;
+import org.opendaylight.yangtools.yang.common.RpcError;
+import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.util.concurrent.Futures;
 
 /**
  * session and inventory listener implementation
@@ -116,12 +124,30 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
         NodeUpdatedBuilder builder = new NodeUpdatedBuilder();
         builder.setId(sw.getNodeId());
         builder.setNodeRef(nodeRef);
-        
         FlowCapableNodeUpdatedBuilder builder2 = new FlowCapableNodeUpdatedBuilder();
+        setIpAddressToBuilder(builder2, sw, nodeRef);
         builder2.setSwitchFeatures(swFeaturesUtil.buildSwitchFeatures(features));
         builder.addAugmentation(FlowCapableNodeUpdated.class, builder2.build());
-        
         return builder.build();
+    }
+
+    private void setIpAddressToBuilder(FlowCapableNodeUpdatedBuilder builder, ModelDrivenSwitch sw, NodeRef nodeRef) {
+        GetNodeIpAddressInput rpcInputGetIpAddress = new GetNodeIpAddressInputBuilder().setNode(nodeRef).build();
+        RpcResult<GetNodeIpAddressOutput> rpcResultGetIpAddress = Futures.getUnchecked(sw
+                .getNodeIpAddress(rpcInputGetIpAddress));
+        if (rpcResultGetIpAddress.isSuccessful()) {
+            builder.setIpAddress(rpcResultGetIpAddress.getResult().getIpAddress());
+        } else {
+            printRpcErrors(rpcResultGetIpAddress.getErrors());
+        }
+    }
+
+    private static void printRpcErrors(Collection<RpcError> rpcErrors) {
+        if (rpcErrors != null) {
+            for (RpcError error : rpcErrors) {
+                LOG.warn("{}", error);
+            }
+        }
     }
 
     private NodeRemoved nodeRemoved(NodeRef nodeRef) {

@@ -11,6 +11,7 @@ import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderCo
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
 import org.opendaylight.openflowplugin.openflow.md.ModelDrivenSwitch;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowNodeInventoryService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.OpendaylightFlowStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.OpendaylightFlowTableStatisticsService;
@@ -59,6 +60,8 @@ public abstract class AbstractModelDrivenSwitch implements ModelDrivenSwitch {
     private RoutedRpcRegistration<OpendaylightFlowTableStatisticsService> flowTableStatisticsRegistration;
 
     private RoutedRpcRegistration<OpendaylightQueueStatisticsService> queueStatisticsRegistration;
+
+    private RoutedRpcRegistration<FlowNodeInventoryService> flowNodeInventoryRegistration;
 
     protected final SessionContext sessionContext;
 
@@ -124,6 +127,10 @@ public abstract class AbstractModelDrivenSwitch implements ModelDrivenSwitch {
         queueStatisticsRegistration = ctx.addRoutedRpcImplementation(OpendaylightQueueStatisticsService.class, this);
         queueStatisticsRegistration.registerPath(NodeContext.class, getIdentifier());
         builder.add(queueStatisticsRegistration);
+
+        flowNodeInventoryRegistration = ctx.addRoutedRpcImplementation(FlowNodeInventoryService.class, this);
+        flowNodeInventoryRegistration.registerPath(NodeContext.class, getIdentifier());
+        builder.add(flowNodeInventoryRegistration);
 
         return builder.toInstance();
     }
