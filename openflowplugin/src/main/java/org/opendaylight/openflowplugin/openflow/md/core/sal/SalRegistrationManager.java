@@ -21,6 +21,9 @@ import org.opendaylight.openflowplugin.openflow.md.core.session.SwitchSessionKey
 import org.opendaylight.openflowplugin.openflow.md.lldp.LLDPSpeaker;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeUpdatedBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.GetNodeIdentifiersInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.GetNodeIdentifiersInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.GetNodeIdentifiersOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRemoved;
@@ -34,8 +37,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yangtools.concepts.CompositeObjectRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier.InstanceIdentifierBuilder;
+import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.util.concurrent.Futures;
 
 /**
  * session and inventory listener implementation
@@ -116,11 +122,18 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
         NodeUpdatedBuilder builder = new NodeUpdatedBuilder();
         builder.setId(sw.getNodeId());
         builder.setNodeRef(nodeRef);
-        
         FlowCapableNodeUpdatedBuilder builder2 = new FlowCapableNodeUpdatedBuilder();
+        GetNodeIdentifiersInput rpcInput = new GetNodeIdentifiersInputBuilder().setNode(nodeRef).build();
+        RpcResult<GetNodeIdentifiersOutput> rpcResult = Futures.getUnchecked(sw.getNodeIdentifiers(rpcInput));
+        if (rpcResult.isSuccessful()) {
+            builder2.setDatapathId(rpcResult.getResult().getDatapathId());
+            builder2.setIpAddress(rpcResult.getResult().getIpAddress());
+        } else {
+            builder2.setDatapathId(null);
+            builder2.setIpAddress(null);
+        }
         builder2.setSwitchFeatures(swFeaturesUtil.buildSwitchFeatures(features));
         builder.addAugmentation(FlowCapableNodeUpdated.class, builder2.build());
-        
         return builder.build();
     }
 
