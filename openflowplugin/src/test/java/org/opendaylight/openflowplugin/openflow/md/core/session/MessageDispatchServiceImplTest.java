@@ -25,6 +25,7 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
+import java.net.InetSocketAddress;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.Future;
@@ -566,6 +567,15 @@ class MockConnectionAdapter implements ConnectionAdapter {
     @Override
     public Future<RpcResult<Void>> multipartRequest(
             MultipartRequestInput input) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter#getRemoteAddress()
+     */
+    @Override
+    public InetSocketAddress getRemoteAddress() {
         // TODO Auto-generated method stub
         return null;
     }
