@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.extension.vendor.nicira;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.opendaylight.openflowjava.nx.codec.action.OutputRegCodec;
 import org.opendaylight.openflowjava.nx.codec.action.RegLoadCodec;
 import org.opendaylight.openflowjava.nx.codec.action.RegMoveCodec;
 import org.opendaylight.openflowjava.nx.codec.match.ArpOpCodec;
@@ -34,6 +35,7 @@ import org.opendaylight.openflowjava.nx.codec.match.TunIpv4SrcCodec;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowplugin.extension.api.ConverterExtensionKey;
 import org.opendaylight.openflowplugin.extension.api.ExtensionConverterRegistrator;
+import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.action.OutputRegConvertor;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.action.RegLoadConvertor;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.action.RegMoveConvertor;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.ArpOpConvertor;
@@ -48,6 +50,7 @@ import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.R
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.TunIdConvertor;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.TunIpv4DstConvertor;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.TunIpv4SrcConvertor;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.NxActionOutputRegKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.NxActionRegLoadKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.NxActionRegMoveKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxArpShaKey;
@@ -97,6 +100,7 @@ public class NiciraExtensionProvider implements AutoCloseable {
     private final static TunIpv4SrcConvertor TUN_IPV4_SRC_CONVERTOR = new TunIpv4SrcConvertor();
     private final static RegLoadConvertor REG_LOAD_CONVERTOR = new RegLoadConvertor();
     private final static RegMoveConvertor REG_MOVE_CONVERTOR = new RegMoveConvertor();
+    private final static OutputRegConvertor OUTPUT_REG_CONVERTOR = new OutputRegConvertor();
     private final static EthTypeConvertor ETH_TYPE_CONVERTOR = new EthTypeConvertor();
 
     @Override
@@ -128,6 +132,8 @@ public class NiciraExtensionProvider implements AutoCloseable {
         registrations.add(extensionConverterRegistrator.registerActionConvertor(RegLoadCodec.SERIALIZER_KEY, REG_LOAD_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerActionConvertor(new ConverterExtensionKey<>(NxActionRegMoveKey.class,  EncodeConstants.OF13_VERSION_ID), REG_MOVE_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerActionConvertor(RegMoveCodec.SERIALIZER_KEY, REG_MOVE_CONVERTOR));
+        registrations.add(extensionConverterRegistrator.registerActionConvertor(new ConverterExtensionKey<>(NxActionOutputRegKey.class,  EncodeConstants.OF13_VERSION_ID), OUTPUT_REG_CONVERTOR));
+        registrations.add(extensionConverterRegistrator.registerActionConvertor(OutputRegCodec.SERIALIZER_KEY, OUTPUT_REG_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(new ConverterExtensionKey<>(NxmNxReg0Key.class, EncodeConstants.OF13_VERSION_ID), REG_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(new ConverterExtensionKey<>(NxmNxReg1Key.class, EncodeConstants.OF13_VERSION_ID), REG_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(new ConverterExtensionKey<>(NxmNxReg2Key.class, EncodeConstants.OF13_VERSION_ID), REG_CONVERTOR));

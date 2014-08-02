@@ -21,6 +21,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ExperimenterId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.extension.nicira.action.rev140421.OfjAugNxAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.grouping.Extension;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.NxActionOutputRegGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.NxActionRegLoadGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.NxActionRegMoveGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.NxAugActionNodesNodeTableFlowApplyActions;
@@ -55,6 +56,8 @@ public class ActionUtil {
             NxActionRegLoadGrouping.class);
     public final static GroupingResolver<NxActionRegMoveGrouping, Extension> regMoveResolver = new GroupingResolver<>(
             NxActionRegMoveGrouping.class);
+    public final static GroupingResolver<NxActionOutputRegGrouping, Extension> outputRegResolver = new GroupingResolver<>(
+            NxActionOutputRegGrouping.class);
 
     static {
         augmentationsOfExtension.add(NxAugActionRpcAddFlowWriteActions.class);
@@ -77,6 +80,7 @@ public class ActionUtil {
         augmentationsOfExtension.add(NxAugActionNotifGroupDescStatsUpdated.class);
         regLoadResolver.setAugmentations(augmentationsOfExtension);
         regMoveResolver.setAugmentations(augmentationsOfExtension);
+        outputRegResolver.setAugmentations(augmentationsOfExtension);
         EXPERIMENTER_ID_ACTION_BUILDER = new ExperimenterIdActionBuilder();
         EXPERIMENTER_ID_ACTION_BUILDER.setExperimenter(new ExperimenterId(NiciraConstants.NX_VENDOR_ID));
     }

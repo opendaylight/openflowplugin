@@ -306,6 +306,10 @@
                          <source>${jmxGeneratorPath}</source>
                          <source>${salGeneratorPath}</source>
                          <source>${xtend.dstdir}</source>
+                         <source>target/generated-sources/sal</source>
+                         <source>target/generated-sources/config</source>
+                         <source>target/yang-gen-sal</source>
+                         <source>target/yang-gen-config</source>
                       </sources>
                    </configuration>
                 </execution>

@@ -170,7 +170,7 @@ public class RegMoveConvertor implements ConvertorToOFJava<Action>, ConvertorFro
         throw new CodecPreconditionException("Missing codec for " + new NxmHeader(dstValue));
     }
 
-    private static SrcChoice resolveSrc(long srcValue) {
+    public static SrcChoice resolveSrc(long srcValue) {
         Class<? extends NxmNxReg> potentialSrc = resolveReg(srcValue);
         if (potentialSrc != null) {
             return new SrcNxRegCaseBuilder().setNxReg(potentialSrc).build();
@@ -327,7 +327,7 @@ public class RegMoveConvertor implements ConvertorToOFJava<Action>, ConvertorFro
         throw new CodecPreconditionException("Missing implementation of a case in dst-choice? " + dstChoice.getClass());
     }
 
-    private static long resolveSrc(SrcChoice srcChoice) {
+    public static long resolveSrc(SrcChoice srcChoice) {
         if (srcChoice instanceof SrcNxRegCase) {
             return resolveReg(((SrcNxRegCase) srcChoice).getNxReg());
         }
