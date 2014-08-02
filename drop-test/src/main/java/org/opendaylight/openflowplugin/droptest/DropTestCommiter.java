@@ -79,7 +79,7 @@ public class DropTestCommiter extends AbstractDropTest {
         final ReadWriteTransaction transaction = manager.getDataService().newReadWriteTransaction();
 
         LOG.debug("onPacketReceived - About to write flow {}", flow);
-        transaction.put(LogicalDatastoreType.CONFIGURATION, flowInstanceId, flow);
+        transaction.put(LogicalDatastoreType.CONFIGURATION, flowInstanceId, flow, true);
         transaction.submit();
         LOG.debug("onPacketReceived - About to write flow commited");
     }
