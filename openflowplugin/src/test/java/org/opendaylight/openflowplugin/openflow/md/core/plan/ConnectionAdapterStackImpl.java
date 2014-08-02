@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.plan;
 
+import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -612,4 +613,11 @@ public class ConnectionAdapterStackImpl implements ConnectionAdapter, Runnable {
         SettableFuture<RpcResult<Void>> result = createOneWayRpcResult();
         return result;
     }
+
+    @Override
+    public InetSocketAddress getRemoteAddress() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }
