@@ -153,7 +153,7 @@ ConvertorActionFromOFJava<Action, ActionPath> {
         throw new CodecPreconditionException("Missing codec for " + new NxmHeader(dstValue));
     }
 
-    private static SrcChoice resolveSrc(long srcValue) {
+    static SrcChoice resolveSrc(long srcValue) {
         Class<? extends NxmNxReg> potentialSrc = resolveReg(srcValue);
         if (potentialSrc != null) {
             return new SrcNxRegCaseBuilder().setNxReg(potentialSrc).build();
@@ -293,7 +293,7 @@ ConvertorActionFromOFJava<Action, ActionPath> {
         throw new CodecPreconditionException("Missing implementation of a case in dst-choice? " + dstChoice.getClass());
     }
 
-    private static long resolveSrc(SrcChoice srcChoice) {
+    static long resolveSrc(SrcChoice srcChoice) {
         if (srcChoice instanceof SrcNxRegCase) {
             return resolveReg(((SrcNxRegCase) srcChoice).getNxReg());
         }

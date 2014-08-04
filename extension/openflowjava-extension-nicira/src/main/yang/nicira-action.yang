@@ -21,6 +21,9 @@ module nicira-action {
     identity nxm-nx-reg-move {
         base ofaction:experimenter-action-sub-type;
     }
+    identity nxm-nx-output-reg {
+        base ofaction:experimenter-action-sub-type;
+    }
 
     grouping ofj-nx-action-reg-load-grouping {
         container action-reg-load {
@@ -54,11 +57,25 @@ module nicira-action {
             }
         }
     }
+    grouping ofj-nx-action-output-reg-grouping {
+        container action-output-reg {
+            leaf n_bits {
+                type uint16;
+            }
+            leaf src {
+                type uint32;
+            }
+            leaf max_len {
+                type uint16;
+            }
+        }
+    }
 
     augment "/ofaction:actions-container/ofaction:action" {
         ext:augment-identifier "ofj-aug-nx-action";
         uses ofj-nx-action-reg-load-grouping;
         uses ofj-nx-action-reg-move-grouping;
+        uses ofj-nx-action-output-reg-grouping;
     }
 
 }
