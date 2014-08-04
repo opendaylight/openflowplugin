@@ -29,6 +29,9 @@ module openflowplugin-extension-nicira-action {
     identity nx-action-reg-move-key {
         base ext-gen:extension-key;
     }
+    identity nx-action-output-reg-key {
+        base ext-gen:extension-key;
+    }
 
     grouping nxm-nx-reg-grouping {
         leaf nx-reg {
@@ -210,7 +213,22 @@ module openflowplugin-extension-nicira-action {
             }
         }
     }
-    
+    grouping nx-action-output-reg-grouping {
+        container nx-output-reg {
+            container src {
+                description "Choose the register with the OpenFlow output port, using the number of 
+bits specified from the register.";
+                uses src-choice-grouping;
+                leaf ofs_nbits {
+                    type uint16;
+                }
+            }
+            leaf max_len {
+                description "The number of bytes to send when the chosen port is OFPP_CONTROLLER";
+                type uint16;
+            }
+        }
+    }
     // ACTION augmentations
     // RPCS
     augment "/sal-flow:add-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action" {
@@ -223,6 +241,11 @@ module openflowplugin-extension-nicira-action {
             uses nx-action-reg-move-grouping;
         }
     }
+    augment "/sal-flow:add-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action" {
+        case nx-action-output-reg-rpc-add-flow-write-actions-case {
+            uses nx-action-output-reg-grouping;
+        }
+    }
     augment "/sal-flow:add-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action" {
         case nx-action-reg-load-rpc-add-flow-apply-actions-case {
             uses nx-action-reg-load-grouping;
@@ -231,6 +254,11 @@ module openflowplugin-extension-nicira-action {
     augment "/sal-flow:add-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action" {
         case nx-action-reg-move-rpc-add-flow-apply-actions-case {
             uses nx-action-reg-move-grouping;
+        }
+    }
+    augment "/sal-flow:add-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action" {
+        case nx-action-output-reg-rpc-add-flow-apply-actions-case {
+            uses nx-action-output-reg-grouping;
         }
     }
     
@@ -244,6 +272,11 @@ module openflowplugin-extension-nicira-action {
             uses nx-action-reg-move-grouping;
         }
     }
+    augment "/sal-flow:remove-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action" {
+        case "nx-action-output-reg-rpc-remove-flow-write-actions-case" {
+            uses nx-action-output-reg-grouping;
+        }
+    }
     augment "/sal-flow:remove-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action" {
         case "nx-action-reg-load-rpc-remove-flow-apply-actions-case" {
             uses nx-action-reg-load-grouping;
@@ -252,6 +285,11 @@ module openflowplugin-extension-nicira-action {
     augment "/sal-flow:remove-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action" {
         case "nx-action-reg-move-rpc-remove-flow-apply-actions-case" {
             uses nx-action-reg-move-grouping;
+        }
+    }
+    augment "/sal-flow:remove-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action" {
+        case "nx-action-output-reg-rpc-remove-flow-apply-actions-case" {
+            uses nx-action-output-reg-grouping;
         }
     }
     
@@ -265,6 +303,11 @@ module openflowplugin-extension-nicira-action {
             uses nx-action-reg-move-grouping;
         }
     }
+    augment "/sal-flow:update-flow/sal-flow:input/sal-flow:original-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action" {
+        case "nx-action-output-reg-rpc-update-flow-original-write-actions-case" {
+            uses nx-action-output-reg-grouping;
+        }
+    }
     augment "/sal-flow:update-flow/sal-flow:input/sal-flow:original-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action" {
         case "nx-action-reg-load-rpc-update-flow-original-apply-actions-case" {
             uses nx-action-reg-load-grouping;
@@ -273,6 +316,11 @@ module openflowplugin-extension-nicira-action {
     augment "/sal-flow:update-flow/sal-flow:input/sal-flow:original-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action" {
         case "nx-action-reg-move-rpc-update-flow-original-apply-actions-case" {
             uses nx-action-reg-move-grouping;
+        }
+    }
+    augment "/sal-flow:update-flow/sal-flow:input/sal-flow:original-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action" {
+        case "nx-action-output-reg-rpc-update-flow-original-apply-actions-case" {
+            uses nx-action-output-reg-grouping;
         }
     }
     augment "/sal-flow:update-flow/sal-flow:input/sal-flow:updated-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action" {
@@ -285,6 +333,11 @@ module openflowplugin-extension-nicira-action {
             uses nx-action-reg-move-grouping;
         }
     }
+    augment "/sal-flow:update-flow/sal-flow:input/sal-flow:updated-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action" {
+        case "nx-action-output-reg-rpc-update-flow-updated-write-actions-case" {
+            uses nx-action-output-reg-grouping;
+        }
+    }
     augment "/sal-flow:update-flow/sal-flow:input/sal-flow:updated-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action" {
         case "nx-action-reg-load-rpc-update-flow-updated-apply-actions-case" {
             uses nx-action-reg-load-grouping;
@@ -293,6 +346,11 @@ module openflowplugin-extension-nicira-action {
     augment "/sal-flow:update-flow/sal-flow:input/sal-flow:updated-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action" {
         case "nx-action-reg-move-rpc-update-flow-updated-apply-actions-case" {
             uses nx-action-reg-move-grouping;
+        }
+    }
+    augment "/sal-flow:update-flow/sal-flow:input/sal-flow:updated-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action" {
+        case "nx-action-output-reg-rpc-update-flow-updated-apply-actions-case" {
+            uses nx-action-output-reg-grouping;
         }
     }
     
@@ -306,6 +364,11 @@ module openflowplugin-extension-nicira-action {
             uses nx-action-reg-move-grouping;
         }
     }
+    augment "/sal-group:add-group/sal-group:input/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action" {
+        case "nx-action-output-reg-rpc-add-group-case" {
+            uses nx-action-output-reg-grouping;
+        }
+    }
     
     augment "/sal-group:remove-group/sal-group:input/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action" {
         case "nx-action-reg-load-rpc-remove-group-case" {
@@ -315,6 +378,11 @@ module openflowplugin-extension-nicira-action {
     augment "/sal-group:remove-group/sal-group:input/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action" {
         case "nx-action-reg-move-rpc-remove-group-case" {
             uses nx-action-reg-move-grouping;
+        }
+    }
+    augment "/sal-group:remove-group/sal-group:input/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action" {
+        case "nx-action-output-reg-rpc-remove-group-case" {
+            uses nx-action-output-reg-grouping;
         }
     }
     
@@ -328,6 +396,11 @@ module openflowplugin-extension-nicira-action {
             uses nx-action-reg-move-grouping;
         }
     }
+    augment "/sal-group:update-group/sal-group:input/sal-group:original-group/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action" {
+        case "nx-action-output-reg-rpc-update-group-original-case" {
+            uses nx-action-output-reg-grouping;
+        }
+    }
     augment "/sal-group:update-group/sal-group:input/sal-group:updated-group/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action" {
         case "nx-action-reg-load-rpc-update-group-updated-case" {
             uses nx-action-reg-load-grouping;
@@ -336,6 +409,11 @@ module openflowplugin-extension-nicira-action {
     augment "/sal-group:update-group/sal-group:input/sal-group:updated-group/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action" {
         case "nx-action-reg-move-rpc-update-group-updated-case" {
             uses nx-action-reg-move-grouping;
+        }
+    }
+    augment "/sal-group:update-group/sal-group:input/sal-group:updated-group/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action" {
+        case "nx-action-output-reg-rpc-update-group-updated-case" {
+            uses nx-action-output-reg-grouping;
         }
     }
     
@@ -347,6 +425,11 @@ module openflowplugin-extension-nicira-action {
     augment "/sal-packet:transmit-packet/sal-packet:input/sal-packet:action/sal-packet:action" {
         case "nx-action-reg-move-rpc-transmit-packet-case" {
             uses nx-action-reg-move-grouping;
+        }
+    }
+    augment "/sal-packet:transmit-packet/sal-packet:input/sal-packet:action/sal-packet:action" {
+        case "nx-action-output-reg-rpc-transmit-packet-case" {
+            uses nx-action-output-reg-grouping;
         }
     }
     
@@ -361,6 +444,11 @@ module openflowplugin-extension-nicira-action {
             uses nx-action-reg-move-grouping;
         }
     }
+    augment "/inv:nodes/inv:node/fni:table/fni:flow/fni:instructions/fni:instruction/fni:instruction/fni:write-actions-case/fni:write-actions/fni:action/fni:action" {
+        case "nx-action-output-reg-nodes-node-table-flow-write-actions-case" {
+            uses nx-action-output-reg-grouping;
+        }
+    }
     augment "/inv:nodes/inv:node/fni:table/fni:flow/fni:instructions/fni:instruction/fni:instruction/fni:apply-actions-case/fni:apply-actions/fni:action/fni:action" {
         case "nx-action-reg-load-nodes-node-table-flow-apply-actions-case" {
             uses nx-action-reg-load-grouping;
@@ -369,6 +457,11 @@ module openflowplugin-extension-nicira-action {
     augment "/inv:nodes/inv:node/fni:table/fni:flow/fni:instructions/fni:instruction/fni:instruction/fni:apply-actions-case/fni:apply-actions/fni:action/fni:action" {
         case "nx-action-reg-move-nodes-node-table-flow-apply-actions-case" {
             uses nx-action-reg-move-grouping;
+        }
+    }
+    augment "/inv:nodes/inv:node/fni:table/fni:flow/fni:instructions/fni:instruction/fni:instruction/fni:apply-actions-case/fni:apply-actions/fni:action/fni:action" {
+        case "nx-action-output-reg-nodes-node-table-flow-apply-actions-case" {
+            uses nx-action-output-reg-grouping;
         }
     }
     
@@ -380,6 +473,11 @@ module openflowplugin-extension-nicira-action {
     augment "/inv:nodes/inv:node/fni:group/fni:buckets/fni:bucket/fni:action/fni:action" {
         case "nx-action-reg-move-nodes-node-group-buckets-bucket-actions-case" {
             uses nx-action-reg-move-grouping;
+        }
+    }
+    augment "/inv:nodes/inv:node/fni:group/fni:buckets/fni:bucket/fni:action/fni:action" {
+        case "nx-action-output-reg-nodes-node-group-buckets-bucket-actions-case" {
+            uses nx-action-output-reg-grouping;
         }
     }
     
@@ -394,6 +492,11 @@ module openflowplugin-extension-nicira-action {
             uses nx-action-reg-move-grouping;
         }
     }
+    augment "/odl-flow-stats:flows-statistics-update/odl-flow-stats:flow-and-statistics-map-list/odl-flow-stats:instructions/odl-flow-stats:instruction/odl-flow-stats:instruction/odl-flow-stats:write-actions-case/odl-flow-stats:write-actions/odl-flow-stats:action/odl-flow-stats:action" {
+        case "nx-action-output-reg-notif-flows-statistics-update-write-actions-case" {
+            uses nx-action-output-reg-grouping;
+        }
+    }
     augment "/odl-flow-stats:flows-statistics-update/odl-flow-stats:flow-and-statistics-map-list/odl-flow-stats:instructions/odl-flow-stats:instruction/odl-flow-stats:instruction/odl-flow-stats:apply-actions-case/odl-flow-stats:apply-actions/odl-flow-stats:action/odl-flow-stats:action" {
         case "nx-action-reg-load-notif-flows-statistics-update-apply-actions-case" {
             uses nx-action-reg-load-grouping;
@@ -402,6 +505,11 @@ module openflowplugin-extension-nicira-action {
     augment "/odl-flow-stats:flows-statistics-update/odl-flow-stats:flow-and-statistics-map-list/odl-flow-stats:instructions/odl-flow-stats:instruction/odl-flow-stats:instruction/odl-flow-stats:apply-actions-case/odl-flow-stats:apply-actions/odl-flow-stats:action/odl-flow-stats:action" {
         case "nx-action-reg-move-notif-flows-statistics-update-apply-actions-case" {
             uses nx-action-reg-move-grouping;
+        }
+    }
+    augment "/odl-flow-stats:flows-statistics-update/odl-flow-stats:flow-and-statistics-map-list/odl-flow-stats:instructions/odl-flow-stats:instruction/odl-flow-stats:instruction/odl-flow-stats:apply-actions-case/odl-flow-stats:apply-actions/odl-flow-stats:action/odl-flow-stats:action" {
+        case "nx-action-output-reg-notif-flows-statistics-update-apply-actions-case" {
+            uses nx-action-output-reg-grouping;
         }
     }
     
@@ -413,6 +521,11 @@ module openflowplugin-extension-nicira-action {
     augment "/odl-group-stats:group-desc-stats-updated/odl-group-stats:group-desc-stats/odl-group-stats:buckets/odl-group-stats:bucket/odl-group-stats:action/odl-group-stats:action" {
         case "nx-action-reg-move-notif-group-desc-stats-updated-case" {
             uses nx-action-reg-move-grouping;
+        }
+    }
+    augment "/odl-group-stats:group-desc-stats-updated/odl-group-stats:group-desc-stats/odl-group-stats:buckets/odl-group-stats:bucket/odl-group-stats:action/odl-group-stats:action" {
+        case "nx-action-output-reg-notif-group-desc-stats-updated-case" {
+            uses nx-action-output-reg-grouping;
         }
     }
 
