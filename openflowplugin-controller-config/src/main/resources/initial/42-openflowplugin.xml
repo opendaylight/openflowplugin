@@ -47,6 +47,11 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
                  <truststore-password>opendaylight</truststore-password>
                  <certificate-password>opendaylight</certificate-password>
                </tls> -->
+<!--           Exemplary thread model configuration. Uncomment <threads> tag below to adjust default thread model -->
+<!--           <threads>
+                 <boss-threads>2</boss-threads>
+                 <worker-threads>8</worker-threads>
+               </threads> -->
         </module>
         <!-- default OF-switch-connection-provider (port 6653) -->
         <module>
@@ -73,6 +78,11 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
                  <truststore-password>opendaylight</truststore-password>
                  <certificate-password>opendaylight</certificate-password>
                </tls> -->
+<!--           Exemplary thread model configuration. Uncomment <threads> tag below to adjust default thread model -->
+<!--           <threads>
+                 <boss-threads>2</boss-threads>
+                 <worker-threads>8</worker-threads>
+               </threads> -->
         </module>
 
 

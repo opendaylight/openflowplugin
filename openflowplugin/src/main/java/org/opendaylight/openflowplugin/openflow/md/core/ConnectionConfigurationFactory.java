@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.openflow.md.core;
 import java.net.InetAddress;
 
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionConfiguration;
+import org.opendaylight.openflowjava.protocol.api.connection.ThreadConfiguration;
 import org.opendaylight.openflowjava.protocol.api.connection.TlsConfiguration;
 
 /**
@@ -61,6 +62,11 @@ public abstract class ConnectionConfigurationFactory {
             public TlsConfiguration getTlsConfiguration() {
                 return null;
             }
+
+            @Override
+            public ThreadConfiguration getThreadConfiguration() {
+                return null;
+            }
         };
     }
     
@@ -99,6 +105,11 @@ public abstract class ConnectionConfigurationFactory {
 
             @Override
             public TlsConfiguration getTlsConfiguration() {
+                return null;
+            }
+
+            @Override
+            public ThreadConfiguration getThreadConfiguration() {
                 return null;
             }
         };
