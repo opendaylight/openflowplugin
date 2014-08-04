@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "fa82b9bf_608043c0",
+        "filename": "extension/openflowplugin-extension-nicira/src/main/java/org/opendaylight/openflowplugin/extension/vendor/nicira/NiciraExtensionProvider.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 144,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2014-08-04T21:52:41Z",
+      "side": 1,
+      "message": "My fault - there are two different keys for registration",
+      "parentUuid": "fa82b9bf_a0ec0bbc",
+      "revId": "30c736dccb3765de7cf5659df6f90d06053d94b1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fa82b9bf_0035b744",
         "filename": "extension/openflowplugin-extension-nicira/src/main/java/org/opendaylight/openflowplugin/extension/vendor/nicira/NiciraExtensionProvider.java",
         "patchSetId": 8
@@ -30,6 +48,24 @@
       "writtenOn": "2014-08-04T21:46:41Z",
       "side": 1,
       "message": "src\u003drpc-addFlow part:\nthe same case as the part src\u003ddataStore/config",
+      "revId": "30c736dccb3765de7cf5659df6f90d06053d94b1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_008377cc",
+        "filename": "extension/openflowplugin-extension-nicira/src/main/java/org/opendaylight/openflowplugin/extension/vendor/nicira/NiciraExtensionProvider.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 149,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2014-08-04T21:52:41Z",
+      "side": 1,
+      "message": "My fault - there are two different keys for registration",
+      "parentUuid": "fa82b9bf_0035b744",
       "revId": "30c736dccb3765de7cf5659df6f90d06053d94b1",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
