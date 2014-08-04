@@ -15,4 +15,5 @@ public class NiciraActionCodecs {
 
     public static final RegMoveCodec REG_MOVE_CODEC = new RegMoveCodec();
     public static final RegLoadCodec REG_LOAD_CODEC = new RegLoadCodec();
+    public static final OutputRegCodec OUTPUT_REG_CODEC = new OutputRegCodec();
 }
