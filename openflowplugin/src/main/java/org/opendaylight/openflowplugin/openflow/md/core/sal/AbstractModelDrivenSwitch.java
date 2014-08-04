@@ -24,6 +24,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.Pa
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.SalPortService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.OpendaylightPortStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.OpendaylightQueueStatisticsService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.config.rev140626.SalRoleService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.SalTableService;
 import org.opendaylight.yangtools.concepts.CompositeObjectRegistration;
 import org.opendaylight.yangtools.concepts.CompositeObjectRegistration.CompositeObjectRegistrationBuilder;
@@ -59,6 +60,8 @@ public abstract class AbstractModelDrivenSwitch implements ModelDrivenSwitch {
     private RoutedRpcRegistration<OpendaylightFlowTableStatisticsService> flowTableStatisticsRegistration;
 
     private RoutedRpcRegistration<OpendaylightQueueStatisticsService> queueStatisticsRegistration;
+
+    private RoutedRpcRegistration<SalRoleService> roleRegistration;
 
     protected final SessionContext sessionContext;
 
@@ -124,6 +127,10 @@ public abstract class AbstractModelDrivenSwitch implements ModelDrivenSwitch {
         queueStatisticsRegistration = ctx.addRoutedRpcImplementation(OpendaylightQueueStatisticsService.class, this);
         queueStatisticsRegistration.registerPath(NodeContext.class, getIdentifier());
         builder.add(queueStatisticsRegistration);
+
+        roleRegistration = ctx.addRoutedRpcImplementation(SalRoleService.class, this);
+        roleRegistration.registerPath(NodeContext.class, getIdentifier());
+        builder.add(roleRegistration);
 
         return builder.toInstance();
     }

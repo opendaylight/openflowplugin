@@ -309,6 +309,7 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
 
     @Override
     public Future<RpcResult<RoleRequestOutput>> roleRequest(RoleRequestInput input, SwitchConnectionDistinguisher cookie) {
+
         try {
             return getConnectionAdapter(cookie).roleRequest(input);
         } catch (ConnectionException e) {
