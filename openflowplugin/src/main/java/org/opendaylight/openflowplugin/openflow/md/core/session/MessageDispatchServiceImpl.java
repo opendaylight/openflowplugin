@@ -11,8 +11,11 @@ import com.google.common.base.Function;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
+<<<<<<< Updated upstream
 import com.google.common.util.concurrent.SettableFuture;
 import org.opendaylight.controller.sal.common.util.RpcErrors;
+=======
+>>>>>>> Stashed changes
 import org.opendaylight.controller.sal.common.util.Rpcs;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.ConnectionException;
@@ -35,8 +38,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigInteger;
+<<<<<<< Updated upstream
 import java.util.ArrayList;
 import java.util.List;
+=======
+>>>>>>> Stashed changes
 import java.util.concurrent.Future;
 
 /**
@@ -309,11 +315,18 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
 
     @Override
     public Future<RpcResult<RoleRequestOutput>> roleRequest(RoleRequestInput input, SwitchConnectionDistinguisher cookie) {
+<<<<<<< Updated upstream
         try {
             return getConnectionAdapter(cookie).roleRequest(input);
         } catch (ConnectionException e) {
             return getRpcErrorFuture(e);
         }
+=======
+        LOG.error("Kamal-MessageDSI: calling roleRequest");
+        ConnectionAdapter ca = getConnectionAdapter(cookie);
+        LOG.error("Kamal-MessageDSI: ca="+ca);
+        return ca.roleRequest(input);
+>>>>>>> Stashed changes
     }
 
     @Override

@@ -22,6 +22,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.Pa
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.SalPortService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.OpendaylightPortStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.OpendaylightQueueStatisticsService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.config.rev140626.SalRoleService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.SalTableService;
 import org.opendaylight.yangtools.concepts.CompositeObjectRegistration;
 import org.opendaylight.yangtools.concepts.Identifiable;
@@ -36,6 +37,7 @@ public interface ModelDrivenSwitch extends //
         SalMeterService, //
         SalTableService,//
         SalPortService,
+        SalRoleService,
         PacketProcessingService, //
         OpendaylightGroupStatisticsService, //
         OpendaylightMeterStatisticsService, //

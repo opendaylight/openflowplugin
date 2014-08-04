@@ -47,7 +47,7 @@ public class NodeErrorListenerLoggingImpl implements NodeErrorListener {
 
     @Override
     public void onBadRequestErrorNotification(BadRequestErrorNotification notification) {
-        LOG.error("Error notification ----" + toStr(notification.getType(), notification.getCode(), notification.getTransactionId().getValue()) );
+        //LOG.error("Error notification ----" + toStr(notification.getType(), notification.getCode(), notification.getTransactionId().getValue()) );
     }
 
     @Override

@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.test;
 
+<<<<<<< Updated upstream
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -20,6 +21,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+=======
+>>>>>>> Stashed changes
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
@@ -178,12 +181,26 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.protocol.match.fields.PbbBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanIdBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.node.error.service.rev140410.NodeErrorListener;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.config.rev140626.ControllerRoleTypes;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.config.rev140626.SalRoleService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.config.rev140626.UpdateControllerRoleInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.config.rev140626.UpdateControllerRoleOutput;
 import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
@@ -199,8 +216,14 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
     private final SalFlowListener flowEventListener = new FlowEventListenerLoggingImpl();
     private final NodeErrorListener nodeErrorListener = new NodeErrorListenerLoggingImpl();
     private static NotificationService notificationService;
+<<<<<<< Updated upstream
     private Registration listener1Reg;
     private Registration listener2Reg;
+=======
+    private Registration<org.opendaylight.yangtools.yang.binding.NotificationListener> listener1Reg;
+    private Registration<org.opendaylight.yangtools.yang.binding.NotificationListener> listener2Reg;
+    private SalRoleService salRoleService;
+>>>>>>> Stashed changes
 
     public OpenflowpluginTestCommandProvider(BundleContext ctx) {
         this.ctx = ctx;
@@ -209,6 +232,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
     public void onSessionInitiated(ProviderContext session) {
         pc = session;
         notificationService = session.getSALService(NotificationService.class);
+        salRoleService = session.<SalRoleService>getRpcService(SalRoleService.class);
         // For switch events
         listener1Reg = notificationService.registerNotificationListener(flowEventListener);
         listener2Reg = notificationService.registerNotificationListener(nodeErrorListener);
@@ -3594,6 +3618,43 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
                 ci.println("--Test Failed--Issue found while adding flow" + flow);
                 break;
             }
+        }
+    }
+
+    /**
+     * @param ci arguments: switchId flowType tableNum
+     *
+     * <pre>
+     * e.g.: changeRole openflow:1 <role> <generationId>
+     *           changeRole openflow:1 SLAVE 1
+     *           changeRole openflow:1 MASTER 2
+     * </pre>
+     */
+    public void _changeRole(CommandInterpreter ci) {
+        String nodeIdStr = ci.nextArgument();
+        String roleStr = ci.nextArgument();
+        String genIdStr = ci.nextArgument();
+        if (nodeIdStr == null || roleStr == null || genIdStr == null) {
+            ci.println("Invalid command, usage:changeRole openflow:1 <role> <generationId>");
+        }
+
+        UpdateControllerRoleInputBuilder builder = new UpdateControllerRoleInputBuilder();
+        builder.setGenerationId(new BigInteger(genIdStr));
+        builder.setControllerRole(ControllerRoleTypes.MASTER.toString().equalsIgnoreCase(roleStr) ? ControllerRoleTypes.MASTER : ControllerRoleTypes.SLAVE);
+        builder.setNode(createNodeRef(nodeIdStr));
+        LOG.error("Kamal-OTCP: calling updateControllerRole");
+        Future<RpcResult<UpdateControllerRoleOutput>> roleOutputFuture = salRoleService.updateControllerRole(builder.build());
+        LOG.error("Kamal-OTCP: roleOutputFuture="+roleOutputFuture);
+        try {
+            RpcResult<UpdateControllerRoleOutput> rpcResult = roleOutputFuture.get();
+            LOG.error("Kamal-OTCP: rpcResult="+rpcResult);
+            if (rpcResult.isSuccessful()) {
+                UpdateControllerRoleOutput roleOutput = rpcResult.getResult();
+                LOG.error("Kamal-OTCP: roleOutput="+roleOutput);
+                ci.println("RoleChange to "+roleOutput.getControllerRole() + " on node="+roleOutput.getNode() + " was successful.GenerationId="+ roleOutput.getGenerationId());
+            }
+        } catch (Exception e) {
+            LOG.error("Exception in OpenflowpluginTestCommandProvider " + e.getMessage(), e);
         }
     }
 }
