@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa82b9bf_200f9b89",
+        "filename": "extension/openflowplugin-extension-nicira/src/main/yang/openflowplugin-extension-nicira-action.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 612
+      },
+      "writtenOn": "2014-08-04T21:54:22Z",
+      "side": 1,
+      "message": "key nx-action-output-reg-key should be removed since *Case class is used as a key",
+      "revId": "61405e0d87444471c2b2a96662d95e46c93c43b0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
