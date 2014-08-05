@@ -52,10 +52,6 @@
             <groupId>org.opendaylight.controller.model</groupId>
         </dependency>
         <dependency>
-            <artifactId>model-flow-management</artifactId>
-            <groupId>org.opendaylight.controller.model</groupId>
-        </dependency>
-        <dependency>
             <artifactId>model-inventory</artifactId>
             <groupId>org.opendaylight.controller.model</groupId>
         </dependency>
