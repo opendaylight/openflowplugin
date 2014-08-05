@@ -67,6 +67,7 @@ import org.slf4j.LoggerFactory;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import com.google.common.collect.Ordering;
 
 /**
  * @author usha@ericsson Action List:This class takes data from SAL layer and
@@ -94,6 +95,7 @@ public final class ActionConvertor {
             short version, BigInteger datapathid)
 
     {
+        actions = Ordering.from(ActionComparator.INSTANCE).sortedCopy(actions);
         List<Action> actionsList = new ArrayList<>();
         Action ofAction;
 
