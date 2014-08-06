@@ -56,6 +56,10 @@
       <salGeneratorPath>src/main/yang-gen-sal</salGeneratorPath>
       <exi.nagasena.version>0000.0002.0038.0</exi.nagasena.version>
         <controller.distribution.version>0.1.2-SNAPSHOT</controller.distribution.version>
+
+        <!-- Sonar config -->
+        <sonar.core.codeCoveragePlugin>jacoco</sonar.core.codeCoveragePlugin>
+        <sonar.jacoco.reportPath>target/code-coverage/jacoco.exec</sonar.jacoco.reportPath>
     </properties>
 
     <dependencyManagement>
@@ -230,10 +234,24 @@
 
     <build>
         <plugins>
-          <plugin>
-             <groupId>org.codehaus.mojo</groupId>
-             <artifactId>build-helper-maven-plugin</artifactId>
-          </plugin>
+            <plugin>
+                 <groupId>org.codehaus.mojo</groupId>
+                 <artifactId>build-helper-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                        <configuration>
+                            <destFile>${sonar.jacoco.reportPath}</destFile>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
         <pluginManagement>
           <plugins>
