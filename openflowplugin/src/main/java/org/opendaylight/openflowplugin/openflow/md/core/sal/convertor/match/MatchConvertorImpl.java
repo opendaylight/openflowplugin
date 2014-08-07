@@ -892,7 +892,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
                     ipv6LabelBuilder.setIpv6Flabel(new Ipv6FlowLabel(ipv6FlabelMatchEntry.getIpv6Flabel()));
                     MaskMatchEntry maskMatchEntry = ofMatch.getAugmentation(MaskMatchEntry.class);
                     if (maskMatchEntry != null) {
-                        ipv6LabelBuilder.setFlabelMask(new Ipv6FlowLabel(new Long(ByteUtil
+                        ipv6LabelBuilder.setFlabelMask(new Ipv6FlowLabel(Long.valueOf(ByteUtil
                                 .bytesToUnsignedInt(maskMatchEntry.getMask()))));
                     }
                     ipv6MatchBuilder.setIpv6Label(ipv6LabelBuilder.build());
