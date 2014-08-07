@@ -346,7 +346,7 @@ public final class ActionConvertor {
             matchEntriesBuilder.setOxmMatchField(VlanVid.class);
             VlanVidMatchEntryBuilder vlanVidBuilder = new VlanVidMatchEntryBuilder();
             vlanVidBuilder.setCfiBit(true);
-            vlanVidBuilder.setVlanVid(new Integer(0x0000));
+            vlanVidBuilder.setVlanVid(0x0000);
             matchEntriesBuilder.addAugmentation(VlanVidMatchEntry.class, vlanVidBuilder.build());
             matchEntriesBuilder.setHasMask(false);
             matchEntriesList.add(matchEntriesBuilder.build());
@@ -592,7 +592,7 @@ public final class ActionConvertor {
         if (outputAction.getMaxLength() != null) {
             maxLenActionBuilder.setMaxLength(outputAction.getMaxLength());
         } else {
-            maxLenActionBuilder.setMaxLength(new Integer(0));
+            maxLenActionBuilder.setMaxLength(0);
         }
         actionBuilder.addAugmentation(MaxLengthAction.class, maxLenActionBuilder.build());
 

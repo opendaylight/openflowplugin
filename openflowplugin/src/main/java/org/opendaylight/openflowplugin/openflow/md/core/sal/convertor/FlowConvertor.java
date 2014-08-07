@@ -64,9 +64,9 @@ public class FlowConvertor {
     // Default values for when things are null
     private static final BigInteger DEFAULT_COOKIE = BigInteger.ZERO;
     private static final BigInteger DEFAULT_COOKIE_MASK = BigInteger.ZERO;
-    private static final TableId DEFAULT_TABLE_ID = new TableId(new Long(0));
-    private static final Integer DEFAULT_IDLE_TIMEOUT = new Integer(5 * 60);
-    private static final Integer DEFAULT_HARD_TIMEOUT = new Integer(10 * 60);
+    private static final TableId DEFAULT_TABLE_ID = new TableId(0L);
+    private static final Integer DEFAULT_IDLE_TIMEOUT = 5 * 60;
+    private static final Integer DEFAULT_HARD_TIMEOUT = 10 * 60;
     private static final Integer DEFAULT_PRIORITY = Integer.parseInt("8000", 16);
     private static final Long DEFAULT_BUFFER_ID = Long.parseLong("ffffffff", 16);
     private static final Long OFPP_ANY = Long.parseLong("ffffffff", 16);

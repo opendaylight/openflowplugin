@@ -487,7 +487,7 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
             supportActionBitmap |= supportedActions.isOFPATPUSHPBB()?(1 << 25): ~(1 << 25);
             supportActionBitmap |= supportedActions.isOFPATPOPPBB()?(1 << 26): ~(1 << 26);
             supportActionBitmap |= supportedActions.isOFPATEXPERIMENTER()?(1 << 27): ~(1 << 27);
-            supportActionByGroups.add(new Long(supportActionBitmap));
+            supportActionByGroups.add(Long.valueOf(supportActionBitmap));
         }
         return supportActionByGroups;
     }
