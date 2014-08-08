@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa82b9bf_8743166b",
+        "filename": "openflowplugin/pom.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 397
+      },
+      "writtenOn": "2014-08-08T05:43:48Z",
+      "side": 1,
+      "message": "do you need to import *",
+      "revId": "fb6bd0897e5d50de3910f163faf5d7e02b01d0ac",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
