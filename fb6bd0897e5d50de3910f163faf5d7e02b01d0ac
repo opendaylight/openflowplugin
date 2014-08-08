@@ -16,6 +16,24 @@
       "revId": "fb6bd0897e5d50de3910f163faf5d7e02b01d0ac",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_52570e58",
+        "filename": "openflowplugin/pom.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 46
+      },
+      "writtenOn": "2014-08-08T15:50:21Z",
+      "side": 1,
+      "message": "I don\u0027t actually know.  All the other ODL projects I looked at seem to do so.  I don\u0027t know what, if any, the consequences are to doing this.  But it does make the integration test work.",
+      "parentUuid": "fa82b9bf_8743166b",
+      "revId": "fb6bd0897e5d50de3910f163faf5d7e02b01d0ac",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
