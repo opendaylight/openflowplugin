@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa82b9bf_55f6155e",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/SalRegistrationManager.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2014-08-11T15:03:12Z",
+      "side": 1,
+      "message": "How about having a separate rpc for this? I presume that ip address of switch is not always used, is it?",
+      "revId": "5b46106cf94109ddddd8cf5353d749e40c43b0ec",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
