@@ -20,7 +20,7 @@ import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
  *
  */
 public abstract class OFPaxOptionsAssistant {
-    
+
     /** system property required to enable osgi console and remote debugging, only presence matters */
     private static final String INSPECT_OSGI = "inspectOsgi";
     /** default remote debug port */
@@ -36,10 +36,10 @@ public abstract class OFPaxOptionsAssistant {
 
     public static final String YANGTOOLS = "org.opendaylight.yangtools";
 
-    
+
     /**
      * Works only if property -DinspectOsgi is used
-     * @return equinox console setup (in order to inspect running IT through osgi console (telnet)) 
+     * @return equinox console setup (in order to inspect running IT through osgi console (telnet))
      * and remote debugging on port {@link #DEBUG_PORT}
      */
     public static Option osgiConsoleBundles() {
@@ -52,7 +52,7 @@ public abstract class OFPaxOptionsAssistant {
             .add(CoreOptions.mavenBundle("equinoxSDK381", "org.apache.felix.gogo.runtime").versionAsInProject())
             .add(CoreOptions.mavenBundle("equinoxSDK381", "org.apache.felix.gogo.command").versionAsInProject());
         }
-            
+
         return option;
     }
 
@@ -88,7 +88,7 @@ public abstract class OFPaxOptionsAssistant {
      */
     public static Option loggingBudles() {
         return new DefaultCompositeOption(
-                mavenBundle("org.slf4j", "slf4j-api").versionAsInProject(), 
+                mavenBundle("org.slf4j", "slf4j-api").versionAsInProject(),
                 mavenBundle("org.slf4j", "log4j-over-slf4j").versionAsInProject(),
                 mavenBundle("ch.qos.logback", "logback-core").versionAsInProject(),
                 mavenBundle("ch.qos.logback", "logback-classic").versionAsInProject());
@@ -99,8 +99,9 @@ public abstract class OFPaxOptionsAssistant {
      */
     public static Option baseSalBundles() {
         return new DefaultCompositeOption(
-                mavenBundle("org.apache.felix", "org.apache.felix.dependencymanager").versionAsInProject(),
-                mavenBundle(CONTROLLER, "sal").versionAsInProject(),
+//                mavenBundle("org.apache.felix", "org.apache.felix.dependencymanager").versionAsInProject(),
+//                mavenBundle(CONTROLLER, "sal").versionAsInProject(),
+                mavenBundle(CONTROLLER, "liblldp").versionAsInProject(),
                 mavenBundle(YANGTOOLS + ".thirdparty", "antlr4-runtime-osgi-nohead").versionAsInProject());
 
     }
