@@ -7,12 +7,20 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.lldp;
 
-import org.opendaylight.controller.sal.packet.Ethernet;
-import org.opendaylight.controller.sal.packet.LLDP;
-import org.opendaylight.controller.sal.packet.LLDPTLV;
-import org.opendaylight.controller.sal.packet.PacketException;
-import org.opendaylight.controller.sal.utils.EtherTypes;
-import org.opendaylight.controller.sal.utils.HexEncode;
+import java.math.BigInteger;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.opendaylight.controller.liblldp.EtherTypes;
+import org.opendaylight.controller.liblldp.Ethernet;
+import org.opendaylight.controller.liblldp.HexEncode;
+import org.opendaylight.controller.liblldp.LLDP;
+import org.opendaylight.controller.liblldp.LLDPTLV;
+import org.opendaylight.controller.liblldp.PacketException;
 import org.opendaylight.openflowplugin.openflow.md.ModelDrivenSwitch;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowVersion;
@@ -31,37 +39,29 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.math.BigInteger;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.ConcurrentHashMap;
-
 
 public class LLDPSpeaker {
     private static Logger LOG = LoggerFactory.getLogger(LLDPSpeaker.class);
-	
+
 	private  final Map<InstanceIdentifier<NodeConnector>,TransmitPacketInput> nodeConnectorMap = new ConcurrentHashMap<InstanceIdentifier<NodeConnector>,TransmitPacketInput>();
 	private  final Map<InstanceIdentifier<Node>,ModelDrivenSwitch> nodeMap = new ConcurrentHashMap<InstanceIdentifier<Node>,ModelDrivenSwitch>();
 	private static final LLDPSpeaker instance = new LLDPSpeaker();
 	private Timer timer = new Timer();
 	private static final int DELAY = 0;
 	private static final int PERIOD = 1000*5;
-	
+
 	private LLDPSpeaker() {
 	    timer.schedule(new LLDPSpeakerTask(), DELAY, PERIOD);
 	}
-	
+
 	public static LLDPSpeaker getInstance() {
 	    return instance;
 	}
-	
+
 	public  void addModelDrivenSwitch(InstanceIdentifier<Node> nodeInstanceId, ModelDrivenSwitch sw) {
-		nodeMap.put(nodeInstanceId,sw);		
+		nodeMap.put(nodeInstanceId,sw);
 	}
-	
+
 	public void removeModelDrivenSwitch(InstanceIdentifier<Node> nodeInstanceId) {
 	    nodeMap.remove(nodeInstanceId);
 	    for (InstanceIdentifier<NodeConnector> nodeConnectorInstanceId : nodeConnectorMap.keySet()) {
@@ -92,19 +92,19 @@ public class LLDPSpeaker {
 	public  void removeNodeConnector(
 			InstanceIdentifier<NodeConnector> nodeConnectorInstanceId,
 			NodeConnector nodeConnector) {
-		nodeConnectorMap.remove(nodeConnectorInstanceId);		
+		nodeConnectorMap.remove(nodeConnectorInstanceId);
 	}
-	
+
 	private  byte[] lldpDataFrom(InstanceIdentifier<Node> nodeInstanceId,InstanceIdentifier<NodeConnector> nodeConnectorInstanceId,MacAddress src,
                                  Short version) {
-		
+
 	    NodeId nodeId = InstanceIdentifier.keyOf(nodeInstanceId).getId();
 	    NodeConnectorId nodeConnectorId = InstanceIdentifier.keyOf(nodeConnectorInstanceId).getId();
 		// Create LLDP TTL TLV
         byte[] ttl = new byte[] { (byte) 0, (byte) 120 };
         LLDPTLV ttlTlv = new LLDPTLV();
         ttlTlv.setType(LLDPTLV.TLVType.TTL.getValue()).setLength((short) ttl.length).setValue(ttl);
-		
+
         // Create LLDP ChassisID TLV
         BigInteger dataPathId = InventoryDataServiceUtil.dataPathIdFromNodeId(nodeId);
         byte[] cidValue = LLDPTLV.createChassisIDTLVValue(
@@ -168,11 +168,11 @@ public class LLDPSpeaker {
                 ModelDrivenSwitch md = nodeMap.get(nodeInstanceId);
                 md.transmitPacket(nodeConnectorMap.get(nodeConnectorInstanceId));
             }
-            
+
         }
-	    
+
 	}
-	
+
 	private String colonize(String orig) {
 	    return orig.replaceAll("(?<=..)(..)", ":$1");
 	}
