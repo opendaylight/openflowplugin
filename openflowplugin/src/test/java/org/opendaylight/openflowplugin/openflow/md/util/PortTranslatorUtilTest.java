@@ -78,6 +78,15 @@ public class PortTranslatorUtilTest {
 
     }
 
+    /**
+     * Test  method for {@link org.opendaylight.openflowplugin.openflow.md.util.PortTranslatorUtil#translatePort(Short, java.math.BigInteger, Long, PortGrouping)} ()}
+     */
+    @Test
+    public void testTranslatePort(){
+        NodeConnectorUpdated nodeConnector = PortTranslatorUtil.translatePort();
+
+    }
+
     private void assertEqualsPortFeaturesV10(PortFeaturesV10 apfV10, org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures npf) {
         assertEquals(apfV10.is_100mbFd(), npf.isHundredMbFd());
         assertEquals(apfV10.is_100mbHd(), npf.isHundredMbHd());
