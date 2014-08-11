@@ -16,7 +16,6 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.opendaylight.controller.sal.action.PopVlan;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Prefix;
@@ -82,6 +81,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.DecNwTtl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.Output;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.PopMpls;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.PopVlan;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.PushMpls;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.PushPbb;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.PushVlan;
@@ -344,7 +344,7 @@ public class ActionConvertorTest {
 
     }
 
-    private void OutputActionData() {        
+    private void OutputActionData() {
         OutputActionBuilder outputB = new OutputActionBuilder();
         outputB.setMaxLength(10);
         Uri uri = new Uri(OutputPortValues.CONTROLLER.toString());
@@ -433,18 +433,18 @@ public class ActionConvertorTest {
 
     /**
      * testing {@link ActionConvertor#ofToSALPushMplsAction(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action)}
-     * with OF-1.3, IPv6 
+     * with OF-1.3, IPv6
      */
     @Test
     public void testOFtoSALPushMplsAction() {
-        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder actionBuilder 
+        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder actionBuilder
         = new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder();
-        
+
         actionBuilder.setType(PushVlan.class);
         EthertypeActionBuilder ethertypeActionBuilder = new EthertypeActionBuilder();
         ethertypeActionBuilder.setEthertype(new EtherType(new Integer(34888)));
         actionBuilder.addAugmentation(EthertypeAction.class, ethertypeActionBuilder.build());
-        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action action = actionBuilder.build(); 
+        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action action = actionBuilder.build();
 
         Assert.assertEquals(34888, ActionConvertor.ofToSALPushMplsAction(action).getPushMplsAction().getEthernetType().intValue());
     }
@@ -460,10 +460,10 @@ public class ActionConvertorTest {
         actions.add(actionItem++, AB1.build());
 
     }
-    
+
     /**
      * testing {@link ActionConvertor#SalToOFSetNwDst(org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder, short)}
-     * with OF-1.0, IPv4 
+     * with OF-1.0, IPv4
      */
     @Test
     public void testSalToOFSetNwDst10v4() {
@@ -479,7 +479,7 @@ public class ActionConvertorTest {
 
     /**
      * testing {@link ActionConvertor#SalToOFSetNwDst(org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder, short)}
-     * with OF-1.0, IPv6 
+     * with OF-1.0, IPv6
      */
     @Test
     public void testSalToOFSetNwDst10v6() {
@@ -491,11 +491,11 @@ public class ActionConvertorTest {
         org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action ofAction = ActionConvertor.SalToOFSetNwDst(action, actionBuilder, version);
         Assert.assertNull(ofAction);
     }
-    
-    
+
+
     /**
      * testing {@link ActionConvertor#SalToOFSetNwDst(org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder, short)}
-     * with OF-1.3, IPv4 
+     * with OF-1.3, IPv4
      */
     @Test
     public void testSalToOFSetNwDst13v4() {
@@ -510,11 +510,11 @@ public class ActionConvertorTest {
         Assert.assertEquals(Ipv4Dst.class, matchEntry.getOxmMatchField());
         Assert.assertEquals("10.0.0.1", matchEntry.getAugmentation(Ipv4AddressMatchEntry.class).getIpv4Address().getValue());
     }
-    
-    
+
+
     /**
      * testing {@link ActionConvertor#SalToOFSetNwDst(org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder, short)}
-     * with OF-1.3, IPv6 
+     * with OF-1.3, IPv6
      */
     @Test
     public void testSalToOFSetNwDst13v6() {
@@ -529,12 +529,12 @@ public class ActionConvertorTest {
         Assert.assertEquals(Ipv6Dst.class, matchEntry.getOxmMatchField());
         Assert.assertEquals("2001:0db8:85a3:0042:1000:8a2e:0370:7334", matchEntry.getAugmentation(Ipv6AddressMatchEntry.class).getIpv6Address().getValue());
     }
-    
-   
-    
+
+
+
     /**
      * testing {@link ActionConvertor#SalToOFSetNwSrc(org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder, short)}
-     * with OF-1.0, IPv4 
+     * with OF-1.0, IPv4
      */
     @Test
     public void testSalToOFSetNwSrc10v4() {
@@ -550,7 +550,7 @@ public class ActionConvertorTest {
 
     /**
      * testing {@link ActionConvertor#SalToOFSetNwSrc(org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder, short)}
-     * with OF-1.0, IPv6 
+     * with OF-1.0, IPv6
      */
     @Test
     public void testSalToOFSetNwSrc10v6() {
@@ -565,7 +565,7 @@ public class ActionConvertorTest {
 
     /**
      * testing {@link ActionConvertor#SalToOFSetNwSrc(org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder, short)}
-     * with OF-1.3, IPv4 
+     * with OF-1.3, IPv4
      */
     @Test
     public void testSalToOFSetNwSrc13v4() {
@@ -583,7 +583,7 @@ public class ActionConvertorTest {
 
     /**
      * testing {@link ActionConvertor#SalToOFSetNwSrc(org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder, short)}
-     * with OF-1.3, IPv6 
+     * with OF-1.3, IPv6
      */
     @Test
     public void testSalToOFSetNwSrc13v6() {
@@ -601,18 +601,18 @@ public class ActionConvertorTest {
 
     /**
      * testing {@link ActionConvertor#ofToSALPopMplsAction(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action)}
-     * with OF-1.3, IPv6 
+     * with OF-1.3, IPv6
      */
     @Test
     public void testOFtoSALPopMplsAction() {
-        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder actionBuilder 
+        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder actionBuilder
         = new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder();
-        
+
         actionBuilder.setType(PopMpls.class);
         EthertypeActionBuilder ethertypeActionBuilder = new EthertypeActionBuilder();
         ethertypeActionBuilder.setEthertype(new EtherType(new Integer(34888)));
         actionBuilder.addAugmentation(EthertypeAction.class, ethertypeActionBuilder.build());
-        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action action = actionBuilder.build(); 
+        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action action = actionBuilder.build();
 
         Assert.assertEquals(34888, ActionConvertor.ofToSALPopMplsAction(action).getPopMplsAction().getEthernetType().intValue());
     }
@@ -621,15 +621,15 @@ public class ActionConvertorTest {
         SetNwDstAction nwDstAction = new SetNwDstActionBuilder().setAddress(address).build();
         SetNwDstActionCase action = new SetNwDstActionCaseBuilder()
             .setSetNwDstAction(nwDstAction)
-            .build(); 
+            .build();
         return action;
     }
-    
+
     private static SetNwSrcActionCase provisionNwSrcActionBuilder(Address address) {
         SetNwSrcAction nwSrcAction = new SetNwSrcActionBuilder().setAddress(address).build();
         SetNwSrcActionCase action = new SetNwSrcActionCaseBuilder()
             .setSetNwSrcAction(nwSrcAction)
-            .build(); 
+            .build();
         return action;
     }
 

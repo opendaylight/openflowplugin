@@ -119,13 +119,8 @@
         </dependency>
         <dependency>
             <groupId>org.opendaylight.controller</groupId>
-            <artifactId>sal</artifactId>
+            <artifactId>liblldp</artifactId>
             <version>${sal.api.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.controller</groupId>
-            <artifactId>sal.connection</artifactId>
-            <version>${sal.connection.api.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.controller</groupId>
