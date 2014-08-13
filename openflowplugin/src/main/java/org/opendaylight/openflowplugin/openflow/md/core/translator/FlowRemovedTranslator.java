@@ -9,16 +9,14 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.translator;
 
-import org.opendaylight.openflowjava.protocol.api.keys.MatchEntrySerializerKey;
+import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.openflowplugin.extension.api.AugmentTuple;
-import org.opendaylight.openflowplugin.extension.api.ConvertorFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
 import org.opendaylight.openflowplugin.openflow.md.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.MatchExtensionHelper;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchConvertorImpl;
-import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.openflow.md.util.ByteUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
@@ -116,7 +114,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Meta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.MplsBos;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.MplsLabel;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.MplsTc;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.OxmClassBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.PbbIsid;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.SctpDst;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.SctpSrc;
@@ -132,14 +129,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Vlan
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.grouping.MatchEntries;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemovedMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNodesNodeTableFlow;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNodesNodeTableFlowBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNotifSwitchFlowRemoved;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNotifSwitchFlowRemovedBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.grouping.Extension;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.grouping.ExtensionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.list.grouping.ExtensionListBuilder;
-import org.opendaylight.yangtools.yang.binding.Augmentation;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -149,7 +138,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, List<DataObject>> {
@@ -432,7 +420,7 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
                     map.put(6, pseudoField.isHop());
                     map.put(7, pseudoField.isUnrep());
                     map.put(8, pseudoField.isUnseq());
-                    int bitmap = fillBitMaskFromMap(map);
+                    int bitmap = ByteBufUtils.fillBitMaskFromMap(map);
                     ipv6ExtHeaderBuilder.setIpv6Exthdr(bitmap);
                     if (entry.isHasMask()) {
                         ipv6ExtHeaderBuilder.setIpv6ExthdrMask(
@@ -515,26 +503,8 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
         return matchBuilder.build();
     }
 
-    /**
-     * Fills the bitmask from boolean map where key is bit position
-     *
-     * @param booleanMap
-     *            bit to boolean mapping
-     * @return bit mask
-     */
-    private int fillBitMaskFromMap(Map<Integer, Boolean> booleanMap) {
-        int bitmask = 0;
-
-        for (Entry<Integer, Boolean> iterator : booleanMap.entrySet()) {
-            if (iterator.getValue() != null && iterator.getValue().booleanValue()) {
-                bitmask |= 1 << iterator.getKey();
-            }
-        }
-        return bitmask;
-    }
-
-    private Ipv4Prefix toIpv4Prefix(MatchEntries entry) {
-        String ipv4Prefix = entry.getAugmentation(Ipv4AddressMatchEntry.class).getIpv4Address().toString();
+    protected Ipv4Prefix toIpv4Prefix(MatchEntries entry) {
+        String ipv4Prefix = entry.getAugmentation(Ipv4AddressMatchEntry.class).getIpv4Address().getValue();
         if (entry.isHasMask()) {
             byte[] mask = entry.getAugmentation(MaskMatchEntry.class).getMask();
             ipv4Prefix = ipv4Prefix + PREFIX_SEPARATOR + countBits(mask);
@@ -542,8 +512,8 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
         return new Ipv4Prefix(ipv4Prefix);
     }
 
-    private Ipv6Prefix toIpv6Prefix(MatchEntries entry) {
-        String ipv6Prefix = entry.getAugmentation(Ipv6AddressMatchEntry.class).getIpv6Address().toString();
+    protected Ipv6Prefix toIpv6Prefix(MatchEntries entry) {
+        String ipv6Prefix = entry.getAugmentation(Ipv6AddressMatchEntry.class).getIpv6Address().getValue();
         if (entry.isHasMask()) {
             byte[] mask = entry.getAugmentation(MaskMatchEntry.class).getMask();
             ipv6Prefix = ipv6Prefix + PREFIX_SEPARATOR + countBits(mask);
