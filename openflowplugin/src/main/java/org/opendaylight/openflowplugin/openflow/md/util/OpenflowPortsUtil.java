@@ -66,6 +66,9 @@ public class OpenflowPortsUtil {
     }
 
     public static String getPortLogicalName(OpenflowVersion ofVersion, Long portNumber) {
+       if (ofVersion.equals(OpenflowVersion.UNSUPPORTED)){
+           return null;
+       }
        return versionPortMap.get(ofVersion).inverse().get(portNumber);
     }
 
