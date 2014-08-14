@@ -46,7 +46,7 @@ public class OFPluginToLibraryTest {
     private static final Logger LOG = LoggerFactory
             .getLogger(OFPluginToLibraryTest.class);
 
-    @Inject @Filter(timeout=5000)
+    @Inject @Filter(timeout=20000)
     OpenflowPluginProvider openflowPluginProvider;
 
     @Inject
