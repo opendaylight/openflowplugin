@@ -13,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
+import org.opendaylight.openflowplugin.ConnectionException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloInput;
@@ -287,8 +288,10 @@ public class HandshakeManagerImpl implements HandshakeManager {
             RpcUtil.smokeRpc(helloResult);
             LOG.debug("FIRST HELLO sent.");
         } catch (Exception e) {
-            LOG.debug("FIRST HELLO sending failed.");
-            throw e;
+            if (LOG.isTraceEnabled()) {
+                LOG.trace("FIRST HELLO sent.", e);
+            }
+            throw new ConnectionException("FIRST HELLO sending failed because of connection issue.");
         }
     }
 
