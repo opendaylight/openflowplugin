@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.openflow.md.core;
 
 import java.util.Arrays;
 
+import org.opendaylight.openflowplugin.ConnectionException;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +31,10 @@ public class ErrorHandlerSimpleImpl implements ErrorHandler {
             sessionKeyId = Arrays.toString(sessionContext.getSessionKey().getId());
         }
         
-        LOG.error("exception -> {}, session -> {}", e.getMessage(), sessionKeyId, e);
+        if (e instanceof ConnectionException) {
+            LOG.warn("exception -> {}, session -> {}", e.getMessage(), sessionKeyId, e);
+        } else {
+            LOG.error("exception -> {}, session -> {}", e.getMessage(), sessionKeyId, e);
+        }
     }
 }
