@@ -6,7 +6,7 @@
     <artifactId>openflowplugin-parent</artifactId>
     <version>0.0.3-SNAPSHOT</version>
   </parent>
-  <artifactId>openflowplugin-features</artifactId>
+  <artifactId>features-openflowplugin</artifactId>
   <name>Openflow Protocol Plugin - Karaf Features</name>
   <packaging>kar</packaging>
   
