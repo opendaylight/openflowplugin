@@ -105,7 +105,7 @@ public class SalIntegrationTest {
         ScenarioHandler scenario = new ScenarioHandler(ScenarioFactory.createHandshakeScenarioVBM(
                 ScenarioFactory.VERSION_BITMAP_13, (short) 0, ScenarioFactory.VERSION_BITMAP_10_13));
         switchSim.setScenarioHandler(scenario);
-        switchSim.start();
+        switchSim.run();
 
         try {
             LOG.debug("tearing down simulator");
