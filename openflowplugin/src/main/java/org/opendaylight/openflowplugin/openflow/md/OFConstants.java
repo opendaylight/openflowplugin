@@ -36,6 +36,8 @@ public class OFConstants {
     public static final BigInteger DEFAULT_COOKIE = BigInteger.ZERO;
     public static final BigInteger DEFAULT_COOKIE_MASK = BigInteger.ZERO;
     public static final Long OFP_NO_BUFFER = 0xffffffffL;
+    public static final Integer OFPCML_NO_BUFFER = 0xffff;
+
 
     public static final int MAC_ADDRESS_LENGTH = 6;
     public static final int SIZE_OF_LONG_IN_BYTES = 8;
