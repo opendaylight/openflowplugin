@@ -16,8 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -37,16 +35,13 @@ import org.opendaylight.openflowplugin.openflow.md.queue.PopListener;
 import org.opendaylight.openflowplugin.openflow.md.queue.QueueProcessorLightImpl;
 import org.opendaylight.openflowplugin.statistics.MessageSpy;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Capabilities;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ErrorType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortFeaturesV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortReason;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoRequestMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessageBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterMessage;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemovedMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemovedMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutputBuilder;
@@ -67,7 +62,9 @@ public class ConnectionConductorImplTest {
     protected static final Logger LOG = LoggerFactory
             .getLogger(ConnectionConductorImplTest.class);
 
-    /** in [ms] */
+    /**
+     * in [ms]
+     */
     private final int maxProcessingTimeout = 500;
 
     protected ConnectionAdapterStackImpl adapter;
@@ -139,7 +136,7 @@ public class ConnectionConductorImplTest {
         controller = new MDController();
         controller.init();
         controller.getMessageTranslators().putAll(assembleTranslatorMapping());
-        
+
         queueProcessor = new QueueProcessorLightImpl();
         queueProcessor.setMessageSpy(messageSpy);
         queueProcessor.setPopListenersMapping(assemblePopListenerMapping());
@@ -196,7 +193,7 @@ public class ConnectionConductorImplTest {
         Assert.assertTrue("plan is not finished", eventPlan.isEmpty());
         eventPlan = null;
         controller = null;
-        
+
         // logging errors if occurred
         ArgumentCaptor<Throwable> errorCaptor = ArgumentCaptor.forClass(Throwable.class);
         Mockito.verify(errorHandler, Mockito.atMost(1)).handleException(
@@ -204,8 +201,8 @@ public class ConnectionConductorImplTest {
         for (Throwable problem : errorCaptor.getAllValues()) {
             LOG.warn(problem.getMessage(), problem);
         }
-        
-        Mockito.verify(errorHandler, Mockito.times(expectedErrors )).handleException(
+
+        Mockito.verify(errorHandler, Mockito.times(expectedErrors)).handleException(
                 Matchers.any(Throwable.class), Matchers.any(SessionContext.class));
     }
 
@@ -213,12 +210,13 @@ public class ConnectionConductorImplTest {
      * Test method for
      * {@link org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductorImpl#onEchoRequestMessage(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoRequestMessage)}
      * .
+     *
      * @throws Exception
      */
     @Test
     public void testOnEchoRequestMessage() throws Exception {
         simulateV13PostHandshakeState(connectionConductor);
-        
+
         eventPlan.add(0, EventFactory.createDefaultNotificationEvent(42L,
                 EventFactory.DEFAULT_VERSION, new EchoRequestMessageBuilder()));
         eventPlan.add(0,
@@ -229,6 +227,7 @@ public class ConnectionConductorImplTest {
     /**
      * Test of handshake, covering version negotiation and features.
      * Switch delivers first helloMessage with default version.
+     *
      * @throws Exception
      */
     @Test
@@ -240,11 +239,13 @@ public class ConnectionConductorImplTest {
                 EventFactory.createDefaultWaitForRpcEvent(44, "getFeatures")));
         eventPlan.add(0, EventFactory.createDefaultRpcResponseEvent(44,
                 EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
-        
-        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(1, "multipartRequestInput"));
-        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(2, "multipartRequestInput"));
-        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(3, "multipartRequestInput"));
-        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(4, "multipartRequestInput"));
+
+        int i = 1;
+        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(i++, "setConfig"));
+        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(i++, "multipartRequestInput"));
+        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(i++, "multipartRequestInput"));
+        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(i++, "multipartRequestInput"));
+        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(i++, "multipartRequestInput"));
         executeNow();
 
         Assert.assertEquals(ConnectionConductor.CONDUCTOR_STATE.WORKING,
@@ -252,10 +253,11 @@ public class ConnectionConductorImplTest {
         Assert.assertEquals((short) 0x04, connectionConductor.getVersion()
                 .shortValue());
     }
-    
+
     /**
      * Test of handshake, covering version negotiation and features.
-     * Controller sends first helloMessage with default version 
+     * Controller sends first helloMessage with default version
+     *
      * @throws Exception
      */
     @Test
@@ -267,11 +269,13 @@ public class ConnectionConductorImplTest {
         eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(43, "getFeatures"));
         eventPlan.add(0, EventFactory.createDefaultRpcResponseEvent(43,
                 EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
-        
-        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(1, "multipartRequestInput"));
-        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(2, "multipartRequestInput"));
-        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(3, "multipartRequestInput"));
-        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(4, "multipartRequestInput"));
+
+        int i = 1;
+        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(i++, "setConfig"));
+        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(i++, "multipartRequestInput"));
+        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(i++, "multipartRequestInput"));
+        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(i++, "multipartRequestInput"));
+        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(i++, "multipartRequestInput"));
 
         executeNow();
 
@@ -283,8 +287,9 @@ public class ConnectionConductorImplTest {
 
     /**
      * Test of handshake, covering version negotiation and features.
-     * Switch delivers first helloMessage with version 0x05 
-     * and negotiates following versions: 0x03, 0x01 
+     * Switch delivers first helloMessage with version 0x05
+     * and negotiates following versions: 0x03, 0x01
+     *
      * @throws Exception
      */
     @Test
@@ -305,7 +310,7 @@ public class ConnectionConductorImplTest {
 
         eventPlan.add(0, EventFactory.createDefaultRpcResponseEvent(45,
                 EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
-        
+
         eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(1, "multipartRequestInput"));
 
         executeNow();
@@ -315,11 +320,12 @@ public class ConnectionConductorImplTest {
         Assert.assertEquals((short) 0x01, connectionConductor.getVersion()
                 .shortValue());
     }
-    
+
     /**
      * Test of handshake, covering version negotiation and features.
-     * Controller sends first helloMessage with default version 
-     * and switch negotiates following versions: 0x05, 0x03, 0x01 
+     * Controller sends first helloMessage with default version
+     * and switch negotiates following versions: 0x05, 0x03, 0x01
+     *
      * @throws Exception
      */
     @Test
@@ -341,7 +347,7 @@ public class ConnectionConductorImplTest {
 
         eventPlan.add(0, EventFactory.createDefaultRpcResponseEvent(45,
                 EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
-        
+
         eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(1, "multipartRequestInput"));
 
         executeNow();
@@ -356,11 +362,12 @@ public class ConnectionConductorImplTest {
      * Test method for
      * {@link org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductorImpl#onFlowRemovedMessage(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemovedMessage)}
      * .
+     *
      * @throws InterruptedException
      */
     @Test
     public void testOnFlowRemovedMessage() throws InterruptedException {
-        IMDMessageTranslator<OfHeader, List<DataObject>> objFms = new FlowRemovedMessageService() ;
+        IMDMessageTranslator<OfHeader, List<DataObject>> objFms = new FlowRemovedMessageService();
         controller.addMessageTranslator(FlowRemovedMessage.class, 4, objFms);
 
         simulateV13PostHandshakeState(connectionConductor);
@@ -398,11 +405,12 @@ public class ConnectionConductorImplTest {
      * Test method for
      * {@link org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductorImpl#onPacketInMessage(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage)}
      * .
+     *
      * @throws InterruptedException
      */
     @Test
     public void testOnPacketInMessage() throws InterruptedException {
-        IMDMessageTranslator<OfHeader, List<DataObject>> objPms = new PacketInMessageService() ;
+        IMDMessageTranslator<OfHeader, List<DataObject>> objPms = new PacketInMessageService();
         controller.addMessageTranslator(PacketInMessage.class, 4, objPms);
 
         simulateV13PostHandshakeState(connectionConductor);
@@ -410,13 +418,13 @@ public class ConnectionConductorImplTest {
         // Now send PacketIn
         PacketInMessageBuilder builder1 = new PacketInMessageBuilder();
         builder1.setVersion((short) 4);
-        builder1.setBufferId((long)1);
+        builder1.setBufferId((long) 1);
         connectionConductor.onPacketInMessage(builder1.build());
         synchronized (popListener) {
             popListener.wait(maxProcessingTimeout);
         }
         Assert.assertEquals(1, packetinMessageCounter);
-        builder1.setBufferId((long)2);
+        builder1.setBufferId((long) 2);
         connectionConductor.onPacketInMessage(builder1.build());
         synchronized (popListener) {
             popListener.wait(maxProcessingTimeout);
@@ -428,11 +436,12 @@ public class ConnectionConductorImplTest {
      * Test method for
      * {@link org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductorImpl#onPortStatusMessage(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage)}
      * .
+     *
      * @throws InterruptedException
      */
     @Test
     public void testOnPortStatusMessage() throws InterruptedException {
-        IMDMessageTranslator<OfHeader, List<DataObject>> objPSms = new PortStatusMessageService() ;
+        IMDMessageTranslator<OfHeader, List<DataObject>> objPSms = new PortStatusMessageService();
         controller.addMessageTranslator(PortStatusMessage.class, 4, objPSms);
 
         simulateV13PostHandshakeState(connectionConductor);
@@ -440,7 +449,7 @@ public class ConnectionConductorImplTest {
         // Send Port Status messages
         PortStatusMessageBuilder builder1 = new PortStatusMessageBuilder();
         builder1.setVersion((short) 4);
-        PortFeatures features = new PortFeatures(true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false);
+        PortFeatures features = new PortFeatures(true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false);
         builder1.setPortNo(90L).setReason(PortReason.OFPPRADD).setCurrentFeatures(features);
         connectionConductor.onPortStatusMessage(builder1.build());
         synchronized (popListener) {
@@ -546,11 +555,11 @@ public class ConnectionConductorImplTest {
         @Override
         public List<DataObject> translate(SwitchConnectionDistinguisher cookie, SessionContext sw, OfHeader msg) {
             LOG.debug("Received a packet in PortStatus Service");
-            if ( (((PortStatusMessage)msg).getReason().equals(PortReason.OFPPRADD))  ) {
+            if ((((PortStatusMessage) msg).getReason().equals(PortReason.OFPPRADD))) {
                 ConnectionConductorImplTest.this.incrPortstatusAddMessageCounter();
-            } else if (((PortStatusMessage)msg).getReason().equals(PortReason.OFPPRDELETE)){
+            } else if (((PortStatusMessage) msg).getReason().equals(PortReason.OFPPRDELETE)) {
                 ConnectionConductorImplTest.this.incrPortstatusDeleteMessageCounter();
-            } else if (((PortStatusMessage)msg).getReason().equals(PortReason.OFPPRMODIFY)) {
+            } else if (((PortStatusMessage) msg).getReason().equals(PortReason.OFPPRMODIFY)) {
                 ConnectionConductorImplTest.this.incrPortstatusModifyMessageCounter();
             }
             return null;
@@ -570,12 +579,13 @@ public class ConnectionConductorImplTest {
      * Test method for
      * {@link org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductorImpl#onExperimenterMessage(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessage)}
      * .
+     *
      * @throws InterruptedException
      */
     @Test
     public void testOnErrorMessage() throws InterruptedException {
         simulateV13PostHandshakeState(connectionConductor);
-        
+
         ErrorMessageBuilder builder1 = new ErrorMessageBuilder();
         builder1.setVersion((short) 4);
         builder1.setCode(100);
@@ -603,12 +613,12 @@ public class ConnectionConductorImplTest {
         Map<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, List<DataObject>>>> translatorMapping = new HashMap<>();
         TranslatorKey tKey;
 
-        IMDMessageTranslator<OfHeader, List<DataObject>> objEms = new ExperimenterMessageService() ;
+        IMDMessageTranslator<OfHeader, List<DataObject>> objEms = new ExperimenterMessageService();
         Collection<IMDMessageTranslator<OfHeader, List<DataObject>>> existingValues = new ArrayList<>();
         existingValues.add(objEms);
         tKey = new TranslatorKey(4, ExperimenterMessage.class.getName());
         translatorMapping.put(tKey, existingValues);
-        IMDMessageTranslator<OfHeader, List<DataObject>> objErms = new ErrorMessageService() ;
+        IMDMessageTranslator<OfHeader, List<DataObject>> objErms = new ErrorMessageService();
         existingValues.add(objErms);
         tKey = new TranslatorKey(4, ErrorMessage.class.getName());
         translatorMapping.put(tKey, existingValues);
@@ -618,8 +628,8 @@ public class ConnectionConductorImplTest {
     /**
      * Test method for
      * {@link org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductorImpl#processPortStatusMsg(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage)}
-     * <br><br> 
-     * Tests for getting features from port status message by port version 
+     * <br><br>
+     * Tests for getting features from port status message by port version
      * <ul>
      * <li>features are malformed - one of them is null</li>
      * <li>mismatch between port version and port features</li>
@@ -628,54 +638,53 @@ public class ConnectionConductorImplTest {
      * <li>port version OF 1.0</li>
      * <li>port version OF 1.3</li>
      * </ul>
-     * 
      */
     @Test
     public void testProcessPortStatusMsg() {
         simulateV13PostHandshakeState(connectionConductor);
-        
-		long portNumber = 90L;
-		long portNumberV10 = 91L;
-		PortStatusMessage msg;
-		
-		PortStatusMessageBuilder builder = new PortStatusMessageBuilder();	        
-        PortFeatures features = new PortFeatures(true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false);
-        PortFeatures featuresMal = new PortFeatures(true,false,false,false,null,false,false,false,false,false,false,false,false,false,false,false);
-        PortFeaturesV10 featuresV10 = new PortFeaturesV10(true,false,false,false,false,false,false,false,false,false,false,false);
-        
+
+        long portNumber = 90L;
+        long portNumberV10 = 91L;
+        PortStatusMessage msg;
+
+        PortStatusMessageBuilder builder = new PortStatusMessageBuilder();
+        PortFeatures features = new PortFeatures(true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false);
+        PortFeatures featuresMal = new PortFeatures(true, false, false, false, null, false, false, false, false, false, false, false, false, false, false, false);
+        PortFeaturesV10 featuresV10 = new PortFeaturesV10(true, false, false, false, false, false, false, false, false, false, false, false);
+
         //Malformed features	        
-        builder.setVersion((short) 1).setPortNo(portNumber).setReason(PortReason.OFPPRADD).setCurrentFeatures(featuresMal);	        
+        builder.setVersion((short) 1).setPortNo(portNumber).setReason(PortReason.OFPPRADD).setCurrentFeatures(featuresMal);
         connectionConductor.processPortStatusMsg(builder.build());
-		Assert.assertTrue(connectionConductor.getSessionContext().getPortsBandwidth().isEmpty());
-		Assert.assertTrue(connectionConductor.getSessionContext().getPhysicalPorts().isEmpty());
-		
+        Assert.assertTrue(connectionConductor.getSessionContext().getPortsBandwidth().isEmpty());
+        Assert.assertTrue(connectionConductor.getSessionContext().getPhysicalPorts().isEmpty());
+
         //Version-features mismatch	        
-        builder.setCurrentFeatures(features);	        
+        builder.setCurrentFeatures(features);
         connectionConductor.processPortStatusMsg(builder.build());
-		Assert.assertTrue(connectionConductor.getSessionContext().getPortsBandwidth().isEmpty());
-		Assert.assertTrue(connectionConductor.getSessionContext().getPhysicalPorts().isEmpty());
-		
+        Assert.assertTrue(connectionConductor.getSessionContext().getPortsBandwidth().isEmpty());
+        Assert.assertTrue(connectionConductor.getSessionContext().getPhysicalPorts().isEmpty());
+
         //Non existing version
         builder.setVersion((short) 0);
         connectionConductor.processPortStatusMsg(builder.build());
-		Assert.assertTrue(connectionConductor.getSessionContext().getPortsBandwidth().isEmpty());
-		Assert.assertTrue(connectionConductor.getSessionContext().getPhysicalPorts().isEmpty());
-		
-		//Version OF 1.3
-		builder.setVersion((short) 4);
-		msg = builder.build();
-		connectionConductor.processPortStatusMsg(builder.build());
-		Assert.assertTrue(connectionConductor.getSessionContext().getPortBandwidth(portNumber));
-		Assert.assertEquals(connectionConductor.getSessionContext().getPhysicalPort(portNumber), msg);
-		
-		//Version OF 1.0			
-		builder.setVersion((short) 1).setPortNo(portNumberV10).setCurrentFeatures(null).setCurrentFeaturesV10(featuresV10);
-		msg = builder.build();
-		connectionConductor.processPortStatusMsg(builder.build());
-		Assert.assertTrue(connectionConductor.getSessionContext().getPortBandwidth(portNumberV10));
-		Assert.assertEquals(connectionConductor.getSessionContext().getPhysicalPort(portNumberV10), msg);
+        Assert.assertTrue(connectionConductor.getSessionContext().getPortsBandwidth().isEmpty());
+        Assert.assertTrue(connectionConductor.getSessionContext().getPhysicalPorts().isEmpty());
+
+        //Version OF 1.3
+        builder.setVersion((short) 4);
+        msg = builder.build();
+        connectionConductor.processPortStatusMsg(builder.build());
+        Assert.assertTrue(connectionConductor.getSessionContext().getPortBandwidth(portNumber));
+        Assert.assertEquals(connectionConductor.getSessionContext().getPhysicalPort(portNumber), msg);
+
+        //Version OF 1.0
+        builder.setVersion((short) 1).setPortNo(portNumberV10).setCurrentFeatures(null).setCurrentFeaturesV10(featuresV10);
+        msg = builder.build();
+        connectionConductor.processPortStatusMsg(builder.build());
+        Assert.assertTrue(connectionConductor.getSessionContext().getPortBandwidth(portNumberV10));
+        Assert.assertEquals(connectionConductor.getSessionContext().getPhysicalPort(portNumberV10), msg);
     }
-    
+
     private void simulateV13PostHandshakeState(ConnectionConductorImpl conductor) {
         GetFeaturesOutputBuilder featureOutput = getFeatureResponseMsg();
         conductor.postHandshakeBasic(featureOutput.build(), OFConstants.OFP_VERSION_1_3);
