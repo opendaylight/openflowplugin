@@ -107,7 +107,7 @@ public class OFPluginToLibraryTest {
 
         ScenarioHandler scenario = new ScenarioHandler(handshakeScenario);
         switchSim.setScenarioHandler(scenario);
-        switchSim.start();
+        switchSim.run();
     }
 
     /**
@@ -125,7 +125,7 @@ public class OFPluginToLibraryTest {
 
         ScenarioHandler scenario = new ScenarioHandler(handshakeScenario);
         switchSim.setScenarioHandler(scenario);
-        switchSim.start();
+        switchSim.run();
     }
 
     /**
@@ -144,7 +144,7 @@ public class OFPluginToLibraryTest {
 
         ScenarioHandler scenario = new ScenarioHandler(handshakeScenario);
         switchSim.setScenarioHandler(scenario);
-        switchSim.start();
+        switchSim.run();
     }
 
     /**
@@ -165,7 +165,7 @@ public class OFPluginToLibraryTest {
 
         ScenarioHandler scenario = new ScenarioHandler(handshakeScenario);
         switchSim.setScenarioHandler(scenario);
-        switchSim.start();
+        switchSim.run();
     }
 
     /**
@@ -191,7 +191,7 @@ public class OFPluginToLibraryTest {
 
         ScenarioHandler scenario = new ScenarioHandler(handshakeScenario);
         switchSim.setScenarioHandler(scenario);
-        switchSim.start();
+        switchSim.run();
     }
 
     /**
@@ -214,7 +214,7 @@ public class OFPluginToLibraryTest {
 
         ScenarioHandler scenario = new ScenarioHandler(handshakeScenario);
         switchSim.setScenarioHandler(scenario);
-        switchSim.start();
+        switchSim.run();
     }
 
     /**
