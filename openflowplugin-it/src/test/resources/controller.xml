@@ -119,6 +119,7 @@
                           <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:openflow:switch:connection:provider:impl">prefix:openflow-switch-connection-provider-impl</type>
                           <name>openflow-switch-connection-provider-default-impl</name>
                           <port>6633</port>
+                          <transport-protocol>TCP</transport-protocol>
                           <switch-idle-timeout>15000</switch-idle-timeout>
                         </module>
                         <!-- default OF-switch-connection-provider (port 6653) -->
@@ -126,6 +127,7 @@
                           <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:openflow:switch:connection:provider:impl">prefix:openflow-switch-connection-provider-impl</type>
                           <name>openflow-switch-connection-provider-legacy-impl</name>
                           <port>6653</port>
+                          <transport-protocol>TCP</transport-protocol>
                           <switch-idle-timeout>15000</switch-idle-timeout>
                         </module>
                 

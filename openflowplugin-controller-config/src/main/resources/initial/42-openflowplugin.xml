@@ -27,6 +27,8 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
           <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:openflow:switch:connection:provider:impl">prefix:openflow-switch-connection-provider-impl</type>
           <name>openflow-switch-connection-provider-default-impl</name>
           <port>6633</port>
+<!--      Possible transport-protocol options: TCP, TLS, UDP -->
+          <transport-protocol>TCP</transport-protocol>
           <switch-idle-timeout>15000</switch-idle-timeout>
 <!--           Exemplary TLS configuration:
                 - uncomment the <tls> tag
@@ -58,6 +60,8 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
           <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:openflow:switch:connection:provider:impl">prefix:openflow-switch-connection-provider-impl</type>
           <name>openflow-switch-connection-provider-legacy-impl</name>
           <port>6653</port>
+<!--      Possible transport-protocol options: TCP, TLS, UDP -->
+          <transport-protocol>TCP</transport-protocol>
           <switch-idle-timeout>15000</switch-idle-timeout>
 <!--           Exemplary TLS configuration:
                 - uncomment the <tls> tag
