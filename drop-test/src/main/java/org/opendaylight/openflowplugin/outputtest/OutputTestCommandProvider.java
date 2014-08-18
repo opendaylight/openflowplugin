@@ -23,6 +23,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.OutputPortValues;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.BufferId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInputBuilder;
@@ -138,7 +139,7 @@ public class OutputTestCommandProvider implements CommandProvider {
             packet_out.setNode(ref);
             packet_out.setIngress(nIngressConRef);
             packet_out.setEgress(nEngressConRef);
-            packet_out.setBufferId(Long.valueOf(0xffffffffL));
+            packet_out.setBufferId(new BufferId(0xffffffffL));
 
             packetProcessingService.transmitPacket(packet_out.build());
         } else {
