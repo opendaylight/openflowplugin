@@ -68,7 +68,7 @@ public class PacketOutConvertor {
 
         // Build Buffer ID to be NO_OFP_NO_BUFFER
         if (inputPacket.getBufferId() != null) {
-            bufferId = inputPacket.getBufferId().getValue();
+            bufferId = inputPacket.getBufferId();
         }
 
         PortNumber outPort = null;

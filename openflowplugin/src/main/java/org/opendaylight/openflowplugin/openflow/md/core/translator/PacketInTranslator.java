@@ -32,7 +32,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNotifPacketIn;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNotifPacketInBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNotifUpdateFlowStatsBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.BufferId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.ConnectionCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceivedBuilder;
@@ -57,10 +56,9 @@ public class PacketInTranslator implements IMDMessageTranslator<OfHeader, List<D
 
         if (sc != null && msg instanceof PacketInMessage) {
             PacketInMessage message = (PacketInMessage)msg;
-            LOG.trace("PacketIn[v{}]: Cookie: {} Match.type: {}, BufferId: {}",
+            LOG.trace("PacketIn[v{}]: Cookie: {} Match.type: {}",
                     message.getVersion(), message.getCookie(),
-                    message.getMatch() != null ? message.getMatch().getType() : message.getMatch(),
-                    message.getBufferId() != null ? message.getBufferId().toString() : "No buffer Id");
+                    message.getMatch() != null ? message.getMatch().getType() : message.getMatch());
 
            // create a packet received event builder
            PacketReceivedBuilder pktInBuilder = new PacketReceivedBuilder();
@@ -121,9 +119,6 @@ public class PacketInTranslator implements IMDMessageTranslator<OfHeader, List<D
                    pktInBuilder.setPacketInReason(PacketInUtil.getMdSalPacketInReason(message.getReason()));
                    pktInBuilder.setTableId(new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableId(message.getTableId().getValue().shortValue()));
                    pktInBuilder.setIngress(InventoryDataServiceUtil.nodeConnectorRefFromDatapathIdPortno(dpid, port, ofVersion));
-                   if (message.getBufferId() != null) {
-                       pktInBuilder.setBufferId(new BufferId(message.getBufferId()));
-                   }
                    PacketReceived pktInEvent = pktInBuilder.build();
                    salPacketIn = Collections.<DataObject>singletonList(pktInEvent);
                }
