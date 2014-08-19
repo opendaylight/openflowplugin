@@ -90,6 +90,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.push.vlan.action._case.PushVlanActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.dl.dst.action._case.SetDlDstAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.dl.src.action._case.SetDlSrcAction;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.field._case.SetField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.mpls.ttl.action._case.SetMplsTtlAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.mpls.ttl.action._case.SetMplsTtlActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.nw.tos.action._case.SetNwTosAction;
@@ -119,6 +120,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.OxmFieldsActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.PortAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.PortActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.PortMatchEntry;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.PortMatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.QueueIdAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.QueueIdActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.VlanPcpAction;
@@ -144,6 +147,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.EthDst;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.EthSrc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.OpenflowBasicClass;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TcpDst;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TcpSrc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.VlanVid;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.grouping.MatchEntries;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.grouping.MatchEntriesBuilder;
@@ -610,6 +615,28 @@ public final class ActionConvertor {
                     .setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.SetTpSrc.class);
             actionBuilder.addAugmentation(PortAction.class, settpsrc.build());
             return actionBuilder.build();
+        } else if (version == OFConstants.OFP_VERSION_1_3) {
+            SetTpSrcActionCase settpsrccase = (SetTpSrcActionCase) action;
+            SetTpSrcAction settpsrcaction = settpsrccase.getSetTpSrcAction();
+            
+            MatchEntriesBuilder matchEntriesBuilder = new MatchEntriesBuilder();
+            matchEntriesBuilder.setOxmClass(OpenflowBasicClass.class);
+            matchEntriesBuilder.setHasMask(false);
+            matchEntriesBuilder.setOxmMatchField(TcpSrc.class);
+            PortMatchEntryBuilder portMatchEntryBuilder = new PortMatchEntryBuilder();
+            portMatchEntryBuilder.setPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber(settpsrcaction.getPort().getValue().intValue()));
+            matchEntriesBuilder.addAugmentation(PortMatchEntry.class, portMatchEntryBuilder.build());
+            
+            actionBuilder
+            .setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.SetField.class);
+            
+            OxmFieldsActionBuilder oxmFieldsActionBuilder = new OxmFieldsActionBuilder();
+            List<MatchEntries> matchEntries = new ArrayList<MatchEntries>();
+            matchEntries.add(matchEntriesBuilder.build());
+            oxmFieldsActionBuilder.setMatchEntries(matchEntries);
+
+            actionBuilder.addAugmentation(OxmFieldsAction.class, oxmFieldsActionBuilder.build());
+            return actionBuilder.build();
         }
         logger.error("Unknown Action Type for the Version", version);
         return null;
@@ -629,6 +656,28 @@ public final class ActionConvertor {
             actionBuilder
                     .setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.SetTpDst.class);
             actionBuilder.addAugmentation(PortAction.class, settpdst.build());
+            return actionBuilder.build();
+        } else if (version == OFConstants.OFP_VERSION_1_3) {
+            SetTpDstActionCase settpdstcase = (SetTpDstActionCase) action;
+            SetTpDstAction settpdstaction = settpdstcase.getSetTpDstAction();
+            
+            MatchEntriesBuilder matchEntriesBuilder = new MatchEntriesBuilder();
+            matchEntriesBuilder.setOxmClass(OpenflowBasicClass.class);
+            matchEntriesBuilder.setHasMask(false);
+            matchEntriesBuilder.setOxmMatchField(TcpDst.class);
+            PortMatchEntryBuilder portMatchEntryBuilder = new PortMatchEntryBuilder();
+            portMatchEntryBuilder.setPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber(settpdstaction.getPort().getValue().intValue()));
+            matchEntriesBuilder.addAugmentation(PortMatchEntry.class, portMatchEntryBuilder.build());
+            
+            actionBuilder
+            .setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.SetField.class);
+            
+            OxmFieldsActionBuilder oxmFieldsActionBuilder = new OxmFieldsActionBuilder();
+            List<MatchEntries> matchEntries = new ArrayList<MatchEntries>();
+            matchEntries.add(matchEntriesBuilder.build());
+            oxmFieldsActionBuilder.setMatchEntries(matchEntries);
+
+            actionBuilder.addAugmentation(OxmFieldsAction.class, oxmFieldsActionBuilder.build());
             return actionBuilder.build();
         }
         logger.error("Unknown Action Type for the Version", version);
