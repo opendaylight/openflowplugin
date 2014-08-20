@@ -5,13 +5,86 @@
     <groupId>org.opendaylight.openflowplugin</groupId>
     <artifactId>openflowplugin-parent</artifactId>
     <version>0.0.3-SNAPSHOT</version>
+    <relativePath>../</relativePath>
   </parent>
   <artifactId>features-openflowplugin</artifactId>
-  <name>Openflow Protocol Plugin - Karaf Features</name>
-  <packaging>pom</packaging>
+
+  <packaging>jar</packaging>
+
   <properties>
     <features.file>features.xml</features.file>
+    <karaf.empty.distro.version>1.4.2-SNAPSHOT</karaf.empty.distro.version>
+    <yangtools.version>0.6.2-SNAPSHOT</yangtools.version>
   </properties>
+
+  <dependencies>
+    <!-- feature dependencies -->
+    <dependency>
+      <groupId>org.opendaylight.controller</groupId>
+      <artifactId>features-mdsal</artifactId>
+      <version>${mdsal.version}</version>
+      <classifier>features</classifier>
+      <type>xml</type>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.openflowjava</groupId>
+      <artifactId>openflowjava-features</artifactId>
+      <version>${openflowjava.version}</version>
+      <classifier>features</classifier>
+      <type>xml</type>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.controller</groupId>
+      <artifactId>features-flow</artifactId>
+      <version>${mdsal.version}</version>
+      <classifier>features</classifier>
+      <type>xml</type>
+    </dependency>
+
+    <!-- bundle dependencies -->
+    <dependency>
+      <groupId>org.opendaylight.openflowplugin</groupId>
+      <artifactId>openflowplugin-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.openflowplugin</groupId>
+      <artifactId>openflowplugin-extension-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.openflowplugin</groupId>
+      <artifactId>openflowplugin</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.openflowplugin</groupId>
+      <artifactId>openflowplugin-controller-config</artifactId>
+      <version>${project.version}</version>
+      <type>xml</type>
+      <classifier>config</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.controller</groupId>
+      <artifactId>liblldp</artifactId>
+      <version>${sal.api.version}</version>
+    </dependency>
+    
+    <!-- test the features.xml -->
+    <dependency>
+      <groupId>org.opendaylight.yangtools</groupId>
+      <artifactId>features-test</artifactId>
+      <version>${yangtools.version}</version>
+    </dependency>
+    <!-- dependency for opendaylight-karaf-empty for use by testing -->
+    <dependency>
+      <groupId>org.opendaylight.controller</groupId>
+      <artifactId>opendaylight-karaf-empty</artifactId>
+      <version>${karaf.distro.empty.version}</version>
+      <type>zip</type>
+    </dependency>
+  </dependencies>
+
   <build>
     <resources>
       <resource>
@@ -20,23 +93,6 @@
       </resource>
     </resources>
     <plugins>
-      <plugin>
-        <groupId>org.apache.karaf.tooling</groupId>
-        <artifactId>karaf-maven-plugin</artifactId>
-        <version>${karaf.version}</version>
-        <extensions>true</extensions>
-        <executions>
-            <execution>
-                <id>features-create-kar</id>
-                <goals>
-                    <goal>features-create-kar</goal>
-                </goals>
-                <configuration>
-                    <featuresFile>${project.build.directory}/classes/${features.file}</featuresFile>
-                </configuration>
-            </execution>
-        </executions>
-      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
@@ -72,12 +128,27 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.16</version>
+        <configuration>
+          <systemPropertyVariables>
+            <karaf.distro.groupId>org.opendaylight.controller</karaf.distro.groupId>
+            <karaf.distro.artifactId>opendaylight-karaf-empty</karaf.distro.artifactId>
+            <karaf.distro.version>${karaf.empty.distro.version}</karaf.distro.version>
+          </systemPropertyVariables>
+          <dependenciesToScan>
+           <dependency>org.opendaylight.yangtools:features-test</dependency>
+          </dependenciesToScan>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
   <scm>
-    <connection>scm:git:ssh://git.opendaylight.org:29418/openflowplugin.git</connection>
-    <developerConnection>scm:git:ssh://git.opendaylight.org:29418/openflowplugin.git</developerConnection>
+    <connection>scm:git:ssh://git.opendaylight.org:29418/controller.git</connection>
+    <developerConnection>scm:git:ssh://git.opendaylight.org:29418/controller.git</developerConnection>
     <tag>HEAD</tag>
-    <url>https://wiki.opendaylight.org/view/OpenDaylight_OpenFlow_Plugin:Main</url>
+    <url>https://wiki.opendaylight.org/view/OpenDaylight_Controller:MD-SAL</url>
   </scm>
 </project>

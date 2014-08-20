@@ -63,6 +63,8 @@
       <sonar.jacoco.reportPath>target/code-coverage/jacoco.exec</sonar.jacoco.reportPath>
       <sonar.jacoco.itReportPath>target/code-coverage/jacoco-it.exec</sonar.jacoco.itReportPath>
       <sonar.profile>Sonar way with Findbugs</sonar.profile>
+
+      <karaf.distro.empty.version>1.4.2-SNAPSHOT</karaf.distro.empty.version>
     </properties>
 
     <dependencyManagement>
@@ -610,7 +612,8 @@
       <module>openflowplugin</module>
       <module>extension</module>
       <module>distribution/base</module>
-      <module>distribution/cbench</module>            
+      <module>distribution/cbench</module>
+      <module>distribution/karaf</module>
       <module>openflowplugin-controller-config</module>
       <module>openflowplugin-it</module>
       <module>test-provider</module>

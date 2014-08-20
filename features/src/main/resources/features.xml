@@ -1,13 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <features name="openflowplugin-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.2.0"
-          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.2.0 http://karaf.apache.org/xmlns/features/v1.2.0">
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.2.0 http://karaf.apache.org/xmlns/features/v1.2.0">
     <repository>mvn:org.opendaylight.controller/features-mdsal/${mdsal.version}/xml/features</repository>
-    <feature name='odl-openflowplugin' description="OpenDaylight :: Openflow Plugin :: Plugin" version='${project.version}'>
-        <feature version="${mdsal.version}">odl-mdsal-all</feature>
-        <feature version="${openflowjava.version}">odl-openflowjava</feature>
+    <repository>mvn:org.opendaylight.controller/features-flow/${mdsal.version}/xml/features</repository>
+    <repository>mvn:org.opendaylight.openflowjava/features-openflowjava/${openflowjava.version}/xml/features</repository>
+
+    <feature name='odl-openflowplugin-all' description="OpenDaylight :: Openflow Plugin :: All" version='${project.version}'>
+        <feature version="${project.version}">odl-openflowplugin-southbound</feature>
+        <feature version="${project.version}">odl-openflowplugin-flow-services</feature>
+    </feature>
+    <feature name='odl-openflowplugin-southbound' description="OpenDaylight :: Openflow Plugin :: SouthBound" version='${project.version}'>
+        <feature version="${mdsal.version}">odl-mdsal-broker</feature>
+        <feature version="${mdsal.version}">odl-flow-model</feature>
+        <feature version="${openflowjava.version}">odl-openflowjava-protocol</feature>
         <bundle>mvn:org.opendaylight.openflowplugin/openflowplugin/${project.version}</bundle>
-        <configfile finalname="classes/initial/42-openflowplugin.xml">mvn:org.opendaylight.openflowplugin/openflowplugin-controller-config/${project.version}/xml/config</configfile>
+        <bundle>mvn:org.opendaylight.openflowplugin/openflowplugin-api/${project.version}</bundle>
+        <bundle>mvn:org.opendaylight.openflowplugin/openflowplugin-extension-api/${project.version}</bundle>
+        <bundle>mvn:org.opendaylight.controller/liblldp/${sal.api.version}</bundle>
+        <configfile finalname="etc/opendaylight/karaf/42-openflowplugin.xml">mvn:org.opendaylight.openflowplugin/openflowplugin-controller-config/${project.version}/xml/config</configfile>
+    </feature>
+    <feature name='odl-openflowplugin-flow-services' description="OpenDaylight :: Openflow Plugin :: Flow Services" version='${project.version}'>
+        <feature version="${project.version}">odl-openflowplugin-southbound</feature>
+        <feature version="${mdsal.version}">odl-flow-services</feature>
     </feature>
 </features>
