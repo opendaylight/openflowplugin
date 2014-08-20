@@ -1,7 +1,9 @@
 package org.opendaylight.openflowplugin.test;
 
+import com.google.common.base.Optional;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
@@ -388,12 +390,18 @@ public class OpenflowpluginStatsTestCommandProvider implements CommandProvider {
 
     private List<Node> getNodes() {
         ReadOnlyTransaction readOnlyTransaction = dataProviderService.newReadOnlyTransaction();
-        Nodes nodes = (Nodes) readOnlyTransaction.read(LogicalDatastoreType.OPERATIONAL, InstanceIdentifier.builder(Nodes.class).toInstance());
-        if (null == nodes) {
+        Optional<Nodes> nodes = null;
+        InstanceIdentifier<Nodes> nodesID = InstanceIdentifier.builder(Nodes.class).toInstance();
+        try {
+            nodes = readOnlyTransaction.read(LogicalDatastoreType.OPERATIONAL, nodesID).get();
+        } catch (ExecutionException | InterruptedException e) {
+            LOG.error("Can't read nodes for instance identifier {}", nodesID, e);
             throw new RuntimeException("nodes are not found, pls add the node.");
         }
-        return nodes.getNode();
-
+        if (nodes.get() == null) {
+            throw new RuntimeException("nodes are not found, pls add the node.");
+        }
+        return nodes.get().getNode();
     }
 
 
