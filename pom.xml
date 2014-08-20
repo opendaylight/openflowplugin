@@ -610,7 +610,8 @@
       <module>openflowplugin</module>
       <module>extension</module>
       <module>distribution/base</module>
-      <module>distribution/cbench</module>            
+      <module>distribution/cbench</module>
+      <module>distribution/karaf</module>
       <module>openflowplugin-controller-config</module>
       <module>openflowplugin-it</module>
       <module>test-provider</module>
