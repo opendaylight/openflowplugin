@@ -148,9 +148,7 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
 
     private static NodeRef createNodeRef(String string) {
         NodeKey key = new NodeKey(new NodeId(string));
-        InstanceIdentifier<Node> path = InstanceIdentifier.builder(Nodes.class).child(Node.class, key)
-                .toInstance();
-
+        InstanceIdentifier<Node> path = InstanceIdentifier.create(Nodes.class).child(Node.class, key);
         return new NodeRef(path);
     }
 
@@ -665,7 +663,7 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
     }
 
     private InstanceIdentifier<Node> nodeToInstanceId(Node node) {
-        return InstanceIdentifier.builder(Nodes.class).child(Node.class, node.getKey()).toInstance();
+        return InstanceIdentifier.create(Nodes.class).child(Node.class, node.getKey());
     }
 
     private void createTestNode() {
@@ -738,17 +736,17 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
     private void writeGroup(final CommandInterpreter ci, Group group, Group group1) {
         ReadWriteTransaction modification = dataBroker.newReadWriteTransaction();
 
-        InstanceIdentifier<Group> path1 = InstanceIdentifier.builder(Nodes.class)
+        InstanceIdentifier<Group> path1 = InstanceIdentifier.create(Nodes.class)
                 .child(Node.class, testNode12.getKey()).augmentation(FlowCapableNode.class)
-                .child(Group.class, new GroupKey(group.getGroupId())).build();
-        modification.put(LogicalDatastoreType.CONFIGURATION, nodeToInstanceId(testNode12), testNode12);
-        modification.put(LogicalDatastoreType.CONFIGURATION, path1, group);
+                .child(Group.class, new GroupKey(group.getGroupId()));
+        modification.merge(LogicalDatastoreType.CONFIGURATION, nodeToInstanceId(testNode12), testNode12, true);
+        modification.merge(LogicalDatastoreType.CONFIGURATION, path1, group, true);
 
-        InstanceIdentifier<Group> path2 = InstanceIdentifier.builder(Nodes.class)
+        InstanceIdentifier<Group> path2 = InstanceIdentifier.create(Nodes.class)
                 .child(Node.class, testNode12.getKey()).augmentation(FlowCapableNode.class)
-                .child(Group.class, new GroupKey(group1.getGroupId())).build();
-        modification.put(LogicalDatastoreType.CONFIGURATION, nodeToInstanceId(testNode12), testNode12);
-        modification.put(LogicalDatastoreType.CONFIGURATION, path2, group1);
+                .child(Group.class, new GroupKey(group1.getGroupId()));
+        modification.merge(LogicalDatastoreType.CONFIGURATION, nodeToInstanceId(testNode12), testNode12, true);
+        modification.merge(LogicalDatastoreType.CONFIGURATION, path2, group1, true);
         CheckedFuture<Void, TransactionCommitFailedException> commitFuture = modification.submit();
         Futures.addCallback(commitFuture, new FutureCallback<Void>() {
             @Override
@@ -765,14 +763,14 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
 
     private void deleteGroup(final CommandInterpreter ci, Group group, Group group1) {
         ReadWriteTransaction modification = dataBroker.newReadWriteTransaction();
-        InstanceIdentifier<Group> path1 = InstanceIdentifier.builder(Nodes.class)
+        InstanceIdentifier<Group> path1 = InstanceIdentifier.create(Nodes.class)
                 .child(Node.class, testNode12.getKey()).augmentation(FlowCapableNode.class)
-                .child(Group.class, new GroupKey(group.getGroupId())).build();
+                .child(Group.class, new GroupKey(group.getGroupId()));
         modification.delete(LogicalDatastoreType.OPERATIONAL, path1);
         modification.delete(LogicalDatastoreType.CONFIGURATION, path1);
-        InstanceIdentifier<Group> path2 = InstanceIdentifier.builder(Nodes.class)
+        InstanceIdentifier<Group> path2 = InstanceIdentifier.create(Nodes.class)
                 .child(Node.class, testNode12.getKey()).augmentation(FlowCapableNode.class)
-                .child(Group.class, new GroupKey(group1.getGroupId())).build();
+                .child(Group.class, new GroupKey(group1.getGroupId()));
         modification.delete(LogicalDatastoreType.OPERATIONAL, path2);
         modification.delete(LogicalDatastoreType.CONFIGURATION, path2);
         CheckedFuture<Void, TransactionCommitFailedException> commitFuture = modification.submit();

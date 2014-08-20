@@ -15,16 +15,13 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
-import org.opendaylight.controller.md.sal.common.api.TransactionStatus;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
@@ -180,7 +177,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.node.error.service.rev140410.NodeErrorListener;
 import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -230,7 +226,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
     }
 
     private InstanceIdentifier<Node> nodeBuilderToInstanceId(NodeBuilder node) {
-        return InstanceIdentifier.builder(Nodes.class).child(Node.class, node.getKey()).toInstance();
+        return InstanceIdentifier.create(Nodes.class).child(Node.class, node.getKey());
     }
 
     private FlowBuilder createTestFlow(NodeBuilder nodeBuilder, String flowTypeArg, String tableId) {
@@ -3336,9 +3332,9 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         } else {
             tf = createTestFlow(tn, flowtype, ci.nextArgument());
         }
-        InstanceIdentifier<Flow> path1 = InstanceIdentifier.builder(Nodes.class).child(Node.class, tn.getKey())
+        InstanceIdentifier<Flow> path1 = InstanceIdentifier.create(Nodes.class).child(Node.class, tn.getKey())
                 .augmentation(FlowCapableNode.class).child(Table.class, new TableKey(tf.getTableId()))
-                .child(Flow.class, tf.getKey()).build();
+                .child(Flow.class, tf.getKey());
         modification.delete(LogicalDatastoreType.CONFIGURATION, path1);
         CheckedFuture<Void, TransactionCommitFailedException> commitFuture = modification.submit();
         Futures.addCallback(commitFuture, new FutureCallback<Void>() {
@@ -3359,8 +3355,8 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
      * @param ci arguments: switchId flowType tableNum
      *           <p/>
      *           <pre>
-     *           e.g.: addMDFlow openflow:1 f1 42
-     *           </pre>
+     *                     e.g.: addMDFlow openflow:1 f1 42
+     *                     </pre>
      */
     public void _addMDFlow(CommandInterpreter ci) {
         NodeBuilder tn = createTestNode(ci.nextArgument());
@@ -3376,11 +3372,11 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
     private void writeFlow(final CommandInterpreter ci, FlowBuilder flow, NodeBuilder nodeBuilder) {
         ReadWriteTransaction modification = dataBroker.newReadWriteTransaction();
-        InstanceIdentifier<Flow> path1 = InstanceIdentifier.builder(Nodes.class)
+        InstanceIdentifier<Flow> path1 = InstanceIdentifier.create(Nodes.class)
                 .child(Node.class, nodeBuilder.getKey()).augmentation(FlowCapableNode.class)
-                .child(Table.class, new TableKey(flow.getTableId())).child(Flow.class, flow.getKey()).build();
-        modification.put(LogicalDatastoreType.CONFIGURATION, nodeBuilderToInstanceId(nodeBuilder), nodeBuilder.build());
-        modification.put(LogicalDatastoreType.CONFIGURATION, path1, flow.build());
+                .child(Table.class, new TableKey(flow.getTableId())).child(Flow.class, flow.getKey());
+        modification.merge(LogicalDatastoreType.CONFIGURATION, nodeBuilderToInstanceId(nodeBuilder), nodeBuilder.build(), true);
+        modification.merge(LogicalDatastoreType.CONFIGURATION, path1, flow.build(), true);
         CheckedFuture<Void, TransactionCommitFailedException> commitFuture = modification.submit();
         Futures.addCallback(commitFuture, new FutureCallback<Void>() {
             @Override
@@ -3407,8 +3403,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
     private static NodeRef createNodeRef(String string) {
         NodeKey key = new NodeKey(new NodeId(string));
-        InstanceIdentifier<Node> path = InstanceIdentifier.builder(Nodes.class).child(Node.class, key)
-                .toInstance();
+        InstanceIdentifier<Node> path = InstanceIdentifier.create(Nodes.class).child(Node.class, key);
 
         return new NodeRef(path);
     }

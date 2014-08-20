@@ -118,7 +118,7 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
     }
 
     private InstanceIdentifier<Node> nodeToInstanceId(Node node) {
-        return InstanceIdentifier.builder(Nodes.class).child(Node.class, node.getKey()).toInstance();
+        return InstanceIdentifier.create(Nodes.class).child(Node.class, node.getKey());
     }
 
     private GroupBuilder createTestGroup(String actiontype, String type, String mod) {
@@ -628,8 +628,8 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         }
         GroupBuilder gbuilder = createTestGroup(ci.nextArgument(), ci.nextArgument(), "add");
         ReadWriteTransaction modification = dataBroker.newReadWriteTransaction();
-        InstanceIdentifier<Group> path1 = InstanceIdentifier.builder(Nodes.class).child(Node.class, testNode.getKey())
-                .augmentation(FlowCapableNode.class).child(Group.class, new GroupKey(gbuilder.getGroupId())).build();
+        InstanceIdentifier<Group> path1 = InstanceIdentifier.create(Nodes.class).child(Node.class, testNode.getKey())
+                .augmentation(FlowCapableNode.class).child(Group.class, new GroupKey(gbuilder.getGroupId()));
         modification.delete(LogicalDatastoreType.CONFIGURATION, path1);
         CheckedFuture<Void, TransactionCommitFailedException> commitFuture = modification.submit();
         Futures.addCallback(commitFuture, new FutureCallback<Void>() {
@@ -661,12 +661,11 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
 
     private void writeGroup(final CommandInterpreter ci, Group group) {
         ReadWriteTransaction modification = dataBroker.newReadWriteTransaction();
-        InstanceIdentifier<Group> path1 = InstanceIdentifier.builder(Nodes.class)
+        InstanceIdentifier<Group> path1 = InstanceIdentifier.create(Nodes.class)
                 .child(Node.class, testNode.getKey()).augmentation(FlowCapableNode.class)
-                .child(Group.class, new GroupKey(group.getGroupId()))
-                .build();
-        modification.put(LogicalDatastoreType.CONFIGURATION, nodeToInstanceId(testNode), testNode);
-        modification.put(LogicalDatastoreType.CONFIGURATION, path1, group);
+                .child(Group.class, new GroupKey(group.getGroupId()));
+        modification.merge(LogicalDatastoreType.CONFIGURATION, nodeToInstanceId(testNode), testNode, true);
+        modification.merge(LogicalDatastoreType.CONFIGURATION, path1, group, true);
         CheckedFuture<Void, TransactionCommitFailedException> commitFuture = modification.submit();
         Futures.addCallback(commitFuture, new FutureCallback<Void>() {
             @Override
@@ -712,7 +711,7 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
     private static NodeRef createNodeRef(String string) {
         NodeKey key = new NodeKey(new NodeId(string));
         InstanceIdentifier<Node> path =
-                InstanceIdentifier.builder(Nodes.class).child(Node.class, key).toInstance();
+                InstanceIdentifier.create(Nodes.class).child(Node.class, key);
 
         return new NodeRef(path);
     }

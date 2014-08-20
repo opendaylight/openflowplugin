@@ -6,7 +6,6 @@ import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
@@ -59,20 +58,23 @@ public class OpenflowpluginStatsTestCommandProvider implements CommandProvider {
         List<Node> nodes = getNodes();
         for (Iterator<Node> iterator = nodes.iterator(); iterator.hasNext(); ) {
             NodeKey nodeKey = iterator.next().getKey();
-            InstanceIdentifier<Node> nodeRef = InstanceIdentifier.builder(Nodes.class).child(Node.class, nodeKey).toInstance();
+            InstanceIdentifier<Node> nodeRef = InstanceIdentifier.create(Nodes.class).child(Node.class, nodeKey);
 
             ReadOnlyTransaction readOnlyTransaction = dataProviderService.newReadOnlyTransaction();
-            Node node = (Node) readOnlyTransaction.read(LogicalDatastoreType.OPERATIONAL, nodeRef);
-
-            List<NodeConnector> ports = node.getNodeConnector();
-            for (Iterator<NodeConnector> iterator2 = ports.iterator(); iterator2.hasNext(); ) {
-                nodeConnectorCount++;
-                NodeConnectorKey nodeConnectorKey = iterator2.next().getKey();
-                InstanceIdentifier<NodeConnector> connectorRef = InstanceIdentifier.builder(Nodes.class).child(Node.class, nodeKey).child(NodeConnector.class, nodeConnectorKey).toInstance();
-                NodeConnector nodeConnector = (NodeConnector) readOnlyTransaction.read(LogicalDatastoreType.OPERATIONAL, connectorRef);
-                FlowCapableNodeConnectorStatisticsData data = nodeConnector.getAugmentation(FlowCapableNodeConnectorStatisticsData.class);
-                if (null != data) {
-                    nodeConnectorStatsCount++;
+            Node node = TestProviderTransactionUtil.getDataObject(readOnlyTransaction, nodeRef);
+            if (node != null) {
+                List<NodeConnector> ports = node.getNodeConnector();
+                for (Iterator<NodeConnector> iterator2 = ports.iterator(); iterator2.hasNext(); ) {
+                    nodeConnectorCount++;
+                    NodeConnectorKey nodeConnectorKey = iterator2.next().getKey();
+                    InstanceIdentifier<NodeConnector> connectorRef = InstanceIdentifier.create(Nodes.class).child(Node.class, nodeKey).child(NodeConnector.class, nodeConnectorKey);
+                    NodeConnector nodeConnector = TestProviderTransactionUtil.getDataObject(readOnlyTransaction, connectorRef);
+                    if (nodeConnector != null) {
+                        FlowCapableNodeConnectorStatisticsData data = nodeConnector.getAugmentation(FlowCapableNodeConnectorStatisticsData.class);
+                        if (null != data) {
+                            nodeConnectorStatsCount++;
+                        }
+                    }
                 }
             }
         }
@@ -93,23 +95,26 @@ public class OpenflowpluginStatsTestCommandProvider implements CommandProvider {
         List<Node> nodes = getNodes();
         for (Iterator<Node> iterator = nodes.iterator(); iterator.hasNext(); ) {
             NodeKey nodeKey = iterator.next().getKey();
-            InstanceIdentifier<Node> nodeRef = InstanceIdentifier.builder(Nodes.class).child(Node.class, nodeKey).toInstance();
+            InstanceIdentifier<Node> nodeRef = InstanceIdentifier.create(Nodes.class).child(Node.class, nodeKey);
 
             ReadOnlyTransaction readOnlyTransaction = dataProviderService.newReadOnlyTransaction();
-            Node node = (Node) readOnlyTransaction.read(LogicalDatastoreType.OPERATIONAL, nodeRef);
-
-            List<NodeConnector> ports = node.getNodeConnector();
-            for (Iterator<NodeConnector> iterator2 = ports.iterator(); iterator2.hasNext(); ) {
-                nodeConnectorCount++;
-                NodeConnectorKey nodeConnectorKey = iterator2.next().getKey();
-                InstanceIdentifier<FlowCapableNodeConnector> connectorRef = InstanceIdentifier.builder(Nodes.class).child(Node.class, nodeKey).child(NodeConnector.class, nodeConnectorKey).augmentation(FlowCapableNodeConnector.class).toInstance();
-                FlowCapableNodeConnector nodeConnector = (FlowCapableNodeConnector) readOnlyTransaction.read(LogicalDatastoreType.OPERATIONAL, connectorRef);
-                if (null != nodeConnector.getName() &&
-                        null != nodeConnector.getCurrentFeature() &&
-                        null != nodeConnector.getState() &&
-                        null != nodeConnector.getHardwareAddress() &&
-                        null != nodeConnector.getPortNumber()) {
-                    nodeConnectorDescStatsCount++;
+            Node node = TestProviderTransactionUtil.getDataObject(readOnlyTransaction, nodeRef);
+            if (node != null) {
+                List<NodeConnector> ports = node.getNodeConnector();
+                for (Iterator<NodeConnector> iterator2 = ports.iterator(); iterator2.hasNext(); ) {
+                    nodeConnectorCount++;
+                    NodeConnectorKey nodeConnectorKey = iterator2.next().getKey();
+                    InstanceIdentifier<FlowCapableNodeConnector> connectorRef = InstanceIdentifier.create(Nodes.class).child(Node.class, nodeKey).child(NodeConnector.class, nodeConnectorKey).augmentation(FlowCapableNodeConnector.class);
+                    FlowCapableNodeConnector nodeConnector = TestProviderTransactionUtil.getDataObject(readOnlyTransaction, connectorRef);
+                    if (nodeConnector != null) {
+                        if (null != nodeConnector.getName() &&
+                                null != nodeConnector.getCurrentFeature() &&
+                                null != nodeConnector.getState() &&
+                                null != nodeConnector.getHardwareAddress() &&
+                                null != nodeConnector.getPortNumber()) {
+                            nodeConnectorDescStatsCount++;
+                        }
+                    }
                 }
             }
         }
@@ -129,27 +134,33 @@ public class OpenflowpluginStatsTestCommandProvider implements CommandProvider {
         List<Node> nodes = getNodes();
         for (Iterator<Node> iterator = nodes.iterator(); iterator.hasNext(); ) {
             NodeKey nodeKey = iterator.next().getKey();
-            InstanceIdentifier<FlowCapableNode> nodeRef = InstanceIdentifier.builder(Nodes.class).child(Node.class, nodeKey).augmentation(FlowCapableNode.class).toInstance();
+            InstanceIdentifier<FlowCapableNode> nodeRef = InstanceIdentifier.create(Nodes.class).child(Node.class, nodeKey).augmentation(FlowCapableNode.class);
 
             ReadOnlyTransaction readOnlyTransaction = dataProviderService.newReadOnlyTransaction();
-            FlowCapableNode node = (FlowCapableNode) readOnlyTransaction.read(LogicalDatastoreType.OPERATIONAL, nodeRef);
+            FlowCapableNode node = TestProviderTransactionUtil.getDataObject(readOnlyTransaction, nodeRef);
 
-            List<Table> tables = node.getTable();
-            for (Iterator<Table> iterator2 = tables.iterator(); iterator2.hasNext(); ) {
-                TableKey tableKey = iterator2.next().getKey();
-                InstanceIdentifier<Table> tableRef = InstanceIdentifier.builder(Nodes.class).child(Node.class, nodeKey).augmentation(FlowCapableNode.class).child(Table.class, tableKey).toInstance();
-                Table table = (Table) readOnlyTransaction.read(LogicalDatastoreType.OPERATIONAL, tableRef);
-                List<Flow> flows = table.getFlow();
-                for (Iterator<Flow> iterator3 = flows.iterator(); iterator3.hasNext(); ) {
-                    flowCount++;
-                    FlowKey flowKey = iterator3.next().getKey();
-                    InstanceIdentifier<Flow> flowRef = InstanceIdentifier.builder(Nodes.class).child(Node.class, nodeKey).augmentation(FlowCapableNode.class).child(Table.class, tableKey).child(Flow.class, flowKey).toInstance();
-                    Flow flow = (Flow) readOnlyTransaction.read(LogicalDatastoreType.OPERATIONAL, flowRef);
-                    FlowStatisticsData data = flow.getAugmentation(FlowStatisticsData.class);
-                    if (null != data) {
-                        flowStatsCount++;
-                        LOG.debug("--------------------------------------------");
-                        ci.print(data);
+            if (node != null) {
+                List<Table> tables = node.getTable();
+                for (Iterator<Table> iterator2 = tables.iterator(); iterator2.hasNext(); ) {
+                    TableKey tableKey = iterator2.next().getKey();
+                    InstanceIdentifier<Table> tableRef = InstanceIdentifier.create(Nodes.class).child(Node.class, nodeKey).augmentation(FlowCapableNode.class).child(Table.class, tableKey);
+                    Table table = TestProviderTransactionUtil.getDataObject(readOnlyTransaction, tableRef);
+                    if (table != null) {
+                        List<Flow> flows = table.getFlow();
+                        for (Iterator<Flow> iterator3 = flows.iterator(); iterator3.hasNext(); ) {
+                            flowCount++;
+                            FlowKey flowKey = iterator3.next().getKey();
+                            InstanceIdentifier<Flow> flowRef = InstanceIdentifier.create(Nodes.class).child(Node.class, nodeKey).augmentation(FlowCapableNode.class).child(Table.class, tableKey).child(Flow.class, flowKey);
+                            Flow flow = TestProviderTransactionUtil.getDataObject(readOnlyTransaction, flowRef);
+                            if (flow != null) {
+                                FlowStatisticsData data = flow.getAugmentation(FlowStatisticsData.class);
+                                if (null != data) {
+                                    flowStatsCount++;
+                                    LOG.debug("--------------------------------------------");
+                                    ci.print(data);
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -171,20 +182,23 @@ public class OpenflowpluginStatsTestCommandProvider implements CommandProvider {
         List<Node> nodes = getNodes();
         for (Iterator<Node> iterator = nodes.iterator(); iterator.hasNext(); ) {
             NodeKey nodeKey = iterator.next().getKey();
-            InstanceIdentifier<FlowCapableNode> nodeRef = InstanceIdentifier.builder(Nodes.class).child(Node.class, nodeKey).augmentation(FlowCapableNode.class).toInstance();
+            InstanceIdentifier<FlowCapableNode> nodeRef = InstanceIdentifier.create(Nodes.class).child(Node.class, nodeKey).augmentation(FlowCapableNode.class);
 
             ReadOnlyTransaction readOnlyTransaction = dataProviderService.newReadOnlyTransaction();
-            FlowCapableNode node = (FlowCapableNode) readOnlyTransaction.read(LogicalDatastoreType.OPERATIONAL, nodeRef);
-
-            List<Table> tables = node.getTable();
-            for (Iterator<Table> iterator2 = tables.iterator(); iterator2.hasNext(); ) {
-                tableCount++;
-                TableKey tableKey = iterator2.next().getKey();
-                InstanceIdentifier<Table> tableRef = InstanceIdentifier.builder(Nodes.class).child(Node.class, nodeKey).augmentation(FlowCapableNode.class).child(Table.class, tableKey).toInstance();
-                Table table = (Table) readOnlyTransaction.read(LogicalDatastoreType.OPERATIONAL, tableRef);
-                FlowTableStatisticsData data = table.getAugmentation(FlowTableStatisticsData.class);
-                if (null != data) {
-                    tableStatsCount++;
+            FlowCapableNode node = TestProviderTransactionUtil.getDataObject(readOnlyTransaction, nodeRef);
+            if (node != null) {
+                List<Table> tables = node.getTable();
+                for (Iterator<Table> iterator2 = tables.iterator(); iterator2.hasNext(); ) {
+                    tableCount++;
+                    TableKey tableKey = iterator2.next().getKey();
+                    InstanceIdentifier<Table> tableRef = InstanceIdentifier.create(Nodes.class).child(Node.class, nodeKey).augmentation(FlowCapableNode.class).child(Table.class, tableKey);
+                    Table table = TestProviderTransactionUtil.getDataObject(readOnlyTransaction, tableRef);
+                    if (table != null) {
+                        FlowTableStatisticsData data = table.getAugmentation(FlowTableStatisticsData.class);
+                        if (null != data) {
+                            tableStatsCount++;
+                        }
+                    }
                 }
             }
         }
@@ -205,19 +219,22 @@ public class OpenflowpluginStatsTestCommandProvider implements CommandProvider {
         List<Node> nodes = getNodes();
         for (Iterator<Node> iterator = nodes.iterator(); iterator.hasNext(); ) {
             NodeKey nodeKey = iterator.next().getKey();
-            InstanceIdentifier<FlowCapableNode> nodeRef = InstanceIdentifier.builder(Nodes.class).child(Node.class, nodeKey).augmentation(FlowCapableNode.class).toInstance();
+            InstanceIdentifier<FlowCapableNode> nodeRef = InstanceIdentifier.create(Nodes.class).child(Node.class, nodeKey).augmentation(FlowCapableNode.class);
             ReadOnlyTransaction readOnlyTransaction = dataProviderService.newReadOnlyTransaction();
-            FlowCapableNode node = (FlowCapableNode) readOnlyTransaction.read(LogicalDatastoreType.OPERATIONAL, nodeRef);
-
-            List<Group> groups = node.getGroup();
-            for (Iterator<Group> iterator2 = groups.iterator(); iterator2.hasNext(); ) {
-                groupCount++;
-                GroupKey groupKey = iterator2.next().getKey();
-                InstanceIdentifier<Group> groupRef = InstanceIdentifier.builder(Nodes.class).child(Node.class, nodeKey).augmentation(FlowCapableNode.class).child(Group.class, groupKey).toInstance();
-                Group group = (Group) readOnlyTransaction.read(LogicalDatastoreType.OPERATIONAL, groupRef);
-                data = group.getAugmentation(NodeGroupStatistics.class);
-                if (null != data) {
-                    groupStatsCount++;
+            FlowCapableNode node = TestProviderTransactionUtil.getDataObject(readOnlyTransaction, nodeRef);
+            if (node != null) {
+                List<Group> groups = node.getGroup();
+                for (Iterator<Group> iterator2 = groups.iterator(); iterator2.hasNext(); ) {
+                    groupCount++;
+                    GroupKey groupKey = iterator2.next().getKey();
+                    InstanceIdentifier<Group> groupRef = InstanceIdentifier.create(Nodes.class).child(Node.class, nodeKey).augmentation(FlowCapableNode.class).child(Group.class, groupKey);
+                    Group group = TestProviderTransactionUtil.getDataObject(readOnlyTransaction, groupRef);
+                    if (group != null) {
+                        data = group.getAugmentation(NodeGroupStatistics.class);
+                        if (null != data) {
+                            groupStatsCount++;
+                        }
+                    }
                 }
             }
         }
@@ -237,28 +254,32 @@ public class OpenflowpluginStatsTestCommandProvider implements CommandProvider {
         List<Node> nodes = getNodes();
         for (Iterator<Node> iterator = nodes.iterator(); iterator.hasNext(); ) {
             NodeKey nodeKey = iterator.next().getKey();
-            InstanceIdentifier<FlowCapableNode> nodeRef = InstanceIdentifier.builder(Nodes.class).child(Node.class, nodeKey).augmentation(FlowCapableNode.class).toInstance();
+            InstanceIdentifier<FlowCapableNode> nodeRef = InstanceIdentifier.create(Nodes.class).child(Node.class, nodeKey).augmentation(FlowCapableNode.class);
             ReadOnlyTransaction readOnlyTransaction = dataProviderService.newReadOnlyTransaction();
-            FlowCapableNode node = (FlowCapableNode) readOnlyTransaction.read(LogicalDatastoreType.OPERATIONAL, nodeRef);
+            FlowCapableNode node = TestProviderTransactionUtil.getDataObject(readOnlyTransaction, nodeRef);
 
-            List<Group> groups = node.getGroup();
-            for (Iterator<Group> iterator2 = groups.iterator(); iterator2.hasNext(); ) {
-                groupCount++;
-                GroupKey groupKey = iterator2.next().getKey();
-                InstanceIdentifier<Group> groupRef = InstanceIdentifier.builder(Nodes.class).child(Node.class, nodeKey).augmentation(FlowCapableNode.class).child(Group.class, groupKey).toInstance();
-                Group group = (Group) readOnlyTransaction.read(LogicalDatastoreType.OPERATIONAL, groupRef);
-                data = group.getAugmentation(NodeGroupDescStats.class);
-                if (null != data) {
-                    groupDescStatsCount++;
+            if (node != null) {
+                List<Group> groups = node.getGroup();
+                for (Iterator<Group> iterator2 = groups.iterator(); iterator2.hasNext(); ) {
+                    groupCount++;
+                    GroupKey groupKey = iterator2.next().getKey();
+                    InstanceIdentifier<Group> groupRef = InstanceIdentifier.create(Nodes.class).child(Node.class, nodeKey).augmentation(FlowCapableNode.class).child(Group.class, groupKey);
+                    Group group = TestProviderTransactionUtil.getDataObject(readOnlyTransaction, groupRef);
+                    if (group != null) {
+                        data = group.getAugmentation(NodeGroupDescStats.class);
+                        if (null != data) {
+                            groupDescStatsCount++;
+                        }
+                    }
                 }
             }
-        }
 
-        if (groupCount == groupDescStatsCount) {
-            LOG.debug("---------------------groupDescStats - Success-------------------------------");
-        } else {
-            LOG.debug("------------------------------groupDescStats - Failed--------------------------");
-            LOG.debug("System fetchs stats data in 50 seconds interval, so pls wait and try again.");
+            if (groupCount == groupDescStatsCount) {
+                LOG.debug("---------------------groupDescStats - Success-------------------------------");
+            } else {
+                LOG.debug("------------------------------groupDescStats - Failed--------------------------");
+                LOG.debug("System fetchs stats data in 50 seconds interval, so pls wait and try again.");
+            }
         }
     }
 
@@ -269,19 +290,22 @@ public class OpenflowpluginStatsTestCommandProvider implements CommandProvider {
         List<Node> nodes = getNodes();
         for (Iterator<Node> iterator = nodes.iterator(); iterator.hasNext(); ) {
             NodeKey nodeKey = iterator.next().getKey();
-            InstanceIdentifier<FlowCapableNode> nodeRef = InstanceIdentifier.builder(Nodes.class).child(Node.class, nodeKey).augmentation(FlowCapableNode.class).toInstance();
+            InstanceIdentifier<FlowCapableNode> nodeRef = InstanceIdentifier.create(Nodes.class).child(Node.class, nodeKey).augmentation(FlowCapableNode.class);
             ReadOnlyTransaction readOnlyTransaction = dataProviderService.newReadOnlyTransaction();
-            FlowCapableNode node = (FlowCapableNode) readOnlyTransaction.read(LogicalDatastoreType.OPERATIONAL, nodeRef);
-
-            List<Meter> meters = node.getMeter();
-            for (Iterator<Meter> iterator2 = meters.iterator(); iterator2.hasNext(); ) {
-                meterCount++;
-                MeterKey meterKey = iterator2.next().getKey();
-                InstanceIdentifier<Meter> meterRef = InstanceIdentifier.builder(Nodes.class).child(Node.class, nodeKey).augmentation(FlowCapableNode.class).child(Meter.class, meterKey).toInstance();
-                Meter meter = (Meter) readOnlyTransaction.read(LogicalDatastoreType.OPERATIONAL, meterRef);
-                data = meter.getAugmentation(NodeMeterStatistics.class);
-                if (null != data) {
-                    meterStatsCount++;
+            FlowCapableNode node = TestProviderTransactionUtil.getDataObject(readOnlyTransaction, nodeRef);
+            if (node != null) {
+                List<Meter> meters = node.getMeter();
+                for (Iterator<Meter> iterator2 = meters.iterator(); iterator2.hasNext(); ) {
+                    meterCount++;
+                    MeterKey meterKey = iterator2.next().getKey();
+                    InstanceIdentifier<Meter> meterRef = InstanceIdentifier.create(Nodes.class).child(Node.class, nodeKey).augmentation(FlowCapableNode.class).child(Meter.class, meterKey);
+                    Meter meter = TestProviderTransactionUtil.getDataObject(readOnlyTransaction, meterRef);
+                    if (meter != null) {
+                        data = meter.getAugmentation(NodeMeterStatistics.class);
+                        if (null != data) {
+                            meterStatsCount++;
+                        }
+                    }
                 }
             }
         }
@@ -294,6 +318,7 @@ public class OpenflowpluginStatsTestCommandProvider implements CommandProvider {
         }
     }
 
+
     public void _meterConfigStats(CommandInterpreter ci) {
         int meterCount = 0;
         int meterConfigStatsCount = 0;
@@ -301,19 +326,22 @@ public class OpenflowpluginStatsTestCommandProvider implements CommandProvider {
         List<Node> nodes = getNodes();
         for (Iterator<Node> iterator = nodes.iterator(); iterator.hasNext(); ) {
             NodeKey nodeKey = iterator.next().getKey();
-            InstanceIdentifier<FlowCapableNode> nodeRef = InstanceIdentifier.builder(Nodes.class).child(Node.class, nodeKey).augmentation(FlowCapableNode.class).toInstance();
+            InstanceIdentifier<FlowCapableNode> nodeRef = InstanceIdentifier.create(Nodes.class).child(Node.class, nodeKey).augmentation(FlowCapableNode.class);
             ReadOnlyTransaction readOnlyTransaction = dataProviderService.newReadOnlyTransaction();
-            FlowCapableNode node = (FlowCapableNode) readOnlyTransaction.read(LogicalDatastoreType.OPERATIONAL, nodeRef);
-
-            List<Meter> meters = node.getMeter();
-            for (Iterator<Meter> iterator2 = meters.iterator(); iterator2.hasNext(); ) {
-                meterCount++;
-                MeterKey meterKey = iterator2.next().getKey();
-                InstanceIdentifier<Meter> meterRef = InstanceIdentifier.builder(Nodes.class).child(Node.class, nodeKey).augmentation(FlowCapableNode.class).child(Meter.class, meterKey).toInstance();
-                Meter meter = (Meter) readOnlyTransaction.read(LogicalDatastoreType.OPERATIONAL, meterRef);
-                data = meter.getAugmentation(NodeMeterConfigStats.class);
-                if (null != data) {
-                    meterConfigStatsCount++;
+            FlowCapableNode node = TestProviderTransactionUtil.getDataObject(readOnlyTransaction, nodeRef);
+            if (node != null) {
+                List<Meter> meters = node.getMeter();
+                for (Iterator<Meter> iterator2 = meters.iterator(); iterator2.hasNext(); ) {
+                    meterCount++;
+                    MeterKey meterKey = iterator2.next().getKey();
+                    InstanceIdentifier<Meter> meterRef = InstanceIdentifier.create(Nodes.class).child(Node.class, nodeKey).augmentation(FlowCapableNode.class).child(Meter.class, meterKey);
+                    Meter meter = TestProviderTransactionUtil.getDataObject(readOnlyTransaction, meterRef);
+                    if (meter != null) {
+                        data = meter.getAugmentation(NodeMeterConfigStats.class);
+                        if (null != data) {
+                            meterConfigStatsCount++;
+                        }
+                    }
                 }
             }
         }
@@ -334,19 +362,22 @@ public class OpenflowpluginStatsTestCommandProvider implements CommandProvider {
         List<Node> nodes = getNodes();
         for (Iterator<Node> iterator = nodes.iterator(); iterator.hasNext(); ) {
             NodeKey nodeKey = iterator.next().getKey();
-            InstanceIdentifier<FlowCapableNode> nodeRef = InstanceIdentifier.builder(Nodes.class).child(Node.class, nodeKey).augmentation(FlowCapableNode.class).toInstance();
+            InstanceIdentifier<FlowCapableNode> nodeRef = InstanceIdentifier.create(Nodes.class).child(Node.class, nodeKey).augmentation(FlowCapableNode.class);
             ReadOnlyTransaction readOnlyTransaction = dataProviderService.newReadOnlyTransaction();
-            FlowCapableNode node = (FlowCapableNode) readOnlyTransaction.read(LogicalDatastoreType.OPERATIONAL, nodeRef);
-
-            List<Table> tables = node.getTable();
-            for (Iterator<Table> iterator2 = tables.iterator(); iterator2.hasNext(); ) {
-                aggregateFlowCount++;
-                TableKey tableKey = iterator2.next().getKey();
-                InstanceIdentifier<Table> tableRef = InstanceIdentifier.builder(Nodes.class).child(Node.class, nodeKey).augmentation(FlowCapableNode.class).child(Table.class, tableKey).toInstance();
-                Table table = (Table) readOnlyTransaction.read(LogicalDatastoreType.OPERATIONAL, tableRef);
-                AggregateFlowStatisticsData data = table.getAugmentation(AggregateFlowStatisticsData.class);
-                if (null != data) {
-                    aggerateFlowStatsCount++;
+            FlowCapableNode node = TestProviderTransactionUtil.getDataObject(readOnlyTransaction, nodeRef);
+            if (node != null) {
+                List<Table> tables = node.getTable();
+                for (Iterator<Table> iterator2 = tables.iterator(); iterator2.hasNext(); ) {
+                    aggregateFlowCount++;
+                    TableKey tableKey = iterator2.next().getKey();
+                    InstanceIdentifier<Table> tableRef = InstanceIdentifier.create(Nodes.class).child(Node.class, nodeKey).augmentation(FlowCapableNode.class).child(Table.class, tableKey);
+                    Table table = TestProviderTransactionUtil.getDataObject(readOnlyTransaction, tableRef);
+                    if (table != null) {
+                        AggregateFlowStatisticsData data = table.getAugmentation(AggregateFlowStatisticsData.class);
+                        if (null != data) {
+                            aggerateFlowStatsCount++;
+                        }
+                    }
                 }
             }
         }
@@ -367,13 +398,15 @@ public class OpenflowpluginStatsTestCommandProvider implements CommandProvider {
         for (Iterator<Node> iterator = nodes.iterator(); iterator.hasNext(); ) {
             descCount++;
             NodeKey nodeKey = iterator.next().getKey();
-            InstanceIdentifier<FlowCapableNode> nodeRef = InstanceIdentifier.builder(Nodes.class).child(Node.class, nodeKey).augmentation(FlowCapableNode.class).toInstance();
+            InstanceIdentifier<FlowCapableNode> nodeRef = InstanceIdentifier.create(Nodes.class).child(Node.class, nodeKey).augmentation(FlowCapableNode.class);
             ReadOnlyTransaction readOnlyTransaction = dataProviderService.newReadOnlyTransaction();
-            FlowCapableNode node = (FlowCapableNode) readOnlyTransaction.read(LogicalDatastoreType.OPERATIONAL, nodeRef);
-            if (null != node.getHardware() &&
-                    null != node.getManufacturer() &&
-                    null != node.getSoftware()) {
-                descStatsCount++;
+            FlowCapableNode node = TestProviderTransactionUtil.getDataObject(readOnlyTransaction, nodeRef);
+            if (node != null) {
+                if (null != node.getHardware() &&
+                        null != node.getManufacturer() &&
+                        null != node.getSoftware()) {
+                    descStatsCount++;
+                }
             }
         }
 
@@ -381,19 +414,19 @@ public class OpenflowpluginStatsTestCommandProvider implements CommandProvider {
             LOG.debug("descStats - Success");
         } else {
             LOG.debug("descStats - Failed");
-            LOG.debug("System fetchs stats data in 50 seconds interval, so pls wait and try again.");
+            LOG.debug("System fetches stats data in 50 seconds interval, so please wait and try again.");
         }
 
     }
 
     private List<Node> getNodes() {
         ReadOnlyTransaction readOnlyTransaction = dataProviderService.newReadOnlyTransaction();
-        Nodes nodes = (Nodes) readOnlyTransaction.read(LogicalDatastoreType.OPERATIONAL, InstanceIdentifier.builder(Nodes.class).toInstance());
-        if (null == nodes) {
+        InstanceIdentifier<Nodes> nodesID = InstanceIdentifier.create(Nodes.class);
+        Nodes nodes = TestProviderTransactionUtil.getDataObject(readOnlyTransaction, nodesID);
+        if (nodes == null) {
             throw new RuntimeException("nodes are not found, pls add the node.");
         }
         return nodes.getNode();
-
     }
 
 

@@ -16,13 +16,10 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
-import org.opendaylight.controller.md.sal.common.api.TransactionStatus;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
@@ -76,7 +73,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeaturePropertiesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeaturePropertiesKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.osgi.framework.BundleContext;
 
 
@@ -117,7 +113,7 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
     }
 
     private InstanceIdentifier<Node> nodeToInstanceId(Node node) {
-        return InstanceIdentifier.builder(Nodes.class).child(Node.class, node.getKey()).toInstance();
+        return InstanceIdentifier.create(Nodes.class).child(Node.class, node.getKey());
     }
 
     private TableBuilder createTestTable(String tableFeatureTypeArg) {
@@ -602,15 +598,15 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
     private void writeTable(final CommandInterpreter ci, Table table) {
         ReadWriteTransaction modification = dataBroker.newReadWriteTransaction();
 
-        InstanceIdentifier<Table> path1 = InstanceIdentifier.builder(Nodes.class)
+        InstanceIdentifier<Table> path1 = InstanceIdentifier.create(Nodes.class)
                 .child(Node.class, testNode.getKey()).augmentation(FlowCapableNode.class).
-                        child(Table.class, new TableKey(table.getId())).build();
+                        child(Table.class, new TableKey(table.getId()));
 
 
-        modification.put(LogicalDatastoreType.OPERATIONAL, nodeToInstanceId(testNode), testNode);
-        modification.put(LogicalDatastoreType.OPERATIONAL, path1, table);
-        modification.put(LogicalDatastoreType.CONFIGURATION, nodeToInstanceId(testNode), testNode);
-        modification.put(LogicalDatastoreType.CONFIGURATION, path1, table);
+        modification.merge(LogicalDatastoreType.OPERATIONAL, nodeToInstanceId(testNode), testNode, true);
+        modification.merge(LogicalDatastoreType.OPERATIONAL, path1, table, true);
+        modification.merge(LogicalDatastoreType.CONFIGURATION, nodeToInstanceId(testNode), testNode, true);
+        modification.merge(LogicalDatastoreType.CONFIGURATION, path1, table, true);
         CheckedFuture<Void, TransactionCommitFailedException> commitFuture = modification.submit();
         Futures.addCallback(commitFuture, new FutureCallback<Void>() {
             @Override
