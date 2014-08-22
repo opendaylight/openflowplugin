@@ -1,0 +1,57 @@
+### OpenFlow 1.3 SET_ASYNC
+#
+# openflow version (u8) = 1.3 (0x4)
+#<0>#
+04
+
+# message type (u8) = OFPT_SET_ASYNC (28)
+1c
+
+# message length (u16) = 32
+00 20
+
+# transaction id (u32) = 0
+00 00 00 00
+
+### Message Specific Payload
+
+## Reasons to send packet in messages (as bitmap)
+## NO_MATCH(0)     =   0x1
+## ACTION(1)       =   0x2
+## INVALID_TTL(2)  =   0x4
+
+# master/equal role (u32) = NO_MATCH, ACTION (0x03)
+#<8>#
+00 00 00 03
+
+# slave role (u32) = Disabled - none (0x00)
+00 00 00 00
+
+## Reasons to send port messages (as bitmap)
+## ADD(0)     =   0x1
+## DELETE(1)  =   0x2
+## MODIFY(2)  =   0x4
+
+# master/equal role (u32) = ADD, DELETE, MODIFY (0x07)
+#<16>#
+00 00 00 07
+
+# slave role (u32) = ADD, DELETE, MODIFY (0x07)
+00 00 00 07
+
+## Reasons to send flow removed messages (as bitmap)
+## IDLE_TIMEOUT(0)  =   0x1
+## HARD_TIMEOUT(1)  =   0x2
+## DELETE(2)        =   0x4
+## GROUP_DELETE(3)  =   0x8
+
+# master/equal role (u32) = IDLE_TIMEOUT, HARD_TIMEOUT,
+#                           DELETE. GROUP_DELETE (0x0f)
+#<24>#
+00 00 00 0f
+
+# slave role (u32) = Disabled - none (0x00)
+00 00 00 00
+
+#<32>#
+#### and we are done ####

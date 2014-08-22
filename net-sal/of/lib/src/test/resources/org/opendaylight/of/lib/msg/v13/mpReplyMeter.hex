@@ -1,0 +1,144 @@
+### OpenFlow 1.3 MULTIPART_REPLY message : Type METER
+#
+# openflow version (u8) = 1.3 (0x4)
+#<0>#
+04
+
+# message type (u8) = OFPT_MULTIPART_REPLY(19)
+13
+
+# message length (u16) = 176
+00 b0
+
+# transaction id (u32) = 0
+00 00 00 00
+
+### Message Specific Payload
+## Multipart Reply Header
+# Multipart-Type (u16) = METER (9)
+#<8>#
+00 09
+
+# Flags (u16) : none
+00 00
+
+# padding (u8 x 4)
+00 00 00 00
+
+## Multipart Reply METER_STATS body
+#### An array of ofp_meter_stats structures
+#==============
+# Meter Stat 0
+#==============
+# Meter ID (u32) :  SLOWPATH = 0xfffffffd
+#<16>#
+ff ff ff fd
+
+# body length (u16) = 72
+00 48
+
+# padding (u8 x 6)
+0000 0000 0000
+
+# flow count (u32) : 100
+#<28>#
+00 00 00 64
+
+# packet in count (u64) : 1000
+0000 0000 0000 03e8
+
+# byte in count (u64) : 10000
+#<40>#
+0000 0000 0000 2710
+
+# duration seconds (u32) : 100000
+00 01 86 a0
+
+# duration nano-seconds (u32) : 1000000
+00 0f 42 40
+
+#### An array of ofp_meter_band_stats structures
+#==================
+# Meter Band Stat 0
+#==================
+#<56>#
+# packet band count (u64) : 42
+0000 0000 0000 002a
+
+# byte band count (u64) : 7
+0000 0000 0000 0007
+
+#==================
+# Meter Band Stat 1
+#==================
+#<72>#
+# packet band count (u64) : 9,876,543,210
+0000 0002 4cb0 16ea
+
+# byte band count (u64) : 1,234,567,890
+0000 0000 4996 02d2
+
+#==============
+# Meter Stat 1
+#==============
+# Meter ID (u32) :  42 = 0x2a
+#<88>#
+00 00 00 2a
+
+# body length (u16) = 88
+00 58
+
+# padding (u8 x 6)
+00 00 00 00 00 00
+
+# flow count (u32) : 200
+#<100>#
+00 00 00 c8
+
+# packet in count (u64) : 2000
+0000 0000 0000 07d0
+
+# byte in count (u64) : 20000
+#<112>#
+0000 0000 0000 4e20
+
+# duration seconds (u32) : 200000
+00 03 0d 40
+
+# duration nano-seconds (u32) : 2000000
+00 1e 84 80
+
+#### An array of ofp_meter_band_stats structures
+#==================
+# Meter Band Stat 0
+#==================
+#<128>#
+# packet band count (u64) : 2420242
+0000 0000 0024 ee12
+
+
+# byte band count (u64) : 4420442
+0000 0000 0043 735a
+
+#==================
+# Meter Band Stat 1
+#==================
+#<144>#
+# packet band count (u64) : 112,233,445,566,778,899
+018e bbb9 5eed 0e13
+
+# byte band count (u64) : 998,877,665,544,332,211
+0ddc b9f1 ccd7 63b3
+
+#==================
+# Meter Band Stat 2
+#==================
+#<160>#
+# packet band count (u64) : 111,122,223,333
+0000 0019 df66 90e5
+
+# byte band count (u64) : 444,455,556,666
+0000 0067 7b9d 963a
+
+#<176>#
+#### and we are done ####

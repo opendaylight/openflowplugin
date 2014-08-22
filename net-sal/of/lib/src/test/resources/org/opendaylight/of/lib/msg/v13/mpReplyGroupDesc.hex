@@ -1,0 +1,134 @@
+### OpenFlow 1.3 MULTIPART_REPLY message : Type GROUP_DESC
+#
+#
+# openflow version (u8) = 1.3 (0x4)
+#<0>#
+04
+
+# message type (u8) = OFPT_MULTIPART_REPLY(19)
+13
+
+# message length (u16) = 96
+00 60
+
+# transaction id (u32) = 0
+00 00 00 00
+
+### Message Specific Payload
+## Multipart Reply Header
+# Multipart-Type (u16) = GROUP_DESC (7)
+#<8>#
+00 07
+
+# Flags (u16) : none
+00 00
+
+# padding (u8 x 4)
+00 00 00 00 
+#<16>#
+
+## Multipart Reply Body
+
+# length (u8) = 80
+00 50
+
+# group type (u8) = ALL(0)
+ 00
+
+# padding (u8 x 1)
+00 
+
+# group id (u32) = 2012
+00 00 07 dc
+
+######## List of Buckets ########
+
+#=============
+# Bucket 0
+#=============
+
+# length (u16) = 24
+#<24>#
+00 18
+
+# weight (u16) = 8
+00 08
+
+# watch port (u32) = 99
+00 00 00 63
+
+# watch group (u32) = 2013
+#<32>#
+00 00 07 dd
+
+# padding (u8 x 4)
+00 00 00 00
+
+#.... List of Actions ....
+
+#.............
+# DEC_NW_TTL
+#.............
+# Action Type (u16), Length (u16), Action Specific
+# DEC_NW_TTL(24),    8,            padding
+#<40>#
+  00 18              00 08         00 00 00 00
+
+
+#=============
+# Bucket 1
+#=============
+
+# length (u16) = 48
+#<48>#
+00 30
+
+# weight (u16) = 1
+00 01
+
+# watch port (u32) = 99
+00 00 00 63
+
+# watch group (u32) = 2013
+#<56>#
+00 00 07 dd
+
+# padding (u8 x 4)
+00 00 00 00
+
+#.... List of Actions ....
+
+#.............
+# SET_FIELD.ETH_DST
+#.............
+# Action Type (u16), Length (u16), Action Specific
+# SET_FIELD(25),     16,           Single OXM TLV
+#<64>#
+  00 19              00 10
+# Class (u16), Field+M (u8),    Payload Length (u8)
+# Basic        ETH_DST(3<<1)    6
+  8000         06               06
+## Payload : Destination MAC address (u48)
+#<72>#
+00 00 1e 45 34 11
+#### Pad to 64-bits
+00 00
+
+#.............
+# SET_FIELD.IPV4_DST
+#.............
+# Action Type (u16), Length (u16), Action Specific
+# SET_FIELD(25),     16,           Single OXM TLV
+#<80>#
+00 19                00 10
+# Class (u16), Field+M (u8),    Payload Length (u8)
+# Basic        IPV4_DST(12<<1)  4
+  8000         18               04
+## Payload : Destination IPv4 address (u32) = 15.254.17.1
+#<88>#
+0f fe 11 01
+#### Pad to 64-bits
+00 00 00 00
+
+#<96>#
+#### and we are done ####

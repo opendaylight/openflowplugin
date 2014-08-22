@@ -1,0 +1,58 @@
+### Ethernet2 - ARP reply packet
+#
+# Destination MAC: Hewlett-_ce:5c:e2
+#<0>#
+44 1e a1 ce 5c e2 
+
+# Source MAC: BelkinIn_33:87:e8
+#<6>#
+08 86 3b 33 87 e8
+
+# Type: ARP (0x0806)
+#<12>#
+08 06
+
+# H/W Type: Ethernet
+#<14>#
+00 01
+
+# Protocol Type: IP
+#<16>#
+08 00
+
+# H/W Size: 6
+#<18>#
+06
+
+# Protocol Size: 4
+#<19>#
+04
+
+# Opcode: 2 (reply)
+#<20>#
+00 02
+
+# Sender MAC: 08:86:3b:33:87:e8
+#<22>#
+08 86 3b 33 87 e8
+
+# Sender IP: 192.168.1.1
+#<28>#
+c0 a8 01 01
+
+# Target MAC: 44:1e:a1:ce:5c:e2
+#<32>#
+44 1e a1 ce 5c e2
+
+# Target IP: 192.168.1.9
+#<38>#
+c0 a8 01 09
+
+# Padding
+#<42>#
+00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00
+00 00
+
+#<60>#
+#### and we are done ####

@@ -1,0 +1,84 @@
+# Some pseudo network packet
+# for testing PacketBuffer
+
+# Magic Number
+#<0>#
+cafe babe
+
+# IPv4 address = 15.255.125.36
+#<4>#
+0f ff 7d 24
+
+# IPv6 address = cafe::b00b
+#<8>#
+cafe 0000 0000 0000 0000 0000 0000 b00b
+
+# MAC address
+#<24>#
+00:01:e7:fa:1a:1a
+
+# Ethernet frame type = SNMP
+#<30>#
+814c
+
+# IP Protocol = TCP
+#<32>#
+06
+
+# ICMPv4 type = 8(ECHO_REQ)
+#<33>#
+08
+
+# ICMPv6 type = 135(NBR_SOL)
+#<34>#
+87
+
+# Port number = 0x42
+#<35>#
+00 42
+
+# Big port number = 0x11223344
+#<37>#
+11 22 33 44
+
+# single byte
+#<41>#
+ff
+
+# some bytes to skip (6)
+#<42>#
+09 09 09 09 09 09
+
+# read an int = -3
+#<48>#
+ff ff ff fd
+
+# read a long = -6
+#<52>#
+ff ff ff ff ff ff ff fa
+
+# read a U8 = 129
+#<60>#
+81
+
+# read a U16 = 65530
+#<61>#
+ff fa
+
+# read a U24 (Christmassy)
+#<63>#
+fa 1a 1a
+
+# read a U32 = 0xc234abcd
+#<66>#
+c2 34 ab cd
+
+# read a string: (field len=48) "Lord of the Rings, by J.R.R. Tolkien"
+#<70>#
+4c6f 7264 206f 6620 7468 6520 5269 6e67
+732c 2062 7920 4a2e 522e 522e 2054 6f6c
+6b69 656e 0000 0000 0000 0000 0000 0000
+
+
+#<118>#
+### DONE ###

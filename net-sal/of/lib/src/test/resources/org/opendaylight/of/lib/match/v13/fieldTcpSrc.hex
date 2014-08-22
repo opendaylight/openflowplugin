@@ -1,0 +1,17 @@
+# An example match field TLV
+# See section A.2.3.2 Flow Match Field Structures of the 1.3 Spec.
+#
+# Basic :: TCP_SRC (no mask)
+
+# Class (u16) : Basic = 0x8000
+80 00
+
+# Field + hasMask Bit (u8) : TCP_SRC(13<<1) (no mask) = 0x1a
+1a
+
+# Length of payload excluding header (u8) = 2
+02
+
+## Payload
+# TCP source port (u16) = 75
+00 4b

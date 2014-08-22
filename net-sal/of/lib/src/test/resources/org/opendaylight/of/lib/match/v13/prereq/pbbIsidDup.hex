@@ -1,0 +1,34 @@
+# Example match structure
+# See section A.2.3 Flow Match Structures of the 1.3 Spec.
+
+# Match field pre-requisite test
+# PBB_ISID pre-requisite: ETH_TYPE = PBB
+# Validation should FAIL (dup)
+
+## Match Header
+# Type (u16) = OXM (0x1)
+00 01
+# Length (u16) = 24 (excludes padding)
+00 18
+
+## Match Field
+# Basic, ETH_TYPE(5<<1),   len
+  8000   0a                02
+# PBB
+  88e7
+
+## Match Field
+# Basic, PBB_ISID(37<<1),   len
+  8000   4a                 03
+# The I-SID (u24)
+  654321
+
+## Match Field
+# Basic, PBB_ISID(37<<1),   len
+  8000   4a                 03
+# The I-SID (u24)
+  887755
+
+## Zero-Filled Padding to bring total structure
+##   length to multiple of 8.
+## Match struct length is 24; add 0 = 24

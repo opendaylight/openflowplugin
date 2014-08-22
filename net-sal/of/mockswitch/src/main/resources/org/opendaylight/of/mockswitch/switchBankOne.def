@@ -1,0 +1,40 @@
+#### Switch Bank ONE - A bank of Mock OpenFlow Switches
+
+### Define the switches that make up the bank.
+# Note the form "LNAME = filename.def" where LNAME is the logical name
+# used in the scenario section, and filename.def is assumed to be a switch
+# definition file in the same directory as this file.
+
+[switches]
+SW10 = simple10sw4port.def
+SW13 = simple13sw32port.def
+
+## TODO add packets section to parser
+# [packets]
+# define packets here that might be sent with Packet-IN messages
+# LLDP_A = lldpPacketA.hex
+# LLDP_B = lldpPacketB.hex
+
+### Define the run-time scenario, invoked when the bank is activated.
+[scenario]
+# start with a pause
+delay 1s
+
+# fire up the two switches
+activate SW10
+delay 200ms
+activate SW13
+
+## TODO implement packet-in
+# send a Packet-In from SW10
+# delay 10ms
+# packetIn SW10 LLDP_A
+
+# wait a while before...
+delay 4s
+
+# shutting down the switches
+deactivate SW13
+delay 10ms
+deactivate SW10
+

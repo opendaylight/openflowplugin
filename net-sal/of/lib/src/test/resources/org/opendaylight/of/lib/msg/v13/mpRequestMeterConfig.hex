@@ -1,0 +1,37 @@
+### OpenFlow 1.3 MULTIPART_REQUEST message : Type METER_CONFIG
+#
+# openflow version (u8) = 1.3 (0x4)
+#<0>#
+04
+
+# message type (u8) = OFPT_MULTIPART_REQUEST(18)
+12
+
+# message length (u16) = 24
+00 18
+
+# transaction id (u32) = 0
+00 00 00 00
+
+### Message Specific Payload
+## Multipart Request Header
+# Multipart-Type (u16) = METER_CONFIG (10)
+#<8>#
+00 0a
+
+# Flags (u16) : none
+00 00
+
+# padding (u8 x 4)
+00 00 00 00
+
+## Multipart Request METER_CONFIG Body
+# Meter ID (u32) :  CONTROLLER = 0xfffffffe
+#<16>#
+ff ff ff fe
+
+# padding (u8 x 4)
+00 00 00 00
+
+#<24>#
+#### and we are done ####

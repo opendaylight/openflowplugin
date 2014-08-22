@@ -1,0 +1,18 @@
+# An example 1.0 Action structure
+# See section 5.2.4 Flow Action Structures of the 1.0 Spec.
+#
+# SET_NW_TOS
+
+## HEADER
+# Action Type (u16) : SET_NW_TOS(8)
+00 08
+
+# Length of struct (u16) = 8
+00 08
+
+## ACTION SPECIFIC
+# IP ToS (u8) (DSCP field, 6 bits) = 31;
+1f
+
+# pad (u8 x 3)
+00 00 00

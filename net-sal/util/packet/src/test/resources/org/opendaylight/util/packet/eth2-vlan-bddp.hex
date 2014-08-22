@@ -1,0 +1,80 @@
+### Ethernet2 - VLAN 802.1Q - BDDP (74 bytes)
+#
+# Destination MAC: ff:ff:ff:ff:ff:ff
+#<0>#
+ff ff ff ff ff ff
+
+# Source MAC: d0:7e:28:bc:34:b5
+#<6>#
+d0 7e 28 bc 34 b5
+
+# Type: 802.1Q VLAN
+#<12>#
+81 00
+
+# VLAN ID: 200
+#<14>#
+00 c8
+
+# Type: IP (0x08999) BDDP
+#<16>#
+89 99
+
+# Chassis ID TLV (7/9b = type:1, len:7)
+#<18>#
+02 07
+
+# Chassis ID Subtype: MAC address (4)
+#<20>#
+04
+
+# Chassis ID
+#<21>#
+d0 7e 28 bc 34 b5
+
+# Port ID TLV (7/9b = type:2, len:5)
+#<27>#
+04 05
+
+# Port ID Subtype: Local (7)
+#<29>#
+07
+
+# Port ID
+#<30>#
+30 78 31 34
+
+
+# Time to live TLV (7/9b = type:3, len:2)
+#<34>#
+06 02
+
+# Time to Live = 120
+#<36>#
+00 78
+
+## Optional TLVs start here
+
+# TLV (7/9b = type:6, len:18)
+#<38>#
+0c 12 
+
+# data
+#<40>#
+31 31 34 39 36 30 33 35 31 38 38 38 38 39 35 36
+38 35
+
+#TLV (7/9b = type:127, len:12)
+#<58>#
+fe 0c
+
+# data
+#<60>#
+00 26 e1 00 00 32 d0 7e 28 bc 34 b5
+
+# TLV (7/9b = type:0, len:0)
+#<72>#
+00 00  
+
+#<74>#
+#### and we are done ####

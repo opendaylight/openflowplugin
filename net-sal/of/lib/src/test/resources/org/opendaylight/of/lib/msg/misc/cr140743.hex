@@ -1,0 +1,12 @@
+# CR 140743 - Message Parse Exception thrown for this message
+
+041300380000f11d00080000000000000000000300000002000000200000002000000020000
+000200000001f0000001f0000001f0000001f
+
+## Analysis:
+# ofp_group_features:
+#  actions[4] :: Bitmaps of OFPAT_* that are supported.
+# is this another of those 1-bit shifted by the constant value masks?
+#
+#   1f = the bottom 5 bits, that is the values 0, 1, 2, 3, 4
+#

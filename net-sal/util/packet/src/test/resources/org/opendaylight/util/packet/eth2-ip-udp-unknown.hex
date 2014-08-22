@@ -1,0 +1,78 @@
+### Ethernet2 - IP - UDP - Unknown payload
+#
+
+# Destination: Alcatel-_49:39:02 (00:e0:b1:49:39:02)
+#
+#<0>#
+00 e0 b1 49 39 02 
+
+# Source: Dell_25:fa:cd (00:13:72:25:fa:cd)
+#<6>#
+00 13 72 25 fa cd
+
+# Type: IP (0x0800)
+#<12>#
+08 00
+
+# Version: 4 (IPv4), header length: 20 bytes
+#<14># 
+45
+
+# DiffServ: 0
+#<15># 
+00
+
+# Total length: 33 bytes
+#<16># 
+00 21
+
+# Identification: 0x4f92 (20370)
+#<18># 
+4f 92
+
+# Flags/Fragment Offset: 0x0000
+#<20># 
+00 00
+
+# Time to live: 128
+#<22># 
+80
+
+# Protocol: UDP (17)
+#<23># 
+11
+
+# Header checksum: not used
+#<24>#
+00 00
+
+# Source: 172.22.178.234 (172.22.178.234)
+#<26>#
+ac 16 b2 ea
+
+# Destination: 10.10.8.240 (10.10.8.240)
+#<30>#
+0a 0a 08 f0
+
+# Source port: (UNDETERMINED)
+#<34>#
+ff ff
+
+# Destination port: (UNDETERMINED)
+#<36>#
+ff ff
+
+# Length: 13
+#<38>#
+00 0d
+
+# Checksum: not used
+#<40>#
+00 00
+
+# Message type: Boot Reply (2)
+#<42>#
+ab cd ef ab cd
+
+#<47>#
+#### and we are done ####

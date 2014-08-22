@@ -1,0 +1,16 @@
+{
+  "version" : "1.3.0",
+  "meters_features" : [ {
+    "max_meters" : 21,
+    "types" : [ "drop", "dscp_remark" ],
+    "flags" : [ "kbps", "pktps", "burst", "stats" ],
+    "max_bands_per_meter" : 21,
+    "max_color_value" : 12
+  }, {
+    "max_meters" : 14,
+    "types" : [ "dscp_remark" ],
+    "flags" : [ ],
+    "max_bands_per_meter" : 21,
+    "max_color_value" : 12
+  } ]
+}

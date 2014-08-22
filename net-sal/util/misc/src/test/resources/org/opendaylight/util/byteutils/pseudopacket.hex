@@ -1,0 +1,8 @@
+# TESTING THE hex slurping test tool test
+# some magic number
+b3 09
+# Source IP
+0e 00 45 f7
+# Source MAC
+00 0c 54 45 ff 2b
+# ... etc ...

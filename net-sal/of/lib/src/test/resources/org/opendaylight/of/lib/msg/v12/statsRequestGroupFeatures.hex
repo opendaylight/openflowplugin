@@ -1,0 +1,33 @@
+### OpenFlow 1.2 STATS_REQUEST message : Type GROUP_FEATURES
+#
+# openflow version (u8) = 1.2 (0x3)
+#<0>#
+03
+
+# message type (u8) = OFPT_MULTIPART_REQUEST(18)
+12
+
+# message length (u16) = 16
+00 10
+
+# transaction id (u32) = 0
+00 00 00 00
+
+### Message Specific Payload
+## Multipart Request Header
+# Multipart-Type (u16) = GROUP_FEATURES (8)
+#<8>#
+00 08
+
+# Flags (u16) : none
+00 00
+
+# padding (u8 x 4)
+00 00 00 00
+
+## Multipart Request Body
+# (none)
+
+#<16>#
+#### and we are done ####
+

@@ -1,0 +1,49 @@
+<!--
+  ~ Copyright (c) 2014 Hewlett-Packard Development Company, L.P.
+  ~
+  ~ This program and the accompanying materials are made available under the
+  ~ terms of the Eclipse Public License v1.0 which accompanies this distribution,
+  ~ and is available at http://www.eclipse.org/legal/epl-v10.html
+  -->
+
+<html>
+<body>
+
+A set of classes representing data values used in the OpenFlow protocol.
+<p>
+    These classes are based on the "Cacheable Data Type" design and provide
+    the following benefits:
+
+<ul>
+    <li>
+        Type-safety in API definitions
+    </li>
+    <li>
+        Instances are immutable (and thus inherently threadsafe)
+    </li>
+    <li>
+        Instances are <i>Serializable</i> so can be passed from VM to VM
+    </li>
+    <li>
+        <code>equals()</code> and <code>hashCode()</code> have been overridden
+        to ensure instances play nicely with the <i>Collection</i> framework
+    </li>
+    <li>
+        The <code>Comparable</code> interface has been implemented to provide
+        an "intuitive" sort order
+    </li>
+    <li>
+        <code>valueOf()</code> static methods allow for creation of instances
+        from a variety of "external" representations
+    </li>
+    <li>
+        <code>to<i>Type</i>()</code> instance methods convert
+        back to "external" representations
+    </li>
+    <li>
+        Under-the-covers memory footprint optimizations
+    </li>
+</ul>
+
+</body>
+</html>

@@ -1,0 +1,42 @@
+### Ethernet2 - PPPoE - Discovery PADO
+#
+
+# Destination: cc:05:0e:88:00:00 (cc:05:0e:88:00:00)
+#<0>#
+cc 05 0e 88 00 00
+
+# Source: ca:01:0e:88:00:06 (ca:01:0e:88:00:06)
+#<6>#
+ca 01 0e 88 00 06
+
+# Type: PPPoE Discovery (0x8863)
+#<12>#
+88 63
+
+# PPP: Version: 1, Type: 1
+#<14># 
+11
+
+# Code: Active Discovery Offer (PADO) (0x07)
+#<15># 
+07
+
+# Session ID: 0x0000
+#<16># 
+00 00
+
+# Payload Length: 40
+#<18># 
+00 28
+
+# PPPoE Tags
+# Host-Uniq: 64138518
+# AC-Name: BRAS
+# AC-Cookie: 3d0f0587062484f2df32b9ddfd77bd5b
+#<20># 
+01 01 00 00 01 03 00 04 64 13 85 18 01 02 00 04
+42 52 41 53 01 04 00 10 3d 0f 05 87 06 24 84 f2
+df 32 b9 dd fd 77 bd 5b
+
+#<60>#
+#### and we are done ####

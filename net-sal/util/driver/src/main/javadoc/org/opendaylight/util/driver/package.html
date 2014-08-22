@@ -1,0 +1,34 @@
+<!--
+  ~ Copyright (c) 2014 Hewlett-Packard Development Company, L.P.
+  ~
+  ~ This program and the accompanying materials are made available under the
+  ~ terms of the Eclipse Public License v1.0 which accompanies this distribution,
+  ~ and is available at http://www.eclipse.org/legal/epl-v10.html
+  -->
+
+<html>
+<body>
+
+Specifications for various aspects device modeling and device driver 
+development.  
+These specifications revolve around separation of concerns among the following 
+areas exposed to the <em>consumers</em> of the device driver implementations
+<ul>
+<li>device information representation ({@link org.opendaylight.util.driver.DeviceInfo} &amp; {@link org.opendaylight.util.driver.Facet})
+<li>device interactions, i.e. communication &amp; control  ({@link org.opendaylight.util.driver.DeviceHandler})
+<li>device information persistence  ({@link org.opendaylight.util.driver.DeviceLoader})
+<li>device type-based brokering &amp; evolution ({@link org.opendaylight.util.driver.DeviceDriverProvider} &amp; {@link org.opendaylight.util.driver.DeviceDriverFactory})
+</ul>
+
+Additionally, the following areas of support are available for the
+<em>providers</em> of the device driver implementations for various
+<em>types</em> of devices. 
+<ul>
+<li>device type-specific information interpretation ({@link org.opendaylight.util.driver.DeviceType} &amp; {@link org.opendaylight.util.driver.Facet})
+<li>device type-based registration, brokering &amp; evolution ({@link org.opendaylight.util.driver.DeviceDriverBroker} &amp; {@link org.opendaylight.util.driver.DeviceDriverFactory})
+<li>facet-based device information &amp; behaviour presentation ({@link org.opendaylight.util.driver.Facet} &amp; {@link org.opendaylight.util.driver.FacetProvider})
+<li>number of abstract and default implementations suitable for extension, to ease authoring of device driver implementations
+</ul>
+
+</body>
+</html>

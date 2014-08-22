@@ -1,0 +1,15 @@
+# A simple test file for the abstract reader
+## a comment line
+    ## an indented comment line, followed by a blank line
+
+Non-comment 1
+
+Non-comment 2
+
+Non-comment 3 with continuation \
+    that has an indented \
+    set of stuff
+
+## more comments
+Last line
+

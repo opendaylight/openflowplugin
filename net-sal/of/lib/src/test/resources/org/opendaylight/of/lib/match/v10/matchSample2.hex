@@ -1,0 +1,63 @@
+# Example 1.0 match structure #2
+# See section 5.2.3 Flow Match Structures of the 1.0 Spec.
+
+# Wildcard everything - match anything
+#
+#  3         2         1         0
+# 10987654321098765432109876543210
+#           xx<NDST><NSRC>xxxxxxxx                  NW_DST NW_SRC
+#           1110000010000011111111  =>  0x3820ff      32     32
+
+# Wildcards (u32) : see notes above
+#<0>#
+00 38 20 ff
+
+# In Port (u16) : 0 - flagged in wildcards (don't care)
+00 00
+
+# Ethernet source address (u48) : 0 - flagged in wildcards (don't care)
+#<6>#
+000000:000000
+
+# Ethernet destination address (u48) : 0 - flagged in wildcards (don't care)
+#<12>#
+000000:000000
+
+# VLAN id (u16) : 0 - flagged in wildcards (don't care)
+#<18>#
+00 00
+
+# VLAN priority (u8) : 0 - flagged in wildcards (don't care)
+00
+
+# padding (u8)
+00
+
+# Ethernet Type (u16) : 0 - flagged in wildcards (don't care)
+00 00
+
+# IP ToS (u8) : 0 - flagged in wildcards (don't care)
+#<24>#
+00
+
+# IP Protocol (u8) : 0 - flagged in wildcards (don't care)
+00
+
+# padding (u8 x 2)
+00 00
+
+# IP Source address (u32) : 0 - flagged in wildcards (don't care)
+00 00 00 00
+
+# IP Destination address (u32) : 0 - flagged in wildcards (don't care)
+#<32>#
+00 00 00 00
+
+# Source port number (u16) : 0 - flagged in wildcards (don't care)
+00 00
+
+# Destination port number (u16) : 0 - flagged in wildcards (don't care)
+00 00
+
+#<40>#
+###### That's All Folks!! ######

@@ -1,0 +1,28 @@
+<!--
+  ~ Copyright (c) 2014 Hewlett-Packard Development Company, L.P.
+  ~
+  ~ This program and the accompanying materials are made available under the
+  ~ terms of the Eclipse Public License v1.0 which accompanies this distribution,
+  ~ and is available at http://www.eclipse.org/legal/epl-v10.html
+  -->
+
+<deviceDriver description="Base switch definitions" origin="Hewlett-Packard">
+
+    <abstractType name="switch"
+                  description="Base device driver containing facets that all devices should support">
+        <handler class="org.opendaylight.util.driver.DefaultDeviceHandler"/>
+
+        <facet name="org.opendaylight.util.driver.DeviceIdentity"
+               class="org.opendaylight.util.driver.DefaultDeviceIdentity"/>
+    </abstractType>
+
+    <type name="switch.openflow" extends="switch">
+        <facet name="org.opendaylight.util.driver.DeviceIdentity"
+               class="org.opendaylight.driver.base.impl.ManualDeviceIdentity"/>
+        <facet name="org.opendaylight.util.driver.DeviceIdentityHandler"
+               class="org.opendaylight.driver.base.impl.ManualDeviceIdentityHandler"/>
+        <facet name="org.opendaylight.net.facet.FlowModAdjuster"
+               class="org.opendaylight.driver.base.impl.DefaultFlowMod"/>
+    </type>
+
+</deviceDriver>

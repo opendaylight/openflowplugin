@@ -1,0 +1,109 @@
+### Ethernet2 - IP - TCP - DNS A #2 query
+#
+# Destination: D-LinkIn_58:4c:5d (1c:7e:e5:58:4c:5d)
+#<0>#
+1c 7e e5 58 4c 5d
+
+# Source: Hewlett-_b3:e4:de (00:24:81:b3:e4:de)
+#<6>#
+00 24 81 b3 e4 de
+
+# Type: IP (0x0800)
+#<12>#
+08 00
+
+# Version/length: 4, 20
+#<14>#
+45
+ 
+# Differentiated Services Field: 0x00
+#<15>#
+00
+
+# Total Length: 56
+#<16>#
+00 38
+
+# Identification: 0
+#<18>#
+00 00
+
+# Flags: 0x02 (Don't Fragment)
+#<20>#
+40 00
+
+# Time to live: 64
+#<22>#
+40
+
+# Protocol: UDP (17)
+#<23>#
+11
+
+# Header checksum: 0xb8ff [correct]
+#<24>#
+b8 ff
+
+# Source: 192.168.0.100 (192.168.0.100)
+#<26>#
+c0 a8 00 64
+
+# Destination: 192.168.0.1 (192.168.0.1)
+#<30>#
+c0 a8 00 01
+
+# Source port: 43015 (43015)
+#<34>#
+a8 07
+
+# Destination port: domain (53)
+#<36>#
+00 35
+
+# Length: 36
+#<38>#
+00 24
+
+# Wireshark packet: Checksum: 0x81eb [validation disabled]
+# Computed checksum: 0x38e1
+#<40>#
+38 e1
+
+# Transaction ID: 0xde05
+#<42>#
+de 05
+
+# Flags: 0x0100 (Standard query) (all 0 except recursion desired)
+#<44>#
+01 00
+
+# Questions: 1
+#<46>#
+00 01
+
+# Answer RRs: 0
+#<48>#
+00 00
+
+# Authority RRs: 0
+#<50>#
+00 00
+
+# Additional RRs: 0
+#<52>#
+00 00
+
+# Name: www.hp.com
+#<54>#
+03 77 77 77 02 68 70 03 63 6f 6d 00
+
+# Type: A (Host address)
+#<66>#
+00 01
+
+# Class: IN (0x0001)
+#<78>#
+00 01
+
+#<70>#
+#### and we are done ####

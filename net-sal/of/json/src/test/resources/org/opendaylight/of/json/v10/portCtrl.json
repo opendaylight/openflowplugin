@@ -1,0 +1,14 @@
+{
+  "version" : "1.0.0",
+  "port" : {
+    "id" : "CONTROLLER",
+    "name" : "net",
+    "mac" : "a2:c0:98:8e:ec:4a",
+    "config" : [ ],
+    "state" : [ ],
+    "current_features" : [ ],
+    "advertised_features" : [ ],
+    "supported_features" : [ ],
+    "peer_features" : [ ]
+  }
+}

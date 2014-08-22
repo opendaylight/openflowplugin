@@ -1,0 +1,88 @@
+### Ethernet 802.3 - LLC - STP
+#
+# Destination MAC: 01:00:0c:cc:cc:cd
+#<0>#
+01 00 0c cc cc cd
+
+# Source MAC: 6c:9c:ed:cf:ed:04
+#<6>#
+6c 9c ed cf ed 04
+
+# Length: 50
+#<12>#
+00 32
+
+# DSAP: SNAP (0xaa)
+#<14>#
+aa
+
+# SSAP: SNAP (0xaa)
+#<15>#
+aa
+
+# Control field: U, func=UI (0x03)
+#<16>#
+03
+
+# Organization code: Cisco (0x00000c)
+#<17>#
+00 00 0c
+
+# PID: PVSTP+ (0x010b)
+#<20>#
+01 0b
+
+# STP Protocol Identifier: STP (0x0000)
+#<22>#
+00 00
+
+# Protocol version: 0
+#<24>#
+00
+
+# BPDU Type: Configuration (0x00)
+#<25>#
+00
+
+# BPDU flags: 0x00
+#<26>#
+00
+
+# Root Identifier: 32768 / 1102 / 6c:9c:ed:cf:ed:00
+#<27>#
+84 4e 6c 9c ed cf ed 00
+
+# Root path cost: 0
+#<35>#
+00 00 00 00
+
+# Bridge Identifier: 32768 / 1102 / 6c:9c:ed:cf:ed:00
+#<39>#
+84 4e 6c 9c ed cf ed 00
+
+# Port Identifier: 0x8004
+#<47>#
+80 04
+
+# Message Age: 0
+#<49>#
+00 00
+
+# Max Age: 20
+#<51>#
+14 00
+
+# Hello Time: 2
+#<53>#
+02 00
+
+# Forward Delay: 15
+#<55>#
+0f 00
+
+# Unknown (padding?)
+#<57>#
+00 00 00 00 02 04 4e
+
+#<64># 
+#### and we are done ####

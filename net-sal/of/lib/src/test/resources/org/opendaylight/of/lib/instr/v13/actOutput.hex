@@ -1,0 +1,21 @@
+# An example 1.3 Action structure
+# See section A.2.5 Action Structures of the 1.3 Spec.
+#
+# OUTPUT
+
+## HEADER
+# Action Type (u16) : OUTPUT = 0
+00 00
+
+# Length of struct (u16) = 16
+00 10
+
+## ACTION SPECIFIC
+# Output port (u32) = Port.CONTROLLER
+ff ff ff fd
+
+# Max Len (u16) = ActOutput.CONTROLLER_MAX
+ff e5
+
+# padding (u8 x 6)
+0000 0000 0000

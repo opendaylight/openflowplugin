@@ -1,0 +1,92 @@
+### Ethernet2 - IP - SCTP Adler32 packet
+#
+# Destination: ACC_4a:00:35 (08:00:03:4a:00:35)
+#<0>#
+08 00 03 4a 00 35 
+
+# Source: TattileS_00:5e:46 (00:a0:80:00:5e:46)
+#<6>#
+00 a0 80 00 5e 46
+
+# Type: IP (0x0800)
+#<12>#
+08 00
+
+# Version: 4 (IPv4), header length: 20 bytes
+#<14># 
+45
+
+# DiffServ: 0
+#<15># 
+00
+
+# Total Length: 48
+#<16># 
+00 30
+
+# Identification: 0x09d9 (2521)
+#<18># 
+09 d9
+
+# Flags: 0x02 (don't fragment)
+#<20># 
+40
+
+# Fragment offset: 0
+#<21># 
+00
+
+# Time to live: 255
+#<22># 
+ff
+
+# Protocol: SCTP
+#<23># 
+84
+
+# Header checksum: 0x50e2
+#<24># 
+50 e2
+
+# Source: 10.28.6.44 (10.28.6.44)
+#<26># 
+0a 1c 06 2c
+
+# Destination: 10.28.6.43 (10.28.6.43)
+#<30># 
+0a 1c 06 2b
+
+# Source port: 2944
+#<34>#
+0b 80
+
+# Destination port: 16384
+#<36>#
+40 00
+
+# Verification tag: 0x21441523
+#<38>#
+21 44 15 23
+
+# Checksum: 0x2bf2024e (not verified)
+#<42>#
+2b f2 02 4e
+
+# Chunk type: SACK (3)
+#<46>#
+03
+
+# Chunk flags: 0x00
+#<47>#
+00
+
+# Chunk length: 16
+#<48>#
+00 10
+
+# Chunk data
+#<50>#
+28 02 43 45 00 00 20 00 00 00 00 00
+
+#<62># 
+#### and we are done ####

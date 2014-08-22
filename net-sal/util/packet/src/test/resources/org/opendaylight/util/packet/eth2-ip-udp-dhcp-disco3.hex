@@ -1,0 +1,170 @@
+### Ethernet2 - IP - UDP - DHCP discover #3 packet
+#
+
+# Destination: Broadcast (ff:ff:ff:ff:ff:ff)
+#
+#<0>#
+ff ff ff ff ff ff 
+
+# Source: Hewlett-_ae:d3:be (00:1e:0b:ae:d3:be)
+#<6>#
+00 1e 0b ae d3 be
+
+# Type: IP (0x0800)
+#<12>#
+08 00
+
+# Version: 4 (IPv4), header length: 20 bytes
+#<14># 
+45
+
+# DiffServ: 0
+#<15># 
+00
+
+# Total length: 328 bytes
+#<16># 
+01 48
+
+# Identification: 1
+#<18># 
+00 01
+
+# Flags/Fragment Offset: 0x0000
+#<20># 
+00 00
+
+# Time to live: 128
+#<22># 
+80
+
+# Protocol: UDP (17)
+#<23># 
+11
+
+# Header checksum: 0x39a5 [correct]
+#<24>#
+39 a5
+
+# Source: 0.0.0.0 (0.0.0.0)
+#<26>#
+00 00 00 00
+
+# Destination: 255.255.255.255 (255.255.255.255)
+#<30>#
+ff ff ff ff
+
+# Source port: bootpc (68)
+#<34>#
+00 44
+
+# Destination port: bootps (67)
+#<36>#
+00 43
+
+# Length: 308
+#<38>#
+01 34
+
+# Checksum: 0x890b [validation disabled]
+#<40>#
+89 0b
+
+# Message type: Boot Request (1)
+#<42>#
+01
+
+# Hardware type: Ethernet
+#<43>#
+01
+
+# Hardware address length: 6 
+#<44>#
+06
+
+# Hops: 0 
+#<45>#
+00
+
+# Transaction ID: 0x00000001
+#<46>#
+00 00 00 01
+
+# Seconds elapsed: 0
+#<50>#
+00 00
+
+# Bootp flags: 0x8000 (Broadcast)
+#<52>#
+80 00
+
+# Client IP address: 0.0.0.0 (0.0.0.0)
+#<54>#
+00 00 00 00
+
+# Your (client) IP address: 0.0.0.0 (0.0.0.0)
+#<58>#
+00 00 00 00
+
+# Next server IP address: 0.0.0.0 (0.0.0.0)
+#<62>#
+00 00 00 00
+
+# Relay agent IP address: 0.0.0.0 (0.0.0.0) 
+#<66>#
+00 00 00 00
+
+# Client MAC address: Hewlett-_ae:d3:be (00:1e:0b:ae:d3:be)
+#<70>#
+00 1e 0b ae d3 be
+
+# Client hardware address padding: 00000000000000000000 
+#<76>#
+00 00 00 00 00 00 00 00 00 00
+
+# Server host name not given 
+#<86>#
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+
+# Boot file name not given
+#<150>#
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+
+# Magic cookie: DHCP
+#<278>#
+63 82 53 63
+
+# Option: (53) DHCP Message Type
+#<282>#
+35 01 01
+
+# Option: (55) Parameter Request List (Subnet Mask, Host Name)
+#<285>#
+37 02 01 0c
+
+# Option: (61) Client ID
+#<289>#
+3d 07 01 06 05 04 03 02 01
+
+# Option: (255) End
+#<298>#
+ff
+
+# Padding: 43 bytes
+#<299>#
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00
+
+#<342>#
+#### and we are done ####

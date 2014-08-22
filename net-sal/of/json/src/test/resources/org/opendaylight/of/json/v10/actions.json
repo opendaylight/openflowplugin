@@ -1,0 +1,13 @@
+{
+  "version" : "1.0.0",
+  "flow_actions" : [ {
+    "output" : 1987
+  }, {
+    "set_queue" : 20,
+    "port" : 1987
+  }, {
+    "set_field" : {
+      "ipv4_dst" : "15.255.124.141"
+    }
+  } ]
+}

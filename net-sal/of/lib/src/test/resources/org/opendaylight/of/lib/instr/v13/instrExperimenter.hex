@@ -1,0 +1,19 @@
+# An example Instruction structure
+# See section A.2.4 Flow Instruction Structures of the 1.3 Spec.
+#
+# EXPERIMENTER
+
+## HEADER
+# Instruction Type (u16) : EXPERIMENTER = 0xffff
+ff ff
+
+# Length of struct (u16) = 16
+00 10
+
+## Experimenter ID (u32) = HP (0x2481)
+00 00 24 81
+
+## INSTRUCTION SPECIFIC
+# Experimenter data
+08 07 06 05
+04 03 02 01

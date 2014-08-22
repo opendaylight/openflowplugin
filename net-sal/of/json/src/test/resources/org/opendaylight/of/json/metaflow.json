@@ -1,0 +1,28 @@
+{
+  "metaflow" : {
+    "flows" : [ {
+      "table_id" : 0,
+      "duration_sec" : 300,
+      "duration_nsec" : "4000",
+      "priority" : 4,
+      "idle_timeout" : 60,
+      "hard_timeout" : 100,
+      "cookie" : "0x1234",
+      "packet_count" : "2341",
+      "byte_count" : "134232425",
+      "match" : [ {
+        "metadata" : "0x1f2f3f4f5f6f7f8",
+        "mask" : "0xf00ff00ff00ff00"
+      }, {
+        "tunnel_id" : "0x1f2f3f4f5f6f723",
+        "mask" : "0xf00ff00ff00ff00"
+      } ],
+      "flow_mod_flags" : [ "send_flow_rem", "no_packet_counts", "no_byte_counts" ],
+      "instructions" : [ {
+        "clear_actions" : true
+      }, {
+        "goto_table" : 3
+      } ]
+    } ]
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "version" : "1.3.0",
+  "meter_stats" : {
+    "id" : 4294967293,
+    "flow_count" : 1000,
+    "packet_count" : 100,
+    "byte_count" : 10000,
+    "duration_sec" : 100000,
+    "duration_nsec" : 1000000,
+    "band_stats" : [ {
+      "packet_count" : 42,
+      "byte_count" : 7
+    }, {
+      "packet_count" : 9876543210,
+      "byte_count" : 1234567890
+    } ]
+  }
+}

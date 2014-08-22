@@ -1,0 +1,31 @@
+# Example match structure
+# See section A.2.3 Flow Match Structures of the 1.3 Spec.
+
+# Match field pre-requisite test
+# METADATA requires none
+# Validation should FAIL (dup)
+
+## Match Header
+# Type (u16) = OXM (0x1)
+00 01
+# Length (u16) = 28 (excludes padding)
+00 1c
+
+## Match Field
+# Basic, METADATA(2<<1),   len
+  8000   04                08
+# data : some primes
+  01 02 03 05
+  07 0b 0d 11
+
+## Match Field DUPLICATED
+# Basic, METADATA(2<<1),   len
+  8000   04                08
+# data : some primes?
+  ff 02 ff 05
+  07 ff 0d ff
+
+## Zero-Filled Padding to bring total structure
+##   length to multiple of 8.
+## Match struct length is 28; add 4 = 32
+00 00 00 00

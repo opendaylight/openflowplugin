@@ -1,0 +1,17 @@
+# An example match field TLV
+# See section A.2.3.2 Flow Match Field Structures of the 1.3 Spec.
+#
+# Basic :: SCTP_DST (no mask)
+
+# Class (u16) : Basic = 0x8000
+80 00
+
+# Field + hasMask Bit (u8) : SCTP_DST(18<<1) (no mask) = 0x24
+24
+
+# Length of payload excluding header (u8) = 2
+02
+
+## Payload
+# SCTP destination port (u16) = 80
+00 50

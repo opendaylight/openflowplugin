@@ -1,0 +1,96 @@
+### Ethernet2 - IP - TCP packet
+#
+# Destination MAC: HewlettP_69:c4:40
+#<0>#
+52 54 00 9c d1 65 
+
+# Source MAC: RealtekU_9c:d1:65
+#<6>#
+08 2e 5f 69 c4 40 
+
+# Type: IP (0x0800)
+#<12>#
+08 00
+
+# Version: 4 (IPv4), header length: 20 bytes
+#<14># 
+45
+
+# DiffServ: 0
+#<15># 
+00
+
+# Total length: 52 bytes
+#<16># 
+00 34
+
+# Identification: 3051
+#<18># 
+0b eb
+
+# Flags: 0x02 (don't fragment)
+#<20># 
+40
+
+# Fragment offset: 0
+#<21># 
+00
+
+# Time to live: 64
+#<22># 
+40
+
+# Protocol: TCP
+#<23># 
+06
+
+# Header checksum: 0x4d82
+#<24># 
+4d 82
+
+# Source IP: 10.10.102.121
+#<26># 
+0a 0a 66 79
+
+# Destination IP: 10.10.102.202
+#<30># 
+0a 0a 66 ca 
+
+# TCP source port: 64088
+#<34># 
+fa 58
+
+# TCP destination port: 6633
+#<36># 
+19 e9
+
+# Sequence number: 9 (relative)
+#<38># 
+43 55 06 92
+
+# ACK number: 9 (relative)
+#<42># 
+59 e2 bd 09
+
+# Header length: 32, Flags: 0x010 (ACK)
+#<46># 
+80 10
+
+# Window size: 32918
+#<48># 
+80 96
+
+# Checksum: 0xeae9
+#<50># 
+ea e9
+
+# Padding 2 bytes
+#<52># 
+00 00
+
+# Options: 12 bytes (NOP, NOP, Timestamps: TSval 264280970, TSecr 60949988)
+#<54># 
+01 01 08 0a 0f c0 9b 8a 03 a2 05 e4
+
+#<66># 
+#### and we are done ####

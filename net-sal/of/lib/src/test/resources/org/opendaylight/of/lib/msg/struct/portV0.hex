@@ -1,0 +1,45 @@
+# An example port structure for OpenFlow 1.0.
+
+# port number (u16) = 1
+00 01
+
+# hardware address (u8 x 6) - MAC
+11:44:77:01:01:01
+
+# port name (u8 x 16) = "One"
+4f 6e 65 00 00 00 00 00
+00 00 00 00 00 00 00 00
+
+# port config (u32) : bitmapped
+# OFPPC_NO_RECV   0x4 (1 << 2)
+# OFPPC_NO_FLOOD 0x10 (1 << 4)
+# OFPPC_NO_FWD   0x20 (1 << 5)
+00 00 00 34
+
+# port state (u32) : bitmapped
+# OFPPS_LINK_DOWN (0x1)
+# OFPPS_STP_LISTEN (0x300 & ... = 0x000)
+00 00 00 01
+
+# port current features (u32) : bitmapped
+# OFPPF_1GB_FD  =  0x20 (1 << 5)
+# OFPPF_FIBER   = 0x100 (1 << 8)
+# OFPPF_AUTONEG = 0x200 (1 << 9)
+00 00 03 20
+
+# port advertised features (u32) : bitmapped
+# OFPPF_1GB_FD  =  0x20 (1 << 5)
+# OFPPF_FIBER   = 0x100 (1 << 8)
+00 00 01 20
+
+# port supported features (u32) : bitmapped
+# OFPPF_1GB_FD  =  0x20 (1 << 5)
+# OFPPF_FIBER   = 0x100 (1 << 8)
+# OFPPF_AUTONEG = 0x200 (1 << 9)
+00 00 03 20
+
+# port peer features (u32) : bitmapped
+# OFPPF_100MB_FD  =  0x8 (1 << 3)
+00 00 00 08
+
+# ---------------------------------------------

@@ -1,0 +1,17 @@
+# An example match field TLV
+# See section A.2.3.2 Flow Match Field Structures of the 1.3 Spec.
+#
+# Basic :: IN_PHY_PORT
+
+# Class (u16) : Basic = 0x8000
+80 00
+
+# Field + hasMask Bit (u8) : IN_PHY_PORT(1<<1) (no mask) = 0x02
+02
+
+# Length of payload excluding header (u8) = 4
+04
+
+## Payload
+# port number (u32) = 259
+00 00 01 03

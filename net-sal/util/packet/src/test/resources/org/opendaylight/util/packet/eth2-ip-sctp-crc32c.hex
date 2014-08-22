@@ -1,0 +1,92 @@
+### Ethernet2 - IP - SCTP CRC32c packet
+#
+# Destination: EdimaxTe_24:37:5f (00:0e:2e:24:37:5f)
+#<0>#
+00 0e 2e 24 37 5f 
+
+# Source: ExtremeN_08:e0:40 (00:04:96:08:e0:40)
+#<6>#
+00 04 96 08 e0 40
+
+# Type: IP (0x0800)
+#<12>#
+08 00
+
+# Version: 4 (IPv4), header length: 20 bytes
+#<14># 
+45
+
+# DiffServ: 0
+#<15># 
+00
+
+# Total Length: 48
+#<16># 
+00 30
+
+# Identification: 0
+#<18># 
+00 00
+
+# Flags: 0x02 (don't fragment)
+#<20># 
+40
+
+# Fragment offset: 0
+#<21># 
+00
+
+# Time to live: 59
+#<22># 
+3b
+
+# Protocol: SCTP
+#<23># 
+84
+
+# Header checksum: 0xc206
+#<24># 
+c2 06
+
+# Source: 203.255.252.194 (203.255.252.194)
+#<26># 
+cb ff fc c2
+
+# Destination: 155.230.24.155 (155.230.24.155)
+#<30># 
+9b e6 18 9b
+
+# Source port: 80
+#<34>#
+00 50
+
+# Destination port: 32836
+#<36>#
+80 44
+
+# Verification tag: 0x3bb99c46
+#<38>#
+3b b9 9c 46
+
+# Checksum: 0xdafdf97b (not verified)
+#<42>#
+da fd f9 7b
+
+# Chunk type: SACK (3)
+#<46>#
+03
+
+# Chunk flags: 0x00
+#<47>#
+00
+
+# Chunk length: 16
+#<48>#
+00 10
+
+# Chunk data
+#<50>#
+2b 2d 7e b2 00 01 9e 6d 00 00 00 00
+
+#<62># 
+#### and we are done ####

@@ -1,0 +1,77 @@
+### OpenFlow 1.3 PACKET IN message - this one has no data
+## This example was constructed by converting a "real" 1.0 Packet-In message
+## decoded with WireShark.
+#
+# openflow version (u8) = 1.3 (0x4)
+#<0>#
+04
+
+# message type (u8) = OFPT_PACKET_IN(10)
+0a
+
+# message length (u16) = 58
+00 3a
+
+# transaction id (u32) = 0
+00 00 00 00
+
+### Message Specific Payload
+# buffer id (u32) = 257
+#<8>#
+00 00 01 01
+
+# full length of frame (u16) = 273
+01 11
+
+# reason (u8) = ACTION (1)
+01
+
+# ID of the table that was looked up (u8) = 7
+07
+
+# cookie (u64) = 0xcafe
+#<16>#
+0000 0000 0000 cafe
+
+### MATCH - reflects packet meta data
+# See section A.4.1 (v1.3.1 spec) for more details
+#<24>#
+
+## Match Header
+# Type (u16) = OXM (0x1)
+00 01
+# Length (u16) = 32 (excludes padding)
+00 20
+
+## Match Field - In Port
+# Basic, IN_PORT(0<<1)+M, len
+#<28>#
+  8000   00               04
+# In Port
+  00 00 00 30
+
+## Match Field - Ethernet Destination Address
+# Basic, ETH_DST(3<<1)+M, len
+#<36>#
+  8000   06               06
+# Destination MAC
+  01 80 c2 00 00 0e
+
+## Match Field - Ethernet Source Address
+# Basic, ETH_SRC(4<<1)+M, len
+#<46>#
+  8000   08               06
+# Source MAC
+  08 2e 5f 69 c4 7b
+
+## Zero-Filled Padding to bring total structure length to multiple of 8
+## Match struct length is 32; add 0 to bring it to 32
+
+# pad (u8 x 2)
+#<56>#
+00 00
+
+########### no frame data
+
+#<58>#
+## We are done ##

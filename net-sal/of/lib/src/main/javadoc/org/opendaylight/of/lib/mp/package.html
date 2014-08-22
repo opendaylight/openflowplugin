@@ -1,0 +1,36 @@
+<!--
+  ~ Copyright (c) 2014 Hewlett-Packard Development Company, L.P.
+  ~
+  ~ This program and the accompanying materials are made available under the
+  ~ terms of the Eclipse Public License v1.0 which accompanies this distribution,
+  ~ and is available at http://www.eclipse.org/legal/epl-v10.html
+  -->
+
+<html>
+<body>
+
+Representations of OpenFlow Protocol Multipart Message bodies.
+<p>
+The following schematic illustrates the relationship of classes and
+interfaces that make up a <code>OfmMultipartRequest</code> or
+<code>OfmMultipartReply</code>. Note that two examples of concrete classes
+are given:
+<ul>
+    <li>
+        On the left, <code>MBodyDesc</code>: representing the
+        multipart body of a <code>MultipartType.DESC</code> reply,
+        along with its mutable subclass.
+    </li>
+    <li>
+        On the right, <code>MBodyPortDesc</code>: representing a single
+        element of a <code>MultipartType.PORT_DESC</code> reply, along with
+        its inner classes <code>Array</code> (immutable) and
+        <code>Mutable Array</code>.
+    </li>
+</ul>
+<p>
+<img src="doc-files/MultipartHierarchy.png" width="1000" height="798"
+     alt="Multipart Body class diagram">
+
+</body>
+</html>

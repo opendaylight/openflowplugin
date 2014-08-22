@@ -1,0 +1,44 @@
+### Ethernet2 - PPPoE - Discovery PADI
+#
+
+# Destination: Broadcast (ff:ff:ff:ff:ff:ff)
+#<0>#
+ff ff ff ff ff ff
+
+# Source: cc:05:0e:88:00:00 (cc:05:0e:88:00:00)
+#<6>#
+cc 05 0e 88 00 00
+
+# Type: PPPoE Discovery (0x8863)
+#<12>#
+88 63
+
+# PPP: Version: 1, Type: 1
+#<14># 
+11
+
+# Code: Active Discovery Initiation (PADI) (0x09)
+#<15># 
+09
+
+# Session ID: 0x0000
+#<16># 
+00 00
+
+# Payload Length: 12
+#<18># 
+00 0c
+
+# PPPoE Tags
+# Host-Uniq: 64138518
+#<20># 
+01 01 00 00 01 03 00 04 64 13 85 18
+
+# Padding
+#<32>#
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00
+
+#<60>#
+#### and we are done ####

@@ -1,0 +1,42 @@
+### Ethernet2 - MPLS - IP - ICMP packet
+#
+# Destination: Cisco_e6:fc:39 (00:30:96:e6:fc:39)
+#<0>#
+00 30 96 e6 fc 39
+
+# Source: Cisco_05:28:38 (00:30:96:05:28:38)
+#<6>#
+00 30 96 05 28 38
+
+# Type: MPLS label switched packet (0x8847)
+#<12>#
+88 47
+
+# MultiProtocol Label Switching Header, Label: 29, Exp: 0, S: 1, TTL: 255
+#<14>#
+00 01 d1 ff
+
+# Internet Protocol Version 4, Total Length: 100, Ident: 0x000a, TTL: 255
+# Protocol: ICMP(1)
+# Checksum: 0xa56a
+# Src: 10.1.2.1 (10.1.2.1), Dst: 10.34.0.1 (10.34.0.1)
+#<18>#
+45 00 00 64 00 0a 00 00 ff 01 a5 6a 0a 01 02 01 0a 22 00 01
+
+# ICMP Type: 8 (Echo ping request)
+# Checksum: 0x3a77
+# Identifier: 2617 (0x0a39)
+# Seq number: 1579 (0x062b)
+#<38>#
+08 00 3a 77 0a 39 06 2b
+
+# Data (72 bytes)
+#<46>#
+00 00 00 00 00 1f 33 50 ab cd ab cd ab cd ab cd
+ab cd ab cd ab cd ab cd ab cd ab cd ab cd ab cd
+ab cd ab cd ab cd ab cd ab cd ab cd ab cd ab cd
+ab cd ab cd ab cd ab cd ab cd ab cd ab cd ab cd
+ab cd ab cd ab cd ab cd
+
+#<118>#
+#### and we are done ####

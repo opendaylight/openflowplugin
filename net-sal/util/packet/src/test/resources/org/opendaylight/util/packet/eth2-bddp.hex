@@ -1,0 +1,73 @@
+### Ethernet2 - BDDP (LLDP broadcast)
+#
+# Destination: Broadcast (ff:ff:ff:ff:ff:ff)
+#<0>#
+ff ff ff ff ff ff
+
+# Source: 00:00:00_00:00:01 (00:00:00:00:00:01)
+#<6>#
+00 00 00 00 00 01
+
+# Type: Unknown (0x8999)
+#<12>#
+89 99
+
+# Chassis ID TLV (7/9b = type:1, len:7)
+#<14>#
+02 07
+
+# Chassis ID Subtype: MAC address (4)
+#<16>#
+04
+
+# Chassis ID
+#<17>#
+00 00 00 00 00 01
+
+# Port ID TLV (7/9b = type:2, len:2)
+#<23>#
+04 02
+
+# Port ID Subtype: Local (7)
+#<25>#
+07
+
+# Port ID
+#<26>#
+35
+
+# Time to live TLV (7/9b = type:3, len:2)
+#<27>#
+06 02
+
+# Time to Live = 120
+#<29>#
+00 78
+
+## Optional TLVs start here
+
+# TLV (7/9b = type:6, len:18)
+#<31>#
+0c 12
+
+# data
+#<33>#
+32 33 33 33 36 36 33 33
+30 36 35 32 36 36 30 34
+32 37
+
+#TLV (7/9b = type:127, len:12)
+#<51>#
+fe 0c
+
+# data
+#<53>#
+00 26 e1 00 00 00 00 00
+00 00 00 01
+
+# TLV (7/9b = type:0, len:0)
+#<65>#
+00 00
+
+#<67>#
+#### and we are done ####

@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+
+<!--
+  ~ Copyright (c) 2014 Hewlett-Packard Development Company, L.P.
+  ~
+  ~ This program and the accompanying materials are made available under the
+  ~ terms of the Eclipse Public License v1.0 which accompanies this distribution,
+  ~ and is available at http://www.eclipse.org/legal/epl-v10.html
+  -->
+
+<package name="mx">
+
+	<parameter name="toolname"/>
+	<syntax name="argOption" usage="-A $argValue"
+	        floating="true" minOccurrences="1">
+	    <parameter name="argValue" minOccurrences="1" illegalValues="-A"/>
+	</syntax>
+	
+	<syntax name="mxexec" usage="mxexec -t $toolname $argOption"
+	        actionName="org.opendaylight.mx.foo.LegacyHandler:invoke"/>
+
+    <!-- Define parameters, assuming all need to be treated as plain Strings.
+         Constraints could be added easily enough.  -->
+    <parameter name="hostname"/>
+    <parameter name="login"/>
+    <parameter name="password"/>
+    <parameter name="filespec"/>
+
+    <!-- Allow one or more instances of this fragment... -->
+    <syntax name="node" usage="-n $hostname" minOccurrences="1"/>
+
+    <!-- The following are truly optional... -->
+    <syntax name="userOption" usage="-u $login" floating="true"/>
+    <syntax name="passwordOption" usage="-p $password" floating="true"/>
+    <syntax name="filespecOption" usage="-f $filespec" floating="true"/>
+    <syntax name="getOption" usage="-g" floating="true"/>
+
+    <!-- Now define the concrete syntax variations, all map to same handler. -->
+    <syntax name="mxagentconfig-a" 
+            usage="mxagentconfig -a $node $userOption"
+            actionName="org.opendaylight.mx.foo.LegacyHandler:invoke"/>
+    <syntax name="mxagentconfig-ap" extends="mxagentconfig-a"
+            usage="$super $passwordOption"/>
+    <syntax name="mxagentconfig-af" extends="mxagentconfig-a"
+            usage="$super $filespecOption"/>
+
+    <syntax name="mxagentconfig-g" 
+            usage="mxagentconfig $getOption"
+            actionName="org.opendaylight.mx.foo.LegacyHandler:invoke"/>
+            
+    <syntax name="mxagentconfig-t" 
+            usage="mxagentconfig -f $filespec1 -O $filespec2"
+            actionName="org.opendaylight.mx.foo.LegacyHandler:invoke">
+        <parameter name="filespec1" extends="filespec"/>
+        <parameter name="filespec2" extends="filespec"/>
+    </syntax>
+	
+	<syntax name="new" usage="mxcert -n $CN"
+            actionName="org.opendaylight.mx.cli2.mxcert.NewCertCommand">
+        <parameter name="CN" parser="pair" description="CN=country"/>
+    </syntax>
+	
+	<syntax name="foobar" usage="foobar $pairmap" actionName="irrelevant">
+		<parameter name="pairmap" parser="pair" description="foo=... bar=... doh=... duh=..." 
+			       legalNames="foo|bar|doh|duh" minOccurrences="4" maxOccurrences="4"/>
+	</syntax>
+	
+	<syntax name="listDetailed"
+            usage="mxcert -ld $aliasOrCN"
+            actionName="org.opendaylight.mx.cli2.mxcert.ListCertDetailedCommand">
+        <parameter name="aliasOrCN" parser="string" 
+			       minOccurrences="0" maxOccurrences="1" 
+			       description="aliasOrCN"/>
+    </syntax>
+	
+	<syntax name="listDetailed2"
+            usage="mxcertf -ld $aliasOrCN"
+            actionName="org.opendaylight.mx.cli2.mxcert.ListCertDetailedCommand">
+        <parameter name="aliasOrCN" parser="string" 
+			       floating="true" illegalERE="^-.*$"
+			       description="aliasOrCN"/>
+    </syntax>
+	            
+</package> 

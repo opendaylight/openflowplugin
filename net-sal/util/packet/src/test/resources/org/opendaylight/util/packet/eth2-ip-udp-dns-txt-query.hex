@@ -1,0 +1,108 @@
+### Ethernet2 - IP - TCP - DNS TXT query
+#
+# Destination: QuantaCo_32:41:8c (00:c0:9f:32:41:8c)
+#<0>#
+00 c0 9f 32 41 8c
+
+# Source: AsustekC_b1:0c:ad (00:e0:18:b1:0c:ad)
+#<6>#
+00 e0 18 b1 0c ad
+
+# Type: IP (0x0800)
+#<12>#
+08 00
+
+# Version/length: 4, 20
+#<14>#
+45
+ 
+# Differentiated Services Field: 0x00
+#<15>#
+00
+
+# Total Length: 56
+#<16>#
+00 38
+
+# Identification: 0
+#<18>#
+00 00
+
+# Flags/Fragment Offset: 0x0000
+#<20>#
+40 00
+
+# Time to live: 64
+#<22>#
+40
+
+# Protocol: UDP (17)
+#<23>#
+11
+
+# Header checksum: 0x6547 [correct]
+#<24>#
+65 47
+
+# Source: 192.168.170.8 (192.168.170.8)
+#<26>#
+c0 a8 aa 08
+
+# Destination: 192.168.170.20 (192.168.170.20)
+#<30>#
+c0 a8 aa 14
+
+# Source port: 32795 (32795)
+#<34>#
+80 1b
+
+# Destination port: domain (53)
+#<36>#
+00 35
+
+# Length: 36
+#<38>#
+00 24
+
+# Checksum: 0x85ed [validation disabled]
+#<40>#
+85 ed
+
+# Transaction ID: 0x1032
+#<42>#
+10 32
+
+# Flags: 0x0100 (Standard query) (all 0 except recursion desired)
+#<44>#
+01 00
+
+# Questions: 1
+#<46>#
+00 01
+
+# Answer RRs: 0
+#<48>#
+00 00
+
+# Authority RRs: 0
+#<50>#
+00 00
+
+# Additional RRs: 0
+#<52>#
+00 00
+
+# Name: google.com
+#<54>#
+06 67 6f 6f 67 6c 65 03 63 6f 6d 00
+
+# Type: TXT (Text strings)
+#<66>#
+00 10
+
+# Class: IN (0x0001)
+#<68>#
+00 01
+
+#<70>#
+#### and we are done ####

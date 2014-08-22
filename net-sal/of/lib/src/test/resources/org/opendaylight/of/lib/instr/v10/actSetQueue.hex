@@ -1,0 +1,21 @@
+# An example 1.0 Action structure
+# See section 5.2.4 Flow Action Structures of the 1.0 Spec.
+#
+# ENQUEUE (but renamed to SET_QUEUE in 1.1)
+
+## HEADER
+# Action Type (u16) : SET_QUEUE(11)
+00 0b
+
+# Length of struct (u16) = 16
+00 10
+
+## ACTION SPECIFIC
+# Port (u16) = 42
+00 2a
+
+# pad (u8 x 6)
+0000 0000 0000
+
+# Queue ID (u32) = 0x80000005
+80 00 00 05

@@ -1,0 +1,194 @@
+### Ethernet2 - IP - TCP - DNS A #2 response
+#
+# Destination: Hewlett-_b3:e4:de (00:24:81:b3:e4:de)
+#<6>#
+00 24 81 b3 e4 de
+
+# Source: D-LinkIn_58:4c:5d (1c:7e:e5:58:4c:5d)
+#<0>#
+1c 7e e5 58 4c 5d
+
+# Type: IP (0x0800)
+#<12>#
+08 00
+
+# Version/length: 4, 20
+#<14>#
+45
+ 
+# Differentiated Services Field: 0x00
+#<15>#
+00
+
+# Total Length: 121
+#<16>#
+00 79
+
+# Identification: 0x0000
+#<18>#
+00 00
+
+# Flags: 0x02 (Don't Fragment)
+#<20>#
+40 00
+
+# Time to live: 64
+#<22>#
+40
+
+# Protocol: UDP (17)
+#<23>#
+11
+
+# Header checksum: 0xb8be [correct]
+#<24>#
+b8 be
+
+# Source: 192.168.0.1 (192.168.0.1)
+#<30>#
+c0 a8 00 01
+
+# Destination: 192.168.0.100 (192.168.0.100)
+#<26>#
+c0 a8 00 64
+
+# Source port: domain (53)
+#<36>#
+00 35
+
+# Destination port: 43015 (43015)
+#<34>#
+a8 07
+
+# Length: 101
+#<38>#
+00 65
+
+# Checksum: 0x240c [validation disabled]
+#<40>#
+24 0c
+
+# Transaction ID: 0xde05
+#<42>#
+de 05
+
+# Flags: 0x8180 (Standard query response, No error)
+#<44>#
+81 80
+
+# Questions: 1
+#<46>#
+00 01
+
+# Answer RRs: 3
+#<48>#
+00 03
+
+# Authority RRs: 0
+#<50>#
+00 00
+
+# Additional RRs: 0
+#<52>#
+00 00
+
+
+
+# Name: www.hp.com
+#<54>#
+03 77 77 77 02 68 70 03 63 6f 6d 00
+
+# Type: A (Host address)
+#<66>#
+00 01
+
+# Class: IN (0x0001)
+#<68>#
+00 01
+
+
+
+# www.hp.com, www.hpgtm.nsatc.net
+
+# Name pointer
+#<70>#
+c0 0c
+
+# Type: CNAME
+#<72>#
+00 05
+
+# Class: IN (0x0001)
+#<74>#
+00 01
+
+# Time to live: 1 minute, 39 seconds
+#<76>#
+00 00 00 63
+
+# Data length: 21
+#<80>#
+00 15
+
+# Primaryname: www.hpgtm.nsatc.net
+#<82>#
+03 77 77 77 05 68 70 67 74 6d 05 6e 73 61 74 63 03 6e 65 74 00
+
+
+
+# www.hpgtm.nsatc.net, 15.217.49.140
+
+# Name pointer
+#<103>#
+c0 28
+
+# Type: A
+#<105>#
+00 01
+
+# Class: IN (0x0001)
+#<107>#
+00 01
+
+# Time to live: 1 minute, 59 seconds
+#<109>#
+00 00 00 77
+
+# Data length: 4
+#<113>#
+00 04
+
+# Addr: 15.217.49.140 (15.217.49.140)
+#<115>#
+0f d9 31 8c
+
+
+
+# www.hpgtm.nsatc.net, 15.217.49.142
+
+# Name pointer
+#<119>#
+c0 28
+
+# Type: A
+#<121>#
+00 01
+
+# Class: IN (0x0001)
+#<123>#
+00 01
+
+# Time to live: 1 minute, 59 seconds
+#<125>#
+00 00 00 77
+
+# Data length: 4
+#<129>#
+00 04
+
+# Addr: 15.217.49.140 (15.217.49.142)
+#<131>#
+0f d9 31 8e
+
+#<135>#
+#### and we are done ####

@@ -1,0 +1,44 @@
+{
+  "version" : "1.0.0",
+  "flow_match_fields" : [ {
+    "in_port" : 15
+  }, {
+    "eth_dst" : "66:55:44:32:22:11",
+    "mask" : "ff:ff:ff:00:00:01"
+  }, {
+    "eth_src" : "66:55:55:32:22:11",
+    "mask" : "ff:ff:ff:00:00:01"
+  }, {
+    "eth_type" : "ipv6"
+  }, {
+    "vlan_vid" : 42
+  }, {
+    "vlan_pcp" : 5
+  }, {
+    "ip_dscp" : 33
+  }, {
+    "ip_proto" : "udp"
+  }, {
+    "ipv4_src" : "15.255.124.23"
+  }, {
+    "ipv4_dst" : "15.255.124.53"
+  }, {
+    "tcp_src" : 75
+  }, {
+    "tcp_dst" : 76
+  }, {
+    "udp_src" : 77
+  }, {
+    "udp_dst" : 78
+  }, {
+    "sctp_src" : 79
+  }, {
+    "sctp_dst" : 80
+  }, {
+    "icmpv4_type" : "redir"
+  }, {
+    "icmpv4_code" : 17
+  }, {
+    "arp_op" : 123
+  } ]
+}

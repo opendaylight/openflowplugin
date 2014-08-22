@@ -1,0 +1,18 @@
+# An example Instruction structure
+# See section A.2.4 Flow Instruction Structures of the 1.3 Spec.
+#
+# GOTO_TABLE
+
+## HEADER
+# Instruction Type (u16) : GOTO_TABLE = 1
+00 01
+
+# Length of struct (u16) = 8
+00 08
+
+## INSTRUCTION SPECIFIC
+# Table ID (u8) = 3
+03
+
+# Pad to 64-bit boundary (u8 x 3)
+00 00 00

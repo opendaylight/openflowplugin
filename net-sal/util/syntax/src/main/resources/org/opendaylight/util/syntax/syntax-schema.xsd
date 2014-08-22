@@ -1,0 +1,77 @@
+<!--
+  ~ Copyright (c) 2014 Hewlett-Packard Development Company, L.P.
+  ~
+  ~ This program and the accompanying materials are made available under the
+  ~ terms of the Eclipse Public License v1.0 which accompanies this distribution,
+  ~ and is available at http://www.eclipse.org/legal/epl-v10.html
+  -->
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+ <xsd:annotation>
+  <xsd:documentation xml:lang="en">
+   Command-Line Syntax Schema for Hewlett-Packard, Co.
+   Copyright 2002-2004 Hewlett-Packard, Co. All rights reserved.
+  </xsd:documentation>
+ </xsd:annotation>
+
+ <xsd:element name="package" type="PackageType"/>
+ <xsd:element name="parameterParser" type="ParameterParserType"/>
+ <xsd:element name="constraintsParser" type="ConstraintsParserType"/>
+ <xsd:element name="syntax" type="SyntaxType"/>
+ <xsd:element name="parameter" type="ParameterType"/>
+ <xsd:element name="property" type="PropertyType"/>
+
+ <!-- package element may contain any sequence of other elements defined in
+      this schema -->
+ <xsd:complexType name="PackageType">
+  <xsd:sequence minOccurs="0" maxOccurs="unbounded">
+   <xsd:element ref="parameterParser" minOccurs="0" maxOccurs="unbounded"/>
+   <xsd:element ref="constraintsParser" minOccurs="0" maxOccurs="unbounded"/>
+   <xsd:element ref="property" minOccurs="0" maxOccurs="unbounded"/>
+   <xsd:element ref="parameter" minOccurs="0" maxOccurs="unbounded"/>
+   <xsd:element ref="syntax" minOccurs="0" maxOccurs="unbounded"/>
+  </xsd:sequence>
+  <xsd:attribute name="name" type="xsd:string"/>
+  <xsd:attribute name="resources" type="xsd:string"/>
+ </xsd:complexType>
+
+ <!-- parameter parser element simply specifies the class of the parser -->
+ <xsd:complexType name="ParameterParserType">
+  <xsd:attribute name="class" type="xsd:string"/>
+ </xsd:complexType>
+
+ <!-- constraints parser element simply specifies the class of the parser -->
+ <xsd:complexType name="ConstraintsParserType">
+  <xsd:attribute name="class" type="xsd:string"/>
+ </xsd:complexType>
+
+ <!-- property element is a name/value pair given via XML attributes -->
+ <xsd:complexType name="PropertyType">
+  <xsd:attribute name="name" type="xsd:string"/>
+  <xsd:attribute name="value" type="xsd:string"/>
+ </xsd:complexType>
+
+ <!-- syntax element may contain any sequence of properties, parameters and 
+      other syntax elements -->
+ <xsd:complexType name="SyntaxType">
+  <xsd:sequence minOccurs="0" maxOccurs="unbounded">
+   <xsd:element ref="property" minOccurs="0" maxOccurs="unbounded"/>
+   <xsd:element ref="syntax" minOccurs="0" maxOccurs="unbounded"/>
+   <xsd:element ref="parameter" minOccurs="0" maxOccurs="unbounded"/>
+  </xsd:sequence>
+  <xsd:anyAttribute processContents="lax"/>
+ </xsd:complexType>
+
+ <!-- parameter element may contain any sequence of propert elements and
+      other parameter elements -->
+ <xsd:complexType name="ParameterType">
+  <xsd:sequence minOccurs="0" maxOccurs="unbounded">
+   <xsd:element ref="parameter" minOccurs="0" maxOccurs="unbounded"/>
+   <xsd:element ref="property" minOccurs="0" maxOccurs="unbounded"/>
+  </xsd:sequence>
+  <xsd:anyAttribute processContents="lax"/>
+ </xsd:complexType>
+
+</xsd:schema>
+

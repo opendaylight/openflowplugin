@@ -1,0 +1,81 @@
+### Ethernet2 - ICMP - destination unreachable packet
+#
+# Destination MAC: 08:86:3b:33:87:e8
+#<0>#
+08 86 3b 33 87 e8
+
+# Source MAC: 44:1e:a1:ce:5c:e2
+#<6>#
+44 1e a1 ce 5c e2
+
+# Ethernet Type: IP (0x0800)
+#<12>#
+08 00
+
+# Version: 4 (IPv4), header length: 20 bytes
+#<14># 
+45
+
+# DiffServ: 0
+#<15># 
+00
+
+# Total length: 32 bytes
+#<16># 
+00 20
+
+# Identification: 14614
+#<18># 
+39 16
+
+# Flags: 0x00
+#<20># 
+00
+
+# Fragment offset: 0
+#<21># 
+00
+
+# Time to live: 128
+#<22># 
+80
+
+# Protocol: ICMP (1)
+#<23># 
+01
+
+# Header checksum
+#<24># 
+7e 6b
+
+# Source IP: 192.168.1.10
+#<26># 
+c0 a8 01 0a
+
+# Destination IP: 192.168.1.1
+#<30># 
+c0 a8 01 01
+
+# ICMP Type: 3 (Destination unreachable)
+#<34>#
+03
+
+# Code: 1 (Host unreachable)
+#<35>#
+01
+
+# Check sum
+#<36>#
+ec ea
+
+# Payload: 8 bytes
+#<38>#
+01 02 03 04 05 06 07 08
+
+# Padding Ethernet minimum 60 bytes
+#<46>#
+00 00 00 00 00 00 00 00
+00 00 00 00 00 00
+
+#<60>#
+#### and we are done ####

@@ -1,0 +1,34 @@
+
+### OpenFlow 1.1 EXPERIMENTER message
+#
+# openflow version (u8) = 1.1 (0x2)
+#<0>#
+02
+
+# message type (u8) = OFPT_EXPERIMENTER (4)
+04
+
+# message length (u16) = 32
+00 20
+
+# transaction id (u32) = 0
+00 00 00 00
+
+# experimenter id (u32) = BIG_SWITCH - (6035143)
+#<8>#
+00 5c 16 c7
+
+# padding (u32) = (u8 X 4)
+00 00 00 00
+
+### Message Specific Payload - Arbitrary length
+# body =  "Experimental" - (u8 x 12)
+#<16>#
+4578 7065 7269 6d65 6e74 616c
+
+# pad to 64-bit (u8 x 4)
+#<28>#
+00 00 00 00
+
+#<32>#
+#### and we are done ####

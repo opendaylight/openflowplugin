@@ -1,0 +1,20 @@
+{
+  "version" : "1.3.0",
+  "port_stats" : {
+    "port_id" : 1,
+    "rx_packets" : 10,
+    "tx_packets" : 10,
+    "rx_bytes" : 10,
+    "tx_bytes" : 10,
+    "rx_dropped" : 1,
+    "tx_dropped" : 2,
+    "rx_errors" : 1,
+    "tx_errors" : 2,
+    "collisions" : 0,
+    "duration_sec" : 3,
+    "duration_nsec" : 65535,
+    "rx_crc_err" : 0,
+    "rx_frame_err" : 42,
+    "rx_over_err" : 12
+  }
+}

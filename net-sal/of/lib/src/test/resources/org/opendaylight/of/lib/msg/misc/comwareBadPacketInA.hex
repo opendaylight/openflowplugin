@@ -1,0 +1,118 @@
+## bytes (A) from an "unparsable" packet-in message from a Comware switch
+## Message Parser output the following:
+# Parse FAILED: hdr=[V_1_3,PACKET_IN,72,0], bytes=[040a004800000000000000000000000000000000000000000001002c8000000400000021800002040000002180000408000000000000000080004c08000000000000000000000000]
+#
+# Note, there are 144 hex digits = 72 bytes (as per decoded header)
+#
+###########################
+### Here are the bytes divided up and annotated...
+
+# Protocol version (u8) = 1.3
+#<0>#
+04
+
+# Message type (u8) = Packet-In
+0a
+
+# length (u16) = 72
+00 48
+
+# XID (u32) = 0
+00 00 00 00
+
+###### This is where stuff is a little weird.. following fields all zeros
+#<8>#
+# Buffer ID (u32) = 0
+00 00 00 00
+
+# Total Length (u16) of the "network packet data" = 0
+#<12>#
+00 00
+
+# Packet In Reason (u8) = NO_MATCH
+#<14>#
+00
+
+# Table ID (u8) = 0
+#<15>#
+00
+
+# Cookie (u64) = 0
+#<16>#
+0000 0000 0000 0000
+
+###### Match Structure ######
+## Match Header ##
+# Match type (u16) = OXM
+#<24>#
+00 01
+# Match length (u16) = 44
+#<26>#
+00 2c
+
+### First match field ###
+# OXM class (u16) = OPENFLOW_BASIC
+#<28>#
+80 00
+# Field and mask (u7 + u1) = 0x00 = IN_PORT (no mask)
+#<30>
+00
+# payload length (u8) = 4
+#<31>#
+04
+# port number (u32) = 33
+#<32>#
+00 00 00 21
+
+### Second match field ###
+# OXM class (u16) = OPENFLOW_BASIC
+#<36>#
+80 00
+# Field and mask (u7 + u1) = 0x02 = IN_PHY_PORT (no mask)
+#<38>#
+02
+# payload length (u8) = 4
+#<39>#
+04
+# port number (u32) = 33
+#<40>#
+00 00 00 21
+
+### Third match field ###
+# OXM class (u16) = OPENFLOW_BASIC
+#<44>#
+80 00
+# Field and mask (u7 + u1) = 0x04 = METADATA (no mask)
+#<46>#
+04
+# payload length (u8) = 8
+#<47>#
+08
+# metadata (u64) = 0
+#<48>#
+0000 0000 0000 0000
+
+### Fourth match field ###
+# OXM class (u16) = OPENFLOW_BASIC
+#<56>#
+80 00
+# Field and mask (u7 + u1) = 0x4c = TUNNEL_ID (no mask)
+#<58>#
+4c
+# payload length (u8) = 8
+#<59>#
+08
+# tunnel ID (u64) = 0
+#<60>#
+0000 0000 0000 0000
+
+### Padding:: Match length is 44; need to add 4 bytes to make it 48 (div by 8)
+#<68>#
+00 00 00 00
+
+### End of message ###
+
+######### QUESTION : Where are the 2 bytes of padding mandated by the spec?
+### See OF1.3.1 Section A.4.1 pg 92 .. struct ofp_packet_in
+### See OF1.3.2 Section 7.4.1 pg 94 .. struct ofp_packet_in
+

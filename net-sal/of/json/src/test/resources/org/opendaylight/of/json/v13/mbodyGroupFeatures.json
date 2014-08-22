@@ -1,0 +1,25 @@
+{
+  "version" : "1.3.0",
+  "group_features" : {
+    "capabilities" : [ "select_weight", "chaining" ],
+    "types" : [ "all", "select", "indirect", "ff" ],
+    "max_groups" : [ {
+      "all" : 1
+    }, {
+      "select" : 2
+    }, {
+      "indirect" : 3
+    }, {
+      "ff" : 4
+    } ],
+    "actions" : [ {
+      "all" : [ ]
+    }, {
+      "select" : [ ]
+    }, {
+      "indirect" : [ "copy_ttl_in", "group" ]
+    }, {
+      "ff" : [ "output", "copy_ttl_out", "copy_ttl_in", "push_mpls", "pop_mpls" ]
+    } ]
+  }
+}

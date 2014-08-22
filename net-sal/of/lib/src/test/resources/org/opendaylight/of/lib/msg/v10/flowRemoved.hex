@@ -1,0 +1,120 @@
+### OpenFlow 1.0 FLOW REMOVED message
+#
+# openflow version (u8) = 1.0 (0x1)
+#<0>#
+01
+
+# message type (u8) = OFPT_FLOW_REMOVED(11)
+0b
+
+# message length (u16) = 88
+00 58
+
+# transaction id (u32) = 0
+00 00 00 00
+
+### Message Specific Payload
+
+#########  Match Structure  ##########
+# Example 1.0 match structure #1
+# See section 5.2.3 Flow Match Structures of the 1.0 Spec.
+
+
+# nw-src field : 8 => 255.255.255.0    : 0b001000
+# nw-dst field : 20 => 255.240.0.0     : 0b010100
+#  Add in DL_VLAN_PCP (0x100000) and DL_VLAN (0x2) for good measure
+#
+#  3         2         1         0
+# 10987654321098765432109876543210
+#           xx<NDST><NSRC>xxxxxxxx                  NW_DST NW_SRC
+#            101010000100000000010  =>  0x150802      20      8
+
+# Wildcards (u32) : see notes above
+#<8>#
+00 15 08 02
+
+# In Port (u16) : 14
+00 0e
+
+# Ethernet source address (u48) :
+#<14>#
+00001e:111111
+
+# Ethernet destination address (u48) :
+#<20>#
+00001e:222222
+
+# VLAN id (u16) : 0 - flagged in wildcards (don't care)
+#<26>#
+00 00
+
+# VLAN priority (u8) : 0 - flagged in wildcards (don't care)
+00
+
+# padding (u8)
+00
+
+# Ethernet Type (u16) : IPv4 (0x0800)
+08 00
+
+# IP ToS (u8) : 5
+#<32>#
+05
+
+# IP Protocol (u8) : TCP (6)
+06
+
+# padding (u8 x 2)
+00 00
+
+# IP Source address (u32) : 15.255.76.3
+0f ff 4c 03
+
+# IP Destination address (u32) : 15.255.77.1
+#<40>#
+0f ff 4d 01
+
+# Source port number (u16) : 25
+00 19
+
+# Destination port number (u16) : 32001
+7d 01
+
+### End of Match Structure ###
+
+# cookie (u64) = 0x1234
+#<48>#
+0000 0000 0000 1234
+
+# priority (u16) = 64
+#<56>#
+00 40
+
+# reason (u8) = IDLE_TIMEOUT (0)
+00
+
+# pad (u8)
+00
+
+# durationSec (u32) = 30
+00 00 00 1e
+
+# Time flow was alive in nanoseconds beyond duration_sec (u32) = 30
+#<64>#
+00 00 00 1e
+
+# idle timeout in seconds (u16) = 30
+00 1e
+
+# pad (u8 x 2)
+00 00
+
+# packet count = 4660 (0x1234) (u64)
+#<72># 
+0000 0000 0000 1234
+
+# byte count = 4660 (0x1234)(u64)
+#<80># 
+0000 0000 0000 1234
+#<88>#
+#### and we are done ####

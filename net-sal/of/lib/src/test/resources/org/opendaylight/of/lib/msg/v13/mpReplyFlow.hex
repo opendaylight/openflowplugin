@@ -1,0 +1,374 @@
+### OpenFlow 1.3 MULTIPART_REPLY message : Type FLOW
+#
+# openflow version (u8) = 1.3 (0x4)
+#<0>#
+04
+
+# message type (u8) = OFPT_MULTIPART_REPLY(19)
+13
+
+# message length (u16) = 352
+01 60
+
+# transaction id (u32) = 0
+00 00 00 00
+
+### Message Specific Payload
+## Multipart Reply Header
+# Multipart-Type (u16) = FLOW (1)
+#<8>#
+00 01
+
+# Flags (u16) : none
+00 00
+
+# padding (u8 x 4)
+00 00 00 00
+
+## Multipart Reply FLOW Body
+#### An array of ofp_flow_stats structures
+
+#==============
+#= Flow 0
+#==============
+# length (u16) = 144
+#<16>#
+00 90
+# Table ID (u8) = 0
+00
+# padding (u8)
+00
+# duration sec (u32) = 300
+00 00 01 2c
+# duration nsec (u32) = 50000
+#<24>#
+00 00 c3 50
+# priority (u16) = 4
+00 04
+# idle timeout (u16) = 60
+00 3c
+# hard timeout (u16) = 300
+#<32>#
+01 2c
+# flow mod flags (u16)
+## SEND_FLOW_REM    =  0x1
+## NO_PACKET_COUNTS =  0x8
+## NO_BYTE_COUNTS   = 0x10
+00 19
+# more padding (u8 x 4)
+00 00 00 00
+# cookie (u64) = 0x1234
+#<40>#
+0000 0000 0000 1234
+# packet count (u62) = 2342
+#<48>#
+0000 0000 0000 0926
+# byte count (u62) = 13423234
+#<56>#
+0000 0000 00cc d282
+
+#### MATCH
+## Match Header
+# Type (u16) = OXM (0x1)
+#<64>#
+00 01
+# Length (u16) = 37 (excludes padding)
+00 25
+
+## Match Field - Ethernet Source Address w/Mask
+# Basic, ETH_SRC(4<<1)+M, len
+#<68>#
+  8000   09               0c
+# Source MAC           Mask
+  11 22 33 44 55 66    ff ff ff 00 00 00
+
+## Match Field - Ethernet Type (IPv4)
+# Basic, ETH_TYPE(5<<1), len
+#<84>#
+  8000   0a              02
+# IPv4
+  0800
+
+## Match Field - IP Protocol (TCP)
+# Basic, IP_PROTO(10<<1), len
+#<90>#
+  8000   14               01
+# TCP
+  06
+
+## Match Field - TCP Destination Port (25 - SMTP)
+# Basic, TCP_DST(14<<1), len
+#<95>#
+  8000   1c              02
+# SMTP (25)
+  00 19
+
+## Zero-Filled Padding to bring total structure length to multiple of 8
+## Match struct length is 37; add 3 to bring it to 40
+#<101>#
+00 00 00
+
+
+#### LIST OF INSTRUCTIONS
+#================
+#= Instruction 0
+#================
+# CLEAR_ACTIONS
+## HEADER
+# Instruction Type (u16) : CLEAR_ACTIONS = 5
+#<104>#
+00 05
+
+# Length of struct (u16) = 8
+00 08
+
+## INSTRUCTION SPECIFIC
+# Pad to 64-bit boundary (u8 x 4)
+00 00 00 00
+
+#### Action List (would) Go Here
+# (no actions expected for CLEAR_ACTIONS)
+
+
+#================
+#= Instruction 1
+#================
+# APPLY_ACTIONS
+## HEADER
+# Instruction Type (u16) : APPLY_ACTIONS = 4
+#<112>#
+00 04
+
+# Length of struct (u16) = 48
+00 30
+
+## INSTRUCTION SPECIFIC
+# Pad to 64-bit boundary (u8 x 4)
+00 00 00 00
+
+#### Action List Goes Here
+
+# Action Type (u16), Length (u16), Action Specific
+# DEC_NW_TTL(24),    8,            padding
+#<120>#
+  00 18              00 08         00 00 00 00
+
+
+# Action Type (u16), Length (u16), Action Specific
+# SET_FIELD(25),     16,           Single OXM TLV
+#<128>#
+  00 19              00 10
+# Class (u16), Field+M (u8),    Payload Length (u8)
+# Basic        ETH_DST(3<<1)    6
+  8000         06               06
+## Payload : Destination MAC address (u48)
+00 00 1e 45 34 11
+#### Pad to 64-bits
+00 00
+
+
+# Action Type (u16), Length (u16), Action Specific
+# SET_FIELD(25),     16,           Single OXM TLV
+#<144>#
+00 19                00 10
+# Class (u16), Field+M (u8),    Payload Length (u8)
+# Basic        IPV4_DST(12<<1)  4
+  8000         18               04
+## Payload : Destination IPv4 address (u32) = 15.254.17.1
+0f fe 11 01
+#### Pad to 64-bits
+00 00 00 00
+
+
+
+#==============
+#= Flow 1
+#==============
+# length (u16) = 88
+#<160>#
+00 58
+# Table ID (u8) = 1
+01
+# padding (u8)
+00
+# duration sec (u32) = 740
+00 00 02 e4
+# duration nsec (u32) = 3
+#<168>#
+00 00 00 03
+# priority (u16) = 1
+00 01
+# idle timeout (u16) = 60
+00 3c
+# hard timeout (u16) = 300
+#<176>#
+01 2c
+# flow mod flags (u16)
+## SEND_FLOW_REM    =  0x1
+## NO_BYTE_COUNTS   = 0x10
+00 11
+# more padding (u8 x 4)
+00 00 00 00
+# cookie (u64) = 0x1234
+#<184>#
+0000 0000 0000 1234
+# packet count (u62) = 256
+#<192>#
+0000 0000 0000 0100
+# byte count (u62) = 37000
+#<200>#
+0000 0000 0000 9088
+
+#### MATCH
+## Match Header
+# Type (u16) = OXM (0x1)
+#<208>#
+00 01
+# Length (u16) = 26 (excludes padding)
+00 1a
+
+## Match Field - Ethernet Source Address w/Mask
+# Basic, ETH_SRC(4<<1)+M, len
+#<212>#
+  8000   09               0c
+# Source MAC           Mask
+  11 22 33 44 55 66    ff ff ff 00 00 00
+
+## Match Field - Ethernet Type (IPv4)
+# Basic, ETH_TYPE(5<<1), len
+#<228>#
+  8000   0a              02
+# IPv4
+  0800
+
+## Zero-Filled Padding to bring total structure length to multiple of 8
+## Match struct length is 26; add 6 to bring it to 32
+#<234>#
+0000 0000 0000
+
+#### LIST OF INSTRUCTIONS
+#================
+#= Instruction 0
+#================
+# GOTO_TABLE
+## HEADER
+# Instruction Type (u16) : GOTO_TABLE = 1
+#<240>#
+00 01
+
+# Length of struct (u16) = 8
+00 08
+
+## INSTRUCTION SPECIFIC
+# Table ID (u8) = 3
+03
+
+# Pad to 64-bit boundary (u8 x 3)
+00 00 00
+
+
+#==============
+#= Flow 2
+#==============
+# length (u16) = 104
+#<248>#
+00 68
+# Table ID (u8) = 1
+#<16>#
+01
+# padding (u8)
+00
+# duration sec (u32) = 748
+00 00 02 ec
+# duration nsec (u32) = 32
+#<256>#
+00 00 00 20
+# priority (u16) = 7
+00 07
+# idle timeout (u16) = 60
+00 3c
+# hard timeout (u16) = 300
+#<264>#
+01 2c
+# flow mod flags (u16)
+## SEND_FLOW_REM    =  0x1
+00 01
+# more padding (u8 x 4)
+00 00 00 00
+# cookie (u64) = 0x1234
+#<272>#
+0000 0000 0000 1234
+# packet count (u62) = 2560
+#<280>#
+0000 0000 0000 0a00
+# byte count (u62) = 37004
+#<288>#
+0000 0000 0000 908c
+
+#### MATCH
+## Match Header
+# Type (u16) = OXM (0x1)
+#<296>#
+00 01
+# Length (u16) = 26 (excludes padding)
+00 1a
+
+## Match Field - Ethernet Source Address w/Mask
+# Basic, ETH_SRC(4<<1)+M, len
+#<300>#
+  8000   09               0c
+# Source MAC           Mask
+  11 22 33 44 55 66    ff ff ff 00 00 00
+
+## Match Field - Ethernet Type (IPv4)
+# Basic, ETH_TYPE(5<<1), len
+#<316>#
+  8000   0a              02
+# IPv4
+  0800
+
+## Zero-Filled Padding to bring total structure length to multiple of 8
+## Match struct length is 26; add 6 to bring it to 32
+#<322>#
+0000 0000 0000
+
+#### LIST OF INSTRUCTIONS
+#================
+#= Instruction 0
+#================
+# METER
+## HEADER
+# Instruction Type (u16) : METER = 6
+#<328>#
+00 06
+
+# Length of struct (u16) = 8
+00 08
+
+## INSTRUCTION SPECIFIC
+# Meter ID (u32) = 192
+00 00 00 c0
+
+#================
+#= Instruction 1
+#================
+# EXPERIMENTER
+## HEADER
+# Instruction Type (u16) : EXPERIMENTER = 0xffff
+#<336>#
+ff ff
+
+# Length of struct (u16) = 16
+00 10
+
+# Experimenter ID (u32) = HP (0x2481)
+00 00 24 81
+
+## INSTRUCTION SPECIFIC
+# Experimenter data (u8 x 8) = "Hola!"
+#<340>#
+486f 6c61 2100 0000
+
+#<352>#
+#### and we are done ####
+

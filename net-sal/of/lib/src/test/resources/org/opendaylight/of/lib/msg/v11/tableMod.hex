@@ -1,0 +1,29 @@
+### OpenFlow 1.1 TABLE_MOD message
+#
+# openflow version (u8) = 1.1 (0x2)
+#<0>#
+02
+
+# message type (u8) = OFPT_TABLE_MOD(17)
+11
+
+# message length (u16) = 16
+00 10
+
+# transaction id (u32) = 0
+00 00 00 00
+
+### Message Specific Payload
+# Table ID (u8) = TABLE_ALL (0xff)
+#<8>#
+ff
+
+# padding (u8 x 3)
+00 00 00
+
+# Table Config flags (u32)
+## TABLE_MISS_DROP (0x2)
+00 00 00 02
+
+#<16>#
+#### and we are done ####

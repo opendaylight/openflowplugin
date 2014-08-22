@@ -1,0 +1,34 @@
+# An example table feature property :: Write Actions
+
+#----------------------------------
+## Table feature property - Header
+
+# property type (u16) = WRITE_ACTIONS (4)
+#<0>#
+00 04
+
+# length (u16) = 16
+00 10
+
+#----------------------------------
+## Table feature property Payload
+
+# list of supported actions: (length - 4) bytes
+#   struct ofp_action with just the action ID
+#    non-experimenter actions are 4 bytes
+
+# Action Type (u16)    Length of struct (u16)
+# OUTPUT = 0
+#<4>#
+00 00                  00 04
+# COPY_TTL_OUT = 11
+#<8>#
+00 0b                  00 04
+# COPY_TTL_IN = 12
+#<12>#
+00 0c                  00 04
+
+## Padding = 0 (to round up to 16)
+
+#<16>#
+## And we are done ##

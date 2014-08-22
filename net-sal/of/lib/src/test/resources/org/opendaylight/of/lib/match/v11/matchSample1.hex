@@ -1,0 +1,91 @@
+# Example 1.1 match structure #1
+# See section A.2.3 Flow Match Structures of the 1.1 Spec.
+
+# Match Type (u16) : OFPMT_STANDARD (0)
+#<0>#
+00 00
+
+# Match Length (u16) : OFMPT_STANDARD_LENGTH (88)
+00 58
+
+# In Port (u32) : 14
+00 00 00 0e
+
+# Wildcards (u32) :
+## DL_VLAN     =   0x2
+## DL_VLAN_PCP =   0x4
+## MPLS_LABEL  = 0x100
+## MPLS_TC     = 0x200
+#<8>#
+00 00 03 06
+
+# Ethernet source address (u48) :
+#<12>#
+00001e:111111
+# Ethernet source address mask (u48) : (last byte = don't care)
+ffffff:ffff00
+
+# Ethernet destination address (u48) :
+#<24>#
+00001e:222222
+# Ethernet destination address mask (u48) : (last byte and 1/4 = don't care)
+ffffff:fffc00
+
+# VLAN id (u16;12) : 42
+#<36>#
+00 2a
+
+# VLAN priority (u8;3) : 3
+03
+
+# padding (u8)
+00
+
+# Ethernet Type (u16) : IPv4 (0x0800)
+#<40>#
+08 00
+
+# IP ToS (u8;6) : 5
+05
+
+# IP Protocol (u8) : TCP (6)
+06
+
+# IP Source address (u32) : 15.255.76.3
+0f ff 4c 03
+# IP Source address mask (u32) : 255.255.255.0
+#<48>#
+ff ff ff 00
+
+# IP Destination address (u32) : 15.255.77.1
+0f ff 4d 01
+# IP Destination address mask (u32) : 255.240.0.0
+#<56>#
+ff f0 00 00
+
+# Source port number (u16) : 25
+00 19
+
+# Destination port number (u16) : 32001
+7d 01
+
+# MPLS Label (u32;20)  : 0 - wildcarded - we don't care
+#<64>#
+00 00 00 00
+
+# MPLS TC (u8;3) : 0 - wildcarded - we don't care
+00
+
+# padding (u8 x 3)
+00 00 00
+
+# Metadata (u64)
+#<72>#
+0123 4567 89ab cdef
+
+# Metadata mask (u64)
+#<80>#
+00ff ffff ffff ffff
+
+#<88>#
+###### That's All Folks!! ######

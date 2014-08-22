@@ -1,0 +1,47 @@
+<!--
+  ~ Copyright (c) 2014 Hewlett-Packard Development Company, L.P.
+  ~
+  ~ This program and the accompanying materials are made available under the
+  ~ terms of the Eclipse Public License v1.0 which accompanies this distribution,
+  ~ and is available at http://www.eclipse.org/legal/epl-v10.html
+  -->
+
+<html>
+<body>
+
+Set of interfaces and several built-in implementations for parsers and
+constraints which define a framework for extension of the command-line parsing
+framework.  During the maching process, the {@link
+org.opendaylight.util.syntax.parsers.ParameterParser parameter parsers} assist in
+translating the individual command-line arguments into native Java objects and
+the {@link org.opendaylight.util.syntax.parsers.Constraints constraints} assist in
+providing hints to the parameter parsers on how they should interpret the
+command-line argument and help determine whether the parsed values are valid.
+<p>
+
+During the syntax compilation process, the 
+{@link org.opendaylight.util.syntax.parsers.ConstraintsParser constraints parsers}
+ are employed to generate specific 
+{@link org.opendaylight.util.syntax.parsers.Constraints constraints} instances from
+the parameter configuration properties.
+<p>
+
+Both {@link org.opendaylight.util.syntax.parsers.ParameterParser parameter parsers} and
+{@link org.opendaylight.util.syntax.parsers.ConstraintsParser constraints parsers} share
+a common ancestor, which is the {@link org.opendaylight.util.syntax.parsers.TypedParser}
+class, and which provides an abstraction for associating a simple <em>type
+token</em> string with the parser implementation.  This helps to increase the
+brevity and readability of the syntax definition files as it allows the syntax
+developer to refer to the short and simple type token, as opposed to the fully
+qualified class name.
+<p>
+
+This package also contains a number of built-in parser and constraints
+implementations for parsing strings into validated instances of {@link
+java.lang.Number}, {@link java.lang.Boolean}, {@link java.lang.String}, 
+{@link java.util.Date}, {@link java.io.File}, etc.  Similarly, parsers and
+constraints are available for translating arguments into lists of these
+entities.  The built-in implementations are highly configurable.
+
+</body>
+</html>

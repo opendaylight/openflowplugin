@@ -1,0 +1,145 @@
+### OpenFlow 1.0 STATS_REPLY message : Type PORT
+#
+# openflow version (u8) = 1.0 (0x1)
+#<0>#
+01
+
+# message type (u8) = OFPT_STATS_REPLY (17)
+11
+
+# message length (u16) = 220
+00 dc
+
+# transaction id (u32) = 0
+00 00 00 00
+
+### Message Specific Payload
+## Multipart Reply Header
+# Multipart-Type (u16) = PORT (4)
+#<8>#
+00 04
+
+# Flags (u16) : none
+00 00
+
+## Multipart Reply PORT_STATS Body
+#### An array of ofp_port_stats structures
+
+#==============
+#= Port 0
+#==============
+# Port (u16) : 20
+#<12>#
+00 14
+
+# padding (u8 x 6)
+0000 0000 0000
+
+# rx packets (u64) = 4660
+#<20>#
+0000 0000 0000 1234
+
+# tx packets (u64) = 4662
+#<28>#
+0000 0000 0000 1236 
+
+# rx bytes (u64) = 22136
+#<36>#
+0000 0000 0000 5678
+
+# tx bytes (u64) = 22138
+#<44>#
+0000 0000 0000 567a
+
+# rx dropped (u64) = 20
+#<52>#
+0000 0000 0000 0014
+
+# tx dropped (u64) = 24
+#<60>#
+0000 0000 0000 0018
+
+# rx errors (u64) = 12
+#<68>#
+0000 0000 0000 000c
+
+# tx errors (u64) = 14
+#<76>#
+0000 0000 0000 000e
+
+# rx frame errors (u64) = 4
+#<84>#
+0000 0000 0000 0004
+
+# rx overrun errors (u64) = 4
+#<92>#
+0000 0000 0000 0004
+
+# rx crc errors (u64) = 4
+#<100>#
+0000 0000 0000 0004
+
+# collisions (u64) = 8
+#<108>#
+0000 0000 0000 0008
+
+#==============
+#= PORT 1
+#==============
+# Port (u16) :  22
+#<116>
+00 16
+
+# padding (u8 x 6)
+0000 0000 0000
+
+# rx packets (u64) = 4660
+#<124>#
+0000 0000 0000 1234
+
+# tx packets (u64) = 4662
+#<132>#
+0000 0000 0000 1236 
+
+# rx bytes (u64) = 22136
+#<140>#
+0000 0000 0000 5678
+
+# tx bytes (u64) = 22138
+#<148>#
+0000 0000 0000 567a
+
+# rx dropped (u64) = 20
+#<156>#
+0000 0000 0000 0014
+
+# tx dropped (u64) = 13
+#<164>#
+0000 0000 0000 000d
+
+# rx errors (u64) = 22
+#<172>#
+0000 0000 0000 0016
+
+# tx errors (u64) = 14
+#<180>#
+0000 0000 0000 000e
+
+# rx frame errors (u64) = 4
+#<188>#
+0000 0000 0000 0004
+
+# rx overrun errors (u64) = 4
+#<196>#
+0000 0000 0000 0004
+
+# rx crc errors (u64) = 14
+#<204>#
+0000 0000 0000 000e
+
+# collisions (u64) = 8
+#<212>#
+0000 0000 0000 0008
+
+#<220>#
+#### and we are done ####

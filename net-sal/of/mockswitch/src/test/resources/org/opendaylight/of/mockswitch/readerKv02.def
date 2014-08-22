@@ -1,0 +1,15 @@
+# Key: Value format
+## This one has errors on lines 8 and 15
+
+## standard key/value pair
+foo: bar
+
+## not really a key/value pair
+globby bits
+
+## valid - the continuation is dropped because the
+## next line is blank
+goo: 1 \
+
+## This is a little more subtle
+gotcha; foibles

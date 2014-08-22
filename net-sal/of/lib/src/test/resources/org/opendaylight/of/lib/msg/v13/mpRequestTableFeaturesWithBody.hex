@@ -1,0 +1,138 @@
+### OpenFlow 1.3 MULTIPART_REQUEST message : Type TABLE_FEATURES (with body)
+# Note: a body represents a request for the switch to reconfigure its tables
+#
+# openflow version (u8) = 1.3 (0x4)
+#<0>#
+04
+
+# message type (u8) = OFPT_MULTIPART_REQUEST(18)
+12
+
+# message length (u16) = 152
+00 98
+
+# transaction id (u32) = 0
+00 00 00 00
+
+### Message Specific Payload
+## Multipart Request Header
+# Multipart-Type (u16) = TABLE_FEATURES (12)
+#<8>#
+00 0c
+
+# Flags (u16) : none
+00 00
+
+# padding (u8 x 4)
+00 00 00 00
+
+## Multipart Request Body
+# This is an array of table feature structures
+
+## TABLE 0 #############
+# table feature length (u16) = 136
+#<16>#
+00 88
+
+# table ID (u8) = 0
+00
+
+# padding (u8 x 5)
+0000 0000 00
+
+# table name (32 char field) = "The First Table"
+#<24>#
+5468 6520 4669 7273 7420 5461 626c 6500
+0000 0000 0000 0000 0000 0000 0000 0000
+
+# metadata match (u64) = all one bits
+#<56>#
+ffff ffff ffff ffff
+
+# metadata write (u64) = top half
+#<64>#
+ffff ffff 0000 0000
+
+# config (u32) - should be all zeros
+#<72>#
+00 00 00 00
+
+# max entries (u32) = 1024
+00 00 04 00
+
+## Table Feature Property list ##
+
+## -- Instructions Property
+# header: type (u16) = INSTRUCTIONS (0), length (u16) = 44
+#<80>#
+00 00                                    00 2c
+# table feature property payload
+# list of supported instructions : (length - 4) bytes
+#   struct ofp_instruction with just the instruction ID
+#    non-experimenter instructions are 4 bytes
+
+# Instruction Type (u16)    Length of struct (u16)
+# GOTO_TABLE = 1
+#<84>#
+00 01                       00 04
+# WRITE_METADATA = 2
+#<88>#
+00 02                       00 04
+# WRITE_ACTIONS = 3
+#<92>#
+00 03                       00 04
+# APPLY_ACTIONS = 4
+#<96>#
+00 04                       00 04
+# CLEAR_ACTIONS = 5
+#<100>#
+00 05                       00 04
+# METER = 6
+#<104>#
+00 06                       00 04
+# EXPERIMENTER = 0xffff
+#<108>#
+ff ff                       00 10
+# Experimenter ID = HP
+#<112>#
+00 00 24 81
+# Some experimenter data
+#<116>#
+0f00 0ba2 c001 c001
+
+### Need padding: (length + 7)/8*8 - (length)   :: between 0 and 7
+# should be 4 to take struct size up to 48.
+#<124>#
+00 00 00 00
+
+
+## -- Instructions MISS Property (in this example, fewer instructions)
+# header: type (u16) = INSTRUCTIONS_MISS (1), length (u16) = 24
+#<128>#
+00 01                                    00 18
+# table feature property payload
+# list of supported instructions : (length - 4) bytes
+#   struct ofp_instruction with just the instruction ID
+#    non-experimenter instructions are 4 bytes
+
+# Instruction Type (u16)    Length of struct (u16)
+# GOTO_TABLE = 1
+#<132>#
+00 01                       00 04
+# WRITE_METADATA = 2
+#<136>#
+00 02                       00 04
+# WRITE_ACTIONS = 3
+#<140>#
+00 03                       00 04
+# APPLY_ACTIONS = 4
+#<144>#
+00 04                       00 04
+# CLEAR_ACTIONS = 5
+#<148>#
+00 05                       00 04
+
+### Need padding: (length + 7)/8*8 - (length)   :: between 0 and 7
+# should be 0 to take struct size up to 24.
+#<152>#
+#### and we are done ####

@@ -1,0 +1,117 @@
+### Ethernet2 - IPv6 - ICMPv6 Router advertisement packet
+#
+
+# Destination: IPv6mcast_00:00:00:01 (33:33:00:00:00:01)
+#<0>#
+33 33 00 00 00 01
+
+# Source: Ibm_82:95:b5 (00:11:25:82:95:b5)
+#<6>#
+00 11 25 82 95 b5
+
+# Type: IPv6 (0x86dd)
+#<12>#
+86 dd
+
+# Version: 6, Traffic Class: 0x0, Flow Label: 0x0
+#<14># 
+60 00 00 00
+
+# Payload length: 56
+#<18># 
+00 38
+
+# Next header: ICMPv6 (58)
+#<20># 
+3a
+
+# Hop limit: 255
+#<21># 
+ff
+
+# Source: fe80::211:25ff:fe82:95b5 (fe80::211:25ff:fe82:95b5)
+#<22># 
+fe 80 00 00 00 00 00 00 02 11 25 ff fe 82 95 b5
+
+# Destination: ff02::1 (ff02::1)
+#<38># 
+ff 02 00 00 00 00 00 00 00 00 00 00 00 00 00 01
+
+# Type: Router Advertisement (134)
+#<54># 
+86
+
+# Code: 0
+#<55># 
+00
+
+# Checksum: 0x79d2 [correct]
+#<56># 
+79 d2
+
+# Cur hop limit: 64
+#<58># 
+40
+
+# Flags: 0x00
+#<59># 
+00
+
+# Router lifetime (s): 1800
+#<60>#
+07 08
+
+# Reachable time (ms): 0
+#<62>#
+00 00 00 00
+
+# Retrans timer (ms): 0
+#<66>#
+00 00 00 00
+
+# Option: Type: Source link-layer address (1)
+#<70>#
+01
+
+# Length: 1 (8 bytes)
+#<71>#
+01
+
+# Link-layer address: Ibm_82:95:b5 (00:11:25:82:95:b5)
+#<72>#
+00 11 25 82 95 b5
+
+# Option: Type: Prefix information (3)
+#<78>#
+03
+
+# Length: 4 (32 bytes)
+#<79>#
+04
+
+# Prefix Length: 64
+#<80>#
+40
+
+# Flag: 0xc0
+#<81>#
+c0
+
+# Valid Lifetime: 2592000
+#<82>#
+00 27 8d 00
+
+# Preferred Lifetime: 604800
+#<86>#
+00 09 3a 80
+
+# Reserved
+#<90>#
+00 00 00 00
+
+# Prefix: 2001:6f8:102d:: (2001:6f8:102d::)
+#<94>#
+20 01 06 f8 10 2d 00 00 00 00 00 00 00 00 00 00
+
+#<110>#
+#### and we are done ####

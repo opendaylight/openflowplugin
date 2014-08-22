@@ -1,0 +1,13 @@
+{
+  "class" : {
+    "id" : "id1",
+    "description" : "desc",
+    "priority" : 123,
+    "actual_priority" : 321,
+    "base_cookie" : "0xcafe000000000000",
+    "lower_ids" : [ "id2", "id3" ],
+    "higher_ids" : [ "i6", "id5" ],
+    "match_fields" : [ "ETH_TYPE", "ETH_SRC", "ETH_DST" ],
+    "actions" : [ "STEAL" ]
+  }
+}

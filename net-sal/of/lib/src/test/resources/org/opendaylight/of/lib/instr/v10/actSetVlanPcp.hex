@@ -1,0 +1,18 @@
+# An example 1.0 Action structure
+# See section 5.2.4 Flow Action Structures of the 1.0 Spec.
+#
+# SET_VLAN_PCP
+
+## HEADER
+# Action Type (u16) : SET_VLAN_PCP(2)
+00 02
+
+# Length of struct (u16) = 8
+00 08
+
+## ACTION SPECIFIC
+# VLAN priority (u8) : but only lower 3-bits have meaning = 4
+04
+
+# pad (u8 x 3)
+00 00 00

@@ -1,0 +1,163 @@
+### Ethernet2 - IP - TCP - DNS A #3 response (no such name)
+#
+# Destination: Hewlett-_b3:e4:de (00:24:81:b3:e4:de)
+#<6>#
+00 24 81 b3 e4 de
+
+# Source: Hewlett-_2d:a0:00 (78:ac:c0:2d:a0:00)
+#<0>#
+78 ac c0 2d a0 00
+
+# Type: IP (0x0800)
+#<12>#
+08 00
+
+# Version/length: 4, 20
+#<14>#
+45
+ 
+# Differentiated Services Field: 0x00
+#<15>#
+00
+
+# Total Length: 135
+#<16>#
+00 87
+
+# Identification: 0xc9c7 (51655)
+#<18>#
+c9 c7
+
+# Flags: 0x02 (Don't Fragment)
+#<20>#
+40 00
+
+# Time to live: 245
+#<22>#
+f5
+
+# Protocol: UDP (17)
+#<23>#
+11
+
+# Header checksum: 0xe1f6 [correct]
+#<24>#
+e1 f6
+
+# Source: 16.110.135.52 (16.110.135.52)
+#<30>#
+10 6e 87 34
+
+# Destination: 16.181.49.80 (16.181.49.80)
+#<26>#
+10 b5 31 50
+
+# Source port: domain (53)
+#<36>#
+00 35
+
+# Destination port: 12082 (12082)
+#<34>#
+2f 32
+
+# Length: 115
+#<38>#
+00 73
+
+# Checksum: 0xc3df [validation disabled]
+#<40>#
+c3 df
+
+# Transaction ID: 0x9793
+#<42>#
+97 93
+
+# Flags: 0x8183 (Standard query response, No such name)
+#<44>#
+81 83
+
+# Questions: 1
+#<46>#
+00 01
+
+# Answer RRs: 0
+#<48>#
+00 00
+
+# Authority RRs: 1
+#<50>#
+00 01
+
+# Additional RRs: 0
+#<52>#
+00 00
+
+
+
+# Name: www.xxxhpxxx.com
+#<54>#
+03 77 77 77 08 78 78 78 68 70 78 78 78 03 63 6f 6d 00
+
+# Type: A (Host address)
+#<72>#
+00 01
+
+# Class: IN (0x0001)
+#<74>#
+00 01
+
+
+
+# com: type SOA, class IN, mname a.gtld-servers.net
+
+# Name pointer
+#<76>#
+c0 19
+
+# Type: SOA (Start of zone of authority)
+#<78>#
+00 06
+
+# Class: IN (0x0001)
+#<80>#
+00 01
+
+# Time to live: 13 minutes
+#<82>#
+00 00 03 0c
+
+# Data length: 61
+#<86>#
+00 3d
+
+# Primary name server: a.gtld-servers.net
+#<88>#
+01 61 0c 67 74 6c 64 2d 73 65 72 76 65 72 73 03 6e 65 74 00
+
+# Responsible authority's mailbox: nstld.verisign-grs.com
+#<108>#
+05 6e 73 74 6c 64 0c 76 65 72 69 73 69 67 6e 2d 67 72 73 c0 19
+
+# Serial number: 1373892002
+#<129>#
+51 e3 ed a2
+
+# Refresh interval: 30 minutes
+#<133>#
+00 00 07 08
+
+# Retry interval: 15 minutes
+#<137>#
+00 00 03 84
+
+# Expiration limit: 7 days
+#<141>#
+00 09 3a 80
+
+# Minimum TTL: 1 day
+#<145>#
+00 01 51 80
+
+ 
+#<149>#
+#### and we are done ####

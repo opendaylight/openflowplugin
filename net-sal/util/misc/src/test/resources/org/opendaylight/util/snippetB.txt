@@ -1,0 +1,14 @@
+java.lang.RuntimeException: Alt Test Exception
+  org.opendaylight.util.LogTestSnippet.altSix(LogTestSnippet.java:72)
+  org.opendaylight.util.LogTestSnippet.altFive(LogTestSnippet.java:68)
+  org.opendaylight.util.LogTestSnippet.altFour(LogTestSnippet.java:64)
+  org.opendaylight.util.LogTestSnippet.altThree(LogTestSnippet.java:60)
+  org.opendaylight.util.LogTestSnippet.altTwo(LogTestSnippet.java:56)
+  ...
+Caused by: java.lang.RuntimeException: Test Exception
+  org.opendaylight.util.LogTestSnippet.snippetFour(LogTestSnippet.java:48)
+  org.opendaylight.util.LogTestSnippet.snippetThree(LogTestSnippet.java:44)
+  org.opendaylight.util.LogTestSnippet.snippetTwo(LogTestSnippet.java:40)
+  org.opendaylight.util.LogTestSnippet.snippetOne(LogTestSnippet.java:36)
+  org.opendaylight.util.LogTestSnippet.snippetWithCause(LogTestSnippet.java:122)
+  ...

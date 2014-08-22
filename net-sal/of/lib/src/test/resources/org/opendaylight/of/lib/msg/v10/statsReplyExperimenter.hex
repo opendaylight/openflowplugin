@@ -1,0 +1,47 @@
+### OpenFlow 1.0 STATS_REPLY message : Type EXPERIMENTER
+#
+# openflow version (u8) = 1.0 (0x1)
+#<0>#
+01
+
+# message type (u8) = OFPT_MULTIPART_REPLY (17)
+11
+
+# message length (u16) = 56
+00 38
+
+# transaction id (u32) = 0
+00 00 00 00
+
+### Message Specific Payload
+## Multipart Request Header
+# Multipart-Type (u16) = EXPERIMENTER (65535)
+#<8>#
+ff ff
+
+# Flags (u16) : none
+00 00
+
+## Multipart Reply Body
+# experimenter id (u32) = HP - (0x2481)
+#<12>#
+00 00 24 81
+
+# Experimenter defined body
+## Acknowledge Op Code (u32) = (02) -- roger roger
+#<16>#
+00 00 00 02
+
+## Message = "Self Destruct Sequence Initiated!" - (u8 X 33)
+#<20>#
+5365 6c66 2044 6573 7472 7563 7420 5365
+7175 656e 6365 2049 6e69 7469 6174 6564
+21
+
+## pad out message to 8 bit boundary - (u8 x 3)
+#<53>#
+00 00 00
+
+#<56>#
+#### and we are done ####
+

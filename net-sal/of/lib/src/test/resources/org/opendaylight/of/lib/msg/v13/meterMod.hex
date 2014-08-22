@@ -1,0 +1,147 @@
+### OpenFlow 1.3 METER MOD message
+#
+# openflow version (u8) = 1.3 (0x4)
+#<0>#
+04
+
+# message type (u8) = OFPT_METER_MOD(29)
+1d
+
+# message length (u16) = 96
+00 60
+
+# transaction id (u32) = 0
+00 00 00 00
+
+### Message Specific Payload
+# meter mod command (u16) = ADD(0)
+#<8>#
+00 00
+
+# meter flags (u16) : bitmapped (the flag values)
+## OFPMF_KBPS      = 0x1
+## OFPMF_BURST     = 0x4
+## OFPMF_STATS     = 0x8
+00 0d
+
+# meter id (u32) = 605
+00 00 02 5d
+
+## List of Meter Bands starts here ##
+
+#==============
+# Meter Band 0
+#==============
+## Meter Band Header
+# Type (u16) = OFPMBT_DROP(1)
+#<16>#
+00 01
+
+# Length (u16) = 16
+00 10
+
+# Rate for dropping packets (u32) = 4000 (kbps)
+00 00 0f a0
+
+# Size of bursts (u32) = 2048
+00 00 08 00
+
+## Meter Band Payload
+# padding (u8 x 4)
+00 00 00 00
+
+#==============
+# Meter Band 1
+#==============
+## Meter Band Header
+# Type (u16) = OFPMBT_DSCP_REMARK(2)
+#<32>#
+00 02
+
+# Length (u16) = 16
+00 10
+
+# Rate for remarking packets (u32) = 512 (kbps)
+00 00 02 00
+
+# Size of bursts (u32) = 2048
+00 00 08 00
+
+## Meter Band Payload
+# precedence level (u8) = 1
+01
+
+# padding (u8 x 3)
+00 00 00
+
+#==============
+# Meter Band 2
+#==============
+## Meter Band Header
+# Type (u16) = OFPMBT_DSCP_REMARK(2)
+#<48>#
+00 02
+
+# Length (u16) = 16
+00 10
+
+# Rate for remarking packets (u32) = 1024 (kbps)
+00 00 04 00
+
+# Size of bursts (u32) = 2048
+00 00 08 00
+
+## Meter Band Payload
+# precedence level (u8) = 2
+02
+
+# padding (u8 x 3)
+00 00 00
+
+#==============
+# Meter Band 3
+#==============
+## Meter Band Header
+# Type (u16) = OFPMBT_DSCP_REMARK(2)
+#<64>#
+00 02
+
+# Length (u16) = 16
+00 10
+
+# Rate for remarking packets (u32) = 2048 (kbps)
+00 00 08 00
+
+# Size of bursts (u32) = 2048
+00 00 08 00
+
+## Meter Band Payload
+# precedence level (u8) = 3
+03
+
+# padding (u8 x 3)
+00 00 00
+
+#==============
+# Meter Band 4
+#==============
+## Meter Band Header
+# Type (u16) = OFPMBT_EXPERIMENTER(0xffff)
+#<80>#
+ff ff
+
+# Length (u16) = 16
+00 10
+
+# Rate for this band (u32) = 1000 (kbps)
+00 00 03 e8
+
+# Size of bursts (u32) = 2048
+00 00 08 00
+
+## Meter Band Payload
+# Experimenter ID (u32) = NICIRA (0x00002320)
+00 00 23 20
+
+#<96>#
+#### and we are done ####

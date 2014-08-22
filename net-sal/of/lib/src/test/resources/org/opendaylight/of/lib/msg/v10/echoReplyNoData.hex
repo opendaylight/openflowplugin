@@ -1,0 +1,19 @@
+### OpenFlow 1.0 ECHO REPLY message
+#
+# openflow version (u8) = 1.0 (0x1)
+#<0>#
+01
+
+# message type (u8) = OFPT_ECHO_REPLY(3)
+03
+
+# message length (u16) = 8
+00 08
+
+# transaction id (u32) = 0
+00 00 00 00
+
+### Message Specific Payload - Arbitrary length
+##   NO DATA
+#<8># 
+#### and we are done ####

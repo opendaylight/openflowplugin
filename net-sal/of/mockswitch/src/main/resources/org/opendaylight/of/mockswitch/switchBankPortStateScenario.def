@@ -1,0 +1,21 @@
+## Test file for port state scenario parsing
+
+[switches]
+SW10 = simple10sw4port.def
+
+### Define the run-time scenario, invoked when the bank is activated.
+[scenario]
+# start with a pause
+delay 10ms
+
+# fire up the switch
+activate SW10
+
+delay 20ms
+portStatus SW10 p3 down
+
+delay 20ms
+portStatus SW10 p1 up
+
+delay 20ms
+portStatus SW10 p3 up

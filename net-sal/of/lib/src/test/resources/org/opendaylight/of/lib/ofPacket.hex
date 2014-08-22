@@ -1,0 +1,40 @@
+## Test pseudo openflow packet - for testing OfPacketReader and OfPacketWriter
+
+## Magic number
+#<0>#
+babe
+
+# Group ID = 0x10101019
+#<2>#
+10 10 10 19
+
+# Virtual ID = 3
+#<6>#
+00 03
+
+# Datapath ID = "0x1949/01:02:03:04:05:06"
+#<8>#
+1949   010203:040506
+
+# Buffer ID = 0xabcdef00
+#<16>#
+ab cd ef 00
+
+# Queue ID = 0x77
+#<20>#
+00 00 00 77
+
+# Meter ID = 0xcabb1e
+#<24>#
+00 ca bb 1e
+
+# Table ID = 130
+#<28>#
+82
+
+## some zero-fill
+#<29>#
+00 00 00
+
+#<32>#
+### DONE ###

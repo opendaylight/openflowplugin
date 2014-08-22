@@ -1,0 +1,17 @@
+# An example match field TLV
+# See section A.2.3.2 Flow Match Field Structures of the 1.3 Spec.
+#
+# Basic :: MPLS_TC (no mask)
+
+# Class (u16) : Basic = 0x8000
+80 00
+
+# Field + hasMask Bit (u8) : MPLS_TC(35<<1) (no mask) = 0x46
+46
+
+# Length of payload excluding header (u8) = 1
+01
+
+## Payload
+# MPLS TC (u3) = 0x4
+04

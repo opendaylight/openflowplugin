@@ -1,0 +1,33 @@
+# An example table feature property :: Apply Actions
+
+#----------------------------------
+## Table feature property - Header
+
+# property type (u16) = APPLY_ACTIONS (6)
+#<0>#
+00 06
+
+# length (u16) = 12
+00 0c
+
+#----------------------------------
+## Table feature property Payload
+
+# list of supported actions: (length - 4) bytes
+#   struct ofp_action with just the action ID
+#    non-experimenter actions are 4 bytes
+
+# Action Type (u16)    Length of struct (u16)
+# PUSH_VLAN = 17
+#<4>#
+00 11                  00 04
+# POP_VLAN = 18
+#<8>#
+00 12                  00 04
+
+## Padding = 4 (to round up to 16)
+#<12>#
+00 00 00 00
+
+#<16>#
+## And we are done ##

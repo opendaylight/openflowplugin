@@ -1,0 +1,33 @@
+### OpenFlow 1.3 ERROR message - BAD_MATCH / BAD_FIELD
+#
+# openflow version (u8) = 1.3 (0x4)
+#<0>#
+04
+
+# message type (u8) = OFPT_ERROR(1)
+01
+
+# message length (u16) = 76
+00 4c
+
+# transaction id (u32) = 482
+00 00 01 e2
+
+### Message Specific Payload
+# Error Type (u16) = BAD_MATCH (4)
+#<8>#
+00 04
+
+# Error Code (u16) = BAD_FIELD (6)
+00 06
+
+# Data: a copy of the offending message
+#  (or at least, the first 64 bytes of the message)
+#<12>#
+040e 0068 0000 01e2 0000 0000 0000 1234
+0000 0000 0000 ffff 6400 0000 0000 0bb8
+ffff ffff 1999 9999 ffff ffff 0019 0000
+0001 0020 8000 0004 0000 0017 8000 0606
+
+#<76>#
+#### and we are done ####

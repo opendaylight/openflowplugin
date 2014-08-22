@@ -1,0 +1,43 @@
+# An example table feature property :: OXM Match
+
+#----------------------------------
+## Table feature property - Header
+
+# property type (u16) = MATCH (8)
+#<0>#
+00 08
+
+# length (u16) = 28
+00 1c
+
+#----------------------------------
+## Table feature property Payload
+# fields that can be matched
+
+## Note: the basic field types are arranged in enum order, so the unit test
+##       can replicate the structure
+
+# list of OXM types : (length - 4) bytes containing OXM ids
+#  32-bit OXM headers or 64-bit OXM headers for experimenter OXM fields
+## OXM-basic class, IN_PORT(0<<1) (!mask),  payload length
+#<4>#
+   80 00            00                      00
+## OXM-basic class, ETH_TYPE(5<<1) (!mask), payload length
+#<8>#
+   80 00            0a                      00
+## OXM-basic class, IPV4_SRC(11<<1) (mask), payload length
+#<12>#
+   80 00            17                      00
+## OXM-basic class, IPV4_DST(12<<1) (mask), payload length
+#<16>#
+   80 00            19                      00
+## Experim. class, field-23(23<<1) (!mask), payload length, ExpId(HP)
+#<20>#
+   ff ff            2e                      04              0000 2481
+## padding of 4 bytes to bring structure up to 32 bytes
+#<28>#
+00 00 00 00
+
+
+#<32>#
+## And we are done ##

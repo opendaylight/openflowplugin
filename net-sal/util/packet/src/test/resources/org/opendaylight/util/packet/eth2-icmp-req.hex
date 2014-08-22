@@ -1,0 +1,85 @@
+### Ethernet2 - ICMP - request packet (74 bytes)
+#
+# Destination MAC: 08:86:3b:33:87:e8
+#<0>#
+08 86 3b 33 87 e8
+
+# Source MAC: 44:1e:a1:ce:5c:e2
+#<6>#
+44 1e a1 ce 5c e2
+
+# Ethernet Type: IP (0x0800)
+#<12>#
+08 00
+
+# Version: 4 (IPv4), header length: 20 bytes
+#<14># 
+45
+
+# DiffServ: 0
+#<15># 
+00
+
+# Total length: 60 bytes
+#<16># 
+00 3c
+
+# Identification: 14614
+#<18># 
+39 16
+
+# Flags: 0x00
+#<20># 
+00
+
+# Fragment offset: 0
+#<21># 
+00
+
+# Time to live: 128
+#<22># 
+80
+
+# Protocol: ICMP (1)
+#<23># 
+01
+
+# Header checksum
+#<24># 
+7e 4f
+
+# Source IP: 192.168.1.10
+#<26># 
+c0 a8 01 0a
+
+# Destination IP: 192.168.1.1
+#<30># 
+c0 a8 01 01
+
+# ICMP Type: 8 (Echo/Ping request)
+#<34>#
+08
+
+# Code: 0
+#<35>#
+00
+
+# Check sum
+#<36>#
+4c ca
+
+# Identifier: 1
+#<38>#
+00 01
+
+# Sequence #: 145
+#<40>#
+00 91
+
+# Data byte count: 32
+#<42>#
+61 62 63 64 65 66 67 68 69 6a 6b 6c 6d 6e 6f 70
+71 72 73 74 75 76 77 61 62 63 64 65 66 67 68 69
+
+#<74># 
+#### and we are done ####

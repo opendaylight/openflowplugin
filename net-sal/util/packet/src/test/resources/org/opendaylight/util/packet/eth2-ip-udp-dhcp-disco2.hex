@@ -1,0 +1,174 @@
+### Ethernet2 - IP - UDP - DHCP discovery #2 packet
+#
+
+# Destination: Broadcast (ff:ff:ff:ff:ff:ff)
+#
+#<0>#
+ff ff ff ff ff ff 
+
+# Source: Procurve_49:40:00 (00:24:a8:49:40:00)
+#<6>#
+00 24 a8 49 40 00
+
+# Type: IP (0x0800)
+#<12>#
+08 00
+
+# Version: 4 (IPv4), header length: 20 bytes
+#<14># 
+45
+
+# DiffServ: 0
+#<15># 
+00
+
+# Total length: 328 bytes
+#<16># 
+01 48
+
+# Identification: 0x935a (37722)
+#<18># 
+93 5a
+
+# Flags/Fragment Offset: 0x4000
+#<20># 
+40 00
+
+# Time to live: 64
+#<22># 
+40
+
+# Protocol: UDP (17)
+#<23># 
+11
+
+# Header checksum: 0xa64b
+#<24>#
+a6 4b
+
+# Source: 0.0.0.0 (0.0.0.0)
+#<26>#
+00 00 00 00
+
+# Destination: 255.255.255.255 (255.255.255.255)
+#<30>#
+ff ff ff ff
+
+# Source port: bootpc (68)
+#<34>#
+00 44
+
+# Destination port: bootps (67)
+#<36>#
+00 43
+
+# Length: 308
+#<38>#
+01 34
+
+# Checksum: 0x7333 [validation disabled]
+#<40>#
+73 33
+
+# Message type: Boot Request (1)
+#<42>#
+01
+
+# Hardware type: Ethernet
+#<43>#
+01
+
+# Hardware address length: 6 
+#<44>#
+06
+
+# Hops: 0 
+#<45>#
+00
+
+# Transaction ID: 0x17936667
+#<46>#
+17 93 66 67
+
+# Seconds elapsed: 16
+#<50>#
+00 10
+
+# Bootp flags: 0x8000 (Broadcast)
+#<52>#
+80 00
+
+# Client IP address: 0.0.0.0 (0.0.0.0)
+#<54>#
+00 00 00 00
+
+# Your (client) IP address: 0.0.0.0 (0.0.0.0)
+#<58>#
+00 00 00 00
+
+# Next server IP address: 0.0.0.0 (0.0.0.0)
+#<62>#
+00 00 00 00
+
+# Relay agent IP address: 0.0.0.0 (0.0.0.0) 
+#<66>#
+00 00 00 00
+
+# Client MAC address: Procurve_49:40:00 (00:24:a8:49:40:00)
+#<70>#
+00 24 a8 49 40 00
+
+# Client hardware address padding: 00000000000000000000 
+#<76>#
+00 00 00 00 00 00 00 00 00 00
+
+# Server host name not given 
+#<86>#
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+
+# Boot file name not given
+#<150>#
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+
+# Magic cookie: DHCP
+#<278>#
+63 82 53 63
+
+# Option: (53) DHCP Message Type
+#<282>#
+35 01 01
+
+# Option: (57) Maximum DHCP Message Size
+#<285>#
+39 02 23 c4
+
+# Option: (60) Vendor class identifier
+#<289>#
+3c 17 48 50 20 4a 38 36 39 37 41 20 53 77 69 74
+63 68 20 35 34 30 36 7a 6c
+
+# Option: (55) Parameter Request List
+#<314>#
+37 08 01 03 04 17 2b 06 0f 77
+
+# Option: (255) End
+#<324>#
+ff
+
+# Padding: 17 bytes
+#<325>#
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00
+
+#<342>#
+#### and we are done ####

@@ -1,0 +1,29 @@
+# An example table feature property :: Experimenter Miss
+
+#----------------------------------
+## Table feature property - Header
+
+# property type (u16) = EXPERIMENTER_MISS (0xffff)
+#<0>#
+ff ff
+
+# length (u16) = 18
+00 12
+
+#----------------------------------
+## Table feature property Payload
+# experimenter ID (u32) = BIG_SWITCH (0x5c16c7)
+#<4>#
+00 5c 16 c7
+# experimenter type (u32) = 7
+#<8>#
+00 00 00 07
+# experimenter data (u8 x 6)
+#<12>#
+0202 0404 0606
+## padding of 6 bytes to bring structure up to 24 bytes
+#<18>#
+0000 0000 0000
+
+#<24>#
+## And we are done ##

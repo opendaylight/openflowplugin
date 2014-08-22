@@ -1,0 +1,10 @@
+#### Switch Bank  - No content
+
+### Define the switches that make up the bank.
+# Note the form "LNAME = filename.def" where LNAME is the logical name
+# used in the scenario section, and filename.def is assumed to be a switch
+# definition file in the same directory as this file.
+
+[switches]
+
+[scenario]

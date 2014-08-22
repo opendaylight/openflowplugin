@@ -1,0 +1,26 @@
+### OpenFlow 1.0 VENDOR message
+#
+# openflow version (u8) = 1.0 (0x1)
+#<0>#
+01
+
+# message type (u8) = OFPT_EXPERIMENTER (4)
+04
+
+# message length (u16) = 24
+00 18
+
+# transaction id (u32) = 0
+00 00 00 00
+
+# experimenter id (u32) = BUDAPEST_U - (6035143)
+#<8>#
+ff 00 00 01
+
+### Message Specific Payload - Arbitrary length
+# body =  "Vendor Stuff" - (u8 x 12)
+#<12>#
+5665 6e64 6f72 2053 7475 6666
+
+#<24>#
+#### and we are done ####

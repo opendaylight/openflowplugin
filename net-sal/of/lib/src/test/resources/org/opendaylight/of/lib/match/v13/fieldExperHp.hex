@@ -1,0 +1,21 @@
+# An example match field TLV
+# See section A.2.3.2 Flow Match Field Structures of the 1.3 Spec.
+#
+# Experimenter :: HP field-23 (no mask)
+
+# Class (u16) : Experimenter = 0xffff
+ff ff
+
+# Field + hasMask Bit (u8) : (23<<1) (no mask) = 0x2e
+2e
+
+# Length of payload excluding header (u8) = 9
+# (includes 4 bytes of experimenter ID)
+09
+
+## Payload
+# Experimenter ID = HP
+00 00 24 81
+
+# data (u8 x ...) = "Hola!"
+48 6f 6c 61 21

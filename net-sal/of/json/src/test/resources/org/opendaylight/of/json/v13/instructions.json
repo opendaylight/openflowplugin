@@ -1,0 +1,93 @@
+{
+  "version" : "1.3.0",
+  "flow_instructions" : [ {
+    "clear_actions" : true
+  }, {
+    "write_actions" : [ {
+      "output" : 1987
+    }, {
+      "copy_ttl_out" : true
+    }, {
+      "copy_ttl_in" : true
+    }, {
+      "set_mpls_ttl" : 10
+    }, {
+      "dec_mpls_ttl" : true
+    }, {
+      "push_vlan" : "vlan"
+    }, {
+      "pop_vlan" : true
+    }, {
+      "push_mpls" : "mpls_u"
+    }, {
+      "pop_mpls" : "mpls_u"
+    }, {
+      "set_queue" : 20
+    }, {
+      "group" : 10
+    }, {
+      "set_nw_ttl" : 10
+    }, {
+      "dec_nw_ttl" : true
+    }, {
+      "set_field" : {
+        "ipv4_dst" : "15.255.124.141"
+      }
+    }, {
+      "push_pbb" : "pbb"
+    }, {
+      "pop_pbb" : true
+    }, {
+      "experimenter" : "0x2481",
+      "data" : "0x0102030405060708"
+    } ]
+  }, {
+    "apply_actions" : [ {
+      "output" : 1987
+    }, {
+      "copy_ttl_out" : true
+    }, {
+      "copy_ttl_in" : true
+    }, {
+      "set_mpls_ttl" : 10
+    }, {
+      "dec_mpls_ttl" : true
+    }, {
+      "push_vlan" : "vlan"
+    }, {
+      "pop_vlan" : true
+    }, {
+      "push_mpls" : "mpls_u"
+    }, {
+      "pop_mpls" : "mpls_u"
+    }, {
+      "set_queue" : 20
+    }, {
+      "group" : 10
+    }, {
+      "set_nw_ttl" : 10
+    }, {
+      "dec_nw_ttl" : true
+    }, {
+      "set_field" : {
+        "ipv4_dst" : "15.255.124.141"
+      }
+    }, {
+      "push_pbb" : "pbb"
+    }, {
+      "pop_pbb" : true
+    }, {
+      "experimenter" : "0x2481",
+      "data" : "0x0102030405060708"
+    } ]
+  }, {
+    "write_metadata" : "0x1234",
+    "mask" : "0xffff"
+  }, {
+    "goto_table" : 3
+  }, {
+    "meter" : 192
+  }, {
+    "experimenter" : "0x0102030405060708"
+  } ]
+}

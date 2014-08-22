@@ -1,0 +1,29 @@
+### OpenFlow 1.0 MULTIPART_REQUEST message : Type TABLE
+#
+# openflow version (u8) = 1.0 (0x1)
+#<0>#
+01
+
+# message type (u8) = OFPT_MULTIPART_REQUEST(16)
+10
+
+# message length (u16) = 12
+00 0c
+
+# transaction id (u32) = 0
+00 00 00 00
+
+### Message Specific Payload
+## Multipart Request Header
+# Multipart-Type (u16) = TABLE (3)
+#<8>#
+00 03
+
+# Flags (u16) : none
+00 00
+
+## Multipart Request Body
+# (none)
+
+#<12>#
+#### and we are done ####

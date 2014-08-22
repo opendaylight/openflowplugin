@@ -1,0 +1,107 @@
+### Ethernet2 - PPPoE - IPv6 - UDP - DHCPv6 Solicit
+#
+
+# Destination: ca:01:0e:88:00:06 (ca:01:0e:88:00:06)
+#<0>#
+ca 01 0e 88 00 06
+
+# Source: cc:05:0e:88:00:00 (cc:05:0e:88:00:00)
+#<6>#
+cc 05 0e 88 00 00
+
+# Type: PPPoE Session (0x8864)
+#<12>#
+88 64
+
+# PPP: Version: 1, Type: 1
+#<14># 
+11
+
+# Code: Session Data (0x00)
+#<15># 
+00
+
+# Session ID: 0x0011
+#<16># 
+00 11
+
+# Payload Length: 100
+#<18># 
+00 64
+
+# Protocol: IPv6 (0x0057)
+#<20># 
+00 57
+
+# Version: 6, TC: 1110 000, FL: 0
+#<22># 
+6e 00 00 00
+
+# Payload length: 58
+#<26># 
+00 3a
+
+# Next header: UDP (0x11)
+#<28># 
+11
+
+# Hop limit: 255
+#<29># 
+ff
+
+# Source: fe80::ce05:eff:fe88:0 (fe80::ce05:eff:fe88:0)
+#<30># 
+fe 80 00 00 00 00 00 00 ce 05 0e ff fe 88 00 00
+
+# Destination: ff02::1:2 (ff02::1:2)
+#<46>#
+ff 02 00 00 00 00 00 00 00 00 00 00 00 01 00 02
+
+# Source port: dhcpv6-client (546)
+#<62># 
+02 22
+
+# Destination port: dhcpv6-server (547)
+#<64>#
+02 23
+
+# Length: 58
+#<66>#
+00 3a
+
+# Checksum: 0x1a67 [validation disabled]
+#<68>#
+1a 67
+
+# Message type: Solicit (1)
+#<70>#
+01
+
+# Transaction ID: 0xfc24ab
+#<71>#
+fc 24 ab
+
+# Option: Elapsed time (8), length: 2, value: 05e9
+#<74>#
+00 08 00 02 05 e9
+
+# Option: Client ID (1), length: 10, value: 00030001cc050e880000
+# DUID type: link-layer address (3)
+# H/W type: Ethernet (1), Link-layer address: cc:05:0e:88:00:00
+#<80>#
+00 01 00 0a 00 03 00 01 cc 05 0e 88 00 00
+
+# Option: Option Request (6), length: 6, value: 001900170018
+#<94>#
+00 06 00 06 00 19 00 17 00 18
+
+# Option: Identity Association for Prefix Delegation (25), length: 12
+# value: 000900010000000000000000
+# IAID: 0090001
+# T1: 0
+# T2: 0
+#<104>#
+00 19 00 0c 00 09 00 01 00 00 00 00 00 00 00 00
+
+#<120>#
+#### and we are done ####

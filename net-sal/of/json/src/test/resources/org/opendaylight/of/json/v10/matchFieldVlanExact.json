@@ -1,0 +1,6 @@
+{
+  "version" : "1.0.0",
+  "flow_match_field" : {
+    "vlan_vid" : 42
+  }
+}

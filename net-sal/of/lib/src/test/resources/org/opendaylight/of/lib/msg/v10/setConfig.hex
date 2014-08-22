@@ -1,0 +1,26 @@
+### OpenFlow 1.0 SET_CONFIG message
+#
+# openflow version (u8) = 1.0 (0x1)
+#<0>#
+01
+
+# message type (u8) = OFPT_SET_CONFIG(9)
+09
+
+# message length (u16) = 12
+00 0c
+
+# transaction id (u32) = 0
+00 00 00 00
+
+### Message Specific Payload
+# ConfigFlags (u16)
+## FRAG_NORMAL (0x0)
+#<8>#
+00 00
+
+# miss send length (u16) = 128
+00 80
+
+#<12>#
+#### and we are done ####

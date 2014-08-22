@@ -1,0 +1,28 @@
+# An example queue structure for OpenFlow 1.0, 1.1.
+# See ofp_packet_queue
+#
+## This particular queue descriptor has a NONE property
+
+## NONE - is dropped in 1.2+
+## Not sure whether this is a valid structure as is.
+
+# queue id (u32) = 14
+00 00 00 0e
+
+# queue descriptor length (u16) = 16
+00 10
+
+# padding (u8 x 2) : 64-bit alignment
+00 00
+
+#### Now the List of Properties follows
+## First Property
+
+# property (u16) = NONE (0)
+00 00
+
+# property length (u16) = 8
+00 08
+
+# padding (u8 x 4) : 64-bit alignment
+00 00 00 00

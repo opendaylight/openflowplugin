@@ -1,0 +1,51 @@
+# An example queue structure for OpenFlow 1.2, 1.3.
+# See ofp_packet_queue
+#
+## This particular queue descriptor has
+##  an EXPERIMENTER property.
+
+# queue id (u32) = 25
+#<0>#
+00 00 00 19
+
+# port (u32) = 13
+00 00 00 0d
+
+# queue descriptor length (u16) = 48
+#<8>#
+00 30
+
+# padding (u8 x 6) : 64-bit alignment
+00 00 00 00 00 00
+
+#### Now the List of Properties follows
+
+## First Property - Header
+# property (u16) = EXPERIMENTER (0xffff)
+#<16>#
+ff ff
+
+# property length (u16) = 32
+00 20
+
+# padding (u8 x 4) : 64-bit alignment
+00 00 00 00
+
+## EXPERIMENTER Body
+# experimenter ID (u32) = HP
+#<24>#
+00 00 24 81
+
+# padding (u8 x 4) : 64-bit alignment
+00 00 00 00
+
+# data : first 16 primes (in bytes: u8)
+#<32>#
+01 02 03 05
+07 0b 0d 11
+#<40>#
+13 17 1d 1f
+25 29 2b 2f
+
+#<48>#
+####### END ###

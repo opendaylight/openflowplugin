@@ -1,0 +1,20 @@
+<!--
+  ~ Copyright (c) 2014 Hewlett-Packard Development Company, L.P.
+  ~
+  ~ This program and the accompanying materials are made available under the
+  ~ terms of the Eclipse Public License v1.0 which accompanies this distribution,
+  ~ and is available at http://www.eclipse.org/legal/epl-v10.html
+  -->
+
+<html>
+<body>
+    Generic service for asynchronous event dispatch. Components that have
+    listeners can implement an {@link org.opendaylight.util.event.EventSink event sink},
+    register it with the {@link org.opendaylight.util.event.EventSinkBroker sink broker}
+    and then simply post {@link org.opendaylight.util.event.Event events} and forget
+    about them.
+    <p>
+    The {@link org.opendaylight.util.event.AbstractEventSink} serves as a convenient base
+    for implementing an event sink.
+</body>
+</html>

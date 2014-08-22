@@ -1,0 +1,15 @@
+# An example 1.0 Action structure
+# See section 5.2.4 Flow Action Structures of the 1.0 Spec.
+#
+# SET_NW_SRC
+
+## HEADER
+# Action Type (u16) : SET_NW_SRC(6)
+00 06
+
+# Length of struct (u16) = 8
+00 08
+
+## ACTION SPECIFIC
+# Source IPv4 (u32) = 15.254.17.1
+0f fe 11 01

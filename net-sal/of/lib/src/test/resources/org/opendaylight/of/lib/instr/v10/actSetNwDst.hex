@@ -1,0 +1,15 @@
+# An example 1.0 Action structure
+# See section 5.2.4 Flow Action Structures of the 1.0 Spec.
+#
+# SET_NW_DST
+
+## HEADER
+# Action Type (u16) : SET_NW_DST(7)
+00 07
+
+# Length of struct (u16) = 8
+00 08
+
+## ACTION SPECIFIC
+# Destination IPv4 (u32) = 15.254.17.1
+0f fe 11 01

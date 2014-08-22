@@ -1,0 +1,17 @@
+# An example match field TLV
+# See section A.2.3.2 Flow Match Field Structures of the 1.3 Spec.
+#
+# Basic :: ARP_SHA (no mask)
+
+# Class (u16) : Basic = 0x8000
+80 00
+
+# Field + hasMask Bit (u8) : ARP_SHA(24<<1) (no mask) = 0x30
+30
+
+# Length of payload excluding header (u8) = 6
+06
+
+## Payload
+# Source Ethernet address in ARP payload = ab:cd:ef:12:23:34
+ab cd ef 12 23 34

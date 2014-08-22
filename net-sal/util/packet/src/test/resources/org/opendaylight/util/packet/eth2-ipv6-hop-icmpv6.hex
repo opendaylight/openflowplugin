@@ -1,0 +1,98 @@
+### Ethernet2 - IPv6 w/ Hop-by-hop option - ICMPv6 Multicast listener packet
+#
+
+# Destination: IPv6mcast_00:00:00:16 (33:33:00:00:00:16)
+#<0>#
+33 33 00 00 00 16
+
+# Source: HsingTec_e3:e8:de (00:d0:09:e3:e8:de)
+#<6>#
+00 d0 09 e3 e8 de
+
+# Type: IPv6 (0x86dd)
+#<12>#
+86 dd
+
+# Version: 6, Traffic Class: 0x0, Flow Label: 0x0
+#<14># 
+60 00 00 00
+
+# Payload length: 36
+#<18># 
+00 24
+
+# Next header: IPv6 hop-by-hop option (0)
+#<20># 
+00
+
+# Hop limit: 1
+#<21># 
+01
+
+# Source: fe80::2d0:9ff:fee3:e8de (fe80::2d0:9ff:fee3:e8de)
+#<22># 
+fe 80 00 00 00 00 00 00 02 d0 09 ff fe e3 e8 de
+
+# Destination: ff02::16 (ff02::16)
+#<38># 
+ff 02 00 00 00 00 00 00 00 00 00 00 00 00 00 16
+
+# Hop-by-hop option
+# Next header: ICMPv6 (58)
+#<54>#
+3a
+
+# Length: 0 (8 bytes)
+#<55>#
+00
+
+# IPv6 Option (Router Alert)
+# Type: Router Alert (5)
+#<56>#
+05 02 00 00
+
+# IPv6 Option (PadN)
+# Type: PadN (1)
+#<60>#
+01 00
+
+# ICMPv6
+# Type: Multicast Listener Report Message v2 (143)
+#<62># 
+8f
+
+# Code: 0
+#<63>#
+00
+
+# Checksum: 0x74fe [correct]
+#<64>#
+74 fe
+
+# Reserved: 0000
+#<66>#
+00 00
+
+# Number of Multicast Address Records: 1
+#<68>#
+00 01
+
+# Multicast Address Record Changed to exclude: ff02::1:ff98:6e1
+# Record Type: Changed to exclude (4)
+#<70>#
+04
+
+# Aux Data Len: 0
+#<71>#
+00 
+
+# Number of Sources: 0
+#<72>#
+00 00
+
+# Multicast Address: ff02::1:ff98:6e1 (ff02::1:ff98:6e1)
+#<74>#
+ff 02 00 00 00 00 00 00 00 00 00 01 ff 98 06 e1
+
+#<90>#
+#### and we are done ####

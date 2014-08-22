@@ -1,0 +1,74 @@
+### Ethernet2 - IPv6 - ICMPv6 Neighbor solicitation packet
+#
+
+# Destination: 3com_07:69:ea (00:60:97:07:69:ea)
+#<0>#
+00 60 97 07 69 ea
+
+# Source: Megahert_05:80:da (00:00:86:05:80:da)
+#<6>#
+00 00 86 05 80 da
+
+# Type: IPv6 (0x86dd)
+#<12>#
+86 dd
+
+# Version: 6, Traffic Class: 0x0, Flow Label: 0x0
+#<14># 
+60 00 00 00
+
+# Payload length: 32
+#<18># 
+00 20
+
+# Next header: ICMPv6 (58)
+#<20># 
+3a
+
+# Hop limit: 255
+#<21># 
+ff
+
+# Source: fe80::200:86ff:fe05:80da (fe80::200:86ff:fe05:80da)
+#<22># 
+fe 80 00 00 00 00 00 00 02 00 86 ff fe 05 80 da
+
+# Destination: fe80::260:97ff:fe07:69ea (fe80::260:97ff:fe07:69ea)
+#<38># 
+fe 80 00 00 00 00 00 00 02 60 97 ff fe 07 69 ea
+
+# Type: Neighbor Solicitation (135)
+#<54># 
+87
+
+# Code: 0
+#<55># 
+00
+
+# Checksum: 0x68bd [correct]
+#<56># 
+68 bd
+
+# Reserved: 00000000
+#<58># 
+00 00 00 00
+
+# Target Address: fe80::260:97ff:fe07:69ea (fe80::260:97ff:fe07:69ea)
+#<62># 
+fe 80 00 00 00 00 00 00 02 60 97 ff fe 07 69 ea
+
+# ICMPv6 Option (Source link-layer address : 00:00:86:05:80:da)
+# Type: Source link-layer address (1)
+#<78># 
+01
+
+# Length: 1 (8 bytes)
+#<79># 
+01
+
+# Link-layer address: Megahert_05:80:da (00:00:86:05:80:da)
+#<80># 
+00 00 86 05 80 da
+
+#<86>#
+#### and we are done ####

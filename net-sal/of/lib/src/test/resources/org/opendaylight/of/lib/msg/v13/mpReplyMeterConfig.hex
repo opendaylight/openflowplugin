@@ -1,0 +1,133 @@
+### OpenFlow 1.3 MULTIPART_REPLY message : Type METER_CONFIG
+#
+# openflow version (u8) = 1.3 (0x4)
+#<0>#
+04
+
+# message type (u8) = OFPT_MULTIPART_REPLY(19)
+13
+
+# message length (u16) = 80
+00 50
+
+# transaction id (u32) = 0
+00 00 00 00
+
+### Message Specific Payload
+## Multipart Reply Head96er
+# Multipart-Type (u16) = METER_CONFIG (10)
+#<8>#
+00 0a
+
+# Flags (u16) : none
+00 00
+
+# padding (u8 x 4)
+00 00 00 00
+
+## Multipart Reply METER_CONFIG body
+#### An array of ofp_meter_config structures
+#==============
+# Meter Config 0
+#==============
+# length (u16) = 24
+#<16>#
+00 18
+
+# flags
+# meter flags (u16) : bitmapped (the flag values)
+## OFPMF_PKTPS     = 0x2
+## OFPMF_STATS     = 0x8
+00 0a
+
+# Meter ID (u32) :  23 = 0x17
+00 00 00 17
+
+## List of Meter Bands starts here ##
+#==============
+# Meter Band 0
+#==============
+## Meter Band Header
+# Type (u16) = OFPMBT_DROP(1)
+#<24>#
+00 01
+
+# Length (u16) = 16
+00 10
+
+# Rate for dropping packets (u32) = 4000 (kbps)
+00 00 0f a0
+
+# Size of bursts (u32) = 2048
+00 00 08 00
+
+## Meter Band Payload
+# padding (u8 x 4)
+00 00 00 00
+
+#==============
+# Meter Config 1
+#==============
+# length (u16) = 40
+#<40>#
+00 28
+
+# flags
+# meter flags (u16) : bitmapped (the flag values)
+## OFPMF_BURST     = 0x4
+00 04
+
+# Meter ID (u32) :  51 = 0x33
+00 00 00 33
+
+
+#==============
+# Meter Band 0
+#==============
+## Meter Band Header
+# Type (u16) = OFPMBT_DSCP_REMARK(2)
+#<48>#
+00 02
+
+# Length (u16) = 16
+00 10
+
+# Rate for remarking packets (u32) = 2048 (kbps)
+00 00 08 00
+
+# Size of bursts (u32) = 2048
+00 00 08 00
+
+## Meter Band Payload
+# precedence level (u8) = 3
+03
+
+# padding (u8 x 3)
+00 00 00
+
+#==============
+# Meter Band 1
+#==============
+## Meter Band Header
+# Type (u16) = OFPMBT_DSCP_REMARK(2)
+#<64>#
+00 02
+
+# Length (u16) = 16
+00 10
+
+# Rate for remarking packets (u32) = 1024 (kbps)
+00 00 04 00
+
+# Size of bursts (u32) = 2048
+00 00 08 00
+
+## Meter Band Payload
+# precedence level (u8) = 2
+02
+
+# padding (u8 x 3)
+00 00 00
+
+#<80>#
+#### and we are done ####

@@ -1,0 +1,36 @@
+## Simple OpenFlow 1.3 Mock Switch (16 ports) Definition file
+
+### define the switch's reported datapath ID
+dpid: 16/0016b9:068016
+
+### define the switch's HELLO message
+# LAZY = wait for controller's HELLO msg; EAGER = send HELLO immediately
+# space-separated list of versions
+# optional LEGACY token suppresses the version-bitmap hello-element
+hello: LAZY V_1_3 LEGACY
+
+### define the switch's base configuration
+controller: 127.0.0.1 6633
+buffers: 256
+tables: 12
+capabilities: FLOW_STATS TABLE_STATS PORT_STATS IP_REASM QUEUE_STATS
+
+### Number of ports on this switch (256 max)
+portCount: 16
+### MAC address of each port (last byte is 0..portCount-1)
+portMac: 00:16:b9:0d:03:*
+
+### Default config and features
+portConfig:
+portFeature: RATE_1GB_FD FIBER
+
+### Specific port overrides
+#portConfig[15]: NO_PACKET_IN
+
+### Description strings for MP/DESC reply
+descMfr:    Acme Switch Co.
+descHw:     RoadRunner 9000
+descSw:     OF-BeepBeep 1.6.1a
+descSerial: WB-11956-TAF
+descDp:     9000 in Secret Hideout
+

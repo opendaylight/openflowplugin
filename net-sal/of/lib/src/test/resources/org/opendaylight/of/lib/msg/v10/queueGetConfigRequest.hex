@@ -1,0 +1,24 @@
+### OpenFlow 1.0 QUEUE_GET_CONFIG_REQUEST message
+#
+# openflow version (u8) = 1.0 (0x1)
+#<0>#
+01
+
+# message type (u8) = OFPT_QUEUE_GET_CONFIG_REQUEST (20)
+14
+
+# message length (u16) = 12
+00 0c
+
+# transaction id (u32) = 0
+00 00 00 00
+
+# port number (u16) = 10
+#<8>#
+00 0a
+
+# padding (u8 X 2)
+00 00
+
+#<12>#
+#### and we are done ####

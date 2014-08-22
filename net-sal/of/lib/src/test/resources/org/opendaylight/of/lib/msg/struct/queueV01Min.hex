@@ -1,0 +1,33 @@
+# An example queue structure for OpenFlow 1.0, 1.1.
+# See ofp_packet_queue
+#
+## This particular queue descriptor has a MIN_RATE property
+
+# queue id (u32) = 18
+00 00 00 12
+
+# queue descriptor length (u16) = 24
+00 18
+
+# padding (u8 x 2) : 64-bit alignment
+00 00
+
+#### Now the List of Properties follows
+## First Property - Header
+
+# property (u16) = MIN_RATE (1)
+00 01
+
+# property length (u16) = 16
+00 10
+
+# padding (u8 x 4) : 64-bit alignment
+00 00 00 00
+
+## MIN_RATE Body
+# rate (u16) : in 1/10 of percent : 45% = 450
+01 c2
+
+# padding (u8 x 6) : 64-bit alignment
+00 00 00 00 00 00
+

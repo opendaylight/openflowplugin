@@ -1,0 +1,62 @@
+<!--
+  ~ Copyright (c) 2014 Hewlett-Packard Development Company, L.P.
+  ~
+  ~ This program and the accompanying materials are made available under the
+  ~ terms of the Eclipse Public License v1.0 which accompanies this distribution,
+  ~ and is available at http://www.eclipse.org/legal/epl-v10.html
+  -->
+
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
+
+    <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.1.0">
+        <command>
+            <action class="org.opendaylight.shell.command.DeviceListCommand"/>
+        </command>
+
+        <command>
+            <action class="org.opendaylight.shell.command.InterfacesListCommand"/>
+            <completers>
+                <ref component-id="deviceIdCompleter"/>
+            </completers>
+        </command>
+
+        <command>
+            <action class="org.opendaylight.shell.command.LinkListCommand"/>
+            <completers>
+                <ref component-id="deviceIdCompleter"/>
+            </completers>
+        </command>
+
+        <command>
+            <action class="org.opendaylight.shell.command.PathListCommand"/>
+            <completers>
+                <ref component-id="deviceIdCompleter"/>
+                <ref component-id="deviceIdCompleter"/>
+            </completers>
+        </command>
+
+        <command>
+            <action class="org.opendaylight.shell.command.ClusterListCommand"/>
+        </command>
+
+        <command>
+            <action class="org.opendaylight.shell.command.HostListCommand"/>
+        </command>
+
+        <command>
+            <action class="org.opendaylight.shell.command.HostPathListCommand"/>
+            <completers>
+                <ref component-id="hostIdCompleter"/>
+                <ref component-id="hostIdCompleter"/>
+            </completers>
+        </command>
+
+        <command>
+            <action class="org.opendaylight.shell.command.DriverListCommand"/>
+        </command>
+    </command-bundle>
+
+    <bean id="deviceIdCompleter" class="org.opendaylight.shell.command.DeviceIdCompleter"/>
+    <bean id="hostIdCompleter" class="org.opendaylight.shell.command.HostIdCompleter"/>
+
+</blueprint>

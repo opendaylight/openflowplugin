@@ -1,0 +1,6 @@
+# TESTING THE hex slurping utility function
+# some magic number
+65 02
+# Some MAC
+00 01 02 ab cd ef
+# ... etc ...

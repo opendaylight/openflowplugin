@@ -1,0 +1,17 @@
+# An example match field TLV
+# See section A.2.3.2 Flow Match Field Structures of the 1.3 Spec.
+#
+# Basic :: ARP_OP (no mask)
+
+# Class (u16) : Basic = 0x8000
+80 00
+
+# Field + hasMask Bit (u8) : ARP_OP(21<<1) (no mask) = 0x2a
+2a
+
+# Length of payload excluding header (u8) = 2
+02
+
+## Payload
+# ARP opcode = 123
+00 7b

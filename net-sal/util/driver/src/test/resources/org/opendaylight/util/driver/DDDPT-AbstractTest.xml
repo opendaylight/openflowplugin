@@ -1,0 +1,33 @@
+<!--
+  ~ Copyright (c) 2014 Hewlett-Packard Development Company, L.P.
+  ~
+  ~ This program and the accompanying materials are made available under the
+  ~ terms of the Eclipse Public License v1.0 which accompanies this distribution,
+  ~ and is available at http://www.eclipse.org/legal/epl-v10.html
+  -->
+
+<deviceDriver description="Test driver definitions"
+              origin="Hewlett-Packard">
+
+    <abstractType name="BaseDeviceDriver" alias="BaseDD"
+                  description="Base device driver containing facets that all devices should support">
+        <facet name="org.opendaylight.util.driver.DeviceIdentity"
+               class="org.opendaylight.util.driver.DefaultDeviceIdentity"/>
+        <facet name="org.opendaylight.util.driver.DeviceIdentityHandler"
+               class="org.opendaylight.util.driver.DefaultDeviceIdentityHandler"/>
+
+        <handler class="org.opendaylight.util.driver.DeviceDriverTestUtils$MyHandler"/>
+        <loader class="com.no.such.ClassFound" platform="not-test"/>
+        <loader class="org.opendaylight.util.driver.DeviceDriverTestUtils$MyLoader" platform="test"/>
+    </abstractType>
+
+
+    <abstractType name="BaseSwitch" extends="BaseDD"
+          description="Base device driver for switches">
+        <facet name="org.opendaylight.util.driver.DeviceDriverTestUtils$Foo"
+               class="org.opendaylight.util.driver.DeviceDriverTestUtils$DefaultFoo"/>
+        <facet name="org.opendaylight.util.driver.DeviceDriverTestUtils$FooHandler"
+               class="org.opendaylight.util.driver.DeviceDriverTestUtils$DefaultFooHandler"/>
+    </abstractType>
+
+</deviceDriver>

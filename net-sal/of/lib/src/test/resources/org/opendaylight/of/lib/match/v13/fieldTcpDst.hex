@@ -1,0 +1,17 @@
+# An example match field TLV
+# See section A.2.3.2 Flow Match Field Structures of the 1.3 Spec.
+#
+# Basic :: TCP_DST (no mask)
+
+# Class (u16) : Basic = 0x8000
+80 00
+
+# Field + hasMask Bit (u8) : TCP_DST(14<<1) (no mask) = 0x1c
+1c
+
+# Length of payload excluding header (u8) = 2
+02
+
+## Payload
+# TCP destination port (u16) = 76
+00 4c

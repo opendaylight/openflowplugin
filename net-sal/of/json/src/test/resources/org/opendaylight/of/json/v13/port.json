@@ -1,0 +1,16 @@
+{
+  "version" : "1.3.0",
+  "port" : {
+    "id" : "3",
+    "name" : "net",
+    "mac" : "a2:c0:98:8e:ec:4a",
+    "current_speed" : 32432,
+    "max_speed" : 332434,
+    "config" : [ "port_down", "no_fwd" ],
+    "state" : [ "link_down", "live" ],
+    "current_features" : [ "rate_1gb_fd", "copper", "pause" ],
+    "advertised_features" : [ "rate_1gb_fd", "copper", "pause" ],
+    "supported_features" : [ "rate_1gb_fd", "copper", "pause" ],
+    "peer_features" : [ "rate_1gb_fd", "copper", "pause_asym" ]
+  }
+}

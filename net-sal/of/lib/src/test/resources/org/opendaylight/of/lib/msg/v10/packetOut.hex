@@ -1,0 +1,174 @@
+### OpenFlow 1.0 PACKET OUT message
+#
+# openflow version (u8) = 1.0 (0x1)
+#<0>#
+01
+
+# message type (u8) = OFPT_PACKET_OUT(13)
+0d
+
+# message length (u16) = 309
+01 35
+
+# transaction id (u32) = 0
+00 00 00 00
+
+### Message Specific Payload
+# buffer id (u32) = NO_BUFFER
+#<8>#
+ff ff ff ff
+
+# Ingress Port (u16) = 19
+#<12>#
+00 13
+
+# Action array length in bytes (u16) = 32
+00 20
+
+########### LIST OF ACTIONS (1.0 format) ###
+#.............
+# SET_VLAN_VID
+#.............
+# Action Type (u16), Length (u16), Action Specific
+# SET_VLAN_VID(1),   8,            VLAN ID (u16) = 42; padding (u8 x 2)
+#<16>#
+  00 01              00 08         00 2a               00 00
+
+#.............
+# SET_VLAN_PCP
+#.............
+# Action Type (u16), Length (u16), Action Specific
+# SET_VLAN_PCP(2),   8,            VLAN PCP (u8) = 7; padding (u8 x 3)
+#<24>#
+  00 02              00 08         07                 00 00 00
+
+#.............
+# SET_NW_DST
+#.............
+# Action Type (u16), Length (u16), Action Specific
+# SET_NW_DST(7),     8,            IP addr (u32) = 15.254.17.1
+#<32>#
+  00 07              00 08         0f fe 11 01
+
+#.............
+# OUTPUT
+#.............
+# Action Type (u16), Length (u16), Action Specific
+# OUTPUT(0),         8,      Port (u16) = 123, maxLen (u16) = 0
+#<40>#
+  00 00              00 08         00 7b              00 00
+
+
+
+########### frame data (u8 x N) ###
+## Example LLDP packet
+# dest MAC
+#<48>#
+01 80 c2 00 00 0e
+
+# src MAC (station's address)
+#<54>#
+08 2e 5f 69 c4 7b
+
+# ethertype = LLDP
+#<60>#
+88 cc
+
+# Chassis ID TLV (7/9b = type:1, len:7)
+#<62>#
+02 07
+## Chassis ID
+04 08 2e 5f 69 c4 40
+
+# Port ID TLV (7/9b = type:2, len:2)
+#<71>#
+04 02
+## Port ID = 1845 (0x735)
+07 35
+
+# Time to live TLV (7/9b = type:3, len:2)
+#<75>#
+06 02
+## Time to Live = 120
+00 78
+
+## Optional TLVs start here
+# TLV (7/9b = type:4, len:1)
+#<79>#
+08 01
+# data
+35
+
+# TLV (7/9b = type:5, len:14)
+#<82>#
+0a 0e
+# data
+48 50 20 53 74 61 63 6b
+20 45 33 38 30 30
+
+# TLV (7/9b = type:6, len:157)
+#<98>#
+0c 9d
+# data
+48 50 20 4a 39 35 38 37
+41 20 33 38 30 30 2d 32
+34 47 2d 50 6f 45 2b 2d
+32 58 47 20 53 77 69 74
+
+63 68 2c 20 72 65 76 69
+73 69 6f 6e 20 4b 41 2e
+31 35 2e 31 30 2e 30 30
+30 34 2c 20 52 4f 4d 20
+
+4b 41 2e 31 35 2e 30 39
+20 28 2f 77 73 2f 73 77
+62 75 69 6c 64 6d 2f 72
+65 6c 5f 69 72 76 69 6e
+
+65 5f 71 61 6f 66 66 2f
+63 6f 64 65 2f 62 75 69
+6c 64 2f 74 61 6d 28 73
+77 62 75 69 6c 64 6d 5f
+
+72 65 6c 5f 69 72 76 69
+6e 65 5f 71 61 6f 66 66
+5f 72 65 6c 5f 69 72 76
+69 6e 65 29 29
+
+# TLV (7/9b = type:7, len:4)
+#<257>#
+0e 04
+# data
+00 14 00 04
+
+# TLV (7/9b = type:8, len:14)
+#<263>#
+10 0e
+# data
+07 06 08 2e 5f 69 c4 40
+02 00 00 00 00 00
+
+#TLV (7/9b = type:127, len:6)
+#<279>#
+fe 06
+# data
+00 80 c2 01 00 0a
+
+#TLV (7/9b = type:127, len:9)
+#<287>#
+fe 09
+# data
+00 12 0f 01 03 6c 01 00 1e
+
+#TLV (7/9b = type:127, len:7)
+#<298>#
+fe 07
+# data
+00 12 0f 02 07 01 01
+
+# TLV (7/9b = type:0, len:0)
+#<307>#
+00 00
+
+#<309>
+# and we are done

@@ -1,0 +1,18 @@
+# An example match field TLV
+# See section A.2.3.2 Flow Match Field Structures of the 1.3 Spec.
+#
+# Basic :: IPV4_SRC (no mask)
+
+# Class (u16) : Basic = 0x8000
+80 00
+
+# Field + hasMask Bit (u8) : IPV4_SRC(11<<1) (no mask) = 0x16
+16
+
+# Length of payload excluding header (u8) = 4
+04
+
+## Payload
+# Source IP address (u32) = 15.255.125.36
+0f ff 7d 24
+

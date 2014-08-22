@@ -1,0 +1,35 @@
+### OpenFlow 1.0 STATS_REQUEST message : Type PORT
+#
+# openflow version (u8) = 1.0 (0x1)
+#<0>#
+01
+
+# message type (u8) = OFPT_STATS_REQUEST (16)
+10
+
+# message length (u16) = 20
+00 14
+
+# transaction id (u32) = 0
+00 00 00 00
+
+### Message Specific Payload
+## Stats Request Header
+# Stats-Type (u16) = PORT (4)
+#<8>#
+00 04
+
+# Flags (u16) : none
+00 00
+
+## Stats Request PORT Body
+# port  (u16) :  20
+#<12>#
+00 14
+
+# padding (u8 x 6)
+#<14>#
+0000 0000 0000 
+
+#<20>#
+#### and we are done ####

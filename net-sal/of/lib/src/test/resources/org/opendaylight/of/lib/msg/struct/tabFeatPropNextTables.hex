@@ -1,0 +1,27 @@
+# An example table feature property :: Next Tables
+
+#----------------------------------
+## Table feature property - Header
+
+# property type (u16) = NEXT_TABLES (2)
+#<0>#
+00 02
+
+# length (u16) = 7
+00 07
+
+#----------------------------------
+## Table feature property Payload
+
+# list of table IDs : (length - 4) bytes
+# Tables 2, 3, 5
+#<4>#
+02 03 05
+
+### Need padding: (length + 7)/8*8 - (length)   :: between 0 and 7
+# should be 1 to take struct size up to 8.
+#<7>#
+00
+
+#<8>#
+## And we are done ##

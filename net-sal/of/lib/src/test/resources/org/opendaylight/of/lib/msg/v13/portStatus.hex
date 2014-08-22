@@ -1,0 +1,95 @@
+### OpenFlow 1.3 PORT STATUS message
+#
+# openflow version (u8) = 1.3 (0x4)
+#<0>#
+04
+
+# message type (u8) = OFPT_PORT_STATUS(12)
+0c
+
+# message length (u16) = 80
+00 50
+
+# transaction id (u32) = 0
+00 00 00 00
+
+### Message Specific Payload
+# reason (u8) = OFPPR_ADD(0)
+#<8>#
+00
+
+# pad (u8 x 7)
+#<9>#
+00 00 00 00 00 00 00
+
+####### Port Structure ########
+# physical port for which the status is sent
+
+# port number (u32) = 258
+#<16>#
+00 00 01 02
+
+# padding
+#<20>
+00 00 00 00
+
+# hardware address (u8 x 6) - MAC
+#<24>#
+11:44:77:11:22:33
+
+# more padding (align to 64 bits)
+#<30>#
+00 00
+
+# port name (u8 x 16) = "Two"
+#<32>#
+54 77 6f 00 00 00 00 00
+00 00 00 00 00 00 00 00
+
+# port config (u32) : bitmapped
+# OFPPC_NO_RECV         0x4 (1 << 2)
+# OFPPC_NO_FWD         0x20 (1 << 5)
+# OFPPC_NO_PACKET_IN   0x40 (1 << 6)
+#<48>#
+00 00 00 64
+
+# port state (u32) : bitmapped
+# OFPPS_LINK_DOWN (0x1)
+#<52>#
+00 00 00 01
+
+# port current features (u32) : bitmapped
+# OFPPF_1GB_FD  =   0x20 (1 << 5)
+# OFPPF_FIBER   = 0x1000 (1 << 12)
+# OFPPF_AUTONEG = 0x2000 (1 << 13)
+#<56>#
+00 00 30 20
+
+# port advertised features (u32) : bitmapped
+# OFPPF_1GB_FD  =   0x20 (1 << 5)
+# OFPPF_FIBER   = 0x1000 (1 << 12)
+#<60>#
+00 00 10 20
+
+# port supported features (u32) : bitmapped
+# OFPPF_1GB_FD  =   0x20 (1 << 5)
+# OFPPF_FIBER   = 0x1000 (1 << 12)
+# OFPPF_AUTONEG = 0x2000 (1 << 13)
+#<64>#
+00 00 30 20
+
+# port peer features (u32) : bitmapped
+# (not available)
+#<68>#
+00 00 00 00
+
+# current speed (u32) = 1100000 (1.1 Gb/s)
+#<72>#
+00 10 c8 e0
+
+# maximum speed (u32) = 3000000 (3.0 Gb/s)
+#<76>#
+00 2d c6 c0
+
+#<80>#
+#### and we are done ####

@@ -1,0 +1,55 @@
+# An example table feature property :: Instructions
+
+#----------------------------------
+## Table feature property - Header
+
+# property type (u16) = INSTRUCTIONS (0)
+#<0>#
+00 00
+
+# length (u16) = 44
+00 2c
+
+#----------------------------------
+## Table feature property Payload
+
+# list of supported instructions : (length - 4) bytes
+#   struct ofp_instruction with just the instruction ID
+#    non-experimenter instructions are 4 bytes
+
+# Instruction Type (u16)    Length of struct (u16)
+# GOTO_TABLE = 1
+#<4>#
+00 01                       00 04
+# WRITE_METADATA = 2
+#<8>#
+00 02                       00 04
+# WRITE_ACTIONS = 3
+#<12>#
+00 03                       00 04
+# APPLY_ACTIONS = 4
+#<16>#
+00 04                       00 04
+# CLEAR_ACTIONS = 5
+#<20>#
+00 05                       00 04
+# METER = 6
+#<24>#
+00 06                       00 04
+# EXPERIMENTER = 0xffff
+#<28>#
+ff ff                       00 10
+# Experimenter ID = HP
+#<32>#
+00 00 24 81
+# Some experimenter data
+#<36>#
+0f00 0ba2 c001 c001
+
+### Need padding: (length + 7)/8*8 - (length)   :: between 0 and 7
+# should be 4 to take struct size up to 48.
+#<44>#
+00 00 00 00
+
+#<48>#
+## And we are done ##

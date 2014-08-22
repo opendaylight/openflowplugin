@@ -1,0 +1,48 @@
+{
+  "version" : "1.0.0",
+  "flows" : [ {
+    "table_id" : "n/a",
+    "duration_sec" : 300,
+    "duration_nsec" : "4000",
+    "priority" : 4,
+    "idle_timeout" : 60,
+    "hard_timeout" : 100,
+    "cookie" : "0x1234",
+    "packet_count" : "2341",
+    "byte_count" : "134232425",
+    "match" : [ {
+      "eth_src" : "66:55:55:32:22:11",
+      "mask" : "ff:ff:ff:00:00:01"
+    }, {
+      "eth_type" : "ipv6"
+    } ],
+    "actions" : [ {
+      "output" : 1987
+    } ]
+  }, {
+    "table_id" : "n/a",
+    "duration_sec" : 200,
+    "duration_nsec" : "5000",
+    "priority" : 7,
+    "idle_timeout" : 20,
+    "hard_timeout" : 200,
+    "cookie" : "0x1434",
+    "packet_count" : "231",
+    "byte_count" : "132311425",
+    "match" : [ {
+      "eth_type" : "ipv6"
+    }, {
+      "ip_proto" : "tcp"
+    }, {
+      "tcp_dst" : 76
+    } ],
+    "actions" : [ {
+      "set_queue" : 20,
+      "port" : 1987
+    }, {
+      "set_field" : {
+        "ipv4_dst" : "15.255.124.141"
+      }
+    } ]
+  } ]
+}

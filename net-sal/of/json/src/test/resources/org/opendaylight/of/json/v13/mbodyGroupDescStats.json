@@ -1,0 +1,64 @@
+{
+  "version" : "1.3.0",
+  "groups" : [ {
+    "id" : 1,
+    "type" : "all",
+    "buckets" : [ {
+      "weight" : 1,
+      "watch_group" : 20,
+      "watch_port" : 99,
+      "actions" : [ {
+        "output" : 1987
+      }, {
+        "dec_nw_ttl" : true
+      }, {
+        "set_field" : {
+          "ipv4_dst" : "15.255.124.141"
+        }
+      } ]
+    }, {
+      "weight" : 1,
+      "watch_group" : 19,
+      "watch_port" : 25,
+      "actions" : [ {
+        "output" : 1987
+      }, {
+        "dec_nw_ttl" : true
+      }, {
+        "set_field" : {
+          "ipv4_dst" : "15.255.124.141"
+        }
+      } ]
+    } ]
+  }, {
+    "id" : 2,
+    "type" : "ff",
+    "buckets" : [ {
+      "weight" : 3,
+      "watch_group" : 10,
+      "watch_port" : 90,
+      "actions" : [ {
+        "output" : 1987
+      }, {
+        "dec_nw_ttl" : true
+      }, {
+        "set_field" : {
+          "ipv4_dst" : "15.255.124.141"
+        }
+      } ]
+    }, {
+      "weight" : 1,
+      "watch_group" : 19,
+      "watch_port" : 25,
+      "actions" : [ {
+        "output" : 1987
+      }, {
+        "dec_nw_ttl" : true
+      }, {
+        "set_field" : {
+          "ipv4_dst" : "15.255.124.141"
+        }
+      } ]
+    } ]
+  } ]
+}

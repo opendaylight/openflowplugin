@@ -1,0 +1,18 @@
+# An example 1.0 Action structure
+# See section 5.2.4 Flow Action Structures of the 1.0 Spec.
+#
+# VENDOR (renamed EXPERIMENTER)
+
+## HEADER
+# Action Type (u16) : VENDOR(0xffff)
+ff ff
+
+# Length of struct (u16) = 16
+00 10
+
+## ACTION SPECIFIC
+# Vendor ID (u32) = HP_LABS(0x04ea)
+00 00 04 ea
+
+# Experimenter defined data
+01 02 03 04 05 06 07 08

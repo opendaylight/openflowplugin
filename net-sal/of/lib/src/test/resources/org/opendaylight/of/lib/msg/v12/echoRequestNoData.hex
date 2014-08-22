@@ -1,0 +1,19 @@
+### OpenFlow 1.2 ECHO REQUEST message
+#
+# openflow version (u8) = 1.2 (0x3)
+#<0>#
+03
+
+# message type (u8) = OFPT_ECHO_REQUEST(2)
+02
+
+# message length (u16) = 8
+00 08
+
+# transaction id (u32) = 0
+00 00 00 00
+
+### Message Specific Payload - Arbitrary length
+##   NO DATA
+#<8># 
+#### and we are done ####

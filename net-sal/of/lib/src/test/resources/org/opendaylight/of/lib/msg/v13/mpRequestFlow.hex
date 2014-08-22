@@ -1,0 +1,76 @@
+### OpenFlow 1.3 MULTIPART_REQUEST message : Type FLOW
+#
+# openflow version (u8) = 1.3 (0x4)
+#<0>#
+04
+
+# message type (u8) = OFPT_MULTIPART_REQUEST(18)
+12
+
+# message length (u16) = 72
+00 48
+
+# transaction id (u32) = 0
+00 00 00 00
+
+### Message Specific Payload
+## Multipart Request Header
+# Multipart-Type (u16) = FLOW (1)
+#<8>#
+00 01
+
+# Flags (u16) : none
+00 00
+
+# padding (u8 x 4)
+00 00 00 00
+
+## Multipart Request FLOW Body
+# Table ID (u8) :  ALL tables
+#<16>#
+ff
+
+# padding (u8 x 3)
+00 00 00
+
+# out port to match (u32) : 12
+00 00 00 0c
+
+# out group to match (u32) : ANY
+#<24>#
+ff ff ff ff
+
+# more padding (u8 x 4)
+00 00 00 00
+
+# cookie to match (u64) : 0x123
+#<32>#
+0000 0000 0000 0123
+
+# cookie mask for match (u64) : 0xfff
+#<40>#
+0000 0000 0000 0fff
+
+########## fields to match -- Match structure
+## Match Header
+# Type (u16) = OXM (0x1)
+#<48>#
+00 01
+# Length (u16) = 20 (excludes padding)
+00 14
+
+## Match Field - Ethernet Source Address w/Mask
+# Basic, ETH_SRC(4<<1)+M, len
+#<52>#
+  8000   09               0c
+# Source MAC           Mask
+  11 22 33 44 55 66    ff ff ff 00 00 00
+
+## Zero-Filled Padding to bring total structure length to multiple of 8
+## Match struct length is 20; add 4 to bring it to 24
+#<68>#
+00 00 00 00
+
+#<72>#
+#### and we are done ####
+

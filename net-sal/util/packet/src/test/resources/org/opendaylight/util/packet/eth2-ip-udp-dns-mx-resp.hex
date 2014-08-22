@@ -1,0 +1,458 @@
+### Ethernet2 - IP - TCP - DNS MX response
+#
+# Destination: AsustekC_b1:0c:ad (00:e0:18:b1:0c:ad)
+#<0>#
+00 e0 18 b1 0c ad
+
+# Source: QuantaCo_32:41:8c (00:c0:9f:32:41:8c)
+#<6>#
+00 c0 9f 32 41 8c
+
+# Type: IP (0x0800)
+#<12>#
+08 00
+
+# Version/length: 4, 20
+#<14>#
+45
+ 
+# Differentiated Services Field: 0x00
+#<15>#
+00
+
+# Total Length: 284
+#<16>#
+01 1c
+
+# Identification: 0xccbb (52411)
+#<18>#
+cc bb
+
+# Flags/Fragment Offset: 0x0000
+#<20>#
+00 00
+
+# Time to live: 128
+#<22>#
+80
+
+# Protocol: UDP (17)
+#<23>#
+11
+
+# Header checksum: 0x97a7 [correct]
+#<24>#
+97 a7
+
+# Source: 192.168.170.20 (192.168.170.20)
+#<26>#
+c0 a8 aa 14
+
+# Destination: 192.168.170.8 (192.168.170.8)
+#<30>#
+c0 a8 aa 08
+
+# Source port: domain (53)
+#<34>#
+00 35
+
+# Destination port: 32795 (32795)
+#<36>#
+80 1b
+
+# Length: 264
+#<38>#
+01 08
+
+# Checksum: 0xd6f3 [validation disabled]
+#<40>#
+d6 f3
+
+# Transaction ID: 0xf76f
+#<42>#
+f7 6f
+
+# Flags: 0x8180 (Standard query response, recur desired, recur avail, No error)
+#<44>#
+81 80
+
+# Questions: 1
+#<46>#
+00 01
+
+# Answer RRs: 0
+#<48>#
+00 06
+
+# Authority RRs: 0
+#<50>#
+00 00
+
+# Additional RRs: 0
+#<52>#
+00 06
+
+# Queries[0]
+
+# Name: google.com
+#<54>#
+06 67 6f 6f 67 6c 65 03 63 6f 6d 00
+
+# Type: MX (Mail exchange)
+#<66>#
+00 0f
+
+# Class: IN (0x0001)
+#<68>#
+00 01
+
+# Answers[0]
+#<70>#
+
+# Name pointer
+#<70>#
+c0 0c
+
+# Type: MX (Mail exchange)
+#<72>#
+00 0f
+
+# Class: IN (0x0001)
+#<74>#
+00 01
+
+# Time to live: 9 minutes, 12 seconds
+#<76>#
+00 00 02 28
+
+# Data length: 10
+#<80>#
+00 0a
+
+# Preference: 40
+#<82>#
+00 28
+
+# Mail exchange: smtp4.google.com
+#<84>#
+05 73 6d 74 70 34 c0 0c
+
+# Answers[1]
+#<92>#
+
+# Name pointer
+#<92>#
+c0 0c
+
+# Type: MX (Mail exchange)
+#<94>#
+00 0f
+
+# Class: IN (0x0001)
+#<96>#
+00 01
+
+# Time to live: 9 minutes, 12 seconds
+#<98>#
+00 00 02 28
+
+# Data length: 10
+#<102>#
+00 0a
+
+# Preference: 10
+#<104>#
+00 0a
+
+# Mail exchange: smtp4.google.com
+#<106>#
+05 73 6d 74 70 35 c0 0c
+
+# Answers[2]
+#<114>#
+
+# Name pointer
+#<114>#
+c0 0c
+
+# Type: MX (Mail exchange)
+#<116>#
+00 0f
+
+# Class: IN (0x0001)
+#<118>#
+00 01
+
+# Time to live: 9 minutes, 12 seconds
+#<120>#
+00 00 02 28
+
+# Data length: 10
+#<124>#
+00 0a
+
+# Preference: 10
+#<126>#
+00 0a
+
+# Mail exchange: smtp6.google.com
+#<128>#
+05 73 6d 74 70 36 c0 0c
+
+# Answers[3]
+#<136>#
+
+# Name pointer
+#<136>#
+c0 0c
+
+# Type: MX (Mail exchange)
+#<138>#
+00 0f
+
+# Class: IN (0x0001)
+#<140>#
+00 01
+
+# Time to live: 9 minutes, 12 seconds
+#<142>#
+00 00 02 28
+
+# Data length: 10
+#<146>#
+00 0a
+
+# Preference: 10
+#<148>#
+00 0a
+
+# Mail exchange: smtp1.google.com
+#<150>#
+05 73 6d 74 70 31 c0 0c
+
+# Answers[4]
+#<158>#
+
+# Name pointer
+#<158>#
+c0 0c
+
+# Type: MX (Mail exchange)
+#<160>#
+00 0f
+
+# Class: IN (0x0001)
+#<162>#
+00 01
+
+# Time to live: 9 minutes, 12 seconds
+#<164>#
+00 00 02 28
+
+# Data length: 10
+#<168>#
+00 0a
+
+# Preference: 10
+#<170>#
+00 0a
+
+# Mail exchange: smtp2.google.com
+#<172>#
+05 73 6d 74 70 32 c0 0c
+
+# Answers[5]
+#<180>#
+
+# Name pointer
+#<182>#
+c0 0c
+
+# Type: MX (Mail exchange)
+#<184>#
+00 0f
+
+# Class: IN (0x0001)
+#<186>#
+00 01
+
+# Time to live: 9 minutes, 12 seconds
+#<188>#
+00 00 02 28
+
+# Data length: 10
+#<192>#
+00 0a
+
+# Preference: 40
+#<194>#
+00 28
+
+# Mail exchange: smtp3.google.com
+#<202>#
+05 73 6d 74 70 33 c0 0c
+
+# Additional[0]
+#<202>#
+
+# Name pointer
+#<202>#
+c0 2a
+
+# Type: A (Host address)
+#<204>#
+00 01
+
+# Class: IN (0x0001)
+#<206>#
+00 01
+
+# Time to live: 10 minutes
+#<208>#
+00 00 02 58
+
+# Data length: 4
+#<212>#
+00 04
+
+# Addr: 216.239.37.26 (216.239.37.26)
+#<214>#
+d8 ef 25 1a
+
+# Additional[1]
+#<218>#
+
+# Name pointer
+#<218>#
+c0 40
+
+# Type: A (Host address)
+#<220>#
+00 01
+
+# Class: IN (0x0001)
+#<222>#
+00 01
+
+# Time to live: 10 minutes
+#<224>#
+00 00 02 58
+
+# Data length: 4
+#<228>#
+00 04
+
+# Addr: 64.233.167.25 (64.233.167.25)
+#<230>#
+40 e9 a7 19
+
+# Additional[2]
+#<234>#
+
+# Name pointer
+#<234>#
+c0 56
+
+# Type: A (Host address)
+#<236>#
+00 01
+
+# Class: IN (0x0001)
+#<238>#
+00 01
+
+# Time to live: 10 minutes
+#<240>#
+00 00 02 58
+
+# Data length: 4
+#<244>#
+00 04
+
+# Addr: 66.102.9.25 (66.102.9.25)
+#<246>#
+42 66 09 19
+
+# Additional[3]
+#<250>#
+
+# Name pointer
+#<250>#
+c0 6c
+
+# Type: A (Host address)
+#<252>#
+00 01
+
+# Class: IN (0x0001)
+#<254>#
+00 01
+
+# Time to live: 10 minutes
+#<256>#
+00 00 02 58
+
+# Data length: 4
+#<260>#
+00 04
+
+# Addr: 216.239.57.25 (216.239.57.25)
+#<262>#
+d8 ef 39 19
+
+# Additional[4]
+#<266>#
+
+# Name pointer
+#<266>#
+c0 82
+
+# Type: A (Host address)
+#<268>#
+00 01
+
+# Class: IN (0x0001)
+#<270>#
+00 01
+
+# Time to live: 10 minutes
+#<272>#
+00 00 02 58
+
+# Data length: 4
+#<276>#
+00 04
+
+# Addr: 216.239.37.25 (216.239.37.25)
+#<278>#
+d8 ef 25 19
+
+# Additional[5]
+#<282>#
+
+# Name pointer
+#<282>#
+c0 98
+
+# Type: A (Host address)
+#<284>#
+00 01
+
+# Class: IN (0x0001)
+#<286>#
+00 01
+
+# Time to live: 10 minutes
+#<288>#
+00 00 02 58
+
+# Data length: 4
+#<292>#
+00 04
+
+# Addr: 216.239.57.26 (216.239.57.26)
+#<294>#
+d8 ef 39 1a
+
+#<298>#
+#### and we are done ####

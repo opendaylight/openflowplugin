@@ -1,0 +1,217 @@
+### Ethernet2 - IP - TCP - DNS PTR response
+#
+# Destination: Hewlett-_b3:e4:de (00:24:81:b3:e4:de)
+#<0>#
+00 24 81 b3 e4 de
+
+# Source: D-LinkIn_58:4c:5d (1c:7e:e5:58:4c:5d)
+#<6>#
+1c 7e e5 58 4c 5d
+
+# Type: IP (0x0800)
+#<12>#
+08 00
+
+# Version/length: 4, 20
+#<14>#
+45
+ 
+# Differentiated Services Field: 0x00
+#<15>#
+00
+
+# Total Length: 172
+#<16>#
+00 ac
+
+# Identification: 0
+#<18>#
+00 00
+
+# Flags: 0x02 (Don't Fragment)
+#<20>#
+40 00
+
+# Time to live: 64
+#<22>#
+40
+
+# Protocol: UDP (17)
+#<23>#
+11
+
+# Header checksum: 0xb88b [correct]
+#<24>#
+b8 8b
+
+# Source: 192.168.0.1 (192.168.0.1)
+#<30>#
+c0 a8 00 01
+
+# Destination: 192.168.0.100 (192.168.0.100)
+#<26>#
+c0 a8 00 64
+
+# Source port: domain (53)
+#<36>#
+00 35
+
+# Destination port: 64602 (64602)
+#<34>#
+fc 5a
+
+# Length: 152
+#<38>#
+00 98
+
+# Checksum: 0x8dd7 [validation disabled]
+#<40>#
+8d d7
+
+# Transaction ID: 0xacac
+#<42>#
+ac ac
+
+# Flags: 0x8180 (Standard query response, No error)
+#<44>#
+81 80
+
+# Questions: 1
+#<46>#
+00 01
+
+# Answer RRs: 1
+#<48>#
+00 01
+
+# Authority RRs: 2
+#<50>#
+00 02
+
+# Additional RRs: 1
+#<52>#
+00 01
+
+
+
+# Name: 8.8.8.8.in-addr.arpa
+#<54>#
+01 38 01 38 01 38 01 38 07 69 6e 2d 61 64 64 72 04 61 72 70 61 00
+
+# Type: PTR (Domain name pointer)
+#<76>#
+00 0c
+
+# Class: IN (0x0001)
+#<78>#
+00 01
+
+
+
+# Name: 8.8.8.8.in-addr.arpa
+#<80>#
+c0 0c
+
+# Type: PTR (Domain name pointer)
+#<82>#
+00 0c
+
+# Class: IN (0x0001)
+#<84>#
+00 01
+
+# Time to live: 17 hours, 6 minutes, 50 seconds
+#<86>#
+00 00 f0 aa
+
+# Data length: 32
+#<90>#
+00 20
+
+# Domain name: google-public-dns-a.google.com
+#<92>#
+13 67 6f 6f 67 6c 65 2d 70 75 62 6c 69 63 2d 64
+6e 73 2d 61 06 67 6f 6f 67 6c 65 03 63 6f 6d 00
+
+
+
+# Name: 8.in-addr.arpa
+#<124>#
+c0 12
+
+# Type: NS (Authoritative name server)
+#<126>#
+00 02
+
+# Class: IN (0x0001)
+#<128>#
+00 01
+
+# Time to live: 17 hours, 6 minutes, 27 seconds
+#<130>#
+00 00 f0 93
+
+# Data length: 16
+#<134>#
+00 10
+
+# Name Server: ns2.level3.net
+#<136>#
+03 6e 73 32 06 6c 65 76 65 6c 33 03 6e 65 74 00
+
+
+
+# Name: 8.in-addr.arpa
+#<152>#
+c0 12
+
+# Type: NS (Authoritative name server)
+#<154>#
+00 02
+
+# Class: IN (0x0001)
+#<156>#
+00 01
+
+# Time to live: 17 hours, 6 minutes, 27 seconds
+#<158>#
+00 00 f0 93
+
+# Data length: 6
+#<162>#
+00 06
+
+# Name Server: ns1.level3.net
+#<164>#
+03 6e 73 31 c0 62
+
+
+
+# Name: ns2.level3.net
+#<170>#
+c0 5e
+
+# Type: A (Host address)
+#<172>#
+00 01
+
+# Class: IN (0x0001)
+#<174>#
+00 01
+
+# Time to live: 49 minutes, 30 seconds
+#<176>#
+00 00 0b 9a
+
+# Data length: 4
+#<180>#
+00 04
+
+# Addr: 209.244.0.2 (209.244.0.2)
+#<182>#
+d1 f4 00 02
+
+ 
+ 
+#<186>#
+#### and we are done ####

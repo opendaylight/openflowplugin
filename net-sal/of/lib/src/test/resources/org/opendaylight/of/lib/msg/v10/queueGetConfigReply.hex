@@ -1,0 +1,87 @@
+### OpenFlow 1.0 QUEUE_GET_CONFIG_REPLY message
+#
+# openflow version (u8) = 1.0 (0x1)
+#<0>#
+01
+
+# message type (u8) = OFPT_QUEUE_GET_CONFIG_REPLY (21)
+15
+
+# message length (u16) = 64
+00 40
+
+# transaction id (u32) = 0
+00 00 00 00
+
+# port number (u16) = 10
+#<8>#
+00 0a
+
+# padding (u8 X 6)
+0000 0000 0000
+
+#### Body - List of Queues
+### First Queue
+# queue id (u32) = 75
+#<16>#
+00 00 00 4b
+
+# queue descriptor length (u16) = 24
+00 18
+
+# padding (u8 x 2) : 64-bit alignment
+00 00
+
+#### Now the List of Properties follows
+## First Property - Header
+# property (u16) = MIN_RATE (1)
+#<24>#
+00 01
+
+# property length -including header- (u16) = 16
+00 10
+
+# padding (u8 x 4) : 64-bit alignment
+00 00 00 00
+
+## MIN_RATE Body
+# rate (u16) : in 1/10 of percent : 57% = 570
+#<32>#
+02 3a
+
+# padding (u8 x 6) : 64-bit alignment
+0000 0000 0000
+
+### Second Queue
+# queue id (u32) = 25
+#<40>#
+00 00 00 19
+
+# queue descriptor length (u16) = 24
+00 18
+
+# padding (u8 x 2) : 64-bit alignment
+00 00
+
+#### Now the List of Properties follows
+## First Property - Header
+# property (u16) = MIN_RATE (1)
+#<48>#
+00 01
+
+# property length -including header- (u16) = 16
+00 10
+
+# padding (u8 x 4) : 64-bit alignment
+00 00 00 00
+
+## MIN_RATE Body
+# rate (u16) : in 1/10 of percent : 21% = 210
+#<56>#
+00 d2
+
+# padding (u8 x 6) : 64-bit alignment
+0000 0000 0000
+
+#<64>#
+#### and we are done ####

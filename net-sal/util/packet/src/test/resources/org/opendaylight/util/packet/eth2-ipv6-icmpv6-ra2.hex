@@ -1,0 +1,133 @@
+### Ethernet2 - IPv6 - ICMPv6 Router advertisement #2 packet
+#
+
+# Destination: IPv6mcast_00:00:00:01 (33:33:00:00:00:01)
+#<0>#
+33 33 00 00 00 01
+
+# Source: 3com_07:69:ea (00:60:97:07:69:ea)
+#<6>#
+00 60 97 07 69 ea
+
+# Type: IPv6 (0x86dd)
+#<12>#
+86 dd
+
+# Version: 6, Traffic Class: 0x0, Flow Label: 0x0
+#<14># 
+60 00 00 00
+
+# Payload length: 64
+#<18># 
+00 40
+
+# Next header: ICMPv6 (58)
+#<20># 
+3a
+
+# Hop limit: 255
+#<21># 
+ff
+
+# Source: fe80::260:97ff:fe07:69ea (fe80::260:97ff:fe07:69ea)
+#<22># 
+fe 80 00 00 00 00 00 00 02 60 97 ff fe 07 69 ea
+
+# Destination: ff02::1 (ff02::1)
+#<38># 
+ff 02 00 00 00 00 00 00 00 00 00 00 00 00 00 01
+
+# Type: Router Advertisement (134)
+#<54># 
+86
+
+# Code: 0
+#<55># 
+00
+
+# Checksum: 0x4625 [correct]
+#<56># 
+46 25
+
+# Cur hop limit: 64
+#<58># 
+40
+
+# Flags: 0x00
+#<59># 
+00
+
+# Router lifetime (s): 1800
+#<60>#
+07 08
+
+# Reachable time (ms): 30000
+#<62>#
+00 00 75 30
+
+# Retrans timer (ms): 1000
+#<66>#
+00 00 03 e8
+
+# Option: Type: Source link-layer address (1)
+#<70>#
+01
+
+# Length: 1 (8 bytes)
+#<71>#
+01
+
+# Link-layer address: 3com_07:69:ea (00:60:97:07:69:ea)
+#<72>#
+00 60 97 07 69 ea
+
+# Option: Type: MTU (5)
+#<78>#
+05
+
+# Length: 1 (8 bytes)
+#<79>#
+01
+
+# Reserved
+#<80>#
+00 00
+
+# MTU: 1500
+#<82>#
+00 00 05 dc
+
+# Option: Type: Prefix information (3)
+#<86>#
+03
+
+# Length: 4 (32 bytes)
+#<87>#
+04
+
+# Prefix Length: 64
+#<88>#
+40
+
+# Flag: 0xc0
+#<89>#
+c0
+
+# Valid Lifetime: 3600000
+#<90>#
+00 36 ee 80
+
+# Preferred Lifetime: 3600000
+#<94>#
+00 36 ee 80
+
+# Reserved
+#<98>#
+00 00 00 00
+
+# Prefix: 3ffe:507:0:1:: (3ffe:507:0:1::)
+#<102>#
+3f fe 05 07 00 00 00 01 00 00 00 00 00 00 00 00
+
+#<118>#
+#### and we are done ####

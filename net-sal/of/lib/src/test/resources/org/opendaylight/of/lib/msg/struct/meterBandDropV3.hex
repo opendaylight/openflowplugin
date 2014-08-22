@@ -1,0 +1,21 @@
+# An example meter band DROP structure for OpenFlow 1.3.
+# See ofp_meter_band_drop
+#
+## Meter Band Header
+# Type (u16) = OFPMBT_DROP(1)
+00 01
+
+# Length (u16) = 16
+00 10
+
+# Rate for dropping packets (u32) = 1000 (kbps)
+00 00 03 e8
+
+# Size of bursts (u32) = 2048
+00 00 08 00
+
+## Meter Band Payload
+# padding (u8 x 4)
+00 00 00 00
+
+## END ##

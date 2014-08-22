@@ -1,0 +1,23 @@
+# Example match structure
+# See section A.2.3 Flow Match Structures of the 1.3 Spec.
+
+# Match field pre-requisite test
+# VLAN_VID requires none
+# Validation should SUCCEED
+
+## Match Header
+# Type (u16) = OXM (0x1)
+00 01
+# Length (u16) = 10 (excludes padding)
+00 0a
+
+## Match Field
+# Basic, VLAN_VID(6<<1),   len
+  8000   0c                02
+# PRESENT (0x1000) | VLAN ID (0x234)
+  1234
+
+## Zero-Filled Padding to bring total structure
+##   length to multiple of 8.
+## Match struct length is 10; add 6 = 16
+00 00 00 00 00 00

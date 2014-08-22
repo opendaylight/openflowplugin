@@ -1,0 +1,12 @@
+{
+  "version" : "1.0.0",
+  "meter" : {
+    "id" : 1,
+    "flags" : [ "kbps" ],
+    "bands" : [ {
+      "burst_size" : 1000,
+      "rate" : 1500,
+      "mtype" : "drop"
+    } ]
+  }
+}

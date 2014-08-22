@@ -1,0 +1,27 @@
+# An example table feature property :: Next Tables Miss
+
+#----------------------------------
+## Table feature property - Header
+
+# property type (u16) = NEXT_TABLES_MISS (3)
+#<0>#
+00 03
+
+# length (u16) = 5
+00 05
+
+#----------------------------------
+## Table feature property Payload
+
+# list of table IDs : (length - 4) bytes
+# Table 9
+#<4>#
+09
+
+### Need padding: (length + 7)/8*8 - (length)   :: between 0 and 7
+# should be 3 to take struct size up to 8.
+#<5>#
+00 00 00
+
+#<8>#
+## And we are done ##

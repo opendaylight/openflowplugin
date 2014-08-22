@@ -1,0 +1,29 @@
+### OpenFlow 1.3 ROLE REQUEST message - EQUAL
+#
+# openflow version (u8) = 1.3 (0x4)
+#<0>#
+04
+
+# message type (u8) = OFPT_ROLE_REQUEST(24)
+18
+
+# message length (u16) = 24
+00 18
+
+# transaction id (u32) = 0
+00 00 00 00
+
+### Message Specific Payload
+# Controller role (u32) = EQUAL (01)
+#<8>#
+00 00 00 01
+
+# pad (u8 x4 ) 
+00 00 00 00
+
+# generation id (u64) = 01
+#<16>#
+0000 0000 0000 0001
+
+#<24>#
+#### and we are done ####

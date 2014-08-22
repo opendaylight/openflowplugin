@@ -1,0 +1,19 @@
+{
+  "controller_stats" : {
+    "duration_ms" : 1377194517223,
+    "packet_in" : {
+      "packets" : 5000,
+      "bytes" : 6000
+    },
+    "packet_out" : {
+      "packets" : 3000,
+      "bytes" : 4000
+    },
+    "lost" : {
+      "packets" : 1000,
+      "bytes" : 6000
+    },
+    "msg_in" : 2000,
+    "msg_out" : 1500
+  }
+}

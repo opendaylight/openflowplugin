@@ -1,0 +1,27 @@
+#### Switch Bank :: Port State Tracker Scenario test
+# A bank of one single Mock OpenFlow Switch (1.0)
+
+### Define the switches that make up the bank.
+# Note the form "LNAME = filename.def" where LNAME is the logical name
+# used in the scenario section, and filename.def is assumed to be a switch
+# definition file in the same directory as this file.
+[switches]
+SW10 = simple10sw4port.def
+
+### Define the run-time scenario, invoked when the bank is activated.
+[scenario]
+# fire up a switch, wait for successful handshake, then wait for the test
+activate SW10
+helloSuccess SW10
+suspend
+
+# tell the controller that our port #4 is now down
+portStatus SW10 p4 down
+suspend
+
+# tell the controller that our port #2 is now up
+portStatus SW10 p2 up
+suspend
+
+# tell the controller that our port #4 is now up
+portStatus SW10 p4 up

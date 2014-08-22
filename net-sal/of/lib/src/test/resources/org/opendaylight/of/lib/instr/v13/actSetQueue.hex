@@ -1,0 +1,15 @@
+# An example 1.3 Action structure
+# See section A.2.5 Action Structures of the 1.3 Spec.
+#
+# SET_QUEUE
+
+## HEADER
+# Action Type (u16) : SET_QUEUE = 21
+00 15
+
+# Length of struct (u16) = 8
+00 08
+
+## ACTION SPECIFIC
+# Queue ID (u32) = 0x80000005
+80 00 00 05

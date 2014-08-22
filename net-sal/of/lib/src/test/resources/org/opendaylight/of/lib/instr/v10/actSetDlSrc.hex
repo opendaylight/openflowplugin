@@ -1,0 +1,18 @@
+# An example 1.0 Action structure
+# See section 5.2.4 Flow Action Structures of the 1.0 Spec.
+#
+# SET_DL_SRC
+
+## HEADER
+# Action Type (u16) : SET_DL_SRC(4)
+00 04
+
+# Length of struct (u16) = 16
+00 10
+
+## ACTION SPECIFIC
+# Source MAC (u48)
+665544:332211
+
+# pad (u8 x 6)
+0000 0000 0000

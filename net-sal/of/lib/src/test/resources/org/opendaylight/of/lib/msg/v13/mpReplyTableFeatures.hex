@@ -1,0 +1,564 @@
+### OpenFlow 1.3 MULTIPART_REPLY message : Type TABLE_FEATURES
+#
+# Sample TABLE_FEATURES reply, illustrating each of the possible
+#  table feature properties
+#
+# openflow version (u8) = 1.3 (0x4)
+#<0>#
+04
+
+# message type (u8) = OFPT_MULTIPART_REPLY(19)
+13
+
+# message length (u16) = 664
+02 98
+
+# transaction id (u32) = 0
+00 00 00 00
+
+### Message Specific Payload
+## Multipart Request Header
+# Multipart-Type (u16) = TABLE_FEATURES (12)
+#<8>#
+00 0c
+
+# Flags (u16) : none
+00 00
+
+# padding (u8 x 4)
+00 00 00 00
+
+## Multipart Request Body
+# This is an array of table feature structures
+
+#####################################
+## TABLE FEATURE 0 ##################
+#####################################
+
+# table feature length (u16) = 136
+#<16>#
+00 88
+
+# table ID (u8) = 0
+00
+
+# padding (u8 x 5)
+0000 0000 00
+
+# table name (32 char field) = "The First Table"
+#<24>#
+5468 6520 4669 7273 7420 5461 626c 6500
+0000 0000 0000 0000 0000 0000 0000 0000
+
+# metadata match (u64) = all one bits
+#<56>#
+ffff ffff ffff ffff
+
+# metadata write (u64) = top half
+#<64>#
+ffff ffff 0000 0000
+
+# config (u32) - should be all zeros
+#<72>#
+00 00 00 00
+
+# max entries (u32) = 1024
+00 00 04 00
+
+## Table Feature Property list ##
+
+## -- Instructions Property
+# header: type (u16) = INSTRUCTIONS (0), length (u16) = 44
+#<80>#
+00 00                                    00 2c
+# table feature property payload
+# list of supported instructions : (length - 4) bytes
+#   struct ofp_instruction with just the instruction ID
+#    non-experimenter instructions are 4 bytes
+
+# Instruction Type (u16)    Length of struct (u16)
+# GOTO_TABLE = 1
+#<84>#
+00 01                       00 04
+# WRITE_METADATA = 2
+#<88>#
+00 02                       00 04
+# WRITE_ACTIONS = 3
+#<92>#
+00 03                       00 04
+# APPLY_ACTIONS = 4
+#<96>#
+00 04                       00 04
+# CLEAR_ACTIONS = 5
+#<100>#
+00 05                       00 04
+# METER = 6
+#<104>#
+00 06                       00 04
+# EXPERIMENTER = 0xffff
+#<108>#
+ff ff                       00 10
+# Experimenter ID = HP
+#<112>#
+00 00 24 81
+
+# Some experimenter data
+#<116>#
+0f00 0ba2 c001 c001
+
+### Need padding: (length + 7)/8*8 - (length)   :: between 0 and 7
+# should be 4 to take struct size up to 48.
+#<124>#
+00 00 00 00
+
+
+## -- Instructions MISS Property (in this example, fewer instructions)
+# header: type (u16) = INSTRUCTIONS_MISS (1), length (u16) = 24
+#<128>#
+00 01                                    00 18
+# table feature property payload
+# list of supported instructions : (length - 4) bytes
+#   struct ofp_instruction with just the instruction ID
+#    non-experimenter instructions are 4 bytes
+
+# Instruction Type (u16)    Length of struct (u16)
+# GOTO_TABLE = 1
+#<132>#
+00 01                       00 04
+# WRITE_METADATA = 2
+#<136>#
+00 02                       00 04
+# WRITE_ACTIONS = 3
+#<140>#
+00 03                       00 04
+# APPLY_ACTIONS = 4
+#<144>#
+00 04                       00 04
+# CLEAR_ACTIONS = 5
+#<148>#
+00 05                       00 04
+
+### Need padding: (length + 7)/8*8 - (length)   :: between 0 and 7
+# should be 0 to maintain struct size of 24.
+#<152>#
+
+
+#####################################
+## TABLE FEATURE 1 ##################
+#####################################
+
+# table feature length (u16) = 80
+#<152>#
+00 50
+
+# table ID (u8) = 1
+01
+
+# padding (u8 x 5)
+0000 0000 00
+
+# table name (32 char field) = "The Second Table"
+#<160>#
+5468 6520 5365 636f 6e64 2054 6162 6c65
+0000 0000 0000 0000 0000 0000 0000 0000
+
+# metadata match (u64) = top half
+#<192>#
+ffff ffff 0000 0000
+
+# metadata write (u64) = all one bits
+#<200>#
+ffff ffff ffff ffff
+
+# config (u32) - should be all zeros
+#<208>#
+00 00 00 00
+
+# max entries (u32) = 1025
+00 00 04 01
+
+## Table Feature Property list ##
+## -- Next-Tables Property
+# header: type (u16) = NEXT_TABLES (2), length (u16) = 7
+#<216>#
+00 02                                    00 07
+# table feature property payload
+# list of table ids : (length - 4) bytes
+02 03 05
+
+### Need padding: (length + 7)/8*8 - (length)   :: between 0 and 7
+# should be 1 to take struct size up to 8.
+00
+
+## -- Next-Tables MISS Property
+# header: type (u16) = NEXT_TABLES_MISS (3), length (u16) = 5
+#<224>#
+00 03                                    00 05
+# table feature property payload
+# list of table ids : (length - 4) bytes
+09
+
+### Need padding: (length + 7)/8*8 - (length)   :: between 0 and 7
+# should be 3 to take struct size up to 8.
+00 00 00
+
+#<232>#
+
+#####################################
+## TABLE FEATURE 2 ##################
+#####################################
+
+# table feature length (u16) = 144
+#<232>#
+00 90
+
+# table ID (u8) = 2
+02
+
+# padding (u8 x 5)
+0000 0000 00
+
+# table name (32 char field) = "The Third Table"
+#<240>#
+5468 6520 5468 6972 6420 5461 626c 6500
+0000 0000 0000 0000 0000 0000 0000 0000
+
+# metadata match (u64) = top half
+#<272>#
+ffff ffff 0000 0000
+
+# metadata write (u64) = top half
+#<280>#
+ffff ffff 0000 0000
+
+# config (u32) - should be all zeros
+#<288>#
+00 00 00 00
+
+# max entries (u32) = 1026
+00 00 04 02
+
+## Table Feature Property list ##
+
+## -- Actions Property
+# header: type (u16) = WRITE_ACTIONS (4), length (u16) = 16
+#<296>#
+00 04                                    00 10
+# table feature property payload
+# list of supported actions: (length - 4) bytes
+#   struct ofp_action with just the action ID
+#    non-experimenter actions are 4 bytes
+
+# Action Type (u16)    Length of struct (u16)
+# OUTPUT = 0
+#<300>#
+00 00                  00 04
+# COPY_TTL_OUT = 11
+#<304>#
+00 0b                  00 04
+# COPY_TTL_IN = 12
+#<308>#
+00 0c                  00 04
+
+## Padding = 0 (to round up to 16)
+
+## -- Actions Property
+# header: type (u16) = WRITE_ACTIONS_MISS (5), length (u16) = 12
+#<312>#
+00 05                                    00 0c
+# table feature property payload
+# list of supported actions: (length - 4) bytes
+#   struct ofp_action with just the action ID
+#    non-experimenter actions are 4 bytes
+
+# Action Type (u16)    Length of struct (u16)
+# SET_MPLS_TTL = 15
+#<316>#
+00 0f                  00 04
+# DEC_MPLS_TTL = 16
+#<320>#
+00 10                  00 04
+
+## Padding = 4 (to round up to 16)
+#<324>#
+00 00 00 00
+
+## -- Actions Property
+# header: type (u16) = APPLY_ACTIONS (6), length (u16) = 12
+#<328>#
+00 06                                    00 0c
+# table feature property payload
+# list of supported actions: (length - 4) bytes
+#   struct ofp_action with just the action ID
+#    non-experimenter actions are 4 bytes
+
+# Action Type (u16)    Length of struct (u16)
+# PUSH_VLAN = 17
+#<332>#
+00 11                  00 04
+# POP_VLAN = 18
+#<336>#
+00 12                  00 04
+
+## Padding = 4 (to round up to 16)
+#<340>#
+00 00 00 00
+
+## -- Actions Property
+# header: type (u16) = APPLY_ACTIONS_MISS (7), length (u16) = 28
+#<344>#
+00 07                                    00 1c
+# table feature property payload
+# list of supported actions: (length - 4) bytes
+#   struct ofp_action with just the action ID
+#    non-experimenter actions are 4 bytes
+
+# Action Type (u16)    Length of struct (u16)
+# SET_QUEUE = 21
+#<348>#
+00 15                  00 04
+# GROUP = 22
+#<352>#
+00 16                  00 04
+
+# EXPERIMENTER = 0xffff
+#<356>#
+ff ff                  00 10
+
+# Experimenter ID = HP (0x2481)
+#<360>#
+00 00 24 81
+
+# Some experimenter data
+#<364>#
+0f00 0ba2 c001 c001
+
+## Padding = 4 (to round up to 32)
+00 00 00 00
+
+#<376>#
+
+#####################################
+## TABLE FEATURE 3 ##################
+#####################################
+
+# table feature length (u16) = 176
+#<376>#
+00 b0
+
+# table ID (u8) = 3
+03
+
+# padding (u8 x 5)
+0000 0000 00
+
+# table name (32 char field) = "The Fourth Table"
+#<384>#
+5468 6520 466f 7572 7468 2054 6162 6c65
+0000 0000 0000 0000 0000 0000 0000 0000
+
+# metadata match (u64) = all one bits
+#<416>#
+ffff ffff ffff ffff
+
+# metadata write (u64) = all one bits
+#<424>#
+ffff ffff ffff ffff
+
+# config (u32) - should be all zeros
+#<432>#
+00 00 00 00
+
+# max entries (u32) = 1027
+00 00 04 03
+
+## Table Feature Property list ##
+
+## -- OXM Property
+# header: type (u16) = MATCH (8), length (u16) = 28
+#<440>#
+00 08                             00 1c
+# table feature property payload :: fields that can be matched
+# list of OXM types : (length - 4) bytes containing OXM ids
+#  32-bit OXM headers or 64-bit OXM headers for experimenter OXM fields
+## OXM-basic class, IN_PORT(0<<1) (!mask),  payload length
+#<444>#
+   80 00            00                      00
+## OXM-basic class, ETH_TYPE(5<<1) (!mask), payload length
+#<448>#
+   80 00            0a                      00
+## OXM-basic class, IPV4_SRC(11<<1) (mask), payload length
+#<452>#
+   80 00            17                      00
+## OXM-basic class, IPV4_DST(12<<1) (mask), payload length
+#<456>#
+   80 00            19                      00
+## Experim. class, field-23(23<<1) (!mask), payload length, ExpId(HP)
+#<460>#
+   ff ff            2e                      04              0000 2481
+## padding of 4 bytes to bring structure up to 32 bytes
+#<468>#
+00 00 00 00
+
+## -- OXM Property
+# header: type (u16) = WILDCARDS (10), length (u16) = 12
+#<472>#
+00 0a                                  00 0c
+# table feature property payload :: fields that can be wildcarded
+# list of OXM types : (length - 4) bytes containing OXM ids
+#  32-bit OXM headers or 64-bit OXM headers for experimenter OXM fields
+## OXM-basic class, ETH_DST(3<<1) (mask),  payload length
+#<476>#
+   80 00            07                     00
+## OXM-basic class, ETH_SRC(4<<1) (mask),  payload length
+#<480>#
+   80 00            09                     00
+## padding of 4 bytes to bring structure up to 16 bytes
+#<484>#
+00 00 00 00
+
+## -- OXM Property
+# header: type (u16) = WRITE_SETFIELD (12), length (u16) = 12
+#<488>#
+00 0c                                  00 0c
+# table feature property payload :: fields that can be set (via WRITE_ACTIONS)
+# list of OXM types : (length - 4) bytes containing OXM ids
+#  32-bit OXM headers or 64-bit OXM headers for experimenter OXM fields
+## OXM-basic class, ETH_DST(3<<1) (!mask),  payload length
+#<492>#
+   80 00            06                      00
+## OXM-basic class, ETH_SRC(4<<1) (!mask),  payload length
+#<496>#
+   80 00            08                      00
+## padding of 4 bytes to bring structure up to 16 bytes
+#<500>#
+00 00 00 00
+
+## -- OXM Property
+# header: type (u16) = WRITE_SETFIELD_MISS (13), length (u16) = 12
+#<504>#
+00 0d                                            00 0c
+# table feature property payload :: fields that can be set (via WRITE_ACTIONS)
+# list of OXM types : (length - 4) bytes containing OXM ids
+#  32-bit OXM headers or 64-bit OXM headers for experimenter OXM fields
+## OXM-basic class, ETH_DST(3<<1) (!mask),  payload length
+#<508>#
+   80 00            06                      00
+## OXM-basic class, ETH_SRC(4<<1) (!mask),  payload length
+#<512>#
+   80 00            08                      00
+## padding of 4 bytes to bring structure up to 16 bytes
+#<516>#
+00 00 00 00
+
+## -- OXM Property
+# header: type (u16) = APPLY_SETFIELD (14), length (u16) = 12
+#<520>#
+00 0e                                       00 0c
+# table feature property payload :: fields that can be set (via APPLY_ACTIONS)
+# list of OXM types : (length - 4) bytes containing OXM ids
+#  32-bit OXM headers or 64-bit OXM headers for experimenter OXM fields
+## OXM-basic class, IPV4_SRC(11<<1) (!mask),  payload length
+#<524>#
+   80 00            16                        00
+## OXM-basic class, IPV4_DST(12<<1) (!mask),  payload length
+#<528>#
+   80 00            18                        00
+## padding of 4 bytes to bring structure up to 16 bytes
+#<532>#
+00 00 00 00
+
+## -- OXM Property
+# header: type (u16) = APPLY_SETFIELD_MISS (15), length (u16) = 12
+#<536>#
+00 0f                                            00 0c
+# table feature property payload :: fields that can be set (via APPLY_ACTIONS)
+# list of OXM types : (length - 4) bytes containing OXM ids
+#  32-bit OXM headers or 64-bit OXM headers for experimenter OXM fields
+## OXM-basic class, IPV6_SRC(26<<1) (!mask),  payload length
+#<540>#
+   80 00            34                        00
+## OXM-basic class, IPV6_DST(27<<1) (!mask),  payload length
+#<544>#
+   80 00            36                        00
+## padding of 4 bytes to bring structure up to 16 bytes
+#<548>#
+00 00 00 00
+
+#<552>#
+
+#####################################
+## TABLE FEATURE 4 ##################
+#####################################
+
+# table feature length (u16) = 112
+#<552>#
+00 70
+
+# table ID (u8) = 4
+04
+
+# padding (u8 x 5)
+0000 0000 00
+
+# table name (32 char field) = "The Last Table"
+#<560>#
+5468 6520 4c61 7374 2054 6162 6c65 0000
+0000 0000 0000 0000 0000 0000 0000 0000
+
+# metadata match (u64) = all one bits
+#<592>#
+ffff ffff ffff ffff
+
+# metadata write (u64) = all one bits
+#<600>#
+ffff ffff ffff ffff
+
+# config (u32) - should be all zeros
+#<608>#
+00 00 00 00
+
+# max entries (u32) = 1028
+#<612>#
+00 00 04 04
+
+## Table Feature Property list ##
+
+## -- Experimenter Property
+# header: type (u16) = EXPERIMENTER (0xfffe), length (u16) = 20
+#<616>#
+ff fe                                         00 14
+# experimenter ID (u32) = HP (0x2481)
+#<620>#
+00 00 24 81
+# experimenter type (u32) = 42
+#<624>#
+00 00 00 2a
+# experimenter data (u8 x 8)
+#<628>#
+0202 0404 0606 0808
+## padding of 4 bytes to bring structure up to 24 bytes
+#<636>#
+00 00 00 00
+
+
+## -- Experimenter Property
+# header: type (u16) = EXPERIMENTER_MISS (0xffff), length (u16) = 18
+#<640>#
+ff ff                                         00 12
+# experimenter ID (u32) = BIG_SWITCH (0x5c16c7)
+#<644>#
+00 5c 16 c7
+# experimenter type (u32) = 7
+#<648>#
+00 00 00 07
+# experimenter data (u8 x 6)
+#<652>#
+0202 0404 0606
+## padding of 6 bytes to bring structure up to 24 bytes
+#<658>#
+0000 0000 0000
+
+
+#<664>#
+#### and we are done ####

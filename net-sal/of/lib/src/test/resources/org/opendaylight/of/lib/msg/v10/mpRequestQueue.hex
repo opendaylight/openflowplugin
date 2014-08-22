@@ -1,0 +1,39 @@
+### OpenFlow 1.0 STATS_REQUEST message : Type QUEUE
+#
+# openflow version (u8) = 1.0 (0x1)
+#<0>#
+01
+
+# message type (u8) = OFPT_STATS_REQUEST(16)
+10
+
+# message length (u16) = 20
+00 14
+
+# transaction id (u32) = 0
+00 00 00 00
+
+### Message Specific Payload
+## Stats Request Header
+# Stats-Type (u16) = QUEUE (5)
+#<8>#
+00 05
+
+# Flags (u16) : none
+00 00
+
+## Stats Request QUEUE Body
+# port number  (u16) :  30
+#<12>#
+00 1e
+
+# padding (u8 x 2)
+#<14>#
+00 00 
+
+# queue id  (u32) :  2
+#<16>#
+00 00 00 02
+
+#<20>#
+#### and we are done ####

@@ -1,0 +1,33 @@
+# An example match field TLV
+# See section A.2.3.2 Flow Match Field Structures of the 1.3 Spec.
+#
+# Basic :: IPV6_EXTHDR (no mask)
+
+# Class (u16) : Basic = 0x8000
+80 00
+
+# Field + hasMask Bit (u8) : IPV6_EXTHDR(39<<1) (no mask) = 0x4e
+4e
+
+# Length of payload excluding header (u8) = 2
+02
+
+## Payload
+# Random sampling of flags:
+# NO_NEXT (  0x1)
+# AUTH    (  0x4)
+# ROUTER  ( 0x20)
+# UN_SEQ  (0x100)
+01 25
+
+### Note this value/(no-mask) combination equates to:
+#
+#   NO_NEXT = must be PRESENT
+#   ESP     = must be ABSENT
+#   AUTH    = must be PRESENT
+#   DEST    = must be ABSENT
+#   FRAG    = must be ABSENT
+#   ROUTER  = must be PRESENT
+#   HOP     = must be ABSENT
+#   UN_REP  = must be ABSENT
+#   UN_SEQ  = must be PRESENT

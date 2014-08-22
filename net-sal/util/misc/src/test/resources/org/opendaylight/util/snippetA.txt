@@ -1,0 +1,7 @@
+java.lang.RuntimeException: Test Exception
+  org.opendaylight.util.LogTestSnippet.snippetFour(LogTestSnippet.java:48)
+  org.opendaylight.util.LogTestSnippet.snippetThree(LogTestSnippet.java:44)
+  org.opendaylight.util.LogTestSnippet.snippetTwo(LogTestSnippet.java:40)
+  org.opendaylight.util.LogTestSnippet.snippetOne(LogTestSnippet.java:36)
+  org.opendaylight.util.LogTestSnippet.snippet(LogTestSnippet.java:107)
+  ...

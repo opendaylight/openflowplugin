@@ -1,0 +1,14 @@
+{
+  "version" : "1.0.0",
+  "port" : {
+    "id" : "3",
+    "name" : "net",
+    "mac" : "a2:c0:98:8e:ec:4a",
+    "config" : [ "port_down", "no_fwd" ],
+    "state" : [ "link_down", "live" ],
+    "current_features" : [ ],
+    "advertised_features" : [ ],
+    "supported_features" : [ ],
+    "peer_features" : [ ]
+  }
+}

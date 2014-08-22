@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+  ~ Copyright (c) 2014 Hewlett-Packard Development Company, L.P.
+  ~
+  ~ This program and the accompanying materials are made available under the
+  ~ terms of the Eclipse Public License v1.0 which accompanies this distribution,
+  ~ and is available at http://www.eclipse.org/legal/epl-v10.html
+  -->
+
+<features xmlns="http://karaf.apache.org/xmlns/features/v1.2.0"
+          name="org.opendaylight.alt-1.0.0">
+    <repository>mvn:org.opendaylight/odl-features/1.0.0-SNAPSHOT/xml/features</repository>
+
+    <feature name="base-thirdparty" version="1.0.0"
+             description="OpenDaylight 3rd party dependencies">
+        <bundle>mvn:commons-codec/commons-codec/1.7</bundle>
+        <bundle>mvn:commons-io/commons-io/2.4</bundle>
+        <bundle>mvn:commons-lang/commons-lang/2.6</bundle>
+        <bundle>mvn:commons-configuration/commons-configuration/1.10</bundle>
+        <bundle>mvn:commons-collections/commons-collections/3.2.1</bundle>
+
+        <bundle>mvn:com.fasterxml.jackson.core/jackson-core/2.4.1</bundle>
+        <bundle>mvn:com.fasterxml.jackson.core/jackson-annotations/2.4.1</bundle>
+        <bundle>mvn:com.fasterxml.jackson.core/jackson-databind/2.4.1</bundle>
+    </feature>
+
+    <feature name="base-jersey" version="1.0.0"
+            description="Jersey JAX-RS dependencies">
+        <bundle>mvn:com.sun.jersey/jersey-core/1.18.1</bundle>
+        <bundle>mvn:com.sun.jersey/jersey-server/1.18.1</bundle>
+        <bundle>mvn:com.sun.jersey/jersey-servlet/1.18.1</bundle>
+    </feature>
+
+    <feature name="odl-util" version="1.0.0"
+             description="OpenDaylight general purpose utilities">
+        <feature>base-thirdparty</feature>
+        <bundle>mvn:org.opendaylight/util-api/1.0.0-SNAPSHOT</bundle>
+        <bundle>mvn:org.opendaylight/util-misc/1.0.0-SNAPSHOT</bundle>
+        <bundle>mvn:org.opendaylight/util-event/1.0.0-SNAPSHOT</bundle>
+        <bundle>mvn:org.opendaylight/util-bexp/1.0.0-SNAPSHOT</bundle>
+        <bundle>mvn:org.opendaylight/util-graph/1.0.0-SNAPSHOT</bundle>
+        <bundle>mvn:org.opendaylight/util-net/1.0.0-SNAPSHOT</bundle>
+        <bundle>mvn:org.opendaylight/util-packet/1.0.0-SNAPSHOT</bundle>
+        <bundle>mvn:org.opendaylight/util-nbio/1.0.0-SNAPSHOT</bundle>
+        <bundle>mvn:org.opendaylight/util-stage/1.0.0-SNAPSHOT</bundle>
+        <bundle>mvn:org.opendaylight/util-driver/1.0.0-SNAPSHOT</bundle>
+        <bundle>mvn:org.opendaylight/util-codec/1.0.0-SNAPSHOT</bundle>
+    </feature>
+
+    <feature name="odl-of" version="1.0.0"
+             description="OpenDaylight OpenFlow subsystem">
+        <!-- Declarative Services are required for autowiring! -->
+        <feature>scr</feature>
+        <feature>odl-util</feature>
+        <bundle>mvn:org.opendaylight/of-lib/1.0.0-SNAPSHOT</bundle>
+        <bundle>mvn:org.opendaylight/of-common/1.0.0-SNAPSHOT</bundle>
+        <bundle>mvn:org.opendaylight/of-controller/1.0.0-SNAPSHOT</bundle>
+        <!-- TODO:
+        <bundle>mvn:org.opendaylight/of-json/1.0.0-SNAPSHOT</bundle>
+        -->
+    </feature>
+
+    <feature name="odl-net" version="1.0.0"
+             description="OpenDaylight network services">
+        <feature>scr</feature>
+        <feature>odl-util</feature>
+        <feature>odl-of</feature> <!-- TODO: sever this dependency -->
+        <bundle>mvn:org.opendaylight/net-api/1.0.0-SNAPSHOT</bundle>
+        <bundle>mvn:org.opendaylight/net-dispatch/1.0.0-SNAPSHOT</bundle>
+        <bundle>mvn:org.opendaylight/net-key/1.0.0-SNAPSHOT</bundle>
+        <bundle>mvn:org.opendaylight/net-driver/1.0.0-SNAPSHOT</bundle>
+        <bundle>mvn:org.opendaylight/net-device/1.0.0-SNAPSHOT</bundle>
+        <bundle>mvn:org.opendaylight/net-host/1.0.0-SNAPSHOT</bundle>
+        <bundle>mvn:org.opendaylight/net-link/1.0.0-SNAPSHOT</bundle>
+        <bundle>mvn:org.opendaylight/net-topology/1.0.0-SNAPSHOT</bundle>
+        <bundle>mvn:org.opendaylight/net-path/1.0.0-SNAPSHOT</bundle>
+    </feature>
+
+    <feature name="odl-base-driver" version="1.0.0"
+             description="OpenDaylight base device drivers">
+        <feature>odl-of</feature>
+        <feature>odl-net</feature>
+        <bundle>mvn:org.opendaylight/base-driver/1.0.0-SNAPSHOT</bundle>
+    </feature>
+
+    <feature name="odl-of-adapter" version="1.0.0"
+             description="OpenDaylight OpenFlow adapter for network service access">
+        <feature>odl-of</feature>
+        <feature>odl-net</feature>
+        <feature>odl-base-driver</feature>
+        <bundle>mvn:org.opendaylight/of-adapter/1.0.0-SNAPSHOT</bundle>
+        <bundle>mvn:org.opendaylight/of-supplier-device/1.0.0-SNAPSHOT</bundle>
+        <bundle>mvn:org.opendaylight/of-supplier-host/1.0.0-SNAPSHOT</bundle>
+        <bundle>mvn:org.opendaylight/of-supplier-link/1.0.0-SNAPSHOT</bundle>
+    </feature>
+
+    <feature name="odl-commands" version="1.0.0"
+             description="OpenDaylight Karaf shell commands">
+        <feature>odl-of-adapter</feature>
+        <bundle>mvn:org.opendaylight/shell-commands/1.0.0-SNAPSHOT</bundle>
+    </feature>
+
+    <feature name="odl-app-forwarding" version="1.0.0"
+             description="OpenDaylight L2 OpenFlow forwarding app">
+        <feature>odl-of-adapter</feature>
+        <bundle>mvn:org.opendaylight/odl-app-forwarding/1.0.0-SNAPSHOT</bundle>
+    </feature>
+
+    <feature name="odl-app-netvue" version="1.0.0"
+             description="OpenDaylight sample network viewer GUI">
+        <feature>war</feature>
+        <feature>base-jersey</feature>
+        <bundle>mvn:org.opendaylight/odl-app-netvue/1.0.0-SNAPSHOT</bundle>
+    </feature>
+
+    <feature name="odl-app-oneping" version="1.0.0"
+             description="OpenDaylight sample ICMP limitting app">
+        <feature>odl-app-forwarding</feature>
+        <bundle>mvn:org.opendaylight/odl-app-oneping/1.0.0-SNAPSHOT</bundle>
+    </feature>
+
+</features>

@@ -1,0 +1,45 @@
+## OpenFlow 1.0 Mock Switch which is definitely eager
+
+### define the switch's reported datapath ID
+dpid: 42/0016b9:006502
+
+### define the switch's HELLO message
+# LAZY = wait for controller's HELLO msg; EAGER = send HELLO immediately
+# space-separated list of versions
+# optional LEGACY token suppresses the version-bitmap hello-element
+hello: LAZY V_1_0 LEGACY
+
+### define the switch's base configuration
+controller: 127.0.0.1 6633 6634
+buffers: 256
+tables: 12
+capabilities: FLOW_STATS TABLE_STATS PORT_STATS IP_REASM  QUEUE_STATS
+
+### 1.0 switch supported actions
+supportedActions: OUTPUT \
+                  SET_VLAN_VID \
+                  STRIP_VLAN \
+                  SET_DL_SRC \
+                  SET_DL_DST \
+                  SET_NW_SRC \
+                  SET_NW_DST
+
+### Number of ports on this switch (256 max)
+portCount: 4
+### MAC address of each port (last byte is 0..portCount-1)
+portMac: 00:16:b9:0a:01:*
+
+### Default config and features
+portConfig: NO_RECV
+portFeature: RATE_100MB_FD COPPER
+
+### Specific port overrides
+portConfig[1]: PORT_DOWN NO_RECV
+portFeature[1]: RATE_100MB_FD COPPER AUTONEG
+
+### Description strings for MP/DESC reply
+descMfr:    Acme Switch Co.
+descHw:     Coyote WB10
+descSw:     OF-Sneaky 1.0
+descSerial: WB-11937-TAF
+descDp:     WB10 at top of Mesa, Top Shelf

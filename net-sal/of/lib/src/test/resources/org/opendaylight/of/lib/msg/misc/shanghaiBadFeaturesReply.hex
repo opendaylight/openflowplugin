@@ -1,0 +1,52 @@
+# What we believe to be a badly formatted Features-Reply from Comware.
+#
+#2013-08-15 00:41:47.866] WARN  Hashed wheel timer #1        hp.of.ctl
+#  DE0005I Closing unresponsive channel id=928505343,
+#  remoteAddr=/10.42.25.20:3595
+#
+#
+#[2013-08-15 00:41:48.919] WARN  New I/O server worker #1-2   hp.of.msglib
+#  DE0005I Parse FAILED: hdr=[V_1_0,FEATURES_REPLY,128,107],
+#  bytes=[010600800000006b000000030f2711130000010002000000000000c70000193700
+#         1500030f27111345746865726e6574312f302f3231000000000000000002010000
+#         02a00000002000000e6c000002a0002d00030f27111345746865726e6574312f30
+#         2f343500000000000000000201000002a00000002000000e6c000002a0]
+#
+#
+#[2013-08-15 00:41:48.925] WARN  New I/O server worker #1-2   hp.of.ctl
+#  DE0005I MsgF:{OfPktRdr: odom=32, op=(n/a),
+#  BigEndianHeapChannelBuffer(ridx=32, widx=128, cap=128)}
+#  OFM:[V_1_0,FEATURES_REPLY,128,107] > com.hp.of.lib.VersionMismatchException:
+#   V_1_0 Bad bits: 0x1937 com.hp.of.lib.MessageParseException:
+#   MsgF:{OfPktRdr: odom=32, op=(n/a),BigEndianHeapChannelBuffer(ridx=32,
+#   widx=128, cap=128)} OFM:[V_1_0,FEATURES_REPLY,128,107] >
+#
+### Bytes reproduced here, so we can see what is going on...
+
+010600800000006b000000030f2711130000010002000000000000c70000193700
+1500030f27111345746865726e6574312f302f3231000000000000000002010000
+02a00000002000000e6c000002a0002d00030f27111345746865726e6574312f30
+2f343500000000000000000201000002a00000002000000e6c000002a0
+
+### Results of analysis:
+# <<One or more reserved bit-positions are non-zero>>
+#
+# Turning off strict decoding yields:
+# supA: [output, setVlanVid, setVlanPcp, setDlSrc, setDlDst, setNwTos, enqueue]
+#
+# Supported Action bitmap is: 0x1937
+#
+#   Reserved
+#   <----->   <-- Valid Bit Positions -->
+#   0 0 0 1 . 1 0 0 1 . 0 0 1 1 . 0 1 1 1
+#         ^                             +-- OUTPUT
+#         |                           +---- SET_VLAN_ID
+#         |                         +------ SET_VLAN_PCP
+#         |                   +------------ SET_DL_SRC
+#         |                 +-------------- SET_DL_DST
+#         |         +---------------------- SET_NW_TOS
+#         |   +---------------------------- ENQUEUE
+#         +-------------------------------- *** This bit should be 0 ***
+#
+# All reserved bits should be zero
+#

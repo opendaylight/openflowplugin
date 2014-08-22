@@ -1,0 +1,24 @@
+#### Switch Bank ECHO - A single switch that emits an echo-request
+
+### Define the switches that make up the bank.
+# Note the form "LNAME = filename.def" where LNAME is the logical name
+# used in the scenario section, and filename.def is assumed to be a switch
+# definition file in the same directory as this file.
+
+# note: we need to activate both SW10 and SW13 for the unit test setup
+#       assertions to hold true
+
+[switches]
+SW10 = simple10sw4port.def
+SW13 = simple13sw32port.def
+
+[scenario]
+activate SW10
+activate SW13
+
+helloSuccess SW10
+
+echoRequest SW10 0a0b0c0d
+suspend
+
+echoRequest SW10 x

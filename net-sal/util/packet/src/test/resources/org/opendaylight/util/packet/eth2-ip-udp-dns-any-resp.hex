@@ -1,0 +1,300 @@
+### Ethernet2 - IP - TCP - DNS ANY response
+#
+# Destination: Hewlett-_b3:e4:de (00:24:81:b3:e4:de)
+#<6>#
+00 24 81 b3 e4 de
+
+# Source: D-LinkIn_58:4c:5d (1c:7e:e5:58:4c:5d)
+#<0>#
+1c 7e e5 58 4c 5d
+
+# Type: IP (0x0800)
+#<12>#
+08 00
+
+# Version/length: 4, 20
+#<14>#
+45
+ 
+# Differentiated Services Field: 0x00
+#<15>#
+00
+
+# Total Length: 456
+#<16>#
+01 c8
+
+# Identification: 0
+#<18>#
+00 00
+
+# Flags: 0x02 (Don't Fragment)
+#<20>#
+40 00
+
+# Time to live: 64
+#<22>#
+40
+
+# Protocol: UDP (17)
+#<23>#
+11
+
+# Header checksum: 0xb76f [correct]
+#<24>#
+b7 6f
+
+# Source: 192.168.0.1 (192.168.0.1)
+#<30>#
+c0 a8 00 01
+
+# Destination: 192.168.0.100 (192.168.0.100)
+#<26>#
+c0 a8 00 64
+
+# Source port: domain (53)
+#<36>#
+00 35
+
+# Destination port: statsci1-lm (6144)
+#<34>#
+18 00
+
+# Length: 436
+#<38>#
+01 b4
+
+# Checksum: 0x0728 [validation disabled]
+#<40>#
+07 28
+
+# Transaction ID: 0xafa5
+#<42>#
+af a5
+
+# Flags: 0x8180 (Standard query response, No error)
+#<44>#
+81 80
+
+# Questions: 1
+#<46>#
+00 01
+
+# Answer RRs: 4
+#<48>#
+00 04
+
+# Authority RRs: 0
+#<50>#
+00 00
+
+# Additional RRs: 0
+#<52>#
+00 00
+
+
+
+# Name: www.isc.org
+#<54>#
+03 77 77 77 03 69 73 63 03 6f 72 67 00
+
+# Type: ANY (Request for all records)
+#<67>#
+00 ff
+
+# Class: IN (0x0001)
+#<69>#
+00 01
+
+
+
+
+# Name pointer
+#<71>#
+c0 0c
+
+# Type: RRSIG (RR signature)
+#<73>#
+00 2e
+
+# Class: IN (0x0001)
+#<75>#
+00 01
+
+# Time to live: 59 minutes, 25 seconds
+#<77>#
+00 00 0d ed
+
+# Data length: 155
+#<81>#
+00 9b
+
+# Type covered: NSEC (Next secured)
+#<83>#
+00 2f
+
+# Algorithm: RSA/SHA1
+#<85>#
+05
+
+# Labels: 3
+#<86>#
+03
+
+# Original TTL: 1 hour
+#<87>#
+00 00 0e 10
+
+# Signature expiration: Jul 25, 2013 10:33:30.000000000 Pacific Daylight Time
+#<91>#
+51 f1 61 6a
+
+# Time signed: Jun 25, 2013 10:33:30.000000000 Pacific Daylight Time
+#<95>#
+51 c9 d4 6a
+
+# Id of signing key(footprint): 50012
+#<99>#
+c3 5c
+
+# Signer's name: isc.org
+#<101>#
+03 69 73 63 03 6f 72 67 00
+
+# Signature
+#<110>#
+73 f6 12 af 4d d1 98 7c 8d a9 90 07 09 86 5e 85
+2c f6 64 0d d0 37 05 77 3c b2 e0 6e 4f 08 37 52
+44 9b 97 da 99 62 8b 0e 75 6d 1f f0 b2 58 95 a1
+90 72 03 60 b1 e2 2d 90 06 0c d7 e6 c5 da a2 04
+66 90 f5 db b4 ef 59 2f e2 4a 97 48 33 f3 61 3f
+0a b9 13 88 b3 65 00 7d 5b a9 11 9d 80 23 df e2
+f3 41 30 79 50 df d3 e7 8a 5d e5 d5 67 01 4a de
+ad 0d bc e1 84 4e 0f 99 1c 14 2f 63 4e 58 29 41
+
+
+
+# Name: www.isc.org
+#<238>#
+c0 0c
+
+# Type: NSEC (Next secured)
+#<240>#
+00 2f
+
+# Class: IN (0x0001)
+#<242>#
+00 01
+
+# Time to live: 59 minutes, 25 seconds
+#<244>#
+00 00 0d ed
+
+# Data length: 25
+#<248>#
+00 19
+
+# Next domain name: www-dev.isc.org
+#<250>#
+07 77 77 77 2d 64 65 76 03 69 73 63 03 6f 72 67
+00
+
+# RR type bitmap
+#<267>#
+00 06 40 00 00 08 00 03
+
+
+
+# Name pointer
+#<275>#
+c0 0c
+
+# Type: RRSIG (RR signature)
+#<277>#
+00 2e
+
+# Class: IN (0x0001)
+#<279>#
+00 01
+
+# Time to live: 25 seconds
+#<281>#
+00 00 00 19
+
+# Data length: 155
+#<285>#
+00 9b
+
+# Type covered: AAAA (IPv6 address)
+#<287>#
+00 1c
+
+# Algorithm: RSA/SHA1
+#<289>#
+05
+
+# Labels: 3
+#<290>#
+03
+
+# Original TTL: 1 minute
+#<291>#
+00 00 00 3c
+
+# Signature expiration: Jul 25, 2013 10:33:30.000000000 Pacific Daylight Time
+#<295>#
+51 f1 61 6a
+
+# Time signed: Jun 25, 2013 10:33:30.000000000 Pacific Daylight Time
+#<299>#
+51 c9 d4 6a
+
+# Id of signing key(footprint): 50012
+#<303>#
+c3 5c
+
+# Signer's name: isc.org
+#<305>#
+03 69 73 63 03 6f 72 67 00
+
+# Signature
+#<314>#
+b1 13 44 dd 1a 54 08 aa 13 e5 77 d1 f5 68 09 c7
+19 8e df 1e 9d 21 d8 f0 4b 3c 08 aa 19 b7 d4 3b
+59 a1 86 46 fa 3a 31 6d a2 d9 94 c1 cd 92 68 a7
+34 18 50 60 d5 50 f6 56 fd 9d 6e 22 27 4f 67 a5
+e0 00 74 9b 72 85 c2 2e 9b d4 c2 f3 5a 1f 7a 9e
+92 9c 94 9b 01 3c 19 9f 46 3e c0 6f cc 3c 6f ea
+81 03 66 30 6d 51 71 14 2b d2 24 03 49 3b 34 1f
+bf 9f 91 47 6e 3d 52 1c 1e 4f 07 5e 31 de 60 e2
+
+
+
+# Name: www.isc.org
+#<442>#
+c0 0c
+
+# Type: AAAA (IPv6 address)
+#<444>#
+00 1c
+
+# Class: IN (0x0001)
+#<446>#
+00 01
+
+# Time to live: 25 seconds
+#<448>#
+00 00 00 19
+
+# Data length: 16
+#<452>#
+00 10
+
+# Addr: 2001:4f8:0:2::69
+#<454>#
+20 01 04 f8 00 00 00 02 00 00 00 00 00 00 00 69
+
+
+
+#<470>#
+#### and we are done ####

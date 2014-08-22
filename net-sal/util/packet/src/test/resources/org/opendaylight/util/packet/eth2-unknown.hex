@@ -1,0 +1,20 @@
+### Ethernet2 - IP packet
+#
+# Destination MAC: HewlettP_69:c4:40
+#<0>#
+52 54 00 9c d1 65 
+
+# Source MAC: RealtekU_9c:d1:65
+#<6>#
+08 2e 5f 69 c4 40 
+
+# Type: (0x0602) - pick a valid but unsupported Ethernet 2 type
+#<12>#
+06 02
+
+# Unknown protocol: 5 bytes
+#<14># 
+ab cd ef ab cd
+
+#<19># 
+#### and we are done ####

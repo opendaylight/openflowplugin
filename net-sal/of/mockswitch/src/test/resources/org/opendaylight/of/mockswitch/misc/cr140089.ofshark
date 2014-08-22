@@ -1,0 +1,14 @@
+# CR 140089
+
+[sources]
+A = 172.16.22.6
+
+# Frame, Time, Source, Openflow Message (or '*' if there was none)
+## Note:
+##  The following filter was used in the pcap file to identify the
+##  FeaturesReply messages:
+## (((ip.proto == 6) && (ip.dst == 15.146.193.90)) && (tcp.dstport == 6633)) && (data.data[1] == 06)
+
+[frames]
+206  2.770603  A  040600200007b8b80014843497ce85a500000000030000000000010f00000000
+293  3.172095  A  040600200007b8bd0014843497ce85a500000000030100000000010f00000000

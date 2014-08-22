@@ -1,0 +1,105 @@
+<!--
+  ~ Copyright (c) 2014 Hewlett-Packard Development Company, L.P.
+  ~
+  ~ This program and the accompanying materials are made available under the
+  ~ terms of the Eclipse Public License v1.0 which accompanies this distribution,
+  ~ and is available at http://www.eclipse.org/legal/epl-v10.html
+  -->
+
+<html>
+<body>
+
+Network packet parsing library.
+
+<ul>
+<li>Packet buffer reader and writer utilities</li>
+<li>Representations of network packet structures</li>
+<li>Network protocol decoders and encoders</li>
+</ul> 
+This is a comprehensive list of the protocols supported and the OpenFlow related match fields:
+<p>
+<i>Outermost layer:</i>
+<ul>
+    <li><b>Ethernet</b> - Ethernet2, Ethernet 802.3, VLAN ID (802.1Q)</li>
+    <ul>
+        <li>destination address</li>
+        <li>Ethernet source address</li>
+        <li>Ethernet frame type</li>
+        <li>VLAN ID</li>
+        <li>VLAN priority</li>
+    </ul>
+</ul>
+<p>
+
+<i>Next layer group:</i>
+<ul>
+    <li><b>MPLS</b></li>
+    <ul>
+        <li>MPLS label</li>
+        <li>MPLS TTL</li>
+        <li>MPLS Bottom of Label Stack bit</li>
+    </ul>
+    <li><b>ARP</b></li>
+    <ul>
+        <li>opcode</li>
+        <li>source IPv4 address</li>
+        <li>target IPv4 address</li>
+        <li>source hardware address</li>
+        <li>target hardware address</li>
+    </ul>
+    <li><b>IP</b></li>
+    <ul>
+        <li>IPv4 TOS Differentiated Services Field Codepoints (DSFC)</li>
+        <li>IPv4 TOS Explicit Congestion Notification (ECN)</li>
+        <li>IPv4 protocol type</li>
+        <li>IPv4 source address</li>
+        <li>IPv4 destination address</li>
+    </ul>
+    <li><b>IPv6</b></li>
+    <ul>
+        <li>IPv6 source address</li>
+        <li>IPv6 destination address</li>
+        <li>IPv6 flow label</li>
+    </ul>
+        <li><b>LLDP</b></li>
+        <li><b>ICMP</b></li>
+    <ul>
+        <li>ICMPv4 type</li>
+        <li>ICMPv4 code</li>
+    </ul>
+    <li><b>ICMPV6</b></li>
+    <ul>
+        <li>ICMPv6 type</li>
+        <li>ICMPv6 code</li>
+        <li>target address for Neighbor Discovery</li>
+        <li>source link-layer for Neighbor Discovery</li>
+        <li>target link-layer for Neighbor Discovery</li>
+    </ul>
+</ul>
+
+<i>Next layer group:</i>
+<ul>
+    <li><b>TCP</b></li>
+    <ul>
+        <li>TCP source port</li>
+        <li>TCP destination port</li>
+    </ul>
+    <li><b>SCTP</b></li>
+    <ul>
+        <li>SCTP source port</li>
+        <li>SCTP destination port</li>
+    </ul>
+    <li><b>UDP</b></li>
+    <ul>
+        <li>UDP source port</li>
+        <li>UDP destination port</li>
+    </ul>
+</ul>
+
+<i>Innermost layer group:</i>
+<ul>
+    <li><b>DHCP</b></li>
+</ul>
+
+</body>
+</html>

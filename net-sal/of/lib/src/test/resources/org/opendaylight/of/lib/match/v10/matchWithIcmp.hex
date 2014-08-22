@@ -1,0 +1,75 @@
+# Example 1.0 match structure for ICMP.
+# This sample match includes ICMP Type and ICMP Code fields, which are folded
+# into the TP_SRC (ICMP Type) and TP_DST (ICMP Code) fields of the structure.
+# See bottom two rows of Table 3 (page 4) of the OF1.0 spec, and the bullet
+#  point on page 9:
+#   "For IP packets that are ICMP (IP protocol is equal to 1), the lookup
+#    includes the Type and Code fields"
+#
+
+# Example 1.0 match structure #1
+# See section 5.2.3 Flow Match Structures of the 1.0 Spec.
+
+#  3         2         1         0
+# 10987654321098765432109876543210
+#           xx<NDST><NSRC>xxxxxxxx                  NW_DST NW_SRC
+#           1110000010000000001111  =>  0x38200f      32     32
+
+# bit 4: DL_TYPE    (IPv4)
+# bit 5: NW_PROTO   (ICMP)
+# bit 6: TP_SRC     (ICMP Type)
+# bit 7: TP_DST     (ICMP Code)
+
+# Wildcards (u32) : see notes above
+#<0>#
+00 38 20 0f
+
+# In Port (u16) : 0 - flagged in wildcards (don't care)
+00 00
+
+# Ethernet source address (u48) : 0 - flagged in wildcards (don't care)
+#<6>#
+000000:000000
+
+# Ethernet destination address (u48) : 0 - flagged in wildcards (don't care)
+#<12>#
+000000:000000
+
+# VLAN id (u16) : 0 - flagged in wildcards (don't care)
+#<18>#
+00 00
+
+# VLAN priority (u8) : 0 - flagged in wildcards (don't care)
+00
+
+# padding (u8)
+00
+
+# Ethernet Type (u16) : IPv4 (0x0800)
+08 00
+
+# IP ToS (u8) : 0 - flagged in wildcards (don't care)
+#<24>#
+00
+
+# IP Protocol (u8) : ICMP (1)
+01
+
+# padding (u8 x 2)
+00 00
+
+# IP Source address (u32) : 0 - flagged in wildcards (don't care)
+00 00 00 00
+
+# IP Destination address (u32) : 0 - flagged in wildcards (don't care)
+#<32>#
+00 00 00 00
+
+# Source port number (u16) - [really ICMP Type] : ECHO_REQ (8)
+00 08
+
+# Destination port number (u16) - [really ICMP Code] : 7
+00 07
+
+#<40>#
+###### That's All Folks!! ######

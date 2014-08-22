@@ -1,0 +1,29 @@
+### OpenFlow 1.0 STATS_REQUEST message : Type DESC
+#
+# openflow version (u8) = 1.0 (0x1)
+#<0>#
+01
+
+# message type (u8) = OFPT_STATS_REQUEST(16)
+10
+
+# message length (u16) = 12
+00 0C
+
+# transaction id (u32) = 0
+00 00 00 00
+
+### Message Specific Payload
+## Multipart Request Header (called Stats Request pre 1.3)
+# Multipart-Type (u16) = DESC (0)
+#<8>#
+00 00
+
+# Flags (u16) : none
+00 00
+
+## Stats Request Body
+# (none)
+
+#<12>#
+#### and we are done ####

@@ -1,0 +1,25 @@
+#### Switch Bank SEVEN - A bank of 7 Mock OpenFlow Switches
+## Four 1.0's and three 1.3's
+
+### Define the switches that make up the bank.
+# Note the form "LNAME = filename.def" where LNAME is the logical name
+# used in the scenario section, and filename.def is assumed to be a switch
+# definition file in the same directory as this file.
+
+[switches]
+SW10_A = simple10sw4port.def
+SW10_B = simple10sw6port.def
+SW10_C = simple10sw8port.def
+SW10_D = simple10sw12port.def
+SW13_X = simple13sw32port.def
+SW13_Y = simple13sw20port.def
+SW13_Z = simple13sw16port.def
+
+[scenario]
+activate SW10_A
+activate SW10_B
+activate SW10_C
+activate SW10_D
+activate SW13_X
+activate SW13_Y
+activate SW13_Z

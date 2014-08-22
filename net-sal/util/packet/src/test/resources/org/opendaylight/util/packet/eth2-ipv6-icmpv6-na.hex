@@ -1,0 +1,62 @@
+### Ethernet2 - IPv6 - ICMPv6 Neighbor advertisement packet
+#
+
+# Destination: Megahert_05:80:da (00:00:86:05:80:da)
+#<0>#
+00 00 86 05 80 da
+
+# Source: 3com_07:69:ea (00:60:97:07:69:ea)
+#<6>#
+00 60 97 07 69 ea
+
+# Type: IPv6 (0x86dd)
+#<12>#
+86 dd
+
+# Version: 6, Traffic Class: 0x0, Flow Label: 0x0
+#<14># 
+60 00 00 00
+
+# Payload length: 24
+#<18># 
+00 18
+
+# Next header: ICMPv6 (58)
+#<20># 
+3a
+
+# Hop limit: 255
+#<21># 
+ff
+
+# Source: fe80::260:97ff:fe07:69ea (fe80::260:97ff:fe07:69ea)
+#<22># 
+fe 80 00 00 00 00 00 00 02 60 97 ff fe 07 69 ea
+
+# Destination: fe80::200:86ff:fe05:80da (fe80::200:86ff:fe05:80da)
+#<38># 
+fe 80 00 00 00 00 00 00 02 00 86 ff fe 05 80 da
+
+# Type: Neighbor Advertisement (136)
+#<54># 
+88
+
+# Code: 0
+#<55># 
+00
+
+# Checksum: 0xafa5 [correct]
+#<56># 
+af a5
+
+# Flags: 0xc0000000 (Router: 1, Solicited: 1)
+#<58># 
+c0 00 00 00
+
+
+# Target Address: fe80::260:97ff:fe07:69ea (fe80::260:97ff:fe07:69ea)
+#<62># 
+fe 80 00 00 00 00 00 00 02 60 97 ff fe 07 69 ea
+
+#<78>#
+#### and we are done ####

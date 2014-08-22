@@ -1,0 +1,33 @@
+# An example table feature property :: OXM Write Setfield Miss
+
+#----------------------------------
+## Table feature property - Header
+
+# property type (u16) = WRITE_SETFIELD_MISS (13)
+#<0>#
+00 0d
+
+# length (u16) = 12
+00 0c
+
+#----------------------------------
+## Table feature property Payload
+# fields that can be set (via WRITE_ACTIONS)
+
+# fields are ordered corresponding to OxmBasicFieldType enum so that unit
+# tests can reproduce the exact same structure.
+
+# list of OXM types : (length - 4) bytes containing OXM ids
+#  32-bit OXM headers or 64-bit OXM headers for experimenter OXM fields
+## OXM-basic class, ETH_DST(3<<1) (!mask),  payload length
+#<4>#
+   80 00            06                      00
+## OXM-basic class, ETH_SRC(4<<1) (!mask),  payload length
+#<8>#
+   80 00            08                      00
+## padding of 4 bytes to bring structure up to 16 bytes
+#<12>#
+00 00 00 00
+
+#<16>#
+## And we are done ##

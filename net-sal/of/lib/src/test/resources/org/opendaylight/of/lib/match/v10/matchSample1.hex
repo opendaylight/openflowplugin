@@ -1,0 +1,66 @@
+# Example 1.0 match structure #1
+# See section 5.2.3 Flow Match Structures of the 1.0 Spec.
+
+
+# nw-src field : 8 => 255.255.255.0    : 0b001000
+# nw-dst field : 20 => 255.240.0.0     : 0b010100
+#  Add in DL_VLAN_PCP (0x100000) and DL_VLAN (0x2) for good measure
+#
+#  3         2         1         0
+# 10987654321098765432109876543210
+#           xx<NDST><NSRC>xxxxxxxx                  NW_DST NW_SRC
+#            101010000100000000010  =>  0x150802      20      8
+
+# Wildcards (u32) : see notes above
+#<0>#
+00 15 08 02
+
+# In Port (u16) : 14
+00 0e
+
+# Ethernet source address (u48) :
+#<6>#
+00001e:111111
+
+# Ethernet destination address (u48) :
+#<12>#
+00001e:222222
+
+# VLAN id (u16) : 0 - flagged in wildcards (don't care)
+#<18>#
+00 00
+
+# VLAN priority (u8) : 0 - flagged in wildcards (don't care)
+00
+
+# padding (u8)
+00
+
+# Ethernet Type (u16) : IPv4 (0x0800)
+08 00
+
+# IP ToS (u8) : 5
+#<24>#
+05
+
+# IP Protocol (u8) : TCP (6)
+06
+
+# padding (u8 x 2)
+00 00
+
+# IP Source address (u32) : 15.255.76.3
+0f ff 4c 03
+
+# IP Destination address (u32) : 15.255.77.1
+#<32>#
+0f ff 4d 01
+
+# Source port number (u16) : 25
+00 19
+
+# Destination port number (u16) : 32001
+7d 01
+
+#<40>#
+###### That's All Folks!! ######

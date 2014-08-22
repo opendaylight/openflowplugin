@@ -1,0 +1,19 @@
+# An example match field TLV
+# See section A.2.3.2 Flow Match Field Structures of the 1.3 Spec.
+#
+# Basic :: VLAN_VID : mode=EXACT (no mask) *** But with no PRESENT BIT!!!
+
+# Class (u16) : Basic = 0x8000
+80 00
+
+# Field + hasMask Bit (u8) : VLAN_VID(6<<1) (no mask) = 0x0c
+0c
+
+# Length of payload excluding header (u8) = 2
+02
+
+## Payload
+# (no PRESENT (0x1000)) .... just VLAN ID (42)
+00 2a
+
+## See Table 12 (p.45) of the 1.3 spec for details.

@@ -1,0 +1,111 @@
+### OpenFlow 1.0 STATS_REPLY message : Type QUEUE
+#
+# openflow version (u8) = 1.0 (0x1)
+#<0>#
+01
+
+# message type (u8) = OFPT_STATS_REPLY(17)
+11
+
+# message length (u16) = 108
+00 6c
+
+# transaction id (u32) = 0
+00 00 00 00
+
+### Message Specific Payload
+## Stats Reply Header
+# Stats-Type (u16) = QUEUE (5)
+#<8>#
+00 05
+
+# Flags (u16) : none
+00 00
+
+## Stats Reply QUEUE Body
+#### An array of ofp_queue_stats structures
+
+#================
+#= Queue Stats 0
+#================
+# port number (u16) = 150
+#<12>#
+00 96
+
+# padding (u8 x 2)
+#<14>#
+00 00 
+
+# queue id (u32) = 2
+#<16>#
+00 00 00 02
+
+# tx bytes (u64) = 60
+#<20>#
+0000 0000 0000 003c
+
+# tx packets (u64) = 20
+#<28>#
+0000 0000 0000 0014
+
+# tx errors (u64) = 5
+#<36>#
+0000 0000 0000 0005
+
+#==============
+#= Queue Stats 1
+#==============
+# port number (u16) = 151
+#<44>#
+00 97
+
+# padding (u8 x 2)
+#<46>#
+00 00 
+
+# queue id (u32) = 3
+#<48>#
+00 00 00 03
+
+# tx bytes (u64) = 61
+#<52>#
+0000 0000 0000 003d
+
+# tx packets (u64) = 21
+#<60>#
+0000 0000 0000 0015
+
+# tx errors (u64) = 5
+#<68>#
+0000 0000 0000 0005
+
+#==============
+#= Queue Stats 2
+#==============
+# port number (u16) = 152
+#<76>#
+00 98
+
+# padding (u8 x 2)
+#<78>#
+00 00 
+
+# queue id (u32) = 4
+#<80>#
+00 00 00 04
+
+# tx bytes (u64) = 62
+#<84>#
+0000 0000 0000 003e
+
+# tx packets (u64) = 22
+#<92>#
+0000 0000 0000 0016
+
+# tx errors (u64) = 5
+#<100>#
+0000 0000 0000 0005
+
+
+#<108>#
+#### and we are done ####

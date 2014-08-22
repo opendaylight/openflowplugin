@@ -1,0 +1,35 @@
+# Example match structure
+# See section A.2.3 Flow Match Structures of the 1.3 Spec.
+
+# Match field pre-requisite test
+# TCP_DST pre-requisite: IP_PROTO = TCP
+# Validation should SUCCEED
+
+## Match Header
+# Type (u16) = OXM (0x1)
+00 01
+# Length (u16) = 21 (excludes padding)
+00 15
+
+## Match Field
+# Basic, ETH_TYPE(5<<1),   len
+  8000   0a                02
+# IPv4
+  0800
+
+## Match Field
+# Basic, IP_PROTO(10<<1),   len
+  8000   14                 01
+# TCP
+  06
+
+## Match Field
+# Basic, TCP_DST(14<<1),  len
+  8000   1c               02
+# Port 80
+  00 50
+
+## Zero-Filled Padding to bring total structure
+##   length to multiple of 8.
+## Match struct length is 21; add 3 = 24
+0000 00

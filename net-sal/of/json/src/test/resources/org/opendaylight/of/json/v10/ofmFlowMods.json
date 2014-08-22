@@ -1,0 +1,46 @@
+{
+  "version" : "1.0.0",
+  "flows" : [ {
+    "priority" : 4,
+    "idle_timeout" : 60,
+    "hard_timeout" : 100,
+    "flow_mod_cmd" : "add",
+    "cookie" : "0x1234",
+    "buffer_id" : 7,
+    "out_port" : 25,
+    "flow_mod_flags" : [ "send_flow_rem", "no_packet_counts", "no_byte_counts" ],
+    "match" : [ {
+      "eth_src" : "66:55:55:32:22:11",
+      "mask" : "ff:ff:ff:00:00:01"
+    }, {
+      "eth_type" : "ipv6"
+    } ],
+    "actions" : [ {
+      "output" : 1987
+    } ]
+  }, {
+    "priority" : 2,
+    "idle_timeout" : 40,
+    "hard_timeout" : 300,
+    "flow_mod_cmd" : "delete_strict",
+    "cookie" : "0x1254",
+    "buffer_id" : 5,
+    "out_port" : 50,
+    "flow_mod_flags" : [ "send_flow_rem", "no_packet_counts" ],
+    "match" : [ {
+      "eth_type" : "ipv6"
+    }, {
+      "ip_proto" : "tcp"
+    }, {
+      "tcp_dst" : 76
+    } ],
+    "actions" : [ {
+      "set_queue" : 20,
+      "port" : 1987
+    }, {
+      "set_field" : {
+        "ipv4_dst" : "15.255.124.141"
+      }
+    } ]
+  } ]
+}

@@ -1,0 +1,160 @@
+### OpenFlow 1.0 FLOW MOD message
+#
+# openflow version (u8) = 1.0 (0x1)
+#<0>#
+01
+
+# message type (u8) = OFPT_FLOW_MOD(14)
+0e
+
+# message length (u16) = 96
+00 60
+
+# transaction id (u32) = 0
+00 00 00 00
+
+### Message Specific Payload
+### Legacy Fixed Match Structure (40 bytes)
+
+### All possible Wildcard values (u32)
+# IN_PORT       :      0x1
+# DL_VLAN       :      0x2
+# DL_SRC        :      0x4
+# DL_DST        :      0x8
+# DL_TYPE       :     0x10
+# NW_PROTO      :     0x20
+# TP_SRC        :     0x40
+# TP_DST        :     0x80
+# NW_SRC        :   0x2000 (6 bit field)
+# NW_DST        :  0x80000 (6 bit field)
+# DL_VLAN_PCP   : 0x100000
+# NW_TOS        : 0x200000
+
+# Wildcards (u32) :
+# Non-wild are: DL_SRC, DL_TYPE, NW_PROTO, TP_DST
+# IN_PORT       :      0x1
+# DL_VLAN       :      0x2
+# DL_DST        :      0x8
+# TP_SRC        :     0x40
+# NW_SRC        :   0x2000 (6 bit field)
+# NW_DST        :  0x80000 (6 bit field)
+# DL_VLAN_PCP   : 0x100000
+# NW_TOS        : 0x200000
+# ========================
+# ORed together : 0x38204b
+#<8>#
+00 38 20 4b
+
+# In Port (u16) : 0 - flagged in wildcards (don't care)
+#<12>#
+00 00
+
+# Ethernet source address (u48) : 112233:445566
+#<14>#
+112233:445566
+
+# Ethernet destination address (u48) : 0 - flagged in wildcards (don't care)
+#<20>#
+000000:000000
+
+# VLAN id (u16) : 0 - flagged in wildcards (don't care)
+#<26>#
+00 00
+
+# VLAN priority (u8) : 0 - flagged in wildcards (don't care)
+00
+
+# padding (u8)
+00
+
+# Ethernet Type (u16) : IPv4 (0x0800)
+#<30>#
+08 00
+
+# IP ToS (u8) : 0 - flagged in wildcards (don't care)
+#<32>#
+00
+
+# IP Protocol (u8) : TCP (6)
+06
+
+# padding (u8 x 2)
+00 00
+
+# IP Source address (u32) : 0 - flagged in wildcards (don't care)
+#<36>#
+00 00 00 00
+
+# IP Destination address (u32) : 0 - flagged in wildcards (don't care)
+#<40>#
+00 00 00 00
+
+# Source port number (u16) : 0 - flagged in wildcards (don't care)
+#<44>#
+00 00
+
+# Destination port number (u16) : 25
+00 19
+
+## End of match structure ##
+
+# cookie (u64) = 0x1234
+#<48>#
+0000 0000 0000 1234
+
+# flow mod command (u16) = ADD(0)
+#<56>#
+00 00
+
+# idle timeout in seconds (u16) = 30
+00 1e
+
+# hard timeout in seconds (u16) = 300 (5 minutes)
+01 2c
+
+# priority (u16) = 64
+00 40
+
+# buffer id (u32) = 7
+#<64>#
+00 00 00 07
+
+# out port (u16) = ANY
+ff ff
+
+# flow mod flags (u16)
+## SEND_FLOW_REM   (0x1)
+## CHECK_OVERLAP   (0x2)
+00 03
+
+
+####################################
+### LIST OF ACTIONS (1.0 format) ###
+####################################
+
+#.............
+# SET_VLAN_VID
+#.............
+# Action Type (u16), Length (u16), Action Specific
+# SET_VLAN_VID(1),   8,            VLAN ID (u16) = 42; padding (u8 x 2)
+#<72>#
+  00 01              00 08         00 2a               00 00
+
+#.............
+# SET_VLAN_PCP
+#.............
+# Action Type (u16), Length (u16), Action Specific
+# SET_VLAN_PCP(2),   8,            VLAN PCP (u8) = 7; padding (u8 x 3)
+#<80>#
+  00 02              00 08         07                 00 00 00
+
+#.............
+# SET_NW_DST
+#.............
+# Action Type (u16), Length (u16), Action Specific
+# SET_NW_DST(7),     8,            IP addr (u32) = 15.255.127.35
+#<88>#
+  00 07              00 08         0f ff 7f 23
+
+#<96>#
+#### and we are done ####

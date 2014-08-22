@@ -1,0 +1,11 @@
+{
+  "version" : "1.3.0",
+  "flow_match_field" : {
+    "ipv6_exthdr" : { 
+      "auth" : true, 
+      "frag" : false, 
+      "router" : true, 
+      "hop" : false
+    }
+  }
+}

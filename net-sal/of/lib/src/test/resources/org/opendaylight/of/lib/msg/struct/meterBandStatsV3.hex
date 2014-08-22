@@ -1,0 +1,11 @@
+# An example meter band stats structure for OpenFlow 1.3
+# See ofp_meter_band_stats
+#
+# Number of packets in band (u64) = 10
+0000 0000 0000 000a
+
+# Number of bytes in band (u64) = 20
+0000 0000 0000 0014
+
+#<16>#
+#### and we are done ####

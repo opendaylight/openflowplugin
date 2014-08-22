@@ -1,0 +1,125 @@
+### OpenFlow 1.3 MULTIPART_REPLY message : Type QUEUE
+#
+# openflow version (u8) = 1.3 (0x4)
+#<0>#
+04
+
+# message type (u8) = OFPT_MULTIPART_REPLY(19)
+13
+
+# message length (u16) = 136
+00 88
+
+# transaction id (u32) = 0
+00 00 00 00
+
+### Message Specific Payload
+## Multipart Reply Header
+# Multipart-Type (u16) = QUEUE (5)
+#<8>#
+00 05
+
+# Flags (u16) : none
+00 00
+
+# padding (u8 x 4)
+00 00 00 00
+
+## Multipart Reply QUEUE Body
+#### An array of ofp_queue_stats structures
+
+#================
+#= Queue Stats 0
+#================
+# port number (u32) = 150
+#<16>#
+00 00 00 96
+
+# queue id (u32) = 2
+#<20>#
+00 00 00 02
+
+# tx bytes (u64) = 60
+#<24>#
+0000 0000 0000 003c
+
+# tx packets (u64) = 20
+#<32>#
+0000 0000 0000 0014
+
+# tx errors (u64) = 5
+#<40>#
+0000 0000 0000 0005
+
+# duration sec (u32) = 748
+#<48>#
+00 00 02 ec
+
+# duration nsec (u32) = 32
+#<52>#
+00 00 00 20
+
+#==============
+#= Queue Stats 1
+#==============
+# port number (u32) = 151
+#<56>#
+00 00 00 97
+
+# queue id (u32) = 3
+#<60>#
+00 00 00 03
+
+# tx bytes (u64) = 61
+#<64>#
+0000 0000 0000 003d
+
+# tx packets (u64) = 21
+#<72>#
+0000 0000 0000 0015
+
+# tx errors (u64) = 5
+#<80>#
+0000 0000 0000 0005
+
+# duration sec (u32) = 750
+#<88>#
+00 00 02 ee
+
+# duration nsec (u32) = 34
+#<92>#
+00 00 00 22
+
+#==============
+#= Queue Stats 2
+#==============
+# port number (u32) = 152
+#<96>#
+00 00 00 98
+
+# queue id (u32) = 4
+#<100>#
+00 00 00 04
+
+# tx bytes (u64) = 62
+#<104>#
+0000 0000 0000 003e
+
+# tx packets (u64) = 22
+#<112>#
+0000 0000 0000 0016
+
+# tx errors (u64) = 5
+#<120>#
+0000 0000 0000 0005
+
+# duration sec (u32) = 752
+#<128>#
+00 00 02 f0
+
+# duration nsec (u32) = 36
+#<132>#
+00 00 00 24
+
+#<136>#
+#### and we are done ####

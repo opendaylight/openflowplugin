@@ -1,0 +1,97 @@
+### OpenFlow 1.3 MULTIPART_REPLY message : Type TABLE
+#
+# openflow version (u8) = 1.3 (0x4)
+#<0>#
+04
+
+# message type (u8) = OFPT_MULTIPART_REPLY(19)
+13
+
+# message length (u16) = 88
+00 58
+
+# transaction id (u32) = 0
+00 00 00 00
+
+### Message Specific Payload
+## Multipart Reply Header
+# Multipart-Type (u16) = TABLE (3)
+#<8>#
+00 03
+
+# Flags (u16) : none
+00 00
+
+# padding (u8 x 4)
+00 00 00 00
+
+#### An array of ofp_table_stats structures
+
+#==============
+#= Table 0
+#==============
+# Table ID (u8) : 0
+#<16>#
+00
+
+# padding (u8 x 3)
+00 00 00
+
+# No. active entries (u32) = 27
+#<20>#
+00 00 00 1b
+
+# No. packets looked up (u64) = 65432 (0xff98)
+#<24>#
+0000 0000 0000 ff98
+
+# No. packets that hit table (u64) = 21810 (0x5532)
+#<32>#
+0000 0000 0000 5532
+
+#==============
+#= Table 1
+#==============
+# Table ID (u8) : 1
+#<40>#
+01
+
+# padding (u8 x 3)
+00 00 00
+
+# No. active entries (u32) = 29
+#<44>#
+00 00 00 1d
+
+# No. packets looked up (u64) = 65428 (0xff94)
+#<48>#
+0000 0000 0000 ff94
+
+# No. packets that hit table (u64) = 21817 (0x5539)
+#<56>#
+0000 0000 0000 5539
+
+#==============
+#= Table 2
+#==============
+# Table ID (u8) : 2
+#<64>#
+02
+
+# padding (u8 x 3)
+00 00 00
+
+# No. active entries (u32) = 31
+#<68>#
+00 00 00 1f
+
+# No. packets looked up (u64) = 65448 (0xffa8)
+#<72>#
+0000 0000 0000 ffa8
+
+# No. packets that hit table (u64) = 21811 (0x5533)
+#<80>#
+0000 0000 0000 5533
+
+#<88>#
+#### and we are done ####

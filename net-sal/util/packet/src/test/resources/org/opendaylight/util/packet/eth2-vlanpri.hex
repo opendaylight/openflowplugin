@@ -1,0 +1,24 @@
+### Ethernet2 - VLAN 802.1Q with VLAN priority (bad packet)
+#
+# Destination MAC: 00:40:05:40:ef:24
+#<0>#
+00 40 05 40 ef 24
+
+# Source MAC: 00:60:08:9f:b1:f3
+#<6>#
+00 60 08 9f b1 f3
+
+# Type: 802.1Q VLAN
+#<12>#
+81 00
+
+# VLAN ID: priority: 0xb = 1011, ID 0x820 = 2080
+#<14>#
+b8 20
+
+# Type: IP (0x0800)
+#<16>#
+08 00
+
+#<18>#
+#### and we are done ####

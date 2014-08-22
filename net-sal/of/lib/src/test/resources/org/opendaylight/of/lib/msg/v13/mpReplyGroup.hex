@@ -1,0 +1,148 @@
+### OpenFlow 1.3 MULTIPART_REPLY message : Type GROUP
+#
+# openflow version (u8) = 1.3 (0x4)
+#<0>#
+04
+
+# message type (u8) = OFPT_MULTIPART_REPLY(19)
+13
+
+# message length (u16) = 160
+00 a0
+
+# transaction id (u32) = 0
+00 00 00 00
+
+### Message Specific Payload
+## Multipart Reply Header
+# Multipart-Type (u16) = GROUP (6)
+#<8>#
+00 06
+
+# Flags (u16) : none
+00 00
+
+# padding (u8 x 4)
+00 00 00 00
+
+## Multipart Reply GROUP Body
+#### An array of ofp_group_stats structures
+
+#==============
+#= Group 0
+#==============
+# length (u16) = 72
+#<16>#
+00 48
+
+# padding (u8 x 2)
+00 00
+
+# Group ID (u32) :  0x10101032
+10 10 10 32
+
+# refCount (u32) = 8
+#<24>#
+00 00 00 08
+
+# padding (u8 x 4)
+00 00 00 00
+
+# packet count (u64) = 4660
+#<32>#
+0000 0000 0000 1234
+
+# byte count (u64) = 13398
+#<40>#
+0000 0000 0000 3456
+
+# duration sec (u32) = 430
+#<48>#
+00 00 01 ae
+
+#duration nsec (u32) = 25
+00 00 00 19
+
+#### LIST OF BUCKET COUNTERS
+#=================
+#= BucketCounter 0
+#=================
+# packet count (u64) = 4660
+#<56>#
+0000 0000 0000 1234
+
+# byte count (u64) = 13398
+#<64>#
+0000 0000 0000 3456
+
+#=================
+#= BucketCounter 1
+#=================
+# packet count (u64) = 4660
+#<72>#
+0000 0000 0000 1234
+
+# byte count (u64) = 13398
+#<80>#
+0000 0000 0000 3456
+
+#==============
+#= Group 1
+#==============
+# length (u16) = 72
+#<88>#
+00 48
+
+# padding (u8 x 2)
+00 00
+
+# Group ID (u32) :  0x10101033
+10 10 10 33
+
+# refCount (u32) = 9
+#<96>#
+00 00 00 09
+
+# padding (u8 x 4)
+00 00 00 00
+
+# packet count (u64) = 22136
+#<104>#
+0000 0000 0000 5678
+
+# byte count (u64) = 30864
+#<112>#
+0000 0000 0000 7890
+
+# duration sec (u32) = 560
+#<120>#
+00 00 02 30
+
+#duration nsec (u32) = 26
+00 00 00 1a
+
+#### LIST OF BUCKET COUNTERS
+#=================
+#= BucketCounter 0
+#=================
+# packet count (u64) = 22136
+#<128>#
+0000 0000 0000 5678
+
+# byte count (u64) = 30864
+#<136>#
+0000 0000 0000 7890
+
+#=================
+#= BucketCounter 1
+#=================
+# packet count (u64) = 22136
+#<144>#
+0000 0000 0000 5678
+
+# byte count (u64) = 30864
+#<152>#
+0000 0000 0000 7890
+
+#<160>#
+#### and we are done ####

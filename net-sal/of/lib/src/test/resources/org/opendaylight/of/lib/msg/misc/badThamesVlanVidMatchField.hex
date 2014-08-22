@@ -1,0 +1,118 @@
+## Bad Thames Vlan VID Match Field (from Shruthy)
+##
+#
+# [2013-03-15 12:46:35.909] WARN  New I/O server worker #1-2   hp.of.msglib
+# MPE: Parse FAILED: hdr=[V_1_3,MULTIPART_REPLY,296,134],
+# bytes=[
+# 04130128000000860001000000000000004000000000004129020c00000000000000
+# 00000000000000000000000000000000000000000000000000000000000000010004
+# 00000000000100086400000000406400000000411e3834c000000000000000010000
+# 00000000000000000000000000000000000700000000000000000001000400000000
+# 00010008c80000000050c800000000411e19b0400000000000000001000000000000
+# 00000000000000000000000000080000000000000744000100040000000000040018
+# 0000000000000010fffffffdffe50000000000000048c800000000040c0a4680006f
+# 006400c8000100000000000000000000000100000000000000000000000000000000
+# 0001000a80000c0200c80000000000000005000800000000
+# ]
+#
+# [2013-03-15 12:46:35.942] WARN  New I/O server worker #1-2   hp.of.ctl
+# com.hp.of.lib.MessageParseException:
+# FF:{OfPktRdr: odom=82, op=(n/a),BigEndianHeapChannelBuffer(ridx=282, widx=296, cap=296)}
+# VLAN_VID: PRESENT bit not set for VLAN id
+#     at com.hp.of.lib.AbstractFactory.mpe(AbstractFactory.java:36)
+#     at com.hp.of.lib.AbstractFactory.mpe(AbstractFactory.java:60)
+#     at com.hp.of.lib.match.FieldParser.vlanVid(FieldParser.java:592)
+#     at com.hp.of.lib.match.FieldParser.createParsedBasicField(FieldParser.java:201)
+#     at com.hp.of.lib.match.FieldParser.createFieldInstance(FieldParser.java:156)
+#     at com.hp.of.lib.match.FieldParser.parseField(FieldParser.java:62)
+#     at com.hp.of.lib.match.FieldFactory.parseField(FieldFactory.java:193)
+#     at com.hp.of.lib.match.MatchFactory.createParsedOxmMatch(MatchFactory.java:308)
+#     at com.hp.of.lib.match.MatchFactory.createParsedMatchInstance(MatchFactory.java:286)
+#     at com.hp.of.lib.match.MatchFactory.parseMatch(MatchFactory.java:87)
+#     at com.hp.of.lib.mp.MpBodyParser.parseFlowStats(MpBodyParser.java:387)
+#     at com.hp.of.lib.mp.MpBodyParser.readFlowRep(MpBodyParser.java:347)
+#     at com.hp.of.lib.mp.MpBodyParser.createParsedReplyBodyInstance(MpBodyParser.java:192)
+#     at com.hp.of.lib.mp.MpBodyParser.parseReplyBody(MpBodyParser.java:92)
+#     at com.hp.of.lib.mp.MpBodyFactory.parseReplyBody(MpBodyFactory.java:127)
+#     at com.hp.of.lib.msg.MessageParser.readMpReply(MessageParser.java:577)
+#     at com.hp.of.lib.msg.MessageParser.createMessageInstance(MessageParser.java:227)
+#     at com.hp.of.lib.msg.MessageParser.parse(MessageParser.java:113)
+#     at com.hp.of.lib.msg.MessageFactory.parseMessage(MessageFactory.java:181)
+#     at com.hp.of.common.OfmDecoder.decode(OfmDecoder.java:67)
+#-------------------------------------------------------------------------
+
+04130128000000860001000000000000004000000000004129020c00000000000000
+00000000000000000000000000000000000000000000000000000000000000010004
+00000000000100086400000000406400000000411e3834c000000000000000010000
+00000000000000000000000000000000000700000000000000000001000400000000
+00010008c80000000050c800000000411e19b0400000000000000001000000000000
+00000000000000000000000000080000000000000744000100040000000000040018
+0000000000000010fffffffdffe50000000000000048c800000000040c0a4680006f
+006400c8000100000000000000000000000100000000000000000000000000000000
+0001000a80000c0200c80000000000000005000800000000
+
+#-------------------------------------------------------------------------
+## With the check for PRESENT bit disabled, we get the following...
+#
+# thamesBadVlanVidMatchField()
+# {ofm:[V_1_3,MULTIPART_REPLY,296,134],FLOW,flgs=[]}
+#
+#   -- FLOW 0 ----------------
+#   Table ID : 0
+#   Duration : 65s 688000000ns
+#   Priority : 0
+#   Idle t/o : 0s
+#   Hard t/o : 0s
+#   Flags    : []
+#   Cookie   : 0x0
+#   # Packets: 0
+#   # Bytes  : 0
+#   Match    : {Match(V_1_3):[type=OXM,len=4],fields=(none)}
+#   Instructions:
+#     {Instr:V_1_3:[type=GOTO_TABLE,len=8],tableId=100}
+#
+#   -- FLOW 1 ----------------
+#   Table ID : 100
+#   Duration : 65s 507000000ns
+#   Priority : 0
+#   Idle t/o : 0s
+#   Hard t/o : 0s
+#   Flags    : [sendFlowRem]
+#   Cookie   : 0x0
+#   # Packets: 7
+#   # Bytes  : 0
+#   Match    : {Match(V_1_3):[type=OXM,len=4],fields=(none)}
+#   Instructions:
+#     {Instr:V_1_3:[type=GOTO_TABLE,len=8],tableId=200}
+#
+#   -- FLOW 2 ----------------
+#   Table ID : 200
+#   Duration : 65s 505000000ns
+#   Priority : 0
+#   Idle t/o : 0s
+#   Hard t/o : 0s
+#   Flags    : [sendFlowRem]
+#   Cookie   : 0x0
+#   # Packets: 8
+#   # Bytes  : 1860
+#   Match    : {Match(V_1_3):[type=OXM,len=4],fields=(none)}
+#   Instructions:
+#     {Instr:V_1_3:[type=APPLY_ACTIONS,len=24],actList=OUTPUT}
+#      {Act:[OUTPUT,len=16],port=0xfffffffd(CONTROLLER),maxLen=65509(MAX)}
+#
+#   -- FLOW 3 ----------------
+#   Table ID : 200
+#   Duration : 4s 202000000ns
+#   Priority : 111
+#   Idle t/o : 100s
+#   Hard t/o : 200s
+#   Flags    : [sendFlowRem]
+#   Cookie   : 0x1
+#   # Packets: 0
+#   # Bytes  : 0
+#   Match    : {Match(V_1_3):[type=OXM,len=10],fields=VLAN_VID}
+#     {Oxm:V_1_3:[cls=0x8000(OPENFLOW_BASIC),ft=6(VLAN_VID),hm=false,len=2],mode=EXACT,vlan-id=200}
+#   Instructions:
+#     {Instr:V_1_3:[type=CLEAR_ACTIONS,len=8]}
+#
+#-------------------------------------------------------------------------

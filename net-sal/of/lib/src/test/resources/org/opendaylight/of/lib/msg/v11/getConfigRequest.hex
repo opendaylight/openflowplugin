@@ -1,0 +1,18 @@
+### OpenFlow 1.1 GET_CONFIG_REQUEST message
+#
+# openflow version (u8) = 1.1 (0x2)
+#<0>#
+02
+
+# message type (u8) = OFPT_GET_CONFIG_REQUEST(7)
+07
+
+# message length (u16) = 8
+00 08
+
+# transaction id (u32) = 0
+00 00 00 00
+
+#<8>#
+### Message Specific Payload
+### (none)

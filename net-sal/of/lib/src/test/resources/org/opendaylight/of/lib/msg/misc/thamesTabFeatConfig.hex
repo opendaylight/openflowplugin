@@ -1,0 +1,1042 @@
+## Thames table features - non-zero config bits...
+#
+# OF version 1.3
+#<0>#
+04
+# Msg type = Multipart Reply
+13
+# Message length = 1544 bytes
+06 08
+# XID = 0
+00 00 00 00
+
+## Multipart type (u16) = TABLE_FEATURES
+#<8>#
+00 0c
+# Multipart flags (u16)
+00 00
+# Padding (u8 x 4)
+00 00 00 00
+
+################################################
+###### Array of Table Features Structures ######
+################################################
+
+##############################
+## Table Features element 0 ##
+##############################
+# Length (u16) = 176                 (target ri = 192)
+#<16>#
+00 b0
+# table id (u8) = 0
+00
+# padding (u8 x 5)
+0000 0000 00
+# table name (u8 x 32) = "Start"
+53 74 61 72 74 00 ff ff ff ff ff ff ff ff ff ff
+ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+# metadata match (u64) = 0
+0000 0000 0000 0000
+# metadata write (u64) = 0
+0000 0000 0000 0000
+# config (u32) ** Don't care what these bits are
+00 00 00 03
+# max entries (u32) = 1
+00 00 00 01
+
+### start of table features property list...  (target ri = 192)
+
+##########
+## PROP ##
+##########
+## prop type (u16) = INSTRUCTIONS (0), prop length (u16) = 4, padding = 4
+#<80>#
+00 00 00 04 00 00 00 00
+### {INSTRUCTIONS: supported=[]}
+
+##########
+## PROP ##
+##########
+## prop type (u16) = INSTRUCTIONS_MISS (1), prop length (u16) = 4, padding = 4
+#<88>#
+00 01 00 04 00 00 00 00
+### {INSTRUCTIONS_MISS: supported=[]}
+
+##########
+## PROP ##
+##########
+## prop type (u16) = NEXT_TABLES (2), prop length (u16) = 4, padding = 4
+#<96>#
+00 02 00 04 00 00 00 00
+### {NEXT_TABLES: nextTables=[]}
+
+##########
+## PROP ##
+##########
+#<104>#
+00 03 00 04 00 00 00 00
+### {NEXT_TABLES_MISS: nextTables=[]}
+
+##########
+## PROP ##
+##########
+#<112>#
+00 04 00 04 00 00 00 00
+## {WRITE_ACTIONS: supported=[]}
+
+##########
+## PROP ##
+##########
+#<120>#
+00 05 00 04 00 00 00 00
+## {WRITE_ACTIONS_MISS: supported=[]}
+
+##########
+## PROP ##
+##########
+#<128>#
+00 06 00 04 00 00 00 00
+## {APPLY_ACTIONS: supported=[]}
+
+##########
+## PROP ##
+##########
+#<136>#
+00 07 00 04 00 00 00 00
+## {APPLY_ACTIONS_MISS: supported=[]}
+
+##########
+## PROP ##
+##########
+#<144>#
+00 08 00 04 00 00 00 00
+## {MATCH: supported=[]}
+
+##########
+## PROP ##
+##########
+#<152>#
+00 0a 00 04 00 00 00 00
+## {WILDCARDS: supported=[]}
+
+##########
+## PROP ##
+##########
+#<160>#
+00 0c 00 04 00 00 00 00
+## {WRITE_SETFIELD: supported=[]}
+
+##########
+## PROP ##
+##########
+#<168>#
+00 0d 00 04 00 00 00 00
+## {WRITE_SETFIELD_MISS: supported=[]}
+
+##########
+## PROP ##
+##########
+#<176>#
+00 0e 00 04 00 00 00 00
+## {APPLY_SETFIELD: supported=[]}
+
+##########
+## PROP ##
+##########
+#<184>#
+00 0f 00 04 00 00 00 00
+## {APPLY_SETFIELD_MISS: supported=[]}
+
+
+##############################
+## Table Features element 1 ##
+##############################
+# Length (u16) = 328                 (target ri = 520)
+#<192>#
+01 48
+# Table ID (u8) = 100
+#<194>#
+64
+# padding (u8 x 5)
+#<195>#
+0000 0000 00
+# table name (u8 x 32) = "Policy Table"
+50 6f 6c 69 63 79 20 54 61 62 6c 65 00 ff ff ff
+ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+# metadata match (u64) = 0
+0000 0000 0000 0000
+# metadata write (u64) = 0
+0000 0000 0000 0000
+# config (u32) ** Don't care what these bits are
+00 00 00 03
+# max entries (u32) = 0
+00 00 00 00
+
+### start of table features property list...  (target ri = 520)
+
+## prop type (u16), prop length (u16), [ props ... ], padding to 64-bit.
+
+##########
+## PROP ##
+##########
+# type (u16) = INSTRUCTIONS, length (u16) = 16
+#<256>#
+00 00 00 10
+# ins-type (u16) = GOTO_TABLE, ins-length (u16) = 4
+00 01 00 04
+# ins-type (u16) = APPLY_ACTIONS, ins-length (u16) = 4
+00 04 00 04
+# ins-type (u16) = METER, ins-length (u16) = 4
+00 06 00 04
+## {INSTRUCTIONS: supported=[GOTO_TABLE, APPLY_ACTIONS, METER]}
+
+##########
+## PROP ##
+##########
+# type (u16) = INSTRUCTIONS_MISS, length (u16) = 12
+#<272>#
+00 01 00 0c
+# ins-type (u16) = GOTO_TABLE, ins-length (u16) = 4
+00 01 00 04
+# ins-type (u16) = APPLY_ACTIONS, ins-length (u16) = 4
+00 04 00 04
+# padding
+00 00 00 00
+## {INSTRUCTIONS_MISS: supported=[GOTO_TABLE, APPLY_ACTIONS]}
+
+##########
+## PROP ##
+##########
+# type (u16) = NEXT_TABLES, length (u16) = 5
+#<288>#
+00 02 00 05
+# table IDs
+c8
+# padding
+00 00 00
+## {NEXT_TABLES: nextTables=[200]}
+
+##########
+## PROP ##
+##########
+# type (u16) = NEXT_TABLES_MISS, length (u16) = 5
+#<296>#
+00 03 00 05
+# table IDs
+c8
+# padding
+00 00 00
+## {NEXT_TABLES_MISS: nextTables=[200]}
+
+##########
+## PROP ##
+##########
+# type (u16) = WRITE_ACTIONS, length (u16) = 4, padding
+#<304>#
+00 04 00 04 00 00 00 00
+## {WRITE_ACTIONS: supported=[]}
+
+##########
+## PROP ##
+##########
+# type (u16) = WRITE_ACTIONS_MISS, length (u16) = 4, padding
+#<312>#
+00 05 00 04 00 00 00 00
+## {WRITE_ACTIONS_MISS: supported=[]}
+
+##########
+## PROP ##
+##########
+# type (u16) = APPLY_ACTIONS, length (u16) = 12
+#<320>#
+00 06 00 0c
+# act-type = OUTPUT(0), len=4
+00 00 00 04
+# act-type = SET_FIELD(25), len=4
+00 19 00 04
+# padding
+00 00 00 00
+## {APPLY_ACTIONS: supported=[OUTPUT, SET_FIELD]}
+
+##########
+## PROP ##
+##########
+# type (u16) = APPLY_ACTIONS_MISS, length (u16) = 8
+#<336>#
+00 07 00 08
+# act-type = OUTPUT(0), len=4
+00 00 00 04
+## {APPLY_ACTIONS_MISS: supported=[OUTPUT]}
+
+##########
+## PROP ##
+##########
+# type (u16) = MATCH, length (u16) = 68    (target ri = 412)
+#<344>#
+00 08 00 44
+
+###############################################################################
+#### The following OXM fields have their payload lengths set to non-zero values
+#### which is probably not what should be done.
+#### OF-1.3.1 (pg.81) Spec states:
+####
+####   The oxm_ids is the list of OXM types for the feature (see A.2.3.2). The
+####   elements of that list are 32-bit OXM headers or 64-bit OXM headers for
+####   experimenter OXM fields.
+####
+###############################################################################
+
+#<348>#
+80 00 00 04
+## [cls=0x8000(OPENFLOW_BASIC),ft=0(IN_PORT),hm=false,len=4]
+
+80 00 0a 02
+## [cls=0x8000(OPENFLOW_BASIC),ft=5(ETH_TYPE),hm=false,len=2]
+
+80 00 0c 02
+## [cls=0x8000(OPENFLOW_BASIC),ft=6(VLAN_VID),hm=false,len=2]
+
+80 00 0e 01
+## [cls=0x8000(OPENFLOW_BASIC),ft=7(VLAN_PCP),hm=false,len=1]
+
+80 00 10 01
+## [cls=0x8000(OPENFLOW_BASIC),ft=8(IP_DSCP),hm=false,len=1]
+
+80 00 14 01
+## [cls=0x8000(OPENFLOW_BASIC),ft=10(IP_PROTO),hm=false,len=1]
+
+80 00 16 04
+## [cls=0x8000(OPENFLOW_BASIC),ft=11(IPV4_SRC),hm=false,len=4]
+
+80 00 18 04
+## [cls=0x8000(OPENFLOW_BASIC),ft=12(IPV4_DST),hm=false,len=4]
+
+80 00 1a 02
+## [cls=0x8000(OPENFLOW_BASIC),ft=13(TCP_SRC),hm=false,len=2]
+
+80 00 1c 02
+## [cls=0x8000(OPENFLOW_BASIC),ft=14(TCP_DST),hm=false,len=2]
+
+80 00 1e 02
+## [cls=0x8000(OPENFLOW_BASIC),ft=15(UDP_SRC),hm=false,len=2]
+
+80 00 20 02
+## [cls=0x8000(OPENFLOW_BASIC),ft=16(UDP_DST),hm=false,len=2]
+
+80 00 26 01
+## [cls=0x8000(OPENFLOW_BASIC),ft=19(ICMPV4_TYPE),hm=false,len=1]
+
+80 00 28 01
+## [cls=0x8000(OPENFLOW_BASIC),ft=20(ICMPV4_CODE),hm=false,len=1]
+
+80 00 34 10
+## [cls=0x8000(OPENFLOW_BASIC),ft=26(IPV6_SRC),hm=false,len=16]
+
+80 00 36 10
+## [cls=0x8000(OPENFLOW_BASIC),ft=27(IPV6_DST),hm=false,len=16]
+
+# padding
+#<412>#
+00 00 00 00
+
+### {MATCH: supported=[IN_PORT, ETH_TYPE, VLAN_VID, VLAN_PCP, IP_DSCP,
+###         IP_PROTO, IPV4_SRC, IPV4_DST, TCP_SRC, TCP_DST, UDP_SRC, UDP_DST,
+###         ICMPV4_TYPE, ICMPV4_CODE, IPV6_SRC, IPV6_DST]}
+
+
+##########
+## PROP ##
+##########
+# type (u16) = WILDCARDS, length (u16) = 64    (target ri = 480)
+#<416>#
+00 0a 00 40
+
+#<420>#
+80 00 00 04
+## [cls=0x8000(OPENFLOW_BASIC),ft=0(IN_PORT),hm=false,len=4]
+
+80 00 0c 02
+## [cls=0x8000(OPENFLOW_BASIC),ft=6(VLAN_VID),hm=false,len=2]
+
+80 00 0e 01
+## [cls=0x8000(OPENFLOW_BASIC),ft=7(VLAN_PCP),hm=false,len=1]
+
+80 00 10 01
+## [cls=0x8000(OPENFLOW_BASIC),ft=8(IP_DSCP),hm=false,len=1]
+
+80 00 14 01
+## [cls=0x8000(OPENFLOW_BASIC),ft=10(IP_PROTO),hm=false,len=1]
+
+80 00 16 04
+## [cls=0x8000(OPENFLOW_BASIC),ft=11(IPV4_SRC),hm=false,len=4]
+
+80 00 18 04
+## [cls=0x8000(OPENFLOW_BASIC),ft=12(IPV4_DST),hm=false,len=4]
+
+80 00 1a 02
+## [cls=0x8000(OPENFLOW_BASIC),ft=13(TCP_SRC),hm=false,len=2]
+
+80 00 1c 02
+## [cls=0x8000(OPENFLOW_BASIC),ft=14(TCP_DST),hm=false,len=2]
+
+80 00 1e 02
+## [cls=0x8000(OPENFLOW_BASIC),ft=15(UDP_SRC),hm=false,len=2]
+
+80 00 20 02
+## [cls=0x8000(OPENFLOW_BASIC),ft=16(UDP_DST),hm=false,len=2]
+
+80 00 26 01
+## [cls=0x8000(OPENFLOW_BASIC),ft=19(ICMPV4_TYPE),hm=false,len=1]
+
+80 00 28 01
+## [cls=0x8000(OPENFLOW_BASIC),ft=20(ICMPV4_CODE),hm=false,len=1]
+
+80 00 34 10
+## [cls=0x8000(OPENFLOW_BASIC),ft=26(IPV6_SRC),hm=false,len=16]
+
+80 00 36 10
+## [cls=0x8000(OPENFLOW_BASIC),ft=27(IPV6_DST),hm=false,len=16]
+
+# (no padding)
+#<480>#
+
+##########
+## PROP ##
+##########
+# type (u16) = WRITE_SETFIELD, length (u16) = 4, padding
+#<480>#
+00 0c 00 04 00 00 00 00
+## {WRITE_SETFIELD: supported=[]}
+
+##########
+## PROP ##
+##########
+# type (u16) = WRITE_SETFIELD_MISS, length (u16) = 4, padding
+#<488>#
+00 0d 00 04 00 00 00 00
+## {WRITE_SETFIELD_MISS: supported=[]}
+
+##########
+## PROP ##
+##########
+# type (u16) = APPLY_SETFIELD, length (u16) = 12, padding
+#<496>#
+00 0e 00 0c
+
+#<500>#
+80 00 0e 01
+## [cls=0x8000(OPENFLOW_BASIC),ft=7(VLAN_PCP),hm=false,len=1]
+
+#<504>#
+80 00 10 01
+## [cls=0x8000(OPENFLOW_BASIC),ft=8(IP_DSCP),hm=false,len=1]
+
+# padding
+#<508>#
+00 00 00 00
+## {APPLY_SETFIELD: supported=[VLAN_PCP, IP_DSCP]}
+
+##########
+## PROP ##
+##########
+# type (u16) = APPLY_SETFIELD_MISS, length (u16) = 4, padding
+#<512>#
+00 0f 00 04 00 00 00 00
+
+#<520>#
+
+##############################
+## Table Features element 2 ##
+##############################
+# Length (u16) = 1024                 (target ri = 1544)
+#<520>#
+0400
+# table id (u8) = 200
+c8
+# padding (u8 x 5)
+0000 0000 00
+# table name (u8 x 32) = "SW Table 1"
+53 57 20 54 61 62 6c 65 20 31 00 ff ff ff ff ff
+ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+# metadata match (u64) = 0xffffffffffffffff
+ffff ffff ffff ffff
+# metadata write (u64) = 0xffffffffffffffff
+ffff ffff ffff ffff
+# config (u32) ** Don't care what these bits are
+00 00 00 03
+# max entries (u32) = 65536
+00 01 00 00
+
+### start of table features property list...  (target ri = 1544)
+
+## prop type (u16), prop length (u16), [ props ... ], padding to 64-bit.
+
+##########
+## PROP ##
+##########
+# type (u16) = INSTRUCTIONS, length (u16) = 24
+00 00 00 18
+
+00 01 00 04
+## {Instr:V_1_3:[type=GOTO_TABLE,len=4]}
+
+00 02 00 04
+## {Instr:V_1_3:[type=WRITE_METADATA,len=4]}
+
+00 03 00 04
+## {Instr:V_1_3:[type=WRITE_ACTIONS,len=4]}
+
+00 04 00 04
+## {Instr:V_1_3:[type=APPLY_ACTIONS,len=4]}
+
+00 05 00 04
+## {Instr:V_1_3:[type=CLEAR_ACTIONS,len=4]}
+
+# no padding
+## {INSTRUCTIONS: supported=[GOTO_TABLE, WRITE_METADATA, WRITE_ACTIONS,
+##                           APPLY_ACTIONS, CLEAR_ACTIONS]}
+
+##########
+## PROP ##
+##########
+# type (u16) = INSTRUCTIONS_MISS, length (u16) = 24
+#<608>#
+00 01 00 18
+
+00 01 00 04
+## {Instr:V_1_3:[type=GOTO_TABLE,len=4]}
+
+00 02 00 04
+## {Instr:V_1_3:[type=WRITE_METADATA,len=4]}
+
+00 03 00 04
+## {Instr:V_1_3:[type=WRITE_ACTIONS,len=4]}
+
+00 04 00 04
+## {Instr:V_1_3:[type=APPLY_ACTIONS,len=4]}
+
+00 05 00 04
+## {Instr:V_1_3:[type=CLEAR_ACTIONS,len=4]}
+
+# no padding
+## {INSTRUCTIONS_MISS: supported=[GOTO_TABLE, WRITE_METADATA, WRITE_ACTIONS,
+##                                APPLY_ACTIONS, CLEAR_ACTIONS]}
+
+##########
+## PROP ##
+##########
+# type (u16) = NEXT_TABLES, length (u16) = 4, padding
+#<632>#
+00 02 00 04 00 00 00 00
+## {NEXT_TABLES: nextTables=[]}
+
+##########
+## PROP ##
+##########
+# type (u16) = NEXT_TABLES_MISS, length (u16) = 4, padding
+#<640>#
+00 03 00 04 00 00 00 00
+## {NEXT_TABLES_MISS: nextTables=[]}
+
+##########
+## PROP ##
+##########
+# type (u16) = WRITE_ACTIONS, length (u16) = 40         (target ri = 688)
+#<648>#
+00 04 00 28
+
+00 00 00 04
+## {Act:[OUTPUT,len=4]}
+
+00 0b 00 04
+## {Act:[COPY_TTL_OUT,len=4]}
+
+00 0c 00 04
+## {Act:[COPY_TTL_IN,len=4]}
+
+00 11 00 04
+## {Act:[PUSH_VLAN,len=4]}
+
+00 12 00 04
+## {Act:[POP_VLAN,len=4]}
+
+00 16 00 04
+## {Act:[GROUP,len=4]}
+
+00 17 00 04
+## {Act:[SET_NW_TTL,len=4]}
+
+00 18 00 04
+## {Act:[DEC_NW_TTL,len=4]}
+
+00 19 00 04
+## {Act:[SET_FIELD/null,len=4]}
+
+# no padding
+## {WRITE_ACTIONS: supported=[OUTPUT, COPY_TTL_OUT, COPY_TTL_IN, PUSH_VLAN,
+##                      POP_VLAN, GROUP, SET_NW_TTL, DEC_NW_TTL, SET_FIELD]}
+
+##########
+## PROP ##
+##########
+# type (u16) = WRITE_ACTIONS_MISS, length (u16) = 40       (target ri = 728)
+#<688>#
+00 05 00 28
+
+00 00 00 04
+## {Act:[OUTPUT,len=4]}
+
+00 0b 00 04
+## {Act:[COPY_TTL_OUT,len=4]}
+
+00 0c 00 04
+## {Act:[COPY_TTL_IN,len=4]}
+
+00 11 00 04
+## {Act:[PUSH_VLAN,len=4]}
+
+00 12 00 04
+## {Act:[POP_VLAN,len=4]}
+
+00 16 00 04
+## {Act:[GROUP,len=4]}
+
+00 17 00 04
+## {Act:[SET_NW_TTL,len=4]}
+
+00 18 00 04
+## {Act:[DEC_NW_TTL,len=4]}
+
+00 19 00 04
+## {Act:[SET_FIELD/null,len=4]}
+
+# no padding
+## {WRITE_ACTIONS_MISS: supported=[OUTPUT, COPY_TTL_OUT, COPY_TTL_IN, PUSH_VLAN,
+##                          POP_VLAN, GROUP, SET_NW_TTL, DEC_NW_TTL, SET_FIELD]}
+
+##########
+## PROP ##
+##########
+# type (u16) = APPLY_ACTIONS, length (u16) = 40       (target ri = 768)
+#<728>#
+00 06 00 28
+
+00 00 00 04
+## {Act:[OUTPUT,len=4]}
+
+00 0b 00 04
+## {Act:[COPY_TTL_OUT,len=4]}
+
+00 0c 00 04
+## {Act:[COPY_TTL_IN,len=4]}
+
+00 11 00 04
+## {Act:[PUSH_VLAN,len=4]}
+
+00 12 00 04
+## {Act:[POP_VLAN,len=4]}
+
+00 16 00 04
+## {Act:[GROUP,len=4]}
+
+00 17 00 04
+## {Act:[SET_NW_TTL,len=4]}
+
+00 18 00 04
+## {Act:[DEC_NW_TTL,len=4]}
+
+00 19 00 04
+## {Act:[SET_FIELD/null,len=4]}
+
+# no padding
+## {APPLY_ACTIONS: supported=[OUTPUT, COPY_TTL_OUT, COPY_TTL_IN, PUSH_VLAN,
+##                        POP_VLAN, GROUP, SET_NW_TTL, DEC_NW_TTL, SET_FIELD]}
+
+##########
+## PROP ##
+##########
+# type (u16) = APPLY_ACTIONS_MISS, length (u16) = 40       (target ri = 808)
+#<768>#
+00 07 00 28
+
+00 00 00 04
+## {Act:[OUTPUT,len=4]}
+
+00 0b 00 04
+## {Act:[COPY_TTL_OUT,len=4]}
+
+00 0c 00 04
+## {Act:[COPY_TTL_IN,len=4]}
+
+00 11 00 04
+## {Act:[PUSH_VLAN,len=4]}
+
+00 12 00 04
+## {Act:[POP_VLAN,len=4]}
+
+00 16 00 04
+## {Act:[GROUP,len=4]}
+
+00 17 00 04
+## {Act:[SET_NW_TTL,len=4]}
+
+00 18 00 04
+## {Act:[DEC_NW_TTL,len=4]}
+
+00 19 00 04
+## {Act:[SET_FIELD/null,len=4]}
+
+# no padding
+## {APPLY_ACTIONS_MISS: supported=[OUTPUT, COPY_TTL_OUT, COPY_TTL_IN, PUSH_VLAN,
+##                      POP_VLAN, GROUP, SET_NW_TTL, DEC_NW_TTL, SET_FIELD]}
+
+##########
+## PROP ##
+##########
+# type (u16) = MATCH, length (u16) = 124       (target ri = 932)
+#<808>#
+00 08 00 7c
+
+80 00 00 04
+## [cls=0x8000(OPENFLOW_BASIC),ft=0(IN_PORT),hm=false,len=4]
+
+80 00 06 06
+## [cls=0x8000(OPENFLOW_BASIC),ft=3(ETH_DST),hm=false,len=6]
+
+80 00 08 06
+## [cls=0x8000(OPENFLOW_BASIC),ft=4(ETH_SRC),hm=false,len=6]
+
+80 00 0a 02
+## [cls=0x8000(OPENFLOW_BASIC),ft=5(ETH_TYPE),hm=false,len=2]
+
+80 00 0c 02
+## [cls=0x8000(OPENFLOW_BASIC),ft=6(VLAN_VID),hm=false,len=2]
+
+80 00 0e 01
+## [cls=0x8000(OPENFLOW_BASIC),ft=7(VLAN_PCP),hm=false,len=1]
+
+80 00 10 01
+## [cls=0x8000(OPENFLOW_BASIC),ft=8(IP_DSCP),hm=false,len=1]
+
+80 00 12 01
+## [cls=0x8000(OPENFLOW_BASIC),ft=9(IP_ECN),hm=false,len=1]
+
+80 00 14 01
+## [cls=0x8000(OPENFLOW_BASIC),ft=10(IP_PROTO),hm=false,len=1]
+
+80 00 16 04
+## [cls=0x8000(OPENFLOW_BASIC),ft=11(IPV4_SRC),hm=false,len=4]
+
+80 00 18 04
+## [cls=0x8000(OPENFLOW_BASIC),ft=12(IPV4_DST),hm=false,len=4]
+
+80 00 1a 02
+## [cls=0x8000(OPENFLOW_BASIC),ft=13(TCP_SRC),hm=false,len=2]
+
+80 00 1c 02
+## [cls=0x8000(OPENFLOW_BASIC),ft=14(TCP_DST),hm=false,len=2]
+
+80 00 1e 02
+## [cls=0x8000(OPENFLOW_BASIC),ft=15(UDP_SRC),hm=false,len=2]
+
+80 00 20 02
+## [cls=0x8000(OPENFLOW_BASIC),ft=16(UDP_DST),hm=false,len=2]
+
+80 00 26 01
+## [cls=0x8000(OPENFLOW_BASIC),ft=19(ICMPV4_TYPE),hm=false,len=1]
+
+80 00 28 01
+## [cls=0x8000(OPENFLOW_BASIC),ft=20(ICMPV4_CODE),hm=false,len=1]
+
+80 00 2a 02
+## [cls=0x8000(OPENFLOW_BASIC),ft=21(ARP_OP),hm=false,len=2]
+
+80 00 2c 04
+## [cls=0x8000(OPENFLOW_BASIC),ft=22(ARP_SPA),hm=false,len=4]
+
+80 00 2e 04
+## [cls=0x8000(OPENFLOW_BASIC),ft=23(ARP_TPA),hm=false,len=4]
+
+80 00 30 06
+## [cls=0x8000(OPENFLOW_BASIC),ft=24(ARP_SHA),hm=false,len=6]
+
+80 00 32 06
+## [cls=0x8000(OPENFLOW_BASIC),ft=25(ARP_THA),hm=false,len=6]
+
+80 00 34 10
+## [cls=0x8000(OPENFLOW_BASIC),ft=26(IPV6_SRC),hm=false,len=16]
+
+80 00 36 10
+## [cls=0x8000(OPENFLOW_BASIC),ft=27(IPV6_DST),hm=false,len=16]
+
+80 00 38 04
+## [cls=0x8000(OPENFLOW_BASIC),ft=28(IPV6_FLABEL),hm=false,len=4]
+####################
+###### NOTE : Library (currently) expects payload of 3 bytes (20 bits)
+####################
+
+80 00 3a 01
+## [cls=0x8000(OPENFLOW_BASIC),ft=29(ICMPV6_TYPE),hm=false,len=1]
+
+80 00 3c 01
+## [cls=0x8000(OPENFLOW_BASIC),ft=30(ICMPV6_CODE),hm=false,len=1]
+
+80 00 3e 10
+## [cls=0x8000(OPENFLOW_BASIC),ft=31(IPV6_ND_TARGET),hm=false,len=16]
+
+80 00 40 06
+## [cls=0x8000(OPENFLOW_BASIC),ft=32(IPV6_ND_SLL),hm=false,len=6]
+
+80 00 42 06
+## [cls=0x8000(OPENFLOW_BASIC),ft=33(IPV6_ND_TLL),hm=false,len=6]
+
+
+# padding
+#<932>#
+00 00 00 00
+## {MATCH: supported=[IN_PORT, ETH_DST, ETH_SRC, ETH_TYPE, VLAN_VID, VLAN_PCP,
+##          IP_DSCP, IP_ECN, IP_PROTO, IPV4_SRC, IPV4_DST, TCP_SRC, TCP_DST,
+##          UDP_SRC, UDP_DST, ICMPV4_TYPE, ICMPV4_CODE, ARP_OP, ARP_SPA,
+##          ARP_TPA, ARP_SHA, ARP_THA, IPV6_SRC, IPV6_DST, IPV6_FLABEL,
+##          ICMPV6_TYPE, ICMPV6_CODE, IPV6_ND_TARGET, IPV6_ND_SLL, IPV6_ND_TLL]}
+
+
+##########
+## PROP ##
+##########
+# type (u16) = WILDCARDS, length (u16) = 124       (target ri = 1060)
+#<936>#
+00 0a 00 7c
+
+#<936>#
+80 00 00 04
+80 00 06 06
+80 00 08 06
+80 00 0a 02
+80 00 0c 02
+80 00 0e 01
+80 00 10 01
+80 00 12 01
+80 00 14 01
+80 00 16 04
+80 00 18 04
+80 00 1a 02
+80 00 1c 02
+80 00 1e 02
+80 00 20 02
+80 00 26 01
+80 00 28 01
+80 00 2a 02
+80 00 2c 04
+80 00 2e 04
+80 00 30 06
+80 00 32 06
+80 00 34 10
+80 00 36 10
+80 00 38 04
+80 00 3a 01
+80 00 3c 01
+80 00 3e 10
+80 00 40 06
+80 00 42 06
+
+# padding
+#<1060>#
+00 00 00 00
+## {WILDCARDS: supported=[IN_PORT, ETH_DST, ETH_SRC, ETH_TYPE, VLAN_VID,
+##          VLAN_PCP, IP_DSCP, IP_ECN, IP_PROTO, IPV4_SRC, IPV4_DST, TCP_SRC,
+##          TCP_DST, UDP_SRC, UDP_DST, ICMPV4_TYPE, ICMPV4_CODE, ARP_OP,
+##          ARP_SPA, ARP_TPA, ARP_SHA, ARP_THA, IPV6_SRC, IPV6_DST,
+##          IPV6_FLABEL, ICMPV6_TYPE, ICMPV6_CODE, IPV6_ND_TARGET, IPV6_ND_SLL,
+##          IPV6_ND_TLL]}
+
+
+##########
+## PROP ##
+##########
+# type (u16) = WRITE_SETFIELD, length (u16) = 120       (target ri = 1184)
+#<1064>#
+00 0c 00 78
+
+#<1068>#
+80 00 06 06
+80 00 08 06
+80 00 0a 02
+80 00 0c 02
+80 00 0e 01
+80 00 10 01
+80 00 12 01
+80 00 14 01
+80 00 16 04
+80 00 18 04
+80 00 1a 02
+80 00 1c 02
+80 00 1e 02
+80 00 20 02
+80 00 26 01
+80 00 28 01
+80 00 2a 02
+80 00 2c 04
+80 00 2e 04
+80 00 30 06
+80 00 32 06
+80 00 34 10
+80 00 36 10
+80 00 38 04
+80 00 3a 01
+80 00 3c 01
+80 00 3e 10
+80 00 40 06
+80 00 42 06
+
+# no padding
+#<1184>#
+## {WRITE_SETFIELD: supported=[ETH_DST, ETH_SRC, ETH_TYPE, VLAN_VID, VLAN_PCP,
+##              IP_DSCP, IP_ECN, IP_PROTO, IPV4_SRC, IPV4_DST, TCP_SRC, TCP_DST,
+##              UDP_SRC, UDP_DST, ICMPV4_TYPE, ICMPV4_CODE, ARP_OP, ARP_SPA,
+##              ARP_TPA, ARP_SHA, ARP_THA, IPV6_SRC, IPV6_DST, IPV6_FLABEL,
+##              ICMPV6_TYPE, ICMPV6_CODE, IPV6_ND_TARGET, IPV6_ND_SLL,
+##              IPV6_ND_TLL]}
+
+##########
+## PROP ##
+##########
+# type (u16) = WRITE_SETFIELD_MISS, length (u16) = 120    (target ri = 1304)
+#<1184>#
+00 0d 00 78
+
+#<1188>#
+80 00 06 06
+80 00 08 06
+80 00 0a 02
+80 00 0c 02
+80 00 0e 01
+80 00 10 01
+80 00 12 01
+80 00 14 01
+80 00 16 04
+80 00 18 04
+80 00 1a 02
+80 00 1c 02
+80 00 1e 02
+80 00 20 02
+80 00 26 01
+80 00 28 01
+80 00 2a 02
+80 00 2c 04
+80 00 2e 04
+80 00 30 06
+80 00 32 06
+80 00 34 10
+80 00 36 10
+80 00 38 04
+80 00 3a 01
+80 00 3c 01
+80 00 3e 10
+80 00 40 06
+80 00 42 06
+
+# no padding
+#<1304>#
+## {WRITE_SETFIELD_MISS: supported=[ETH_DST, ETH_SRC, ETH_TYPE, VLAN_VID,
+##                  VLAN_PCP, IP_DSCP, IP_ECN, IP_PROTO, IPV4_SRC, IPV4_DST,
+##                  TCP_SRC, TCP_DST, UDP_SRC, UDP_DST, ICMPV4_TYPE,
+##                  ICMPV4_CODE, ARP_OP, ARP_SPA, ARP_TPA, ARP_SHA, ARP_THA,
+##                  IPV6_SRC, IPV6_DST, IPV6_FLABEL, ICMPV6_TYPE, ICMPV6_CODE,
+##                  IPV6_ND_TARGET, IPV6_ND_SLL, IPV6_ND_TLL]}
+
+
+##########
+## PROP ##
+##########
+# type (u16) = APPLY_SETFIELD, length (u16) = 120    (target ri = 1424)
+#<1304>#
+00 0e 00 78
+
+#<1308>#
+80 00 06 06
+80 00 08 06
+80 00 0a 02
+80 00 0c 02
+80 00 0e 01
+80 00 10 01
+80 00 12 01
+80 00 14 01
+80 00 16 04
+80 00 18 04
+80 00 1a 02
+80 00 1c 02
+80 00 1e 02
+80 00 20 02
+80 00 26 01
+80 00 28 01
+80 00 2a 02
+80 00 2c 04
+80 00 2e 04
+80 00 30 06
+80 00 32 06
+80 00 34 10
+80 00 36 10
+80 00 38 04
+80 00 3a 01
+80 00 3c 01
+80 00 3e 10
+80 00 40 06
+80 00 42 06
+
+# no padding
+#<1424>#
+## {APPLY_SETFIELD: supported=[ETH_DST, ETH_SRC, ETH_TYPE, VLAN_VID, VLAN_PCP,
+##              IP_DSCP, IP_ECN, IP_PROTO, IPV4_SRC, IPV4_DST, TCP_SRC, TCP_DST,
+##              UDP_SRC, UDP_DST, ICMPV4_TYPE, ICMPV4_CODE, ARP_OP, ARP_SPA,
+##              ARP_TPA, ARP_SHA, ARP_THA, IPV6_SRC, IPV6_DST, IPV6_FLABEL,
+##              ICMPV6_TYPE, ICMPV6_CODE, IPV6_ND_TARGET, IPV6_ND_SLL,
+##              IPV6_ND_TLL]}
+
+##########
+## PROP ##
+##########
+# type (u16) = APPLY_SETFIELD_MISS, length (u16) = 120    (target ri = 1544)
+00 0f 00 78
+
+80 00 06 06
+80 00 08 06
+80 00 0a 02
+80 00 0c 02
+80 00 0e 01
+80 00 10 01
+80 00 12 01
+80 00 14 01
+80 00 16 04
+80 00 18 04
+80 00 1a 02
+80 00 1c 02
+80 00 1e 02
+80 00 20 02
+80 00 26 01
+80 00 28 01
+80 00 2a 02
+80 00 2c 04
+80 00 2e 04
+80 00 30 06
+80 00 32 06
+80 00 34 10
+80 00 36 10
+80 00 38 04
+80 00 3a 01
+80 00 3c 01
+80 00 3e 10
+80 00 40 06
+80 00 42 06
+
+# no padding
+#<1544>#
+## {APPLY_SETFIELD_MISS: supported=[ETH_DST, ETH_SRC, ETH_TYPE, VLAN_VID,
+##              VLAN_PCP, IP_DSCP, IP_ECN, IP_PROTO, IPV4_SRC, IPV4_DST,
+##              TCP_SRC, TCP_DST, UDP_SRC, UDP_DST, ICMPV4_TYPE, ICMPV4_CODE,
+##              ARP_OP, ARP_SPA, ARP_TPA, ARP_SHA, ARP_THA, IPV6_SRC, IPV6_DST,
+##              IPV6_FLABEL, ICMPV6_TYPE, ICMPV6_CODE, IPV6_ND_TARGET,
+##              IPV6_ND_SLL, IPV6_ND_TLL]}
+
+#<1544>#
+##################### That's All Folks!! ######################

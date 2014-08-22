@@ -1,0 +1,44 @@
+# An example table feature property :: Apply Actions Miss
+
+#----------------------------------
+## Table feature property - Header
+
+# property type (u16) = APPLY_ACTIONS_MISS (7)
+#<0>#
+00 07
+
+# length (u16) = 24
+00 18
+
+#----------------------------------
+## Table feature property Payload
+
+# list of supported actions: (length - 4) bytes
+#   struct ofp_action with just the action ID
+#    non-experimenter actions are 4 bytes
+
+# Action Type (u16)    Length of struct (u16)
+# SET_QUEUE = 21
+#<4>#
+00 15                  00 04
+# GROUP = 22
+#<8>#
+00 16                  00 04
+
+###### NOTE: THIS SHOULD FAIL TO PARSE, as the action length is not div.by.8
+# EXPERIMENTER = 0xffff
+#<12>#
+ff ff                  00 0c
+
+# Experimenter ID = HP (0x2481)
+#<16>#
+00 00 24 81
+
+# Some experimenter header data
+#<20>#
+0f00 0ba2
+
+## Padding = 0 (to round up to 24)
+
+#<24>#
+## And we are done ##

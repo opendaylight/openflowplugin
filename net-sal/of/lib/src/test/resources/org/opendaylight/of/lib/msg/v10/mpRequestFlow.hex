@@ -1,0 +1,112 @@
+### OpenFlow 1.0 STATS_REQUEST message : Type FLOW
+#
+# openflow version (u8) = 1.0 (0x1)
+#<0>#
+01
+
+# message type (u8) = OFPT_STATS_REQUEST(16)
+10
+
+# message length (u16) = 56
+00 38
+
+# transaction id (u32) = 0
+00 00 00 00
+
+### Message Specific Payload
+## Multipart Request Header
+# Multipart-Type (u16) = FLOW (1)
+#<8>#
+00 01
+
+# Flags (u16) : none
+00 00
+
+## Multipart Request FLOW Body
+### Legacy Fixed Match Structure (40 bytes)
+
+# Wildcards (u32) :
+# Non-wild are: DL_SRC
+# IN_PORT       :      0x1
+# DL_VLAN       :      0x2
+# DL_DST        :      0x8
+# DL_TYPE       :     0x10
+# NW_PROTO      :     0x20
+# TP_SRC        :     0x40
+# TP_DST        :     0x80
+# NW_SRC        :   0x2000 (6 bit field)
+# NW_DST        :  0x80000 (6 bit field)
+# DL_VLAN_PCP   : 0x100000
+# NW_TOS        : 0x200000
+# ========================
+# ORed together : 0x3820fb
+#<12>#
+00 38 20 fb
+
+# In Port (u16) : 0 - flagged in wildcards (don't care)
+#<16>#
+00 00
+
+# Ethernet source address (u48) : 112233:445566
+#<18>#
+112233:445566
+
+# Ethernet destination address (u48) : 0 - flagged in wildcards (don't care)
+#<24>#
+000000:000000
+
+# VLAN id (u16) : 0 - flagged in wildcards (don't care)
+#<30>#
+00 00
+
+# VLAN priority (u8) : 0 - flagged in wildcards (don't care)
+00
+
+# padding (u8)
+00
+
+# Ethernet Type (u16) : 0 - flagged in wildcards (don't care)
+#<34>#
+00 00
+
+# IP ToS (u8) : 0 - flagged in wildcards (don't care)
+#<36>#
+00
+
+# IP Protocol (u8) : 0 - flagged in wildcards (don't care)
+00
+
+# padding (u8 x 2)
+00 00
+
+# IP Source address (u32) : 0 - flagged in wildcards (don't care)
+#<40>#
+00 00 00 00
+
+# IP Destination address (u32) : 0 - flagged in wildcards (don't care)
+#<44>#
+00 00 00 00
+
+# Source port number (u16) : 0 - flagged in wildcards (don't care)
+#<48>#
+00 00
+
+# Destination port number (u16) : 0 - flagged in wildcards (don't care)
+00 00
+
+##== End of match structure ==##
+
+# Table ID (u8) :  ALL tables
+#<52>#
+ff
+
+# padding (u8)
+00
+
+# out port to match (u16) : 12
+00 0c
+
+
+#<56>#
+#### and we are done ####
+

@@ -1,0 +1,68 @@
+# An example port structure for OpenFlow 1.1, 1.2, 1.3.
+
+# port number (u32) = 258
+00 00 01 02
+
+# padding
+00 00 00 00
+
+# hardware address (u8 x 6) - MAC
+11:44:77:11:22:33
+
+# more padding (align to 64 bits)
+00 00
+
+# port name (u8 x 16) = "Two"
+54 77 6f 00 00 00 00 00
+00 00 00 00 00 00 00 00
+
+# port config (u32) : bitmapped
+# OFPPC_NO_RECV         0x4 (1 << 2)
+# OFPPC_NO_FWD         0x20 (1 << 5)
+# OFPPC_NO_PACKET_IN   0x40 (1 << 6)
+00 00 00 64
+
+# port state (u32) : bitmapped
+# OFPPS_LINK_DOWN (0x1)
+00 00 00 01
+
+# port current features (u32) : bitmapped
+# OFPPF_1GB_FD  =   0x20 (1 << 5)
+# OFPPF_FIBER   = 0x1000 (1 << 12)
+# OFPPF_AUTONEG = 0x2000 (1 << 13)
+00 00 30 20
+
+# port advertised features (u32) : bitmapped
+# OFPPF_1GB_FD  =   0x20 (1 << 5)
+# OFPPF_FIBER   = 0x1000 (1 << 12)
+00 00 10 20
+
+# port supported features (u32) : bitmapped
+# OFPPF_1GB_FD  =   0x20 (1 << 5)
+# OFPPF_FIBER   = 0x1000 (1 << 12)
+# OFPPF_AUTONEG = 0x2000 (1 << 13)
+00 00 30 20
+
+# port peer features (u32) : bitmapped
+# (not available)
+00 00 00 00
+
+## current and maximum speed fields indicate the current and maximum bit
+## rate (raw transmission speed) of the link in kbps. The number should be
+## rounded to match common usage. For example, an optical 10 Gb Ethernet
+## port should have this field set to 10000000 (instead of 10312500), and
+## an OC-192 port should have this field set to 10000000 (instead of 9953280).
+##
+## The max speed indicates the maximum configured capacity of the link, whereas
+## the current speed indicates the current capacity. If the port is a LAG with
+## 3 links of 1Gb/s capacity, with one of the ports of the LAG being down,
+## one port auto-negotiated at 1Gb/s and 1 port auto-negotiated at 100Mb/s, the
+## max speed is 3 Gb/s and the current speed is 1.1 Gb/s.
+
+# current speed (u32) = 1100000 (1.1 Gb/s)
+00 10 c8 e0
+
+# maximum speed (u32) = 3000000 (3.0 Gb/s)
+00 2d c6 c0
+
+# ---------------------------------------------

@@ -1,0 +1,55 @@
+### OpenFlow 1.2 PORT MOD message
+#
+# openflow version (u8) = 1.2 (0x3)
+#<0>#
+03
+
+# message type (u8) = OFPT_PORT_MOD(16)
+10
+
+# message length (u16) = 40
+00 28
+
+# transaction id (u32) = 0
+00 00 00 00
+
+### Message Specific Payload
+# port number (u32) = 0x79
+#<8>#
+00 00 00 79
+
+# pad (u8 x 4)
+00 00 00 00
+
+# hardware address (u48) = 33:44:aa:00:00:12
+#<16>#
+3344aa:000012
+
+# pad (u8 x 2)
+00 00
+
+# port config flags (u32) : bitmapped (the flag values)
+## OFPPC_NO_RECV       on  =  0x4
+## OFPPC_NO_FWD        on  = 0x20
+## OFPPC_NO_PACKET_IN  off = 0x00
+#<24>#
+00 00 00 24
+
+# port config mask flags (u32) : bitmapped (the flags to change)
+## OFPPC_NO_RECV         0x4
+## OFPPC_NO_FWD         0x20
+## OFPPC_NO_PACKET_IN   0x40
+00 00 00 64
+
+# advertise port features (u32) : bitmapped
+## OFPPF_1GB_FD  =   0x20
+## OFPPF_FIBER   = 0x1000
+## OFPPF_AUTONEG = 0x2000
+#<32>#
+00 00 30 20
+
+# pad (u8 x 4)
+00 00 00 00
+
+#<40>#
+#### and we are done ####

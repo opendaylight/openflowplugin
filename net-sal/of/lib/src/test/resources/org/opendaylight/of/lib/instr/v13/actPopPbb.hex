@@ -1,0 +1,15 @@
+# An example Action structure
+# See section A.2.5 Action Structures of the 1.3 Spec.
+#
+# POP_PBB
+
+## HEADER
+# Action Type (u16) : POP_PBB = 27
+00 1b
+
+# Length of struct (u16) = 8
+00 08
+
+## ACTION SPECIFIC
+# padding (u8 x 4)
+00 00 00 00

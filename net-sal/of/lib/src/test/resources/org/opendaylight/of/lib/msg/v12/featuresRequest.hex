@@ -1,0 +1,18 @@
+### OpenFlow 1.2 FEATURES REQUEST message
+#
+# openflow version (u8) = 1.2 (0x3)
+#<0>#
+03
+
+# message type (u8) = OFPT_FEATURES_REQUEST(5)
+05
+
+# message length (u16) = 8
+00 08
+
+# transaction id (u32) = 0
+00 00 00 00
+
+#<8>#
+### Message Specific Payload
+### (none)

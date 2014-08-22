@@ -1,0 +1,19 @@
+# An example Action structure
+# See section A.2.5 Action Structures of the 1.3 Spec.
+#
+# EXPERIMENTER
+
+## HEADER
+# Action Type (u16) : EXPERIMENTER = 0xffff
+ff ff
+
+# Length of struct (u16) = 16 (must be multiple of 8)
+00 10
+
+## ACTION SPECIFIC
+# Experimenter ID = BIG_SWITCH
+00 5c 16 c7
+
+# Experimenter-defined data
+20 21 22 23
+24 25 26 27

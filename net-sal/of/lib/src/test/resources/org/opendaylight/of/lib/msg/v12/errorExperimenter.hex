@@ -1,0 +1,37 @@
+### OpenFlow 1.2 ERROR message - EXPERIMENTER / 3 / NICIRA
+#
+# openflow version (u8) = 1.2 (0x3)
+#<0>#
+03
+
+# message type (u8) = OFPT_ERROR(1)
+01
+
+# message length (u16) = 80
+00 50
+
+# transaction id (u32) = 0
+00 00 00 00
+
+### Message Specific Payload
+# Error Type (u16) = EXPERIMENTER (0xffff)
+#<8>#
+ff ff
+
+# Experimenter Type (u16) = Experimenter defined (03)
+00 03
+
+# experimenter id (u32) = NICIRA (0x2320)
+#<12>#
+00 00 23 20
+
+# Variable-length data. Interpreted based on the type and code.
+# No padding.
+#<16>#
+0101 0101 0101 0101 0101 0101 0101 0101
+0101 0101 0101 0101 0101 0101 0101 0101
+0101 0101 0101 0101 0101 0101 0101 0101
+0101 0101 0101 0101 0101 0101 0101 7701
+
+#<80>#
+#### and we are done ####

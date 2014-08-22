@@ -1,0 +1,33 @@
+### OpenFlow 1.2 EXPERIMENTER message
+#
+# openflow version (u8) = 1.2 (0x3)
+#<0>#
+03
+
+# message type (u8) = OFPT_EXPERIMENTER (4)
+04
+
+# message length (u16) = 32
+00 20
+
+# transaction id (u32) = 0
+00 00 00 00
+
+# experimenter id (u32) = NICIRA - (8992)
+#<8>#
+00 00 23 20
+
+# experimenter type (u32) = (121)
+00 00 00 79
+
+### Message Specific Payload - Arbitrary length
+# body =  "Experimental" - (u8 x 12)
+#<16>#
+4578 7065 7269 6d65 6e74 616c
+
+# pad to 64-bit (u8 x 4)
+#<28>#
+00 00 00 00
+
+#<32>#
+#### and we are done ####

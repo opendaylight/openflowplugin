@@ -1,0 +1,75 @@
+### Ethernet2 - VLAN 802.1Q (66 bytes)
+#
+# Destination MAC: 00:40:05:40:ef:24
+#<0>#
+00 40 05 40 ef 24
+
+# Source MAC: 00:60:08:9f:b1:f3
+#<6>#
+00 60 08 9f b1 f3
+
+# Type: 802.1Q VLAN
+#<12>#
+81 00
+
+# VLAN ID: 32
+#<14>#
+00 20
+
+# Type: IP (0x0800)
+#<16>#
+08 00
+
+# Version: 4 (IPv4), header length: 20 bytes
+#<18># 
+45
+
+# DiffServ: 0
+#<19># 
+00
+
+# Total length: 48 bytes
+#<20># 
+00 30
+
+# Identification: 35421
+#<22># 
+8a 5d
+
+# Flags: 0
+#<23># 
+00
+
+# Fragment offset: 1480
+#<24># 
+00 b9
+
+# Time to live: 64
+#<26># 
+40
+
+# Protocol: ICMP
+#<27># 
+01
+
+# Header checksum
+#<28># 
+a7 f2
+
+# Source IP: 131.151.32.21
+#<30># 
+83 97 20 15
+
+# Destination IP: 131.151.32.129
+#<34># 
+83 97 20 81
+
+# Data byte count: 28
+#<38>#
+c0 c1 c2 c3 c4 c5 c6 c7
+c8 c9 ca cb cc cd ce cf
+d0 d1 d2 d3 d4 d5 d6 d7
+d8 d9 da db
+
+#<66>#
+#### and we are done ####

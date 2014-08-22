@@ -1,0 +1,49 @@
+### OpenFlow 1.3 FEATURES REPLY message
+#
+# openflow version (u8) = 1.3 (0x4)
+#<0>#
+04
+
+# message type (u8) = OFPT_FEATURES_REPLY(6)
+06
+
+# message length (u16) = 32
+00 20
+
+# transaction id (u32) = 0
+00 00 00 00
+
+### Message Specific Payload
+# datapath id (u64) = [VId][MacAddress] = 45067, 000036:006502
+#<8>#
+b00b 000036:006502
+
+# num buffers (u32) = 256
+#<16>#
+00 00 01 00
+
+# num tables (u8) = 20
+14
+
+# aux id (u8) = 0 (main connection)
+00
+
+# padding (u8 x 2)
+00 00
+
+# Capabilities flags (u32)
+## FLOW_STATS   =   0x1
+## TABLE_STATS  =   0x2
+## PORT_STATS   =   0x4
+## GROUP_STATS  =   0x8
+## IP_REASM     =  0x20
+## QUEUE_STATS  =  0x40
+## PORT_BLOCKED = 0x100
+#<24>#
+00 00 01 6f
+
+# Reserved (u32)
+00 00 00 00
+
+#<32>#
+#### and we are done ####

@@ -1,0 +1,57 @@
+### OpenFlow 1.3 MULTIPART_REQUEST message : Type EXPERIMENTER
+#
+# openflow version (u8) = 1.3 (0x4)
+#<0>#
+04
+
+# message type (u8) = OFPT_MULTIPART_REQUEST(18)
+12
+
+# message length (u16) = 64
+00 40
+
+# transaction id (u32) = 0
+00 00 00 00
+
+### Message Specific Payload
+## Multipart Request Header
+# Multipart-Type (u16) = EXPERIMENTER (65535)
+#<8>#
+ff ff
+
+# Flags (u16) : none
+00 00
+
+# padding (u8 x 4)
+00 00 00 00
+
+## Multipart Request Body
+# experimenter id (u32) = HP - (0x2481)
+#<16>#
+00 00 24 81
+
+# experimenter type (u32) = (42)
+#<20>#
+00 00 00 2a
+
+# Experimenter defined body
+## Operation Code (u32) = (18) -- start self destruct sequence
+#<24>#
+00 00 00 12
+
+## Delay (u32) = (400) -- millisecond delay before running op code
+#<28>#
+00 00 01 90
+
+## Message = "Enable Self Destruct Sequence!" - (u8 X 30)
+#<32>#
+456e 6162 6c65 2053 656c 6620 4465 7374
+7275 6374 2053 6571 7565 6e63 6521
+
+## pad out message to 8 bit boundary - (u8 x 2)
+#<62>#
+00 00
+
+#<64>#
+#### and we are done ####
+

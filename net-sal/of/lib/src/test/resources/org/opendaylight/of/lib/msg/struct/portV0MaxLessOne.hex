@@ -1,0 +1,27 @@
+# An example port structure for OpenFlow 1.0.
+## This one has port number MAX - 1
+
+# port number (u16) = MAX - 1 (0xff00 - 1)
+fe ff
+
+# hardware address (u8 x 6) - MAC
+11:44:77:01:01:01
+
+# port name (u8 x 16) = "Foo"
+46 6f 6f 00 00 00 00 00
+00 00 00 00 00 00 00 00
+
+# port config (u32) : bitmapped => NO_RECV, NO_FLOOD, NO_FWD
+00 00 00 34
+# port state (u32) : bitmapped => LINK_DOWN, STP_LISTEN
+00 00 00 01
+# port current features (u32) : bitmapped => RATE_1GB_FD, FIBER
+00 00 01 20
+# port advertised features (u32) : bitmapped => RATE_1GB_FD, FIBER
+00 00 01 20
+# port supported features (u32) : bitmapped => RATE_1GB_FD, FIBER
+00 00 01 20
+# port peer features (u32) : bitmapped => RATE_1GB_FD, FIBER
+00 00 01 20
+
+# ---------------------------------------------

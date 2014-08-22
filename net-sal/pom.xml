@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2014 Hewlett-Packard Development Company, L.P.
+  ~
+  ~ This program and the accompanying materials are made available under the
+  ~ terms of the Eclipse Public License v1.0 which accompanies this distribution,
+  ~ and is available at http://www.eclipse.org/legal/epl-v10.html
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.opendaylight</groupId>
+    <artifactId>odl-root</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0.0-SNAPSHOT</version>
+
+    <name>odl-root</name>
+    <description>Alternate OpenDaylight API Contribution</description>
+
+    <modules>
+        <module>util</module>
+        <module>of</module>
+        <module>net</module>
+        <module>of-adapter</module>
+        <module>suppliers</module>
+        <module>drivers</module>
+        <module>apps</module>
+        <module>commands</module>
+        <module>features</module>
+    </modules>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.8.1</version>
+                <configuration>
+                    <docfilessubdirs>true</docfilessubdirs>
+                    <doctitle>OpenDaylight Net-SAL &amp; OpenFlow Controller Plugin</doctitle>
+                    <groups>
+                        <group>
+                            <title>Network Services</title>
+                            <packages>
+                                org.opendaylight.net:org.opendaylight.net.*
+                            </packages>
+                        </group>
+
+                        <group>
+                            <title>OpenFlow Controller &amp; Libraries</title>
+                            <packages>
+                                org.opendaylight.of:org.opendaylight.of.*
+                            </packages>
+                        </group>
+
+                        <group>
+                            <title>OpenFlow Adapter &amp; Suppliers</title>
+                            <packages>
+                                org.opendaylight.of.adapter:org.opendaylight.supplier.of.*:org.opendaylight.driver.base:org.opendaylight.driver.base.*
+                            </packages>
+                        </group>
+
+                        <group>
+                            <title>Utils</title>
+                            <packages>
+                                org.opendaylight.util:org.opendaylight.util.*:org.opendaylight.nbio
+                            </packages>
+                        </group>
+
+                        <group>
+                            <title>Test Facilities</title>
+                            <packages>
+                                org.opendaylight.util.junit:org.opendaylight.util.junit.*:org.opendaylight.of.mockswitch:org.opendaylight.of.mockswitch.*:org.opendaylight.test
+                            </packages>
+                        </group>
+                    </groups>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

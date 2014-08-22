@@ -1,0 +1,60 @@
+### Ethernet2 - PPPoE - Session request
+#
+
+# Destination: ca:01:0e:88:00:06 (ca:01:0e:88:00:06)
+#<0>#
+ca 01 0e 88 00 06
+
+# Source: cc:05:0e:88:00:00 (cc:05:0e:88:00:00)
+#<6>#
+cc 05 0e 88 00 00
+
+# Type: PPPoE Session (0x8864)
+#<12>#
+88 64
+
+# PPP: Version: 1, Type: 1
+#<14># 
+11
+
+# Code: Session Data (0x00)
+#<15># 
+00
+
+# Session ID: 0x0011
+#<16># 
+00 11
+
+# Payload Length: 12
+#<18># 
+00 0c
+
+# Protocol: Link Control Protocol (0xc021)
+#<20>#
+c0 21
+
+# PPP Link Control Protocol
+# Code: Configuration Request (0x01)
+#<22>#
+01
+
+# Identifier: 0x01
+#<23>#
+01
+
+# Length: 10
+#<24>#
+00 0a
+
+# Options: (6 bytes)
+# Magic number: 0x05fcd459
+#<26>#
+05 06 05 fc d4 59
+
+# Padding
+#<32>#
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00
+
+#<60>#
+#### and we are done ####

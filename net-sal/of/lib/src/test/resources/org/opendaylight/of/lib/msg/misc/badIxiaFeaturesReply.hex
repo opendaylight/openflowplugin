@@ -1,0 +1,32 @@
+# Bad Ixia FeaturesReply
+
+# [2013-09-09 10:31:54.986] WARN  New I/O server worker #1-14  hp.of.msglib
+#   DE0005I Parse FAILED: hdr=[V_1_3,FEATURES_REPLY,32,203672774],
+#   bytes=[040600200c23ccc60000000000000022000003e800000000000000ef00000000]
+
+# [2013-09-09 10:31:54.991] WARN  New I/O server worker #1-14  hp.of.ctl
+#   DE0005I MsgF:{OfPktRdr: odom=28, op=(n/a),BigEndianHeapChannelBuffer
+#    (ridx=28, widx=32, cap=32)} OFM:[V_1_3,FEATURES_REPLY,32,203672774] >
+#    com.hp.of.lib.VersionMismatchException: V_1_3 Bad bits: 0xef
+#    com.hp.of.lib.MessageParseException:
+#    MsgF:{OfPktRdr: odom=28, op=(n/a),BigEndianHeapChannelBuffer
+#    (ridx=28, widx=32, cap=32)} OFM:[V_1_3,FEATURES_REPLY,32,203672774] >
+#    com.hp.of.lib.VersionMismatchException: V_1_3 Bad bits: 0xef
+
+040600200c23ccc60000000000000022000003e800000000000000ef00000000
+
+# Analysis:
+# Capabilities flags: 0xef
+# 0 . 1 1 1 0 . 1 1 1 1
+#                     +-- 0x1  Flow Stats
+#                   +---- 0x2  Table Stats
+#                 +------ 0x4  Port Stats
+#               +-------- 0x8  Group Stats
+#
+#           +------------ 0x10 (reserved)
+#         +-------------- 0x20 IP Reasm
+#       +---------------- 0x40 Queue Stats
+#     +------------------ 0x80 (undefined/reserved in 1.3) !!!
+#
+# +---------------------- 0x100 Port Blocked (will block looping ports)
+

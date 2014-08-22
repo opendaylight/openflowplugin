@@ -1,0 +1,132 @@
+### Ethernet2 - IP - TCP - DNS A response
+#
+# Destination: AsustekC_b1:0c:ad (00:e0:18:b1:0c:ad)
+#<6>#
+00 e0 18 b1 0c ad
+
+# Source: QuantaCo_32:41:8c (00:c0:9f:32:41:8c)
+#<0>#
+00 c0 9f 32 41 8c
+
+# Type: IP (0x0800)
+#<12>#
+08 00
+
+# Version/length: 4, 20
+#<14>#
+45
+ 
+# Differentiated Services Field: 0x00
+#<15>#
+00
+
+# Total Length: 76
+#<16>#
+00 4c
+
+# Identification: 0xcff9 (53241)
+#<18>#
+cf f9
+
+# Flags: 0x00
+#<20>#
+00 00
+
+# Time to live: 128
+#<22>#
+80
+
+# Protocol: UDP (17)
+#<23>#
+11
+
+# Header checksum: 0x9539 [correct]
+#<24>#
+95 39
+
+# Source: 192.168.170.20 (192.168.170.20)
+#<30>#
+c0 a8 aa 14
+
+# Destination: 192.168.170.8 (192.168.170.8)
+#<26>#
+c0 a8 aa 08
+
+# Source port: domain (53)
+#<36>#
+00 35
+
+# Destination port: 32795 (32795)
+#<34>#
+80 1b
+
+# Length: 56
+#<38>#
+00 38
+
+# Checksum: 0xa317 [validation disabled]
+#<40>#
+a3 17
+
+# Transaction ID: 0x75c0
+#<42>#
+75 c0
+
+# Flags: 0x8180 (Standard query response, No error)
+#<44>#
+81 80
+
+# Questions: 1
+#<46>#
+00 01
+
+# Answer RRs: 1
+#<48>#
+00 01
+
+# Authority RRs: 0
+#<50>#
+00 00
+
+# Additional RRs: 0
+#<52>#
+00 00
+
+# Name: www.netbsd.org
+#<54>#
+03 77 77 77 06 6e 65 74 62 73 64 03 6f 72 67 00
+
+# Type: A (Host address)
+#<70>#
+00 01
+
+# Class: IN (0x0001)
+#<72>#
+00 01
+
+# Name pointer
+#<74>#
+c0 0c
+
+# Type: A (Host address)
+#<76>#
+00 01
+
+# Class: IN (0x0001)
+#<78>#
+00 01
+
+# Time to live: 22 hours, 49 minutes, 19 seconds
+#<80>#
+00 01 40 ef
+
+# Data length: 4
+#<84>#
+00 04
+
+# Addr: 204.152.190.12 (204.152.190.12)
+#<86>#
+cc 98 be 0c
+
+#<90>#
+#### and we are done ####

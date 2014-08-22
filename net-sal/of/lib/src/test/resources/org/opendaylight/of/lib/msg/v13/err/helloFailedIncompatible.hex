@@ -1,0 +1,30 @@
+### OpenFlow 1.3 ERROR message - HELLO_FAILED / INCOMPATIBLE
+#
+# openflow version (u8) = 1.3 (0x4)
+#<0>#
+04
+
+# message type (u8) = OFPT_ERROR(1)
+01
+
+# message length (u16) = 40
+00 28
+
+# transaction id (u32) = 0
+00 00 00 00
+
+### Message Specific Payload
+# Error Type (u16) = HELLO_FAILED (0)
+#<8>#
+00 00
+
+# Error Code (u16) = INCOMPATIBLE (0)
+00 00
+
+# Data: Ascii message - "Not Compatible, Sorry!"
+#<12>#
+4e6f 7420 436f 6d70 6174 6962 6c65 2c20
+536f 7272 7921 0000 0000 0000
+
+#<40>#
+#### and we are done ####

@@ -1,0 +1,109 @@
+### Ethernet2 - IP - TCP - DNS PTR query
+#
+# Destination: D-LinkIn_58:4c:5d (1c:7e:e5:58:4c:5d)
+#<0>#
+1c 7e e5 58 4c 5d
+
+# Source: Hewlett-_b3:e4:de (00:24:81:b3:e4:de)
+#<6>#
+00 24 81 b3 e4 de
+
+# Type: IP (0x0800)
+#<12>#
+08 00
+
+# Version/length: 4, 20
+#<14>#
+45
+ 
+# Differentiated Services Field: 0x00
+#<15>#
+00
+
+# Total Length: 66
+#<16>#
+00 42
+
+# Identification: 0
+#<18>#
+00 00
+
+# Flags/Fragment Offset: 0x0000
+#<20>#
+40 00
+
+# Time to live: 64
+#<22>#
+40
+
+# Protocol: UDP (17)
+#<23>#
+11
+
+# Header checksum: 0xb8f5 [correct]
+#<24>#
+b8 f5
+
+# Source: 192.168.0.100 (192.168.0.100)
+#<26>#
+c0 a8 00 64
+
+# Destination: 192.168.0.1 (192.168.0.1)
+#<30>#
+c0 a8 00 01
+
+# Source port: 64602 (64602)
+#<34>#
+fc 5a
+
+# Destination port: domain (53)
+#<36>#
+00 35
+
+# Length: 46
+#<38>#
+00 2e
+
+# Wireshark checksum: 0x81f5 [validation disabled]
+# Computed checksum: 0xbb72
+#<40>#
+bb 72
+
+# Transaction ID: 0xacac
+#<42>#
+ac ac
+
+# Flags: 0x0100 (Standard query) (all 0 except recursion desired)
+#<44>#
+01 00
+
+# Questions: 1
+#<46>#
+00 01
+
+# Answer RRs: 0
+#<48>#
+00 00
+
+# Authority RRs: 0
+#<50>#
+00 00
+
+# Additional RRs: 0
+#<52>#
+00 00
+
+# Name: 8.8.8.8.in-addr.arpa
+#<54>#
+01 38 01 38 01 38 01 38 07 69 6e 2d 61 64 64 72 04 61 72 70 61 00
+
+# Type: PTR (Domain name pointer)
+#<76>#
+00 0c
+
+# Class: IN (0x0001)
+#<78>#
+00 01
+
+#<80>#
+#### and we are done ####

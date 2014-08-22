@@ -1,0 +1,17 @@
+# An example match field TLV
+# See section A.2.3.2 Flow Match Field Structures of the 1.3 Spec.
+#
+# Basic :: IPV6_SRC (no mask)
+
+# Class (u16) : Basic = 0x8000
+80 00
+
+# Field + hasMask Bit (u8) : IPV6_SRC(26<<1) (no mask) = 0x34
+34
+
+# Length of payload excluding header (u8) = 16
+10
+
+## Payload
+# IPv6 Source address = cafe::babe
+cafe 0000 0000 0000 0000 0000 0000 babe

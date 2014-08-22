@@ -1,0 +1,59 @@
+{  
+  "version" : "1.3.0",
+  "groups" : [ {
+    "dpid": "00:00:00:00:00:00:00:02",
+    "group_id" : "1",
+    "group_type" : "All",
+    "command" : "ADD",
+    "buckets" : [ {
+      "weight" : "1",
+      "watch_group" : "20",
+      "watch_port" : "99",
+      "actions" : [ { "type":"SET_FIELD",
+                            "set_field_type":"stst",
+                            "payload" :"6"},
+                         {  "type":"dec_nw_ttl",
+                              "set_field_type":"",
+                             "payload":""}]
+      },
+    {
+             "weight": "1",
+             "watch_group": "19",
+             "watch_port": "25",
+             "actions" :[{ "type":" SET_FIELD ",
+                            "set_field_type":"stst",
+                            "payload" :"6"},
+                         {  "type":"dec_nw_ttl",
+                              "set_field_type":"",
+                             "payload":""}]
+                      }]
+     },
+       {
+          "dpid": "00:00:00:00:00:00:00:02",
+        "group_id": "1",
+          "group_type": "All",
+          "command": "ADD",
+          "buckets": [{
+             "weight": "1",
+              "watch_group": "20",
+             "watch_port": "99",
+             "actions" :[{ "type":"SET_FIELD",
+                            "set_field_type":"stst",
+                            "payload" :"6"},
+                         {  "type":"dec_nw_ttl",
+                              "set_field_type":"",
+                             "payload":""}]
+      },
+    {
+             "weight": "1",
+             "watch_group": "19",
+             "watch_port": "25",
+             "actions" :[{ "type":" SET_FIELD ",
+                            "set_field_type":"stst",
+                            "payload" :"6"},
+                         {  "type":"dec_nw_ttl",
+                              "set_field_type":"",
+                             "payload":""}]
+                      }]
+     }]}
+ 

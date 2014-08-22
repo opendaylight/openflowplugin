@@ -1,0 +1,18 @@
+# An example 1.0 Action structure
+# See section 5.2.4 Flow Action Structures of the 1.0 Spec.
+#
+# SET_VLAN_VID (No VID set)
+
+## HEADER
+# Action Type (u16) : SET_VLAN_VID(1)
+00 01
+
+# Length of struct (u16) = 8
+00 08
+
+## ACTION SPECIFIC
+# VLAN id (u16) = None(0xffff)
+ff ff
+
+# pad (u8 x 2)
+00 00

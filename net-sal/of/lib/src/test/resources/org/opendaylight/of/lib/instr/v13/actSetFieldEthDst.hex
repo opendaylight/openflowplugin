@@ -1,0 +1,26 @@
+# An example Action structure
+# See section A.2.5 Action Structures of the 1.3 Spec.
+#
+# SET_FIELD : ETH_DST
+
+## HEADER
+# Action Type (u16) : SET_FIELD = 25
+00 19
+
+# Length of struct (u16) = 16 (must be multiple of 8)
+00 10
+
+## ACTION SPECIFIC
+
+# A single OXM TLV (no mask allowed)
+# Class (u16), Field+M (u8), Payload Length (u8)
+# Basic        ETH_DST(3)    6
+  8000         06            06
+
+## Payload
+# Destination MAC address (u48)
+66 55 44 33 22 11
+
+#### Padding to bring whole structure up to 64-bit boundary
+00 00
+

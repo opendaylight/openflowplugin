@@ -1,0 +1,18 @@
+{
+  "datapath" : {
+    "dpid" : "b0:0b:00:00:36:00:65:02",
+    "negotiated_version" : "1.3.0",
+    "ready" : "2013-05-23T10:09:08.000Z",
+    "last_message" : "2013-05-23T10:09:08.000Z",
+    "num_buffers" : 256,
+    "num_tables" : 20,
+    "mfr" : "Acme Switch Co.",
+    "hw" : "Coyote WB10",
+    "sw" : "OF-Sneaky 1.0",
+    "serial" : "WB-11937-TAF",
+    "desc" : "WB10 at top of Mesa, Top Shelf",
+    "device_ip" : "15.1.2.3",
+    "device_port" : 65530,
+    "capabilities" : [ "flow_stats", "table_stats", "port_stats", "group_stats", "ip_reasm", "queue_stats", "port_blocked" ]
+  }
+}

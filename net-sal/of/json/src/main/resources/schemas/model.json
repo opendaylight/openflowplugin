@@ -1,0 +1,1136 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "/net/v2/of",
+    "description": "HP SDN Openflow Schema",
+    "hex": {
+        "description": "Hex format",
+        "type": "string",
+        "pattern": "^(0x)?[a-fA-F\\d]+$"
+    },
+    "mac": {
+        "description": "MAC address format",
+        "type": "string",
+        "pattern": "^([0-9A-Fa-f]{2}[:]){5}([0-9A-Fa-f]{2})$"
+    },
+    "ethernet": {
+        "description": "Ethernet types",
+        "type": "string",
+        "enum": [
+            "ipv4",
+            "arp",
+            "rarp",
+            "vlan",
+            "snmp",
+            "ipv6",
+            "mpls_u",
+            "mpls_m",
+            "prv_brdg",
+            "lldp",
+            "pbb",
+            "bddp"
+        ]
+    },
+    "ethernet_vlan": {
+        "description": "Ethernet types for vlan-related action",
+        "type": "string",
+        "enum": [
+            "vlan",
+            "prv_brdg"
+        ]
+    },
+    "ethernet_mpls": {
+        "description": "Ethernet types for mpls-related action",
+        "type": "string",
+        "enum": [
+            "mpls_u",
+            "mpls_m"
+        ]
+    },
+    "ethernet_pbb": {
+        "description": "Ethernet types for pbb-related action",
+        "type": "string",
+        "enum": ["pbb"]
+    },
+    "packet_stat": {
+        "description": "Packet processing statistics",
+        "type": "object",
+        "properties": {
+            "bytes": {"type": "integer"},
+            "packets": {"type": "integer"}
+        },
+        "required": [
+            "bytes",
+            "packets"
+        ]
+    },
+    "controller_stats": {
+        "description": "Openflow controller statistics",
+        "duration_ms": {
+            "description": "Number of milliseconds since the statistics were last reset to zero",
+            "type": "integer"
+        },
+        "packet_in": {
+            "description": "Packet_ins processed by the controller",
+            "$ref": "#/packet_stat"
+        },
+        "packet_out": {
+            "description": "Packet_outs emitted by the controller, including synthentic packets not associated with packet_in messages.",
+            "$ref": "#/packet_stat"
+        },
+        "lost": {
+            "description": "Packet_ins for which no packet_outs was issued",
+            "$ref": "#/packet_stat"
+        },
+        "msg_rx": {
+            "description": "Number of OF messages received by the controller",
+            "type": "integer"
+        },
+        "msg_tx": {
+            "description": "Number of OF messages transmitted by the controller",
+            "type": "integer"
+        }
+    },
+    "group_features": {
+        "description": "OF group features supported by this datapath (OF 1.2 and above)",
+        "capabilities": {
+            "description": "Capabilities of group",
+            "type": "array",
+            "items": {"enum": [
+                "select_weight",
+                "select_liveness",
+                "chaining",
+                "chaining_checks"
+            ]}
+        },
+        "types": {
+            "description": "Supported group types",
+            "type": "array",
+            "items": {"enum": [
+                "all",
+                "select",
+                "indirect",
+                "ff"
+            ]}
+        },
+        "max_groups": {
+            "description": "Maximum number of groups per group type",
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "all": {"type": "integer"},
+                    "select": {"type": "integer"},
+                    "indirect": {"type": "integer"},
+                    "ff": {"type": "integer"}
+                }
+            }
+        },
+        "actions": {
+            "description": "Supported actions per group type",
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "all": {
+                        "type": "array",
+                        "items": {"enum": [
+                            "output",
+                            "copy_ttl_out",
+                            "copy_ttl_in",
+                            "set_mpls_ttl",
+                            "dec_mpls_ttl",
+                            "push_vlan",
+                            "pop_vlan",
+                            "push_mpls",
+                            "pop_mpls",
+                            "set_queue",
+                            "group",
+                            "set_nw_ttl",
+                            "dec_nw_ttl",
+                            "set_field",
+                            "push_pbb",
+                            "pop_pbb",
+                            "experimenter"
+                        ]}
+                    },
+                    "select": {
+                        "type": "array",
+                        "items": {"enum": [
+                            "output",
+                            "copy_ttl_out",
+                            "copy_ttl_in",
+                            "set_mpls_ttl",
+                            "dec_mpls_ttl",
+                            "push_vlan",
+                            "pop_vlan",
+                            "push_mpls",
+                            "pop_mpls",
+                            "set_queue",
+                            "group",
+                            "set_nw_ttl",
+                            "dec_nw_ttl",
+                            "set_field",
+                            "push_pbb",
+                            "pop_pbb",
+                            "experimenter"
+                        ]}
+                    },
+                    "indirect": {
+                        "type": "array",
+                        "items": {"enum": [
+                            "output",
+                            "copy_ttl_out",
+                            "copy_ttl_in",
+                            "set_mpls_ttl",
+                            "dec_mpls_ttl",
+                            "push_vlan",
+                            "pop_vlan",
+                            "push_mpls",
+                            "pop_mpls",
+                            "set_queue",
+                            "group",
+                            "set_nw_ttl",
+                            "dec_nw_ttl",
+                            "set_field",
+                            "push_pbb",
+                            "pop_pbb",
+                            "experimenter"
+                        ]}
+                    },
+                    "ff": {
+                        "type": "array",
+                        "items": {"enum": [
+                            "output",
+                            "copy_ttl_out",
+                            "copy_ttl_in",
+                            "set_mpls_ttl",
+                            "dec_mpls_ttl",
+                            "push_vlan",
+                            "pop_vlan",
+                            "push_mpls",
+                            "pop_mpls",
+                            "set_queue",
+                            "group",
+                            "set_nw_ttl",
+                            "dec_nw_ttl",
+                            "set_field",
+                            "push_pbb",
+                            "pop_pbb",
+                            "experimenter"
+                        ]}
+                    }
+                }
+            }
+        }
+    },
+    "datapath": {
+        "description": "OF datapath information",
+        "type": "object",
+        "properties": {
+            "dpid": {
+                "description": "Datapath ID",
+                "type": "string"
+            },
+            "mfr": {
+                "description": "Manufacturer description",
+                "type": "string"
+            },
+            "hw": {
+                "description": "Hardware version",
+                "type": "string"
+            },
+            "sw": {
+                "description": "Software version",
+                "type": "string"
+            },
+            "serial": {
+                "description": "Serial number",
+                "type": "string"
+            },
+            "desc": {
+                "description": "Datapath description",
+                "type": "string"
+            },
+            "negotiated_version": {
+                "description": "OF version negotiated at handshake",
+                "type": "string",
+                "enum": [
+                    "1.0.0",
+                    "1.1.0",
+                    "1.2",
+                    "1.3.0"
+                ]
+            },
+            "ready": {
+                "description": "Time at which the datapath completed the handshake with the controller",
+                "type": "string",
+                "format": "date-time"
+            },
+            "last_message": {
+                "description": "Time at which the last message was received from the datapath",
+                "type": "string",
+                "format": "date-time"
+            },
+            "num_buffers": {
+                "description": "Maximum number of packets the datapath can buffer at once",
+                "type": "integer"
+            },
+            "num_tables": {
+                "description": "Maximum number of tables supported by the datapath",
+                "type": "integer"
+            },
+            "capabilities": {
+                "description": "Datapath capabilities",
+                "$ref": "#/datapath_capabilities"
+            },
+            "device_ip": {
+                "description": "Switch IP address via the main connection",
+                "type": "string",
+                "format": "ipv4"
+            },
+            "device_port": {
+                "description": "Switch TCP port via the main connection",
+                "type": "integer"
+            }
+        },
+        "required": ["dpid"]
+    },
+    "datapaths": {
+        "type": "array",
+        "items": {"$ref": "#/datapath"}
+    },
+    "datapath_capabilities": {
+        "description": "OF datapath capabilities",
+        "type": "array",
+        "items": {"enum": [
+            "flow_stats",
+            "table_stats",
+            "port_stats",
+            "stp",
+            "group_stats",
+            "reserved",
+            "ip_reasm",
+            "queue_stats",
+            "arp_match_ip",
+            "port_blocked"
+        ]}
+    },
+    "port": {
+        "description": "OF port",
+        "type": "object",
+        "properties": {
+            "id": {
+                "description": "Port number",
+                "type": "string"
+            },
+            "name": {
+                "description": "Port name",
+                "type": "string"
+            },
+            "mac": {
+                "description": "Port MAC address",
+                "$ref": "#/mac"
+            },
+            "current_speed": {
+                "description": "Current port speed (kbps). OF 1.1 and above.",
+                "type": "integer"
+            },
+            "max_speed": {
+                "description": "Maximum port speed (kbps) (OF 1.1 and above).",
+                "type": "integer"
+            },
+            "config": {
+                "description": "Port configurations",
+                "type": "array",
+                "items": {"enum": [
+                    "port_down",
+                    "no_stp",
+                    "no_recv",
+                    "ro_recv_stp",
+                    "no_flood",
+                    "no_fwd",
+                    "no_packet_in"
+                ]}
+            },
+            "state": {
+                "description": "Port states",
+                "type": "array",
+                "items": {"enum": [
+                    "link_down",
+                    "blocked",
+                    "live",
+                    "stp_listen",
+                    "stp_learn",
+                    "stp_forward",
+                    "stp_block"
+                ]}
+            },
+            "current_features": {
+                "description": "Current port features",
+                "$ref": "#/port_features"
+            },
+            "advertised_features": {
+                "description": "Advertised port features",
+                "$ref": "#/port_features"
+            },
+            "supported_features": {
+                "description": "Supported port features",
+                "$ref": "#/port_features"
+            },
+            "peer_features": {
+                "description": "Peer port features",
+                "$ref": "#/port_features"
+            }
+        },
+        "required": ["id"]
+    },
+    "ports": {
+        "type": "array",
+        "items": {"$ref": "#/port"}
+    },
+    "port_features": {
+        "description": "OF port features",
+        "type": "array",
+        "items": {"enum": [
+            "rate_10mb_hd",
+            "rate_10mb_fd",
+            "rate_100mb_hd",
+            "rate_100mb_fd",
+            "rate_1gb_hd",
+            "rate_1gb_fd",
+            "rate_10gb_fd",
+            "rate_40gb_fd",
+            "rate_100gb_fd",
+            "rate_1tb_fd",
+            "rate_other",
+            "copper",
+            "fiber",
+            "autoneg",
+            "pause",
+            "pause_asym"
+        ]}
+    },
+    "flow": {
+        "description": "OF flow",
+        "type": "object",
+        "properties": {
+            "table_id": {
+                "description": "Table id (OF 1.1 and above)",
+                "type": "integer"
+            },
+            "priority": {
+                "description": "Flow priority",
+                "type": "integer"
+            },
+            "match": {
+                "description": "Flow match fields",
+                "$ref": "#/flow_match_fields"
+            },
+            "duration_sec": {
+                "description": "Time this flow has been alive in seconds",
+                "type": "integer"
+            },
+            "duration_nsec": {
+                "description": "Time this flow has been alive in nano-seconds",
+                "type": "integer"
+            },
+            "idle_timeout": {
+                "description": "Idle timeout for this flow",
+                "type": "integer"
+            },
+            "hard_timeout": {
+                "description": "Hard timeout for this flow",
+                "type": "integer"
+            },
+            "packet_count": {
+                "description": "Number of packets in this flow",
+                "type": "integer"
+            },
+            "byte_count": {
+                "description": "Number of bytes in this flow",
+                "type": "integer"
+            },
+            "cookie": {
+                "description": "Cookie",
+                "$ref": "#/hex"
+            },
+            "cookie_mask": {
+                "description": "Cookie mask (OF 1.1 and above)",
+                "$ref": "#/hex"
+            },
+            "buffer_id": {
+                "description": "Flow mod buffer id",
+                "type": "integer"
+            },
+            "out_port": {
+                "description": "Flow mod output port number",
+                "type": [ "integer", "string" ]
+            },
+            "out_group": {
+                "description": "Flow mod output group number (OF 1.1 and above)",
+                "type": "integer"
+            },
+            "flow_mod_cmd": {
+                "description": "Flow mod command",
+                "type": "string",
+                "enum": [
+                    "add",
+                    "modify",
+                    "modify_strict",
+                    "delete",
+                    "delete_strict"
+                ]
+            },
+            "flow_mod_flags": {
+                "description": "Flow mod flags",
+                "$ref": "#/flow_mod_flags"
+            },
+            "instructions": {
+                "description": "Flow mod instructions (OF 1.1 and above)",
+                "$ref": "#/flow_instructions"
+            },
+            "actions": {
+                "description": "Flow mod actions (OF 1.0 only)",
+                "$ref": "#/flow_actions"
+            }
+        },
+        "required": [
+            "priority",
+            "match"
+        ]
+    },
+    "flows": {
+        "type": "array",
+        "items": {"$ref": "#/flow"}
+    },
+    "flow_mod_flags": {
+        "description": "OF flow mod flags",
+        "type": "array",
+        "items": {"enum": [
+            "send_flow_rem",
+            "check_overlap",
+            "emerg",
+            "reset_counts",
+            "no_packet_counts",
+            "no_byte_counts"
+        ]}
+    },
+    "flow_match_field": {
+        "description": "OF flow match field.  Some match fields may include an optional mask.",
+        "type": "object",
+        "properties": {
+            "in_port": {
+                "description": "Input port",
+                "type": [ "integer", "string" ]
+            },
+            "in_phy_port": {
+                "description": "Physical input port",
+                "type": [ "integer", "string" ]
+            },
+            "metadata": {
+                "description": "Metadata passed between tables",
+                "$ref": "#/hex"
+            },
+            "tunnel_id": {
+                "description": "Logical port metadata",
+                "$ref": "#/hex"
+            },
+            "eth_dst": {
+                "description": "Ethernet destination address",
+                "$ref": "#/mac"
+            },
+            "eth_src": {
+                "description": "Ethernet source address",
+                "$ref": "#/mac"
+            },
+            "eth_type": {
+                "description": "Ethernet frame type",
+                "$ref": "#/ethernet"
+            },
+            "arp_sha": {
+                "description": "ARP source hardware address",
+                "$ref": "#/mac"
+            },
+            "arp_tha": {
+                "description": "ARP target hardware address",
+                "$ref": "#/mac"
+            },
+            "ip_proto": {
+                "description": "IP protocol",
+                "type": "string",
+                "enum": [
+                    "tcp",
+                    "udp",
+                    "sctp",
+                    "icmp",
+                    "ipv6-icmp"
+                ]
+            },
+            "icmpv6_type": {
+                "description": "ICMPv6 type",
+                "type": "string",
+                "enum": [
+                    "nbr_sol",
+                    "nbr_adv"
+                ]
+            },
+            "ipv6_nd_sll": {
+                "description": "Source link-layer for ND",
+                "$ref": "#/mac"
+            },
+            "ipv6_nd_tll": {
+                "description": "Target link-layer for ND",
+                "$ref": "#/mac"
+            },
+            "vlan_vid": {
+                "description": "VLAN id",
+                "oneOf": [
+                    {"type": "integer"},
+                    {"enum": [
+                        "none",
+                        "present"
+                    ]}
+                ]
+            },
+            "vlan_pcp": {
+                "description": "VLAN priority",
+                "type": "integer"
+            },
+            "ip_dscp": {
+                "description": "IP DSCP",
+                "type": "integer"
+            },
+            "ip_ecn": {
+                "description": "IP ECN",
+                "type": "integer"
+            },
+            "icmpv4_code": {
+                "description": "ICMP code",
+                "type": "integer"
+            },
+            "icmpv6_code": {
+                "description": "ICMPv6 code",
+                "type": "integer"
+            },
+            "mpls_tc": {
+                "description": "MPLS TC",
+                "type": "integer"
+            },
+            "mpls_bos": {
+                "description": "MPLS BoS",
+                "type": "integer"
+            },
+            "arp_op": {
+                "description": "ARP opcode",
+                "type": "integer"
+            },
+            "ipv6_flabel": {
+                "description": "IPv6 flow label",
+                "$ref": "#/hex"
+            },
+            "mpls_label": {
+                "description": "MPLS label",
+                "$ref": "#/hex"
+            },
+            "pbb_isid": {
+                "description": "PBB I-SID",
+                "$ref": "#/hex"
+            },
+            "ipv4_src": {
+                "description": "IPv4 source address",
+                "type": "string",
+                "format": "ipv4"
+            },
+            "ipv4_dst": {
+                "description": "IPv4 destination address",
+                "type": "string",
+                "format": "ipv4"
+            },
+            "arp_spa": {
+                "description": "ARP source IPv4 address",
+                "type": "string",
+                "format": "ipv4"
+            },
+            "arp_tpa": {
+                "description": "ARP target IPv4 address",
+                "type": "string",
+                "format": "ipv4"
+            },
+            "ipv6_src": {
+                "description": "IPv6 source address",
+                "type": "string",
+                "format": "ipv6"
+            },
+            "ipv6_dst": {
+                "description": "IPv6 destination address",
+                "type": "string",
+                "format": "ipv6"
+            },
+            "ipv6_nd_target": {
+                "description": "Target address for ND",
+                "type": "string",
+                "format": "ipv6"
+            },
+            "tcp_src": {
+                "description": "TCP source port",
+                "type": "integer"
+            },
+            "tcp_dst": {
+                "description": "TCP destination port",
+                "type": "integer"
+            },
+            "udp_src": {
+                "description": "UDP source port",
+                "type": "integer"
+            },
+            "udp_dst": {
+                "description": "UDP destination port",
+                "type": "integer"
+            },
+            "sctp_src": {
+                "description": "SCTP source port",
+                "type": "integer"
+            },
+            "sctp_dst": {
+                "description": "SCTP destination port",
+                "type": "integer"
+            },
+            "icmpv4_type": {
+                "description": "ICMP type",
+                "type": "string"
+            },
+            "ipv6_exthdr": {
+                "description": "IPv6 extension header with a map of properties to match",
+                "type": "object",
+                "properties": {
+                    "no_next": {"type": "boolean"},
+                    "esp": {"type": "boolean"},
+                    "auth": {"type": "boolean"},
+                    "dest": {"type": "boolean"},
+                    "frag": {"type": "boolean"},
+                    "router": {"type": "boolean"},
+                    "hop": {"type": "boolean"},
+                    "un_rep": {"type": "boolean"},
+                    "un_seq": {"type": "boolean"}
+                },
+                "additionalProperties": false
+            },
+            "mask": {
+                "description": "Mask",
+                "type": [
+                    "string",
+                    "array"
+                ]
+            }
+        }
+    },
+    "flow_match_fields": {
+        "type": "array",
+        "items": {"$ref": "#/flow_match_field"}
+    },
+    "flow_action": {
+        "description": "OF flow action",
+        "type": "object",
+        "properties": {
+            "output": {
+                "description": "Output to specified port",
+                "type": ["integer", "string" ]
+            },
+            "copy_ttl_out": {
+                "description": "Copy the TTL from next-to-outermost to outermost header with TTL",
+                "type": "boolean"
+            },
+            "copy_ttl_in": {
+                "description": "Copy the TTL from outermost to next-to-outermost header with TTL",
+                "type": "boolean"
+            },
+            "set_mpls_ttl": {
+                "description": "Replace the existing MPLS TTL",
+                "type": "integer"
+            },
+            "dec_mpls_ttl": {
+                "description": "Decrement the MPLS TTL",
+                "type": "boolean"
+            },
+            "push_vlan": {
+                "description": "Push a new VLAN header onto the packet",
+                "$ref": "#/ethernet_vlan"
+            },
+            "pop_vlan": {
+                "description": "Pop the outer-most VLAN header from the packet",
+                "type": "boolean"
+            },
+            "push_mpls": {
+                "description": "Push a new MPLS shim header onto the packet",
+                "$ref": "#/ethernet_mpls"
+            },
+            "pop_mpls": {
+                "description": "Pop the outer-most MPLS tag or shim header from the packet",
+                "$ref": "#/ethernet_mpls"
+            },
+            "set_queue": {
+                "description": "Set queue id when outputting to a port",
+                "type": "integer"
+            },
+            "group": {
+                "description": "Apply group",
+                "type": "integer"
+            },
+            "set_nw_ttl": {
+                "description": "Replace the existing IPv4 TTL or IPv6 Hop Limit and update the IP checksum",
+                "type": "integer"
+            },
+            "dec_nw_ttl": {
+                "description": "Decrement the IPv4 TTL or IPv6 Hop Limit and update the IP checksum",
+                "type": "boolean"
+            },
+            "set_field": {
+                "description": "Set the given header field",
+                "$ref": "#/flow_match_field"
+            },
+            "push_pbb": {
+                "description": "Push a new PBB service instance header (I-TAG TCI) onto the packet",
+                "$ref": "#/ethernet_pbb"
+            },
+            "pop_pbb": {
+                "description": "Pop the outer-most PBB service instance header (I-TAG TCI) from the packet",
+                "type": "boolean"
+            },
+            "experimenter": {
+                "description": "Experimenter action",
+                "$ref": "#/hex"
+            },
+            "data": {
+                "description": "Experimenter data",
+                "$ref": "#/hex"
+            }
+        }
+    },
+    "flow_actions": {
+        "type": "array",
+        "items": {"$ref": "#/flow_action"}
+    },
+    "flow_instruction": {
+        "description": "OF flow instruction (OF 1.1 and above)",
+        "type": "object",
+        "properties": {
+            "clear_actions": {
+                "description": "Clears all action(s) from the datapath action set",
+                "type": "boolean"
+            },
+            "write_actions": {
+                "description": "Write the action(s) onto the datapath action set",
+                "$ref": "#/flow_actions"
+            },
+            "apply_actions": {
+                "description": "Applies the action(s) immediately",
+                "$ref": "#/flow_actions"
+            },
+            "write_metadata": {
+                "description": "Setup the metadata field for use later in pipeline",
+                "$ref": "#/hex"
+            },
+            "mask": {
+                "description": "Metadata mask",
+                "$ref": "#/hex"
+            },
+            "goto_table": {
+                "description": "Goto table",
+                "type": "integer"
+            },
+            "meter": {
+                "description": "Apply meter (rate limiter) (OF 1.3 and above)",
+                "type": "integer"
+            },
+            "experimenter": {
+                "description": "Experimenter instruction",
+                "$ref": "#/hex"
+            }
+        }
+    },
+    "flow_instructions": {
+        "type": "array",
+        "items": {"$ref": "#/flow_instruction"}
+    },
+    "meter": {
+        "description": "OF meter (OF 1.3 and above)",
+        "type": "object",
+        "properties": {
+            "id": {
+                "description": "Meter id",
+                "type": "integer"
+            },
+            "command": {
+                "description": "Meter command",
+                "type": "string",
+                "enum": [
+                    "add",
+                    "modify",
+                    "delete"
+                ]
+            },
+            "flags": {
+                "description": "Meter flags",
+                "type": "array",
+                "items": {"enum": [
+                    "kbps",
+                    "pktps",
+                    "burst",
+                    "stats"
+                ]}
+            },
+            "bands": {
+                "description": "Meter bands",
+                "$ref": "#/meter_bands"
+            }
+        }
+    },
+    "meters": {
+        "type": "array",
+        "items": {"$ref": "#/meter"}
+    },
+    "meter_band": {
+        "description": "OF meter band (OF 1.3 and above)",
+        "type": "object",
+        "properties": {
+            "burst_size": {
+                "description": "Size of bursts",
+                "type": "integer"
+            },
+            "rate": {
+                "description": "Rate for dropping or remarking packets",
+                "type": "integer"
+            },
+            "mtype": {
+                "description": "Meter band type",
+                "type": "string",
+                "enum": [
+                    "drop",
+                    "dscp_remark",
+                    "experimenter"
+                ]
+            },
+            "prec_level": {
+                "description": "Number of drop precedence level to add",
+                "type": "integer"
+            },
+            "experimenter": {
+                "description": "Experimenter meter band",
+                "$ref": "#/hex"
+            }
+        }
+    },
+    "meter_bands": {
+        "type": "array",
+        "items": {"$ref": "#/meter_band"}
+    },
+    "meter_features": {
+        "description": "OF meter features (OF 1.3 and above)",
+        "type": "object",
+        "properties": {
+            "max_meters": {
+                "description": "Maximum number of meters",
+                "type": "integer"
+            },
+            "types": {
+                "description": "Meter band types",
+                "type": "array",
+                "items": {"enum": [
+                    "drop",
+                    "dscp_remark",
+                    "experimenter"
+                ]}
+            },
+            "flags": {
+                "description": "Meter configuration flags",
+                "type": "array",
+                "items": {"enum": [
+                    "kbps",
+                    "pktps",
+                    "burst",
+                    "stats"
+                ]}
+            },
+            "max_bands_per_meter": {
+                "description": "Maximum bands per meter",
+                "type": "integer"
+            },
+            "max_color_value": {
+                "description": "Maximum color value",
+                "type": "integer"
+            }
+        },
+        "required": [
+            "max_meters",
+            "types",
+            "flags",
+            "max_bands_per_meter",
+            "max_color_value"
+        ]
+    },
+    "meters_features": {
+        "type": "array",
+        "items": {"$ref": "#/meter_features"}
+    },
+    "group": {
+        "description": "OF group (OF 1.1 and above)",
+        "type": "object",
+        "properties": {
+            "id": {
+                "description": "Group id",
+                "type": "integer"
+            },
+            "type": {
+                "description": "Group type",
+                "type": "string",
+                "enum": [
+                    "all",
+                    "select",
+                    "indirect",
+                    "ff"
+                ]
+            },
+            "buckets": {
+                "description": "Group buckets",
+                "$ref": "#/buckets"
+            }
+        },
+        "required": ["id"]
+    },
+    "bucket": {
+        "description": "OF group bucket",
+        "type": "object",
+        "properties": {
+            "weight": {
+                "description": "Bucket weight",
+                "type": "integer"
+            },
+            "watch_group": {
+                "description": "Group whose state affects whether this bucket is live. Only required for fast failover groups.",
+                "type": "integer"
+            },
+            "watch_port": {
+                "description": "Port whose state affects whether this bucket is live. Only required for fast failover groups",
+                "type": [ "integer", "string" ]
+            },
+            "actions": {
+                "description": "Actions associated with this bucket",
+                "$ref": "#/flow_actions"
+            }
+        }
+    },
+    "buckets": {
+        "type": "array",
+        "items": {"$ref": "#/bucket"}
+    },
+    "groups": {
+        "type": "array",
+        "items": {"$ref": "#/group"}
+    },
+    "stats": {
+        "description": "OF statistics",
+        "type": "array",
+        "properties": {
+            "dpid": {
+                "description": "Datapath id",
+                "type": "string"
+            },
+            "version": {
+                "description": "OF version",
+                "type": "string"
+            },
+            "meter_stats": {
+                "description": "Meter statistics",
+                "$ref": "#/meter_stats"
+            },
+            "port_stats": {
+                "description": "Port statistics",
+                "$ref": "#/port_stats"
+            },
+            "group_stats": {
+                "description": "Group statistics",
+                "$ref": "#/group_stats"
+            }
+        },
+        "required": ["dpid"],
+        "additionalProperties": false,
+        "minProperties": 3,
+        "maxProperties": 3
+    },
+    "meter_stats": {
+        "description": "OF meter statistics (OF 1.3 and above)",
+        "type": "array",
+        "items": {
+            "type": "object",
+            "properties": {
+                "id": {"type": "integer"},
+                "flow_count": {"type": "integer"},
+                "packet_count": {"type": "integer"},
+                "byte_count": {"type": "integer"},
+                "duration_sec": {"type": "integer"},
+                "duration_nsec": {"type": "integer"},
+                "band_stats": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "packet_count": {"type": "integer"},
+                            "byte_count": {"type": "integer"}
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "port_stats": {
+        "description": "OF port statistics",
+        "type": "array",
+        "items": {
+            "type": "object",
+            "properties": {
+                "port_id": {"type": "integer"},
+                "rx_packets": {"type": "integer"},
+                "tx_packets": {"type": "integer"},
+                "rx_bytes": {"type": "integer"},
+                "tx_bytes": {"type": "integer"},
+                "rx_dropped": {"type": "integer"},
+                "tx_dropped": {"type": "integer"},
+                "rx_errors": {"type": "integer"},
+                "tx_errors": {"type": "integer"},
+                "collisions": {"type": "integer"},
+                "duration_sec": {"type": "integer"},
+                "duration_nsec": {"type": "integer"},
+                "rx_crc_err": {"type": "integer"},
+                "rx_frame_err": {"type": "integer"},
+                "rx_over_err": {"type": "integer"}
+            },
+            "required": ["port_id"]
+        }
+    },
+    "group_stats": {
+        "description": "OF group statistics (OF 1.1 and above)",
+        "type": "array",
+        "items": {
+            "type": "object",
+            "properties": {
+                "id": {"type": "integer"},
+                "ref_count": {"type": "integer"},
+                "packet_count": {"type": "integer"},
+                "byte_count": {"type": "integer"},
+                "duration_sec": {"type": "integer"},
+                "duration_nsec": {"type": "integer"},
+                "bucket_stats": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "packet_count": {"type": "integer"},
+                            "byte_count": {"type": "integer"}
+                        }
+                    }
+                }
+            },
+            "required": ["id"]
+        }
+    }
+}

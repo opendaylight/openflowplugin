@@ -1,0 +1,260 @@
+### OpenFlow 1.0 STATS_REPLY message : Type FLOW
+#
+# openflow version (u8) = 1.0 (0x1)
+#<0>#
+01
+
+# message type (u8) = OFPT_STATS_REPLY(17)
+11
+
+# message length (u16) = 340
+01 54
+
+# transaction id (u32) = 0
+00 00 00 00
+
+### Message Specific Payload
+## Multipart Reply Header
+# Multipart-Type (u16) = FLOW (1)
+#<8>#
+00 01
+
+# Flags (u16) : none
+00 00
+
+## Multipart Reply FLOW Body
+#### An array of ofp_flow_stats structures
+
+#==============
+#= Flow 0
+#==============
+# length (u16) = 112
+#<12>#
+00 70
+# Table ID (u8) = 0
+00
+# padding (u8)
+00
+
+### Legacy Fixed Match Structure (40 bytes)
+# Wildcards (u32) : match DL_SRC
+#<16>#
+00 38 20 fb
+
+# InPort  EthSrc          EthDst        VLANid  VLANpri  pad   EthType
+  0000    112233:445566  000000:000000  0000    00       00    0000
+
+# ToS   Proto   pad   IpSrc     IpDst     TpSrc TpDst
+  00    00      0000  00000000  00000000  0000  0000
+
+##== End of match structure ==##
+
+# duration sec (u32) = 300
+#<56>#
+00 00 01 2c
+# duration nsec (u32) = 50000
+#<60>#
+00 00 c3 50
+# priority (u16) = 4
+#<64>#
+00 04
+# idle timeout (u16) = 60
+00 3c
+# hard timeout (u16) = 300
+#<68>#
+01 2c
+
+# more padding (u8 x 6)
+0000 0000 0000
+
+# cookie (u64) = 0x1234
+#<76>#
+0000 0000 0000 1234
+# packet count (u62) = 2342
+#<84>#
+0000 0000 0000 0926
+# byte count (u62) = 13423234
+#<92>#
+0000 0000 00cc d282
+
+
+####################################
+### LIST OF ACTIONS (1.0 format) ###
+####################################
+
+#.............
+# SET_VLAN_VID
+#.............
+# Action Type (u16), Length (u16), Action Specific
+# SET_VLAN_VID(1),   8,            VLAN ID (u16) = 42; padding (u8 x 2)
+#<100>#
+  00 01              00 08         00 2a               00 00
+
+#.............
+# SET_VLAN_PCP
+#.............
+# Action Type (u16), Length (u16), Action Specific
+# SET_VLAN_PCP(2),   8,            VLAN PCP (u8) = 7; padding (u8 x 3)
+#<108>#
+  00 02              00 08         07                 00 00 00
+
+#.............
+# SET_NW_DST
+#.............
+# Action Type (u16), Length (u16), Action Specific
+# SET_NW_DST(7),     8,            IP addr (u32) = 15.255.127.35
+#<116>#
+  00 07              00 08         0f ff 7f 23
+
+
+
+#==============
+#= Flow 1
+#==============
+# length (u16) = 104
+#<124>#
+00 68
+# Table ID (u8) = 1
+01
+# padding (u8)
+00
+
+### Legacy Fixed Match Structure (40 bytes)
+# Wildcards (u32) : match :
+#     ETH_TYPE : IPv4 (0x0800)
+#     NW_SRC 15.255.1.1 w/ mask 255.0.0.0
+#<128>#
+00 38 18 ef
+
+# InPort  EthSrc          EthDst        VLANid  VLANpri  pad   EthType
+  0000    000000:000000  000000:000000  0000    00       00    0800
+
+# ToS   Proto   pad   IpSrc     IpDst     TpSrc TpDst
+  00    00      0000  0fff0101  00000000  0000  0000
+
+##== End of match structure ==##
+
+# duration sec (u32) = 740
+#<168>#
+00 00 02 e4
+# duration nsec (u32) = 3
+#<172>#
+00 00 00 03
+# priority (u16) = 1
+00 01
+# idle timeout (u16) = 60
+00 3c
+# hard timeout (u16) = 300
+#<180>#
+01 2c
+
+# more padding (u8 x 6)
+0000 0000 0000
+
+# cookie (u64) = 0x1234
+#<188>#
+0000 0000 0000 1234
+# packet count (u62) = 256
+#<196>#
+0000 0000 0000 0100
+# byte count (u62) = 37000
+#<204>#
+0000 0000 0000 9088
+
+####################################
+### LIST OF ACTIONS (1.0 format) ###
+####################################
+
+#.............
+# SET_NW_DST
+#.............
+# Action Type (u16), Length (u16), Action Specific
+# SET_NW_DST(7),     8,            IP addr (u32) = 15.255.127.35
+#<212>#
+  00 07              00 08         0f ff 7f 23
+
+#.............
+# OUTPUT
+#.............
+# Action Type (u16), Length (u16), Action Specific
+# OUTPUT(0),         8,      Port (u16) = CONTROLLER, maxLen (u16) = NO_BUFFER
+#<220>#
+  00 00              00 08         ff fd              ff ff
+
+
+#==============
+#= Flow 2
+#==============
+# length (u16) = 112
+#<228>#
+00 70
+# Table ID (u8) = 1
+01
+# padding (u8)
+00
+
+### Legacy Fixed Match Structure (40 bytes)
+# Wildcards (u32) : match anything!
+#<232>#
+00 38 20 ff
+
+# InPort  EthSrc          EthDst        VLANid  VLANpri  pad   EthType
+  0000    000000:000000  000000:000000  0000    00       00    0000
+
+# ToS   Proto   pad   IpSrc     IpDst     TpSrc TpDst
+  00    00      0000  00000000  00000000  0000  0000
+
+##== End of match structure ==##
+
+# duration sec (u32) = 748
+#<272>#
+00 00 02 ec
+# duration nsec (u32) = 32
+#<276>#
+00 00 00 20
+# priority (u16) = 7
+00 07
+# idle timeout (u16) = 60
+00 3c
+# hard timeout (u16) = 300
+#<284>#
+01 2c
+
+# more padding (u8 x 6)
+0000 0000 0000
+
+# cookie (u64) = 0x1234
+#<292>#
+0000 0000 0000 1234
+# packet count (u62) = 2560
+#<300>#
+0000 0000 0000 0a00
+# byte count (u62) = 37004
+#<308>#
+0000 0000 0000 908c
+
+####################################
+### LIST OF ACTIONS (1.0 format) ###
+####################################
+
+#.............
+# OUTPUT
+#.............
+# Action Type (u16), Length (u16), Action Specific
+# OUTPUT(0),         8,       Port (u16) = CONTROLLER,   maxLen (u16) = 128
+#<316>#
+  00 00              00 08         ff fd              00 80
+
+#.............
+# VENDOR
+#.............
+# Action Type (u16), Length (u16), Action Specific
+# VENDOR(ffff),      16,           VendorID (u32) = NICIRA,
+#<324>#
+  ff ff              00 10         00 00 23 20
+# data (u64)
+  01 02 03 04 05 06 07 08
+
+
+#<340>#
+#### and we are done ####
