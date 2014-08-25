@@ -13,9 +13,9 @@ import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
-import org.opendaylight.controller.sal.binding.api.data.DataProviderService;
 import org.opendaylight.openflowplugin.openflow.md.ModelDrivenSwitch;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
@@ -55,10 +55,10 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
 
     private NotificationProviderService publishService;
 
-    private DataProviderService dataService;
-    
+    private DataBroker dataService;
+
     private SwitchFeaturesUtil swFeaturesUtil;
-    
+
     public SalRegistrationManager() {
         swFeaturesUtil = SwitchFeaturesUtil.getInstance();
     }
@@ -79,11 +79,11 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
         LOG.debug("onSessionInitiated");
         this.providerContext = session;
         this.publishService = session.getSALService(NotificationProviderService.class);
-        this.dataService = session.getSALService(DataProviderService.class);
+        this.dataService = session.getSALService(DataBroker.class);
         // We register as listener for Session Manager
         getSessionManager().registerSessionListener(this);
         getSessionManager().setNotificationProviderService(publishService);
-        getSessionManager().setDataProviderService(dataService);
+        getSessionManager().setDataBroker(dataService);
         LOG.debug("SalRegistrationManager initialized");
     }
 
@@ -101,7 +101,7 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
 
         LOG.debug("ModelDrivenSwitch for {} registered to MD-SAL.", datapathId.toString());
 
-        publishService.publish(nodeAdded(ofSwitch, features,nodeRef));
+        publishService.publish(nodeAdded(ofSwitch, features, nodeRef));
     }
 
     @Override
@@ -114,7 +114,7 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
         LLDPSpeaker.getInstance().removeModelDrivenSwitch(identifier);
         CompositeObjectRegistration<ModelDrivenSwitch> registration = context.getProviderRegistration();
         registration.close();
-        
+
         LOG.debug("ModelDrivenSwitch for {} unregistered from MD-SAL.", datapathId.toString());
         publishService.publish(nodeRemoved);
     }
@@ -123,10 +123,12 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
         NodeUpdatedBuilder builder = new NodeUpdatedBuilder();
         builder.setId(sw.getNodeId());
         builder.setNodeRef(nodeRef);
+
         FlowCapableNodeUpdatedBuilder builder2 = new FlowCapableNodeUpdatedBuilder();
         builder2.setIpAddress(getIpAddressOf(sw));
         builder2.setSwitchFeatures(swFeaturesUtil.buildSwitchFeatures(features));
         builder.addAugmentation(FlowCapableNodeUpdated.class, builder2.build());
+
         return builder.build();
     }
 
@@ -164,7 +166,7 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
 
     public static InstanceIdentifier<Node> identifierFromDatapathId(BigInteger datapathId) {
         NodeKey nodeKey = nodeKeyFromDatapathId(datapathId);
-        InstanceIdentifierBuilder<Node> builder = InstanceIdentifier.builder(Nodes.class).child(Node.class,nodeKey);
+        InstanceIdentifierBuilder<Node> builder = InstanceIdentifier.builder(Nodes.class).child(Node.class, nodeKey);
         return builder.toInstance();
     }
 
@@ -181,7 +183,7 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
     public SessionManager getSessionManager() {
         return OFSessionUtil.getSessionManager();
     }
-    
+
     @Override
     public void close() {
         LOG.debug("close");

@@ -8,12 +8,12 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.session;
 
+import com.google.common.util.concurrent.ListeningExecutorService;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
-import org.opendaylight.controller.sal.binding.api.data.DataProviderService;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
@@ -27,8 +27,6 @@ import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 
-import com.google.common.util.concurrent.ListeningExecutorService;
-
 /**
  * @author mirehak
  */
@@ -37,7 +35,7 @@ public interface SessionManager extends AutoCloseable {
     /**
      * @param sessionKey
      * @return corresponding conductor, holding {@link ConnectionAdapter} to
-     *         primary connection
+     * primary connection
      */
     public SessionContext getSessionContext(SwitchSessionKeyOF sessionKey);
 
@@ -64,7 +62,7 @@ public interface SessionManager extends AutoCloseable {
      * @param connectionCookie
      */
     public void invalidateAuxiliary(SwitchSessionKeyOF sessionKey,
-            SwitchConnectionDistinguisher connectionCookie);
+                                    SwitchConnectionDistinguisher connectionCookie);
 
     /**
      * @param connectionConductor
@@ -89,12 +87,12 @@ public interface SessionManager extends AutoCloseable {
     /**
      * @return notificationServiceProvider
      */
-    public DataProviderService getDataProviderService();
+    public DataBroker getDataBroker();
 
     /**
-     * @param dataServiceProvider
+     * @param dataBroker
      */
-    public void setDataProviderService(DataProviderService dataServiceProvider);
+    public void setDataBroker(DataBroker dataBroker);
 
     /**
      * @return notificationServiceProvider
