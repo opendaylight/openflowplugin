@@ -8,6 +8,8 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -76,7 +78,7 @@ public class ConnectionConductorImplTest {
     private ScheduledThreadPoolExecutor pool = new ScheduledThreadPoolExecutor(
             8);
 
-    private QueueProcessorLightImpl queueProcessor;
+    protected QueueProcessorLightImpl queueProcessor;
 
     private PopListener<DataObject> popListener;
 
@@ -123,6 +125,14 @@ public class ConnectionConductorImplTest {
         this.errorMessageCounter++;
     }
 
+    @Test
+    /**
+     * Test for ConnectionConductorFactory#createConductor
+     */
+    public void testCreateConductor() {
+        ConnectionConductor connectionConductor = ConnectionConductorFactory.createConductor(adapter, queueProcessor);
+        assertNotNull(connectionConductor);
+    }
 
     /**
      * @throws java.lang.Exception
