@@ -8,15 +8,15 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.session;
 
+import com.google.common.util.concurrent.ListeningExecutorService;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
-
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
-import org.opendaylight.controller.sal.binding.api.data.DataProviderService;
 import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
@@ -32,8 +32,6 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.util.concurrent.ListeningExecutorService;
-
 /**
  * @author mirehak
  */
@@ -48,9 +46,9 @@ public class SessionManagerOFImpl implements SessionManager {
     protected ListenerRegistry<SessionListener> sessionListeners;
     private NotificationProviderService notificationProviderService;
 
-    private DataProviderService dataProviderService;
+    private DataBroker dataBroker;
     private ListeningExecutorService rpcPool;
-    
+
 
     /**
      * @return singleton instance
@@ -65,7 +63,7 @@ public class SessionManagerOFImpl implements SessionManager {
         }
         return instance;
     }
-    
+
     /**
      * close and release singleton instace
      */
@@ -139,7 +137,7 @@ public class SessionManagerOFImpl implements SessionManager {
 
     @Override
     public void invalidateAuxiliary(SwitchSessionKeyOF sessionKey,
-            SwitchConnectionDistinguisher connectionCookie) {
+                                    SwitchConnectionDistinguisher connectionCookie) {
         SessionContext context = getSessionContext(sessionKey);
         invalidateAuxiliary(context, connectionCookie, true);
     }
@@ -147,11 +145,10 @@ public class SessionManagerOFImpl implements SessionManager {
     /**
      * @param context
      * @param connectionCookie
-     * @param disconnect
-     *            true if auxiliary connection is to be disconnected
+     * @param disconnect       true if auxiliary connection is to be disconnected
      */
     private static void invalidateAuxiliary(SessionContext context, SwitchConnectionDistinguisher connectionCookie,
-            boolean disconnect) {
+                                            boolean disconnect) {
         if (context == null) {
             LOG.warn("context for invalidation not found");
         } else {
@@ -213,7 +210,7 @@ public class SessionManagerOFImpl implements SessionManager {
     };
     private MessageSpy<DataContainer> messageSpy;
     private ExtensionConverterProvider extensionConverterProvider;
-    
+
 
     @Override
     public Map<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, List<DataObject>>>> getTranslatorMapping() {
@@ -228,13 +225,13 @@ public class SessionManagerOFImpl implements SessionManager {
     }
 
     @Override
-    public DataProviderService getDataProviderService() {
-        return dataProviderService;
+    public DataBroker getDataBroker() {
+        return dataBroker;
     }
 
     @Override
-    public void setDataProviderService(DataProviderService dataServiceProvider) {
-        this.dataProviderService = dataServiceProvider;
+    public void setDataBroker(DataBroker dataBroker) {
+        this.dataBroker = dataBroker;
 
     }
 
@@ -253,7 +250,7 @@ public class SessionManagerOFImpl implements SessionManager {
             Map<Class<? extends DataObject>, Collection<PopListener<DataObject>>> popListenerMapping) {
         this.popListenerMapping = popListenerMapping;
     }
-    
+
     @Override
     public void close() {
         LOG.debug("close");
@@ -271,28 +268,28 @@ public class SessionManagerOFImpl implements SessionManager {
     public void setRpcPool(ListeningExecutorService rpcPool) {
         this.rpcPool = rpcPool;
     }
-    
+
     @Override
     public ListeningExecutorService getRpcPool() {
         return rpcPool;
     }
-    
+
     @Override
     public void setMessageSpy(MessageSpy<DataContainer> messageSpy) {
         this.messageSpy = messageSpy;
     }
-    
+
     @Override
     public MessageSpy<DataContainer> getMessageSpy() {
         return messageSpy;
     }
-    
+
     @Override
     public void setExtensionConverterProvider(
             ExtensionConverterProvider extensionConverterProvider) {
-                this.extensionConverterProvider = extensionConverterProvider;
+        this.extensionConverterProvider = extensionConverterProvider;
     }
-    
+
     /**
      * @return the extensionConverterProvider
      */
