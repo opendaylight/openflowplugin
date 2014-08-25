@@ -135,10 +135,20 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
         builder.setId(sw.getNodeId());
         builder.setNodeRef(nodeRef);
         FlowCapableNodeUpdatedBuilder builder2 = new FlowCapableNodeUpdatedBuilder();
+        builder2.setDatapathId(getDatapathIdOf(sw));
         builder2.setIpAddress(getIpAddressOf(sw));
         builder2.setSwitchFeatures(swFeaturesUtil.buildSwitchFeatures(features));
         builder.addAugmentation(FlowCapableNodeUpdated.class, builder2.build());
         return builder.build();
+    }
+
+    private BigInteger getDatapathIdOf(ModelDrivenSwitch sw) {
+        SessionContext sessionContext = sw.getSessionContext();
+        if (!sessionContext.isValid()) {
+            LOG.warn("Datapath ID of the node {} cannot be obtained. Session is not valid.", sw.getNodeId());
+            return null;
+        }
+        return sessionContext.getFeatures().getDatapathId();
     }
 
     private IpAddress getIpAddressOf(ModelDrivenSwitch sw) {
