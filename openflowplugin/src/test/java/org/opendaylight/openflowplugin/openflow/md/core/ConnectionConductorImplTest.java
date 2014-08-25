@@ -76,7 +76,7 @@ public class ConnectionConductorImplTest {
     private ScheduledThreadPoolExecutor pool = new ScheduledThreadPoolExecutor(
             8);
 
-    private QueueProcessorLightImpl queueProcessor;
+    protected QueueProcessorLightImpl queueProcessor;
 
     private PopListener<DataObject> popListener;
 
