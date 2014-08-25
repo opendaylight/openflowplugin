@@ -8,6 +8,8 @@
 package org.opendaylight.openflowplugin.openflow.md.util;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -51,12 +53,13 @@ public class InventoryDataServiceUtilTest {
      */
     public void testReadAllNodes() {
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node> nodes = InventoryDataServiceUtil.readAllNodes();
-        assertNotNull(nodes);
+        assertNull(nodes);
     }
 
     /**
      * Test method for {@link InventoryDataServiceUtil#nodeUpdatedBuilderFromDataPathId(BigInteger datapathId)}.
      */
+    @Test
     public void testNodeUpdatedBuilderFromDataPathId() {
         NodeUpdatedBuilder nodeUpdatedBuilder = InventoryDataServiceUtil.nodeUpdatedBuilderFromDataPathId(PATH_ID);
         assertNotNull(nodeUpdatedBuilder);
@@ -66,6 +69,7 @@ public class InventoryDataServiceUtilTest {
      * Test method for {@link InventoryDataServiceUtil#nodeConnectorBuilderFromDatapathIdPortNo(BigInteger datapathId,
      * Long portNo, OpenflowVersion ofVersion)}.
      */
+    @Test
     public void testNodeConnectorBuilderFromDatapathIdPortNo() {
         NodeConnectorBuilder nodeConnectorBuilder = InventoryDataServiceUtil.nodeConnectorBuilderFromDatapathIdPortNo(PATH_ID,
                 PORT_NO, OpenflowVersion.OF10);
@@ -84,6 +88,7 @@ public class InventoryDataServiceUtilTest {
      * Test method for {@link InventoryDataServiceUtil#nodeConnectorUpdatedBuilderFromDatapathIdPortNo(BigInteger datapathId,
      * Long portNo, OpenflowVersion ofVersion)}
      */
+    @Test
     public void testNodeConnectorUpdatedBuilderFromDatapathIdPortNo() {
         NodeConnectorUpdatedBuilder nodeConnectorUpdatedBuilder = InventoryDataServiceUtil.nodeConnectorUpdatedBuilderFromDatapathIdPortNo(PATH_ID,
                 PORT_NO, OpenflowVersion.OF10);
