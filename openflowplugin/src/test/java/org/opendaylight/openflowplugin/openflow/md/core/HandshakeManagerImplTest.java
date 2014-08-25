@@ -76,10 +76,10 @@ public class HandshakeManagerImplTest {
         handshakeManager.setHandshakeListener(handshakeListener);
         handshakeManager.setUseVersionBitmap(false);
         
-        resultFeatures = createRpcResult(true, new GetFeaturesOutputBuilder().build(), null);
+        resultFeatures = RpcResultsUtil.createRpcResult(true, new GetFeaturesOutputBuilder().build(), null);
         
         Mockito.when(adapter.hello(Matchers.any(HelloInput.class)))
-            .thenReturn(Futures.immediateFuture(createRpcResult(true, (Void) null, null)));
+            .thenReturn(Futures.immediateFuture(RpcResultsUtil.createRpcResult(true, (Void) null, null)));
     }
     
     /**
@@ -555,19 +555,6 @@ public class HandshakeManagerImplTest {
                 Matchers.any(GetFeaturesOutput.class), Matchers.anyShort());
     }
 
-    /**
-     * @param success
-     * @param result
-     * @param errors
-     * @return
-     */
-    private static <T> RpcResult<T> createRpcResult(boolean success, T result, Collection<RpcError> errorsArg) {
-        Collection<RpcError> errors = errorsArg;
-        if (errors == null) {
-            errors = Collections.emptyList();
-        }
-        return Rpcs.getRpcResult(success, result, errors);
-    }
 
     /**
      * @param ofpVersion10
