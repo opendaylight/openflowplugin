@@ -122,7 +122,7 @@ public abstract class OFSessionUtil {
      * @param features
      * @param seed 
      * @return connection cookie key
-     * @see #createConnectionCookie(BigInteger, short)
+     * @see #createConnectionCookie(BigInteger,short, int)
      */
     public static SwitchConnectionDistinguisher createConnectionCookie(
             GetFeaturesOutput features, int seed) {
