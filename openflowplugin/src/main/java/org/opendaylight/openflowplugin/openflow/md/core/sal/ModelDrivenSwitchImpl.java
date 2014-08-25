@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal;
 
+import java.math.BigInteger;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
@@ -24,6 +25,9 @@ import org.opendaylight.openflowplugin.openflow.md.core.session.SwitchConnection
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Address;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.GetNodeDatapathIdInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.GetNodeDatapathIdOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.GetNodeDatapathIdOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.GetNodeIpAddressInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.GetNodeIpAddressOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.GetNodeIpAddressOutputBuilder;
@@ -530,6 +534,19 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
                 OFRpcTaskFactory.createGetQueueStatisticsFromGivenPortTask(rpcTaskContext, input, cookie);
         ListenableFuture<RpcResult<GetQueueStatisticsFromGivenPortOutput>> result = task.submit();
         return result;
+    }
+
+    @Override
+    public Future<RpcResult<GetNodeDatapathIdOutput>> getNodeDatapathId(GetNodeDatapathIdInput input) {
+        if (!sessionContext.isValid()) {
+            return Futures.immediateFuture(RpcResultBuilder
+                    .<GetNodeDatapathIdOutput> failed()
+                    .withError(org.opendaylight.yangtools.yang.common.RpcError.ErrorType.TRANSPORT,
+                            "Session is not valid.").build());
+        }
+        BigInteger datapathId = sessionContext.getFeatures().getDatapathId();
+        GetNodeDatapathIdOutput result = new GetNodeDatapathIdOutputBuilder().setDatapathId(datapathId).build();
+        return Futures.immediateFuture(RpcResultBuilder.<GetNodeDatapathIdOutput> success(result).build());
     }
 
     @Override
