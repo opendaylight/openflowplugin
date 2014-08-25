@@ -22,6 +22,9 @@ import org.opendaylight.openflowplugin.openflow.md.core.session.SwitchSessionKey
 import org.opendaylight.openflowplugin.openflow.md.lldp.LLDPSpeaker;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeUpdatedBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.GetNodeDatapathIdInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.GetNodeDatapathIdInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.GetNodeDatapathIdOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.GetNodeIpAddressInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.GetNodeIpAddressInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.GetNodeIpAddressOutput;
@@ -125,10 +128,22 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
         builder.setId(sw.getNodeId());
         builder.setNodeRef(nodeRef);
         FlowCapableNodeUpdatedBuilder builder2 = new FlowCapableNodeUpdatedBuilder();
+        setDatapathIdToBuilder(builder2, sw, nodeRef);
         setIpAddressToBuilder(builder2, sw, nodeRef);
         builder2.setSwitchFeatures(swFeaturesUtil.buildSwitchFeatures(features));
         builder.addAugmentation(FlowCapableNodeUpdated.class, builder2.build());
         return builder.build();
+    }
+
+    private void setDatapathIdToBuilder(FlowCapableNodeUpdatedBuilder builder, ModelDrivenSwitch sw, NodeRef nodeRef) {
+        GetNodeDatapathIdInput rpcInputGetDatapathId = new GetNodeDatapathIdInputBuilder().setNode(nodeRef).build();
+        RpcResult<GetNodeDatapathIdOutput> rpcResultGetDatapathId = Futures.getUnchecked(sw
+                .getNodeDatapathId(rpcInputGetDatapathId));
+        if (rpcResultGetDatapathId.isSuccessful()) {
+            builder.setDatapathId(rpcResultGetDatapathId.getResult().getDatapathId());
+        } else {
+            printRpcErrors(rpcResultGetDatapathId.getErrors());
+        }
     }
 
     private void setIpAddressToBuilder(FlowCapableNodeUpdatedBuilder builder, ModelDrivenSwitch sw, NodeRef nodeRef) {
