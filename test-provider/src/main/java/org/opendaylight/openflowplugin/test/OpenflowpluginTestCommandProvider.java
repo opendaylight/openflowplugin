@@ -3219,7 +3219,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         byte[] metamask = new byte[]{(byte) -1, (byte) -1, (byte) -1, 0, 0, 0, (byte) 1, (byte) 1};
         MetadataBuilder metadata = new MetadataBuilder(); // metadata match
         metadata.setMetadata(BigInteger.valueOf(500L));
-        metadata.setMetadataMask(new BigInteger(metamask));
+        metadata.setMetadataMask(new BigInteger(1, metamask));
         match.setMetadata(metadata.build());
 
         return match;
