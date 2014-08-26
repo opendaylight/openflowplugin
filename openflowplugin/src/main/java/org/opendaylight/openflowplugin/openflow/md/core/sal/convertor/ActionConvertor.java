@@ -9,10 +9,7 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.google.common.collect.Ordering;
 import org.opendaylight.openflowplugin.extension.api.ConverterExtensionKey;
 import org.opendaylight.openflowplugin.extension.api.ConvertorActionToOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorToOFJava;
@@ -158,7 +155,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ge
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Ordering;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author usha@ericsson Action List:This class takes data from SAL layer and
@@ -210,9 +209,10 @@ public final class ActionConvertor {
             else if (action instanceof DecMplsTtlCase)
                 ofAction = SalToOFDecMplsTtl(actionBuilder);
             else if (action instanceof PushVlanActionCase)
-                ofAction = SalToOFPushVlanAction(action, actionBuilder);
+                ofAction = SalToOFPushVlanAction(action, actionBuilder, version);
             else if (action instanceof PopVlanActionCase)
-                ofAction = (version == OFConstants.OFP_VERSION_1_0) ? SalToOFStripVlan(actionBuilder, version)
+                ofAction = (version == OFConstants.OFP_VERSION_1_0) ?
+                    SalToOFStripVlan(actionBuilder, version)
                         : SalToOFPopVlan(actionBuilder);
             else if (action instanceof PushMplsActionCase)
                 ofAction = SalToOFPushMplsAction(action, actionBuilder);
@@ -232,8 +232,15 @@ public final class ActionConvertor {
                 ofAction = SalToOFPopPBB(actionBuilder);
 
                 // 1.0 Actions
-            else if (action instanceof SetVlanIdActionCase)
+            else if (action instanceof SetVlanIdActionCase) {
+                /*if (version == OFConstants.OFP_VERSION_1_0) {
+
+                } else {
+                    List<Action> setVlanIdActionsList = convertToOF13(action, actionBuilder);
+                    actionsList.addAll(setVlanIdActionsList);
+                }*/
                 ofAction = SalToOFSetVlanId(action, actionBuilder, version);
+            }
             else if (action instanceof SetVlanPcpActionCase)
                 ofAction = SalToOFSetVlanpcp(action, actionBuilder, version);
             else if (action instanceof StripVlanActionCase)
@@ -293,17 +300,33 @@ public final class ActionConvertor {
             ActionBuilder actionBuilder, short version, BigInteger datapathid) {
 
         SetFieldCase setFieldCase = (SetFieldCase) action;
-        org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match match = setFieldCase
-                .getSetField();
+        org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match match =
+            setFieldCase.getSetField();
 
-        OxmFieldsActionBuilder oxmFieldsActionBuilder = new OxmFieldsActionBuilder();
-        MatchReactor.getInstance().convert(match, version, oxmFieldsActionBuilder, datapathid);
+        if (version == OFConstants.OFP_VERSION_1_0) {
+            // pushvlan +setField can be called to configure 1.0 switches via MDSAL app
+            if (match.getVlanMatch() != null) {
+                VlanVidActionBuilder vlanidActionBuilder = new VlanVidActionBuilder();
+                vlanidActionBuilder.setVlanVid(match.getVlanMatch().getVlanId().getVlanId().getValue());
+                actionBuilder.setType(
+                    org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.SetVlanVid.class);
+                actionBuilder.addAugmentation(VlanVidAction.class, vlanidActionBuilder.build());
+                return actionBuilder.build();
+            } else {
+                return emtpyAction(actionBuilder);
+            }
 
-        actionBuilder
-                .setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.SetField.class);
+        } else {
+            OxmFieldsActionBuilder oxmFieldsActionBuilder = new OxmFieldsActionBuilder();
+            MatchReactor.getInstance().convert(match, version, oxmFieldsActionBuilder, datapathid);
 
-        actionBuilder.addAugmentation(OxmFieldsAction.class, oxmFieldsActionBuilder.build());
-        return actionBuilder.build();
+            actionBuilder.setType(
+                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.SetField.class);
+
+            actionBuilder.addAugmentation(OxmFieldsAction.class, oxmFieldsActionBuilder.build());
+            return actionBuilder.build();
+        }
+
     }
 
     private static Action SalToOFDecNwTtl(ActionBuilder actionBuilder) {
@@ -332,7 +355,13 @@ public final class ActionConvertor {
 
     private static Action SalToOFPushVlanAction(
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
-            ActionBuilder actionBuilder) {
+            ActionBuilder actionBuilder, short version) {
+        if (version == OFConstants.OFP_VERSION_1_0) {
+            // if client configure openflow 1.0 switch as a openflow 1.3 switch using openflow 1.3 instructions
+            // then we can ignore PUSH_VLAN as set-vlan-id will push a vlan header if not present
+            return emtpyAction(actionBuilder);
+        }
+
         PushVlanActionCase pushVlanActionCase = (PushVlanActionCase) action;
         PushVlanAction pushVlanAction = pushVlanActionCase.getPushVlanAction();
         actionBuilder.setType(PushVlan.class);
@@ -384,6 +413,7 @@ public final class ActionConvertor {
         return emtpyAction(actionBuilder);
     }
 
+    // set-vlan-id (1.0 feature) can be called on  1.3 switches as well using ADSAL apis
     private static Action SalToOFSetVlanId(
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
             ActionBuilder actionBuilder, short version) {
@@ -399,6 +429,7 @@ public final class ActionConvertor {
                     .setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.SetVlanVid.class);
             actionBuilder.addAugmentation(VlanVidAction.class, vlanidActionBuilder.build());
             return actionBuilder.build();
+
         } else if (version >= OFConstants.OFP_VERSION_1_3) {
             OxmFieldsActionBuilder oxmFieldsActionBuilder = new OxmFieldsActionBuilder();
             actionBuilder
@@ -507,7 +538,6 @@ public final class ActionConvertor {
             logger.error("Unknown Action Type for the Version", version);
             return null;
         }
-
     }
 
     private static Action SalToOFSetDlDst(
@@ -537,7 +567,6 @@ public final class ActionConvertor {
             logger.error("Unknown Action Type for the Version", version);
             return null;
         }
-
     }
 
     protected static Action SalToOFSetNwSrc(

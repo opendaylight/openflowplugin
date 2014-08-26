@@ -7,12 +7,12 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal;
 
-import java.math.BigInteger;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.Future;
-
+import com.google.common.util.concurrent.AsyncFunction;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.JdkFutureAdapters;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.SettableFuture;
 import org.opendaylight.controller.sal.common.util.RpcErrors;
 import org.opendaylight.controller.sal.common.util.Rpcs;
 import org.opendaylight.openflowjava.protocol.api.util.BinContent;
@@ -161,18 +161,20 @@ import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcError.ErrorSeverity;
 import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.google.common.util.concurrent.AsyncFunction;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.JdkFutureAdapters;
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.SettableFuture;
+import java.math.BigInteger;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.Future;
 
 /**
  *
  */
 public abstract class OFRpcTaskFactory {
+    private static final Logger logger = LoggerFactory.getLogger(OFRpcTaskFactory.class);
 
     /**
      * @param taskContext 
@@ -195,17 +197,23 @@ public abstract class OFRpcTaskFactory {
                     OFRpcTaskUtil.wrapBarrierErrors(((SettableFuture<RpcResult<UpdateFlowOutput>>) result), barrierErrors);
                 } else {
                     // Convert the AddFlowInput to FlowModInput
-                    FlowModInputBuilder ofFlowModInput = FlowConvertor.toFlowModInput(getInput(), 
+                    List<FlowModInputBuilder> ofFlowModInputs = FlowConvertor.toFlowModInputs(getInput(),
                             getVersion(), getSession().getFeatures().getDatapathId());
-                    final Long xId = getSession().getNextXid();
-                    ofFlowModInput.setXid(xId);
-                    
-                    Future<RpcResult<UpdateFlowOutput>> resultFromOFLib = 
+
+                    logger.debug("Number of flows to push to switch: {}", ofFlowModInputs.size());
+
+                    for (FlowModInputBuilder ofFlowModInput : ofFlowModInputs) {
+                        final Long xId = getSession().getNextXid();
+                        ofFlowModInput.setXid(xId);
+                        logger.debug("Flow Insert xid:{}", xId);
+
+                        Future<RpcResult<UpdateFlowOutput>> resultFromOFLib =
                             getMessageService().flowMod(ofFlowModInput.build(), getCookie());
-                    result = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
-                    
-                    OFRpcTaskUtil.hookFutureNotification(this, result, 
+                        result = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
+
+                        OFRpcTaskUtil.hookFutureNotification(this, result,
                             getRpcNotificationProviderService(), createFlowAddedNotification(xId, getInput()));
+                    }
                 }
                 return result;
             }
