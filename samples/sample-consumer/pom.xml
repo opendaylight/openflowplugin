@@ -12,11 +12,6 @@
     <version>0.0.3-SNAPSHOT</version>
     <packaging>bundle</packaging>
 
-    <properties>
-        <yang.prototype.version>1.0</yang.prototype.version>
-    </properties>
-
-
     <build>
         <plugins>
             <plugin>
@@ -62,7 +57,6 @@
         <dependency>
             <groupId>org.opendaylight.yangtools</groupId>
             <artifactId>yang-binding</artifactId>
-            <version>0.6.1</version>
         </dependency>
         <dependency>
           <groupId>org.osgi</groupId>
@@ -76,7 +70,6 @@
         <dependency>
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>sal-common-util</artifactId>
-            <version>${yang.prototype.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
