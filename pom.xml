@@ -48,6 +48,7 @@
       <controller.model.version>1.1-SNAPSHOT</controller.model.version>
       <sal.api.version>0.8.1-SNAPSHOT</sal.api.version>
       <sal.connection.api.version>0.1.2-SNAPSHOT</sal.connection.api.version>
+      <sal.common.util.version>1.1-SNAPSHOT</sal.common.util.version>
       <netconf.parent.version>0.2.5-SNAPSHOT</netconf.parent.version>
       <config.parent.version>0.2.5-SNAPSHOT</config.parent.version>
       <build.helper.version>1.8</build.helper.version>
@@ -65,10 +66,16 @@
       <sonar.profile>Sonar way with Findbugs</sonar.profile>
 
       <karaf.distro.empty.version>1.4.2-SNAPSHOT</karaf.distro.empty.version>
+      <yang.binding.version>0.6.2-SNAPSHOT</yang.binding.version>
     </properties>
 
     <dependencyManagement>
       <dependencies>
+         <dependency>
+            <groupId>org.opendaylight.yangtools</groupId>
+            <artifactId>yang-binding</artifactId>
+            <version>${yang.binding.version}</version>
+        </dependency>
         <dependency>
           <groupId>org.opendaylight.openflowjava</groupId>
           <artifactId>openflow-protocol-impl</artifactId>
@@ -131,6 +138,11 @@
         </dependency>
 
         <!-- IT -->
+        <dependency>
+            <groupId>org.opendaylight.controller</groupId>
+            <artifactId>sal-common-util</artifactId>
+            <version>${sal.common.util.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>config-netconf-connector</artifactId>
