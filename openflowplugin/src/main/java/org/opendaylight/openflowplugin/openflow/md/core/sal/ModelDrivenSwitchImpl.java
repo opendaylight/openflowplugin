@@ -7,10 +7,6 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal;
 
-import java.net.Inet4Address;
-import java.net.Inet6Address;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
@@ -21,12 +17,6 @@ import org.opendaylight.openflowplugin.openflow.md.core.session.IMessageDispatch
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SwitchConnectionCookieOFImpl;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Address;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.GetNodeIpAddressInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.GetNodeIpAddressOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.GetNodeIpAddressOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInput;
@@ -94,7 +84,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.Upd
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableOutput;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
-import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 
 import com.google.common.util.concurrent.Futures;
@@ -530,37 +519,5 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
                 OFRpcTaskFactory.createGetQueueStatisticsFromGivenPortTask(rpcTaskContext, input, cookie);
         ListenableFuture<RpcResult<GetQueueStatisticsFromGivenPortOutput>> result = task.submit();
         return result;
-    }
-
-    @Override
-    public Future<RpcResult<GetNodeIpAddressOutput>> getNodeIpAddress(GetNodeIpAddressInput input) {
-        if (!sessionContext.isValid()) {
-            return Futures.immediateFuture(RpcResultBuilder
-                    .<GetNodeIpAddressOutput> failed()
-                    .withError(org.opendaylight.yangtools.yang.common.RpcError.ErrorType.TRANSPORT,
-                            "Session is not valid.").build());
-        }
-        InetSocketAddress remoteAddress = sessionContext.getPrimaryConductor().getConnectionAdapter()
-                .getRemoteAddress();
-        if (remoteAddress == null) {
-            return Futures.immediateFuture(RpcResultBuilder
-                    .<GetNodeIpAddressOutput> failed()
-                    .withError(org.opendaylight.yangtools.yang.common.RpcError.ErrorType.TRANSPORT,
-                            "No connection with switch.").build());
-        }
-        IpAddress ipAddress = resolveIpAddress(remoteAddress.getAddress());
-        GetNodeIpAddressOutput result = new GetNodeIpAddressOutputBuilder().setIpAddress(ipAddress).build();
-        return Futures.immediateFuture(RpcResultBuilder.<GetNodeIpAddressOutput> success(result).build());
-    }
-
-    private static IpAddress resolveIpAddress(InetAddress address) {
-        String hostAddress = address.getHostAddress();
-        if (address instanceof Inet4Address) {
-            return new IpAddress(new Ipv4Address(hostAddress));
-        }
-        if (address instanceof Inet6Address) {
-            return new IpAddress(new Ipv6Address(hostAddress));
-        }
-        throw new IllegalArgumentException("Unsupported IP address type!");
     }
 }
