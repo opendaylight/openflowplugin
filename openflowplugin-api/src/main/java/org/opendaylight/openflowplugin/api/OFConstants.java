@@ -5,14 +5,13 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.openflowplugin.openflow.md;
+package org.opendaylight.openflowplugin.api;
 
 import java.math.BigInteger;
 
 /**
  * OFP related constants
  */
-//FIXME move this class to openflowplugin-api
 public class OFConstants {
 
     /** reserved port: process with normal L2/L3 switching  */
