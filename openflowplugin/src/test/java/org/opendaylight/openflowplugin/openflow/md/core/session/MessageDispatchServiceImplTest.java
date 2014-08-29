@@ -7,6 +7,15 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.session;
 
+import java.net.InetSocketAddress;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,17 +27,50 @@ import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.openflow.md.core.ErrorHandler;
 import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.openflow.md.queue.QueueProcessor;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.*;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoReplyInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetAsyncInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetAsyncInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetAsyncOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetConfigInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetConfigInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetConfigOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetQueueConfigInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetQueueConfigInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetQueueConfigOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GroupModInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MeterModInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OpenflowProtocolListener;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOutInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOutInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortModInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.RoleRequestInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.RoleRequestInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.RoleRequestOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetAsyncInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetConfigInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.TableModInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.TableModInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SystemNotificationsListener;
 import org.opendaylight.yangtools.concepts.CompositeObjectRegistration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
-
-import java.net.InetSocketAddress;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.concurrent.Future;
 
 /**
  * test for {@link MessageDispatchServiceImpl}
@@ -59,6 +101,103 @@ public class MessageDispatchServiceImplTest {
         session.getMessageDispatchService().barrier(barrierMsg.build(), cookie);
         Assert.assertEquals(MessageType.BARRIER, session.getPrimaryConductor().getMessageType());
     }
+
+    /**
+     * Test experimenter message for null cookie
+     */
+    @Test
+    public void testExperimenter() {
+        MockConnectionConductor conductor = new MockConnectionConductor(1);
+        SwitchConnectionDistinguisher cookie = conductor.getAuxiliaryKey();
+        ExperimenterInputBuilder experimenterInputBuilder = new ExperimenterInputBuilder();
+        session.getMessageDispatchService().experimenter(experimenterInputBuilder.build(), cookie);
+        Assert.assertEquals(MessageType.NONE, session.getPrimaryConductor().getMessageType());
+    }
+
+    /**
+     * Test get async input with null cookie
+     */
+    @Test
+    public void testGetAsync() throws ExecutionException, InterruptedException {
+        MockConnectionConductor conductor = new MockConnectionConductor(1);
+        SwitchConnectionDistinguisher cookie = conductor.getAuxiliaryKey();
+        GetAsyncInputBuilder getAsyncInputBuilder = new GetAsyncInputBuilder();
+        session.getMessageDispatchService().getAsync(getAsyncInputBuilder.build(), cookie);
+        Assert.assertEquals(MessageType.NONE, session.getPrimaryConductor().getMessageType());
+    }
+
+    /**
+     * Test get async output with null cookie
+     */
+    @Test
+    public void testGetConfig() {
+        MockConnectionConductor conductor = new MockConnectionConductor(1);
+        SwitchConnectionDistinguisher cookie = conductor.getAuxiliaryKey();
+        GetConfigInputBuilder getConfigInputBuilder = new GetConfigInputBuilder();
+        session.getMessageDispatchService().getConfig(getConfigInputBuilder.build(), cookie);
+        Assert.assertEquals(MessageType.NONE, session.getPrimaryConductor().getMessageType());
+    }
+
+    /**
+     * Test get features with null cookie
+     */
+    @Test
+    public void testGetFeatures() {
+        MockConnectionConductor conductor = new MockConnectionConductor(1);
+        SwitchConnectionDistinguisher cookie = conductor.getAuxiliaryKey();
+        GetFeaturesInputBuilder getFeaturesInputBuilder = new GetFeaturesInputBuilder();
+        session.getMessageDispatchService().getFeatures(getFeaturesInputBuilder.build(), cookie);
+        Assert.assertEquals(MessageType.NONE, session.getPrimaryConductor().getMessageType());
+    }
+
+    /**
+     * Test get queue config with null cookie
+     */
+    @Test
+    public void testGetQueueConfig() {
+        MockConnectionConductor conductor = new MockConnectionConductor(1);
+        SwitchConnectionDistinguisher cookie = conductor.getAuxiliaryKey();
+        GetQueueConfigInputBuilder getQueueConfigInputBuilder = new GetQueueConfigInputBuilder();
+        session.getMessageDispatchService().getQueueConfig(getQueueConfigInputBuilder.build(), cookie);
+        Assert.assertEquals(MessageType.NONE, session.getPrimaryConductor().getMessageType());
+    }
+
+    /**
+     * Test multipart request with null cookie
+     */
+    @Test
+    public void testGetMultipart() {
+        MockConnectionConductor conductor = new MockConnectionConductor(1);
+        SwitchConnectionDistinguisher cookie = conductor.getAuxiliaryKey();
+        MultipartRequestInputBuilder multipartRequestInputBuilder = new MultipartRequestInputBuilder();
+        session.getMessageDispatchService().multipartRequest(multipartRequestInputBuilder.build(), cookie);
+        Assert.assertEquals(MessageType.NONE, session.getPrimaryConductor().getMessageType());
+    }
+
+    /**
+     * Test role request with null cookie
+     */
+    @Test
+    public void testRoleRequest() {
+        MockConnectionConductor conductor = new MockConnectionConductor(1);
+        SwitchConnectionDistinguisher cookie = conductor.getAuxiliaryKey();
+        RoleRequestInputBuilder roleRequestInputBuilder = new RoleRequestInputBuilder();
+        session.getMessageDispatchService().roleRequest(roleRequestInputBuilder.build(), cookie);
+        Assert.assertEquals(MessageType.NONE, session.getPrimaryConductor().getMessageType());
+    }
+
+    /**
+     * Test table mod with null cookie
+     */
+    @Test
+    public void testTableMod() {
+        MockConnectionConductor conductor = new MockConnectionConductor(1);
+        SwitchConnectionDistinguisher cookie = conductor.getAuxiliaryKey();
+        TableModInputBuilder tableModInputBuilder = new TableModInputBuilder();
+        session.getMessageDispatchService().tableMod(tableModInputBuilder.build(), cookie);
+        Assert.assertEquals(MessageType.TABLEMOD, session.getPrimaryConductor().getMessageType());
+    }
+
 
     /**
      * Test packet out message for primary connection
