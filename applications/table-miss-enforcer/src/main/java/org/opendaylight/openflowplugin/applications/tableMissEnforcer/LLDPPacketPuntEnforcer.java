@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.openflowplugin.openflow.md.lldp;
+package org.opendaylight.openflowplugin.applications.tableMissEnforcer;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -44,14 +44,14 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 /**
  * Created by Martin Bobak mbobak@cisco.com on 8/27/14.
  */
-public class LLDPPAcketPuntEnforcer implements DataChangeListener {
+public class LLDPPacketPuntEnforcer implements DataChangeListener {
 
     private static final short TABLE_ID = (short) 0;
     private static final String LLDP_PUNT_WHOLE_PACKET_FLOW = "LLDP_PUNT_WHOLE_PACKET_FLOW";
     private static final String DEFAULT_FLOW_ID = "42";
     private final SalFlowService flowService;
 
-    public LLDPPAcketPuntEnforcer(SalFlowService flowService) {
+    public LLDPPacketPuntEnforcer(SalFlowService flowService) {
         this.flowService = flowService;
     }
 

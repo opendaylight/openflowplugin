@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.opendaylight.openflowplugin</groupId>
+    <artifactId>openflowplugin-parent</artifactId>
+    <version>0.0.3-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.opendaylight.openflowplugin</groupId>
+  <artifactId>applications</artifactId>
+  <version>0.0.3-SNAPSHOT</version>
+  <name>applications</name>
+  <url>http://maven.apache.org</url>
+  <packaging>pom</packaging>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.opendaylight.openflowplugin</groupId>
+                <artifactId>openflowplugin-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.opendaylight.yangtools</groupId>
+                    <artifactId>yang-maven-plugin</artifactId>
+                    <version>${yang.binding.version}</version>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>generate-sources</goal>
+                            </goals>
+                            <configuration>
+                                <codeGenerators>
+                                    <generator>
+                                        <codeGeneratorClass>
+                                            org.opendaylight.controller.config.yangjmxgenerator.plugin.JMXGenerator
+                                        </codeGeneratorClass>
+                                        <outputBaseDir>${project.build.directory}/generated-sources/config</outputBaseDir>
+                                        <additionalConfiguration>
+                                            <namespaceToPackage1>
+                                                urn:opendaylight:params:xml:ns:yang:controller==org.opendaylight.controller.config.yang
+                                            </namespaceToPackage1>
+                                        </additionalConfiguration>
+                                    </generator>
+                                    <generator>
+                                        <codeGeneratorClass>
+                                            org.opendaylight.yangtools.maven.sal.api.gen.plugin.CodeGeneratorImpl
+                                        </codeGeneratorClass>
+                                        <outputBaseDir>${project.build.directory}/generated-sources/sal</outputBaseDir>
+                                    </generator>
+                                </codeGenerators>
+                                <inspectDependencies>true</inspectDependencies>
+                            </configuration>
+                        </execution>
+                    </executions>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.opendaylight.controller</groupId>
+                            <artifactId>yang-jmx-generator-plugin</artifactId>
+                            <version>${config.parent.version}</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.opendaylight.yangtools</groupId>
+                            <artifactId>maven-sal-api-gen-plugin</artifactId>
+                            <version>${yang.binding.version}</version>
+                            <type>jar</type>
+                        </dependency>
+                    </dependencies>
+
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>build-helper-maven-plugin</artifactId>
+                    <version>1.8</version>
+                    <executions>
+                        <execution>
+                            <id>add-source</id>
+                            <phase>generate-sources</phase>
+                            <goals>
+                                <goal>add-source</goal>
+                            </goals>
+                            <configuration>
+                                <sources>
+                                    <source>${project.build.directory}/generated-sources/config</source>;
+                                </sources>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+    <modules>
+        <module>table-miss-enforcer</module>
+    </modules>
+
+</project>
