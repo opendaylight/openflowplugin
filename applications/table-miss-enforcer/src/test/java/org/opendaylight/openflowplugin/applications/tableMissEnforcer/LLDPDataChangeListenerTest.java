@@ -6,13 +6,14 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.openflowplugin.openflow.md.lldp;
+package org.opendaylight.openflowplugin.applications.tableMissEnforcer;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 import org.mockito.Mock;
+import org.opendaylight.openflowplugin.applications.tableMissEnforcer.LLDPPacketPuntEnforcer;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
@@ -30,12 +31,12 @@ public class LLDPDataChangeListenerTest {
     private static SalFlowService flowService;
 
     /**
-     * Test method for {@link LLDPPAcketPuntEnforcer#createFlow()}
+     * Test method for {@link org.opendaylight.openflowplugin.applications.tableMissEnforcer.LLDPPacketPuntEnforcer#createFlow()}
      * which ensures that LLDPDataChangeListener creates proper flow for
      */
     @Test
     public void testCreateFlow() {
-        LLDPPAcketPuntEnforcer lldpDataChangeListener = new LLDPPAcketPuntEnforcer(flowService);
+        LLDPPacketPuntEnforcer lldpDataChangeListener = new LLDPPacketPuntEnforcer(flowService);
         evaluateFlow(lldpDataChangeListener.createFlow());
     }
 
