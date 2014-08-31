@@ -9,9 +9,6 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal;
 
 import java.util.Collection;
 import java.util.Collections;
-
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ConsumerContext;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
@@ -19,17 +16,12 @@ import org.opendaylight.controller.sal.binding.api.BindingAwareProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.openflowplugin.extension.api.ExtensionConverterRegistrator;
 import org.opendaylight.openflowplugin.openflow.md.core.MDController;
-import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionConverterManagerImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionConverterManager;
-import org.opendaylight.openflowplugin.openflow.md.lldp.LLDPPAcketPuntEnforcer;
+import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionConverterManagerImpl;
 import org.opendaylight.openflowplugin.statistics.MessageCountDumper;
 import org.opendaylight.openflowplugin.statistics.MessageObservatory;
 import org.opendaylight.openflowplugin.statistics.MessageSpyCounterImpl;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.RpcService;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
@@ -53,8 +45,8 @@ public class OpenflowPluginProvider implements BindingAwareProvider, AutoCloseab
     private MessageObservatory<DataContainer> messageCountProvider;
 
     private SalRegistrationManager registrationManager;
-    
-    private ExtensionConverterManager extensionConverterManager;  
+
+    private ExtensionConverterManager extensionConverterManager;
 
     /**
      * Initialization of services and msgSpy counter
@@ -84,14 +76,6 @@ public class OpenflowPluginProvider implements BindingAwareProvider, AutoCloseab
         LOG.debug("onSessionInitiated");
         registrationManager = new SalRegistrationManager();
         registrationManager.onSessionInitiated(session);
-        //TODO : LLDPPAcketPuntEnforcer should be instantiated and registered in separate module driven by config subsystem
-        InstanceIdentifier<Node> path = InstanceIdentifier.create(Nodes.class).child(Node.class);
-        registrationManager.getSessionManager().getDataBroker().registerDataChangeListener(
-                LogicalDatastoreType.OPERATIONAL,
-                path,
-                new LLDPPAcketPuntEnforcer(
-                        session.<SalFlowService>getRpcService(SalFlowService.class)),
-                AsyncDataBroker.DataChangeScope.BASE);
         mdController = new MDController();
         mdController.setSwitchConnectionProviders(switchConnectionProviders);
         mdController.setMessageSpyCounter(messageCountProvider);
@@ -133,6 +117,7 @@ public class OpenflowPluginProvider implements BindingAwareProvider, AutoCloseab
 
     /**
      * dependencymanager requirement
+     *
      * @param broker
      */
     public void setBroker(BindingAwareBroker broker) {
@@ -141,14 +126,15 @@ public class OpenflowPluginProvider implements BindingAwareProvider, AutoCloseab
 
     /**
      * dependencymanager requirement
+     *
      * @param brokerArg
      */
     public void unsetBroker(BindingAwareBroker brokerArg) {
         this.broker = null;
     }
 
-    private boolean hasAllDependencies(){
-        if(this.broker != null && this.switchConnectionProviders != null) {
+    private boolean hasAllDependencies() {
+        if (this.broker != null && this.switchConnectionProviders != null) {
             return true;
         }
         return false;
@@ -158,19 +144,19 @@ public class OpenflowPluginProvider implements BindingAwareProvider, AutoCloseab
      * register providers for md-sal
      */
     private void registerProvider() {
-        if(hasAllDependencies()) {
-            this.broker.registerProvider(this,context);
+        if (hasAllDependencies()) {
+            this.broker.registerProvider(this, context);
         }
     }
 
     public MessageCountDumper getMessageCountDumper() {
         return messageCountProvider;
     }
-    
+
     /**
      * @return the extensionConverterRegistry
      */
     public ExtensionConverterRegistrator getExtensionConverterRegistrator() {
         return extensionConverterManager;
     }
- }
+}

@@ -120,6 +120,12 @@ see https://git.opendaylight.org/gerrit/#/c/390/
       <groupId>org.opendaylight.openflowjava</groupId>
       <artifactId>util</artifactId>
     </dependency>
+
+      <dependency>
+          <groupId>org.opendaylight.openflowplugin.applications</groupId>
+          <artifactId>table-miss-enforcer</artifactId>
+          <version>${project.version}</version>
+      </dependency>
   </dependencies>
 
   <build>
@@ -161,7 +167,8 @@ see https://git.opendaylight.org/gerrit/#/c/390/
             <configuration>
              <outputDirectory>${project.build.directory}/generated-resources/opendaylight/configuration</outputDirectory>
              <includeArtifactIds>openflowplugin-controller-config, 
-             test-extension, openflowjava-extension-nicira, openflowjava-extension-nicira-api, openflowplugin-extension-nicira
+             test-extension, openflowjava-extension-nicira, openflowjava-extension-nicira-api, openflowplugin-extension-nicira,
+             table-miss-enforcer,
              </includeArtifactIds>
              <includes>**\/*.xml</includes>
              <excludes>META-INF</excludes>
