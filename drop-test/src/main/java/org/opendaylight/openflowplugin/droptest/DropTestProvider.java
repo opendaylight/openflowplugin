@@ -9,6 +9,8 @@ package org.opendaylight.openflowplugin.droptest;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+import org.opendaylight.openflowplugin.test.common.DropTestCommiter;
+import org.opendaylight.openflowplugin.test.common.DropTestStats;
 import org.opendaylight.yangtools.concepts.Registration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,10 +19,10 @@ import org.slf4j.LoggerFactory;
 public class DropTestProvider implements AutoCloseable {
     private final static Logger LOG = LoggerFactory.getLogger(DropTestProvider.class);
 
-    private DataBroker _dataService;
-    private NotificationProviderService _notificationService;
+    private DataBroker dataService;
+    private NotificationProviderService notificationService;
     private Registration listenerRegistration;
-    private final DropTestCommiter commiter = new DropTestCommiter(this);
+    private final DropTestCommiter commiter = new DropTestCommiter();
 
     public DropTestStats getStats() {
         return this.commiter.getStats();
@@ -31,24 +33,25 @@ public class DropTestProvider implements AutoCloseable {
     }
 
     public DataBroker getDataService() {
-        return this._dataService;
+        return this.dataService;
     }
 
     public void setDataService(final DataBroker dataService) {
-        this._dataService = dataService;
+        this.dataService = dataService;
     }
 
 
     public NotificationProviderService getNotificationService() {
-        return this._notificationService;
+        return notificationService;
     }
 
     public void setNotificationService(final NotificationProviderService notificationService) {
-        this._notificationService = notificationService;
+        this.notificationService = notificationService;
     }
 
     public void start() {
-        this.listenerRegistration = this.getNotificationService().registerNotificationListener(commiter);
+        commiter.setDataService(dataService);
+        listenerRegistration = notificationService.registerNotificationListener(commiter);
         LOG.debug("DropTestProvider Started.");
     }
 

@@ -5,10 +5,11 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.openflowplugin.droptest;
+package org.opendaylight.openflowplugin.test.common;
 
 import java.math.BigInteger;
 
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
@@ -23,12 +24,19 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * provides cbench responder behavior: upon packetIn arrival addFlow action is sent out to 
+ * device using {@link SalFlowService} strategy
+ */
 public class DropTestRpcSender extends AbstractDropTest {
-    private final static Logger LOG = LoggerFactory.getLogger(DropTestProvider.class);
+    private final static Logger LOG = LoggerFactory.getLogger(DropTestRpcSender.class);
 
-    private final SalFlowService flowService;
-
-    public DropTestRpcSender(final SalFlowService flowService) {
+    private SalFlowService flowService;
+    
+    /**
+     * @param flowService the flowService to set
+     */
+    public void setFlowService(SalFlowService flowService) {
         this.flowService = flowService;
     }
 
@@ -68,6 +76,10 @@ public class DropTestRpcSender extends AbstractDropTest {
         fb.setNode(new NodeRef(flowInstanceId));
 
         // Add flow
-        flowService.addFlow(fb.build());
+        AddFlowInput flow = fb.build();
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("onPacketReceived - About to write flow (via SalFlowService) {}", flow);
+        }
+        flowService.addFlow(flow);
     }
 }

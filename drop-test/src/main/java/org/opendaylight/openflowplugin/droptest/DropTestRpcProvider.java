@@ -8,6 +8,8 @@
 package org.opendaylight.openflowplugin.droptest;
 
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+import org.opendaylight.openflowplugin.test.common.DropTestRpcSender;
+import org.opendaylight.openflowplugin.test.common.DropTestStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.NotificationListener;
@@ -18,30 +20,30 @@ import org.slf4j.LoggerFactory;
 public class DropTestRpcProvider implements AutoCloseable {
     private final static Logger LOG = LoggerFactory.getLogger(DropTestProvider.class);
 
-    private SalFlowService _flowService;
-    private NotificationProviderService _notificationService;
-    private DropTestRpcSender commiter;
+    private SalFlowService flowService;
+    private NotificationProviderService notificationService;
+    private DropTestRpcSender commiter = new DropTestRpcSender();
     private Registration listenerRegistration;
 
     public SalFlowService getFlowService() {
-        return this._flowService;
+        return this.flowService;
     }
 
     public void setFlowService(final SalFlowService flowService) {
-        this._flowService = flowService;
+        this.flowService = flowService;
     }
 
     public NotificationProviderService getNotificationService() {
-        return this._notificationService;
+        return this.notificationService;
     }
 
     public void setNotificationService(final NotificationProviderService notificationService) {
-        this._notificationService = notificationService;
+        this.notificationService = notificationService;
     }
 
     public void start() {
-        this.commiter = new DropTestRpcSender(this.getFlowService());
-        this.listenerRegistration = this.getNotificationService().registerNotificationListener(this.commiter);
+        commiter.setFlowService(flowService);
+        listenerRegistration = this.getNotificationService().registerNotificationListener(this.commiter);
         LOG.debug("DropTestProvider Started.");
     }
 

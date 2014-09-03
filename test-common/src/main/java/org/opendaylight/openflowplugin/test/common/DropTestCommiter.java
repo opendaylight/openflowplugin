@@ -5,10 +5,11 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.openflowplugin.droptest;
+package org.opendaylight.openflowplugin.test.common;
 
-import com.google.common.base.Preconditions;
 import java.math.BigInteger;
+
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -29,8 +30,14 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * provides cbench responder behavior: upon packetIn arrival addFlow action is sent out to 
+ * device using dataStore strategy (FRM involved)
+ */
 public class DropTestCommiter extends AbstractDropTest {
-    private final static Logger LOG = LoggerFactory.getLogger(DropTestProvider.class);
+    private final static Logger LOG = LoggerFactory.getLogger(DropTestCommiter.class);
+    
+    private DataBroker dataService;
 
     private static final ThreadLocal<FlowBuilder> BUILDER = new ThreadLocal<FlowBuilder>() {
         @Override
@@ -50,11 +57,12 @@ public class DropTestCommiter extends AbstractDropTest {
             return fb;
         }
     };
-
-    private final DropTestProvider manager;
-
-    public DropTestCommiter(final DropTestProvider manager) {
-        this.manager = Preconditions.checkNotNull(manager);
+    
+    /**
+     * @param dataService the dataService to set
+     */
+    public void setDataService(DataBroker dataService) {
+        this.dataService = dataService;
     }
 
     @Override
@@ -76,9 +84,11 @@ public class DropTestCommiter extends AbstractDropTest {
                         .build();
 
         final Flow flow = fb.build();
-        final ReadWriteTransaction transaction = manager.getDataService().newReadWriteTransaction();
+        final ReadWriteTransaction transaction = dataService.newReadWriteTransaction();
 
-        LOG.debug("onPacketReceived - About to write flow {}", flow);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("onPacketReceived - About to write flow {}", flow);
+        }
         transaction.put(LogicalDatastoreType.CONFIGURATION, flowInstanceId, flow, true);
         transaction.submit();
         LOG.debug("onPacketReceived - About to write flow commited");

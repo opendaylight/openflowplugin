@@ -630,6 +630,7 @@
       <module>openflowplugin-it</module>
       <module>test-provider</module>
       <module>drop-test</module>
+      <module>test-common</module>
       <module>features</module>
       <module>samples/sample-consumer</module>
       <module>samples/learning-switch</module>
