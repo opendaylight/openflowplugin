@@ -10,7 +10,6 @@
 package org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.common.config.impl.rev140326;
 
 import org.opendaylight.openflowplugin.openflow.md.core.sal.OpenflowPluginProvider;
-import org.osgi.framework.BundleContext;
 
 /**
 *
@@ -18,7 +17,6 @@ import org.osgi.framework.BundleContext;
 public final class ConfigurableOpenFlowProviderModule extends org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.common.config.impl.rev140326.AbstractConfigurableOpenFlowProviderModule {
 
     private OpenflowPluginProvider pluginProvider;
-    private BundleContext bundleContext;
 
     /**
      * @param identifier
@@ -48,20 +46,9 @@ public final class ConfigurableOpenFlowProviderModule extends org.opendaylight.y
     @Override
     public java.lang.AutoCloseable createInstance() {
         pluginProvider =  new OpenflowPluginProvider();
-        pluginProvider.setContext(bundleContext);
         pluginProvider.setBroker(getBindingAwareBrokerDependency());
         pluginProvider.setSwitchConnectionProviders(getOpenflowSwitchConnectionProviderDependency());
         pluginProvider.initialization();
         return pluginProvider;
-    }
-
-    /**
-     * @param bundleContext the bundleContext to set, see {@link OpenflowPluginProvider#setContext(BundleContext)}
-     *
-     * @deprecated we should avoid osgi specific stuff .. once,
-     */
-    @Deprecated
-    public void setBundleContext(BundleContext bundleContext) {
-        this.bundleContext = bundleContext;
     }
 }

@@ -22,7 +22,6 @@ import org.opendaylight.openflowplugin.openflow.md.core.MDController;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionConverterManagerImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionConverterManager;
 import org.opendaylight.openflowplugin.openflow.md.lldp.LLDPPAcketPuntEnforcer;
-import org.opendaylight.openflowplugin.statistics.MessageCountCommandProvider;
 import org.opendaylight.openflowplugin.statistics.MessageCountDumper;
 import org.opendaylight.openflowplugin.statistics.MessageObservatory;
 import org.opendaylight.openflowplugin.statistics.MessageSpyCounterImpl;
@@ -50,8 +49,6 @@ public class OpenflowPluginProvider implements BindingAwareProvider, AutoCloseab
     private Collection<SwitchConnectionProvider> switchConnectionProviders;
 
     private MDController mdController;
-
-    private MessageCountCommandProvider messageCountCommandProvider;
 
     private MessageObservatory<DataContainer> messageCountProvider;
 
@@ -82,24 +79,13 @@ public class OpenflowPluginProvider implements BindingAwareProvider, AutoCloseab
         return context;
     }
 
-    /**
-     * dependencymanager requirement
-     * @param context
-     *
-     * @deprecated we should stop relying on osgi to provide cli interface for messageCounter
-     */
-    @Deprecated
-    public void setContext(BundleContext context) {
-        this.context = context;
-    }
-
     @Override
     public void onSessionInitiated(ProviderContext session) {
         LOG.debug("onSessionInitiated");
         registrationManager = new SalRegistrationManager();
         registrationManager.onSessionInitiated(session);
         //TODO : LLDPPAcketPuntEnforcer should be instantiated and registered in separate module driven by config subsystem
-        InstanceIdentifier path = InstanceIdentifier.create(Nodes.class).child(Node.class);
+        InstanceIdentifier<Node> path = InstanceIdentifier.create(Nodes.class).child(Node.class);
         registrationManager.getSessionManager().getDataBroker().registerDataChangeListener(
                 LogicalDatastoreType.OPERATIONAL,
                 path,
@@ -112,8 +98,6 @@ public class OpenflowPluginProvider implements BindingAwareProvider, AutoCloseab
         mdController.setExtensionConverterProvider(extensionConverterManager);
         mdController.init();
         mdController.start();
-        messageCountCommandProvider = new MessageCountCommandProvider(context, messageCountProvider);
-        messageCountCommandProvider.onSessionInitiated(session);
     }
 
     @Override
@@ -123,8 +107,6 @@ public class OpenflowPluginProvider implements BindingAwareProvider, AutoCloseab
         mdController = null;
         registrationManager.close();
         registrationManager = null;
-        messageCountCommandProvider.close();
-        messageCountCommandProvider = null;
     }
 
     @Override
