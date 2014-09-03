@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.opendaylight.openflowplugin</groupId>
@@ -6,7 +7,7 @@
         <version>0.0.3-SNAPSHOT</version>
         <relativePath>../</relativePath>
     </parent>
-    <artifactId>drop-test</artifactId>
+    <artifactId>drop-test-karaf</artifactId>
     <packaging>bundle</packaging>
     <scm>
         <connection>scm:git:ssh://git.opendaylight.org:29418/openflowplugin.git</connection>
@@ -29,24 +30,29 @@
         <dependency>
             <groupId>org.opendaylight.controller.model</groupId>
             <artifactId>model-flow-service</artifactId>
-        </dependency>    
-	    <dependency>
-	      <groupId>org.opendaylight.controller.model</groupId>
-	      <artifactId>model-flow-base</artifactId>
-	    </dependency>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.controller.model</groupId>
+            <artifactId>model-flow-base</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.opendaylight.controller.model</groupId>
             <artifactId>model-inventory</artifactId>
         </dependency>
-         <dependency>
-	        <groupId>equinoxSDK381</groupId>
-	        <artifactId>org.eclipse.osgi</artifactId>
-	      </dependency>
-	      <dependency>
+        <dependency>
+            <groupId>org.apache.karaf.shell</groupId>
+            <artifactId>org.apache.karaf.shell.console</artifactId>
+            <version>${karaf.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+        </dependency>
+        <dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
-          </dependency>
-	      
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -58,9 +64,15 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-Activator>org.opendaylight.openflowplugin.droptest.DropTestActivator</Bundle-Activator>
+                        <Bundle-Activator>org.opendaylight.openflowplugin.droptestkaraf.DropTestActivator</Bundle-Activator>
                         <Embed-Dependency>commons-lang</Embed-Dependency>
                         <Bundle-Name>${project.groupId}.${project.artifactId}</Bundle-Name>
+                        <Import-Package>
+                          org.apache.felix.service.command,
+                          org.apache.felix.gogo.commands,
+                          org.apache.karaf.shell.console,
+                          *
+                        </Import-Package>
                     </instructions>
                 </configuration>
             </plugin>

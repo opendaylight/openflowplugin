@@ -5,12 +5,14 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.openflowplugin.droptest;
+package org.opendaylight.openflowplugin.testcommon;
 
-import com.google.common.base.Preconditions;
 import java.math.BigInteger;
+
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
@@ -25,12 +27,20 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.M
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.NotificationListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * provides cbench responder behavior: upon packetIn arrival addFlow action is sent out to 
+ * device using dataStore strategy (FRM involved)
+ */
 public class DropTestCommiter extends AbstractDropTest {
-    private final static Logger LOG = LoggerFactory.getLogger(DropTestProvider.class);
+    private final static Logger LOG = LoggerFactory.getLogger(DropTestCommiter.class);
+    
+    private DataBroker dataService;
 
     private static final ThreadLocal<FlowBuilder> BUILDER = new ThreadLocal<FlowBuilder>() {
         @Override
@@ -51,10 +61,22 @@ public class DropTestCommiter extends AbstractDropTest {
         }
     };
 
-    private final DropTestProvider manager;
+    private NotificationProviderService notificationService;
 
-    public DropTestCommiter(final DropTestProvider manager) {
-        this.manager = Preconditions.checkNotNull(manager);
+    private ListenerRegistration<NotificationListener> notificationRegistration;
+    
+    /**
+     * start listening on packetIn
+     */
+    public void start() {
+        notificationRegistration = notificationService.registerNotificationListener(this);
+    }
+    
+    /**
+     * @param dataService the dataService to set
+     */
+    public void setDataService(DataBroker dataService) {
+        this.dataService = dataService;
     }
 
     @Override
@@ -76,11 +98,32 @@ public class DropTestCommiter extends AbstractDropTest {
                         .build();
 
         final Flow flow = fb.build();
-        final ReadWriteTransaction transaction = manager.getDataService().newReadWriteTransaction();
+        final ReadWriteTransaction transaction = dataService.newReadWriteTransaction();
 
-        LOG.debug("onPacketReceived - About to write flow {}", flow);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("onPacketReceived - About to write flow {}", flow);
+        }
         transaction.put(LogicalDatastoreType.CONFIGURATION, flowInstanceId, flow, true);
         transaction.submit();
         LOG.debug("onPacketReceived - About to write flow commited");
+    }
+    
+    @Override
+    public void close() {
+        try {
+            LOG.debug("DropTestProvider stopped.");
+            if (notificationRegistration != null) {
+                notificationRegistration.close();
+            }
+        } catch (Exception e) {
+            LOG.error("unregistration of notification listener failed", e);
+        }
+    }
+
+    /**
+     * @param notificationService
+     */
+    public void setNotificationService(NotificationProviderService notificationService) {
+        this.notificationService = notificationService;
     }
 }
