@@ -8,66 +8,71 @@
 package org.opendaylight.openflowplugin.droptest;
 
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+import org.opendaylight.openflowplugin.test.common.DropTestRpcSender;
+import org.opendaylight.openflowplugin.test.common.DropTestStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
-import org.opendaylight.yangtools.concepts.Registration;
-import org.opendaylight.yangtools.yang.binding.NotificationListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@SuppressWarnings("all")
+/**
+ * provides activation and deactivation of drop responder service - responds on packetIn
+ */
 public class DropTestRpcProvider implements AutoCloseable {
     private final static Logger LOG = LoggerFactory.getLogger(DropTestProvider.class);
 
-    private SalFlowService _flowService;
-    private NotificationProviderService _notificationService;
-    private DropTestRpcSender commiter;
-    private Registration listenerRegistration;
+    private SalFlowService flowService;
+    private NotificationProviderService notificationService;
+    private DropTestRpcSender commiter = new DropTestRpcSender();
 
-    public SalFlowService getFlowService() {
-        return this._flowService;
-    }
-
+    /**
+     * @param flowService value for setter
+     */
     public void setFlowService(final SalFlowService flowService) {
-        this._flowService = flowService;
+        this.flowService = flowService;
     }
 
-    public NotificationProviderService getNotificationService() {
-        return this._notificationService;
-    }
-
+    /**
+     * @param notificationService value for setter
+     */
     public void setNotificationService(final NotificationProviderService notificationService) {
-        this._notificationService = notificationService;
+        this.notificationService = notificationService;
     }
 
+    /**
+     * activates drop responder
+     */
     public void start() {
-        this.commiter = new DropTestRpcSender(this.getFlowService());
-        this.listenerRegistration = this.getNotificationService().registerNotificationListener(this.commiter);
+        commiter.setFlowService(flowService);
+        commiter.setNotificationService(notificationService);
+        commiter.start();
         LOG.debug("DropTestProvider Started.");
     }
 
+    /**
+     * @return message counts
+     */
     public DropTestStats getStats() {
-        if(this.commiter != null) {
-            return this.commiter.getStats();
+        if (this.commiter != null) {
+            return commiter.getStats();
         } else {
             return new DropTestStats("Not initialized yet.");
         }
     }
 
+    /**
+     * reset message counts
+     */
     public void clearStats() {
-        if(this.commiter != null) {
-            this.commiter.clearStats();
+        if (commiter != null) {
+            commiter.clearStats();
         }
     }
 
     @Override
     public void close() {
-        try {
-            LOG.debug("DropTestProvider stopped.");
-            if (this.listenerRegistration != null) {
-                this.listenerRegistration.close();
-            }
-        } catch (Exception _e) {
-            throw new Error(_e);
+        LOG.debug("DropTestProvider stopped.");
+        if (commiter != null) {
+            commiter.close();
         }
     }
 }

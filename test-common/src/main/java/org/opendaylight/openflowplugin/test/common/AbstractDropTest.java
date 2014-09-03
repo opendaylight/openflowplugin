@@ -5,7 +5,7 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.openflowplugin.droptest;
+package org.opendaylight.openflowplugin.test.common;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -37,7 +37,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-abstract class AbstractDropTest implements PacketProcessingListener {
+abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractDropTest.class);
 
     private static final AtomicIntegerFieldUpdater<AbstractDropTest> SENT_UPDATER = AtomicIntegerFieldUpdater.newUpdater(AbstractDropTest.class, "_sent");

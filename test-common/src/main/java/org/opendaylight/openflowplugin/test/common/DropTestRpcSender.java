@@ -5,10 +5,12 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.openflowplugin.droptest;
+package org.opendaylight.openflowplugin.test.common;
 
 import java.math.BigInteger;
 
+import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
@@ -19,16 +21,25 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.NotificationListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * provides cbench responder behavior: upon packetIn arrival addFlow action is sent out to 
+ * device using {@link SalFlowService} strategy
+ */
 public class DropTestRpcSender extends AbstractDropTest {
-    private final static Logger LOG = LoggerFactory.getLogger(DropTestProvider.class);
+    private final static Logger LOG = LoggerFactory.getLogger(DropTestRpcSender.class);
 
-    private final SalFlowService flowService;
-
-    public DropTestRpcSender(final SalFlowService flowService) {
+    private SalFlowService flowService;
+    
+    /**
+     * @param flowService the flowService to set
+     */
+    public void setFlowService(SalFlowService flowService) {
         this.flowService = flowService;
     }
 
@@ -52,6 +63,17 @@ public class DropTestRpcSender extends AbstractDropTest {
         }
     };
 
+    private NotificationProviderService notificationService;
+
+    private ListenerRegistration<NotificationListener> notificationRegistration;
+    
+    /**
+     * start listening on packetIn
+     */
+    public void start() {
+        notificationRegistration = notificationService.registerNotificationListener(this);
+    }
+
     @Override
     protected void processPacket(final NodeKey node, final Match match, final Instructions instructions) {
         final AddFlowInputBuilder fb = BUILDER.get();
@@ -68,6 +90,29 @@ public class DropTestRpcSender extends AbstractDropTest {
         fb.setNode(new NodeRef(flowInstanceId));
 
         // Add flow
-        flowService.addFlow(fb.build());
+        AddFlowInput flow = fb.build();
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("onPacketReceived - About to write flow (via SalFlowService) {}", flow);
+        }
+        flowService.addFlow(flow);
+    }
+
+    /**
+     * @param notificationService
+     */
+    public void setNotificationService(NotificationProviderService notificationService) {
+        this.notificationService = notificationService;
+    }
+    
+    @Override
+    public void close() {
+        try {
+            LOG.debug("DropTestProvider stopped.");
+            if (notificationRegistration != null) {
+                notificationRegistration.close();
+            }
+        } catch (Exception e) {
+            LOG.error("unregistration of notification listener failed", e);
+        }
     }
 }

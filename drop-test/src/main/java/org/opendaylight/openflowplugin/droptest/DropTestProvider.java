@@ -9,57 +9,65 @@ package org.opendaylight.openflowplugin.droptest;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
-import org.opendaylight.yangtools.concepts.Registration;
+import org.opendaylight.openflowplugin.test.common.DropTestCommiter;
+import org.opendaylight.openflowplugin.test.common.DropTestStats;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@SuppressWarnings("all")
+/**
+ * provides activation and deactivation of drop responder service - responds on packetIn
+ */
 public class DropTestProvider implements AutoCloseable {
     private final static Logger LOG = LoggerFactory.getLogger(DropTestProvider.class);
 
-    private DataBroker _dataService;
-    private NotificationProviderService _notificationService;
-    private Registration listenerRegistration;
-    private final DropTestCommiter commiter = new DropTestCommiter(this);
+    private DataBroker dataService;
+    private NotificationProviderService notificationService;
+    private final DropTestCommiter commiter = new DropTestCommiter();
 
+    /**
+     * @return message counts
+     */
     public DropTestStats getStats() {
-        return this.commiter.getStats();
+        return commiter.getStats();
     }
 
+    /**
+     * reset message counts
+     */
     public void clearStats() {
-        this.commiter.clearStats();
+        commiter.clearStats();
     }
 
-    public DataBroker getDataService() {
-        return this._dataService;
-    }
-
+    /**
+     * @param dataService value for setter
+     */
     public void setDataService(final DataBroker dataService) {
-        this._dataService = dataService;
+        this.dataService = dataService;
     }
 
 
-    public NotificationProviderService getNotificationService() {
-        return this._notificationService;
-    }
-
+    /**
+     * @param notificationService value for setter
+     */
     public void setNotificationService(final NotificationProviderService notificationService) {
-        this._notificationService = notificationService;
+        this.notificationService = notificationService;
     }
 
+    /**
+     * activates the drop responder
+     */
     public void start() {
-        this.listenerRegistration = this.getNotificationService().registerNotificationListener(commiter);
+        commiter.setDataService(dataService);
+        commiter.setNotificationService(notificationService);
+        commiter.start();
         LOG.debug("DropTestProvider Started.");
     }
 
+    @Override
     public void close() {
-        try {
-            LOG.debug("DropTestProvider stopped.");
-            if (this.listenerRegistration != null) {
-                this.listenerRegistration.close();
-            }
-        } catch (Exception e) {
-            throw new Error(e);
+        LOG.debug("DropTestProvider stopped.");
+        if (commiter != null) {
+            commiter.close();
         }
     }
 }
