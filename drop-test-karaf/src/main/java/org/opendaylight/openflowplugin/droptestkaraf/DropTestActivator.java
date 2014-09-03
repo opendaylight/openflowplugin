@@ -5,13 +5,12 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.openflowplugin.droptest;
+package org.opendaylight.openflowplugin.droptestkaraf;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.AbstractBindingAwareProvider;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
-import org.opendaylight.openflowplugin.outputtest.OutputTestCommandProvider;
 import org.opendaylight.openflowplugin.testcommon.DropTestProvider;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.osgi.framework.BundleContext;
@@ -26,9 +25,7 @@ public class DropTestActivator extends AbstractBindingAwareProvider {
 
     private static DropTestRpcProvider rpcProvider = new DropTestRpcProvider();
 
-    private static DropTestCommandProvider cmdProvider;
-
-    private static OutputTestCommandProvider outCmdProvider;
+    private static DropAllPacketsCommandProvider cmdProvider;
 
 
     public void onSessionInitiated(final ProviderContext session) {
@@ -37,25 +34,22 @@ public class DropTestActivator extends AbstractBindingAwareProvider {
 
         provider.setNotificationService(session.<NotificationProviderService>getSALService(NotificationProviderService.class));
 
-        cmdProvider.onSessionInitiated(session);
-
         rpcProvider.setNotificationService(session.<NotificationProviderService>getSALService(NotificationProviderService.class));
 
         rpcProvider.setFlowService(session.<SalFlowService>getRpcService(SalFlowService.class));
-        outCmdProvider.onSessionInitiated(session);
 
         LOG.debug("Activator DropAllPack END");
     }
 
     public void startImpl(final BundleContext ctx) {
         super.startImpl(ctx);
-//      LOG.debug("-------------------------------------    DROP ALL PACK TEST INITIATED ------------------------ ")
-        cmdProvider = new DropTestCommandProvider(ctx, provider, rpcProvider);
-        outCmdProvider = new OutputTestCommandProvider(ctx);
+      LOG.debug("-------------------------------------    DROP ALL PACK TEST INITIATED ------------------------ ");
+//        cmdProvider = new DropAllPacketsCommandProvider(ctx, provider, rpcProvider);
+//        outCmdProvider = new OutputTestCommandProvider(ctx);
     }
 
     protected void stopImpl(final BundleContext context) {
-//      LOG.debug("--------------------------------------    DROP ALL PACK TEST STOPED --------------------------- ")
-        provider.close();
+      LOG.debug("--------------------------------------    DROP ALL PACK TEST STOPED --------------------------- ");
+//        provider.close();
     }
 }

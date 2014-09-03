@@ -1,4 +1,4 @@
-package org.opendaylight.openflowplugin.droptest;
+package org.opendaylight.openflowplugin.testcommon;
 
 public class DropTestStats {
 	private final int _rcvd;

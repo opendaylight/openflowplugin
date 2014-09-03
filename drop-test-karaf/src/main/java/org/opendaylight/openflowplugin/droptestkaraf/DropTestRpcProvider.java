@@ -5,10 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.openflowplugin.droptest;
+package org.opendaylight.openflowplugin.droptestkaraf;
 
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
-import org.opendaylight.openflowplugin.testcommon.DropTestProvider;
 import org.opendaylight.openflowplugin.testcommon.DropTestRpcSender;
 import org.opendaylight.openflowplugin.testcommon.DropTestStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
@@ -19,7 +18,7 @@ import org.slf4j.LoggerFactory;
  * provides activation and deactivation of drop responder service - responds on packetIn
  */
 public class DropTestRpcProvider implements AutoCloseable {
-    private final static Logger LOG = LoggerFactory.getLogger(DropTestProvider.class);
+    private final static Logger LOG = LoggerFactory.getLogger(DropTestRpcProvider.class);
 
     private SalFlowService flowService;
     private NotificationProviderService notificationService;

@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.droptest;
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
+import org.opendaylight.openflowplugin.testcommon.DropTestProvider;
 import org.osgi.framework.BundleContext;
 
 import com.google.common.base.Preconditions;
