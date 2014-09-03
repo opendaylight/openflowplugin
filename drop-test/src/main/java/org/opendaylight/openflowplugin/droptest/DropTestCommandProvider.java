@@ -11,6 +11,8 @@ package org.opendaylight.openflowplugin.droptest;
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
+import org.opendaylight.openflowplugin.testcommon.DropTestDsProvider;
+import org.opendaylight.openflowplugin.testcommon.DropTestRpcProvider;
 import org.osgi.framework.BundleContext;
 
 import com.google.common.base.Preconditions;
@@ -18,12 +20,11 @@ import com.google.common.base.Preconditions;
 public class DropTestCommandProvider implements CommandProvider {
 
     private final BundleContext ctx;
-    private final DropTestProvider provider;
+    private final DropTestDsProvider provider;
     private final DropTestRpcProvider rpcProvider;
-    private boolean on = false;
     private boolean sessionInitiated = false;
 
-    public DropTestCommandProvider(final BundleContext ctx, final DropTestProvider provider,
+    public DropTestCommandProvider(final BundleContext ctx, final DropTestDsProvider provider,
             final DropTestRpcProvider rpcProvider) {
         this.ctx = Preconditions.checkNotNull(ctx, "BundleContext can not be null!");
         this.provider = Preconditions.checkNotNull(provider, "DropTestProvider can't be null!");
@@ -40,21 +41,19 @@ public class DropTestCommandProvider implements CommandProvider {
         if (sessionInitiated) {
             String onoff = ci.nextArgument();
             if (onoff.equalsIgnoreCase("on")) {
-                if (on == false) {
+                if (! provider.isActive()) {
                     provider.start();
                     ci.println("DropAllFlows transitions to on");
                 } else {
                     ci.println("DropAllFlows is already on");
                 }
-                on = true;
             } else if (onoff.equalsIgnoreCase("off")) {
-                if (on == true) {
+                if (provider.isActive()) {
                     provider.close();
                     ci.println("DropAllFlows transitions to off");
                 } else {
                     ci.println("DropAllFlows is already off");
                 }
-                on = false;
             }
         } else {
             ci.println("Session not initiated, try again in a few seconds");
@@ -65,21 +64,19 @@ public class DropTestCommandProvider implements CommandProvider {
         if (sessionInitiated) {
             String onoff = ci.nextArgument();
             if (onoff.equalsIgnoreCase("on")) {
-                if (on == false) {
+                if (! rpcProvider.isActive()) {
                     rpcProvider.start();
                     ci.println("DropAllFlows transitions to on");
                 } else {
                     ci.println("DropAllFlows is already on");
                 }
-                on = true;
             } else if (onoff.equalsIgnoreCase("off")) {
-                if (on == true) {
+                if (rpcProvider.isActive()) {
                     rpcProvider.close();
                     ci.println("DropAllFlows transitions to off");
                 } else {
                     ci.println("DropAllFlows is already off");
                 }
-                on = false;
             }
         } else {
             ci.println("Session not initiated, try again in a few seconds");

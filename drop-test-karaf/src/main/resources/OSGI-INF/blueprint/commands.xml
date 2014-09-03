@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
+
+    <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
+        <command name="drop-test/dropAllPackets">
+            <action class="org.opendaylight.openflowplugin.droptestkaraf.DropAllPacketsCommandProvider"/>
+             <completers>
+                <ref component-id="onOffCompleter"/>
+                <null/>
+            </completers>
+        </command>
+        <command name="drop-test/dropAllPacketsRpc">
+            <action class="org.opendaylight.openflowplugin.droptestkaraf.DropAllPacketsRpcCommandProvider"/>
+             <completers>
+                <ref component-id="onOffCompleter"/>
+                <null/>
+            </completers>
+        </command>
+    </command-bundle>
+    
+    <bean id="onOffCompleter" class="org.opendaylight.openflowplugin.droptestkaraf.DropAllPacketsCompleter"/>
+
+</blueprint>
