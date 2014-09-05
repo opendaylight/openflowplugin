@@ -59,6 +59,16 @@
     </dependency>
     <dependency>
       <groupId>org.opendaylight.openflowplugin</groupId>
+      <artifactId>drop-test-karaf</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.openflowplugin</groupId>
+      <artifactId>test-common</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.openflowplugin</groupId>
       <artifactId>openflowplugin-controller-config</artifactId>
       <version>${project.version}</version>
       <type>xml</type>

@@ -74,6 +74,13 @@ see https://git.opendaylight.org/gerrit/#/c/390/
       <version>0.0.3-SNAPSHOT</version>
     </dependency>
 
+    <!-- test-common -->
+    <dependency>
+        <groupId>org.opendaylight.openflowplugin</groupId>
+        <artifactId>test-common</artifactId>
+        <version>${project.version}</version>
+    </dependency>
+
     <!-- debug provider -->
     <dependency>
       <groupId>org.opendaylight.openflowplugin</groupId>

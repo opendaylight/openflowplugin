@@ -25,4 +25,9 @@
         <feature version="${project.version}">odl-openflowplugin-southbound</feature>
         <feature version="${mdsal.version}">odl-flow-services</feature>
     </feature>
+    <feature name='odl-openflowplugin-drop-test' description="OpenDaylight :: Openflow Plugin :: Drop Test" version='${project.version}'>
+        <feature version="${project.version}">odl-openflowplugin-flow-services</feature>
+        <bundle>mvn:org.opendaylight.openflowplugin/test-common/${project.version}</bundle>
+        <bundle>mvn:org.opendaylight.openflowplugin/drop-test-karaf/${project.version}</bundle>
+    </feature>
 </features>
