@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.openflow.md.queue;
 
 import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
-import org.opendaylight.openflowplugin.openflow.md.queue.QueueKeeper.QueueType;
 
 /**
  * @param <IN> input message type 
@@ -28,5 +27,5 @@ public interface QueueItem<IN> {
     /**
      * @return queue type associated to this item 
      */
-    QueueType getQueueType();
+    QueueKeeper.QueueType getQueueType();
 }

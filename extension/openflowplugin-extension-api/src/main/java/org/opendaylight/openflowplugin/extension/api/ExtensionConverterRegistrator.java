@@ -19,7 +19,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ge
 import org.opendaylight.yangtools.concepts.ObjectRegistration;
 
 /**
- * registration place for message converters provided by vendor extensions
+ * registration place for message converters provided by vendor extension
  */
 public interface ExtensionConverterRegistrator {
 

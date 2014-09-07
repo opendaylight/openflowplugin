@@ -5,17 +5,20 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
+package org.opendaylight.openflowplugin.api.openflow.md.core;
 
-package org.opendaylight.openflowplugin.openflow.md.core;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 
 /**
  * @author mirehak
+ *
  */
-public interface SwitchConnectionDistinguisher {
+public interface HandshakeListener {
     
     /**
-     * @return encoded switch session identifier
+     * @param featureOutput obtained
+     * @param version negotiated
      */
-    public long getCookie();
+    void onHandshakeSuccessfull(GetFeaturesOutput featureOutput, Short version);
 
 }

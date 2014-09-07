@@ -552,7 +552,7 @@ public class TableFeaturesConvertor {
                     .equals(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TcpFlag.class)) {
 
                 //FIXME: move to extensible support
-                // TODO: Move to seperate bundle as soon as extensions are supported
+                // TODO: Move to seperate bundle as soon as extension are supported
                 setMatchEntry(matchEntryBuilder, TcpFlag.class, currMatch.isHasMask());
             } else if (currMatchType
                     .equals(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TunnelIpv4Dst.class)) {

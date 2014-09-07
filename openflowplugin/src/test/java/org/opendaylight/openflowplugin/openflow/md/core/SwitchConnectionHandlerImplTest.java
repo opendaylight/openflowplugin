@@ -15,7 +15,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
-import org.opendaylight.openflowplugin.statistics.MessageSpy;
+import org.opendaylight.openflowplugin.api.statistics.MessageSpy;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 
 /**

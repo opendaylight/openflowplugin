@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.opendaylight.openflowplugin.api.openflow.md.core.sal.BuildSwitchFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.flow.node.SwitchFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.slf4j.Logger;
