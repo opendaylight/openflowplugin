@@ -8,6 +8,7 @@
 package org.opendaylight.openflowplugin.openflow.md.core.session;
 
 import java.util.EventListener;
+import org.opendaylight.openflowplugin.api.openflow.md.core.session.SwitchSessionKeyOF;
 
 /**
  * listens on session changes

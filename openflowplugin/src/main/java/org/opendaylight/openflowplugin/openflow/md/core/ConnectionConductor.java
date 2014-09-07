@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.concurrent.Future;
 
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
+import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.openflow.md.queue.QueueProcessor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
@@ -73,7 +74,7 @@ public interface ConnectionConductor {
     public void setSessionContext(SessionContext context);
 
     /**
-     * assign corresponding {@link SwitchConnectionDistinguisher} to this conductor
+     * assign corresponding {@link org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher} to this conductor
      * to handle disconnect caused by switch. This involves auxiliary conductors only.
      * @param auxiliaryKey
      */

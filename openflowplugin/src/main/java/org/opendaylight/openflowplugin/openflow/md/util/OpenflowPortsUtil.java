@@ -3,6 +3,7 @@ package org.opendaylight.openflowplugin.openflow.md.util;
 import com.google.common.collect.ImmutableBiMap;
 
 import org.opendaylight.openflowjava.protocol.api.util.BinContent;
+import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.CommonPort;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.OutputPortValues;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumberValues;

@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core;
 
+import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
 
 /**

@@ -477,7 +477,7 @@ public class TableFeaturesReplyConvertor {
             } else if (ofMatchField.equals(VlanVid.class)) {
                 salMatchField = org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.VlanVid.class;
             }
-            // TODO: Move to seperate bundle as soon as extensions are supported in openflowplugin/java
+            // TODO: Move to seperate bundle as soon as extension are supported in openflowplugin/java
             else if (ofMatchField.equals(TcpFlag.class)) {
                 //FIXME: move to extensible support
                 salMatchField = org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TcpFlag.class;

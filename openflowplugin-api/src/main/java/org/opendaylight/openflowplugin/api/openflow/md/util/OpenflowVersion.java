@@ -1,4 +1,4 @@
-package org.opendaylight.openflowplugin.openflow.md.util;
+package org.opendaylight.openflowplugin.api.openflow.md.util;
 
 /** List of Openflow versions supported by the plugin
  *  Note: If you add a version here, make sure to update {@link OpenflowPortsUtil} as well.

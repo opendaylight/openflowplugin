@@ -20,10 +20,10 @@ import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionPro
 import org.opendaylight.openflowplugin.extension.api.ExtensionConverterRegistrator;
 import org.opendaylight.openflowplugin.openflow.md.core.MDController;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionConverterManagerImpl;
-import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionConverterManager;
+import org.opendaylight.openflowplugin.api.openflow.md.core.extension.ExtensionConverterManager;
 import org.opendaylight.openflowplugin.openflow.md.lldp.LLDPPAcketPuntEnforcer;
-import org.opendaylight.openflowplugin.statistics.MessageCountDumper;
-import org.opendaylight.openflowplugin.statistics.MessageObservatory;
+import org.opendaylight.openflowplugin.api.statistics.MessageCountDumper;
+import org.opendaylight.openflowplugin.api.statistics.MessageObservatory;
 import org.opendaylight.openflowplugin.statistics.MessageSpyCounterImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;

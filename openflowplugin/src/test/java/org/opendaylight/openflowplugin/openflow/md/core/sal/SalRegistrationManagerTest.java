@@ -30,10 +30,10 @@ import org.opendaylight.controller.sal.common.util.Rpcs;
 import org.opendaylight.openflowplugin.openflow.md.ModelDrivenSwitch;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
-import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
+import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.openflow.md.core.session.IMessageDispatchService;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
-import org.opendaylight.openflowplugin.openflow.md.core.session.SwitchSessionKeyOF;
+import org.opendaylight.openflowplugin.api.openflow.md.core.session.SwitchSessionKeyOF;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -152,7 +152,7 @@ public class SalRegistrationManagerTest {
     }
 
     /**
-     * Test for {@link org.opendaylight.openflowplugin.openflow.md.core.sal.SalRegistrationManager#onSessionAdded(org.opendaylight.openflowplugin.openflow.md.core.session.SwitchSessionKeyOF, org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext)}
+     * Test for {@link org.opendaylight.openflowplugin.openflow.md.core.sal.SalRegistrationManager#onSessionAdded(org.opendaylight.openflowplugin.api.openflow.md.core.session.SwitchSessionKeyOF, org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext)}
      */
     public void testOnAdded() {
         SwitchSessionKeyOF switchSessionKeyOF = new SwitchSessionKeyOF();
