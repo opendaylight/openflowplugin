@@ -11,7 +11,8 @@ package org.opendaylight.openflowplugin.openflow.md.core;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
-import org.opendaylight.openflowplugin.openflow.md.queue.QueueProcessor;
+import org.opendaylight.openflowplugin.api.openflow.md.core.ConnectionConductor;
+import org.opendaylight.openflowplugin.api.openflow.md.queue.QueueProcessor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 
@@ -32,7 +33,7 @@ public final class ConnectionConductorFactory {
      * @param queueProcessor 
      * @return conductor for given connection
      */
-    public static ConnectionConductor createConductor(ConnectionAdapter connectionAdapter, 
+    public static ConnectionConductor createConductor(ConnectionAdapter connectionAdapter,
             QueueProcessor<OfHeader, DataObject> queueProcessor) {
         ConnectionConductor connectionConductor = new ConnectionConductorImpl(connectionAdapter);
         connectionConductor.setQueueProcessor(queueProcessor);

@@ -13,6 +13,7 @@ import java.math.BigInteger;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
+import org.opendaylight.openflowplugin.api.openflow.md.core.sal.convertor.match.MatchConvertorUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Ipv6ExthdrFlags;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +27,7 @@ public class MatchConvertorUtilTest {
             .getLogger(MatchConvertorUtilTest.class);
 
     /**
-     * Test method for {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchConvertorUtil#ipv6ExthdrFlagsToInt(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Ipv6ExthdrFlags)}.
+     * Test method for {@link org.opendaylight.openflowplugin.api.openflow.md.core.sal.convertor.match.MatchConvertorUtil#ipv6ExthdrFlagsToInt(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Ipv6ExthdrFlags)}.
      * @throws Exception 
      */
     @Test
@@ -66,7 +67,7 @@ public class MatchConvertorUtilTest {
     }
 
     /**
-     * Test method for {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchConvertorUtil#ipv6NetmaskArrayToCIDRValue(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.MaskMatchEntry)}.
+     * Test method for {@link org.opendaylight.openflowplugin.api.openflow.md.core.sal.convertor.match.MatchConvertorUtil#ipv6NetmaskArrayToCIDRValue(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.MaskMatchEntry)}.
      * @throws Exception
      */
     @Test

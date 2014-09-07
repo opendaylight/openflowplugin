@@ -15,11 +15,14 @@ import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.controller.sal.common.util.RpcErrors;
 import org.opendaylight.controller.sal.common.util.Rpcs;
 import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.api.openflow.md.core.sal.NotificationComposer;
+import org.opendaylight.openflowplugin.api.openflow.md.core.sal.OFRpcTask;
+import org.opendaylight.openflowplugin.api.openflow.md.core.sal.OFRpcTaskContext;
 import org.opendaylight.openflowplugin.openflow.md.core.MessageFactory;
-import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
-import org.opendaylight.openflowplugin.openflow.md.core.session.IMessageDispatchService;
-import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
-import org.opendaylight.openflowplugin.statistics.MessageSpy;
+import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
+import org.opendaylight.openflowplugin.api.openflow.md.core.session.IMessageDispatchService;
+import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
+import org.opendaylight.openflowplugin.api.statistics.MessageSpy;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierOutput;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
@@ -47,7 +50,7 @@ public abstract class OFRpcTaskUtil {
      * @param cookie 
      * @return rpcResult of given type, containing wrapped errors of barrier sending (if any) or success
      */
-    public static Collection<RpcError> manageBarrier(OFRpcTaskContext taskContext, Boolean isBarrier, 
+    public static Collection<RpcError> manageBarrier(OFRpcTaskContext taskContext, Boolean isBarrier,
             SwitchConnectionDistinguisher cookie) {
         Collection<RpcError> errors = null;
         if (Objects.firstNonNull(isBarrier, Boolean.FALSE)) {
@@ -103,7 +106,7 @@ public abstract class OFRpcTaskUtil {
      * @param notificationComposer lazy notification composer
      */
     public static <R, N extends Notification, INPUT extends DataContainer> void hookFutureNotification(
-            final OFRpcTask<INPUT, R> task, 
+            final OFRpcTask<INPUT, R> task,
             ListenableFuture<R> originalResult, 
             final NotificationProviderService notificationProviderService, 
             final NotificationComposer<N> notificationComposer) {

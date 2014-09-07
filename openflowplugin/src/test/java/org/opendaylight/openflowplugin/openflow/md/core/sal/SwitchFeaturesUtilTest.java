@@ -25,12 +25,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 public class SwitchFeaturesUtilTest {
 
     private GetFeaturesOutputBuilder featuresOutputBuilder;    
-    private SwitchFeaturesUtil swUtil; 
+    private SwitchFeaturesUtil swUtil;
     
     
     /**
      * initialization of {@link org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutputBuilder GetFeaturesOutputBuilder}
-     * and {@link org.opendaylight.openflowplugin.openflow.md.core.sal.SwitchFeaturesUtil SwitchFeaturesUtil}
+     * and {@link SwitchFeaturesUtil SwitchFeaturesUtil}
      * @throws Exception
      */
     @Before
@@ -50,7 +50,7 @@ public class SwitchFeaturesUtilTest {
 
     /**
      * Test method for
-     * {@link org.opendaylight.openflowplugin.openflow.md.core.sal.SwitchFeaturesUtil#buildSwitchFeatures} for OF 1.0 version 
+     * {@link SwitchFeaturesUtil#buildSwitchFeatures} for OF 1.0 version
      * and switch feature capabilities
      * .
      */
@@ -64,7 +64,7 @@ public class SwitchFeaturesUtilTest {
     
     /**
      * Test method for
-     * {@link org.opendaylight.openflowplugin.openflow.md.core.sal.SwitchFeaturesUtil#buildSwitchFeatures} for OF 1.3 version 
+     * {@link SwitchFeaturesUtil#buildSwitchFeatures} for OF 1.3 version
      * and switch feature capabilities
      * .
      */
@@ -78,7 +78,7 @@ public class SwitchFeaturesUtilTest {
     
     /**
      * Test method for
-     * {@link org.opendaylight.openflowplugin.openflow.md.core.sal.SwitchFeaturesUtil#buildSwitchFeatures} for malformed switch feature capabilities
+     * {@link SwitchFeaturesUtil#buildSwitchFeatures} for malformed switch feature capabilities
      * - at least one feature is null
      * .
      */    
@@ -92,7 +92,7 @@ public class SwitchFeaturesUtilTest {
     
     /**
      * Test method for
-     * {@link org.opendaylight.openflowplugin.openflow.md.core.sal.SwitchFeaturesUtil#buildSwitchFeatures} for mismatch between
+     * {@link SwitchFeaturesUtil#buildSwitchFeatures} for mismatch between
      * version and switch feature capabilities
      * .
      */
@@ -106,7 +106,7 @@ public class SwitchFeaturesUtilTest {
     
     /**
      * Test method for
-     * {@link org.opendaylight.openflowplugin.openflow.md.core.sal.SwitchFeaturesUtil#buildSwitchFeatures} for nonexisting version
+     * {@link SwitchFeaturesUtil#buildSwitchFeatures} for nonexisting version
      * .
      */
     @Test

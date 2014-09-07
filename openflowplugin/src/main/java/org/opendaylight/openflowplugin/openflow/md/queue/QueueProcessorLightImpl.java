@@ -20,11 +20,20 @@ import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
+import org.opendaylight.openflowplugin.api.openflow.md.core.IMDMessageTranslator;
+import org.opendaylight.openflowplugin.api.openflow.md.queue.HarvesterHandle;
+import org.opendaylight.openflowplugin.api.openflow.md.queue.PopListener;
+import org.opendaylight.openflowplugin.api.openflow.md.queue.QueueItem;
+import org.opendaylight.openflowplugin.api.openflow.md.queue.QueueKeeper;
+import org.opendaylight.openflowplugin.api.openflow.md.queue.QueueProcessor;
+import org.opendaylight.openflowplugin.api.openflow.md.queue.Ticket;
+import org.opendaylight.openflowplugin.api.openflow.md.queue.TicketFinisher;
+import org.opendaylight.openflowplugin.api.openflow.md.queue.TicketProcessorFactory;
+import org.opendaylight.openflowplugin.api.openflow.md.queue.TicketResult;
 import org.opendaylight.openflowplugin.openflow.md.core.ThreadPoolLoggingExecutor;
-import org.opendaylight.openflowplugin.openflow.md.core.TranslatorKey;
-import org.opendaylight.openflowplugin.statistics.MessageSpy;
-import org.opendaylight.openflowplugin.statistics.MessageSpy.STATISTIC_GROUP;
+import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
+import org.opendaylight.openflowplugin.api.statistics.MessageSpy;
+import org.opendaylight.openflowplugin.api.statistics.MessageSpy.STATISTIC_GROUP;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -33,7 +42,7 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * {@link QueueKeeper} implementation focused to keep order and use up mutiple threads for translation phase.
+ * {@link org.opendaylight.openflowplugin.api.openflow.md.queue.QueueKeeper} implementation focused to keep order and use up mutiple threads for translation phase.
  * <br/>
  * There is internal thread pool of limited size ({@link QueueProcessorLightImpl#setProcessingPoolSize(int)}) 
  * dedicated to translation. Then there is singleThreadPool dedicated to publishing (via popListeners)
@@ -45,7 +54,7 @@ import org.slf4j.LoggerFactory;
  * <li>when translation of particular message is finished, result is set in future result of wrapping ticket</br>
  *     (order of tickets in queue is not touched during translate)
  * </li>
- * <li>at the end of queue there is {@link TicketFinisher} running in singleThreadPool and for each ticket it does:
+ * <li>at the end of queue there is {@link org.opendaylight.openflowplugin.api.openflow.md.queue.TicketFinisher} running in singleThreadPool and for each ticket it does:
  *    <ol>
  *      <li>invoke blocking {@link BlockingQueue#take()} method in order to get the oldest ticket</li>
  *      <li>invoke blocking {@link Future#get()} on the dequeued ticket</li>

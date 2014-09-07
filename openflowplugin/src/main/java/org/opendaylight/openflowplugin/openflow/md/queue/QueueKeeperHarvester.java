@@ -9,6 +9,10 @@ package org.opendaylight.openflowplugin.openflow.md.queue;
 
 import java.util.Collection;
 
+import org.opendaylight.openflowplugin.api.openflow.md.queue.Enqueuer;
+import org.opendaylight.openflowplugin.api.openflow.md.queue.HarvesterHandle;
+import org.opendaylight.openflowplugin.api.openflow.md.queue.QueueItem;
+import org.opendaylight.openflowplugin.api.openflow.md.queue.QueueKeeper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

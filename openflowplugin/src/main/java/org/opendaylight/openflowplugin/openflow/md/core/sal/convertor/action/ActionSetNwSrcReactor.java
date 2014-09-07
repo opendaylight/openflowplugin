@@ -11,10 +11,10 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action;
 import java.util.Map;
 
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertReactor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
+import org.opendaylight.openflowplugin.api.openflow.md.core.sal.convertor.common.Convertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.InjectionKey;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.InjectionResultTargetKey;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ResultInjector;
+import org.opendaylight.openflowplugin.api.openflow.md.core.sal.convertor.common.ResultInjector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetNwSrcActionCase;
 
 /**

@@ -13,6 +13,8 @@ import static org.junit.Assert.assertNull;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowPortsUtil;
+import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorUpdatedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -67,7 +69,7 @@ public class InventoryDataServiceUtilTest {
 
     /**
      * Test method for {@link InventoryDataServiceUtil#nodeConnectorBuilderFromDatapathIdPortNo(BigInteger datapathId,
-     * Long portNo, OpenflowVersion ofVersion)}.
+     * Long portNo, org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion ofVersion)}.
      */
     @Test
     public void testNodeConnectorBuilderFromDatapathIdPortNo() {

@@ -11,9 +11,9 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 import java.util.Map;
 
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertReactor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
+import org.opendaylight.openflowplugin.api.openflow.md.core.sal.convertor.common.Convertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.InjectionKey;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ResultInjector;
+import org.opendaylight.openflowplugin.api.openflow.md.core.sal.convertor.common.ResultInjector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
 
 /**

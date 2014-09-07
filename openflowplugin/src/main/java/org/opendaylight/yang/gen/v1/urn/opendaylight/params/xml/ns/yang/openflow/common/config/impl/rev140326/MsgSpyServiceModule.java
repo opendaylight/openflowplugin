@@ -4,8 +4,8 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 
 import org.opendaylight.openflowplugin.openflow.md.core.sal.OpenflowPluginProvider;
-import org.opendaylight.openflowplugin.statistics.MessageCountDumper;
-import org.opendaylight.openflowplugin.statistics.MessageObservatory;
+import org.opendaylight.openflowplugin.api.statistics.MessageCountDumper;
+import org.opendaylight.openflowplugin.api.statistics.MessageObservatory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

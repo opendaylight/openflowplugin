@@ -7,17 +7,19 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.queue;
 
+import org.opendaylight.openflowplugin.api.openflow.md.queue.MessageSourcePollRegistrator;
+import org.opendaylight.openflowplugin.api.openflow.md.queue.QueueKeeper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 
 /**
- * factory for {@link QueueKeeper} implementations
+ * factory for {@link org.opendaylight.openflowplugin.api.openflow.md.queue.QueueKeeper} implementations
  */
 public abstract class QueueKeeperFactory {
     
     /**
      * @param sourceRegistrator 
      * @param capacity blocking queue capacity
-     * @return fair reading implementation of {@link QueueKeeper}
+     * @return fair reading implementation of {@link org.opendaylight.openflowplugin.api.openflow.md.queue.QueueKeeper}
      */
     @SuppressWarnings("resource")
     public static QueueKeeper<OfHeader> createFairQueueKeeper(

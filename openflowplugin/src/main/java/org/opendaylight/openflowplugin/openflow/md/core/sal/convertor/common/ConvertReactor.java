@@ -13,6 +13,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.google.common.collect.ImmutableMap;
+import org.opendaylight.openflowplugin.api.openflow.md.core.sal.convertor.common.Convertor;
+import org.opendaylight.openflowplugin.api.openflow.md.core.sal.convertor.common.ResultInjector;
 
 /**
  * @param <FROM> source type for conversion

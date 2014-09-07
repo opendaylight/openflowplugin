@@ -8,6 +8,7 @@
 package org.opendaylight.openflowplugin.openflow.md.util;
 
 import org.junit.Test;
+import org.opendaylight.openflowplugin.api.openflow.md.util.PacketInUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PacketInReason;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.InvalidTtl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.NoMatch;

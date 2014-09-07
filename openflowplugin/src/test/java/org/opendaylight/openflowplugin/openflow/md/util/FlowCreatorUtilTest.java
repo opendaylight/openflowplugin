@@ -12,6 +12,7 @@ import static junit.framework.TestCase.assertEquals;
 
 import org.junit.Test;
 import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.api.openflow.md.util.FlowCreatorUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.OxmMatchType;
@@ -28,7 +29,7 @@ public class FlowCreatorUtilTest {
     private static final Ipv4Address ipv4Address = new Ipv4Address("0.0.0.0");
 
     /**
-     * Test method for {@link FlowCreatorUtil#setWildcardedFlowMatch(short version, MultipartRequestFlowBuilder flowBuilder)}.
+     * Test method for {@link org.opendaylight.openflowplugin.api.openflow.md.util.FlowCreatorUtil#setWildcardedFlowMatch(short version, MultipartRequestFlowBuilder flowBuilder)}.
      */
     @Test
     public void testSetWildcardedFlowMatch_1_0() {

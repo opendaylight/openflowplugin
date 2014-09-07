@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.openflow.md.util;
 import org.junit.Test;
 
 import java.math.BigInteger;
+import org.opendaylight.openflowplugin.api.openflow.md.util.ByteUtil;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

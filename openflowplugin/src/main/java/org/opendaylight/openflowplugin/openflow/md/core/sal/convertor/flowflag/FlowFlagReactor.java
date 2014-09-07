@@ -11,9 +11,9 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flowflag;
 import java.util.Map;
 
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertReactor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
+import org.opendaylight.openflowplugin.api.openflow.md.core.sal.convertor.common.Convertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.InjectionKey;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ResultInjector;
+import org.opendaylight.openflowplugin.api.openflow.md.core.sal.convertor.common.ResultInjector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags;
 
 /**
