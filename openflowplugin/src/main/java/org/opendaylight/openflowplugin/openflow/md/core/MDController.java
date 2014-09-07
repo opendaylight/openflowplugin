@@ -28,6 +28,7 @@ import java.util.concurrent.TimeoutException;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionConfiguration;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.translator.ErrorTranslator;
@@ -45,7 +46,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.translator.PortStatusMes
 import org.opendaylight.openflowplugin.openflow.md.lldp.LLDPSpeakerPopListener;
 import org.opendaylight.openflowplugin.openflow.md.queue.PopListener;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
-import org.opendaylight.openflowplugin.statistics.MessageSpy;
+import org.opendaylight.openflowplugin.api.statistics.MessageSpy;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.NodeErrorNotification;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SwitchFlowRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.AggregateFlowStatisticsUpdate;

@@ -26,7 +26,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.
 import java.util.Iterator;
 
 /**
- * Temporary extension conversions until extensions are supported in MD_SAL OpenFlow v1.3 implementations
+ * Temporary extension conversions until extension are supported in MD_SAL OpenFlow v1.3 implementations
  */
 public class NxmExtensionsConvertor {
     static final Splitter PREFIX_SPLITTER = Splitter.on('/');

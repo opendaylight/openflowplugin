@@ -14,7 +14,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.opendaylight.openflowplugin.openflow.md.util.PollableQueuesZipper;
+import org.opendaylight.openflowplugin.api.openflow.md.util.PollableQueuesZipper;
 
 import com.google.common.collect.Lists;
 
@@ -24,7 +24,7 @@ import com.google.common.collect.Lists;
 public class PollableQueuesZipperTest {
 
     /**
-     * Test method for {@link org.opendaylight.openflowplugin.openflow.md.util.PollableQueuesZipper#poll()}.
+     * Test method for {@link org.opendaylight.openflowplugin.api.openflow.md.util.PollableQueuesZipper#poll()}.
      */
     @Test
     public void testPoll() {

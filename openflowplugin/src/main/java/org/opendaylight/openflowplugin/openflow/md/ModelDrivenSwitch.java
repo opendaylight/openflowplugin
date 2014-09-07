@@ -58,6 +58,7 @@ public interface ModelDrivenSwitch extends //
 
     /**
      * returnes the session context associated with this model-driven switch
+     *
      * @return session context object
      */
     SessionContext getSessionContext();
