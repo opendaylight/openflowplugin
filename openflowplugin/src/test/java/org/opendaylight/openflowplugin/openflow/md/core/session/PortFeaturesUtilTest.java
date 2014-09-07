@@ -13,7 +13,6 @@ import junit.framework.Assert;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.opendaylight.openflowplugin.openflow.md.core.session.PortFeaturesUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortFeaturesV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortReason;
@@ -30,7 +29,7 @@ public class PortFeaturesUtilTest {
     
     /**
      * initialization of {@link org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessageBuilder.PortStatusMessageBuilder}
-     * and {@link org.opendaylight.openflowplugin.openflow.md.core.session.PortFeaturesUtil}
+     * and {@link PortFeaturesUtil}
      * @throws Exception
      */
     @Before
@@ -50,7 +49,7 @@ public class PortFeaturesUtilTest {
 
     /**
      * Test method for
-     * {@link org.opendaylight.openflowplugin.openflow.md.core.session.PortFeaturesUtil#getPortBandwidth()} for OF 1.0 version 
+     * {@link PortFeaturesUtil#getPortBandwidth()} for OF 1.0 version
      * and features
      * .
      */
@@ -64,7 +63,7 @@ public class PortFeaturesUtilTest {
     
     /**
      * Test method for
-     * {@link org.opendaylight.openflowplugin.openflow.md.core.session.PortFeaturesUtil#getPortBandwidth()} for OF 1.3 version 
+     * {@link PortFeaturesUtil#getPortBandwidth()} for OF 1.3 version
      * and features
      * .
      */
@@ -78,7 +77,7 @@ public class PortFeaturesUtilTest {
     
     /**
      * Test method for
-     * {@link org.opendaylight.openflowplugin.openflow.md.core.session.PortFeaturesUtil#getPortBandwidth()} for malformed features
+     * {@link PortFeaturesUtil#getPortBandwidth()} for malformed features
      * - at least one feature is null
      * .
      */
@@ -92,7 +91,7 @@ public class PortFeaturesUtilTest {
     
     /**
      * Test method for
-     * {@link org.opendaylight.openflowplugin.openflow.md.core.session.PortFeaturesUtil#getPortBandwidth()} for mismatch between
+     * {@link PortFeaturesUtil#getPortBandwidth()} for mismatch between
      * port version and port features
      * .
      */
@@ -106,7 +105,7 @@ public class PortFeaturesUtilTest {
     
     /**
      * Test method for
-     * {@link org.opendaylight.openflowplugin.openflow.md.core.session.PortFeaturesUtil#getPortBandwidth()} for nonexisting port version
+     * {@link PortFeaturesUtil#getPortBandwidth()} for nonexisting port version
      * .
      */
     @Test

@@ -32,7 +32,7 @@ public final class ConnectionConductorFactory {
      * @param queueProcessor 
      * @return conductor for given connection
      */
-    public static ConnectionConductor createConductor(ConnectionAdapter connectionAdapter, 
+    public static ConnectionConductor createConductor(ConnectionAdapter connectionAdapter,
             QueueProcessor<OfHeader, DataObject> queueProcessor) {
         ConnectionConductor connectionConductor = new ConnectionConductorImpl(connectionAdapter);
         connectionConductor.setQueueProcessor(queueProcessor);

@@ -8,7 +8,7 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.session;
 
-import org.opendaylight.openflowplugin.openflow.md.core.SwitchConnectionDistinguisher;
+import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hasher;

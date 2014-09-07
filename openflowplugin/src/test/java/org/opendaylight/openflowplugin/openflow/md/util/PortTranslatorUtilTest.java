@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 import java.math.BigInteger;
 import org.junit.Before;
 import org.junit.Test;
+import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortConfig;
@@ -38,7 +39,7 @@ public class PortTranslatorUtilTest {
     }
 
     /**
-     * Test  method for {@link org.opendaylight.openflowplugin.openflow.md.util.PortTranslatorUtil#translatePortFeatures(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortFeatures)}
+     * Test  method for {@link PortTranslatorUtil#translatePortFeatures(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortFeatures)}
      */
     @Test
     public void testTranslatePortFeatures() {
@@ -60,7 +61,7 @@ public class PortTranslatorUtilTest {
     }
 
     /**
-     * Test  method for {@link org.opendaylight.openflowplugin.openflow.md.util.PortTranslatorUtil#translatePortFeatures(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortFeaturesV10)}
+     * Test  method for {@link PortTranslatorUtil#translatePortFeatures(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortFeaturesV10)}
      */
     @Test
     public void testTranslatePortFeaturesV10() {
@@ -84,7 +85,7 @@ public class PortTranslatorUtilTest {
     }
 
     /**
-     * Test  method for {@link org.opendaylight.openflowplugin.openflow.md.util.PortTranslatorUtil#translatePort(Short, java.math.BigInteger, Long, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping)} ()}
+     * Test  method for {@link PortTranslatorUtil#translatePort(Short, java.math.BigInteger, Long, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping)} ()}
      */
     @Test
     public void testTranslatePort() {
