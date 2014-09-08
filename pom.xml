@@ -363,7 +363,7 @@
             <plugin>
               <groupId>org.opendaylight.yangtools</groupId>
               <artifactId>yang-maven-plugin</artifactId>
-              <version>0.6.2-SNAPSHOT</version>
+              <version>${yang.binding.version}</version>
             </plugin>
             <plugin>
               <groupId>org.apache.felix</groupId>
