@@ -51,6 +51,7 @@
       <sal.common.util.version>1.1-SNAPSHOT</sal.common.util.version>
       <netconf.parent.version>0.2.5-SNAPSHOT</netconf.parent.version>
       <config.parent.version>0.2.5-SNAPSHOT</config.parent.version>
+      <yangtools.version>0.6.2-SNAPSHOT</yangtools.version>
       <build.helper.version>1.8</build.helper.version>
       <xtend.dstdir>src/main/xtend-gen</xtend.dstdir>
       <jmxGeneratorPath>src/main/yang-gen-config</jmxGeneratorPath>
