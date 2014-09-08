@@ -365,7 +365,7 @@ public class FlowConvertor {
             vlanIdBuilder.setVlanIdPresent(true);
             vlanIdBuilder.setVlanId(srcFlow.getMatch().getVlanMatch().getVlanId().getVlanId());
             vlanMatchBuilder.setVlanId(vlanIdBuilder.build());
-            Match match = new MatchBuilder().setVlanMatch(vlanMatchBuilder.build()).build();
+            Match match = new MatchBuilder(srcFlow.getMatch()).setVlanMatch(vlanMatchBuilder.build()).build();
 
             Optional<? extends Flow> optional = injectMatchToFlow(srcFlow, match);
             if (optional.isPresent()) {
@@ -380,7 +380,7 @@ public class FlowConvertor {
             vlanIdBuilder.setVlanIdPresent(false);
             vlanIdBuilder.setVlanId(new VlanId(0));
             vlanMatchBuilder.setVlanId(vlanIdBuilder.build());
-            Match match1 = new MatchBuilder().setVlanMatch(vlanMatchBuilder.build()).build();
+            Match match1 = new MatchBuilder(srcFlow.getMatch()).setVlanMatch(vlanMatchBuilder.build()).build();
 
             Optional<? extends Flow> optional1 = injectMatchAndAction(srcFlow, match1);
             if (optional1.isPresent()) {
@@ -394,7 +394,7 @@ public class FlowConvertor {
             vlanIdBuilder2.setVlanIdPresent(true);
             vlanIdBuilder2.setVlanId(new VlanId(0));
             vlanMatchBuilder2.setVlanId(vlanIdBuilder2.build());
-            Match match2 = new MatchBuilder().setVlanMatch(vlanMatchBuilder2.build()).build();
+            Match match2 = new MatchBuilder(srcFlow.getMatch()).setVlanMatch(vlanMatchBuilder2.build()).build();
             Optional<? extends Flow> optional2 = injectMatchToFlow(srcFlow, match2);
             if (optional2.isPresent()) {
                 list.add(toFlowModInput(optional2.get(), version, datapathId));
@@ -445,21 +445,27 @@ public class FlowConvertor {
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction> targetInstructionList = new ArrayList<>(srcInstructionList.size());
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> targetActionList = new ArrayList<>();
 
+        org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder instructionBuilder =
+                new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder();
+        
         for (int i=0; i < srcInstructionList.size(); i++) {
-            org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction srcInstruction = srcInstructionList.get(i);
-            org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction curSrcInstruction = srcInstruction.getInstruction();
-
+            org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction srcInstruction = 
+                    srcInstructionList.get(i);
+            org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction curSrcInstruction = 
+                    srcInstruction.getInstruction();
+            
             if (curSrcInstruction instanceof ApplyActionsCase) {
                 ApplyActionsCase applyActionscase = (ApplyActionsCase) curSrcInstruction;
                 ApplyActions applyActions = applyActionscase.getApplyActions();
                 List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> srcActionList = applyActions.getAction();
 
-                boolean orderIncrement = false;
+                int offset = 0;
                 for (int j=0; j < srcActionList.size(); j++) {
                     // check if its a set-vlan-action. If yes, then add the injected-action
 
-                    if(srcActionList.get(j).getAction() instanceof SetVlanIdActionCase) {
-                        SetVlanIdActionCase setVlanIdActionCase = (SetVlanIdActionCase) srcActionList.get(j).getAction();
+                    org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action actionItem = srcActionList.get(j);
+                    if(actionItem.getAction() instanceof SetVlanIdActionCase) {
+                        SetVlanIdActionCase setVlanIdActionCase = (SetVlanIdActionCase) actionItem.getAction();
 
                         PushVlanActionCaseBuilder pushVlanActionCaseBuilder = new PushVlanActionCaseBuilder();
                         PushVlanActionBuilder pushVlanActionBuilder = new PushVlanActionBuilder();
@@ -475,49 +481,39 @@ public class FlowConvertor {
 
                         org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder actionBuilder = new ActionBuilder();
                         actionBuilder.setAction(injectedAction)
-                            .setKey(srcActionList.get(j).getKey())
-                            .setOrder(srcActionList.get(j).getOrder());
+                            .setKey(actionItem.getKey())
+                            .setOrder(actionItem.getOrder() + offset);
 
                         targetActionList.add(actionBuilder.build());
-
-                        orderIncrement = true;
+                        offset ++;
                     }
 
-                    if (orderIncrement) {
+                    if (offset > 0) {
                         // we need to increment the order for all the actions added after injection
                         org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder actionBuilder =
-                            new org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder(srcActionList.get(j));
-                        actionBuilder.setOrder(srcActionList.get(j).getOrder() + 1);
-                        targetActionList.add(actionBuilder.build());
-                    } else {
-                        targetActionList.add(srcActionList.get(j));
+                            new org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder(actionItem);
+                        actionBuilder.setOrder(actionItem.getOrder() + offset);
+                        actionItem = actionBuilder.build();
                     }
+                    
+                    targetActionList.add(actionItem);
                 }
 
                 ApplyActionsCaseBuilder applyActionsCaseBuilder = new ApplyActionsCaseBuilder();
                 ApplyActionsBuilder applyActionsBuilder = new ApplyActionsBuilder();
                 applyActionsBuilder.setAction(targetActionList);
                 applyActionsCaseBuilder.setApplyActions(applyActionsBuilder.build());
-
-                org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder builder =
-                    new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder();
-
-                targetInstructionList.add(
-                    builder.setKey(srcInstruction.getKey())
-                        .setOrder(srcInstruction.getOrder())
-                        .setInstruction(applyActionsCaseBuilder.build())
-                        .build());
-
-
+                    
+                instructionBuilder.setInstruction(applyActionsCaseBuilder.build());
             } else {
-                org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder builder =
-                    new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder();
-                targetInstructionList.add(
-                    builder.setKey(srcInstruction.getKey())
-                        .setOrder(srcInstruction.getOrder())
-                        .setInstruction(curSrcInstruction)
-                        .build());
+                instructionBuilder.setInstruction(curSrcInstruction);
             }
+            
+            instructionBuilder
+                .setKey(srcInstruction.getKey())
+                .setOrder(srcInstruction.getOrder());
+            targetInstructionList.add(instructionBuilder.build());
+            
         }
 
         return targetInstructionList;
