@@ -358,7 +358,7 @@ public final class ActionConvertor {
         if (version == OFConstants.OFP_VERSION_1_0) {
             // if client configure openflow 1.0 switch as a openflow 1.3 switch using openflow 1.3 instructions
             // then we can ignore PUSH_VLAN as set-vlan-id will push a vlan header if not present
-            return emtpyAction(actionBuilder);
+            return null;
         }
 
         PushVlanActionCase pushVlanActionCase = (PushVlanActionCase) action;
