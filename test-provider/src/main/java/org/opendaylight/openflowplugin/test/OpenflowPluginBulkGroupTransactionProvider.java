@@ -6,13 +6,10 @@ import com.google.common.util.concurrent.Futures;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
-import org.opendaylight.controller.md.sal.common.api.TransactionStatus;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
@@ -97,7 +94,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.node.error.service.rev140410.NodeErrorListener;
 import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -756,7 +752,7 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
 
             @Override
             public void onFailure(Throwable throwable) {
-                ci.println(String.format("Status of Group Data Loaded Transaction : failure. Reason : %s",throwable));
+                ci.println(String.format("Status of Group Data Loaded Transaction : failure. Reason : %s", throwable));
             }
         });
     }
@@ -782,7 +778,7 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
 
             @Override
             public void onFailure(Throwable throwable) {
-                ci.println(String.format("Status of Group Data Loaded Transaction : failure. Reason : %s",throwable));
+                ci.println(String.format("Status of Group Data Loaded Transaction : failure. Reason : %s", throwable));
             }
         });
     }
