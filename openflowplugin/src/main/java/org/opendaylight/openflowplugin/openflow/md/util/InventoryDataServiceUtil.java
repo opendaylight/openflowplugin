@@ -67,6 +67,7 @@ public abstract class InventoryDataServiceUtil {
         return (Node) getDataObject(OFSessionUtil.getSessionManager().getDataBroker().newReadOnlyTransaction(), instance);
     }
 
+/*
     public static Node readNode(NodeRef nodeRef) {
         return readNode((InstanceIdentifier<Node>) nodeRef.getValue());
     }
@@ -74,7 +75,9 @@ public abstract class InventoryDataServiceUtil {
     public static Node readNode(NodeKey nodeKey) {
         return readNode(nodeKeyToInstanceIdentifier(nodeKey));
     }
+*/
 
+/*
     public static Node readNode(NodeId nodeId) {
         return readNode(new NodeKey(nodeId));
     }
@@ -90,6 +93,7 @@ public abstract class InventoryDataServiceUtil {
         transaction.merge(LogicalDatastoreType.OPERATIONAL, nodeID, node);
         transaction.submit();
     }
+*/
 
     public static void putNodeConnector(InstanceIdentifier<Node> instance, NodeConnector nodeConnector) {
         ReadWriteTransaction transaction = OFSessionUtil.getSessionManager().getDataBroker().newReadWriteTransaction();
@@ -107,9 +111,11 @@ public abstract class InventoryDataServiceUtil {
         putNodeConnector(new NodeKey(nodeId), nodeConnector);
     }
 
+/*
     public static void putNodeConnector(BigInteger datapathId, NodeConnector nodeConnector) {
         putNodeConnector(new NodeId(OF_URI_PREFIX + datapathId), nodeConnector);
     }
+*/
 
     public static InstanceIdentifier<Node> identifierFromDatapathId(BigInteger datapathId) {
         NodeKey nodeKey = nodeKeyFromDatapathId(datapathId);
@@ -139,9 +145,11 @@ public abstract class InventoryDataServiceUtil {
         return dpid;
     }
 
+/*
     public static NodeRef nodeRefFromNode(Node node) {
         return nodeRefFromNodeKey(node.getKey());
     }
+*/
 
     public static NodeRef nodeRefFromNodeKey(NodeKey nodeKey) {
         return new NodeRef(nodeKeyToInstanceIdentifier(nodeKey));
@@ -151,9 +159,11 @@ public abstract class InventoryDataServiceUtil {
         return InstanceIdentifier.builder(Nodes.class).child(Node.class, nodeKey).toInstance();
     }
 
+/*
     public static InstanceIdentifier<Node> nodeIdToInstanceIdentifier(NodeId nodeId) {
         return nodeKeyToInstanceIdentifier(new NodeKey(nodeId));
     }
+*/
 
     public static NodeConnectorId nodeConnectorIdfromDatapathPortNo(BigInteger datapathid, Long portNo,
                                                                     OpenflowVersion ofVersion) {

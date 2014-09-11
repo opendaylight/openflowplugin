@@ -90,7 +90,7 @@ public class InventoryDataServiceUtilTest {
      * Long portNo, OpenflowVersion ofVersion)}
      */
     @Test
-    public void testNodeConnectorUpdatedBuilderFromDatapathIdPortNo() {
+    public void l() {
         NodeConnectorUpdatedBuilder nodeConnectorUpdatedBuilder = InventoryDataServiceUtil.nodeConnectorUpdatedBuilderFromDatapathIdPortNo(PATH_ID,
                 PORT_NO, OpenflowVersion.OF10);
         assertNotNull(nodeConnectorUpdatedBuilder);
