@@ -302,18 +302,6 @@ public class MDController implements IMDController, AutoCloseable {
     }
 
     /**
-     * @return wished connections configurations
-     * @deprecated use configSubsystem
-     */
-    @Deprecated
-    private static Collection<ConnectionConfiguration> getConnectionConfiguration() {
-        // TODO:: get config from state manager
-        ConnectionConfiguration configuration = ConnectionConfigurationFactory.getDefault();
-        ConnectionConfiguration configurationLegacy = ConnectionConfigurationFactory.getLegacy();
-        return Lists.newArrayList(configuration, configurationLegacy);
-    }
-
-    /**
      * Function called by the dependency manager before the services exported by
      * the component are unregistered, this will be followed by a "destroy ()"
      * calls
