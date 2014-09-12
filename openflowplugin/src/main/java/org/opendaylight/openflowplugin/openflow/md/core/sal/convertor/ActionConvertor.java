@@ -10,6 +10,7 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
 import com.google.common.collect.Ordering;
+
 import org.opendaylight.openflowplugin.extension.api.ConverterExtensionKey;
 import org.opendaylight.openflowplugin.extension.api.ConvertorActionToOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorToOFJava;
@@ -23,6 +24,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Ord
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchConvertorImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchReactor;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
+import org.opendaylight.openflowplugin.openflow.md.util.ActionUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
@@ -166,7 +168,7 @@ import java.util.List;
  */
 public final class ActionConvertor {
     private static final Logger logger = LoggerFactory.getLogger(ActionConvertor.class);
-
+    
     private ActionConvertor() {
         // NOOP
     }
@@ -616,7 +618,9 @@ public final class ActionConvertor {
             actionBuilder
                     .setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.SetField.class);
             List<MatchEntries> matchEntriesList = new ArrayList<>();
-            matchEntriesList.add(MatchConvertorImpl.toOfIpDscp(new Dscp(setnwtosaction.getTos().shortValue())));
+            matchEntriesList.add(MatchConvertorImpl.toOfIpDscp(new Dscp(
+                    ActionUtil.tosToDscp(setnwtosaction.getTos().shortValue())
+                    )));
             oxmFieldsActionBuilder.setMatchEntries(matchEntriesList);
             actionBuilder.addAugmentation(OxmFieldsAction.class, oxmFieldsActionBuilder.build());
             return actionBuilder.build();
