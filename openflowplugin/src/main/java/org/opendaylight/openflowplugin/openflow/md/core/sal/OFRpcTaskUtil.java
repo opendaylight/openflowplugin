@@ -12,23 +12,22 @@ import java.util.Collections;
 import java.util.concurrent.Future;
 
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
-import org.opendaylight.controller.sal.common.util.RpcErrors;
-import org.opendaylight.controller.sal.common.util.Rpcs;
 import org.opendaylight.openflowplugin.api.OFConstants;
-import org.opendaylight.openflowplugin.api.openflow.md.core.sal.NotificationComposer;
-import org.opendaylight.openflowplugin.openflow.md.core.MessageFactory;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
+import org.opendaylight.openflowplugin.api.openflow.md.core.sal.NotificationComposer;
+import org.opendaylight.openflowplugin.api.statistics.MessageSpy;
+import org.opendaylight.openflowplugin.openflow.md.core.MessageFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.session.IMessageDispatchService;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
-import org.opendaylight.openflowplugin.api.statistics.MessageSpy;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev131103.TransactionAware;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierOutput;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.opendaylight.yangtools.yang.binding.Notification;
 import org.opendaylight.yangtools.yang.common.RpcError;
-import org.opendaylight.yangtools.yang.common.RpcError.ErrorSeverity;
 import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
@@ -60,10 +59,13 @@ public abstract class OFRpcTaskUtil {
                     errors = barrierResult.getErrors();
                 }
             } catch (Exception e) {
-                RpcError rpcError = RpcErrors.getRpcError(
-                        OFConstants.APPLICATION_TAG, OFConstants.ERROR_TAG_TIMEOUT, 
-                        "barrier sending failed", ErrorSeverity.WARNING, 
-                        "switch failed to respond on barrier request - message ordering is not preserved", ErrorType.RPC, e);
+                RpcError rpcError = RpcResultBuilder.newWarning(
+                        ErrorType.RPC, 
+                        OFConstants.ERROR_TAG_TIMEOUT, 
+                        "barrier sending failed", 
+                        OFConstants.APPLICATION_TAG, 
+                        "switch failed to respond on barrier request - message ordering is not preserved", 
+                        e);
                 errors = Lists.newArrayList(rpcError);
             }
         } 
@@ -94,7 +96,7 @@ public abstract class OFRpcTaskUtil {
      */
     public static <T> void wrapBarrierErrors(SettableFuture<RpcResult<T>> result,
             Collection<RpcError> barrierErrors) {
-        result.set(Rpcs.<T>getRpcResult(false, barrierErrors));
+        result.set(RpcResultBuilder.<T>failed().withRpcErrors(barrierErrors).build());
     }
     
     /**
@@ -103,7 +105,8 @@ public abstract class OFRpcTaskUtil {
      * @param notificationProviderService
      * @param notificationComposer lazy notification composer
      */
-    public static <R, N extends Notification, INPUT extends DataContainer> void hookFutureNotification(
+    public static <R extends RpcResult<? extends TransactionAware>, N extends Notification, INPUT extends DataContainer> 
+    void hookFutureNotification(
             final OFRpcTask<INPUT, R> task,
             ListenableFuture<R> originalResult, 
             final NotificationProviderService notificationProviderService, 
@@ -112,7 +115,7 @@ public abstract class OFRpcTaskUtil {
             @Override
             public void onSuccess(R result) {
                 if (null != notificationProviderService) {
-                    notificationProviderService.publish(notificationComposer.compose());
+                    notificationProviderService.publish(notificationComposer.compose(result.getResult().getTransactionId()));
                 }
                 task.getTaskContext().getMessageSpy().spyMessage(
                         task.getInput(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_SUCCESS);
