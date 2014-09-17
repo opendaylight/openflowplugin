@@ -17,6 +17,7 @@
         <yangtools.binding.version>0.6.2-SNAPSHOT</yangtools.binding.version>
         <jmxGeneratorPath>${project.build.directory}/generated-sources/config</jmxGeneratorPath>
         <sal-binding-api.version>1.1-SNAPSHOT</sal-binding-api.version>
+        <sonar.jacoco.excludes>org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow*/*java</sonar.jacoco.excludes>
     </properties>
 
     <build>
