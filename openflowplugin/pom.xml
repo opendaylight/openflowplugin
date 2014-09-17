@@ -90,6 +90,12 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.opendaylight.openflowplugin</groupId>
+            <artifactId>openflowjava-extension-nicira</artifactId>
+            <version>0.0.3-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>liblldp</artifactId>
         </dependency>
@@ -168,6 +174,7 @@
             <groupId>org.opendaylight.openflowjava</groupId>
             <artifactId>util</artifactId>
         </dependency>
+
     </dependencies>
 </project>
 
