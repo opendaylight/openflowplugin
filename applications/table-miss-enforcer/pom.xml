@@ -7,6 +7,9 @@
     <artifactId>applications</artifactId>
     <version>0.0.3-SNAPSHOT</version>
   </parent>
+  <properties>
+      <sonar.jacoco.excludes>org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.applications*/*java</sonar.jacoco.excludes>
+  </properties>
   <groupId>org.opendaylight.openflowplugin.applications</groupId>
   <artifactId>table-miss-enforcer</artifactId>
   <packaging>bundle</packaging>
