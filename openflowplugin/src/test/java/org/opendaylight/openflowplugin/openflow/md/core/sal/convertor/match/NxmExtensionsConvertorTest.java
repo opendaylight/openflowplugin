@@ -23,7 +23,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Nxm1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TcpFlag;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.grouping.MatchEntries;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.grouping.MatchEntriesBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmOfEthType;
 
 /**
  * Created by Martin Bobak mbobak@cisco.com on 9/17/14.
@@ -52,12 +51,12 @@ public class NxmExtensionsConvertorTest {
      * Trivial test method for {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.NxmExtensionsConvertor#toNxmIpv4Tunnel(Class, org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix)}  }
      */
     public void testToNxmIpv4Tunnel() {
-        MatchEntries matchEntries = NxmExtensionsConvertor.toNxmIpv4Tunnel(NxmOfEthType.class, IPV_4_PREFIX);
+        MatchEntries matchEntries = NxmExtensionsConvertor.toNxmIpv4Tunnel(MockMatchField.class, IPV_4_PREFIX);
         assertNotNull(matchEntries.getAugmentation(MaskMatchEntry.class));
         assertNotNull(matchEntries.getAugmentation(Ipv4AddressMatchEntry.class));
         assertTrue(matchEntries.isHasMask());
         assertEquals(Nxm1Class.class, matchEntries.getOxmClass());
-        assertEquals(NxmOfEthType.class, matchEntries.getOxmMatchField());
+        assertEquals(MockMatchField.class, matchEntries.getOxmMatchField());
     }
 
     @Test
@@ -82,4 +81,8 @@ public class NxmExtensionsConvertorTest {
         assertNotNull(matchEntryBuilder.getAugmentation(MaskMatchEntry.class));
     }
 
+
+    private class MockMatchField extends org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.MatchField {
+
+    }
 }
