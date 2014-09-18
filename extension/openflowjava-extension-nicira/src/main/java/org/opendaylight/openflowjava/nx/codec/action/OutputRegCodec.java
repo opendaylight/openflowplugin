@@ -29,6 +29,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev1
 public class OutputRegCodec extends AbstractActionCodec {
     public static final int LENGTH = 24;
     public static final byte SUBTYPE = 15; // NXAST_OUTPUT_REG
+    public static final byte PADDING_IN_OUTPUT_REG_ACTION = 6;
     public static final NiciraActionSerializerKey SERIALIZER_KEY = 
             new NiciraActionSerializerKey(EncodeConstants.OF13_VERSION_ID, NxmNxOutputReg.class);
     public static final NiciraActionDeserializerKey DESERIALIZER_KEY = 
@@ -51,6 +52,7 @@ public class OutputRegCodec extends AbstractActionCodec {
         builder.setNBits(message.readUnsignedShort());
         builder.setSrc(message.readUnsignedInt());
         builder.setMaxLen(message.readUnsignedShort());
+        message.skipBytes(PADDING_IN_OUTPUT_REG_ACTION);
         OfjAugNxActionBuilder augNxActionBuilder = new OfjAugNxActionBuilder();
         augNxActionBuilder.setActionOutputReg(builder.build());
         actionBuilder.addAugmentation(ExperimenterIdAction.class, 
