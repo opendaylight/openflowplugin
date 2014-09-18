@@ -67,6 +67,7 @@
 
       <karaf.distro.empty.version>1.4.2-SNAPSHOT</karaf.distro.empty.version>
       <yang.binding.version>0.6.2-SNAPSHOT</yang.binding.version>
+      <dlux.version>0.1.0-SNAPSHOT</dlux.version>
     </properties>
 
     <dependencyManagement>
