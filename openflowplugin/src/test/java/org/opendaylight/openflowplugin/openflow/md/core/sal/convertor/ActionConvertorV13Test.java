@@ -53,8 +53,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.strip.vlan.action._case.StripVlanActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.address.address.Ipv4Builder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.address.address.Ipv6Builder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanPcp;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.IpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.DscpMatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.EthertypeAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.EthertypeActionBuilder;
@@ -425,8 +428,11 @@ public class ActionConvertorV13Test {
         actionBuilder.setOrder(11);
         salActions.add(actionBuilder.build());
         
+        IpMatchBuilder ipMatchBld = new IpMatchBuilder().setIpProtocol((short) 6);
+        MatchBuilder matchBld = new MatchBuilder().setIpMatch(ipMatchBld.build());
+        FlowBuilder flowBld = new FlowBuilder().setMatch(matchBld.build());
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping
-        .Action> actions = ActionConvertor.getActions(salActions, EncodeConstants.OF13_VERSION_ID, new BigInteger("42"));
+        .Action> actions = ActionConvertor.getActions(salActions, EncodeConstants.OF13_VERSION_ID, new BigInteger("42"), flowBld.build());
         
         Assert.assertEquals("Wrong number of actions", 12, actions.size());
         org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping
