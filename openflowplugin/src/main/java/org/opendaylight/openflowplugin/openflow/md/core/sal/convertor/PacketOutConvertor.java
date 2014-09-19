@@ -97,7 +97,7 @@ public class PacketOutConvertor {
             actions.add(aBuild.build());
             builder.setAction(actions);
         } else {
-            builder.setAction(ActionConvertor.getActions(inputPacket.getAction(), version, datapathid));
+            builder.setAction(ActionConvertor.getActions(inputPacket.getAction(), version, datapathid, null));
         }
 
         builder.setData(inputPacket.getPayload());
