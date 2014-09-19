@@ -206,8 +206,8 @@ public class FlowConvertor {
         MatchReactor.getInstance().convert(flow.getMatch(), version, flowMod,datapathid);
 
         if (flow.getInstructions() != null) {
-            flowMod.setInstruction(toInstructions(flow.getInstructions(), version,datapathid));
-            flowMod.setAction(getActions(flow.getInstructions(), version,datapathid));
+            flowMod.setInstruction(toInstructions(flow, version,datapathid));
+            flowMod.setAction(getActions(version,datapathid, flow));
         }
         flowMod.setVersion(version);
         
@@ -215,10 +215,11 @@ public class FlowConvertor {
     }
 
     private static List<Instruction> toInstructions(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Instructions instructions,
+            Flow flow,
             short version,BigInteger datapathid) {
         List<Instruction> instructionsList = new ArrayList<>();
 
+        org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Instructions instructions = flow.getInstructions();
         for (org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction instruction : instructions
                 .getInstruction()) {
             InstructionBuilder instructionBuilder = new InstructionBuilder();
@@ -257,7 +258,7 @@ public class FlowConvertor {
                         .setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.WriteActions.class);
                 ActionsInstructionBuilder actionsInstructionBuilder = new ActionsInstructionBuilder();
                 actionsInstructionBuilder.setAction(ActionConvertor.getActions(writeActions.getAction(),
-                        version,datapathid));
+                        version,datapathid, flow));
                 instructionBuilder.addAugmentation(ActionsInstruction.class, actionsInstructionBuilder.build());
                 instructionsList.add(instructionBuilder.build());
             }
@@ -269,7 +270,7 @@ public class FlowConvertor {
                         .setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.ApplyActions.class);
                 ActionsInstructionBuilder actionsInstructionBuilder = new ActionsInstructionBuilder();
                 actionsInstructionBuilder.setAction(ActionConvertor.getActions(applyActions.getAction(),
-                        version,datapathid));
+                        version,datapathid, flow));
                 instructionBuilder.addAugmentation(ActionsInstruction.class, actionsInstructionBuilder.build());
                 instructionsList.add(instructionBuilder.build());
             }
@@ -297,10 +298,12 @@ public class FlowConvertor {
         return instructionsList;
     }
     
-    private static List<Action> getActions(
+    /*private static List<Action> getActions(
             org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Instructions instructions,
-            short version,BigInteger datapathid) {
-
+            short version,BigInteger datapathid) {*/
+    private static List<Action> getActions(short version,BigInteger datapathid, Flow flow) {
+        
+        org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Instructions instructions = flow.getInstructions();
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction> sortedInstructions =
             Ordering.from(OrderComparator.<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction>toInstance())
                 .sortedCopy(instructions.getInstruction());
@@ -312,7 +315,7 @@ public class FlowConvertor {
             if (curInstruction instanceof ApplyActionsCase) {
                 ApplyActionsCase applyActionscase = (ApplyActionsCase) curInstruction;
                 ApplyActions applyActions = applyActionscase.getApplyActions();
-                return ActionConvertor.getActions(applyActions.getAction(), version,datapathid);
+                return ActionConvertor.getActions(applyActions.getAction(), version,datapathid, flow);
             }
         }
         return null;
