@@ -100,6 +100,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.vlan.id.action._case.SetVlanIdAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.vlan.pcp.action._case.SetVlanPcpAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.CommonPort;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.DlAddressAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.DlAddressActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.EthertypeAction;
@@ -144,9 +145,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.EthDst;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.EthSrc;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Icmpv4Code;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Icmpv4Type;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Icmpv6Code;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Icmpv6Type;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.OpenflowBasicClass;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TcpDst;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TcpSrc;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.UdpDst;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.UdpSrc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.VlanVid;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.grouping.MatchEntries;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.grouping.MatchEntriesBuilder;
@@ -158,7 +165,9 @@ import org.slf4j.LoggerFactory;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author usha@ericsson Action List:This class takes data from SAL layer and
@@ -179,11 +188,12 @@ public final class ActionConvertor {
      * @param actions    SAL actions
      * @param version    Openflow protocol version used
      * @param datapathid
+     * @param flow TODO
      * @return OF Library actions
      */
     public static List<Action> getActions(
             List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> actions,
-            short version, BigInteger datapathid) {
+            short version, BigInteger datapathid, Flow flow) {
         List<Action> actionsList = new ArrayList<>();
         Action ofAction;
 
@@ -254,10 +264,14 @@ public final class ActionConvertor {
                 ofAction = SalToOFSetNwSrc(action, actionBuilder, version);
             else if (action instanceof SetNwDstActionCase)
                 ofAction = SalToOFSetNwDst(action, actionBuilder, version);
-            else if (action instanceof SetTpSrcActionCase)
-                ofAction = SalToOFSetTpSrc(action, actionBuilder, version);
-            else if (action instanceof SetTpDstActionCase)
-                ofAction = SalToOFSetTpDst(action, actionBuilder, version);
+            else if (action instanceof SetTpSrcActionCase) {
+                ofAction = SalToOFSetTpSrc(action, actionBuilder, version, IPProtocols.fromProtocolNum(flow.getMatch().
+                        getIpMatch().getIpProtocol()));
+            }
+            else if (action instanceof SetTpDstActionCase) {
+                ofAction = SalToOFSetTpDst(action, actionBuilder, version, IPProtocols.fromProtocolNum(flow.getMatch().
+                        getIpMatch().getIpProtocol()));
+            }
             else if (action instanceof SetNwTosActionCase)
                 ofAction = SalToOFSetNwTos(action, actionBuilder, version);
             else if (action instanceof GeneralExtensionGrouping) {
@@ -633,7 +647,7 @@ public final class ActionConvertor {
 
     private static Action SalToOFSetTpSrc(
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
-            ActionBuilder actionBuilder, short version) {
+            ActionBuilder actionBuilder, short version, IPProtocols protocol) {
 
         if (version == OFConstants.OFP_VERSION_1_0) {
             SetTpSrcActionCase settpsrccase = (SetTpSrcActionCase) action;
@@ -654,7 +668,20 @@ public final class ActionConvertor {
             MatchEntriesBuilder matchEntriesBuilder = new MatchEntriesBuilder();
             matchEntriesBuilder.setOxmClass(OpenflowBasicClass.class);
             matchEntriesBuilder.setHasMask(false);
-            matchEntriesBuilder.setOxmMatchField(TcpSrc.class);
+            
+            switch(protocol) {
+            case ICMP: matchEntriesBuilder.setOxmMatchField(Icmpv4Code.class);
+                break;
+            case ICMPV6: matchEntriesBuilder.setOxmMatchField(Icmpv6Code.class);
+                break;
+            case TCP: matchEntriesBuilder.setOxmMatchField(TcpSrc.class);
+                break;
+            case UDP: matchEntriesBuilder.setOxmMatchField(UdpSrc.class);
+                break;
+            default: logger.warn("Unknown protocol with combination of SetSourcePort: {}", protocol);
+                break;
+            }
+            
             PortMatchEntryBuilder portMatchEntryBuilder = new PortMatchEntryBuilder();
             portMatchEntryBuilder.setPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber(settpsrcaction.getPort().getValue().intValue()));
             matchEntriesBuilder.addAugmentation(PortMatchEntry.class, portMatchEntryBuilder.build());
@@ -676,7 +703,7 @@ public final class ActionConvertor {
 
     private static Action SalToOFSetTpDst(
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
-            ActionBuilder actionBuilder, short version) {
+            ActionBuilder actionBuilder, short version, IPProtocols protocol) {
 
         if (version == OFConstants.OFP_VERSION_1_0) {
             SetTpDstActionCase settpdstcase = (SetTpDstActionCase) action;
@@ -696,6 +723,20 @@ public final class ActionConvertor {
             MatchEntriesBuilder matchEntriesBuilder = new MatchEntriesBuilder();
             matchEntriesBuilder.setOxmClass(OpenflowBasicClass.class);
             matchEntriesBuilder.setHasMask(false);
+            
+            switch(protocol) {
+            case ICMP: matchEntriesBuilder.setOxmMatchField(Icmpv4Type.class);
+                break;
+            case ICMPV6: matchEntriesBuilder.setOxmMatchField(Icmpv6Type.class);
+                break;
+            case TCP: matchEntriesBuilder.setOxmMatchField(TcpDst.class);
+                break;
+            case UDP: matchEntriesBuilder.setOxmMatchField(UdpDst.class);
+                break;
+            default: matchEntriesBuilder.setOxmMatchField(TcpDst.class);
+                break;
+            }
+            
             matchEntriesBuilder.setOxmMatchField(TcpDst.class);
             PortMatchEntryBuilder portMatchEntryBuilder = new PortMatchEntryBuilder();
             portMatchEntryBuilder.setPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber(settpdstaction.getPort().getValue().intValue()));
@@ -1032,7 +1073,6 @@ public final class ActionConvertor {
 
         QueueIdAction queueId = action.getAugmentation(QueueIdAction.class);
         setQueueAction.setQueueId(queueId.getQueueId());
-
         return new SetQueueActionCaseBuilder().setSetQueueAction(setQueueAction.build()).build();
     }
 
@@ -1067,4 +1107,38 @@ public final class ActionConvertor {
         return new PushPbbActionCaseBuilder().setPushPbbAction(pushPbbAction.build()).build();
     }
 
+    //TODO make a model in YANG for protocols 
+    /*private enum IPProtocols {
+        ICMP(1), 
+        TCP(6), 
+        UDP(17), 
+        ICMPV6(58);
+
+        private int protocol;
+        
+        private static Map<Integer, IPProtocols> valueMap;
+        static {
+            valueMap = new HashMap<>();
+            for(IPProtocols protocols : IPProtocols.values()) {
+                valueMap.put(protocols.protocol, protocols);
+            }
+        }
+        
+        private IPProtocols(int value) {
+            this.protocol = value;
+        }
+
+        private byte getValue() {
+            return (byte) this.protocol;
+        }
+        
+        private Short getShortValue() {
+            return new Short((short) protocol);
+        }
+        
+        private IPProtocols fromProtocolNum(Short protocolNum) {
+            return valueMap.get(protocolNum);
+        }
+    }    */
+    
 }
