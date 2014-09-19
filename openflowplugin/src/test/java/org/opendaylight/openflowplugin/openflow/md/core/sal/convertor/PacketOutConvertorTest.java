@@ -175,7 +175,7 @@ public class PacketOutConvertorTest{
                 Short.valueOf(message.getVersion()));
         Assert.assertEquals(xid, message.getXid());
         Assert.assertEquals(
-                ActionConvertor.getActions(actionList, version, datapathId),
+                ActionConvertor.getActions(actionList, version, datapathId, null),
                 message.getAction());
         Assert.assertEquals(transmitPacketInput.getPayload(), message.getData());
     }
