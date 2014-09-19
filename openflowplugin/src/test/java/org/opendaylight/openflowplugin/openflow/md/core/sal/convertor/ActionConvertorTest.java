@@ -128,7 +128,7 @@ public class ActionConvertorTest {
         setFieldData();
         setExperimenterData();
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731
-        .actions.grouping.Action> OFActionsList = ActionConvertor.getActions(actions, (short) 0X4, BigInteger.ONE);
+        .actions.grouping.Action> OFActionsList = ActionConvertor.getActions(actions, (short) 0X4, BigInteger.ONE, null);
 
        // OutputActions(OFActionsList);
 
