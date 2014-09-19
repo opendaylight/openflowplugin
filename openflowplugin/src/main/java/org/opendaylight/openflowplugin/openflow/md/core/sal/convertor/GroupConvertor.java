@@ -139,7 +139,7 @@ public final class GroupConvertor {
                 bucketBuilder.setWatchPort(new PortNumber(BinContent.intToUnsignedLong(DEFAULT_WATCH_PORT.intValue())));
             }
 
-            List<Action> bucketActionList = ActionConvertor.getActions(groupBucket.getAction(), version,datapathid);
+            List<Action> bucketActionList = ActionConvertor.getActions(groupBucket.getAction(), version,datapathid, null);
             bucketBuilder.setAction(bucketActionList);
             BucketsList bucket = bucketBuilder.build();
             bucketLists.add(bucket);
