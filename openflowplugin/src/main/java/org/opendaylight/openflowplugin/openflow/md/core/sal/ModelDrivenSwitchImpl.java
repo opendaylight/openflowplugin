@@ -125,7 +125,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 
     @Override
     public Future<RpcResult<AddFlowOutput>> addFlow(final AddFlowInput input) {
-        LOG.debug("Calling the FlowMod RPC method on MessageDispatchService");
+        LOG.debug("Calling the FlowMod RPC method on MessageDispatchService", input);
         // use primary connection
         SwitchConnectionDistinguisher cookie = null;
         
@@ -167,7 +167,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 
     @Override
     public Future<RpcResult<RemoveFlowOutput>> removeFlow(final RemoveFlowInput input) {
-        LOG.debug("Calling the removeFlow RPC method on MessageDispatchService");
+        LOG.debug("Calling the removeFlow RPC method on MessageDispatchService",input);
         
         // use primary connection
         SwitchConnectionDistinguisher cookie = null;
@@ -221,7 +221,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 
     @Override
     public Future<RpcResult<UpdateFlowOutput>> updateFlow(final UpdateFlowInput input) {
-        LOG.debug("Calling the updateFlow RPC method on MessageDispatchService");
+        LOG.debug("Calling the updateFlow RPC method on MessageDispatchService",input);
         
         // use primary connection
         SwitchConnectionDistinguisher cookie = null;
