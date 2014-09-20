@@ -82,6 +82,13 @@
       <classifier>config</classifier>
     </dependency>
     <dependency>
+      <groupId>org.opendaylight.openflowplugin</groupId>
+      <artifactId>openflowplugin-controller-config</artifactId>
+      <version>${project.version}</version>
+      <type>xml</type>
+      <classifier>configmsgspy</classifier>
+    </dependency>
+    <dependency>
       <groupId>org.opendaylight.controller</groupId>
       <artifactId>liblldp</artifactId>
       <version>${sal.api.version}</version>

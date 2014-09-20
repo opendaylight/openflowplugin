@@ -40,6 +40,22 @@
                 </artifacts>
               </configuration>
             </execution>
+            <execution>
+              <id>attach-artifacts-msgspy</id>
+              <goals>
+                <goal>attach-artifact</goal>
+              </goals>
+              <phase>package</phase>
+              <configuration>
+                <artifacts>
+                  <artifact>
+                    <file>${project.build.directory}/classes/initial/43-msg-spy.xml</file>
+                    <type>xml</type>
+                    <classifier>configmsgspy</classifier>
+                  </artifact>
+                </artifacts>
+              </configuration>
+            </execution>
           </executions>
         </plugin>
       </plugins>
