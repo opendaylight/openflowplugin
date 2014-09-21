@@ -427,11 +427,6 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
             requestPorts();
             requestGroupFeatures();
             requestMeterFeatures();
-        } else if (version == OFConstants.OFP_VERSION_1_0) {
-            //  Because the GetFeaturesOutput contains information about the port
-            //  in OF1.0 (that we would otherwise get from the PortDesc) we have to pass
-            //  it up for parsing to convert into a NodeConnectorUpdate
-            enqueueMessage(featureOutput);
         }
         
         requestDesc();
@@ -445,10 +440,20 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     protected void postHandshakeBasic(GetFeaturesOutput featureOutput,
             Short negotiatedVersion) {
         version = negotiatedVersion;
-        conductorState = CONDUCTOR_STATE.WORKING;
+        if (version == OFConstants.OFP_VERSION_1_0) {
+            //  Because the GetFeaturesOutput contains information about the port
+            //  in OF1.0 (that we would otherwise get from the PortDesc) we have to pass
+            //  it up for parsing to convert into a NodeConnectorUpdate
+            //
+            // BUG-1988 - this must be the first item in queue in order not to get behind link-up message
+            enqueueMessage(featureOutput);
+        }
+        
         OFSessionUtil.registerSession(this, featureOutput, negotiatedVersion);
         hsPool.shutdown();
         hsPool.purge();
+        conductorState = CONDUCTOR_STATE.WORKING;
+        QueueKeeperFactory.plugQueue(queueProcessor, queue);
     }
 
     private void setDefaultConfig(){

@@ -43,4 +43,9 @@ public interface QueueKeeper<IN> extends AutoCloseable {
      * @return oldest item from queue - if available and remove it from queue
      */
     QueueItem<IN> poll();
+
+    /**
+     * @param processingRegistration the processingRegistration to set (in order to provide close method)
+     */
+    void setPollRegistration(AutoCloseable processingRegistration);
 }

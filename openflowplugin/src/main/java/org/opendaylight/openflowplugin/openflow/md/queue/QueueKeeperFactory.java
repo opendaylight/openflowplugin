@@ -17,9 +17,8 @@ public abstract class QueueKeeperFactory {
     /**
      * @param sourceRegistrator 
      * @param capacity blocking queue capacity
-     * @return fair reading implementation of {@link QueueKeeper}
+     * @return fair reading implementation of {@link QueueKeeper} (not registered = not started yet)
      */
-    @SuppressWarnings("resource")
     public static QueueKeeper<OfHeader> createFairQueueKeeper(
             MessageSourcePollRegistrator<QueueKeeper<OfHeader>> sourceRegistrator, int capacity) {
         QueueKeeperFairImpl queueKeeper = new QueueKeeperFairImpl();
@@ -27,8 +26,18 @@ public abstract class QueueKeeperFactory {
         queueKeeper.setHarvesterHandle(sourceRegistrator.getHarvesterHandle());
         queueKeeper.init();
         
+        return queueKeeper;
+    }
+
+    /**
+     * register queue by harvester, start processing it. Use {@link QueueKeeperFairImpl#close()} to kill the queue and stop processing. 
+     * @param sourceRegistrator
+     * @param queueKeeper
+     */
+    public static <V> void plugQueue(
+            MessageSourcePollRegistrator<QueueKeeper<V>> sourceRegistrator,
+            QueueKeeper<V> queueKeeper) {
         AutoCloseable registration = sourceRegistrator.registerMessageSource(queueKeeper);
         queueKeeper.setPollRegistration(registration);
-        return queueKeeper;
     }
 }
