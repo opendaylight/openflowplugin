@@ -13,8 +13,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
-import org.opendaylight.controller.sal.common.util.RpcErrors;
-import org.opendaylight.controller.sal.common.util.Rpcs;
+
 import org.opendaylight.openflowjava.protocol.api.util.BinContent;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
@@ -29,6 +28,7 @@ import org.opendaylight.openflowplugin.openflow.md.util.FlowCreatorUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowAdded;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowAddedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowRemoved;
@@ -159,9 +159,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.Upd
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableOutputBuilder;
 import org.opendaylight.yangtools.yang.common.RpcError;
-import org.opendaylight.yangtools.yang.common.RpcError.ErrorSeverity;
 import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -176,7 +176,7 @@ import java.util.concurrent.Future;
  *
  */
 public abstract class OFRpcTaskFactory {
-    private static final Logger logger = LoggerFactory.getLogger(OFRpcTaskFactory.class);
+    protected static final Logger logger = LoggerFactory.getLogger(OFRpcTaskFactory.class);
 
     /**
      * @param taskContext 
@@ -204,13 +204,11 @@ public abstract class OFRpcTaskFactory {
 
                     logger.debug("Number of flows to push to switch: {}", ofFlowModInputs.size());
 
-                    Long xId = getSession().getNextXid();
-
                     result = chainFlowMods(ofFlowModInputs, 0, getTaskContext(), getCookie());
 
                     OFRpcTaskUtil.hookFutureNotification(this, result,
                         getRpcNotificationProviderService(),
-                        createFlowAddedNotification(xId, getInput()));
+                        createFlowAddedNotification(getInput()));
                 }
                 return result;
             }
@@ -226,7 +224,7 @@ public abstract class OFRpcTaskFactory {
      * All the flowmods should have the same xid, in-order to cross-reference
      * the notification
      */
-    private static ListenableFuture<RpcResult<UpdateFlowOutput>> chainFlowMods(
+    protected static ListenableFuture<RpcResult<UpdateFlowOutput>> chainFlowMods(
         final List<FlowModInputBuilder> ofFlowModInputs, final int index,
         final OFRpcTaskContext taskContext, final SwitchConnectionDistinguisher cookie) {
 
@@ -245,7 +243,7 @@ public abstract class OFRpcTaskFactory {
                             return chainFlowMods(ofFlowModInputs, index + 1, taskContext, cookie);
                         } else {
                             logger.warn("Flowmod failed. Any chained flowmods are ignored. xid:{}",
-                                taskContext.getSession().getFeatures().getXid());
+                                ofFlowModInputs.get(index).getXid());
                             return Futures.immediateFuture(input);
                         }
                     }
@@ -259,22 +257,22 @@ public abstract class OFRpcTaskFactory {
     private static Future<RpcResult<UpdateFlowOutput>> createResultForFlowMod(
         OFRpcTaskContext taskContext, FlowModInputBuilder flowModInput,
         SwitchConnectionDistinguisher cookie) {
-        flowModInput.setXid(taskContext.getSession().getFeatures().getXid());
+        flowModInput.setXid(taskContext.getSession().getNextXid());
         return taskContext.getMessageService().flowMod(flowModInput.build(), cookie);
     }
 
 
     /**
-     * @param xId
+     * @param input
      * @return
      */
     protected static NotificationComposer<FlowAdded> createFlowAddedNotification(
-            final Long xId, final AddFlowInput input) {
+            final AddFlowInput input) {
         return new NotificationComposer<FlowAdded>() {
             @Override
-            public FlowAdded compose() {
+            public FlowAdded compose(TransactionId tXid) {
                 FlowAddedBuilder newFlow = new FlowAddedBuilder((Flow) input);
-                newFlow.setTransactionId(new TransactionId(BigInteger.valueOf(xId.intValue())));
+                newFlow.setTransactionId(tXid);
                 newFlow.setFlowRef(input.getFlowRef());
                 return newFlow.build();
             }
@@ -303,33 +301,36 @@ public abstract class OFRpcTaskFactory {
                     OFRpcTaskUtil.wrapBarrierErrors(((SettableFuture<RpcResult<UpdateFlowOutput>>) result), barrierErrors);
 
                 } else {
-                    Long xId = getSession().getNextXid();
                     boolean updatedFlow = (getInput().getUpdatedFlow().getMatch().equals(getInput().getOriginalFlow().getMatch())) &&
                             (getInput().getUpdatedFlow().getPriority().equals(getInput().getOriginalFlow().getPriority()));
 
                     List<FlowModInputBuilder> allFlowMods = new ArrayList<>();
-                    List<FlowModInputBuilder> ofFlowModInputs =
-                        FlowConvertor.toFlowModInputs(getInput().getUpdatedFlow(),
-                            getVersion(), getSession().getFeatures().getDatapathId());
+                    List<FlowModInputBuilder> ofFlowModInputs;
 
                     if (updatedFlow == false) {
                         // if neither match nor priority matches, then we would need to remove the flow and add it
                         //remove flow
                         RemoveFlowInputBuilder removeflow = new RemoveFlowInputBuilder(getInput().getOriginalFlow());
-                        FlowModInputBuilder ofFlowRemoveInput = FlowConvertor.toFlowModInput(removeflow.build(),
+                        List<FlowModInputBuilder> ofFlowRemoveInput = FlowConvertor.toFlowModInputs(removeflow.build(),
                             getVersion(),getSession().getFeatures().getDatapathId());
-                        ofFlowRemoveInput.setXid(xId);
                         // remove flow should be the first
-                        allFlowMods.add(ofFlowRemoveInput);
+                        allFlowMods.addAll(ofFlowRemoveInput);
+                        AddFlowInputBuilder addFlowInputBuilder = new AddFlowInputBuilder(getInput().getUpdatedFlow());
+                        ofFlowModInputs = FlowConvertor.toFlowModInputs(addFlowInputBuilder.build(),
+                                getVersion(), getSession().getFeatures().getDatapathId());
+                    } else {
+                        ofFlowModInputs = FlowConvertor.toFlowModInputs(getInput().getUpdatedFlow(),
+                                getVersion(), getSession().getFeatures().getDatapathId());
                     }
 
                     allFlowMods.addAll(ofFlowModInputs);
                     logger.debug("Number of flows to push to switch: {}", allFlowMods.size());
                     result = chainFlowMods(allFlowMods, 0, getTaskContext(), getCookie());
 
+                    
                     OFRpcTaskUtil.hookFutureNotification(this, result,
                         getRpcNotificationProviderService(),
-                        createFlowUpdatedNotification(xId, getInput()));
+                        createFlowUpdatedNotification(getInput()));
                 }
                 return result;
             }
@@ -343,13 +344,12 @@ public abstract class OFRpcTaskFactory {
      * @param input
      * @return
      */
-    protected static NotificationComposer<FlowUpdated> createFlowUpdatedNotification(
-            final Long xId, final UpdateFlowInput input) {
+    protected static NotificationComposer<FlowUpdated> createFlowUpdatedNotification(final UpdateFlowInput input) {
         return new NotificationComposer<FlowUpdated>() {
             @Override
-            public FlowUpdated compose() {
+            public FlowUpdated compose(TransactionId tXid) {
                 FlowUpdatedBuilder updFlow = new FlowUpdatedBuilder(input.getUpdatedFlow());
-                updFlow.setTransactionId(new TransactionId(BigInteger.valueOf(xId.intValue())));
+                updFlow.setTransactionId(tXid);
                 updFlow.setFlowRef(input.getFlowRef());
                 return updFlow.build();
             }
@@ -387,7 +387,7 @@ public abstract class OFRpcTaskFactory {
                     result = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
                     
                     OFRpcTaskUtil.hookFutureNotification(this, result, 
-                            getRpcNotificationProviderService(), createGroupAddedNotification(xId, getInput()));
+                            getRpcNotificationProviderService(), createGroupAddedNotification(getInput()));
                 }
 
                 return result;
@@ -399,17 +399,16 @@ public abstract class OFRpcTaskFactory {
     
 
     /**
-     * @param xId
      * @param input
      * @return
      */
     protected static NotificationComposer<GroupAdded> createGroupAddedNotification(
-            final Long xId, final AddGroupInput input) {
+            final AddGroupInput input) {
         return new NotificationComposer<GroupAdded>() {
             @Override
-            public GroupAdded compose() {
+            public GroupAdded compose(TransactionId tXid) {
                 GroupAddedBuilder groupMod = new GroupAddedBuilder((Group) input);
-                groupMod.setTransactionId(new TransactionId(BigInteger.valueOf(xId.intValue())));
+                groupMod.setTransactionId(tXid);
                 groupMod.setGroupRef(input.getGroupRef());
                 return groupMod.build();
             }
@@ -446,7 +445,7 @@ public abstract class OFRpcTaskFactory {
                     result = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
                     
                     OFRpcTaskUtil.hookFutureNotification(this, result, 
-                            getRpcNotificationProviderService(), createMeterAddedNotification(xId, getInput()));
+                            getRpcNotificationProviderService(), createMeterAddedNotification(getInput()));
                 }
 
                 return result;
@@ -458,17 +457,16 @@ public abstract class OFRpcTaskFactory {
     }
 
     /**
-     * @param xId
      * @param input
      * @return
      */
     protected static NotificationComposer<MeterAdded> createMeterAddedNotification(
-            final Long xId, final AddMeterInput input) {
+            final AddMeterInput input) {
         return new NotificationComposer<MeterAdded>() {
             @Override
-            public MeterAdded compose() {
+            public MeterAdded compose(TransactionId tXid) {
                 MeterAddedBuilder meterMod = new MeterAddedBuilder((Meter) input);
-                meterMod.setTransactionId(new TransactionId(BigInteger.valueOf(xId.intValue())));
+                meterMod.setTransactionId(tXid);
                 meterMod.setMeterRef(input.getMeterRef());
                 return meterMod.build();
             }
@@ -507,7 +505,7 @@ public abstract class OFRpcTaskFactory {
                     result = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
                     
                     OFRpcTaskUtil.hookFutureNotification(this, result, 
-                            getRpcNotificationProviderService(), createGroupUpdatedNotification(xId, getInput()));
+                            getRpcNotificationProviderService(), createGroupUpdatedNotification(getInput()));
                 }
                 return result;
             }
@@ -516,17 +514,16 @@ public abstract class OFRpcTaskFactory {
     }
     
     /**
-     * @param xId
      * @param input
      * @return
      */
     protected static NotificationComposer<GroupUpdated> createGroupUpdatedNotification(
-            final Long xId, final UpdateGroupInput input) {
+            final UpdateGroupInput input) {
         return new NotificationComposer<GroupUpdated>() {
             @Override
-            public GroupUpdated compose() {
+            public GroupUpdated compose(TransactionId tXid) {
                 GroupUpdatedBuilder groupMod = new GroupUpdatedBuilder(input.getUpdatedGroup());
-                groupMod.setTransactionId(new TransactionId(BigInteger.valueOf(xId.intValue())));
+                groupMod.setTransactionId(tXid);
                 groupMod.setGroupRef(input.getGroupRef());
                 return groupMod.build();
             }
@@ -564,7 +561,7 @@ public abstract class OFRpcTaskFactory {
                     result = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
                     
                     OFRpcTaskUtil.hookFutureNotification(this, result,
-                            getRpcNotificationProviderService(), createMeterUpdatedNotification(xId, getInput()));
+                            getRpcNotificationProviderService(), createMeterUpdatedNotification(getInput()));
                 }
                 return result;
             }
@@ -573,17 +570,16 @@ public abstract class OFRpcTaskFactory {
     }
     
     /**
-     * @param xId
      * @param input
      * @return
      */
     protected static NotificationComposer<MeterUpdated> createMeterUpdatedNotification(
-            final Long xId, final UpdateMeterInput input) {
+            final UpdateMeterInput input) {
         return new NotificationComposer<MeterUpdated>() {
             @Override
-            public MeterUpdated compose() {
+            public MeterUpdated compose(TransactionId tXid) {
                 MeterUpdatedBuilder meterMod = new MeterUpdatedBuilder(input.getUpdatedMeter());
-                meterMod.setTransactionId(new TransactionId(BigInteger.valueOf(xId.intValue())));
+                meterMod.setTransactionId(tXid);
                 meterMod.setMeterRef(input.getMeterRef());
                 return meterMod.build();
             }
@@ -622,7 +618,7 @@ public abstract class OFRpcTaskFactory {
                     result = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
                     
                     OFRpcTaskUtil.hookFutureNotification(this, result, 
-                            getRpcNotificationProviderService(), createFlowRemovedNotification(xId, getInput()));
+                            getRpcNotificationProviderService(), createFlowRemovedNotification(getInput()));
                 }
 
                 return result;
@@ -633,16 +629,16 @@ public abstract class OFRpcTaskFactory {
     }
     
     /**
-     * @param xId
+     * @param input
      * @return
      */
     protected static NotificationComposer<FlowRemoved> createFlowRemovedNotification(
-            final Long xId, final RemoveFlowInput input) {
+            final RemoveFlowInput input) {
         return new NotificationComposer<FlowRemoved>() {
             @Override
-            public FlowRemoved compose() {
+            public FlowRemoved compose(TransactionId tXid) {
                 FlowRemovedBuilder removedFlow = new FlowRemovedBuilder((Flow) input);
-                removedFlow.setTransactionId(new TransactionId(BigInteger.valueOf(xId.intValue())));
+                removedFlow.setTransactionId(tXid);
                 removedFlow.setFlowRef(input.getFlowRef());
                 return removedFlow.build();
             }
@@ -681,7 +677,7 @@ public abstract class OFRpcTaskFactory {
                     result = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
                     
                     OFRpcTaskUtil.hookFutureNotification(this, result, 
-                            getRpcNotificationProviderService(), createGroupRemovedNotification(xId, getInput()));
+                            getRpcNotificationProviderService(), createGroupRemovedNotification(getInput()));
                 }
 
                 return result;
@@ -692,17 +688,16 @@ public abstract class OFRpcTaskFactory {
     }
     
     /**
-     * @param xId
      * @param input
      * @return 
      */
     protected static NotificationComposer<GroupRemoved> createGroupRemovedNotification(
-            final Long xId, final RemoveGroupInput input) {
+            final RemoveGroupInput input) {
         return new NotificationComposer<GroupRemoved>() {
             @Override
-            public GroupRemoved compose() {
+            public GroupRemoved compose(TransactionId tXid) {
                 GroupRemovedBuilder removedGroup = new GroupRemovedBuilder((Group) input);
-                removedGroup.setTransactionId(new TransactionId(BigInteger.valueOf(xId.intValue())));
+                removedGroup.setTransactionId(tXid);
                 removedGroup.setGroupRef(input.getGroupRef());
                 return removedGroup.build();
             }
@@ -739,7 +734,7 @@ public abstract class OFRpcTaskFactory {
                     result = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
                     
                     OFRpcTaskUtil.hookFutureNotification(this, result, 
-                            getRpcNotificationProviderService(), createMeterRemovedNotification(xId, getInput()));
+                            getRpcNotificationProviderService(), createMeterRemovedNotification(getInput()));
                 }
 
                 return result;
@@ -751,17 +746,16 @@ public abstract class OFRpcTaskFactory {
     }
     
     /**
-     * @param xId
      * @param input
      * @return
      */
     protected static NotificationComposer<MeterRemoved> createMeterRemovedNotification(
-            final Long xId, final RemoveMeterInput input) {
+            final RemoveMeterInput input) {
         return new NotificationComposer<MeterRemoved>() {
             @Override
-            public MeterRemoved compose() {
+            public MeterRemoved compose(TransactionId tXid) {
                 MeterRemovedBuilder meterRemoved = new MeterRemovedBuilder((Meter) input);
-                meterRemoved.setTransactionId(new TransactionId(BigInteger.valueOf(xId.intValue())));
+                meterRemoved.setTransactionId(tXid);
                 meterRemoved.setMeterRef(input.getMeterRef());
                 return meterRemoved.build();
             }
@@ -785,9 +779,8 @@ public abstract class OFRpcTaskFactory {
                 final SettableFuture<RpcResult<GetAllGroupStatisticsOutput>> result = SettableFuture.create();
              
                 if (taskContext.getSession().getPrimaryConductor().getVersion() == OFConstants.OFP_VERSION_1_0) {
-                    Collection<RpcError> errors = Collections.emptyList();
-                    RpcResult<GetAllGroupStatisticsOutput> rpcResult = Rpcs.getRpcResult(true, 
-                            new GetAllGroupStatisticsOutputBuilder().build(), errors);
+                    RpcResult<GetAllGroupStatisticsOutput> rpcResult = RpcResultBuilder.success(
+                            new GetAllGroupStatisticsOutputBuilder().build()).build();
                     
                     return Futures.immediateFuture(rpcResult);
                 } else {   
@@ -850,9 +843,8 @@ public abstract class OFRpcTaskFactory {
                         final SettableFuture<RpcResult<GetGroupDescriptionOutput>> result = SettableFuture.create();
                         
                         if (taskContext.getSession().getPrimaryConductor().getVersion() == OFConstants.OFP_VERSION_1_0) {
-                            Collection<RpcError> errors = Collections.emptyList();
-                            RpcResult<GetGroupDescriptionOutput> rpcResult = Rpcs.getRpcResult(true, 
-                                    new GetGroupDescriptionOutputBuilder().build(), errors);
+                            RpcResult<GetGroupDescriptionOutput> rpcResult = RpcResultBuilder.success( 
+                                    new GetGroupDescriptionOutputBuilder().build()).build();
                             return Futures.immediateFuture(rpcResult);
                         } else {
                             final Long xid = taskContext.getSession().getNextXid();
@@ -899,9 +891,8 @@ public abstract class OFRpcTaskFactory {
                         final SettableFuture<RpcResult<GetGroupFeaturesOutput>> result = SettableFuture.create();
                         
                         if (taskContext.getSession().getPrimaryConductor().getVersion() == OFConstants.OFP_VERSION_1_0) {
-                            Collection<RpcError> errors = Collections.emptyList();
-                            RpcResult<GetGroupFeaturesOutput> rpcResult = Rpcs.getRpcResult(true, 
-                                    new GetGroupFeaturesOutputBuilder().build(), errors);
+                            RpcResult<GetGroupFeaturesOutput> rpcResult = RpcResultBuilder.success( 
+                                    new GetGroupFeaturesOutputBuilder().build()).build();
                             return Futures.immediateFuture(rpcResult);
                         } else {
                             final Long xid = taskContext.getSession().getNextXid();
@@ -948,9 +939,8 @@ public abstract class OFRpcTaskFactory {
                         final SettableFuture<RpcResult<GetGroupStatisticsOutput>> result = SettableFuture.create();
                         
                         if (taskContext.getSession().getPrimaryConductor().getVersion() == OFConstants.OFP_VERSION_1_0) {
-                            Collection<RpcError> errors = Collections.emptyList();
-                            RpcResult<GetGroupStatisticsOutput> rpcResult = Rpcs.getRpcResult(true, 
-                                    new GetGroupStatisticsOutputBuilder().build(), errors);
+                            RpcResult<GetGroupStatisticsOutput> rpcResult = RpcResultBuilder.success(
+                                    new GetGroupStatisticsOutputBuilder().build()).build();
                             return Futures.immediateFuture(rpcResult);
                         } else {
                             final Long xid = taskContext.getSession().getNextXid();
@@ -1001,9 +991,8 @@ public abstract class OFRpcTaskFactory {
                         final SettableFuture<RpcResult<GetAllMeterConfigStatisticsOutput>> result = SettableFuture.create();
                         
                         if (taskContext.getSession().getPrimaryConductor().getVersion() == OFConstants.OFP_VERSION_1_0) {
-                            Collection<RpcError> errors = Collections.emptyList();
-                            RpcResult<GetAllMeterConfigStatisticsOutput> rpcResult = Rpcs.getRpcResult(true, 
-                                    new GetAllMeterConfigStatisticsOutputBuilder().build(), errors);
+                            RpcResult<GetAllMeterConfigStatisticsOutput> rpcResult = RpcResultBuilder.success(
+                                    new GetAllMeterConfigStatisticsOutputBuilder().build()).build();
                             return Futures.immediateFuture(rpcResult);
                         } else {
                             final Long xid = taskContext.getSession().getNextXid();
@@ -1058,9 +1047,8 @@ public abstract class OFRpcTaskFactory {
                         final SettableFuture<RpcResult<GetAllMeterStatisticsOutput>> result = SettableFuture.create();
                         
                         if (taskContext.getSession().getPrimaryConductor().getVersion() == OFConstants.OFP_VERSION_1_0) {
-                            Collection<RpcError> errors = Collections.emptyList();
-                            RpcResult<GetAllMeterStatisticsOutput> rpcResult = Rpcs.getRpcResult(true, 
-                                    new GetAllMeterStatisticsOutputBuilder().build(), errors);
+                            RpcResult<GetAllMeterStatisticsOutput> rpcResult = RpcResultBuilder.success(
+                                    new GetAllMeterStatisticsOutputBuilder().build()).build();
                             return Futures.immediateFuture(rpcResult);
                         } else {
                             final Long xid = taskContext.getSession().getNextXid();
@@ -1115,9 +1103,8 @@ public abstract class OFRpcTaskFactory {
                         final SettableFuture<RpcResult<GetMeterFeaturesOutput>> result = SettableFuture.create();
                         
                         if (taskContext.getSession().getPrimaryConductor().getVersion() == OFConstants.OFP_VERSION_1_0) {
-                            Collection<RpcError> errors = Collections.emptyList();
-                            RpcResult<GetMeterFeaturesOutput> rpcResult = Rpcs.getRpcResult(true, 
-                                    new GetMeterFeaturesOutputBuilder().build(), errors);
+                            RpcResult<GetMeterFeaturesOutput> rpcResult = RpcResultBuilder.success(
+                                    new GetMeterFeaturesOutputBuilder().build()).build();
                             return Futures.immediateFuture(rpcResult);
                         } else {
                             final Long xid = taskContext.getSession().getNextXid();
@@ -1166,9 +1153,8 @@ public abstract class OFRpcTaskFactory {
                         final SettableFuture<RpcResult<GetMeterStatisticsOutput>> result = SettableFuture.create();
                         
                         if (taskContext.getSession().getPrimaryConductor().getVersion() == OFConstants.OFP_VERSION_1_0) {
-                            Collection<RpcError> errors = Collections.emptyList();
-                            RpcResult<GetMeterStatisticsOutput> rpcResult = Rpcs.getRpcResult(true, 
-                                    new GetMeterStatisticsOutputBuilder().build(), errors);
+                            RpcResult<GetMeterStatisticsOutput> rpcResult = RpcResultBuilder.success(
+                                    new GetMeterStatisticsOutputBuilder().build()).build();
                             return Futures.immediateFuture(rpcResult);
                         } else {
                             final Long xid = taskContext.getSession().getNextXid();
@@ -1829,17 +1815,17 @@ public abstract class OFRpcTaskFactory {
 
         @Override
         public void onSuccess(RpcResult<Void> resultArg) {
-            Collection<RpcError> errors = Collections.emptyList();
-            result.set(Rpcs.getRpcResult(true, createResult(), errors));
+            result.set(RpcResultBuilder.success(createResult()).build());
         }
 
         @Override
         public void onFailure(Throwable t) {
-            result.set(Rpcs.<T>getRpcResult(false, 
-                    Collections.singletonList(RpcErrors.getRpcError(OFConstants.APPLICATION_TAG, 
+            result.set(RpcResultBuilder.<T>failed().withWarning(
+                            ErrorType.RPC,
                             OFConstants.ERROR_TAG_TIMEOUT, 
-                            "something wrong happened", ErrorSeverity.WARNING, "", 
-                            ErrorType.RPC, t))));
+                            "something wrong happened", 
+                            OFConstants.APPLICATION_TAG, 
+                            "", t).build());
         }
     }
     
