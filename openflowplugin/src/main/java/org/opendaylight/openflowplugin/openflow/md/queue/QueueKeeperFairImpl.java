@@ -80,6 +80,7 @@ public class QueueKeeperFairImpl implements QueueKeeper<OfHeader> {
     /**
      * @param processingRegistration the processingRegistration to set
      */
+    @Override
     public void setPollRegistration(AutoCloseable processingRegistration) {
         this.pollRegistration = processingRegistration;
     }

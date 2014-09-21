@@ -445,10 +445,11 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     protected void postHandshakeBasic(GetFeaturesOutput featureOutput,
             Short negotiatedVersion) {
         version = negotiatedVersion;
-        conductorState = CONDUCTOR_STATE.WORKING;
         OFSessionUtil.registerSession(this, featureOutput, negotiatedVersion);
         hsPool.shutdown();
         hsPool.purge();
+        conductorState = CONDUCTOR_STATE.WORKING;
+        QueueKeeperFactory.plugQueue(queueProcessor, queue);
     }
 
     private void setDefaultConfig(){
