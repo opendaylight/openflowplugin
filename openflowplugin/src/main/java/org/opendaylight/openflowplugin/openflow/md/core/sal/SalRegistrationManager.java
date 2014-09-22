@@ -113,7 +113,12 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
         NodeRemoved nodeRemoved = nodeRemoved(nodeRef);
         LLDPSpeaker.getInstance().removeModelDrivenSwitch(identifier);
         CompositeObjectRegistration<ModelDrivenSwitch> registration = context.getProviderRegistration();
-        registration.close();
+
+        if (null != registration) {
+            registration.close();
+        } else {
+            LOG.debug("ModelDrivenSwitch registration not found");
+        }
 
         LOG.debug("ModelDrivenSwitch for {} unregistered from MD-SAL.", datapathId.toString());
         publishService.publish(nodeRemoved);
