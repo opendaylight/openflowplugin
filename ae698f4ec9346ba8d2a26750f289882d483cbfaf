@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa82b9bf_2a6158d3",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/session/SessionManagerOFImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2014-09-22T21:18:25Z",
+      "side": 1,
+      "message": "Hi Martin/Michal,\nJust a thought, so please ignore it if it doesn\u0027t make sense. I think it would be better if we set the status to valid in onSessionAdd() before we publish nodeAdded event to all the listeners. Because in my opinion we should publish the  nodeAdded event when we think that its valid (and in actual it really is), but in this case, there can be issue, when listener takes some action when it receives the event,  for which plugin checks the validity for the session and it find it invalid, because we set the session valid after publishing the event.",
+      "revId": "ae698f4ec9346ba8d2a26750f289882d483cbfaf",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
