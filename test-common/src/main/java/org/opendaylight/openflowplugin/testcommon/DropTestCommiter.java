@@ -8,6 +8,7 @@
 package org.opendaylight.openflowplugin.testcommon;
 
 import java.math.BigInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
@@ -41,6 +42,8 @@ public class DropTestCommiter extends AbstractDropTest {
     private final static Logger LOG = LoggerFactory.getLogger(DropTestCommiter.class);
     
     private DataBroker dataService;
+    
+    private static final AtomicLong idCounter = new AtomicLong();
 
     private static final ThreadLocal<FlowBuilder> BUILDER = new ThreadLocal<FlowBuilder>() {
         @Override
@@ -49,7 +52,7 @@ public class DropTestCommiter extends AbstractDropTest {
 
             fb.setPriority(4);
             fb.setBufferId(0L);
-            final FlowCookie cookie = new FlowCookie(BigInteger.valueOf(10));
+            final FlowCookie cookie = new FlowCookie(BigInteger.TEN);
             fb.setCookie(cookie);
             fb.setCookieMask(cookie);
 
@@ -86,8 +89,8 @@ public class DropTestCommiter extends AbstractDropTest {
         final FlowBuilder fb = BUILDER.get();
         fb.setMatch(match);
         fb.setInstructions(instructions);
-        fb.setId(new FlowId(String.valueOf(fb.hashCode())));
-
+        fb.setId(new FlowId(String.valueOf(fb.hashCode()) +"."+ String.valueOf(idCounter.getAndIncrement())));
+        
         // Construct the flow instance id
         final InstanceIdentifier<Flow> flowInstanceId =
                 InstanceIdentifier.builder(Nodes.class) // File under nodes

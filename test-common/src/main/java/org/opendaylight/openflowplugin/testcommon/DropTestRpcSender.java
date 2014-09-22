@@ -51,7 +51,7 @@ public class DropTestRpcSender extends AbstractDropTest {
             fb.setPriority(4);
             fb.setBufferId(0L);
 
-            final FlowCookie cookie = new FlowCookie(BigInteger.valueOf(10));
+            final FlowCookie cookie = new FlowCookie(BigInteger.TEN);
             fb.setCookie(cookie);
             fb.setCookieMask(cookie);
             fb.setTableId((short) 0);
