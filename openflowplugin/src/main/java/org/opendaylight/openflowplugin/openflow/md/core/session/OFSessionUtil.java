@@ -62,7 +62,6 @@ public abstract class OFSessionUtil {
             context.setSessionKey(sessionKey);
             context.setSeed((int) System.currentTimeMillis());
             connectionConductor.setSessionContext(context);
-            context.setValid(true);
             getSessionManager().addSessionContext(sessionKey, context);
         } else {
             // handle auxiliary

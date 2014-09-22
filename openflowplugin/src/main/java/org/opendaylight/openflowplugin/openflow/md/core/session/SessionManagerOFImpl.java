@@ -17,13 +17,13 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
-import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
-import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
+import org.opendaylight.openflowplugin.api.statistics.MessageSpy;
+import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
+import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.openflow.md.queue.PopListener;
-import org.opendaylight.openflowplugin.api.statistics.MessageSpy;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.concepts.util.ListenerRegistry;
@@ -95,13 +95,15 @@ public class SessionManagerOFImpl implements SessionManager {
         if (context == null) {
             LOG.warn("context for invalidation not found");
         } else {
-            for (Entry<SwitchConnectionDistinguisher, ConnectionConductor> auxEntry : context.getAuxiliaryConductors()) {
-                invalidateAuxiliary(sessionKey, auxEntry.getKey());
+            synchronized (context) {
+                for (Entry<SwitchConnectionDistinguisher, ConnectionConductor> auxEntry : context.getAuxiliaryConductors()) {
+                    invalidateAuxiliary(sessionKey, auxEntry.getKey());
+                }
+                context.getPrimaryConductor().disconnect();
+                context.setValid(false);
+                removeSessionContext(context);
+                // TODO:: notify listeners
             }
-            context.getPrimaryConductor().disconnect();
-            context.setValid(false);
-            removeSessionContext(context);
-            // TODO:: notify listeners
         }
     }
 
@@ -109,13 +111,15 @@ public class SessionManagerOFImpl implements SessionManager {
         if (sessionContext == null) {
             LOG.warn("context for invalidation not found");
         } else {
-            for (Entry<SwitchConnectionDistinguisher, ConnectionConductor> auxEntry : sessionContext
-                    .getAuxiliaryConductors()) {
-                invalidateAuxiliary(sessionContext, auxEntry.getKey(), true);
+            synchronized (sessionContext) {
+                for (Entry<SwitchConnectionDistinguisher, ConnectionConductor> auxEntry : sessionContext
+                        .getAuxiliaryConductors()) {
+                    invalidateAuxiliary(sessionContext, auxEntry.getKey(), true);
+                }
+                sessionContext.setValid(false);
+                removeSessionContext(sessionContext);
+                // TODO:: notify listeners
             }
-            sessionContext.setValid(false);
-            removeSessionContext(sessionContext);
-            // TODO:: notify listeners
         }
     }
 
@@ -129,10 +133,12 @@ public class SessionManagerOFImpl implements SessionManager {
 
     @Override
     public void addSessionContext(SwitchSessionKeyOF sessionKey, SessionContext context) {
-        sessionLot.put(sessionKey, context);
+        synchronized (context) {
+            sessionLot.put(sessionKey, context);
+            sessionNotifier.onSessionAdded(sessionKey, context);
 
-        sessionNotifier.onSessionAdded(sessionKey, context);
-
+            context.setValid(true);
+        }
     }
 
     @Override

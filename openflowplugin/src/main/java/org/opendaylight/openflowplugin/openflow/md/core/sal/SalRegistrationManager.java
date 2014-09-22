@@ -12,7 +12,6 @@ import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
@@ -112,8 +111,10 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
         NodeRef nodeRef = new NodeRef(identifier);
         NodeRemoved nodeRemoved = nodeRemoved(nodeRef);
         LLDPSpeaker.getInstance().removeModelDrivenSwitch(identifier);
-        CompositeObjectRegistration<ModelDrivenSwitch> registration = context.getProviderRegistration();
-        registration.close();
+        if (context.isValid()) {
+            CompositeObjectRegistration<ModelDrivenSwitch> registration = context.getProviderRegistration();
+            registration.close();
+        }
 
         LOG.debug("ModelDrivenSwitch for {} unregistered from MD-SAL.", datapathId.toString());
         publishService.publish(nodeRemoved);
