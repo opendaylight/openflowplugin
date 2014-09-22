@@ -16,6 +16,24 @@
       "revId": "ae698f4ec9346ba8d2a26750f289882d483cbfaf",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_caa9cce0",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/session/SessionManagerOFImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2014-09-22T21:46:44Z",
+      "side": 1,
+      "message": "You are in principle right. But codewise - onsessionAdded contain service registation which might fail. And then the notification is asynchronous so the local valid field is expected be set to true before notification delivered. So I guess the best point is after registration and before publishing.",
+      "parentUuid": "fa82b9bf_2a6158d3",
+      "revId": "ae698f4ec9346ba8d2a26750f289882d483cbfaf",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
