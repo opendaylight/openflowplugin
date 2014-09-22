@@ -129,4 +129,11 @@ public abstract class OFRpcTask<T, K> implements Callable<ListenableFuture<K>> {
         ListenableFuture<ListenableFuture<K>> compoundResult = getTaskContext().getRpcPool().submit(this);
         return Futures.dereference(compoundResult);
     }
+    
+    /**
+     * @return required barrier value
+     */
+    public Boolean isBarrier() {
+        return null;
+    }
 }

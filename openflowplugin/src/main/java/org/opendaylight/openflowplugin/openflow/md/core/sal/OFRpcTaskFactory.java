@@ -7,17 +7,16 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal;
 
-import com.google.common.util.concurrent.AsyncFunction;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.JdkFutureAdapters;
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.SettableFuture;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Future;
 
 import org.opendaylight.openflowjava.protocol.api.util.BinContent;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.sal.NotificationComposer;
+import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.FlowConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.GroupConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.MeterConvertor;
@@ -26,7 +25,6 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.TableFeatu
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchReactor;
 import org.opendaylight.openflowplugin.openflow.md.util.FlowCreatorUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
-import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowAdded;
@@ -158,19 +156,18 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableOutputBuilder;
-import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.Future;
+import com.google.common.util.concurrent.AsyncFunction;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.JdkFutureAdapters;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.SettableFuture;
 
 /**
  *
@@ -194,23 +191,25 @@ public abstract class OFRpcTaskFactory {
             public ListenableFuture<RpcResult<UpdateFlowOutput>> call() {
                 ListenableFuture<RpcResult<UpdateFlowOutput>> result = SettableFuture.create();
                 
-                Collection<RpcError> barrierErrors = OFRpcTaskUtil.manageBarrier(getTaskContext(), getInput().isBarrier(), getCookie());
-                if (!barrierErrors.isEmpty()) {
-                    OFRpcTaskUtil.wrapBarrierErrors(((SettableFuture<RpcResult<UpdateFlowOutput>>) result), barrierErrors);
-                } else {
-                    // Convert the AddFlowInput to FlowModInput
-                    List<FlowModInputBuilder> ofFlowModInputs = FlowConvertor.toFlowModInputs(getInput(),
-                            getVersion(), getSession().getFeatures().getDatapathId());
+                // Convert the AddFlowInput to FlowModInput
+                List<FlowModInputBuilder> ofFlowModInputs = FlowConvertor.toFlowModInputs(getInput(),
+                        getVersion(), getSession().getFeatures().getDatapathId());
 
-                    logger.debug("Number of flows to push to switch: {}", ofFlowModInputs.size());
+                logger.debug("Number of flows to push to switch: {}", ofFlowModInputs.size());
 
-                    result = chainFlowMods(ofFlowModInputs, 0, getTaskContext(), getCookie());
+                result = chainFlowMods(ofFlowModInputs, 0, getTaskContext(), getCookie());
 
-                    OFRpcTaskUtil.hookFutureNotification(this, result,
-                        getRpcNotificationProviderService(),
-                        createFlowAddedNotification(getInput()));
-                }
+                
+                result = OFRpcTaskUtil.chainFutureBarrier(this, result);
+                OFRpcTaskUtil.hookFutureNotification(this, result,
+                    getRpcNotificationProviderService(),
+                    createFlowAddedNotification(getInput()));
                 return result;
+            }
+            
+            @Override
+            public Boolean isBarrier() {
+                return getInput().isBarrier();
             }
         };
         return task;
@@ -295,44 +294,43 @@ public abstract class OFRpcTaskFactory {
             @Override
             public ListenableFuture<RpcResult<UpdateFlowOutput>> call() {
                 ListenableFuture<RpcResult<UpdateFlowOutput>> result = null;
-                Collection<RpcError> barrierErrors = OFRpcTaskUtil.manageBarrier(getTaskContext(), 
-                        getInput().getUpdatedFlow().isBarrier(), getCookie());
-                if (!barrierErrors.isEmpty()) {
-                    OFRpcTaskUtil.wrapBarrierErrors(((SettableFuture<RpcResult<UpdateFlowOutput>>) result), barrierErrors);
-
-                } else {
-                    boolean updatedFlow = (getInput().getUpdatedFlow().getMatch().equals(getInput().getOriginalFlow().getMatch())) &&
-                            (getInput().getUpdatedFlow().getPriority().equals(getInput().getOriginalFlow().getPriority()));
-
-                    List<FlowModInputBuilder> allFlowMods = new ArrayList<>();
-                    List<FlowModInputBuilder> ofFlowModInputs;
-
-                    if (updatedFlow == false) {
-                        // if neither match nor priority matches, then we would need to remove the flow and add it
-                        //remove flow
-                        RemoveFlowInputBuilder removeflow = new RemoveFlowInputBuilder(getInput().getOriginalFlow());
-                        List<FlowModInputBuilder> ofFlowRemoveInput = FlowConvertor.toFlowModInputs(removeflow.build(),
-                            getVersion(),getSession().getFeatures().getDatapathId());
-                        // remove flow should be the first
-                        allFlowMods.addAll(ofFlowRemoveInput);
-                        AddFlowInputBuilder addFlowInputBuilder = new AddFlowInputBuilder(getInput().getUpdatedFlow());
-                        ofFlowModInputs = FlowConvertor.toFlowModInputs(addFlowInputBuilder.build(),
-                                getVersion(), getSession().getFeatures().getDatapathId());
-                    } else {
-                        ofFlowModInputs = FlowConvertor.toFlowModInputs(getInput().getUpdatedFlow(),
-                                getVersion(), getSession().getFeatures().getDatapathId());
-                    }
-
-                    allFlowMods.addAll(ofFlowModInputs);
-                    logger.debug("Number of flows to push to switch: {}", allFlowMods.size());
-                    result = chainFlowMods(allFlowMods, 0, getTaskContext(), getCookie());
-
                     
-                    OFRpcTaskUtil.hookFutureNotification(this, result,
+                boolean updatedFlow = (getInput().getUpdatedFlow().getMatch().equals(getInput().getOriginalFlow().getMatch())) &&
+                        (getInput().getUpdatedFlow().getPriority().equals(getInput().getOriginalFlow().getPriority()));
+
+                List<FlowModInputBuilder> allFlowMods = new ArrayList<>();
+                List<FlowModInputBuilder> ofFlowModInputs;
+
+                if (updatedFlow == false) {
+                    // if neither match nor priority matches, then we would need to remove the flow and add it
+                    //remove flow
+                    RemoveFlowInputBuilder removeflow = new RemoveFlowInputBuilder(getInput().getOriginalFlow());
+                    List<FlowModInputBuilder> ofFlowRemoveInput = FlowConvertor.toFlowModInputs(removeflow.build(),
+                            getVersion(),getSession().getFeatures().getDatapathId());
+                    // remove flow should be the first
+                    allFlowMods.addAll(ofFlowRemoveInput);
+                    AddFlowInputBuilder addFlowInputBuilder = new AddFlowInputBuilder(getInput().getUpdatedFlow());
+                    ofFlowModInputs = FlowConvertor.toFlowModInputs(addFlowInputBuilder.build(),
+                            getVersion(), getSession().getFeatures().getDatapathId());
+                } else {
+                    ofFlowModInputs = FlowConvertor.toFlowModInputs(getInput().getUpdatedFlow(),
+                            getVersion(), getSession().getFeatures().getDatapathId());
+                }
+
+                allFlowMods.addAll(ofFlowModInputs);
+                logger.debug("Number of flows to push to switch: {}", allFlowMods.size());
+                result = chainFlowMods(allFlowMods, 0, getTaskContext(), getCookie());
+
+                result = OFRpcTaskUtil.chainFutureBarrier(this, result);
+                OFRpcTaskUtil.hookFutureNotification(this, result,
                         getRpcNotificationProviderService(),
                         createFlowUpdatedNotification(getInput()));
-                }
                 return result;
+            }
+            
+            @Override
+            public Boolean isBarrier() {
+                return getInput().getUpdatedFlow().isBarrier();
             }
         };
         return task;
@@ -372,25 +370,26 @@ public abstract class OFRpcTaskFactory {
             public ListenableFuture<RpcResult<UpdateGroupOutput>> call() {
                 ListenableFuture<RpcResult<UpdateGroupOutput>> result = SettableFuture.create();
                 
-                Collection<RpcError> barrierErrors = OFRpcTaskUtil.manageBarrier(getTaskContext(), getInput().isBarrier(), getCookie());
-                if (!barrierErrors.isEmpty()) {
-                    OFRpcTaskUtil.wrapBarrierErrors(((SettableFuture<RpcResult<UpdateGroupOutput>>) result), barrierErrors);
-                } else {
-                    // Convert the AddGroupInput to GroupModInput
-                    GroupModInputBuilder ofGroupModInput = GroupConvertor.toGroupModInput(getInput(), 
-                            getVersion(), getSession().getFeatures().getDatapathId());
-                    final Long xId = getSession().getNextXid();
-                    ofGroupModInput.setXid(xId);
-                    
-                    Future<RpcResult<UpdateGroupOutput>> resultFromOFLib = getMessageService()
-                            .groupMod(ofGroupModInput.build(), getCookie());
-                    result = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
-                    
-                    OFRpcTaskUtil.hookFutureNotification(this, result, 
-                            getRpcNotificationProviderService(), createGroupAddedNotification(getInput()));
-                }
+                // Convert the AddGroupInput to GroupModInput
+                GroupModInputBuilder ofGroupModInput = GroupConvertor.toGroupModInput(getInput(), 
+                        getVersion(), getSession().getFeatures().getDatapathId());
+                final Long xId = getSession().getNextXid();
+                ofGroupModInput.setXid(xId);
+
+                Future<RpcResult<UpdateGroupOutput>> resultFromOFLib = getMessageService()
+                        .groupMod(ofGroupModInput.build(), getCookie());
+                result = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
+
+                result = OFRpcTaskUtil.chainFutureBarrier(this, result);
+                OFRpcTaskUtil.hookFutureNotification(this, result, 
+                        getRpcNotificationProviderService(), createGroupAddedNotification(getInput()));
 
                 return result;
+            }
+            
+            @Override
+            public Boolean isBarrier() {
+                return getInput().isBarrier();
             }
         };
         
@@ -431,24 +430,25 @@ public abstract class OFRpcTaskFactory {
             public ListenableFuture<RpcResult<UpdateMeterOutput>> call() {
                 ListenableFuture<RpcResult<UpdateMeterOutput>> result = SettableFuture.create();
                 
-                Collection<RpcError> barrierErrors = OFRpcTaskUtil.manageBarrier(getTaskContext(), getInput().isBarrier(), getCookie());
-                if (!barrierErrors.isEmpty()) {
-                    OFRpcTaskUtil.wrapBarrierErrors(((SettableFuture<RpcResult<UpdateMeterOutput>>) result), barrierErrors);
-                } else {
-                    // Convert the AddGroupInput to GroupModInput
-                    MeterModInputBuilder ofMeterModInput = MeterConvertor.toMeterModInput(getInput(), getVersion());
-                    final Long xId = getSession().getNextXid();
-                    ofMeterModInput.setXid(xId);
-                    
-                    Future<RpcResult<UpdateMeterOutput>> resultFromOFLib = getMessageService()
-                            .meterMod(ofMeterModInput.build(), getCookie());
-                    result = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
-                    
-                    OFRpcTaskUtil.hookFutureNotification(this, result, 
-                            getRpcNotificationProviderService(), createMeterAddedNotification(getInput()));
-                }
+                // Convert the AddGroupInput to GroupModInput
+                MeterModInputBuilder ofMeterModInput = MeterConvertor.toMeterModInput(getInput(), getVersion());
+                final Long xId = getSession().getNextXid();
+                ofMeterModInput.setXid(xId);
+                
+                Future<RpcResult<UpdateMeterOutput>> resultFromOFLib = getMessageService()
+                        .meterMod(ofMeterModInput.build(), getCookie());
+                result = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
+                
+                result = OFRpcTaskUtil.chainFutureBarrier(this, result);
+                OFRpcTaskUtil.hookFutureNotification(this, result, 
+                        getRpcNotificationProviderService(), createMeterAddedNotification(getInput()));
 
                 return result;
+            }
+            
+            @Override
+            public Boolean isBarrier() {
+                return getInput().isBarrier();
             }
         };
         
@@ -488,25 +488,22 @@ public abstract class OFRpcTaskFactory {
             @Override
             public ListenableFuture<RpcResult<UpdateGroupOutput>> call() {
                 ListenableFuture<RpcResult<UpdateGroupOutput>> result = null;
-                Collection<RpcError> barrierErrors = OFRpcTaskUtil.manageBarrier(getTaskContext(), 
-                        getInput().getUpdatedGroup().isBarrier(), getCookie());
-                if (!barrierErrors.isEmpty()) {
-                    OFRpcTaskUtil.wrapBarrierErrors(((SettableFuture<RpcResult<UpdateGroupOutput>>) result), barrierErrors);
-                } else {
-                    // Convert the UpdateGroupInput to GroupModInput
-                    GroupModInputBuilder ofGroupModInput = GroupConvertor.toGroupModInput(
-                            getInput().getUpdatedGroup(), getVersion(),
-                            getSession().getFeatures().getDatapathId());
-                    final Long xId = getSession().getNextXid();
-                    ofGroupModInput.setXid(xId);
-    
-                    Future<RpcResult<UpdateGroupOutput>> resultFromOFLib = 
-                            getMessageService().groupMod(ofGroupModInput.build(), getCookie());
-                    result = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
-                    
-                    OFRpcTaskUtil.hookFutureNotification(this, result, 
-                            getRpcNotificationProviderService(), createGroupUpdatedNotification(getInput()));
-                }
+                
+                // Convert the UpdateGroupInput to GroupModInput
+                GroupModInputBuilder ofGroupModInput = GroupConvertor.toGroupModInput(
+                        getInput().getUpdatedGroup(), getVersion(),
+                        getSession().getFeatures().getDatapathId());
+                final Long xId = getSession().getNextXid();
+                ofGroupModInput.setXid(xId);
+
+                Future<RpcResult<UpdateGroupOutput>> resultFromOFLib = 
+                        getMessageService().groupMod(ofGroupModInput.build(), getCookie());
+                result = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
+
+                result = OFRpcTaskUtil.chainFutureBarrier(this, result);
+                OFRpcTaskUtil.hookFutureNotification(this, result, 
+                        getRpcNotificationProviderService(), createGroupUpdatedNotification(getInput()));
+                
                 return result;
             }
         };
@@ -545,24 +542,20 @@ public abstract class OFRpcTaskFactory {
             @Override
             public ListenableFuture<RpcResult<UpdateMeterOutput>> call() {
                 ListenableFuture<RpcResult<UpdateMeterOutput>> result = null;
-                Collection<RpcError> barrierErrors = OFRpcTaskUtil.manageBarrier(getTaskContext(), 
-                        getInput().getUpdatedMeter().isBarrier(), getCookie());
-                if (!barrierErrors.isEmpty()) {
-                    OFRpcTaskUtil.wrapBarrierErrors(((SettableFuture<RpcResult<UpdateMeterOutput>>) result), barrierErrors);
-                } else {
-                    // Convert the UpdateMeterInput to MeterModInput
-                    MeterModInputBuilder ofMeterModInput = MeterConvertor.toMeterModInput(
-                            getInput().getUpdatedMeter(), getVersion());
-                    final Long xId = getSession().getNextXid();
-                    ofMeterModInput.setXid(xId);
-    
-                    Future<RpcResult<UpdateMeterOutput>> resultFromOFLib = 
-                            getMessageService().meterMod(ofMeterModInput.build(), getCookie());
-                    result = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
-                    
-                    OFRpcTaskUtil.hookFutureNotification(this, result,
-                            getRpcNotificationProviderService(), createMeterUpdatedNotification(getInput()));
-                }
+
+                // Convert the UpdateMeterInput to MeterModInput
+                MeterModInputBuilder ofMeterModInput = MeterConvertor.toMeterModInput(
+                        getInput().getUpdatedMeter(), getVersion());
+                final Long xId = getSession().getNextXid();
+                ofMeterModInput.setXid(xId);
+
+                Future<RpcResult<UpdateMeterOutput>> resultFromOFLib = 
+                        getMessageService().meterMod(ofMeterModInput.build(), getCookie());
+                result = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
+
+                result = OFRpcTaskUtil.chainFutureBarrier(this, result);
+                OFRpcTaskUtil.hookFutureNotification(this, result,
+                        getRpcNotificationProviderService(), createMeterUpdatedNotification(getInput()));
                 return result;
             }
         };
@@ -602,24 +595,20 @@ public abstract class OFRpcTaskFactory {
             @Override
             public ListenableFuture<RpcResult<UpdateFlowOutput>> call() {
                 ListenableFuture<RpcResult<UpdateFlowOutput>> result = SettableFuture.create();
-                
-                Collection<RpcError> barrierErrors = OFRpcTaskUtil.manageBarrier(getTaskContext(), getInput().isBarrier(), getCookie());
-                if (!barrierErrors.isEmpty()) {
-                    OFRpcTaskUtil.wrapBarrierErrors(((SettableFuture<RpcResult<UpdateFlowOutput>>) result), barrierErrors);
-                } else {
-                    // Convert the AddFlowInput to FlowModInput
-                    FlowModInputBuilder ofFlowModInput = FlowConvertor.toFlowModInput(getInput(), 
-                            getVersion(), getSession().getFeatures().getDatapathId());
-                    final Long xId = getSession().getNextXid();
-                    ofFlowModInput.setXid(xId);
-                    
-                    Future<RpcResult<UpdateFlowOutput>> resultFromOFLib = 
-                            getMessageService().flowMod(ofFlowModInput.build(), getCookie());
-                    result = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
-                    
-                    OFRpcTaskUtil.hookFutureNotification(this, result, 
-                            getRpcNotificationProviderService(), createFlowRemovedNotification(getInput()));
-                }
+
+                // Convert the AddFlowInput to FlowModInput
+                FlowModInputBuilder ofFlowModInput = FlowConvertor.toFlowModInput(getInput(), 
+                        getVersion(), getSession().getFeatures().getDatapathId());
+                final Long xId = getSession().getNextXid();
+                ofFlowModInput.setXid(xId);
+
+                Future<RpcResult<UpdateFlowOutput>> resultFromOFLib = 
+                        getMessageService().flowMod(ofFlowModInput.build(), getCookie());
+                result = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
+
+                result = OFRpcTaskUtil.chainFutureBarrier(this, result);
+                OFRpcTaskUtil.hookFutureNotification(this, result, 
+                        getRpcNotificationProviderService(), createFlowRemovedNotification(getInput()));
 
                 return result;
             }
@@ -661,29 +650,25 @@ public abstract class OFRpcTaskFactory {
             @Override
             public ListenableFuture<RpcResult<UpdateGroupOutput>> call() {
                 ListenableFuture<RpcResult<UpdateGroupOutput>> result = SettableFuture.create();
-                
-                Collection<RpcError> barrierErrors = OFRpcTaskUtil.manageBarrier(getTaskContext(), getInput().isBarrier(), getCookie());
-                if (!barrierErrors.isEmpty()) {
-                    OFRpcTaskUtil.wrapBarrierErrors(((SettableFuture<RpcResult<UpdateGroupOutput>>) result), barrierErrors);
-                } else {
-                    // Convert the AddGroupInput to GroupModInput
-                    GroupModInputBuilder ofGroupModInput = GroupConvertor.toGroupModInput(getInput(), 
-                            getVersion(), getSession().getFeatures().getDatapathId());
-                    final Long xId = getSession().getNextXid();
-                    ofGroupModInput.setXid(xId);
-                    
-                    Future<RpcResult<UpdateGroupOutput>> resultFromOFLib = getMessageService()
-                            .groupMod(ofGroupModInput.build(), getCookie());
-                    result = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
-                    
-                    OFRpcTaskUtil.hookFutureNotification(this, result, 
-                            getRpcNotificationProviderService(), createGroupRemovedNotification(getInput()));
-                }
+
+                // Convert the AddGroupInput to GroupModInput
+                GroupModInputBuilder ofGroupModInput = GroupConvertor.toGroupModInput(getInput(), 
+                        getVersion(), getSession().getFeatures().getDatapathId());
+                final Long xId = getSession().getNextXid();
+                ofGroupModInput.setXid(xId);
+
+                Future<RpcResult<UpdateGroupOutput>> resultFromOFLib = getMessageService()
+                        .groupMod(ofGroupModInput.build(), getCookie());
+                result = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
+
+                result = OFRpcTaskUtil.chainFutureBarrier(this, result);
+                OFRpcTaskUtil.hookFutureNotification(this, result, 
+                        getRpcNotificationProviderService(), createGroupRemovedNotification(getInput()));
 
                 return result;
             }
         };
-        
+
         return task;
     }
     
@@ -719,23 +704,19 @@ public abstract class OFRpcTaskFactory {
             @Override
             public ListenableFuture<RpcResult<UpdateMeterOutput>> call() {
                 ListenableFuture<RpcResult<UpdateMeterOutput>> result = SettableFuture.create();
-                
-                Collection<RpcError> barrierErrors = OFRpcTaskUtil.manageBarrier(getTaskContext(), getInput().isBarrier(), getCookie());
-                if (!barrierErrors.isEmpty()) {
-                    OFRpcTaskUtil.wrapBarrierErrors(((SettableFuture<RpcResult<UpdateMeterOutput>>) result), barrierErrors);
-                } else {
-                    // Convert the AddGroupInput to GroupModInput
-                    MeterModInputBuilder ofMeterModInput = MeterConvertor.toMeterModInput(getInput(), getVersion());
-                    final Long xId = getSession().getNextXid();
-                    ofMeterModInput.setXid(xId);
-                    
-                    Future<RpcResult<UpdateMeterOutput>> resultFromOFLib = getMessageService()
-                            .meterMod(ofMeterModInput.build(), getCookie());
-                    result = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
-                    
-                    OFRpcTaskUtil.hookFutureNotification(this, result, 
-                            getRpcNotificationProviderService(), createMeterRemovedNotification(getInput()));
-                }
+
+                // Convert the AddGroupInput to GroupModInput
+                MeterModInputBuilder ofMeterModInput = MeterConvertor.toMeterModInput(getInput(), getVersion());
+                final Long xId = getSession().getNextXid();
+                ofMeterModInput.setXid(xId);
+
+                Future<RpcResult<UpdateMeterOutput>> resultFromOFLib = getMessageService()
+                        .meterMod(ofMeterModInput.build(), getCookie());
+                result = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
+
+                result = OFRpcTaskUtil.chainFutureBarrier(this, result);
+                OFRpcTaskUtil.hookFutureNotification(this, result, 
+                        getRpcNotificationProviderService(), createMeterRemovedNotification(getInput()));
 
                 return result;
             }
