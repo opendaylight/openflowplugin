@@ -58,7 +58,7 @@ public class MsgSpyServiceModule extends org.opendaylight.yang.gen.v1.urn.openda
 
                 StringBuilder strBuilder = new StringBuilder(ft.format(System.currentTimeMillis()));
                 for (String stat : statList) {
-                    strBuilder.append("\n").append(stat).append(Strings.repeat(" ", (100 -stat.length())));
+                    strBuilder.append("\n").append(stat);
                 }
                 return strBuilder.toString();
             }
