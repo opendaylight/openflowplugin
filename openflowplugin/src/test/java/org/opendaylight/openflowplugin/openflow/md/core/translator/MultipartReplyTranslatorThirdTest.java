@@ -33,6 +33,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessageBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyPortStatsCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyQueueCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyTableCaseBuilder;
@@ -55,7 +56,7 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
  * @author michal.polkorab
  *
  */
-public class MultipartReplyTranslatorTest3 {
+public class MultipartReplyTranslatorThirdTest {
 
     @Mock SwitchConnectionDistinguisher cookie;
     @Mock SessionContext sc;
@@ -78,7 +79,8 @@ public class MultipartReplyTranslatorTest3 {
     }
 
     /**
-     * Test empty port stats
+     * Test {@link MultipartReplyTranslator#translate(SwitchConnectionDistinguisher, SessionContext, OfHeader)}
+     * with empty port stats
      */
     @Test
     public void testEmptyPortStats() {
@@ -107,7 +109,8 @@ public class MultipartReplyTranslatorTest3 {
     }
 
     /**
-     * Test port stats
+     * Test {@link MultipartReplyTranslator#translate(SwitchConnectionDistinguisher, SessionContext, OfHeader)}
+     * with port stats
      */
     @Test
     public void testPortStats() {
@@ -200,7 +203,8 @@ public class MultipartReplyTranslatorTest3 {
     }
 
     /**
-     * Test empty table stats
+     * Test {@link MultipartReplyTranslator#translate(SwitchConnectionDistinguisher, SessionContext, OfHeader)}
+     * with empty table stats
      */
     @Test
     public void testEmptyTableStats() {
@@ -229,7 +233,8 @@ public class MultipartReplyTranslatorTest3 {
     }
 
     /**
-     * Test table stats
+     * Test {@link MultipartReplyTranslator#translate(SwitchConnectionDistinguisher, SessionContext, OfHeader)}
+     * with table stats
      */
     @Test
     public void testTableStats() {
@@ -280,7 +285,8 @@ public class MultipartReplyTranslatorTest3 {
     }
 
     /**
-     * Test empty queue stats
+     * Test {@link MultipartReplyTranslator#translate(SwitchConnectionDistinguisher, SessionContext, OfHeader)}
+     * with empty queue stats
      */
     @Test
     public void testEmptyQueueStats() {
@@ -309,7 +315,8 @@ public class MultipartReplyTranslatorTest3 {
     }
 
     /**
-     * Test queue stats
+     * Test {@link MultipartReplyTranslator#translate(SwitchConnectionDistinguisher, SessionContext, OfHeader)}
+     * with queue stats
      */
     @Test
     public void testQueueStats() {

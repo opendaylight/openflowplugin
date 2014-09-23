@@ -37,6 +37,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessageBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyFlowCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.flow._case.MultipartReplyFlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.flow._case.multipart.reply.flow.FlowStats;
@@ -47,7 +48,7 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
  * @author michal.polkorab
  *
  */
-public class MultipartReplyTranslatorTest {
+public class MultipartReplyTranslatorFirstTest {
 
     @Mock SwitchConnectionDistinguisher cookie;
     @Mock SessionContext sc;
@@ -69,7 +70,8 @@ public class MultipartReplyTranslatorTest {
     }
 
     /**
-     * Test with null and incorrect message
+     * Test {@link MultipartReplyTranslator#translate(SwitchConnectionDistinguisher, SessionContext, OfHeader)}
+     * with null and incorrect message
      */
     @Test
     public void test() {
@@ -82,7 +84,8 @@ public class MultipartReplyTranslatorTest {
     }
 
     /**
-     * Test with experimenter MultipartReply message
+     * Test {@link MultipartReplyTranslator#translate(SwitchConnectionDistinguisher, SessionContext, OfHeader)}
+     * with experimenter MultipartReply message
      */
     @Test
     public void testExperimenterCase() {
@@ -99,7 +102,8 @@ public class MultipartReplyTranslatorTest {
     }
 
     /**
-     * Test  MultipartReply message with empty flow stats
+     * Test {@link MultipartReplyTranslator#translate(SwitchConnectionDistinguisher, SessionContext, OfHeader)}
+     * with empty flow stats
      */
     @Test
     public void testEmptyFlowCase() {
@@ -129,7 +133,8 @@ public class MultipartReplyTranslatorTest {
     }
 
     /**
-     * Test with experimenter MultipartReply message
+     * Test {@link MultipartReplyTranslator#translate(SwitchConnectionDistinguisher, SessionContext, OfHeader)}
+     * with experimenter MultipartReply message
      */
     @Test
     public void testFlowCase() {
