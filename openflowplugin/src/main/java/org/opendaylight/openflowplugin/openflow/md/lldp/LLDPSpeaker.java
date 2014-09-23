@@ -14,16 +14,15 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
-
 import org.opendaylight.controller.liblldp.EtherTypes;
 import org.opendaylight.controller.liblldp.Ethernet;
 import org.opendaylight.controller.liblldp.HexEncode;
 import org.opendaylight.controller.liblldp.LLDP;
 import org.opendaylight.controller.liblldp.LLDPTLV;
 import org.opendaylight.controller.liblldp.PacketException;
+import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.ModelDrivenSwitch;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
-import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
@@ -43,65 +42,65 @@ import org.slf4j.LoggerFactory;
 public class LLDPSpeaker {
     private static Logger LOG = LoggerFactory.getLogger(LLDPSpeaker.class);
 
-	private  final Map<InstanceIdentifier<NodeConnector>,TransmitPacketInput> nodeConnectorMap = new ConcurrentHashMap<InstanceIdentifier<NodeConnector>,TransmitPacketInput>();
-	private  final Map<InstanceIdentifier<Node>,ModelDrivenSwitch> nodeMap = new ConcurrentHashMap<InstanceIdentifier<Node>,ModelDrivenSwitch>();
-	private static final LLDPSpeaker instance = new LLDPSpeaker();
-	private Timer timer = new Timer();
-	private static final int DELAY = 0;
-	private static final int PERIOD = 1000*5;
+    private final Map<InstanceIdentifier<NodeConnector>, TransmitPacketInput> nodeConnectorMap = new ConcurrentHashMap<InstanceIdentifier<NodeConnector>, TransmitPacketInput>();
+    private final Map<InstanceIdentifier<Node>, ModelDrivenSwitch> nodeMap = new ConcurrentHashMap<InstanceIdentifier<Node>, ModelDrivenSwitch>();
+    private static final LLDPSpeaker instance = new LLDPSpeaker();
+    private Timer timer = new Timer();
+    private static final int DELAY = 0;
+    private static final int PERIOD = 1000 * 5;
 
-	private LLDPSpeaker() {
-	    timer.schedule(new LLDPSpeakerTask(), DELAY, PERIOD);
-	}
+    private LLDPSpeaker() {
+        timer.schedule(new LLDPSpeakerTask(), DELAY, PERIOD);
+    }
 
-	public static LLDPSpeaker getInstance() {
-	    return instance;
-	}
+    public static LLDPSpeaker getInstance() {
+        return instance;
+    }
 
-	public  void addModelDrivenSwitch(InstanceIdentifier<Node> nodeInstanceId, ModelDrivenSwitch sw) {
-		nodeMap.put(nodeInstanceId,sw);
-	}
+    public void addModelDrivenSwitch(InstanceIdentifier<Node> nodeInstanceId, ModelDrivenSwitch sw) {
+        nodeMap.put(nodeInstanceId, sw);
+    }
 
-	public void removeModelDrivenSwitch(InstanceIdentifier<Node> nodeInstanceId) {
-	    nodeMap.remove(nodeInstanceId);
-	    for (InstanceIdentifier<NodeConnector> nodeConnectorInstanceId : nodeConnectorMap.keySet()) {
-	        if(nodeInstanceId.equals(nodeConnectorInstanceId.firstIdentifierOf(Node.class))) {
-	            nodeConnectorMap.remove(nodeConnectorInstanceId);
-	        }
-	    }
-	}
+    public void removeModelDrivenSwitch(InstanceIdentifier<Node> nodeInstanceId) {
+        nodeMap.remove(nodeInstanceId);
+        for (InstanceIdentifier<NodeConnector> nodeConnectorInstanceId : nodeConnectorMap.keySet()) {
+            if (nodeInstanceId.equals(nodeConnectorInstanceId.firstIdentifierOf(Node.class))) {
+                nodeConnectorMap.remove(nodeConnectorInstanceId);
+            }
+        }
+    }
 
-	public  void addNodeConnector(InstanceIdentifier<NodeConnector> nodeConnectorInstanceId, NodeConnector nodeConnector) {
-    	InstanceIdentifier<Node> nodeInstanceId = nodeConnectorInstanceId.firstIdentifierOf(Node.class);
+    public void addNodeConnector(InstanceIdentifier<NodeConnector> nodeConnectorInstanceId, NodeConnector nodeConnector) {
+        InstanceIdentifier<Node> nodeInstanceId = nodeConnectorInstanceId.firstIdentifierOf(Node.class);
         ModelDrivenSwitch md = nodeMap.get(nodeInstanceId);
 
-    	NodeKey nodeKey = InstanceIdentifier.keyOf(nodeInstanceId);
-    	NodeId nodeId = nodeKey.getId();
-    	NodeConnectorId nodeConnectorId = nodeConnector.getId();
-    	FlowCapableNodeConnector flowConnector = nodeConnector.<FlowCapableNodeConnector>getAugmentation(FlowCapableNodeConnector.class);
-    	TransmitPacketInputBuilder tpib = new TransmitPacketInputBuilder();
-    	tpib.setEgress(new NodeConnectorRef(nodeConnectorInstanceId));
-    	tpib.setNode(new NodeRef(nodeInstanceId));
-    	tpib.setPayload(lldpDataFrom(nodeInstanceId,nodeConnectorInstanceId,flowConnector.getHardwareAddress(),
+        NodeKey nodeKey = InstanceIdentifier.keyOf(nodeInstanceId);
+        NodeId nodeId = nodeKey.getId();
+        NodeConnectorId nodeConnectorId = nodeConnector.getId();
+        FlowCapableNodeConnector flowConnector = nodeConnector.<FlowCapableNodeConnector>getAugmentation(FlowCapableNodeConnector.class);
+        TransmitPacketInputBuilder tpib = new TransmitPacketInputBuilder();
+        tpib.setEgress(new NodeConnectorRef(nodeConnectorInstanceId));
+        tpib.setNode(new NodeRef(nodeInstanceId));
+        tpib.setPayload(lldpDataFrom(nodeInstanceId, nodeConnectorInstanceId, flowConnector.getHardwareAddress(),
                 md.getSessionContext().getPrimaryConductor().getVersion()));
-    	nodeConnectorMap.put(nodeConnectorInstanceId, tpib.build());
+        nodeConnectorMap.put(nodeConnectorInstanceId, tpib.build());
 
         md.transmitPacket(nodeConnectorMap.get(nodeConnectorInstanceId));
-	}
+    }
 
-	public  void removeNodeConnector(
-			InstanceIdentifier<NodeConnector> nodeConnectorInstanceId,
-			NodeConnector nodeConnector) {
-		nodeConnectorMap.remove(nodeConnectorInstanceId);
-	}
+    public void removeNodeConnector(
+            InstanceIdentifier<NodeConnector> nodeConnectorInstanceId,
+            NodeConnector nodeConnector) {
+        nodeConnectorMap.remove(nodeConnectorInstanceId);
+    }
 
-	private  byte[] lldpDataFrom(InstanceIdentifier<Node> nodeInstanceId,InstanceIdentifier<NodeConnector> nodeConnectorInstanceId,MacAddress src,
-                                 Short version) {
+    private byte[] lldpDataFrom(InstanceIdentifier<Node> nodeInstanceId, InstanceIdentifier<NodeConnector> nodeConnectorInstanceId, MacAddress src,
+                                Short version) {
 
-	    NodeId nodeId = InstanceIdentifier.keyOf(nodeInstanceId).getId();
-	    NodeConnectorId nodeConnectorId = InstanceIdentifier.keyOf(nodeConnectorInstanceId).getId();
-		// Create LLDP TTL TLV
-        byte[] ttl = new byte[] { (byte) 0, (byte) 120 };
+        NodeId nodeId = InstanceIdentifier.keyOf(nodeInstanceId).getId();
+        NodeConnectorId nodeConnectorId = InstanceIdentifier.keyOf(nodeConnectorInstanceId).getId();
+        // Create LLDP TTL TLV
+        byte[] ttl = new byte[]{(byte) 0, (byte) 120};
         LLDPTLV ttlTlv = new LLDPTLV();
         ttlTlv.setType(LLDPTLV.TLVType.TTL.getValue()).setLength((short) ttl.length).setValue(ttl);
 
@@ -154,10 +153,10 @@ public class LLDPSpeaker {
             byte[] data = ethPkt.serialize();
             return data;
         } catch (PacketException e) {
-            LOG.error("Error creating LLDP packet",e);
+            LOG.error("Error creating LLDP packet", e);
         }
         return null;
-	}
+    }
 
     private class LLDPSpeakerTask extends TimerTask {
 
@@ -171,9 +170,9 @@ public class LLDPSpeaker {
 
         }
 
-	}
+    }
 
-	private String colonize(String orig) {
-	    return orig.replaceAll("(?<=..)(..)", ":$1");
-	}
+    private String colonize(String orig) {
+        return orig.replaceAll("(?<=..)(..)", ":$1");
+    }
 }
