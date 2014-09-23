@@ -36,6 +36,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessageBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyAggregateCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyGroupFeaturesCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyMeterFeaturesCaseBuilder;
@@ -48,7 +49,7 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
  * @author michal.polkorab
  *
  */
-public class MultipartReplyTranslatorTest2 {
+public class MultipartReplyTranslatorSecondTest {
 
     @Mock SwitchConnectionDistinguisher cookie;
     @Mock SessionContext sc;
@@ -70,7 +71,8 @@ public class MultipartReplyTranslatorTest2 {
     }
 
     /**
-     * Test  MultipartReply message with aggregate stat
+     * Test {@link MultipartReplyTranslator#translate(SwitchConnectionDistinguisher, SessionContext, OfHeader)}
+     * with aggregate stat
      */
     @Test
     public void testAggregateCase() {
@@ -102,7 +104,8 @@ public class MultipartReplyTranslatorTest2 {
     }
 
     /**
-     * Test  MultipartReply message with group features stat
+     * Test {@link MultipartReplyTranslator#translate(SwitchConnectionDistinguisher, SessionContext, OfHeader)}
+     * with group features stat
      */
     @Test
     public void testGroupFeaturesCase() {
@@ -165,7 +168,8 @@ public class MultipartReplyTranslatorTest2 {
     }
 
     /**
-     * Test  MultipartReply message with meter features stat
+     * Test {@link MultipartReplyTranslator#translate(SwitchConnectionDistinguisher, SessionContext, OfHeader)}
+     * with meter features stat
      */
     @Test
     public void testMeterFeaturesCase() {
