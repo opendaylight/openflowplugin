@@ -27,6 +27,13 @@
       <type>xml</type>
     </dependency>
     <dependency>
+      <groupId>org.opendaylight.controller</groupId>
+      <artifactId>features-features</artifactId>
+      <version>${mdsal.version}</version>
+      <classifier>features</classifier>
+      <type>xml</type>
+    </dependency>
+    <dependency>
       <groupId>org.opendaylight.openflowjava</groupId>
       <artifactId>features-openflowjava</artifactId>
       <version>${openflowjava.version}</version>
