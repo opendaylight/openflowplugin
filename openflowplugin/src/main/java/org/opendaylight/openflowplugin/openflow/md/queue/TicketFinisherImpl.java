@@ -39,7 +39,7 @@ public class TicketFinisherImpl implements TicketFinisher<DataObject> {
         this.queue = queue;
         this.popListenersMapping = popListenersMapping;
     }
-    
+
     @Override
     public void run() {
         while (! finished ) {
@@ -49,11 +49,11 @@ public class TicketFinisherImpl implements TicketFinisher<DataObject> {
                 List<DataObject> processedMessages = result.getResult().get();
                 firePopNotification(processedMessages);
             } catch (Exception e) {
-                LOG.warn("processing (translate, publish) of ticket failed", e);
+                LOG.warn("processing (translate, publish) of ticket failed {}", e);
             }
         }
     }
-    
+
     @Override
     public void firePopNotification(List<DataObject> processedMessages) {
         for (DataObject msg : processedMessages) {
@@ -64,12 +64,16 @@ public class TicketFinisherImpl implements TicketFinisher<DataObject> {
                 LOG.warn("no popListener registered for type {}", registeredType);
             } else {
                 for (PopListener<DataObject> consumer : popListeners) {
-                    consumer.onPop(msg);
+                    try {
+                        consumer.onPop(msg);
+                    } catch (Exception e){
+                        LOG.warn("firePopNotification: processing (translate, publish) of ticket failed for consumer {} msg {} Excpetion: {}", consumer, msg,e);
+                    }
                 }
             }
         }
     }
-    
+
     /**
      * initiate shutdown of this worker
      */
