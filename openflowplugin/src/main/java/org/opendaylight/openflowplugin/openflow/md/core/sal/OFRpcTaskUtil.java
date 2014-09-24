@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2013 Cisco Systems, Inc. and others.  All rights reserved.
- * 
+ *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
@@ -31,6 +31,8 @@ import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Function;
 import com.google.common.base.Objects;
@@ -43,21 +45,21 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 
 /**
- * 
+ *
  */
 public abstract class OFRpcTaskUtil {
-
+    protected static final Logger LOG = LoggerFactory.getLogger(OFRpcTaskUtil.class);
     /**
-     * @param taskContext 
-     * @param isBarrier 
-     * @param cookie 
+     * @param taskContext
+     * @param isBarrier
+     * @param cookie
      * @return rpcResult of given type, containing wrapped errors of barrier sending (if any) or success
      */
     public static Collection<RpcError> manageBarrier(OFRpcTaskContext taskContext, Boolean isBarrier,
             SwitchConnectionDistinguisher cookie) {
         Collection<RpcError> errors = null;
         if (Objects.firstNonNull(isBarrier, Boolean.FALSE)) {
-            RpcInputOutputTuple<BarrierInput, ListenableFuture<RpcResult<BarrierOutput>>> sendBarrierRpc = 
+            RpcInputOutputTuple<BarrierInput, ListenableFuture<RpcResult<BarrierOutput>>> sendBarrierRpc =
                     sendBarrier(taskContext.getSession(), cookie, taskContext.getMessageService());
             Future<RpcResult<BarrierOutput>> barrierFuture = sendBarrierRpc.getOutput();
             try {
@@ -68,20 +70,20 @@ public abstract class OFRpcTaskUtil {
                 }
             } catch (Exception e) {
                 RpcError rpcError = RpcResultBuilder.newWarning(
-                        ErrorType.RPC, 
-                        OFConstants.ERROR_TAG_TIMEOUT, 
-                        "barrier sending failed", 
-                        OFConstants.APPLICATION_TAG, 
-                        "switch failed to respond on barrier request - message ordering is not preserved", 
+                        ErrorType.RPC,
+                        OFConstants.ERROR_TAG_TIMEOUT,
+                        "barrier sending failed",
+                        OFConstants.APPLICATION_TAG,
+                        "switch failed to respond on barrier request - message ordering is not preserved",
                         e);
                 errors = Lists.newArrayList(rpcError);
             }
-        } 
-        
+        }
+
         if (errors == null) {
             errors = Collections.emptyList();
         }
-        
+
         return errors;
     }
 
@@ -91,13 +93,13 @@ public abstract class OFRpcTaskUtil {
      * @param messageService
      * @return barrier response
      */
-    protected static RpcInputOutputTuple<BarrierInput, ListenableFuture<RpcResult<BarrierOutput>>> sendBarrier(SessionContext session, 
+    protected static RpcInputOutputTuple<BarrierInput, ListenableFuture<RpcResult<BarrierOutput>>> sendBarrier(SessionContext session,
             SwitchConnectionDistinguisher cookie, IMessageDispatchService messageService) {
         BarrierInput barrierInput = MessageFactory.createBarrier(
                 session.getFeatures().getVersion(), session.getNextXid());
         Future<RpcResult<BarrierOutput>> barrierResult = messageService.barrier(barrierInput, cookie);
         ListenableFuture<RpcResult<BarrierOutput>> output = JdkFutureAdapters.listenInPoolThread(barrierResult);
-        
+
         return new RpcInputOutputTuple<>(barrierInput, output);
     }
 
@@ -109,29 +111,40 @@ public abstract class OFRpcTaskUtil {
             Collection<RpcError> barrierErrors) {
         result.set(RpcResultBuilder.<T>failed().withRpcErrors(barrierErrors).build());
     }
-    
+
     /**
      * @param task of rpc
      * @param originalResult
      * @param notificationProviderService
      * @param notificationComposer lazy notification composer
      */
-    public static <R extends RpcResult<? extends TransactionAware>, N extends Notification, INPUT extends DataContainer> 
+    public static <R extends RpcResult<? extends TransactionAware>, N extends Notification, INPUT extends DataContainer>
     void hookFutureNotification(
             final OFRpcTask<INPUT, R> task,
-            ListenableFuture<R> originalResult, 
-            final NotificationProviderService notificationProviderService, 
+            ListenableFuture<R> originalResult,
+            final NotificationProviderService notificationProviderService,
             final NotificationComposer<N> notificationComposer) {
         Futures.addCallback(originalResult, new FutureCallback<R>() {
             @Override
             public void onSuccess(R result) {
-                if (null != notificationProviderService) {
+                if (null != notificationProviderService && notificationComposer != null &&
+                        result != null && result.getResult() != null &&  result.getResult().getTransactionId() != null) {
                     notificationProviderService.publish(notificationComposer.compose(result.getResult().getTransactionId()));
+                } else {
+                    if(null == notificationProviderService) {
+                        LOG.warn("onSuccess(): notificationServiceProvider is null, could not publish result {}",result);
+                    } else if (notificationComposer == null) {
+                        LOG.warn("onSuccess(): notificationComposer is null, could not publish result {}",result);
+                    } else if (result.getResult() == null) {
+                        LOG.warn("onSuccess(): result.getResult() is null, could not publish result {}",result);
+                    } else if (result.getResult().getTransactionId() == null) {
+                        LOG.warn("onSuccess(): result.getResult().getTransactionId() is null, could not publish result {}",result);
+                    }
                 }
                 task.getTaskContext().getMessageSpy().spyMessage(
                         task.getInput(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_SUCCESS);
             }
-            
+
             @Override
             public void onFailure(Throwable t) {
                 //TODO: good place to notify MD-SAL about errors
@@ -140,7 +153,7 @@ public abstract class OFRpcTaskUtil {
             }
         });
     }
-    
+
     /**
      * @param task of rpc
      * @param originalResult
@@ -152,10 +165,10 @@ public abstract class OFRpcTaskUtil {
     ListenableFuture<RpcResult<TX>> chainFutureBarrier(
             final OFRpcTask<INPUT, RpcResult<TX>> task,
             final ListenableFuture<RpcResult<TX>> originalResult) {
-        
+
         ListenableFuture<RpcResult<TX>> chainResult = originalResult;
-        if (Objects.firstNonNull(task.isBarrier(), Boolean.FALSE)) { 
-            
+        if (Objects.firstNonNull(task.isBarrier(), Boolean.FALSE)) {
+
             chainResult = Futures.transform(originalResult, new AsyncFunction<RpcResult<TX>, RpcResult<TX>>() {
 
                 @Override
@@ -171,13 +184,13 @@ public abstract class OFRpcTaskUtil {
                         return Futures.immediateFuture(input);
                     }
                 }
-                
+
             });
         }
-        
+
         return chainResult;
     }
-        
+
     /**
      * @param originalInput
      * @return
@@ -185,7 +198,7 @@ public abstract class OFRpcTaskUtil {
     protected static <TX extends TransactionAware> Function<RpcResult<BarrierOutput>, RpcResult<TX>> transformBarrierToTransactionAware(
             final RpcResult<TX> originalInput, final BarrierInput barrierInput) {
         return new Function<RpcResult<BarrierOutput>, RpcResult<TX>>() {
-            
+
             @Override
             public RpcResult<TX> apply(final RpcResult<BarrierOutput> barrierResult) {
                 RpcResultBuilder<TX> rpcBuilder = null;
@@ -194,23 +207,23 @@ public abstract class OFRpcTaskUtil {
                 } else {
                     rpcBuilder = RpcResultBuilder.<TX>failed();
                     RpcError rpcError = RpcResultBuilder.newWarning(
-                            ErrorType.RPC, 
-                            OFConstants.ERROR_TAG_TIMEOUT, 
-                            "barrier sending failed", 
-                            OFConstants.APPLICATION_TAG, 
-                            "switch failed to respond on barrier request, barrier.xid = "+barrierInput.getXid(), 
+                            ErrorType.RPC,
+                            OFConstants.ERROR_TAG_TIMEOUT,
+                            "barrier sending failed",
+                            OFConstants.APPLICATION_TAG,
+                            "switch failed to respond on barrier request, barrier.xid = "+barrierInput.getXid(),
                             null);
                     List<RpcError> chainedErrors = new ArrayList<>();
                     chainedErrors.add(rpcError);
                     chainedErrors.addAll(barrierResult.getErrors());
                     rpcBuilder.withRpcErrors(chainedErrors);
                 }
-                
+
                 rpcBuilder.withResult(originalInput.getResult());
-                
+
                 return rpcBuilder.build();
             }
-            
+
         };
     }
 }
