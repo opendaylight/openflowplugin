@@ -7,14 +7,6 @@
     <artifactId>applications</artifactId>
     <version>0.0.3-SNAPSHOT</version>
   </parent>
-  <properties>
-      <sonar.jacoco.excludes>${project.basedir}/org/opendaylight/yang/gen/v1/urn/opendaylight/params/xml/ns/yang/openflow/**/*.java</sonar.jacoco.excludes>
-      <sonar.exclusions>
-          ${project.basedir}/org/opendaylight/yang/gen/v1/urn/opendaylight/params/xml/ns/yang/openflow/**/*.java
-      </sonar.exclusions>
-  </properties>
-
-
   <groupId>org.opendaylight.openflowplugin.applications</groupId>
   <artifactId>table-miss-enforcer</artifactId>
   <packaging>bundle</packaging>
@@ -58,9 +50,8 @@
     <build>
      <plugins>
          <plugin>
-             <groupId>org.apache.maven.plugins</groupId>
-             <artifactId>maven-surefire-plugin</artifactId>
-             <version>2.16</version>
+             <groupId>org.jacoco</groupId>
+             <artifactId>jacoco-maven-plugin</artifactId>
              <configuration>
                  <excludes>
                      <exclude>
@@ -69,7 +60,6 @@
                  </excludes>
              </configuration>
          </plugin>
-
          <plugin>
              <groupId>org.opendaylight.yangtools</groupId>
              <artifactId>yang-maven-plugin</artifactId>
