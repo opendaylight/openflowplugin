@@ -32,7 +32,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterModCommand;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MeterModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MeterModInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.MeterBand;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.meter.band.MeterBandDropCaseBuilder;
@@ -65,8 +64,8 @@ public final class MeterConvertor {
             org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter source, short version) {
 
         MeterModInputBuilder meterModInputBuilder = new MeterModInputBuilder();
-        List<Bands> bands = new ArrayList<Bands>();       
-        
+        List<Bands> bands = new ArrayList<Bands>();
+
         if (source instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterInput) {
             meterModInputBuilder.setCommand(MeterModCommand.OFPMCADD);
         } else if (source instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterInput) {
@@ -98,7 +97,7 @@ public final class MeterConvertor {
         } else {
             logger.error("For this meter Id" + source.getMeterId().getValue() + ",no associated band data found!");
         }
-        
+
         meterModInputBuilder.setVersion(version);
         return meterModInputBuilder;
     }
@@ -114,7 +113,7 @@ public final class MeterConvertor {
             meterBandHeader = bandHeadersIterator.next();
             MeterBand meterBandItem = null;
             // The band types :drop,DSCP_Remark or experimenter.
-            if (null != meterBandHeader.getMeterBandTypes() && 
+            if (null != meterBandHeader.getMeterBandTypes() &&
                     null != meterBandHeader.getMeterBandTypes().getFlags()) {
 
                 if (meterBandHeader.getMeterBandTypes().getFlags().isOfpmbtDrop()) {
@@ -123,8 +122,8 @@ public final class MeterConvertor {
                         MeterBandDropBuilder meterBandDropBuilder = new MeterBandDropBuilder();
                         meterBandDropBuilder.setType(MeterBandType.OFPMBTDROP);
                         Drop drop = (Drop) meterBandHeader.getBandType();
-                        meterBandDropBuilder.setBurstSize(drop.getDropRate());
-                        meterBandDropBuilder.setRate(drop.getDropBurstSize());
+                        meterBandDropBuilder.setBurstSize(drop.getDropBurstSize());
+                        meterBandDropBuilder.setRate(drop.getDropRate());
                         dropCaseBuilder.setMeterBandDrop(meterBandDropBuilder.build());
                         meterBandItem = dropCaseBuilder.build();
                         bandsB = new BandsBuilder();
