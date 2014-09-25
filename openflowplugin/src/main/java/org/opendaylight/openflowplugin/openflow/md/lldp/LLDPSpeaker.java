@@ -74,19 +74,33 @@ public class LLDPSpeaker {
         InstanceIdentifier<Node> nodeInstanceId = nodeConnectorInstanceId.firstIdentifierOf(Node.class);
         ModelDrivenSwitch md = nodeMap.get(nodeInstanceId);
 
-        NodeKey nodeKey = InstanceIdentifier.keyOf(nodeInstanceId);
-        NodeId nodeId = nodeKey.getId();
-        NodeConnectorId nodeConnectorId = nodeConnector.getId();
-        FlowCapableNodeConnector flowConnector = nodeConnector.<FlowCapableNodeConnector>getAugmentation(FlowCapableNodeConnector.class);
-        TransmitPacketInputBuilder tpib = new TransmitPacketInputBuilder();
-        tpib.setEgress(new NodeConnectorRef(nodeConnectorInstanceId));
-        tpib.setNode(new NodeRef(nodeInstanceId));
-        tpib.setPayload(lldpDataFrom(nodeInstanceId, nodeConnectorInstanceId, flowConnector.getHardwareAddress(),
-                md.getSessionContext().getPrimaryConductor().getVersion()));
-        nodeConnectorMap.put(nodeConnectorInstanceId, tpib.build());
+    	NodeKey nodeKey = InstanceIdentifier.keyOf(nodeInstanceId);
+    	NodeId nodeId = nodeKey.getId();
+    	NodeConnectorId nodeConnectorId = nodeConnector.getId();
+    	FlowCapableNodeConnector flowConnector = nodeConnector.<FlowCapableNodeConnector>getAugmentation(FlowCapableNodeConnector.class);
+    	TransmitPacketInputBuilder tpib = new TransmitPacketInputBuilder();
+    	tpib.setEgress(new NodeConnectorRef(nodeConnectorInstanceId));
+    	tpib.setNode(new NodeRef(nodeInstanceId));
+    	if(nodeInstanceId == null) {
+    	    LOG.warn("addNodeConnector(): nodeInstanceId should not be null nodeConnectorInstanceId {} nodeConnector {}",nodeConnectorInstanceId,nodeConnector);
+    	} else if (nodeConnectorInstanceId == null) {
+    	    LOG.warn("addNodeConnector(): nodeConnectorInstanceId should not be null nodeConnectorInstanceId {} nodeConnector {}",nodeConnectorInstanceId,nodeConnector);
+    	} else if (flowConnector == null) {
+    	    LOG.warn("addNodeConnector(): flowConnector should not be null nodeConnectorInstanceId {} nodeConnector {}",nodeConnectorInstanceId,nodeConnector);
+    	} else if (md == null) {
+    	    LOG.warn("addNodeConnector(): md should not be null nodeConnectorInstanceId {} nodeConnector {}",nodeConnectorInstanceId,nodeConnector);
+    	} else if(md.getSessionContext() == null) {
+    	    LOG.warn("addNodeConnector(): md.getSessionContext() should not be null nodeConnectorInstanceId {} nodeConnector {}",nodeConnectorInstanceId,nodeConnector);
+    	} else if (md.getSessionContext().getPrimaryConductor() == null) {
+    	    LOG.warn("addNodeConnector(): md.getSessionContext().getPrimaryConductor() should not be null nodeConnectorInstanceId {} nodeConnector {}",nodeConnectorInstanceId,nodeConnector);
+    	} else {
+        	tpib.setPayload(lldpDataFrom(nodeInstanceId,nodeConnectorInstanceId,flowConnector.getHardwareAddress(),
+                    md.getSessionContext().getPrimaryConductor().getVersion()));
+        	nodeConnectorMap.put(nodeConnectorInstanceId, tpib.build());
 
-        md.transmitPacket(nodeConnectorMap.get(nodeConnectorInstanceId));
-    }
+            md.transmitPacket(nodeConnectorMap.get(nodeConnectorInstanceId));
+    	}
+	}
 
     public void removeNodeConnector(
             InstanceIdentifier<NodeConnector> nodeConnectorInstanceId,
