@@ -88,7 +88,7 @@ public class LLDPSpeaker {
         } else if (flowConnector == null) {
             LOG.warn("addNodeConnector(): flowConnector should not be null nodeConnectorInstanceId {} nodeConnector {}",nodeConnectorInstanceId,nodeConnector);
         } else if (md == null) {
-            LOG.warn("addNodeConnector(): md should not be null nodeConnectorInstanceId {} nodeConnector {}",nodeConnectorInstanceId,nodeConnector);
+            LOG.debug("addNodeConnector(): md is null, this usually means your switch disconnected while you had unprocessed NodeConnectorUpdated messages in queue nodeConnectorInstanceId {} nodeConnector {}",nodeConnectorInstanceId,nodeConnector);
         } else if(md.getSessionContext() == null) {
             LOG.warn("addNodeConnector(): md.getSessionContext() should not be null nodeConnectorInstanceId {} nodeConnector {}",nodeConnectorInstanceId,nodeConnector);
         } else if (md.getSessionContext().getPrimaryConductor() == null) {
