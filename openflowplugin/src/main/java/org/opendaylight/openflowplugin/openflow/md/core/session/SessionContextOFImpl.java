@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.opendaylight.openflowplugin.openflow.md.ModelDrivenSwitch;
 import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
+import org.opendaylight.openflowplugin.openflow.md.core.NotificationEnqueuer;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
@@ -32,6 +33,7 @@ public class SessionContextOFImpl implements SessionContext {
 
     private GetFeaturesOutput features;
     private ConnectionConductor primaryConductor;
+    private NotificationEnqueuer notificationEnqueuer;
     private ConcurrentHashMap<SwitchConnectionDistinguisher, ConnectionConductor> auxiliaryConductors;
     private boolean valid;
     private SwitchSessionKeyOF sessionKey;
@@ -217,5 +219,18 @@ public class SessionContextOFImpl implements SessionContext {
     @Override
     public int getSeed() {
         return seed;
+    }
+    
+    /**
+     * @param notificationEnqueuer the notificationEnqueuer to set
+     */
+    public void setNotificationEnqueuer(
+            NotificationEnqueuer notificationEnqueuer) {
+        this.notificationEnqueuer = notificationEnqueuer;
+    }
+    
+    @Override
+    public NotificationEnqueuer getNotificationEnqueuer() {
+        return notificationEnqueuer;
     }
 }

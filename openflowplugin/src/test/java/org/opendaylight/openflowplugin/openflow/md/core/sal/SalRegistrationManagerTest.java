@@ -12,10 +12,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import com.google.common.util.concurrent.Futures;
+
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,6 +32,7 @@ import org.opendaylight.controller.sal.common.util.Rpcs;
 import org.opendaylight.openflowplugin.openflow.md.ModelDrivenSwitch;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
+import org.opendaylight.openflowplugin.openflow.md.core.NotificationEnqueuer;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.openflow.md.core.session.IMessageDispatchService;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
@@ -69,6 +72,8 @@ public class SalRegistrationManagerTest {
     private GetFeaturesOutput features;
     @Mock
     private BindingAwareBroker.ProviderContext providerContext;
+    @Mock
+    private NotificationEnqueuer notificationEnqueuer;
 
     private ModelDrivenSwitch mdSwitchOF13;
 
@@ -76,7 +81,6 @@ public class SalRegistrationManagerTest {
 
     @Before
     public void setUp() {
-
 
         Mockito.when(context.getPrimaryConductor()).thenReturn(conductor);
         Mockito.when(context.getMessageDispatchService()).thenReturn(messageDispatchService);
@@ -88,6 +92,7 @@ public class SalRegistrationManagerTest {
         registration = new CompositeObjectRegistration<>(mdSwitchOF13, Collections.EMPTY_LIST);
 
         Mockito.when(context.getProviderRegistration()).thenReturn(registration);
+        Mockito.when(context.getNotificationEnqueuer()).thenReturn(notificationEnqueuer);
         Mockito.when(features.getDatapathId()).thenReturn(BigInteger.valueOf(1));
         Mockito.when(features.getVersion()).thenReturn((short) 1);
 
