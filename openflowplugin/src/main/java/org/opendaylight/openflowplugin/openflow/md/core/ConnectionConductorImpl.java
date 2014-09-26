@@ -65,7 +65,7 @@ import com.google.common.util.concurrent.Futures;
  * @author mirehak
  */
 public class ConnectionConductorImpl implements OpenflowProtocolListener,
-        SystemNotificationsListener, ConnectionConductor, ConnectionReadyListener, HandshakeListener {
+        SystemNotificationsListener, ConnectionConductor, ConnectionReadyListener, HandshakeListener, NotificationEnqueuer {
 
     /** ingress queue limit */
     private static final int INGRESS_QUEUE_MAX_SIZE = 200;
@@ -179,6 +179,11 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
      */
     private void enqueueMessage(OfHeader message) {
         enqueueMessage(message, QueueType.DEFAULT);
+    }
+    
+    @Override
+    public void enqueueNotification(NotificationQueueWrapper notification) {
+        enqueueMessage(notification);
     }
 
     /**

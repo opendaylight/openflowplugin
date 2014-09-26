@@ -14,7 +14,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
+import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductorImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
@@ -39,7 +39,7 @@ public abstract class OFSessionUtil {
      * @param features
      * @param version
      */
-    public static void registerSession(ConnectionConductor connectionConductor,
+    public static void registerSession(ConnectionConductorImpl connectionConductor,
             GetFeaturesOutput features, short version) {
         SwitchSessionKeyOF sessionKey = createSwitchSessionKey(features
                 .getDatapathId());
@@ -58,6 +58,7 @@ public abstract class OFSessionUtil {
             // register new session context (based primary conductor)
             SessionContextOFImpl context = new SessionContextOFImpl();
             context.setPrimaryConductor(connectionConductor);
+            context.setNotificationEnqueuer(connectionConductor);
             context.setFeatures(features);
             context.setSessionKey(sessionKey);
             context.setSeed((int) System.currentTimeMillis());

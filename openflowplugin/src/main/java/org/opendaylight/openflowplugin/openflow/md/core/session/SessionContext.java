@@ -15,6 +15,8 @@ import java.util.Set;
 
 import org.opendaylight.openflowplugin.openflow.md.ModelDrivenSwitch;
 import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
+import org.opendaylight.openflowplugin.openflow.md.core.NotificationEnqueuer;
+import org.opendaylight.openflowplugin.openflow.md.core.NotificationQueueWrapper;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
@@ -159,4 +161,9 @@ public interface SessionContext {
      * @return seed value for random operations
      */
     int getSeed();
+    
+    /**
+     * @return (wrapped) notification enqueue service - {@link NotificationQueueWrapper} 
+     */
+    NotificationEnqueuer getNotificationEnqueuer();
 }

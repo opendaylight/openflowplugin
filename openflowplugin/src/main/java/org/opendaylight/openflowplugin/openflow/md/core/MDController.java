@@ -25,7 +25,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.opendaylight.openflowjava.protocol.api.connection.ConnectionConfiguration;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
@@ -40,6 +39,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.translator.MultiPartMess
 import org.opendaylight.openflowplugin.openflow.md.core.translator.MultiPartReplyPortToNodeConnectorUpdatedTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.translator.MultipartReplyTableFeaturesToTableUpdatedTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.translator.MultipartReplyTranslator;
+import org.opendaylight.openflowplugin.openflow.md.core.translator.NotificationPlainTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.translator.PacketInTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.translator.PacketInV10Translator;
 import org.opendaylight.openflowplugin.openflow.md.core.translator.PortStatusMessageToNodeConnectorUpdatedTranslator;
@@ -56,6 +56,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GroupFeaturesUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GroupStatisticsUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorUpdated;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.MeterConfigStatsUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.MeterFeaturesUpdated;
@@ -154,6 +155,8 @@ public class MDController implements IMDController, AutoCloseable {
         addMessageTranslator(MultipartReplyMessage.class,OF13, new MultipartReplyTranslator());
         addMessageTranslator(MultipartReplyMessage.class,OF13,new MultipartReplyTableFeaturesToTableUpdatedTranslator());
         addMessageTranslator(GetFeaturesOutput.class,OF10, new FeaturesV10ToNodeConnectorUpdatedTranslator());
+        addMessageTranslator(NotificationQueueWrapper.class, OF10, new NotificationPlainTranslator());
+        addMessageTranslator(NotificationQueueWrapper.class, OF13, new NotificationPlainTranslator());
 
         NotificationPopListener<DataObject> notificationPopListener = new NotificationPopListener<DataObject>();
         notificationPopListener.setNotificationProviderService(
@@ -181,6 +184,7 @@ public class MDController implements IMDController, AutoCloseable {
         addMessagePopListener(PacketReceived.class,notificationPopListener);
         addMessagePopListener(TransmitPacketInput.class, notificationPopListener);
         addMessagePopListener(NodeUpdated.class, notificationPopListener);
+        addMessagePopListener(NodeRemoved.class, notificationPopListener);
 
         addMessagePopListener(SwitchFlowRemoved.class, notificationPopListener);
         addMessagePopListener(TableUpdated.class, notificationPopListener);

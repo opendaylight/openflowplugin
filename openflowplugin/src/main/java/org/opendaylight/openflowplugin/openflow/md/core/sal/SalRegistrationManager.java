@@ -12,10 +12,12 @@ import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.openflowplugin.openflow.md.ModelDrivenSwitch;
+import org.opendaylight.openflowplugin.openflow.md.core.NotificationQueueWrapper;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionListener;
@@ -100,7 +102,10 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
 
         LOG.debug("ModelDrivenSwitch for {} registered to MD-SAL.", datapathId.toString());
 
-        publishService.publish(nodeAdded(ofSwitch, features, nodeRef));
+        NotificationQueueWrapper wrappedNotification = new NotificationQueueWrapper(
+                nodeAdded(ofSwitch, features, nodeRef), 
+                context.getFeatures().getVersion());
+        context.getNotificationEnqueuer().enqueueNotification(wrappedNotification);
     }
 
     @Override
@@ -117,7 +122,10 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
         }
 
         LOG.debug("ModelDrivenSwitch for {} unregistered from MD-SAL.", datapathId.toString());
-        publishService.publish(nodeRemoved);
+        
+        NotificationQueueWrapper wrappedNotification = new NotificationQueueWrapper(
+                nodeRemoved, context.getFeatures().getVersion());
+        context.getNotificationEnqueuer().enqueueNotification(wrappedNotification);
     }
 
     private NodeUpdated nodeAdded(ModelDrivenSwitch sw, GetFeaturesOutput features, NodeRef nodeRef) {

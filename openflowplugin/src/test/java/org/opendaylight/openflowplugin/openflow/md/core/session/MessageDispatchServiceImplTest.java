@@ -16,6 +16,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,6 +26,8 @@ import org.opendaylight.openflowplugin.openflow.md.ModelDrivenSwitch;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.openflow.md.core.ErrorHandler;
+import org.opendaylight.openflowplugin.openflow.md.core.NotificationEnqueuer;
+import org.opendaylight.openflowplugin.openflow.md.core.NotificationQueueWrapper;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.openflow.md.queue.QueueProcessor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInput;
@@ -430,9 +433,14 @@ class MockSessionContext implements SessionContext {
     public void setSeed(int seed) {
         this.seed = seed;
     }
+    
+    @Override
+    public NotificationEnqueuer getNotificationEnqueuer() {
+        return conductor;
+    }
 }
 
-class MockConnectionConductor implements ConnectionConductor {
+class MockConnectionConductor implements ConnectionConductor, NotificationEnqueuer {
 
     private int conductorNum;
     private MockConnectionAdapter adapter;
@@ -523,6 +531,11 @@ class MockConnectionConductor implements ConnectionConductor {
 
     @Override
     public void setId(int conductorId) {
+        // NOOP
+    }
+    
+    @Override
+    public void enqueueNotification(NotificationQueueWrapper notification) {
         // NOOP
     }
 }
