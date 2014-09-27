@@ -27,8 +27,8 @@
         <configfile finalname="etc/opendaylight/karaf/43-msg-spy.xml">mvn:org.opendaylight.openflowplugin/openflowplugin-controller-config/${project.version}/xml/configmsgspy</configfile>
     </feature>
     <feature name='odl-openflowplugin-flow-services' description="OpenDaylight :: Openflow Plugin :: Flow Services" version='${project.version}'>
-        <feature version="${project.version}">odl-openflowplugin-southbound</feature>
         <feature version="${mdsal.version}">odl-flow-services</feature>
+        <feature version="${project.version}">odl-openflowplugin-southbound</feature>
     </feature>
     <feature name='odl-openflowplugin-flow-services-rest' description="OpenDaylight :: Openflow Plugin :: Flow Services :: REST" version='${project.version}'>
         <feature version="${project.version}">odl-openflowplugin-flow-services</feature>
