@@ -27,6 +27,14 @@ public final class ActionUtil {
     public static Short tosToDscp(short tosValue) {
         return (short) (tosValue >>> ActionUtil.ENC_FIELD_BIT_SIZE);
     }
+    
+    /**
+     * @param dscpValue TypeOfService value
+     * @return TOS value
+     */
+    public static Short dscpToTos(short dscpValue) {
+        return (short) (dscpValue << ActionUtil.ENC_FIELD_BIT_SIZE);
+    }
 
     
 }

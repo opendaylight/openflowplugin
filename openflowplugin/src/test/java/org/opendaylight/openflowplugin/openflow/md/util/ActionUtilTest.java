@@ -24,4 +24,14 @@ public class ActionUtilTest {
         Assert.assertEquals(63, ActionUtil.tosToDscp((short) 252).intValue());
     }
 
+    /**
+     * Test method for {@link org.opendaylight.openflowplugin.openflow.md.util.ActionUtil#dscpToTos(short)}.
+     */
+    @Test
+    public void testDscpToTos() {
+        Assert.assertEquals(0, ActionUtil.dscpToTos((short) 0).intValue());
+        Assert.assertEquals(4, ActionUtil.dscpToTos((short) 1).intValue());
+        Assert.assertEquals(16, ActionUtil.dscpToTos((short) 4).intValue());
+        Assert.assertEquals(252, ActionUtil.dscpToTos((short) 63).intValue());
+    }
 }

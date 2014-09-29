@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 import java.math.BigInteger;
 import java.util.Iterator;
 
+import org.opendaylight.openflowplugin.openflow.md.util.ActionUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
@@ -43,7 +44,7 @@ public class MatchConvertorV10Impl implements MatchConvertor<MatchV10> {
      * The value 0xffff (OFP_VLAN_NONE) is used to indicate
      * that no VLAN ID is set for OF Flow.
      */
-    private static final int OFP_VLAN_NONE = (int) 0xffff;
+    private static final int OFP_VLAN_NONE = 0xffff;
 
     /**
      * Method builds openflow 1.0 specific match (MatchV10) from MD-SAL match.
@@ -195,7 +196,7 @@ public class MatchConvertorV10Impl implements MatchConvertor<MatchV10> {
     private static boolean convertNwTos(final MatchV10Builder matchBuilder,
             final IpMatch ipMatch) {
         if (ipMatch.getIpDscp() != null) {
-            matchBuilder.setNwTos(ipMatch.getIpDscp().getValue());
+            matchBuilder.setNwTos(ActionUtil.dscpToTos(ipMatch.getIpDscp().getValue()));
             return false;
         }
         return true;
