@@ -7,11 +7,12 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Future;
-
+import com.google.common.util.concurrent.AsyncFunction;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.JdkFutureAdapters;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.SettableFuture;
 import org.opendaylight.openflowjava.protocol.api.util.BinContent;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
@@ -162,12 +163,10 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.util.concurrent.AsyncFunction;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.JdkFutureAdapters;
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.SettableFuture;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Future;
 
 /**
  *
@@ -1290,10 +1289,9 @@ public abstract class OFRpcTaskFactory {
                 @Override
                 public ListenableFuture<RpcResult<GetAllFlowStatisticsFromFlowTableOutput>> call() throws Exception {
                     final SettableFuture<RpcResult<GetAllFlowStatisticsFromFlowTableOutput>> result = SettableFuture.create();
-                    
+
                         final Long xid = taskContext.getSession().getNextXid();
-                        
-                        MultipartRequestFlowCaseBuilder multipartRequestFlowCaseBuilder = new MultipartRequestFlowCaseBuilder();
+
                         MultipartRequestFlowBuilder mprFlowRequestBuilder = new MultipartRequestFlowBuilder();
                         mprFlowRequestBuilder.setTableId(input.getTableId().getValue());
                         mprFlowRequestBuilder.setOutPort(OFConstants.OFPP_ANY);
@@ -1302,7 +1300,10 @@ public abstract class OFRpcTaskFactory {
                         mprFlowRequestBuilder.setCookieMask(OFConstants.DEFAULT_COOKIE_MASK);
                         FlowCreatorUtil.setWildcardedFlowMatch(taskContext.getSession()
                                 .getPrimaryConductor().getVersion(), mprFlowRequestBuilder);
-                        
+
+                        MultipartRequestFlowCaseBuilder multipartRequestFlowCaseBuilder = new MultipartRequestFlowCaseBuilder();
+                        multipartRequestFlowCaseBuilder.setMultipartRequestFlow(mprFlowRequestBuilder.build());
+
                         MultipartRequestInputBuilder mprInput = 
                                 createMultipartHeader(MultipartType.OFPMPFLOW, taskContext, xid);
                         mprInput.setMultipartRequestBody(multipartRequestFlowCaseBuilder.build());
