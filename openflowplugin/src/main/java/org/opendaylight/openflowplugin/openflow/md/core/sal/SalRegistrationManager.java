@@ -103,8 +103,9 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
         LOG.debug("ModelDrivenSwitch for {} registered to MD-SAL.", datapathId.toString());
 
         NotificationQueueWrapper wrappedNotification = new NotificationQueueWrapper(
-                nodeAdded(ofSwitch, features, nodeRef), 
+                nodeAdded(ofSwitch, features, nodeRef),
                 context.getFeatures().getVersion());
+        LOG.debug("Wrapped NotificationQueueWrapper for {} registered to MD-SAL. {}", datapathId.toString(),wrappedNotification);
         context.getNotificationEnqueuer().enqueueNotification(wrappedNotification);
     }
 
@@ -122,7 +123,7 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
         }
 
         LOG.debug("ModelDrivenSwitch for {} unregistered from MD-SAL.", datapathId.toString());
-        
+
         NotificationQueueWrapper wrappedNotification = new NotificationQueueWrapper(
                 nodeRemoved, context.getFeatures().getVersion());
         context.getNotificationEnqueuer().enqueueNotification(wrappedNotification);

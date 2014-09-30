@@ -94,14 +94,14 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     private HandshakeManager handshakeManager;
 
     private boolean firstHelloProcessed;
-    
+
     private PortFeaturesUtil portFeaturesUtils;
 
     private int conductorId;
 
     private int ingressMaxQueueSize;
 
-    
+
     /**
      * @param connectionAdapter
      */
@@ -128,10 +128,10 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     @Override
     public void init() {
         int handshakeThreadLimit = 1;
-        hsPool = new ThreadPoolLoggingExecutor(handshakeThreadLimit , handshakeThreadLimit, 0L, 
-                TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(), 
+        hsPool = new ThreadPoolLoggingExecutor(handshakeThreadLimit , handshakeThreadLimit, 0L,
+                TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(),
                 "OFHandshake-"+conductorId);
-        
+
         connectionAdapter.setMessageListener(this);
         connectionAdapter.setSystemListener(this);
         connectionAdapter.setConnectionReadyListener(this);
@@ -173,14 +173,14 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         enqueueMessage(errorMessage);
     }
 
-    
+
     /**
      * @param message
      */
     private void enqueueMessage(OfHeader message) {
         enqueueMessage(message, QueueType.DEFAULT);
     }
-    
+
     @Override
     public void enqueueNotification(NotificationQueueWrapper notification) {
         enqueueMessage(notification);
@@ -255,7 +255,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         processPortStatusMsg(message);
         enqueueMessage(message);
     }
-    
+
     protected void processPortStatusMsg(PortStatus msg) {
         if (msg.getReason().getIntValue() == 2) {
             updatePort(msg);
@@ -265,22 +265,22 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
             deletePort(msg);
         }
     }
-    
+
     protected void updatePort(PortStatus msg) {
-        Long portNumber = msg.getPortNo();        
+        Long portNumber = msg.getPortNo();
         Boolean portBandwidth = portFeaturesUtils.getPortBandwidth(msg);
-        
+
         if(portBandwidth == null) {
             LOG.debug("can't get bandwidth info from port: {}, aborting port update", msg.toString());
         } else {
             this.getSessionContext().getPhysicalPorts().put(portNumber, msg);
-            this.getSessionContext().getPortsBandwidth().put(portNumber, portBandwidth);                   
-        }            
+            this.getSessionContext().getPortsBandwidth().put(portNumber, portBandwidth);
+        }
     }
-    
+
     protected void deletePort(PortGrouping port) {
         Long portNumber = port.getPortNo();
-        
+
         this.getSessionContext().getPhysicalPorts().remove(portNumber);
         this.getSessionContext().getPortsBandwidth().remove(portNumber);
     }
@@ -425,7 +425,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     public void onHandshakeSuccessfull(GetFeaturesOutput featureOutput,
             Short negotiatedVersion) {
         postHandshakeBasic(featureOutput, negotiatedVersion);
-        
+
         // post-handshake actions
         if(version == OFConstants.OFP_VERSION_1_3){
             setDefaultConfig();
@@ -433,7 +433,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
             requestGroupFeatures();
             requestMeterFeatures();
         }
-        
+
         requestDesc();
     }
 
@@ -453,11 +453,12 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
             // BUG-1988 - this must be the first item in queue in order not to get behind link-up message
             enqueueMessage(featureOutput);
         }
-        
+
         OFSessionUtil.registerSession(this, featureOutput, negotiatedVersion);
         hsPool.shutdown();
         hsPool.purge();
         conductorState = CONDUCTOR_STATE.WORKING;
+        LOG.debug("postHandshakeBasic(): about to plugQueue dpid {} version {}",featureOutput.getDatapathId(),negotiatedVersion);
         QueueKeeperFactory.plugQueue(queueProcessor, queue);
     }
 
@@ -500,13 +501,13 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         mprInput.setFlags(new MultipartRequestFlags(false));
         mprInput.setXid(getSessionContext().getNextXid());
 
-        MultipartRequestGroupFeaturesCaseBuilder mprGroupFeaturesBuild = 
+        MultipartRequestGroupFeaturesCaseBuilder mprGroupFeaturesBuild =
                 new MultipartRequestGroupFeaturesCaseBuilder();
         mprInput.setMultipartRequestBody(mprGroupFeaturesBuild.build());
 
         LOG.debug("Send group features statistics request :{}",mprGroupFeaturesBuild);
         getConnectionAdapter().multipartRequest(mprInput.build());
-        
+
     }
     private void requestMeterFeatures(){
         MultipartRequestInputBuilder mprInput = new MultipartRequestInputBuilder();
@@ -521,7 +522,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
 
         LOG.debug("Send meter features statistics request :{}",mprMeterFeaturesBuild);
         getConnectionAdapter().multipartRequest(mprInput.build());
-        
+
     }
     /**
      * @param isBitmapNegotiationEnable the isBitmapNegotiationEnable to set
@@ -535,7 +536,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         hsPool.shutdownNow();
         LOG.debug("pool is terminated: {}", hsPool.isTerminated());
     }
-    
+
     @Override
     public void setId(int conductorId) {
         this.conductorId = conductorId;

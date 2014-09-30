@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRemoved;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeUpdated;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +49,9 @@ public class TicketFinisherImpl implements TicketFinisher<DataObject> {
                 //TODO:: handle shutdown of queue
                 TicketResult<DataObject> result = queue.take();
                 List<DataObject> processedMessages = result.getResult().get();
+                if(processedMessages.get(0) instanceof NodeUpdated || processedMessages.get(0) instanceof NodeRemoved) {
+                    LOG.debug("processing (translate, publish) of ticket succeeded {}", processedMessages);
+                }
                 firePopNotification(processedMessages);
             } catch (Exception e) {
                 LOG.warn("processing (translate, publish) of ticket failed", e);
@@ -65,7 +70,13 @@ public class TicketFinisherImpl implements TicketFinisher<DataObject> {
             } else {
                 for (PopListener<DataObject> consumer : popListeners) {
                     try {
+                        if(msg instanceof NodeUpdated || msg instanceof NodeRemoved) {
+                            LOG.debug("about to apply popListener {} to msg {}", consumer,msg);
+                        }
                         consumer.onPop(msg);
+                        if(msg instanceof NodeUpdated || msg instanceof NodeRemoved) {
+                            LOG.debug("applied popListener {} to msg {}", consumer,msg);
+                        }
                     } catch (Exception e){
                         LOG.warn("firePopNotification: processing (translate, publish) of ticket failed for consumer {} msg {} Exception: ", consumer, msg,e);
                     }
