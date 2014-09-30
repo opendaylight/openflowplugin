@@ -104,15 +104,6 @@ public abstract class OFRpcTaskUtil {
     }
 
     /**
-     * @param result rpcResult with success = false, errors = given collection
-     * @param barrierErrors
-     */
-    public static <T> void wrapBarrierErrors(SettableFuture<RpcResult<T>> result,
-            Collection<RpcError> barrierErrors) {
-        result.set(RpcResultBuilder.<T>failed().withRpcErrors(barrierErrors).build());
-    }
-
-    /**
      * @param task of rpc
      * @param originalResult
      * @param notificationProviderService
@@ -154,7 +145,7 @@ public abstract class OFRpcTaskUtil {
     }
 
     /**
-     * @param task of rpc
+     * @param task of rpcl
      * @param originalResult
      * @param notificationProviderService
      * @param notificationComposer lazy notification composer

@@ -1,0 +1,99 @@
+/*
+ * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ */
+
+package org.opendaylight.openflowplugin.openflow.md.core.sal;
+
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.when;
+
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
+import java.util.Collection;
+import java.util.concurrent.Callable;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.mockito.runners.MockitoJUnitRunner;
+import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
+import org.opendaylight.openflowplugin.api.openflow.md.core.sal.NotificationComposer;
+import org.opendaylight.openflowplugin.openflow.md.core.session.IMessageDispatchService;
+import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
+import org.opendaylight.yangtools.yang.common.RpcError;
+import org.opendaylight.yangtools.yang.common.RpcResult;
+
+@RunWith(MockitoJUnitRunner.class)
+public class OFRpcTaskUtilTest {
+
+    @MockitoAnnotations.Mock
+    private OFRpcTaskContext taskContext;
+    @MockitoAnnotations.Mock
+    private SwitchConnectionDistinguisher connectionDistinguisher;
+    @MockitoAnnotations.Mock
+    private SessionContext sessionContext;
+    @MockitoAnnotations.Mock
+    private IMessageDispatchService messageDispatchService;
+    @MockitoAnnotations.Mock
+    private GetFeaturesOutput featuresOutput;
+    @MockitoAnnotations.Mock
+    private ListenableFuture<RpcResult<BarrierOutput>> resultListenableFuture;
+    @MockitoAnnotations.Mock
+    private ListenableFuture<RpcResult<UpdateFlowOutput>> updateFlowRpcResultListenableFuture;
+    @MockitoAnnotations.Mock
+    private OFRpcTaskContext ofRpcTaskContext;
+    @MockitoAnnotations.Mock
+    private NotificationProviderService notificationProviderService;
+    @MockitoAnnotations.Mock
+    private NotificationComposer notificationComposer;
+    @MockitoAnnotations.Mock
+    ListeningExecutorService executorService;
+
+
+    @Before
+    public void setup() {
+        when(taskContext.getSession()).thenReturn(sessionContext);
+        when(taskContext.getMessageService()).thenReturn(messageDispatchService);
+        when(sessionContext.getNextXid()).thenReturn(new Long(10));
+        when(sessionContext.getFeatures()).thenReturn(featuresOutput);
+        when(featuresOutput.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
+        when(messageDispatchService.barrier(Mockito.any(BarrierInput.class), Mockito.any(SwitchConnectionDistinguisher.class))).thenReturn(resultListenableFuture);
+        when(ofRpcTaskContext.getRpcPool()).thenReturn(executorService);
+        when(executorService.submit(Mockito.any(Callable.class))).thenReturn(updateFlowRpcResultListenableFuture);
+    }
+
+
+    @Test
+    public void testManageBarrier() throws Exception {
+        Collection<RpcError> rpcErrors = OFRpcTaskUtil.manageBarrier(taskContext, true, connectionDistinguisher);
+        assertNotNull(rpcErrors);
+    }
+
+    @Test
+    public void testHookFutureNotification() throws Exception {
+        AddFlowInputBuilder flowInputBuilder = new AddFlowInputBuilder();
+        OFRpcTask<AddFlowInput, RpcResult<UpdateFlowOutput>> addFlowInputRpcResultOFRpcTask = OFRpcTaskFactory.createAddFlowTask(ofRpcTaskContext, flowInputBuilder.build(), connectionDistinguisher);
+        OFRpcTaskUtil.hookFutureNotification(addFlowInputRpcResultOFRpcTask, updateFlowRpcResultListenableFuture, notificationProviderService, notificationComposer);
+    }
+
+    @Test
+    public void testChainFutureBarrier() throws Exception {
+        AddFlowInputBuilder flowInputBuilder = new AddFlowInputBuilder();
+        flowInputBuilder.setBarrier(true);
+        OFRpcTask<AddFlowInput, RpcResult<UpdateFlowOutput>> addFlowInputRpcResultOFRpcTask = OFRpcTaskFactory.createAddFlowTask(ofRpcTaskContext, flowInputBuilder.build(), connectionDistinguisher);
+        OFRpcTaskUtil.chainFutureBarrier(addFlowInputRpcResultOFRpcTask, updateFlowRpcResultListenableFuture);
+    }
+}
