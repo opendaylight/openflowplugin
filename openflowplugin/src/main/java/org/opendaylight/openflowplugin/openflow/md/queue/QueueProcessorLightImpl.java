@@ -20,11 +20,14 @@ import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
-import org.opendaylight.openflowplugin.openflow.md.core.ThreadPoolLoggingExecutor;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.api.statistics.MessageSpy;
 import org.opendaylight.openflowplugin.api.statistics.MessageSpy.STATISTIC_GROUP;
+import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
+import org.opendaylight.openflowplugin.openflow.md.core.NotificationQueueWrapper;
+import org.opendaylight.openflowplugin.openflow.md.core.ThreadPoolLoggingExecutor;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRemoved;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -35,7 +38,7 @@ import org.slf4j.LoggerFactory;
 /**
  * {@link QueueKeeper} implementation focused to keep order and use up mutiple threads for translation phase.
  * <br/>
- * There is internal thread pool of limited size ({@link QueueProcessorLightImpl#setProcessingPoolSize(int)}) 
+ * There is internal thread pool of limited size ({@link QueueProcessorLightImpl#setProcessingPoolSize(int)})
  * dedicated to translation. Then there is singleThreadPool dedicated to publishing (via popListeners)
  * <br/>
  * Workflow:
@@ -51,11 +54,11 @@ import org.slf4j.LoggerFactory;
  *      <li>invoke blocking {@link Future#get()} on the dequeued ticket</li>
  *      <li>as soon as the result of translation is available, appropriate popListener is invoked</li>
  *    </ol>
- *    and this way the order of messages is preserved and also multiple threads are used by translating 
+ *    and this way the order of messages is preserved and also multiple threads are used by translating
  * </li>
  * </ol>
- * 
- * 
+ *
+ *
  */
 public class QueueProcessorLightImpl implements QueueProcessor<OfHeader, DataObject> {
 
@@ -67,7 +70,7 @@ public class QueueProcessorLightImpl implements QueueProcessor<OfHeader, DataObj
     private int processingPoolSize = 4;
     private ExecutorService harvesterPool;
     private ExecutorService finisherPool;
-    
+
     protected Map<Class<? extends DataObject>, Collection<PopListener<DataObject>>> popListenersMapping;
     private Map<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, List<DataObject>>>> translatorMapping;
     private TicketProcessorFactory<OfHeader, DataObject> ticketProcessorFactory;
@@ -91,10 +94,10 @@ public class QueueProcessorLightImpl implements QueueProcessor<OfHeader, DataObj
                         return Integer.valueOf(o1.hashCode()).compareTo(o2.hashCode());
                     }
                 });
-        
-        processorPool = new ThreadPoolLoggingExecutor(processingPoolSize, processingPoolSize, 0, 
-                TimeUnit.MILLISECONDS, 
-                new ArrayBlockingQueue<Runnable>(ticketQueueCapacity), 
+
+        processorPool = new ThreadPoolLoggingExecutor(processingPoolSize, processingPoolSize, 0,
+                TimeUnit.MILLISECONDS,
+                new ArrayBlockingQueue<Runnable>(ticketQueueCapacity),
                 "OFmsgProcessor");
         // force blocking when pool queue is full
         processorPool.setRejectedExecutionHandler(new RejectedExecutionHandler() {
@@ -108,15 +111,15 @@ public class QueueProcessorLightImpl implements QueueProcessor<OfHeader, DataObj
                 }
             }
         });
-        
-        harvesterPool = new ThreadPoolLoggingExecutor(1, 1, 0, 
+
+        harvesterPool = new ThreadPoolLoggingExecutor(1, 1, 0,
                 TimeUnit.MILLISECONDS, new ArrayBlockingQueue<Runnable>(1), "OFmsgHarvester");
-        finisherPool = new ThreadPoolLoggingExecutor(1, 1, 0, 
+        finisherPool = new ThreadPoolLoggingExecutor(1, 1, 0,
                 TimeUnit.MILLISECONDS, new ArrayBlockingQueue<Runnable>(1), "OFmsgFinisher");
         finisher = new TicketFinisherImpl(
                 ticketQueue, popListenersMapping);
         finisherPool.execute(finisher);
-        
+
         harvester = new QueueKeeperHarvester<OfHeader>(this, messageSources);
         harvesterPool.execute(harvester);
 
@@ -140,27 +143,29 @@ public class QueueProcessorLightImpl implements QueueProcessor<OfHeader, DataObj
         ticket.setConductor(queueItem.getConnectionConductor());
         ticket.setMessage(queueItem.getMessage());
         ticket.setQueueType(queueItem.getQueueType());
-        
+        if(queueItem != null && queueItem.getMessage() instanceof NodeUpdated || queueItem.getMessage() instanceof NodeRemoved || queueItem.getMessage() instanceof NotificationQueueWrapper) {
+            LOG.debug("enqueueQueueItem() {}",queueItem.getMessage());
+        }
         LOG.trace("ticket scheduling: {}, ticket: {}",
-                queueItem.getMessage().getImplementedInterface().getSimpleName(), 
+                queueItem.getMessage().getImplementedInterface().getSimpleName(),
                 System.identityHashCode(queueItem));
         scheduleTicket(ticket);
     }
-    
-    
+
+
     @Override
     public void directProcessQueueItem(QueueItem<OfHeader> queueItem) {
         messageSpy.spyMessage(queueItem.getMessage(), STATISTIC_GROUP.FROM_SWITCH_ENQUEUED);
         TicketImpl<OfHeader, DataObject> ticket = new TicketImpl<>();
         ticket.setConductor(queueItem.getConnectionConductor());
         ticket.setMessage(queueItem.getMessage());
-        
+
         LOG.debug("ticket scheduling: {}, ticket: {}",
-                queueItem.getMessage().getImplementedInterface().getSimpleName(), 
+                queueItem.getMessage().getImplementedInterface().getSimpleName(),
                 System.identityHashCode(queueItem));
-        
+
         ticketProcessorFactory.createProcessor(ticket).run();
-        
+
         // publish notification
         finisher.firePopNotification(ticket.getDirectResult());
     }
@@ -220,21 +225,21 @@ public class QueueProcessorLightImpl implements QueueProcessor<OfHeader, DataObj
         if (! added) {
             LOG.debug("registration of message source queue failed - already registered");
         }
-        MessageSourcePollRegistration<QueueKeeper<OfHeader>> queuePollRegistration = 
+        MessageSourcePollRegistration<QueueKeeper<OfHeader>> queuePollRegistration =
                 new MessageSourcePollRegistration<>(this, queue);
         return queuePollRegistration;
     }
-    
+
     @Override
     public boolean unregisterMessageSource(QueueKeeper<OfHeader> queue) {
         return messageSources.remove(queue);
     }
-    
+
     @Override
     public Collection<QueueKeeper<OfHeader>> getMessageSources() {
         return messageSources;
     }
-    
+
     @Override
     public HarvesterHandle getHarvesterHandle() {
         return harvester;
