@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2013 Ericsson. and others.  All rights reserved.
+ * Copyright (c) 2013-2014 Ericsson. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -629,8 +629,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
                 PortNumberMatchEntry portNumber = ofMatch.getAugmentation(PortNumberMatchEntry.class);
                 if(portNumber != null){
                     Long portNo = portNumber.getPortNumber().getValue();
-                    String logicalName = OpenflowPortsUtil.getPortLogicalName(ofVersion, portNo);
-                    matchBuilder.setInPort(new NodeConnectorId(logicalName == null? portNo.toString() : logicalName));
+                    matchBuilder.setInPort(InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(datapathid, portNo, ofVersion));
                 }
             } else if (ofMatch.getOxmMatchField().equals(InPhyPort.class)) {
                 PortNumberMatchEntry portNumber = ofMatch.getAugmentation(PortNumberMatchEntry.class);
@@ -679,7 +678,8 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
                 if (vlanVidMatchEntry != null) {
                     VlanIdBuilder vlanBuilder = new VlanIdBuilder();
                     vlanBuilder.setVlanId(new org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId(
-                            vlanVidMatchEntry.getVlanVid()));
+                            vlanVidMatchEntry.getVlanVid()))
+                        .setVlanIdPresent(vlanVidMatchEntry.isCfiBit());
                     vlanMatchBuilder.setVlanId(vlanBuilder.build());
                     matchBuilder.setVlanMatch(vlanMatchBuilder.build());
                 }
