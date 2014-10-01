@@ -20,6 +20,7 @@ import org.opendaylight.openflowplugin.extension.api.ConvertorToOFJava;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionResolvers;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
+import org.opendaylight.openflowplugin.openflow.md.util.ActionUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.ByteUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
@@ -575,12 +576,8 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
             }
         }
         if (!swMatch.getWildcards().isNWTOS().booleanValue() && swMatch.getNwTos() != null) {
-            // DSCP default value is 0 from the library but controller side it
-            // is null.
-            // look if there better solution
-            if (0 != swMatch.getNwTos()) {
-                ipMatchBuilder.setIpDscp(new Dscp(swMatch.getNwTos()));
-            }
+            Short dscp = ActionUtil.tosToDscp(swMatch.getNwTos().shortValue());
+            ipMatchBuilder.setIpDscp(new Dscp(dscp));
             matchBuilder.setIpMatch(ipMatchBuilder.build());
         }
 
