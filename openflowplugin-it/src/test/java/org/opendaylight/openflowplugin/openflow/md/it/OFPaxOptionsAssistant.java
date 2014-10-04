@@ -101,7 +101,6 @@ public abstract class OFPaxOptionsAssistant {
         return new DefaultCompositeOption(
 //                mavenBundle("org.apache.felix", "org.apache.felix.dependencymanager").versionAsInProject(),
 //                mavenBundle(CONTROLLER, "sal").versionAsInProject(),
-                mavenBundle(CONTROLLER, "liblldp").versionAsInProject(),
                 mavenBundle(YANGTOOLS + ".thirdparty", "antlr4-runtime-osgi-nohead").versionAsInProject());
 
     }

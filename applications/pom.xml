@@ -101,6 +101,7 @@
     <modules>
         <module>table-miss-enforcer</module>
         <module>of-switch-config-pusher</module>
-  </modules>
+        <module>lldp-speaker</module>
+    </modules>
 
 </project>

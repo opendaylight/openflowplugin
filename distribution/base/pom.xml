@@ -126,6 +126,12 @@ see https://git.opendaylight.org/gerrit/#/c/390/
           <artifactId>table-miss-enforcer</artifactId>
           <version>${project.version}</version>
       </dependency>
+      <dependency>
+          <groupId>org.opendaylight.openflowplugin.applications</groupId>
+          <artifactId>lldp-speaker</artifactId>
+          <version>${project.version}</version>
+      </dependency>
+
   </dependencies>
 
   <build>
