@@ -56,5 +56,8 @@
         <bundle>mvn:org.opendaylight.openflowplugin.applications/of-switch-config-pusher/${project.version}</bundle>
         <configfile finalname="etc/opendaylight/karaf/70-of-switch-config-pusher.xml">mvn:org.opendaylight.openflowplugin.applications/of-switch-config-pusher/${project.version}/xml/config</configfile>
 -->
+
+      <bundle>mvn:org.opendaylight.openflowplugin.applications/lldp-speaker/${project.version}</bundle>
+      <configfile finalname="etc/opendaylight/karaf/71-lldp-speaker.xml">mvn:org.opendaylight.openflowplugin.applications/lldp-speaker/${project.version}/xml/config</configfile>
     </feature>
 </features>
