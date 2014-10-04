@@ -1,0 +1,27 @@
+module lldp-discovery {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:openflow:applications:lldp-discovery";
+    prefix lldp;
+
+    import opendaylight-inventory { prefix inv; revision-date "2013-08-19"; }
+
+    description "LLDP discovery module configuration model";
+
+    revision "2014-09-18" {
+        description "Initial revision";
+    }
+
+    container lldp-discovery {
+        leaf oui {
+            type string;
+            config true;
+            description "Organizationally Unique Identifier with which LLDP custom TLVs will be marked.";
+        }
+
+        leaf-list excluded-node-connectors {
+            type inv:node-connector-id;
+            config true;
+            description "List of node connector IDs to which controller shouldn't send LLDP frames.";
+        }
+    }
+}
