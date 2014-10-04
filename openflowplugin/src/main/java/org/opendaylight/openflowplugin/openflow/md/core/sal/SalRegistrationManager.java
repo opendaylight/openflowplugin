@@ -23,7 +23,6 @@ import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionListener;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionManager;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SwitchSessionKeyOF;
-import org.opendaylight.openflowplugin.openflow.md.lldp.LLDPSpeaker;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Address;
@@ -96,7 +95,6 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
         NodeRef nodeRef = new NodeRef(identifier);
         NodeId nodeId = nodeIdFromDatapathId(datapathId);
         ModelDrivenSwitchImpl ofSwitch = new ModelDrivenSwitchImpl(nodeId, identifier, context);
-        LLDPSpeaker.getInstance().addModelDrivenSwitch(identifier, ofSwitch);
         CompositeObjectRegistration<ModelDrivenSwitch> registration = ofSwitch.register(providerContext);
         context.setProviderRegistration(registration);
 
@@ -115,7 +113,6 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
         InstanceIdentifier<Node> identifier = identifierFromDatapathId(datapathId);
         NodeRef nodeRef = new NodeRef(identifier);
         NodeRemoved nodeRemoved = nodeRemoved(nodeRef);
-        LLDPSpeaker.getInstance().removeModelDrivenSwitch(identifier);
         if (context.isValid()) {
             CompositeObjectRegistration<ModelDrivenSwitch> registration = context.getProviderRegistration();
             registration.close();
