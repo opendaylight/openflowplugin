@@ -1,0 +1,42 @@
+module lldp-speaker {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:openflow:applications:lldp-speaker";
+    prefix "lldp-speaker";
+    import config {prefix config; revision-date 2013-04-05;}
+    import opendaylight-md-sal-binding { prefix mdsal; revision-date 2013-10-28;}
+
+    description
+        "Application that send LLDPDU frames to all Openflow switch ports.";
+
+    revision "2014-10-23" {
+        description
+            "Initial revision";
+    }
+
+    identity lldp-speaker {
+        base "config:module-type";
+        config:java-name-prefix LLDPSpeaker;
+    }
+
+    augment "/config:modules/config:module/config:configuration" {
+        case lldp-speaker {
+            when "/config:modules/config:module/config:type = 'lldp-speaker'";
+            container rpc-registry {
+                uses config:service-ref {
+                    refine type {
+                        mandatory true;
+                        config:required-identity mdsal:binding-rpc-registry;
+                    }
+                }
+            }
+            container data-broker {
+                uses config:service-ref {
+                    refine type {
+                        mandatory false;
+                        config:required-identity mdsal:binding-async-data-broker;
+                    }
+                }
+            }
+        }
+    }
+}
