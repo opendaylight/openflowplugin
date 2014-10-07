@@ -72,6 +72,11 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.opendaylight.openflowplugin.applications</groupId>
+      <artifactId>table-miss-enforcer</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opendaylight.openflowplugin</groupId>
       <artifactId>drop-test-karaf</artifactId>
       <version>${project.version}</version>
