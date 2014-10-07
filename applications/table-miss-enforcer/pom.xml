@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.opendaylight.openflowplugin</groupId>
     <artifactId>applications</artifactId>
-    <version>0.0.3-Helium</version>
+    <version>0.0.4-SNAPSHOT</version>
   </parent>
   <groupId>org.opendaylight.openflowplugin.applications</groupId>
   <artifactId>table-miss-enforcer</artifactId>

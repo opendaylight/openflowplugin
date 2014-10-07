@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opendaylight.openflowplugin</groupId>
     <artifactId>openflowplugin-parent</artifactId>
-    <version>0.0.3-Helium</version>
+    <version>0.0.4-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
   <artifactId>features-openflowplugin</artifactId>
@@ -13,8 +13,8 @@
 
   <properties>
     <features.file>features.xml</features.file>
-    <karaf.empty.distro.version>1.4.2-Helium</karaf.empty.distro.version>
-    <yangtools.version>0.6.2-Helium</yangtools.version>
+    <karaf.empty.distro.version>1.4.3-SNAPSHOT</karaf.empty.distro.version>
+    <yangtools.version>0.6.3-SNAPSHOT</yangtools.version>
   </properties>
 
   <dependencies>
@@ -47,13 +47,14 @@
       <classifier>features</classifier>
       <type>xml</type>
     </dependency>
-    <dependency>
-      <groupId>org.opendaylight.dlux</groupId>
-      <artifactId>features-dlux</artifactId>
-      <version>${dlux.version}</version>
-      <classifier>features</classifier>
-      <type>xml</type>
-    </dependency>
+    <!-- TODO: temporary disabled during release process in order to avoid circular dependency to dlux -->
+    <!-- <dependency> -->
+    <!--   <groupId>org.opendaylight.dlux</groupId> -->
+    <!--   <artifactId>features-dlux</artifactId> -->
+    <!--   <version>${dlux.version}</version> -->
+    <!--   <classifier>features</classifier> -->
+    <!--   <type>xml</type> -->
+    <!-- </dependency> -->
 
     <!-- bundle dependencies -->
     <dependency>
