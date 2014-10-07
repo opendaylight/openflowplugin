@@ -45,4 +45,9 @@
         <bundle>mvn:org.opendaylight.openflowplugin/test-common/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.openflowplugin/drop-test-karaf/${project.version}</bundle>
     </feature>
+    <feature name='odl-openflowplugin-apps' description="OpenDaylight :: Openflow Plugin :: Applications" version='${project.version}'>
+        <feature version="${project.version}">odl-openflowplugin-flow-services</feature>
+        <bundle>mvn:org.opendaylight.openflowplugin.applications/table-miss-enforcer/${project.version}</bundle>
+        <configfile finalname="etc/opendaylight/karaf/69-table-miss-enforcer.xml">mvn:org.opendaylight.openflowplugin.applications/table-miss-enforcer/${project.version}/xml/config</configfile>
+    </feature>
 </features>
