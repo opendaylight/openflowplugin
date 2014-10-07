@@ -7,7 +7,8 @@
     <repository>mvn:org.opendaylight.controller/features-restconf/${mdsal.version}/xml/features</repository>
     <repository>mvn:org.opendaylight.controller/features-flow/${mdsal.version}/xml/features</repository>
     <repository>mvn:org.opendaylight.openflowjava/features-openflowjava/${openflowjava.version}/xml/features</repository>
-    <repository>mvn:org.opendaylight.dlux/features-dlux/${dlux.version}/xml/features</repository>
+    <!-- TODO: temporary disabled during release process in order to avoid circular dependency to dlux -->
+    <!-- <repository>mvn:org.opendaylight.dlux/features-dlux/${dlux.version}/xml/features</repository> -->
 
     <feature name='odl-openflowplugin-all' description="OpenDaylight :: Openflow Plugin :: All" version='${project.version}'>
         <feature version="${project.version}">odl-openflowplugin-southbound</feature>
@@ -36,7 +37,8 @@
     </feature>
     <feature name='odl-openflowplugin-flow-services-ui' description="OpenDaylight :: Openflow Plugin :: Flow Services :: UI" version='${project.version}'>
         <feature version="${project.version}">odl-openflowplugin-flow-services-rest</feature>
-        <feature version="${dlux.version}">odl-dlux-core</feature>
+        <!-- TODO: temporary disabled during release process in order to avoid circular dependency to dlux -->
+        <!-- <feature version="${dlux.version}">odl-dlux-core</feature> -->
         <feature version="${mdsal.version}">odl-mdsal-apidocs</feature>
         <feature version="${mdsal.version}">odl-mdsal-xsql</feature>
     </feature>
