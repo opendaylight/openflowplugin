@@ -5,13 +5,13 @@
   <parent>
     <groupId>org.opendaylight.openflowplugin</groupId>
     <artifactId>openflowplugin-extension-parent</artifactId>
-    <version>0.0.3-SNAPSHOT</version>
+    <version>0.0.3-Helium</version>
     <relativePath>../</relativePath>
   </parent>
   <artifactId>test-extension</artifactId>
   
   <properties>
-        <yangtools.version>0.6.2-SNAPSHOT</yangtools.version>
+        <yangtools.version>0.6.2-Helium</yangtools.version>
     </properties>
   
   <packaging>bundle</packaging>

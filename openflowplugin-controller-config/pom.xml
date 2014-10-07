@@ -12,7 +12,7 @@
     <parent>
       <groupId>org.opendaylight.openflowplugin</groupId>
       <artifactId>openflowplugin-parent</artifactId>
-      <version>0.0.3-SNAPSHOT</version>
+      <version>0.0.3-Helium</version>
     </parent>
 
     <artifactId>openflowplugin-controller-config</artifactId>
