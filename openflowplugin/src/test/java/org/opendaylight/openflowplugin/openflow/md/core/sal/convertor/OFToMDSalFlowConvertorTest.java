@@ -13,6 +13,7 @@ import static org.junit.Assert.assertNotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.junit.Test;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Instructions;
@@ -26,6 +27,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.TableIdInstructionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.ApplyActions;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.ClearActions;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.GotoTable;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.Meter;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.WriteActions;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.WriteMetadata;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping.InstructionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ActionBase;
@@ -37,10 +44,10 @@ public class OFToMDSalFlowConvertorTest {
 
     private static final int PRESET_COUNT = 7;
 
-    @Test
     /**
      * Test method for {@link OFToMDSalFlowConvertor#wrapOF10ActionsToInstruction(java.util.List, org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion)}
      */
+    @Test
     public void testWrapOF10ActionsToInstruction() {
         ActionBuilder actionBuilder = new ActionBuilder();
         List<Action> actions = new ArrayList<>();
@@ -51,15 +58,16 @@ public class OFToMDSalFlowConvertorTest {
         Instructions instructions = OFToMDSalFlowConvertor.wrapOF10ActionsToInstruction(actions, OpenflowVersion.OF13);
         assertNotNull(instructions);
     }
-        @Test
+
     /**
      * Test method for {@link OFToMDSalFlowConvertor#toSALInstruction(java.util.List, org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion)}
      */
+    @Test
     public void testToSALInstruction() {
         List<Instruction> instructionsList = new ArrayList<>();
         InstructionBuilder instructionBuilder = new InstructionBuilder();
         for (int i = 0; i < PRESET_COUNT; i++) {
-            instructionBuilder.setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.ApplyActions.class);
+            instructionBuilder.setType(ApplyActions.class);
             ActionsInstructionBuilder actionsInstructionBuilder = new ActionsInstructionBuilder();
             ActionBuilder actionBuilder = new ActionBuilder();
             List<Action> actions = new ArrayList<>();
@@ -78,7 +86,7 @@ public class OFToMDSalFlowConvertorTest {
 
         instructionsList = new ArrayList<>();
         for (int i = 0; i < PRESET_COUNT; i++) {
-            instructionBuilder.setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.ApplyActions.class);
+            instructionBuilder.setType(GotoTable.class);
             TableIdInstructionBuilder tableIdInstructionBuilder = new TableIdInstructionBuilder();
             tableIdInstructionBuilder.setTableId((short) i);
             instructionBuilder.addAugmentation(TableIdInstruction.class, tableIdInstructionBuilder.build());
@@ -91,7 +99,7 @@ public class OFToMDSalFlowConvertorTest {
 
         instructionsList = new ArrayList<>();
         for (int i = 0; i < PRESET_COUNT; i++) {
-            instructionBuilder.setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.ApplyActions.class);
+            instructionBuilder.setType(Meter.class);
             MeterIdInstructionBuilder meterIdInstructionBuilder = new MeterIdInstructionBuilder();
             meterIdInstructionBuilder.setMeterId(Long.valueOf(i));
             instructionBuilder.addAugmentation(MeterIdInstruction.class, meterIdInstructionBuilder.build());
@@ -105,7 +113,7 @@ public class OFToMDSalFlowConvertorTest {
 
         instructionsList = new ArrayList<>();
         for (int i = 0; i < PRESET_COUNT; i++) {
-            instructionBuilder.setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.ApplyActions.class);
+            instructionBuilder.setType(WriteActions.class);
             ActionsInstructionBuilder actionsInstructionBuilder = new ActionsInstructionBuilder();
             ActionBuilder actionBuilder = new ActionBuilder();
             List<Action> actions = new ArrayList<>();
@@ -122,10 +130,19 @@ public class OFToMDSalFlowConvertorTest {
         assertNotNull(instructions);
         assertEquals(PRESET_COUNT, instructions.getInstruction().size());
 
+        instructionsList = new ArrayList<>();
+        for (int i = 0; i < PRESET_COUNT; i++) {
+            instructionBuilder.setType(ClearActions.class);
+            instructionsList.add(instructionBuilder.build());
+        }
+
+        instructions = OFToMDSalFlowConvertor.toSALInstruction(instructionsList, OpenflowVersion.OF13);
+        assertNotNull(instructions);
+        assertEquals(PRESET_COUNT, instructions.getInstruction().size());
 
         instructionsList = new ArrayList<>();
         for (int i = 0; i < PRESET_COUNT; i++) {
-            instructionBuilder.setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.ApplyActions.class);
+            instructionBuilder.setType(WriteMetadata.class);
             MetadataInstructionBuilder metadataInstructionBuilder = new MetadataInstructionBuilder();
             metadataInstructionBuilder.setMetadata(new byte[i]);
             metadataInstructionBuilder.setMetadataMask(new byte[i]);
@@ -136,12 +153,9 @@ public class OFToMDSalFlowConvertorTest {
         instructions = OFToMDSalFlowConvertor.toSALInstruction(instructionsList, OpenflowVersion.OF13);
         assertNotNull(instructions);
         assertEquals(PRESET_COUNT, instructions.getInstruction().size());
-
-
     }
 
     private static final class MockActionBase extends ActionBase {
-
+        // for testing purposes
     }
-
 }
