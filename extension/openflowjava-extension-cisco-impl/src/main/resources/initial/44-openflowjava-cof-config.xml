@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- vi: set et smarttab sw=4 tabstop=4: -->
+<snapshot>
+  <required-capabilities>
+    <capability>urn:opendaylight:params:xml:ns:yang:openflowplugin:ofjava:cof:config?module=openflowjava-cof-config&amp;revision=2014-10-08</capability>
+  </required-capabilities>
+
+  <configuration>
+
+    <data xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+      <modules xmlns="urn:opendaylight:params:xml:ns:yang:controller:config">
+        <module>
+          <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:openflowplugin:ofjava:cof:config">prefix:openflowjava-extension-cisco</type>
+          <name>openflow-cof-bundle</name>
+          <cisco-extension-codec-registrator>
+            <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:openflowplugin:ofjava:cof:api:config">prefix:cisco-extension-codec-registrator</type>
+            <name>openflowjava-cisco-ext-registrator</name>
+          </cisco-extension-codec-registrator>
+        </module>
+      </modules>
+    </data>
+
+  </configuration>
+</snapshot>
