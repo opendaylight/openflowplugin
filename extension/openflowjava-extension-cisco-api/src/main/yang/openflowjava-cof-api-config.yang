@@ -1,0 +1,42 @@
+module openflowjava-cof-api-config {
+	yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:openflowplugin:ofjava:cof:api:config";
+    prefix "openflowjava-cof-api";
+
+    import config {prefix config; revision-date 2013-04-05;}
+    import openflow-switch-connection-provider {prefix openflow-switch-connection-provider;revision-date 2014-03-28;}
+
+    description
+        "Cisco extensions API in openflow library.";
+
+    revision "2014-10-08" {
+        description
+            "Initial revision";
+    }
+
+    identity openflowjava-extension-cisco-api {
+        base config:module-type;
+        config:provided-service cisco-extension-codec-registrator;
+        config:java-name-prefix CiscoExtensionApiProvider;
+    }
+    
+    identity cisco-extension-codec-registrator {
+        base config:service-type;
+        config:java-class "org.opendaylight.openflowjava.cof.api.CiscoExtensionCodecRegistrator";
+    }
+
+    augment "/config:modules/config:module/config:configuration" {
+        case openflowjava-extension-cisco-api {
+            when "/config:modules/config:module/config:type = 'openflowjava-extension-cisco-api'";
+
+            list openflow-switch-connection-provider {
+                uses config:service-ref {
+                    refine type {
+                        mandatory true;
+                        config:required-identity openflow-switch-connection-provider:openflow-switch-connection-provider;
+                    }
+                }
+            }
+        }
+    }
+}
