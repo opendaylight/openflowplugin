@@ -23,6 +23,10 @@
         <module>openflowplugin-extension-api</module>
         <module>openflowplugin-extension-nicira</module>
         <module>test-extension</module>
+
+        <module>openflowjava-extension-cisco-api</module>
+        <module>openflowjava-extension-cisco-impl</module>
+        <module>openflowplugin-extension-cisco</module>
     </modules>
 
     <dependencyManagement>
