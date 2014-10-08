@@ -47,14 +47,13 @@
       <classifier>features</classifier>
       <type>xml</type>
     </dependency>
-    <!-- TODO: temporary disabled during release process in order to avoid circular dependency to dlux -->
-    <!-- <dependency> -->
-    <!--   <groupId>org.opendaylight.dlux</groupId> -->
-    <!--   <artifactId>features-dlux</artifactId> -->
-    <!--   <version>${dlux.version}</version> -->
-    <!--   <classifier>features</classifier> -->
-    <!--   <type>xml</type> -->
-    <!-- </dependency> -->
+    <dependency>
+      <groupId>org.opendaylight.dlux</groupId>
+      <artifactId>features-dlux</artifactId>
+      <version>${dlux.version}</version>
+      <classifier>features</classifier>
+      <type>xml</type>
+    </dependency>
 
     <!-- bundle dependencies -->
     <dependency>
