@@ -45,4 +45,13 @@
         <bundle>mvn:org.opendaylight.openflowplugin/test-common/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.openflowplugin/drop-test-karaf/${project.version}</bundle>
     </feature>
+    <feature name='odl-openflowplugin-cisco-extension' description="OpenDaylight :: Openflow Plugin :: Cisco-extension" version='${project.version}'>
+        <feature version="${project.version}">odl-openflowplugin-flow-services-rest</feature>
+        <bundle>mvn:org.opendaylight.openflowplugin/openflowjava-extension-cisco-api/${project.version}</bundle>
+        <bundle>mvn:org.opendaylight.openflowplugin/openflowjava-extension-cisco-impl/${project.version}</bundle>
+        <bundle>mvn:org.opendaylight.openflowplugin/openflowplugin-extension-cisco/${project.version}</bundle>
+        <configfile finalname="etc/opendaylight/karaf/43-openflowjava-cof-api-config.xml">mvn:org.opendaylight.openflowplugin/openflowjava-extension-cisco-api/${project.version}/xml/config</configfile>
+        <configfile finalname="etc/opendaylight/karaf/44-openflowjava-cof-impl-config.xml">mvn:org.opendaylight.openflowplugin/openflowjava-extension-cisco-impl/${project.version}/xml/config</configfile>
+        <configfile finalname="etc/opendaylight/karaf/44-cisco-extension.xml">mvn:org.opendaylight.openflowplugin/openflowplugin-extension-cisco/${project.version}/xml/config</configfile>
+    </feature>
 </features>

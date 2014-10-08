@@ -100,6 +100,22 @@
       <artifactId>liblldp</artifactId>
       <version>${sal.api.version}</version>
     </dependency>
+    <!-- cisco extensions -->
+    <dependency>
+        <groupId>org.opendaylight.openflowplugin</groupId>
+        <artifactId>openflowjava-extension-cisco-api</artifactId>
+        <version>${project.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.opendaylight.openflowplugin</groupId>
+        <artifactId>openflowjava-extension-cisco-impl</artifactId>
+        <version>${project.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.opendaylight.openflowplugin</groupId>
+        <artifactId>openflowplugin-extension-cisco</artifactId>
+        <version>${project.version}</version>
+    </dependency>
     
     <!-- test the features.xml -->
     <dependency>

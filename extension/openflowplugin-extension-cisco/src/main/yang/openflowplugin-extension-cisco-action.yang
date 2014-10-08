@@ -1,0 +1,229 @@
+module openflowplugin-extension-cisco-action {
+    yang-version 1;
+
+    namespace "urn:opendaylight:openflowplugin:extension:cisco:action";
+    prefix "openflowplugin-cisco-action";
+    
+    import yang-ext {prefix ext; revision-date "2013-07-09";}
+    import flow-node-inventory {prefix fni; revision-date 2013-08-19; }
+    import opendaylight-inventory {prefix inv;revision-date "2013-08-19";}
+    import sal-flow {prefix sal-flow;revision-date "2013-08-19";}
+    import sal-group {prefix sal-group;revision-date "2013-09-18";}
+    import packet-processing {prefix sal-packet;revision-date "2013-07-09";}
+    import opendaylight-flow-statistics {prefix odl-flow-stats;revision-date "2013-08-19";}
+    import opendaylight-group-statistics {prefix odl-group-stats;revision-date "2013-11-11";}
+    import cisco-action-high {prefix cAction-hi;revision-date "2014-10-10";}
+
+    description 
+        "Cisco openflow action extensions.";
+
+    revision "2014-10-10" {
+        description "Initial revision";
+    }
+    
+    
+    // ACTION augmentations
+    // RPCS
+    augment "/sal-flow:add-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action" {
+        case cof-action-vrf-rpc-add-flow-write-actions-case {
+            uses cAction-hi:cof-action-vrf-grouping;
+        }
+    }
+    augment "/sal-flow:add-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action" {
+        case cof-action-next-hop-rpc-add-flow-write-actions-case {
+            uses cAction-hi:cof-action-next-hop-grouping;
+        }
+    }
+    augment "/sal-flow:add-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action" {
+        case cof-action-vrf-rpc-add-flow-apply-actions-case {
+            uses cAction-hi:cof-action-vrf-grouping;
+        }
+    }
+    augment "/sal-flow:add-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action" {
+        case cof-action-next-hop-rpc-add-flow-apply-actions-case {
+            uses cAction-hi:cof-action-next-hop-grouping;
+        }
+    }
+    augment "/sal-flow:remove-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action" {
+        case "cof-action-vrf-rpc-remove-flow-write-actions-case" {
+            uses cAction-hi:cof-action-vrf-grouping;
+        }
+    }
+    augment "/sal-flow:remove-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action" {
+        case "cof-action-next-hop-rpc-remove-flow-write-actions-case" {
+            uses cAction-hi:cof-action-next-hop-grouping;
+        }
+    }
+    augment "/sal-flow:remove-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action" {
+        case "cof-action-vrf-rpc-remove-flow-apply-actions-case" {
+            uses cAction-hi:cof-action-vrf-grouping;
+        }
+    }
+    augment "/sal-flow:remove-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action" {
+        case "cof-action-next-hop-rpc-remove-flow-apply-actions-case" {
+            uses cAction-hi:cof-action-next-hop-grouping;
+        }
+    }
+    
+    augment "/sal-flow:update-flow/sal-flow:input/sal-flow:original-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action" {
+        case "cof-action-vrf-rpc-update-flow-original-write-actions-case" {
+            uses cAction-hi:cof-action-vrf-grouping;
+        }
+    }
+    augment "/sal-flow:update-flow/sal-flow:input/sal-flow:original-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action" {
+        case "cof-action-next-hop-rpc-update-flow-original-write-actions-case" {
+            uses cAction-hi:cof-action-next-hop-grouping;
+        }
+    }
+    augment "/sal-flow:update-flow/sal-flow:input/sal-flow:original-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action" {
+        case "cof-action-vrf-rpc-update-flow-original-apply-actions-case" {
+            uses cAction-hi:cof-action-vrf-grouping;
+        }
+    }
+    augment "/sal-flow:update-flow/sal-flow:input/sal-flow:original-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action" {
+        case "cof-action-next-hop-rpc-update-flow-original-apply-actions-case" {
+            uses cAction-hi:cof-action-next-hop-grouping;
+        }
+    }
+    augment "/sal-flow:update-flow/sal-flow:input/sal-flow:updated-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action" {
+        case "cof-action-vrf-rpc-update-flow-updated-write-actions-case" {
+            uses cAction-hi:cof-action-vrf-grouping;
+        }
+    }
+    augment "/sal-flow:update-flow/sal-flow:input/sal-flow:updated-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action" {
+        case "cof-action-next-hop-rpc-update-flow-updated-write-actions-case" {
+            uses cAction-hi:cof-action-next-hop-grouping;
+        }
+    }
+    augment "/sal-flow:update-flow/sal-flow:input/sal-flow:updated-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action" {
+        case "cof-action-vrf-rpc-update-flow-updated-apply-actions-case" {
+            uses cAction-hi:cof-action-vrf-grouping;
+        }
+    }
+    augment "/sal-flow:update-flow/sal-flow:input/sal-flow:updated-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action" {
+        case "cof-action-next-hop-rpc-update-flow-updated-apply-actions-case" {
+            uses cAction-hi:cof-action-next-hop-grouping;
+        }
+    }
+    
+    augment "/sal-group:add-group/sal-group:input/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action" {
+        case "cof-action-vrf-rpc-add-group-case" {
+            uses cAction-hi:cof-action-vrf-grouping;
+        }
+    }
+    augment "/sal-group:add-group/sal-group:input/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action" {
+        case "cof-action-next-hop-rpc-add-group-case" {
+            uses cAction-hi:cof-action-next-hop-grouping;
+        }
+    }
+    
+    augment "/sal-group:remove-group/sal-group:input/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action" {
+        case "cof-action-vrf-rpc-remove-group-case" {
+            uses cAction-hi:cof-action-vrf-grouping;
+        }
+    }
+    augment "/sal-group:remove-group/sal-group:input/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action" {
+        case "cof-action-next-hop-rpc-remove-group-case" {
+            uses cAction-hi:cof-action-next-hop-grouping;
+        }
+    }
+    
+    augment "/sal-group:update-group/sal-group:input/sal-group:original-group/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action" {
+        case "cof-action-vrf-rpc-update-group-original-case" {
+            uses cAction-hi:cof-action-vrf-grouping;
+        }
+    }
+    augment "/sal-group:update-group/sal-group:input/sal-group:original-group/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action" {
+        case "cof-action-next-hop-rpc-update-group-original-case" {
+            uses cAction-hi:cof-action-next-hop-grouping;
+        }
+    }
+    augment "/sal-group:update-group/sal-group:input/sal-group:updated-group/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action" {
+        case "cof-action-vrf-rpc-update-group-updated-case" {
+            uses cAction-hi:cof-action-vrf-grouping;
+        }
+    }
+    augment "/sal-group:update-group/sal-group:input/sal-group:updated-group/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action" {
+        case "cof-action-next-hop-rpc-update-group-updated-case" {
+            uses cAction-hi:cof-action-next-hop-grouping;
+        }
+    }
+    
+    augment "/sal-packet:transmit-packet/sal-packet:input/sal-packet:action/sal-packet:action" {
+        case "cof-action-vrf-rpc-transmit-packet-case" {
+            uses cAction-hi:cof-action-vrf-grouping;
+        }
+    }
+    augment "/sal-packet:transmit-packet/sal-packet:input/sal-packet:action/sal-packet:action" {
+        case "cof-action-next-hop-rpc-transmit-packet-case" {
+            uses cAction-hi:cof-action-next-hop-grouping;
+        }
+    }
+    
+    // DATA
+    augment "/inv:nodes/inv:node/fni:table/fni:flow/fni:instructions/fni:instruction/fni:instruction/fni:write-actions-case/fni:write-actions/fni:action/fni:action" {
+        case "cof-action-vrf-nodes-node-table-flow-write-actions-case" {
+            uses cAction-hi:cof-action-vrf-grouping;
+        }
+    }
+    augment "/inv:nodes/inv:node/fni:table/fni:flow/fni:instructions/fni:instruction/fni:instruction/fni:write-actions-case/fni:write-actions/fni:action/fni:action" {
+        case "cof-action-next-hop-nodes-node-table-flow-write-actions-case" {
+            uses cAction-hi:cof-action-next-hop-grouping;
+        }
+    }
+    augment "/inv:nodes/inv:node/fni:table/fni:flow/fni:instructions/fni:instruction/fni:instruction/fni:apply-actions-case/fni:apply-actions/fni:action/fni:action" {
+        case "cof-action-vrf-nodes-node-table-flow-apply-actions-case" {
+            uses cAction-hi:cof-action-vrf-grouping;
+        }
+    }
+    augment "/inv:nodes/inv:node/fni:table/fni:flow/fni:instructions/fni:instruction/fni:instruction/fni:apply-actions-case/fni:apply-actions/fni:action/fni:action" {
+        case "cof-action-next-hop-nodes-node-table-flow-apply-actions-case" {
+            uses cAction-hi:cof-action-next-hop-grouping;
+        }
+    }
+    
+    augment "/inv:nodes/inv:node/fni:group/fni:buckets/fni:bucket/fni:action/fni:action" {
+        case "cof-action-vrf-nodes-node-group-buckets-bucket-actions-case" {
+            uses cAction-hi:cof-action-vrf-grouping;
+        }
+    }
+    augment "/inv:nodes/inv:node/fni:group/fni:buckets/fni:bucket/fni:action/fni:action" {
+        case "cof-action-next-hop-nodes-node-group-buckets-bucket-actions-case" {
+            uses cAction-hi:cof-action-next-hop-grouping;
+        }
+    }
+    
+    // NOTIFICATIONS
+    augment "/odl-flow-stats:flows-statistics-update/odl-flow-stats:flow-and-statistics-map-list/odl-flow-stats:instructions/odl-flow-stats:instruction/odl-flow-stats:instruction/odl-flow-stats:write-actions-case/odl-flow-stats:write-actions/odl-flow-stats:action/odl-flow-stats:action" {
+        case "cof-action-vrf-notif-flows-statistics-update-write-actions-case" {
+            uses cAction-hi:cof-action-vrf-grouping;
+        }
+    }
+    augment "/odl-flow-stats:flows-statistics-update/odl-flow-stats:flow-and-statistics-map-list/odl-flow-stats:instructions/odl-flow-stats:instruction/odl-flow-stats:instruction/odl-flow-stats:write-actions-case/odl-flow-stats:write-actions/odl-flow-stats:action/odl-flow-stats:action" {
+        case "cof-action-next-hop-notif-flows-statistics-update-write-actions-case" {
+            uses cAction-hi:cof-action-next-hop-grouping;
+        }
+    }
+    augment "/odl-flow-stats:flows-statistics-update/odl-flow-stats:flow-and-statistics-map-list/odl-flow-stats:instructions/odl-flow-stats:instruction/odl-flow-stats:instruction/odl-flow-stats:apply-actions-case/odl-flow-stats:apply-actions/odl-flow-stats:action/odl-flow-stats:action" {
+        case "cof-action-vrf-notif-flows-statistics-update-apply-actions-case" {
+            uses cAction-hi:cof-action-vrf-grouping;
+        }
+    }
+    augment "/odl-flow-stats:flows-statistics-update/odl-flow-stats:flow-and-statistics-map-list/odl-flow-stats:instructions/odl-flow-stats:instruction/odl-flow-stats:instruction/odl-flow-stats:apply-actions-case/odl-flow-stats:apply-actions/odl-flow-stats:action/odl-flow-stats:action" {
+        case "cof-action-next-hop-notif-flows-statistics-update-apply-actions-case" {
+            uses cAction-hi:cof-action-next-hop-grouping;
+        }
+    }
+    
+    augment "/odl-group-stats:group-desc-stats-updated/odl-group-stats:group-desc-stats/odl-group-stats:buckets/odl-group-stats:bucket/odl-group-stats:action/odl-group-stats:action" {
+        case "cof-action-vrf-notif-group-desc-stats-updated-case" {
+            uses cAction-hi:cof-action-vrf-grouping;
+        }
+    }
+    augment "/odl-group-stats:group-desc-stats-updated/odl-group-stats:group-desc-stats/odl-group-stats:buckets/odl-group-stats:bucket/odl-group-stats:action/odl-group-stats:action" {
+        case "cof-action-next-hop-notif-group-desc-stats-updated-case" {
+            uses cAction-hi:cof-action-next-hop-grouping;
+        }
+    }
+
+}
