@@ -60,6 +60,23 @@ see https://git.opendaylight.org/gerrit/#/c/390/
         <version>${project.version}</version>
     </dependency>
 
+    <!-- cisco extension -->
+    <dependency>
+        <groupId>org.opendaylight.openflowplugin</groupId>
+        <artifactId>openflowplugin-extension-cisco</artifactId>
+        <version>${project.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.opendaylight.openflowplugin</groupId>
+        <artifactId>openflowjava-extension-cisco-api</artifactId>
+        <version>${project.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.opendaylight.openflowplugin</groupId>
+        <artifactId>openflowjava-extension-cisco-impl</artifactId>
+        <version>${project.version}</version>
+    </dependency>
+
     <!-- openflowplugin -->
     <dependency>
       <groupId>org.opendaylight.openflowplugin</groupId>
@@ -166,9 +183,10 @@ see https://git.opendaylight.org/gerrit/#/c/390/
             <phase>generate-resources</phase>
             <configuration>
              <outputDirectory>${project.build.directory}/generated-resources/opendaylight/configuration</outputDirectory>
-             <includeArtifactIds>openflowplugin-controller-config, 
+             <includeArtifactIds>openflowplugin-controller-config,
              test-extension, openflowjava-extension-nicira, openflowjava-extension-nicira-api, openflowplugin-extension-nicira,
              table-miss-enforcer,
+             openflowjava-extension-cisco-api, openflowjava-extension-cisco-impl, openflowplugin-extension-cisco
              </includeArtifactIds>
              <includes>**\/*.xml</includes>
              <excludes>META-INF</excludes>
