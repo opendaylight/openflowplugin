@@ -1,0 +1,68 @@
+module cisco-action-low {
+    yang-version 1;
+
+    namespace "urn:opendaylight:openflowjava:cof:action";
+    prefix "cisco-action";
+
+    import openflow-action {prefix ofaction;}
+    import openflow-types {prefix oft;}
+    import ietf-inet-types {prefix inet;}
+    import ietf-yang-types {prefix yang;}
+    import yang-ext {prefix ext; revision-date "2013-07-09";}
+
+    description 
+        "Cisco openflow extensions of action.";
+
+    revision "2014-10-08" {
+        description "Initial revision";
+    }
+
+    
+    // action subtypes (for registration)    
+    identity cof-at-output-nh {
+        base ofaction:experimenter-action-sub-type;
+    }
+    identity cof-at-vrf {
+        base ofaction:experimenter-action-sub-type;
+    }
+
+    
+    // nextHop ----
+    grouping ofj-cof-action-output-nh-grouping {
+        container action-output-nh {
+        
+            leaf address-type {
+                type uint16;
+            }
+            leaf address-extra-type {
+                type uint16;
+            }
+            
+            leaf address {
+                type binary;
+            }
+            leaf address-extra {
+                type uint32;
+            }
+        }
+    }
+    
+    // vrf ----
+    grouping ofj-cof-action-vrf-grouping {
+        container action-vrf {
+            leaf vpn-type {
+                type uint16;
+            }
+            leaf vrf-extra {
+                type binary;
+            }
+        }
+    }
+
+    augment "/ofaction:actions-container/ofaction:action" {
+        ext:augment-identifier "ofj-aug-cof-action";
+        uses ofj-cof-action-output-nh-grouping;
+        uses ofj-cof-action-vrf-grouping;
+    }
+
+}

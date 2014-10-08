@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- vi: set et smarttab sw=4 tabstop=4: -->
+<snapshot>
+  <required-capabilities>
+    <capability>urn:opendaylight:params:xml:ns:yang:openflowplugin:ofjava:cof:api:config?module=openflowjava-cof-api-config&amp;revision=2014-10-08</capability>
+  </required-capabilities>
+
+  <configuration>
+
+    <data xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+      <modules xmlns="urn:opendaylight:params:xml:ns:yang:controller:config">
+        <module>
+          <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:openflowplugin:ofjava:cof:api:config">prefix:openflowjava-extension-cisco-api</type>
+          <name>openflowjava-extension-cof-api-bundle</name>
+          <openflow-switch-connection-provider>
+            <type xmlns:ofSwitch="urn:opendaylight:params:xml:ns:yang:openflow:switch:connection:provider">ofSwitch:openflow-switch-connection-provider</type>
+            <name>openflow-switch-connection-provider-legacy</name>
+          </openflow-switch-connection-provider>
+          <openflow-switch-connection-provider>
+            <type xmlns:ofSwitch="urn:opendaylight:params:xml:ns:yang:openflow:switch:connection:provider">ofSwitch:openflow-switch-connection-provider</type>
+            <name>openflow-switch-connection-provider-default</name>
+          </openflow-switch-connection-provider>
+        </module>
+      </modules>
+
+      <services xmlns="urn:opendaylight:params:xml:ns:yang:controller:config">
+        <service>
+          <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:openflowplugin:ofjava:cof:api:config">prefix:cisco-extension-codec-registrator</type>
+          <instance>
+            <name>openflowjava-cisco-ext-registrator</name>
+            <provider>/modules/module[type='openflowjava-extension-cisco-api'][name='openflowjava-extension-cof-api-bundle']</provider>
+          </instance>
+        </service>
+      </services>
+    </data>
+
+  </configuration>
+</snapshot>
