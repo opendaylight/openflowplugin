@@ -1,0 +1,134 @@
+module cisco-action {
+    yang-version 1;
+
+    namespace "urn:opendaylight:openflowjava:cof:action";
+    prefix "cisco-action";
+
+    import openflow-action {prefix ofaction;}
+    import openflow-types {prefix oft;}
+    import ietf-inet-types {prefix inet;}
+    import ietf-yang-types {prefix yang;}
+    import yang-ext {prefix ext; revision-date "2013-07-09";}
+
+    description 
+        "Cisco openflow extensions of action.";
+
+    revision "2014-10-08" {
+        description "Initial revision";
+    }
+    
+    
+    identity cof-at-output-nh {
+        base ofaction:experimenter-action-sub-type;
+    }
+    identity cof-at-vrf {
+        base ofaction:experimenter-action-sub-type;
+    }
+    
+    
+    // output next hop ----
+    typedef cof-at-output-nh-address-type {
+        type enumeration {
+            enum NONE {
+                description "address only";
+            }
+            enum P2P {
+                description "address and port";
+            }
+            enum IPV4 {
+                description "address and port";
+            }
+            enum IPV6 {
+                description "address and port";
+            }
+            enum MAC48 {
+                description "address and port";
+            }
+        }
+    }
+    
+    typedef cof-at-output-nh-address-extra-type {
+        type enumeration {
+            enum NONE {
+                description "address only";
+            }
+            enum PORT {
+                description "address and port";
+            }
+        }
+    }
+    
+    typedef nh-port-number {
+        type uint32;
+    }
+    
+    grouping ofj-cof-action-output-nh-grouping {
+        container action-output-nh {
+        
+            leaf address-type {
+                type cof-at-output-nh-address-type;
+            }
+            leaf address-extra-type {
+                type cof-at-output-nh-address-extra-type;
+            }
+            
+            leaf address {
+                type union {
+                    type inet:ipv4-address;
+                    type inet:ipv6-address;
+                    type yang:mac-address;
+                } 
+            }
+            leaf address-extra {
+                type nh-port-number;
+            }
+        }
+    }
+    
+    // vrf ----
+    typedef cof-at-vrf-type {
+        type enumeration {
+            enum NONE {
+                description "illegal value";
+            }
+            enum VPNID {
+                description "vpn-id (rfc 2685)";
+            }
+            enum NAME {
+                description "vrf namestring (sized determine by len)";
+            }
+        }
+    }
+    
+    typedef vrf-vpn-id {
+        description "see RFC-2685, vpn identifier (7 bytes)";
+        type binary;
+    }
+    typedef vrf-name {
+        type string;
+    }
+    typedef vrf-extra {
+        type union {
+            type vrf-vpn-id;
+            type vrf-name;
+        }
+    }
+    
+    grouping ofj-cof-action-vrf-grouping {
+        container action-vrf {
+            leaf vpn-type {
+                type cof-at-vrf-type;
+            }
+            leaf vrf-extra {
+                type vrf-extra;
+            }
+        }
+    }
+
+    augment "/ofaction:actions-container/ofaction:action" {
+        ext:augment-identifier "ofj-aug-cof-action";
+        uses ofj-cof-action-output-nh-grouping;
+        uses ofj-cof-action-vrf-grouping;
+    }
+
+}
