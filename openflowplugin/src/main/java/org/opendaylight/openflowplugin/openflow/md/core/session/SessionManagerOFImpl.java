@@ -141,7 +141,6 @@ public class SessionManagerOFImpl implements ConjunctSessionManager {
         synchronized (context) {
             sessionLot.put(sessionKey, context);
             sessionNotifier.onSessionAdded(sessionKey, context);
-
             context.setValid(true);
         }
     }
