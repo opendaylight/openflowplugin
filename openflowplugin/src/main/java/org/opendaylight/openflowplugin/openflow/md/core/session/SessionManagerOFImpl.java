@@ -135,9 +135,8 @@ public class SessionManagerOFImpl implements SessionManager {
     public void addSessionContext(SwitchSessionKeyOF sessionKey, SessionContext context) {
         synchronized (context) {
             sessionLot.put(sessionKey, context);
-            sessionNotifier.onSessionAdded(sessionKey, context);
-
             context.setValid(true);
+            sessionNotifier.onSessionAdded(sessionKey, context);
         }
     }
 
