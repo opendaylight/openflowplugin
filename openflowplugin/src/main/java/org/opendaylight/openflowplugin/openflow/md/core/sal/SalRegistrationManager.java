@@ -46,6 +46,8 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier.InstanceIdenti
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Preconditions;
+
 /**
  * session and inventory listener implementation
  */
@@ -137,19 +139,27 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
         builder.setNodeRef(nodeRef);
 
         FlowCapableNodeUpdatedBuilder builder2 = new FlowCapableNodeUpdatedBuilder();
-        builder2.setIpAddress(getIpAddressOf(sw));
+        try {
+            builder2.setIpAddress(getIpAddressOf(sw));
+        } catch (Exception e) {
+            LOG.warn("IP address of the node {} cannot be obtained: {}", sw.getNodeId(), e.getMessage());
+        }
         builder2.setSwitchFeatures(swFeaturesUtil.buildSwitchFeatures(features));
         builder.addAugmentation(FlowCapableNodeUpdated.class, builder2.build());
 
         return builder.build();
     }
 
-    private IpAddress getIpAddressOf(ModelDrivenSwitch sw) {
+    private static IpAddress getIpAddressOf(ModelDrivenSwitch sw) {
         SessionContext sessionContext = sw.getSessionContext();
-        if (!sessionContext.isValid()) {
-            LOG.warn("IP address of the node {} cannot be obtained. Session is not valid.", sw.getNodeId());
-            return null;
-        }
+//        if (!sessionContext.isValid()) {
+//            LOG.warn("IP address of the node {} cannot be obtained. Session is not valid.", sw.getNodeId());
+//            return null;
+//        }
+        Preconditions.checkNotNull(sessionContext.getPrimaryConductor(), 
+                "primary conductor must not be NULL -> "+sw.getNodeId());
+        Preconditions.checkNotNull(sessionContext.getPrimaryConductor().getConnectionAdapter(),
+                "connection adapter of primary conductor must not be NULL -> "+sw.getNodeId());
         InetSocketAddress remoteAddress = sessionContext.getPrimaryConductor().getConnectionAdapter()
                 .getRemoteAddress();
         if (remoteAddress == null) {
@@ -205,5 +215,12 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
         if (sessionListenerRegistration != null) {
             sessionListenerRegistration.close();
         }
+    }
+    
+    /**
+     * @param providerContext the providerContext to set
+     */
+    public void setProviderContext(ProviderContext providerContext) {
+        this.providerContext = providerContext;
     }
 }
