@@ -5,20 +5,20 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.openflowplugin.openflow.md.core;
+package org.opendaylight.openflowplugin.api.openflow.md.core;
 
-import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 
 /**
  * @author mirehak
  *
  */
-public interface ErrorHandler {
-
+public interface HandshakeListener {
+    
     /**
-     * @param e cause
-     * @param sessionContext of source
+     * @param featureOutput obtained
+     * @param version negotiated
      */
-    void handleException(Throwable e, SessionContext sessionContext);
+    void onHandshakeSuccessfull(GetFeaturesOutput featureOutput, Short version);
 
 }

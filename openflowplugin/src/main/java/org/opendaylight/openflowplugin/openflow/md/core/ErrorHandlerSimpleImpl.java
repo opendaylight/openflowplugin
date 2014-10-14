@@ -11,7 +11,8 @@ package org.opendaylight.openflowplugin.openflow.md.core;
 import java.util.Arrays;
 
 import org.opendaylight.openflowplugin.ConnectionException;
-import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
+import org.opendaylight.openflowplugin.api.openflow.md.core.ErrorHandler;
+import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

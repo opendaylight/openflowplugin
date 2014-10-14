@@ -14,12 +14,14 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
+import org.opendaylight.openflowplugin.api.openflow.md.core.session.SwitchSessionKeyOF;
 import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductorImpl;
-import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
+import org.opendaylight.openflowplugin.api.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
-import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionConverterProvider;
-import org.opendaylight.openflowplugin.openflow.md.queue.PopListener;
+import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
+import org.opendaylight.openflowplugin.api.openflow.md.queue.PopListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -148,7 +150,7 @@ public abstract class OFSessionUtil {
     /**
      * @return session manager singleton instance
      */
-    public static SessionManager getSessionManager() {
+    public static ConjunctSessionManager getSessionManager() {
         return SessionManagerOFImpl.getInstance();
     }
     

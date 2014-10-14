@@ -21,7 +21,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
-import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
+import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ActionTypeV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Capabilities;
@@ -58,7 +58,7 @@ public class FeaturesV10ToNodeConnectorUpdatedTranslatorTest extends TestCase {
 
     @Test
     /**
-     * Test method for basic functionality of {@link FeaturesV10ToNodeConnectorUpdatedTranslator#translate(org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher, org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader)}
+     * Test method for basic functionality of {@link FeaturesV10ToNodeConnectorUpdatedTranslator#translate(org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher, org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader)}
      */
     public void testTranslate() throws Exception {
 

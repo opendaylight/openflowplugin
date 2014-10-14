@@ -8,6 +8,7 @@
 package org.opendaylight.openflowplugin.openflow.md.core.extension;
 
 import org.opendaylight.openflowplugin.extension.api.ExtensionConverterRegistrator;
+import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 
 /**
  * unifying interface
