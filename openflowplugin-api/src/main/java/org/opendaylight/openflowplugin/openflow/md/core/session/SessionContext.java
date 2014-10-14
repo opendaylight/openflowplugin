@@ -163,7 +163,7 @@ public interface SessionContext {
     int getSeed();
     
     /**
-     * @return (wrapped) notification enqueue service - {@link NotificationQueueWrapper} 
+     * @return (wrapped) notification enqueue service - {@link NotificationQueueWrapper}
      */
     NotificationEnqueuer getNotificationEnqueuer();
 }

@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 /**
  * @author mirehak
  */
-public class SessionManagerOFImpl implements SessionManager {
+public class SessionManagerOFImpl implements ConjunctSessionManager {
 
     protected static final Logger LOG = LoggerFactory.getLogger(SessionManagerOFImpl.class);
     private static SessionManagerOFImpl instance;
@@ -53,7 +53,7 @@ public class SessionManagerOFImpl implements SessionManager {
     /**
      * @return singleton instance
      */
-    public static SessionManager getInstance() {
+    public static ConjunctSessionManager getInstance() {
         if (instance == null) {
             synchronized (SessionContextOFImpl.class) {
                 if (instance == null) {
