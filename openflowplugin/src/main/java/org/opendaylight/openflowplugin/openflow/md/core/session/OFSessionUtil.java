@@ -148,7 +148,7 @@ public abstract class OFSessionUtil {
     /**
      * @return session manager singleton instance
      */
-    public static SessionManager getSessionManager() {
+    public static ConjunctSessionManager getSessionManager() {
         return SessionManagerOFImpl.getInstance();
     }
     
