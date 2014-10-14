@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba8cc1f7_5414acf4",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/session/SessionManagerOFImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 141,
+      "author": {
+        "id": 48
+      },
+      "writtenOn": "2014-10-14T18:25:59Z",
+      "side": 1,
+      "message": "I *think* that moving this statement *above* the:\n\n     sessionNotifier.onSessionAdded(sessionKey, context);\n\nwas what fixed it. I don\u0027t know if there\u0027s a problem with doing this that I missed, but my gut reaction is without moving this statement to before onSessionAdded, the thing won\u0027t populate the IP addresses right.",
+      "revId": "82d0471682c1e6374261727d3aed9d7ea7841d77",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
