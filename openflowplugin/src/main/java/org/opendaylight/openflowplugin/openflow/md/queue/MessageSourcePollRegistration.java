@@ -8,8 +8,10 @@
 package org.opendaylight.openflowplugin.openflow.md.queue;
 
 
+import org.opendaylight.openflowplugin.api.openflow.md.queue.MessageSourcePollRegistrator;
+
 /**
- * closable registration for {@link MessageSourcePollRegistrator}
+ * closable registration for {@link org.opendaylight.openflowplugin.api.openflow.md.queue.MessageSourcePollRegistrator}
  * @param <IN> queue input message type
  */
 public class MessageSourcePollRegistration<IN> implements AutoCloseable {

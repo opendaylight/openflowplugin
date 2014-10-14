@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.openflowplugin.openflow.md.core.session;
+package org.opendaylight.openflowplugin.api.openflow.md.core.session;
 
 import com.google.common.util.concurrent.ListeningExecutorService;
 import java.util.Collection;
@@ -15,13 +15,12 @@ import java.util.Map;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
-import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
-import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
+import org.opendaylight.openflowplugin.api.openflow.md.core.ConnectionConductor;
+import org.opendaylight.openflowplugin.api.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.statistics.MessageSpy;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
-import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionConverterProvider;
-import org.opendaylight.openflowplugin.openflow.md.queue.PopListener;
+import org.opendaylight.openflowplugin.api.openflow.md.queue.PopListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
@@ -135,13 +134,4 @@ public interface SessionManager extends AutoCloseable {
      */
     MessageSpy<DataContainer> getMessageSpy();
 
-    /**
-     * @param extensionConverterProvider
-     */
-    void setExtensionConverterProvider(ExtensionConverterProvider extensionConverterProvider);
-
-    /**
-     * @return extensionConverterProvider
-     */
-    ExtensionConverterProvider getExtensionConverterProvider();
 }

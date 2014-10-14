@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.openflow.md.core;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
+import org.opendaylight.openflowplugin.api.openflow.md.core.NotificationQueueWrapper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoRequestMessageBuilder;
 
 /**
@@ -45,7 +46,7 @@ public class NotificationQueueWrapperTest {
         NotificationQueueWrapper queueWrapper = new NotificationQueueWrapper(echoBuilder.build(),
                 (short) EncodeConstants.OF13_VERSION_ID);
 
-        Assert.assertEquals("Wrong implemented interface", "org.opendaylight.openflowplugin.openflow.md"
+        Assert.assertEquals("Wrong implemented interface", "org.opendaylight.openflowplugin.api.openflow.md"
                 + ".core.NotificationQueueWrapper", queueWrapper.getImplementedInterface().getName());
         Assert.assertEquals("Wrong version", 4, queueWrapper.getVersion().intValue());
         Assert.assertEquals("Wrong notification", "org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol"

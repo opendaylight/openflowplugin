@@ -15,8 +15,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;
 import org.opendaylight.openflowplugin.ConnectionException;
-import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
-import org.opendaylight.openflowplugin.openflow.md.core.session.SwitchSessionKeyOF;
+import org.opendaylight.openflowplugin.api.openflow.md.core.ErrorHandler;
+import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
+import org.opendaylight.openflowplugin.api.openflow.md.core.session.SwitchSessionKeyOF;
 
 public class ErrorHandlerSimpleImplTest extends TestCase {
 

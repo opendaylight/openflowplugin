@@ -7,7 +7,7 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core;
 
-import org.opendaylight.openflowplugin.openflow.md.queue.PopListener;
+import org.opendaylight.openflowplugin.api.openflow.md.queue.PopListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

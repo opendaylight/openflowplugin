@@ -9,7 +9,8 @@ package org.opendaylight.openflowplugin.openflow.md.core;
 
 import java.util.List;
 
-import org.opendaylight.openflowplugin.openflow.md.queue.PopListener;
+import org.opendaylight.openflowplugin.api.openflow.md.core.IMDMessageTranslator;
+import org.opendaylight.openflowplugin.api.openflow.md.queue.PopListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 
@@ -22,7 +23,7 @@ public interface IMDController {
      *            the type of OF message that applications want to receive
      * @param version corresponding OF version
      * @param translator
-     *            : Object that implements the {@link IMDMessageTranslator}
+     *            : Object that implements the {@link org.opendaylight.openflowplugin.api.openflow.md.core.IMDMessageTranslator}
      */
     public void addMessageTranslator(Class<? extends DataObject> messageType, int version, IMDMessageTranslator<OfHeader, List<DataObject>> translator);
 

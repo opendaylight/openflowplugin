@@ -5,9 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.openflowplugin.openflow.md.queue;
+package org.opendaylight.openflowplugin.api.openflow.md.queue;
 
-import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
+import org.opendaylight.openflowplugin.api.openflow.md.core.ConnectionConductor;
 
 /**
  * This processing mechanism based on queue. Processing consists of 2 steps: translate and publish. 

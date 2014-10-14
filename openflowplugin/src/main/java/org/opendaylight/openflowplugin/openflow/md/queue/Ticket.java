@@ -7,8 +7,8 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.queue;
 
-import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
-import org.opendaylight.openflowplugin.openflow.md.queue.QueueKeeper.QueueType;
+import org.opendaylight.openflowplugin.api.openflow.md.core.ConnectionConductor;
+import org.opendaylight.openflowplugin.api.openflow.md.queue.QueueKeeper.QueueType;
 
 /**
  * @author mirehak

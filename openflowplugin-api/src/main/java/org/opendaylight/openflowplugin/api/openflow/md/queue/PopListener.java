@@ -5,20 +5,19 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.openflowplugin.openflow.md.core;
+package org.opendaylight.openflowplugin.api.openflow.md.queue;
 
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 
 /**
  * @author mirehak
+ * @param <T> result type
  *
  */
-public interface HandshakeListener {
+public interface PopListener<T> {
     
     /**
-     * @param featureOutput obtained
-     * @param version negotiated
+     * @param processedMessage
      */
-    void onHandshakeSuccessfull(GetFeaturesOutput featureOutput, Short version);
+    void onPop(T processedMessage);
 
 }
