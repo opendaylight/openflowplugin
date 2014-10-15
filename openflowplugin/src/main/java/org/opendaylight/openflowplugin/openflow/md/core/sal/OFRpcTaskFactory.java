@@ -13,11 +13,13 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
+import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.util.BinContent;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.sal.NotificationComposer;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
+import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.FlowConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.GroupConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.MeterConvertor;
@@ -105,16 +107,21 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.GetMeterStatisticsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.GetMeterStatisticsOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.SetConfigInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.SetConfigOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.SetConfigOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartRequestFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.SwitchConfigFlag;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GroupModInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MeterModInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortModInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetConfigInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestAggregateCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestFlowCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestGroupCaseBuilder;
@@ -1894,6 +1901,36 @@ public abstract class OFRpcTaskFactory {
             }
         };
         return task;
+    }
+
+    public static  OFRpcTask<SetConfigInput, RpcResult<SetConfigOutput>> createSetNodeConfigTask(final OFRpcTaskContext taskContext,
+                                                                                                 final SetConfigInput input,
+                                                                                                 final SwitchConnectionDistinguisher cookie){
+        OFRpcTask<SetConfigInput, RpcResult<SetConfigOutput>> rpcTask = new OFRpcTask<SetConfigInput, RpcResult<SetConfigOutput>>(taskContext, cookie, input){
+            @Override
+            public ListenableFuture<RpcResult<SetConfigOutput>> call() throws Exception {
+
+                final SettableFuture<RpcResult<SetConfigOutput>> result = SettableFuture.create();
+                final Long xid = taskContext.getSession().getNextXid();
+
+                SetConfigInputBuilder builder = new SetConfigInputBuilder();
+                SwitchConfigFlag flag = SwitchConfigFlag.valueOf(input.getFlag());
+                builder.setXid(xid);
+                builder.setFlags(flag);
+                builder.setMissSendLen(input.getMissSearchLength());
+                ListenableFuture<RpcResult<Void>> resultLib =  JdkFutureAdapters.listenInPoolThread(taskContext.getSession().getPrimaryConductor().getConnectionAdapter().setConfig(builder.build()));
+                Futures.addCallback(resultLib, new ResultCallback<SetConfigOutput>(result) {
+                    @Override
+                    public SetConfigOutput createResult() {
+                        SetConfigOutputBuilder setConfigOutputBuilder = new SetConfigOutputBuilder();
+                        setConfigOutputBuilder.setTransactionId(new TransactionId(BigInteger.valueOf(xid)));
+                        return setConfigOutputBuilder.build();
+                    }
+                });
+                return result;
+               }
+        };
+        return rpcTask;
     }
     
 }

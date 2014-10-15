@@ -253,7 +253,6 @@ public class ConnectionConductorImplTest {
                 EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
 
         int i = 1;
-        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(i++, "setConfig"));
         eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(i++, "multipartRequestInput"));
         eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(i++, "multipartRequestInput"));
         eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(i++, "multipartRequestInput"));
@@ -283,7 +282,6 @@ public class ConnectionConductorImplTest {
                 EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
 
         int i = 1;
-        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(i++, "setConfig"));
         eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(i++, "multipartRequestInput"));
         eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(i++, "multipartRequestInput"));
         eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(i++, "multipartRequestInput"));
@@ -324,7 +322,6 @@ public class ConnectionConductorImplTest {
                 EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
 
         int i = 1;
-        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(i++, "setConfig"));
         eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(i++, "multipartRequestInput"));
 
         executeNow();
@@ -363,7 +360,6 @@ public class ConnectionConductorImplTest {
                 EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
 
         int i = 1;
-        eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(i++, "setConfig"));
         eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(i++, "multipartRequestInput"));
 
         executeNow();
