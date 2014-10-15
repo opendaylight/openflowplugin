@@ -16,6 +16,24 @@
       "revId": "3ae9def5c9d0d563016e067fcc722590a4485ce9",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba8cc1f7_94655447",
+        "filename": "applications/table-miss-enforcer/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2014-10-15T07:42:17Z",
+      "side": 1,
+      "message": "Checkstyle will be turned on after stable branch is left/released. Until then I want to avoid differences between master and stable/helium as this will lead to later cherry-pick conflicts (the same change is already merged on master). \n\nAnyway thank you for your concern and eagle eye.",
+      "parentUuid": "ba8cc1f7_7488d022",
+      "revId": "3ae9def5c9d0d563016e067fcc722590a4485ce9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
