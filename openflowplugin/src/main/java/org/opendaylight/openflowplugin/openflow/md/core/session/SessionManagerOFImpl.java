@@ -9,12 +9,14 @@
 package org.opendaylight.openflowplugin.openflow.md.core.session;
 
 import com.google.common.util.concurrent.ListeningExecutorService;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
@@ -26,7 +28,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionConve
 import org.opendaylight.openflowplugin.openflow.md.queue.PopListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
-import org.opendaylight.yangtools.concepts.util.ListenerRegistry;
+import org.opendaylight.yangtools.util.ListenerRegistry;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
@@ -260,13 +262,23 @@ public class SessionManagerOFImpl implements SessionManager {
     @Override
     public void close() {
         LOG.debug("close");
-        sessionListeners = null;
         synchronized (sessionLot) {
             for (SessionContext sessionContext : sessionLot.values()) {
                 sessionContext.getPrimaryConductor().disconnect();
             }
             // TODO: handle timeouted shutdown
             rpcPool.shutdown();
+        }
+        
+        for (ListenerRegistration<SessionListener> listenerRegistration : sessionListeners) {
+            SessionListener listener = listenerRegistration.getInstance();
+            if (listener instanceof AutoCloseable) {
+                try {
+                    ((AutoCloseable) listener).close();
+                } catch (Exception e) {
+                    LOG.warn("closing of sessionListenerRegistration failed", e);
+                }
+            }
         }
     }
 

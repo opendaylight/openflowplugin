@@ -11,13 +11,11 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import com.google.common.util.concurrent.Futures;
-
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,15 +24,15 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
-import org.opendaylight.controller.sal.binding.api.NotificationListener;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.controller.sal.common.util.Rpcs;
-import org.opendaylight.openflowplugin.openflow.md.ModelDrivenSwitch;
 import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
+import org.opendaylight.openflowplugin.openflow.md.ModelDrivenSwitch;
 import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.openflow.md.core.NotificationEnqueuer;
-import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.openflow.md.core.session.IMessageDispatchService;
+import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SwitchSessionKeyOF;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutput;
@@ -45,12 +43,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yangtools.concepts.CompositeObjectRegistration;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.Notification;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListeningExecutorService;
 
 /**
  * Created by Martin Bobak mbobak@cisco.com on 8/26/14.
@@ -74,13 +73,19 @@ public class SalRegistrationManagerTest {
     private BindingAwareBroker.ProviderContext providerContext;
     @Mock
     private NotificationEnqueuer notificationEnqueuer;
+    @Mock
+    private ListeningExecutorService rpcPool;
+    @Mock
+    private NotificationProviderService notificationProviderService;
 
     private ModelDrivenSwitch mdSwitchOF13;
 
     CompositeObjectRegistration<ModelDrivenSwitch> registration;
 
+
     @Before
     public void setUp() {
+        OFSessionUtil.getSessionManager().setRpcPool(rpcPool);
 
         Mockito.when(context.getPrimaryConductor()).thenReturn(conductor);
         Mockito.when(context.getMessageDispatchService()).thenReturn(messageDispatchService);
@@ -106,7 +111,15 @@ public class SalRegistrationManagerTest {
 
         salRegistrationManager = new SalRegistrationManager();
         salRegistrationManager.onSessionInitiated(providerContext);
-        salRegistrationManager.setPublishService(new MockNotificationProviderService());
+        salRegistrationManager.setPublishService(notificationProviderService);
+    }
+    
+    /**
+     * free sesion manager
+     */
+    @After
+    public void tearDown() {
+        OFSessionUtil.releaseSessionManager();
     }
 
     /**
@@ -163,35 +176,5 @@ public class SalRegistrationManagerTest {
         SwitchSessionKeyOF switchSessionKeyOF = new SwitchSessionKeyOF();
         salRegistrationManager.onSessionAdded(switchSessionKeyOF, context);
     }
-
-
-    private class MockNotificationProviderService implements NotificationProviderService {
-
-        @Override
-        public void publish(Notification notification) {
-
-        }
-
-        @Override
-        public void publish(Notification notification, ExecutorService executorService) {
-
-        }
-
-        @Override
-        public ListenerRegistration<NotificationInterestListener> registerInterestListener(NotificationInterestListener notificationInterestListener) {
-            return null;
-        }
-
-        @Override
-        public <T extends Notification> ListenerRegistration<NotificationListener<T>> registerNotificationListener(Class<T> tClass, NotificationListener<T> tNotificationListener) {
-            return null;
-        }
-
-        @Override
-        public ListenerRegistration<org.opendaylight.yangtools.yang.binding.NotificationListener> registerNotificationListener(org.opendaylight.yangtools.yang.binding.NotificationListener notificationListener) {
-            return null;
-        }
-    }
-
 }
 

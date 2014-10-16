@@ -40,6 +40,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yangtools.concepts.CompositeObjectRegistration;
+import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier.InstanceIdentifierBuilder;
 import org.slf4j.Logger;
@@ -59,6 +60,8 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
     private DataBroker dataService;
 
     private SwitchFeaturesUtil swFeaturesUtil;
+
+    private ListenerRegistration<SessionListener> sessionListenerRegistration;
 
     public SalRegistrationManager() {
         swFeaturesUtil = SwitchFeaturesUtil.getInstance();
@@ -82,7 +85,7 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
         this.publishService = session.getSALService(NotificationProviderService.class);
         this.dataService = session.getSALService(DataBroker.class);
         // We register as listener for Session Manager
-        getSessionManager().registerSessionListener(this);
+        sessionListenerRegistration = getSessionManager().registerSessionListener(this);
         getSessionManager().setNotificationProviderService(publishService);
         getSessionManager().setDataBroker(dataService);
         LOG.debug("SalRegistrationManager initialized");
@@ -199,5 +202,8 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
         dataService = null;
         providerContext = null;
         publishService = null;
+        if (sessionListenerRegistration != null) {
+            sessionListenerRegistration.close();
+        }
     }
 }
