@@ -52,9 +52,7 @@
         <bundle>mvn:org.opendaylight.openflowplugin.applications/table-miss-enforcer/${project.version}</bundle>
         <configfile finalname="etc/opendaylight/karaf/69-table-miss-enforcer.xml">mvn:org.opendaylight.openflowplugin.applications/table-miss-enforcer/${project.version}/xml/config</configfile>
 
-<!--
         <bundle>mvn:org.opendaylight.openflowplugin.applications/of-switch-config-pusher/${project.version}</bundle>
         <configfile finalname="etc/opendaylight/karaf/70-of-switch-config-pusher.xml">mvn:org.opendaylight.openflowplugin.applications/of-switch-config-pusher/${project.version}/xml/config</configfile>
--->
     </feature>
 </features>
