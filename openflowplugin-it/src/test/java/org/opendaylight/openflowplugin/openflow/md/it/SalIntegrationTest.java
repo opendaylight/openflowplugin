@@ -65,7 +65,7 @@ public class SalIntegrationTest {
      * @return timeout for case of failure
      */
     private static long getFailSafeTimeout() {
-        return 20000;
+        return 30000;
     }
     
     /**
@@ -75,7 +75,7 @@ public class SalIntegrationTest {
     @Before
     public void setUp() throws InterruptedException {
         //FIXME: plugin should provide service exposing startup result via future 
-        Thread.sleep(5000);
+        Thread.sleep(6000);
     }
     
     /**
