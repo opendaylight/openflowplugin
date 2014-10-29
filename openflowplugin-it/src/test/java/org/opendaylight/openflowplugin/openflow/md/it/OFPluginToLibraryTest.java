@@ -11,6 +11,7 @@ import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 
 import java.util.Stack;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -25,6 +26,7 @@ import org.opendaylight.openflowjava.protocol.impl.clients.ClientEvent;
 import org.opendaylight.openflowjava.protocol.impl.clients.ScenarioHandler;
 import org.opendaylight.openflowjava.protocol.impl.clients.SimpleClient;
 import org.opendaylight.openflowjava.protocol.impl.clients.SleepEvent;
+import org.opendaylight.openflowplugin.openflow.md.core.ThreadPoolLoggingExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.OpenflowPluginProvider;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
@@ -46,6 +48,8 @@ public class OFPluginToLibraryTest {
     private static final Logger LOG = LoggerFactory
             .getLogger(OFPluginToLibraryTest.class);
 
+    private static final ArrayBlockingQueue<Runnable> SCENARIO_POOL_QUEUE = new ArrayBlockingQueue<>(1);
+
     @Inject @Filter(timeout=20000)
     OpenflowPluginProvider openflowPluginProvider;
 
@@ -53,6 +57,7 @@ public class OFPluginToLibraryTest {
     BundleContext ctx;
 
     private SimpleClient switchSim;
+    private ThreadPoolLoggingExecutor scenarioPool;
 
     /**
      * test setup
@@ -61,6 +66,7 @@ public class OFPluginToLibraryTest {
     @Before
     public void setUp() throws InterruptedException {
         LOG.debug("openflowPluginProvider: "+openflowPluginProvider);
+        scenarioPool = new ThreadPoolLoggingExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, SCENARIO_POOL_QUEUE, "scenario");
         //FIXME: plugin should provide service exposing startup result via future
         Thread.sleep(5000);
     }
@@ -77,9 +83,10 @@ public class OFPluginToLibraryTest {
             String msg = "waiting for scenario to finish failed: "+e.getMessage();
             LOG.error(msg, e);
             Assert.fail(msg);
+        } finally {
+            scenarioPool.shutdownNow();
+            SCENARIO_POOL_QUEUE.clear();
         }
-
-        //TODO: dump errors of plugin (by exploiting ErrorHandler)
 
         try {
             LOG.debug("checking if simulator succeeded to connect to controller");
@@ -107,7 +114,7 @@ public class OFPluginToLibraryTest {
 
         ScenarioHandler scenario = new ScenarioHandler(handshakeScenario);
         switchSim.setScenarioHandler(scenario);
-        switchSim.run();
+        scenarioPool.execute(switchSim);
     }
 
     /**
@@ -125,7 +132,7 @@ public class OFPluginToLibraryTest {
 
         ScenarioHandler scenario = new ScenarioHandler(handshakeScenario);
         switchSim.setScenarioHandler(scenario);
-        switchSim.run();
+        scenarioPool.execute(switchSim);
     }
 
     /**
@@ -144,7 +151,7 @@ public class OFPluginToLibraryTest {
 
         ScenarioHandler scenario = new ScenarioHandler(handshakeScenario);
         switchSim.setScenarioHandler(scenario);
-        switchSim.run();
+        scenarioPool.execute(switchSim);
     }
 
     /**
@@ -165,7 +172,7 @@ public class OFPluginToLibraryTest {
 
         ScenarioHandler scenario = new ScenarioHandler(handshakeScenario);
         switchSim.setScenarioHandler(scenario);
-        switchSim.run();
+        scenarioPool.execute(switchSim);
     }
 
     /**
@@ -191,7 +198,7 @@ public class OFPluginToLibraryTest {
 
         ScenarioHandler scenario = new ScenarioHandler(handshakeScenario);
         switchSim.setScenarioHandler(scenario);
-        switchSim.run();
+        scenarioPool.execute(switchSim);
     }
 
     /**
@@ -214,7 +221,7 @@ public class OFPluginToLibraryTest {
 
         ScenarioHandler scenario = new ScenarioHandler(handshakeScenario);
         switchSim.setScenarioHandler(scenario);
-        switchSim.run();
+        scenarioPool.execute(switchSim);
     }
 
     /**
