@@ -141,7 +141,7 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
         bandHeader.setBandBurstSize((long) 444);
         DscpRemarkBuilder dscpRemark = new DscpRemarkBuilder();
         dscpRemark.setDscpRemarkBurstSize((long) 5);
-        dscpRemark.setPercLevel((short) 1);
+        dscpRemark.setPrecLevel((short) 1);
         dscpRemark.setDscpRemarkRate((long) 12);
         bandHeader.setBandType(dscpRemark.build());
         MeterBandTypesBuilder bandTypes = new MeterBandTypesBuilder();
@@ -180,7 +180,7 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
         bandHeader.setBandBurstSize((long) 444);
         DscpRemarkBuilder dscpRemark = new DscpRemarkBuilder();
         dscpRemark.setDscpRemarkBurstSize((long) 5);
-        dscpRemark.setPercLevel((short) 1);
+        dscpRemark.setPrecLevel((short) 1);
         dscpRemark.setDscpRemarkRate((long) 12);
         bandHeader.setBandType(dscpRemark.build());
         MeterBandTypesBuilder bandTypes = new MeterBandTypesBuilder();
