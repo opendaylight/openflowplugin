@@ -13,15 +13,14 @@ import static org.mockito.Mockito.when;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
-import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.ConnectionConductor;
+import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.MeterConfigStatsUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.MeterStatisticsUpdated;
@@ -56,14 +55,17 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 
 /**
  * @author michal.polkorab
- *
  */
 public class MultipartReplyTranslatorFifthTest {
 
-    @Mock SwitchConnectionDistinguisher cookie;
-    @Mock SessionContext sc;
-    @Mock ConnectionConductor conductor;
-    @Mock GetFeaturesOutput features;
+    @Mock
+    SwitchConnectionDistinguisher cookie;
+    @Mock
+    SessionContext sc;
+    @Mock
+    ConnectionConductor conductor;
+    @Mock
+    GetFeaturesOutput features;
 
     MultipartReplyTranslator translator = new MultipartReplyTranslator();
 
@@ -98,7 +100,7 @@ public class MultipartReplyTranslatorFifthTest {
         caseBuilder.setMultipartReplyMeter(meterBuilder.build());
         mpBuilder.setMultipartReplyBody(caseBuilder.build());
         MultipartReplyMessage message = mpBuilder.build();
-        
+
         List<DataObject> list = translator.translate(cookie, sc, message);
 
         Assert.assertEquals("Wrong list size", 1, list.size());
@@ -156,7 +158,7 @@ public class MultipartReplyTranslatorFifthTest {
         caseBuilder.setMultipartReplyMeter(meterBuilder.build());
         mpBuilder.setMultipartReplyBody(caseBuilder.build());
         MultipartReplyMessage message = mpBuilder.build();
-        
+
         List<DataObject> list = translator.translate(cookie, sc, message);
 
         Assert.assertEquals("Wrong list size", 1, list.size());
@@ -166,7 +168,7 @@ public class MultipartReplyTranslatorFifthTest {
         Assert.assertEquals("Wrong transaction-id", 123, statUpdate.getTransactionId().getValue().intValue());
         Assert.assertEquals("Wrong group stats size", 2, statUpdate.getMeterStats().size());
         org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.statistics.reply
-        .MeterStats stat = statUpdate.getMeterStats().get(0);
+                .MeterStats stat = statUpdate.getMeterStats().get(0);
         Assert.assertEquals("Wrong meter-id", 15, stat.getMeterId().getValue().intValue());
         Assert.assertEquals("Wrong flow count", 16, stat.getFlowCount().getValue().intValue());
         Assert.assertEquals("Wrong packet in count", 17, stat.getPacketInCount().getValue().intValue());
@@ -215,7 +217,7 @@ public class MultipartReplyTranslatorFifthTest {
         caseBuilder.setMultipartReplyMeterConfig(meterBuilder.build());
         mpBuilder.setMultipartReplyBody(caseBuilder.build());
         MultipartReplyMessage message = mpBuilder.build();
-        
+
         List<DataObject> list = translator.translate(cookie, sc, message);
 
         Assert.assertEquals("Wrong list size", 1, list.size());
@@ -276,7 +278,7 @@ public class MultipartReplyTranslatorFifthTest {
         caseBuilder.setMultipartReplyMeterConfig(meterBuilder.build());
         mpBuilder.setMultipartReplyBody(caseBuilder.build());
         MultipartReplyMessage message = mpBuilder.build();
-        
+
         List<DataObject> list = translator.translate(cookie, sc, message);
 
         Assert.assertEquals("Wrong list size", 1, list.size());
@@ -286,11 +288,10 @@ public class MultipartReplyTranslatorFifthTest {
         Assert.assertEquals("Wrong transaction-id", 123, statUpdate.getTransactionId().getValue().intValue());
         Assert.assertEquals("Wrong meter config stats size", 2, statUpdate.getMeterConfigStats().size());
         MeterConfigStats stat = statUpdate.getMeterConfigStats().get(0);
-        // TODO: fix implementation - add flags creation
-//        Assert.assertEquals("Wrong flag", false, stat.getFlags().isMeterBurst());
-//        Assert.assertEquals("Wrong flag", false, stat.getFlags().isMeterPktps());
-//        Assert.assertEquals("Wrong flag", true, stat.getFlags().isMeterKbps());
-//        Assert.assertEquals("Wrong flag", true, stat.getFlags().isMeterStats());
+        Assert.assertEquals("Wrong flag", false, stat.getFlags().isMeterBurst());
+        Assert.assertEquals("Wrong flag", false, stat.getFlags().isMeterPktps());
+        Assert.assertEquals("Wrong flag", true, stat.getFlags().isMeterKbps());
+        Assert.assertEquals("Wrong flag", true, stat.getFlags().isMeterStats());
         Assert.assertEquals("Wrong meter-id", 20, stat.getMeterId().getValue().intValue());
         Assert.assertEquals("Wrong bands size", 2, stat.getMeterBandHeaders().getMeterBandHeader().size());
         MeterBandHeader header = stat.getMeterBandHeaders().getMeterBandHeader().get(0);
@@ -310,11 +311,10 @@ public class MultipartReplyTranslatorFifthTest {
         Assert.assertEquals("Wrong flag", true, header.getMeterBandTypes().getFlags().isOfpmbtDscpRemark());
         Assert.assertEquals("Wrong flag", false, header.getMeterBandTypes().getFlags().isOfpmbtExperimenter());
         stat = statUpdate.getMeterConfigStats().get(1);
-        // TODO: fix implementation - add flags creation
-//      Assert.assertEquals("Wrong flag", true, stat.getFlags().isMeterBurst());
-//      Assert.assertEquals("Wrong flag", true, stat.getFlags().isMeterPktps());
-//      Assert.assertEquals("Wrong flag", false, stat.getFlags().isMeterKbps());
-//      Assert.assertEquals("Wrong flag", false, stat.getFlags().isMeterStats());
+        Assert.assertEquals("Wrong flag", true, stat.getFlags().isMeterBurst());
+        Assert.assertEquals("Wrong flag", true, stat.getFlags().isMeterPktps());
+        Assert.assertEquals("Wrong flag", false, stat.getFlags().isMeterKbps());
+        Assert.assertEquals("Wrong flag", false, stat.getFlags().isMeterStats());
         Assert.assertEquals("Wrong meter-id", 26, stat.getMeterId().getValue().intValue());
         Assert.assertEquals("Wrong bands size", 0, stat.getMeterBandHeaders().getMeterBandHeader().size());
     }
