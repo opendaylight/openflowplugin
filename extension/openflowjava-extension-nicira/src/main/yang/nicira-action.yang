@@ -24,6 +24,12 @@ module nicira-action {
     identity nxm-nx-output-reg {
         base ofaction:experimenter-action-sub-type;
     }
+    identity nxm-nx-resubmit {
+        base ofaction:experimenter-action-sub-type;
+    }
+    identity nxm-nx-multipath {
+        base ofaction:experimenter-action-sub-type;
+    }
 
     grouping ofj-nx-action-reg-load-grouping {
         container action-reg-load {
@@ -71,11 +77,84 @@ module nicira-action {
         }
     }
 
+    grouping ofj-nx-action-resubmit-grouping {
+        container action-resubmit {
+            leaf in-port {
+                type uint16;
+                default 0xfff8; // OFPP_INPORT
+            }
+            leaf table {
+                type uint8 {
+                    range "0 .. 255";
+                }
+                default 255; // Current Table
+            }
+        }
+    }
+
+    typedef ofj-nx-hash-fields {
+        type enumeration {
+            enum NX_HASH_FIELDS_ETH_SRC {
+                value 0;
+                description "eth src address only";
+            }
+            enum NX_HASH_FIELDS_SYMMETRIC_L4 {
+                value 1;
+                description "L2 through L4 fields";
+            }
+        }
+    }
+
+    typedef ofj-nx-mp-algorithm {
+        type enumeration {
+            enum NX_MP_ALG_MODULO_N {
+                value 0;
+            }
+            enum NX_MP_ALG_HASH_THRESHOLD {
+                value 1;
+            }
+            enum NX_MP_ALG_HRW {
+                value 2;
+            }
+            enum NX_MP_ALG_ITER_HASH {
+                value 3;
+            }
+        }
+    }
+
+    grouping ofj-nx-action-multipath-grouping {
+        container action-multipath {
+            leaf fields {
+                type ofj-nx-hash-fields;
+            }
+            leaf basis {
+                type uint16;
+                default 0x400;
+            }
+            leaf algorithm {
+                type ofj-nx-mp-algorithm;
+            }
+            leaf max-link {
+                type uint16;
+            }
+            leaf arg {
+                type uint32;
+            }
+            leaf ofs-nbits {
+                type uint16;
+            }
+            leaf dst {
+                type uint32;
+            }
+        }
+    }
+
     augment "/ofaction:actions-container/ofaction:action" {
         ext:augment-identifier "ofj-aug-nx-action";
         uses ofj-nx-action-reg-load-grouping;
         uses ofj-nx-action-reg-move-grouping;
         uses ofj-nx-action-output-reg-grouping;
+        uses ofj-nx-action-resubmit-grouping;
+        uses ofj-nx-action-multipath-grouping;
     }
-
 }
