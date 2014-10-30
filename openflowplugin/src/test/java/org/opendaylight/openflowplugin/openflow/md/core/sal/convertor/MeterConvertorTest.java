@@ -78,7 +78,7 @@ public class MeterConvertorTest {
         DscpRemarkBuilder dscp = new DscpRemarkBuilder();
         dscp.setDscpRemarkBurstSize(DSCP_REMARK_BURST_SIZE);
         dscp.setDscpRemarkRate(DSCP_REMARK_RATE);
-        dscp.setPercLevel(DSCP_PERC_LEVEL);
+        dscp.setPrecLevel(DSCP_PERC_LEVEL);
         DscpRemark dscpRemark = dscp.build();
         meterBandHeaderBuilder1.setBandType(dscpRemark);
         meterBandHeaderBuilder1.setMeterBandTypes(meterBandTypesB1.build());
@@ -210,7 +210,7 @@ public class MeterConvertorTest {
 
         dscp.setDscpRemarkBurstSize(DSCP_REMARK_BURST_SIZE);
         dscp.setDscpRemarkRate(DSCP_REMARK_RATE);
-        dscp.setPercLevel(DSCP_PERC_LEVEL);
+        dscp.setPrecLevel(DSCP_PERC_LEVEL);
         DscpRemark dscpRemark = dscp.build();
         meterBandHeaderBuilder1.setBandType(dscpRemark);
         meterBandHeaderBuilder1.setMeterBandTypes(meterBandTypesB1.build());
@@ -358,7 +358,7 @@ public class MeterConvertorTest {
         DscpRemarkBuilder dscp = new DscpRemarkBuilder();
         dscp.setDscpRemarkBurstSize(11L);
         dscp.setDscpRemarkRate(21L);
-        dscp.setPercLevel((short) 1);
+        dscp.setPrecLevel((short) 1);
         DscpRemark dscpRemark = dscp.build();
         meterBandHeaderBuilder1.setBandType(dscpRemark);
         meterBandHeaderBuilder1.setMeterBandTypes(meterBandTypesB1.build());

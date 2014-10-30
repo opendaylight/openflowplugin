@@ -141,7 +141,7 @@ public final class MeterConvertor {
                         DscpRemark dscpRemark = (DscpRemark) meterBandHeader.getBandType();
                         meterBandDscpRemarkBuilder.setBurstSize(dscpRemark.getDscpRemarkBurstSize());
                         meterBandDscpRemarkBuilder.setRate(dscpRemark.getDscpRemarkRate());
-                        meterBandDscpRemarkBuilder.setPrecLevel(dscpRemark.getPercLevel());
+                        meterBandDscpRemarkBuilder.setPrecLevel(dscpRemark.getPrecLevel());
                         dscpCaseBuilder.setMeterBandDscpRemark(meterBandDscpRemarkBuilder.build());
                         meterBandItem = dscpCaseBuilder.build();
                         bandsB = new BandsBuilder();
