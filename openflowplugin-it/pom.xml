@@ -105,11 +105,6 @@
         </dependency>
         <dependency>
             <groupId>org.opendaylight.openflowjava</groupId>
-            <artifactId>openflow-protocol-impl</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.openflowjava</groupId>
             <artifactId>simple-client</artifactId>
             <scope>test</scope>
         </dependency>
