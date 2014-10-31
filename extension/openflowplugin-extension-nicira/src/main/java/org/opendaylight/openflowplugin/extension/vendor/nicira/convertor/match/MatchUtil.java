@@ -41,6 +41,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfEthDstGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfEthSrcGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfEthTypeGrouping;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxNspGrouping;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxNsiGrouping;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
 
 /**
@@ -74,6 +76,10 @@ public class MatchUtil {
             NxmOfEthSrcGrouping.class);
     public final static GroupingResolver<NxmOfEthTypeGrouping, Extension> ethTypeResolver = new GroupingResolver<>(
             NxmOfEthTypeGrouping.class);
+    public final static GroupingResolver<NxmNxNsiGrouping, Extension> nsiResolver = new GroupingResolver<>(
+            NxmNxNsiGrouping.class);
+    public final static GroupingResolver<NxmNxNspGrouping, Extension> nspResolver = new GroupingResolver<>(
+            NxmNxNspGrouping.class);
     public final static ExperimenterIdMatchEntry EXPERIMENTER_ID_MATCH_ENTRY;
 
     static {
@@ -97,6 +103,8 @@ public class MatchUtil {
         ethDstResolver.setAugmentations(augmentationsOfExtension);
         ethSrcResolver.setAugmentations(augmentationsOfExtension);
         ethTypeResolver.setAugmentations(augmentationsOfExtension);
+        nspResolver.setAugmentations(augmentationsOfExtension);
+        nsiResolver.setAugmentations(augmentationsOfExtension);
         ExperimenterIdMatchEntryBuilder experimenterIdMatchEntryBuilder = new ExperimenterIdMatchEntryBuilder();
         experimenterIdMatchEntryBuilder.setExperimenter(new ExperimenterId(NiciraConstants.NX_VENDOR_ID));
         EXPERIMENTER_ID_MATCH_ENTRY = experimenterIdMatchEntryBuilder.build();

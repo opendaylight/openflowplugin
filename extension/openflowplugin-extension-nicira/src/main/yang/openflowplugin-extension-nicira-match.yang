@@ -3,11 +3,11 @@ module openflowplugin-extension-nicira-match {
 
     namespace "urn:opendaylight:openflowplugin:extension:nicira:match";
     prefix "openflowplugin-nicira-match";
-	
-	import yang-ext {prefix ext; revision-date "2013-07-09";}
-	import flow-node-inventory {prefix fni; revision-date 2013-08-19; }
-	import opendaylight-inventory {prefix inv;revision-date "2013-08-19";}
-	import sal-flow {prefix sal-flow;revision-date "2013-08-19";}
+
+    import yang-ext {prefix ext; revision-date "2013-07-09";}
+    import flow-node-inventory {prefix fni; revision-date 2013-08-19; }
+    import opendaylight-inventory {prefix inv;revision-date "2013-08-19";}
+    import sal-flow {prefix sal-flow;revision-date "2013-08-19";}
     import packet-processing {prefix sal-packet;revision-date "2013-07-09";}
     import openflowplugin-extension-general {prefix ext-gen;revision-date "2014-07-14";}
     import opendaylight-flow-statistics {prefix odl-flow-stats;revision-date "2013-08-19";}
@@ -79,6 +79,12 @@ module openflowplugin-extension-nicira-match {
     identity nxm-of-eth-type-key {
         base ext-gen:extension-key;
     }
+    identity nxm-nx-nsp-key {
+        base ext-gen:extension-key;
+    }
+    identity nxm-nx-nsi-key {
+        base ext-gen:extension-key;
+    }
     
     grouping ipv4-address-grouping {
         leaf ipv4-address {
@@ -91,18 +97,18 @@ module openflowplugin-extension-nicira-match {
         }
     }
 
-	grouping nxm-nx-reg-grouping {
-		container nxm-nx-reg {
-			leaf reg {
+    grouping nxm-nx-reg-grouping {
+        container nxm-nx-reg {
+            leaf reg {
                 type identityref {
                     base nicira-match:nxm-nx-reg;
                 }
             }
-			leaf value {
+            leaf value {
                 type uint32;
             }
-		}
-	}
+        }
+    }
     grouping nxm-nx-tun-id-grouping {
         container nxm-nx-tun-id {
             leaf value {
@@ -167,6 +173,21 @@ module openflowplugin-extension-nicira-match {
             }
         }
     }
+    grouping nxm-nx-nsp-grouping {
+        container nxm-nx-nsp {
+            leaf value {
+                type uint32;
+            }
+        }
+    }
+    grouping nxm-nx-nsi-grouping {
+        container nxm-nx-nsi {
+            leaf nsi {
+                type uint8;
+            }
+        }
+    }
+
     
     grouping all-matches-grouping {
         uses nxm-nx-reg-grouping;
@@ -181,6 +202,8 @@ module openflowplugin-extension-nicira-match {
         uses nxm-of-eth-src-grouping;
         uses nxm-of-eth-dst-grouping;
         uses nxm-of-eth-type-grouping;
+        uses nxm-nx-nsp-grouping;
+        uses nxm-nx-nsi-grouping;
     }
     
     // MATCH augmentations
