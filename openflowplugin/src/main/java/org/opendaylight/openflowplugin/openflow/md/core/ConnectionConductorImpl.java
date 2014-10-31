@@ -432,6 +432,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         postHandshakeBasic(featureOutput, negotiatedVersion);
         
         // post-handshake actions
+        setDefaultConfig();
         if(version == OFConstants.OFP_VERSION_1_3){
             requestPorts();
             requestGroupFeatures();
@@ -463,6 +464,16 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         hsPool.purge();
         conductorState = CONDUCTOR_STATE.WORKING;
         QueueKeeperFactory.plugQueue(queueProcessor, queue);
+    }
+
+    private void setDefaultConfig(){
+        SetConfigInputBuilder builder = new SetConfigInputBuilder();
+        builder.setVersion(getVersion());
+        builder.setXid(getSessionContext().getNextXid());
+        SwitchConfigFlag flag = SwitchConfigFlag.FRAGNORMAL;
+        builder.setFlags(flag);
+        builder.setMissSendLen(OFConstants.OFPCML_NO_BUFFER);
+        getConnectionAdapter().setConfig(builder.build());
     }
 
     /*
