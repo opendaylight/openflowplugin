@@ -16,6 +16,24 @@
       "revId": "82d0471682c1e6374261727d3aed9d7ea7841d77",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba8cc1f7_2fee60ed",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/session/SessionManagerOFImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 141,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2014-10-31T16:25:38Z",
+      "side": 1,
+      "message": "Yes, you are right, announcing session as valid sooner enabled for socket address to read as there was session validity check. \nI realized that in this state there must be a connection available. Which implies that there is supposed to be address available too. Reading this address is part of internal logic and result of it goes to notification. So better place to address this issue was to reconsider session validity check. \n\nAnnouncing the session as valid before registering services might lead to other issues.",
+      "parentUuid": "ba8cc1f7_5414acf4",
+      "revId": "82d0471682c1e6374261727d3aed9d7ea7841d77",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
