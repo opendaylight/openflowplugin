@@ -5,16 +5,18 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.openflowplugin.api.openflow.md.queue;
+package org.opendaylight.openflowplugin.openflow.md.core;
 
 /**
- * message harvester simple control
+ * provider of wrapped notification enqueue
  */
-public interface HarvesterHandle {
+public interface NotificationEnqueuer {
 
     /**
-     * wakeup harvester in case it is in phase of starving sleep
+     * enqueue given notification into standard message processing queue
+     * 
+     * @param notification
      */
-    void ping();
+    void enqueueNotification(NotificationQueueWrapper notification);
 
 }

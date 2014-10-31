@@ -19,14 +19,11 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
-import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
-import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionListener;
-import org.opendaylight.openflowplugin.api.openflow.md.core.session.SwitchSessionKeyOF;
 import org.opendaylight.openflowplugin.api.statistics.MessageSpy;
-import org.opendaylight.openflowplugin.api.openflow.md.core.ConnectionConductor;
-import org.opendaylight.openflowplugin.api.openflow.md.core.IMDMessageTranslator;
-import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
-import org.opendaylight.openflowplugin.api.openflow.md.queue.PopListener;
+import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
+import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
+import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionConverterProvider;
+import org.opendaylight.openflowplugin.openflow.md.queue.PopListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.concepts.util.ListenerRegistry;
@@ -38,7 +35,7 @@ import org.slf4j.LoggerFactory;
 /**
  * @author mirehak
  */
-public class SessionManagerOFImpl implements ConjunctSessionManager {
+public class SessionManagerOFImpl implements SessionManager {
 
     protected static final Logger LOG = LoggerFactory.getLogger(SessionManagerOFImpl.class);
     private static SessionManagerOFImpl instance;
@@ -56,7 +53,7 @@ public class SessionManagerOFImpl implements ConjunctSessionManager {
     /**
      * @return singleton instance
      */
-    public static ConjunctSessionManager getInstance() {
+    public static SessionManager getInstance() {
         if (instance == null) {
             synchronized (SessionContextOFImpl.class) {
                 if (instance == null) {

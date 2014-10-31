@@ -12,8 +12,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.opendaylight.openflowplugin.api.openflow.md.core.ConnectionConductor;
-import org.opendaylight.openflowplugin.api.openflow.md.core.IMDMessageTranslator;
+import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
+import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.api.statistics.MessageSpy;

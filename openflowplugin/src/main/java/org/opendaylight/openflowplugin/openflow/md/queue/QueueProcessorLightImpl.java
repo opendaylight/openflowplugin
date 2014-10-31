@@ -20,14 +20,9 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
-import org.opendaylight.openflowplugin.api.openflow.md.queue.HarvesterHandle;
-import org.opendaylight.openflowplugin.api.openflow.md.queue.PopListener;
-import org.opendaylight.openflowplugin.api.openflow.md.queue.QueueItem;
-import org.opendaylight.openflowplugin.api.openflow.md.queue.QueueKeeper;
-import org.opendaylight.openflowplugin.api.openflow.md.queue.QueueProcessor;
 import org.opendaylight.openflowplugin.api.statistics.MessageSpy;
 import org.opendaylight.openflowplugin.api.statistics.MessageSpy.STATISTIC_GROUP;
-import org.opendaylight.openflowplugin.api.openflow.md.core.IMDMessageTranslator;
+import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.ThreadPoolLoggingExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
@@ -37,7 +32,7 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * {@link org.opendaylight.openflowplugin.api.openflow.md.queue.QueueKeeper} implementation focused to keep order and use up mutiple threads for translation phase.
+ * {@link QueueKeeper} implementation focused to keep order and use up mutiple threads for translation phase.
  * <br/>
  * There is internal thread pool of limited size ({@link QueueProcessorLightImpl#setProcessingPoolSize(int)})
  * dedicated to translation. Then there is singleThreadPool dedicated to publishing (via popListeners)
