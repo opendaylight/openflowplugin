@@ -8,7 +8,7 @@
 package org.opendaylight.openflowplugin.openflow.md.core;
 
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
-import org.opendaylight.openflowplugin.api.openflow.md.queue.PopListener;
+import org.opendaylight.openflowplugin.openflow.md.queue.PopListener;
 import org.opendaylight.openflowplugin.api.statistics.MessageSpy;
 import org.opendaylight.yangtools.yang.binding.Notification;
 

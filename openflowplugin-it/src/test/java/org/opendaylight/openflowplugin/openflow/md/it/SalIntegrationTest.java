@@ -126,7 +126,7 @@ public class SalIntegrationTest {
             Assert.fail(message);
         }
         
-        Thread.sleep(1000);
+        Thread.sleep(4000);
         assertEquals(1, listener.nodeUpdated.size());
         assertNotNull(listener.nodeUpdated.get(0));
     }

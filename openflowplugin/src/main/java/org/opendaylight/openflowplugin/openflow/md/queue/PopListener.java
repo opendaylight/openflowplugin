@@ -5,20 +5,19 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.openflowplugin.api.openflow.md.core;
+package org.opendaylight.openflowplugin.openflow.md.queue;
 
-import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
 
 /**
  * @author mirehak
+ * @param <T> result type
  *
  */
-public interface ErrorHandler {
-
+public interface PopListener<T> {
+    
     /**
-     * @param e cause
-     * @param sessionContext of source
+     * @param processedMessage
      */
-    void handleException(Throwable e, SessionContext sessionContext);
+    void onPop(T processedMessage);
 
 }

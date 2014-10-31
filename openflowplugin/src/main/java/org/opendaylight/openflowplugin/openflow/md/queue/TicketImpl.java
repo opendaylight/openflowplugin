@@ -9,8 +9,8 @@ package org.opendaylight.openflowplugin.openflow.md.queue;
 
 import java.util.List;
 
-import org.opendaylight.openflowplugin.api.openflow.md.core.ConnectionConductor;
-import org.opendaylight.openflowplugin.api.openflow.md.queue.QueueKeeper.QueueType;
+import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
+import org.opendaylight.openflowplugin.openflow.md.queue.QueueKeeper.QueueType;
 
 import com.google.common.util.concurrent.SettableFuture;
 

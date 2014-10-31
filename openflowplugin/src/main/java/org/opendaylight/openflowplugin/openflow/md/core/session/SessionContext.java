@@ -6,17 +6,17 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.openflowplugin.api.openflow.md.core.session;
+package org.opendaylight.openflowplugin.openflow.md.core.session;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.opendaylight.openflowplugin.api.openflow.md.core.ConnectionConductor;
-import org.opendaylight.openflowplugin.api.openflow.md.core.NotificationEnqueuer;
-import org.opendaylight.openflowplugin.api.openflow.md.ModelDrivenSwitch;
-import org.opendaylight.openflowplugin.api.openflow.md.core.NotificationQueueWrapper;
+import org.opendaylight.openflowplugin.openflow.md.ModelDrivenSwitch;
+import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductor;
+import org.opendaylight.openflowplugin.openflow.md.core.NotificationEnqueuer;
+import org.opendaylight.openflowplugin.openflow.md.core.NotificationQueueWrapper;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
@@ -163,7 +163,7 @@ public interface SessionContext {
     int getSeed();
     
     /**
-     * @return (wrapped) notification enqueue service - {@link NotificationQueueWrapper}
+     * @return (wrapped) notification enqueue service - {@link NotificationQueueWrapper} 
      */
     NotificationEnqueuer getNotificationEnqueuer();
 }
