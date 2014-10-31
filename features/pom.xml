@@ -76,11 +76,6 @@
       <artifactId>table-miss-enforcer</artifactId>
       <version>${project.version}</version>
     </dependency>
-      <dependency>
-          <groupId>org.opendaylight.openflowplugin.applications</groupId>
-          <artifactId>of-switch-config-pusher</artifactId>
-          <version>${project.version}</version>
-      </dependency>
     <dependency>
       <groupId>org.opendaylight.openflowplugin</groupId>
       <artifactId>drop-test-karaf</artifactId>
@@ -110,7 +105,7 @@
       <artifactId>liblldp</artifactId>
       <version>${sal.api.version}</version>
     </dependency>
-
+    
     <!-- test the features.xml -->
     <dependency>
       <groupId>org.opendaylight.yangtools</groupId>
