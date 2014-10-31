@@ -1,0 +1,8 @@
+Code-Review+2: michal rehak <mirehak@cisco.com>
+Verified+1: jenkins-openflowplugin <jenkins-openflowplugin@opendaylight.org>
+Code-Review+1: Martin Bobak <mbobak@cisco.com>
+Submitted-by: michal rehak <mirehak@cisco.com>
+Submitted-at: Fri, 31 Oct 2014 14:41:12 +0000
+Reviewed-on: https://git.opendaylight.org/gerrit/12403
+Project: openflowplugin
+Branch: refs/heads/stable/helium
