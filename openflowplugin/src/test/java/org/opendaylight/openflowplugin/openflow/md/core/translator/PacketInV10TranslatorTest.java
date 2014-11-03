@@ -8,14 +8,10 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.translator;
 
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.EventLoopGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.nio.NioSocketChannel;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.math.BigInteger;
-import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -23,14 +19,17 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
-import org.opendaylight.openflowjava.protocol.impl.connection.ConnectionAdapterImpl;
+import org.opendaylight.openflowplugin.api.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
-import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductorImpl;
-import org.opendaylight.openflowplugin.api.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
+import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductorImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContextOFImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SwitchConnectionCookieOFImpl;
 import org.opendaylight.openflowplugin.openflow.md.queue.QueueProcessorLightImpl;
@@ -41,8 +40,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessageBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetConfigInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetConfigInputBuilder;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,11 +47,36 @@ import org.slf4j.LoggerFactory;
 /**
  * Created by Jakub Toth jatoth@cisco.com on 3/10/14.
  */
-
+@RunWith(MockitoJUnitRunner.class)
 public class PacketInV10TranslatorTest{
-    private static final Logger log = LoggerFactory
+    private static final Logger LOG = LoggerFactory
             .getLogger(PacketInV10TranslatorTest.class);
+    
+    @Mock
+    private SessionContext sc;
+    @Mock
+    private ConnectionConductorImpl conductor;
+    @Mock
+    private GetFeaturesOutput features;
 
+    private SwitchConnectionDistinguisher cookie;
+    private byte[] data;
+    
+    /**
+     * Initializes mocks
+     */
+    @Before
+    public void startUp() {
+        when(sc.getPrimaryConductor()).thenReturn(conductor);
+        when(conductor.getVersion()).thenReturn((short) EncodeConstants.OF10_VERSION_ID);
+        when(sc.getFeatures()).thenReturn(features);
+        when(features.getDatapathId()).thenReturn(new BigInteger("42"));
+        OpenflowPortsUtil.init();
+        
+        cookie = settingCookie();
+        data = messageData();
+    }
+    
     /**
      * test
      * {@link PacketInV10Translator#translate(SwitchConnectionDistinguisher, SessionContext, OfHeader)}
@@ -63,18 +85,18 @@ public class PacketInV10TranslatorTest{
      */
     @Test
     public void testTranslateWithAllNullParam(){
-        SwitchConnectionDistinguisher cookie = null;
+        SwitchConnectionDistinguisher cookieNull = null;
         SessionContext sessionContext = null;
         OfHeader msg = null;
 
         PacketInV10Translator packetInV10Translator = new PacketInV10Translator();
 
-        List<DataObject> salPacketIn = packetInV10Translator.translate(cookie,
+        List<DataObject> salPacketIn = packetInV10Translator.translate(cookieNull,
                 sessionContext, msg);
 
         Assert.assertEquals(true, salPacketIn.isEmpty());
 
-        log.info("Test with all null parameters done.");
+        LOG.info("Test with all null parameters done.");
     }
 
     /**
@@ -87,10 +109,7 @@ public class PacketInV10TranslatorTest{
     public void testTranslateDPIDNull(){
         SessionContextOFImpl sessionContextOFImpl = new SessionContextOFImpl();
 
-        SwitchConnectionDistinguisher cookie = this.settingCookie();
-
-        byte[] data = this.messageData();
-        PacketInMessage message = this.createPacketInMessage(data, null);
+        PacketInMessage message = createPacketInMessage(data, null);
 
         PacketInV10Translator packetInV10Translator = new PacketInV10Translator();
 
@@ -98,7 +117,7 @@ public class PacketInV10TranslatorTest{
                 sessionContextOFImpl, message);
 
         Assert.assertEquals(true, salPacketIn.isEmpty());
-        log.info("Test with null DPID parameter done.");
+        LOG.info("Test with null DPID parameter done.");
     }
 
     /**
@@ -109,7 +128,7 @@ public class PacketInV10TranslatorTest{
      */
     @Test
     public void testTranslateInPortNull(){
-        BigInteger datapathId = this.dataPathId();
+        BigInteger datapathId = dataPathId();
 
         GetFeaturesOutputBuilder featuresBuilder = new GetFeaturesOutputBuilder();
         featuresBuilder.setDatapathId(datapathId);
@@ -117,11 +136,7 @@ public class PacketInV10TranslatorTest{
         SessionContextOFImpl sessionContextOFImpl = new SessionContextOFImpl();
         sessionContextOFImpl.setFeatures(featuresBuilder.build());
 
-        SwitchConnectionDistinguisher cookie = this.settingCookie();
-
-        byte[] data = this.messageData();
-
-        PacketInMessage message = this.createPacketInMessage(data, null);
+        PacketInMessage message = createPacketInMessage(data, null);
 
         PacketInV10Translator packetInV10Translator = new PacketInV10Translator();
 
@@ -130,7 +145,7 @@ public class PacketInV10TranslatorTest{
 
         Assert.assertEquals(true, salPacketIn.isEmpty());
 
-        log.info("Test with null inPort parameter done.");
+        LOG.info("Test with null inPort parameter done.");
     }
 
     /**
@@ -142,42 +157,21 @@ public class PacketInV10TranslatorTest{
      */
     @Test
     public void testTranslate(){
-        BigInteger datapathId = this.dataPathId();
+        BigInteger datapathId = dataPathId();
 
-        byte[] data = this.messageData();
+        PacketInMessage message = createPacketInMessage(data, 5);
 
-        PacketInMessage message = this.createPacketInMessage(data, 5);
-
-        GetFeaturesOutput featuresOutput = this
-                .createGetFeatureOutput(datapathId);
-
-        NioSocketChannel nioSocketChannel = new NioSocketChannel();
-        this.registerChannel(nioSocketChannel);
-
-        SetConfigInput setConfigInput = this.createSetConfigInput();
-
-        ConnectionAdapterImpl connectionAdapter = new ConnectionAdapterImpl(
-                nioSocketChannel, new InetSocketAddress(51));
-        connectionAdapter.setConfig(setConfigInput);
-
-        ConnectionConductorImpl connectionConductor = new ConnectionConductorImpl(
-                connectionAdapter);
-
-        this.initConnectionConductor(connectionConductor, featuresOutput);
-
+        GetFeaturesOutput featuresOutput = createGetFeatureOutput(datapathId);
+        initConnectionConductor(conductor, featuresOutput);
         SessionContextOFImpl sessionContextOFImpl = new SessionContextOFImpl();
         sessionContextOFImpl.setFeatures(featuresOutput);
-        sessionContextOFImpl.setPrimaryConductor(connectionConductor);
-
-        SwitchConnectionDistinguisher cookie = this.settingCookie();
-
+        sessionContextOFImpl.setPrimaryConductor(conductor);
         PacketInV10Translator packetInV10Translator = new PacketInV10Translator();
-
         OpenflowPortsUtil.init();
-
         List<DataObject> salPacketIn = packetInV10Translator.translate(cookie,
                 sessionContextOFImpl, message);
-
+        
+        //TODO: rewrite to object and involve object comparison in Assert
         String expectedString = "[PacketReceived [_ingress=NodeConnectorRef [_value=KeyedInstanceIdentifier"
                 + "{targetType=interface org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector,"
                 + " path=[org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes,"
@@ -194,8 +188,7 @@ public class PacketInV10TranslatorTest{
                 + "packet.service.rev130709.SendToController, _payload=[115, 101, 110, 100, 79, 117,"
                 + " 116, 112, 117, 116, 77, 115, 103, 95, 84, 69, 83, 84], augmentation=[]]]";
         Assert.assertEquals(expectedString, salPacketIn.toString());
-
-        log.info("Test translate done.");
+        LOG.debug("Test translate done.");
     }
 
     /**
@@ -203,7 +196,7 @@ public class PacketInV10TranslatorTest{
      * 
      * @return BigInteger
      */
-    private BigInteger dataPathId(){
+    private static BigInteger dataPathId(){
         byte[] datapathIdByte = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
         for(int i = 0; i < datapathIdByte.length; i++){
             datapathIdByte[i] = 1;
@@ -216,7 +209,7 @@ public class PacketInV10TranslatorTest{
      * 
      * @return byte[]
      */
-    private byte[] messageData(){
+    private static byte[] messageData(){
         String string = new String("sendOutputMsg_TEST");
         return string.getBytes();
     }
@@ -228,7 +221,7 @@ public class PacketInV10TranslatorTest{
      * @param port
      * @return PacketInMessage
      */
-    private PacketInMessage createPacketInMessage(final byte[] data,
+    private static PacketInMessage createPacketInMessage(final byte[] data,
             final java.lang.Integer port){
         PacketInReason reason = PacketInReason.OFPRACTION;
         return new PacketInMessageBuilder()
@@ -242,7 +235,7 @@ public class PacketInV10TranslatorTest{
      * 
      * @return SwitchConnectionDistinguisher
      */
-    private SwitchConnectionDistinguisher settingCookie(){
+    private static SwitchConnectionDistinguisher settingCookie(){
         SwitchConnectionCookieOFImpl key = new SwitchConnectionCookieOFImpl();
         key.setAuxiliaryId((short) 1);
         key.init(42);
@@ -255,29 +248,9 @@ public class PacketInV10TranslatorTest{
      * @param datapathId
      * @return GetFeaturesOutput
      */
-    private GetFeaturesOutput createGetFeatureOutput(final BigInteger datapathId){
+    private static GetFeaturesOutput createGetFeatureOutput(final BigInteger datapathId){
         return new GetFeaturesOutputBuilder().setDatapathId(datapathId)
                 .setVersion((short) 0x01).build();
-    }
-
-    /**
-     * register eventLop
-     * 
-     * @param channel
-     */
-    private void registerChannel(final NioSocketChannel channel){
-        EventLoopGroup eventLop = new NioEventLoopGroup();
-        ChannelFuture regFuture = eventLop.register(channel);
-    }
-
-    /**
-     * build SetConfigInput with setting Version and Xid
-     * 
-     * @return SetConfigInput
-     */
-    private SetConfigInput createSetConfigInput(){
-        return new SetConfigInputBuilder().setVersion((short) 0x01)
-                .setXid(0xfffffL).build();
     }
 
     /**
@@ -286,10 +259,10 @@ public class PacketInV10TranslatorTest{
      * @param connectionConductor
      * @param featuresOutput
      */
-    private void initConnectionConductor(
+    private static void initConnectionConductor(
             final ConnectionConductorImpl connectionConductor,
             final GetFeaturesOutput featuresOutput){
-        TranslatorKey paramK = new TranslatorKey(1, "PacketInMessage.class");
+        TranslatorKey paramK = new TranslatorKey(1, PacketInMessage.class.getSimpleName());
         Collection<IMDMessageTranslator<OfHeader, List<DataObject>>> coll = new ArrayList<>();
         coll.add(new PacketInV10Translator());
         Map<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, List<DataObject>>>> translatorMapping = new HashMap<>();
