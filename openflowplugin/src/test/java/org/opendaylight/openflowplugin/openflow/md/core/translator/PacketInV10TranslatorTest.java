@@ -8,6 +8,8 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.translator;
 
+import static org.mockito.Mockito.when;
+
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -23,14 +25,18 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
-import org.opendaylight.openflowjava.protocol.impl.connection.ConnectionAdapterImpl;
+import org.opendaylight.openflowjava.protocol.impl.core.connection.ConnectionAdapterImpl;
+import org.opendaylight.openflowplugin.api.openflow.md.core.ConnectionConductor;
+import org.opendaylight.openflowplugin.api.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
-import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductorImpl;
-import org.opendaylight.openflowplugin.api.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
+import org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductorImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContextOFImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SwitchConnectionCookieOFImpl;
 import org.opendaylight.openflowplugin.openflow.md.queue.QueueProcessorLightImpl;
@@ -54,7 +60,23 @@ import org.slf4j.LoggerFactory;
 public class PacketInV10TranslatorTest{
     private static final Logger log = LoggerFactory
             .getLogger(PacketInV10TranslatorTest.class);
-
+    @Mock SwitchConnectionDistinguisher cookie;
+    @Mock SessionContext sc;
+    @Mock ConnectionConductorImpl conductor;
+    @Mock GetFeaturesOutput features;
+    /**
+     * Initializes mocks
+     */
+    @Before
+    public void startUp() {
+        MockitoAnnotations.initMocks(this);
+        when(sc.getPrimaryConductor()).thenReturn(conductor);
+        when(conductor.getVersion()).thenReturn((short) EncodeConstants.OF10_VERSION_ID);
+        when(sc.getFeatures()).thenReturn(features);
+        when(features.getDatapathId()).thenReturn(new BigInteger("42"));
+        OpenflowPortsUtil.init();
+    }
+    
     /**
      * test
      * {@link PacketInV10Translator#translate(SwitchConnectionDistinguisher, SessionContext, OfHeader)}
@@ -150,34 +172,17 @@ public class PacketInV10TranslatorTest{
 
         GetFeaturesOutput featuresOutput = this
                 .createGetFeatureOutput(datapathId);
-
         NioSocketChannel nioSocketChannel = new NioSocketChannel();
         this.registerChannel(nioSocketChannel);
-
-        SetConfigInput setConfigInput = this.createSetConfigInput();
-
-        ConnectionAdapterImpl connectionAdapter = new ConnectionAdapterImpl(
-                nioSocketChannel, new InetSocketAddress(51));
-        connectionAdapter.setConfig(setConfigInput);
-
-        ConnectionConductorImpl connectionConductor = new ConnectionConductorImpl(
-                connectionAdapter);
-
-        this.initConnectionConductor(connectionConductor, featuresOutput);
-
+        this.initConnectionConductor(conductor, featuresOutput);
         SessionContextOFImpl sessionContextOFImpl = new SessionContextOFImpl();
         sessionContextOFImpl.setFeatures(featuresOutput);
-        sessionContextOFImpl.setPrimaryConductor(connectionConductor);
-
+        sessionContextOFImpl.setPrimaryConductor(conductor);
         SwitchConnectionDistinguisher cookie = this.settingCookie();
-
         PacketInV10Translator packetInV10Translator = new PacketInV10Translator();
-
         OpenflowPortsUtil.init();
-
         List<DataObject> salPacketIn = packetInV10Translator.translate(cookie,
                 sessionContextOFImpl, message);
-
         String expectedString = "[PacketReceived [_ingress=NodeConnectorRef [_value=KeyedInstanceIdentifier"
                 + "{targetType=interface org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector,"
                 + " path=[org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes,"
@@ -194,8 +199,7 @@ public class PacketInV10TranslatorTest{
                 + "packet.service.rev130709.SendToController, _payload=[115, 101, 110, 100, 79, 117,"
                 + " 116, 112, 117, 116, 77, 115, 103, 95, 84, 69, 83, 84], augmentation=[]]]";
         Assert.assertEquals(expectedString, salPacketIn.toString());
-
-        log.info("Test translate done.");
+        log.debug("Test translate done.");
     }
 
     /**
