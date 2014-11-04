@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba8cc1f7_6823fe05",
+        "filename": "features/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 62
+      },
+      "writtenOn": "2014-11-04T18:26:05Z",
+      "side": 1,
+      "message": "Any reason why the artifactId lldp-speaker is repeated? Once with type XML and the classifier config.",
+      "revId": "b7721249cc7b658be51cb7cd9036a23f804aad98",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
