@@ -76,11 +76,40 @@
       <artifactId>table-miss-enforcer</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.opendaylight.openflowplugin.applications</groupId>
+      <artifactId>table-miss-enforcer</artifactId>
+      <version>${project.version}</version>
+      <type>xml</type>
+      <classifier>config</classifier>
+    </dependency>
+
       <dependency>
           <groupId>org.opendaylight.openflowplugin.applications</groupId>
           <artifactId>of-switch-config-pusher</artifactId>
           <version>${project.version}</version>
       </dependency>
+      <dependency>
+          <groupId>org.opendaylight.openflowplugin.applications</groupId>
+          <artifactId>of-switch-config-pusher</artifactId>
+          <version>${project.version}</version>
+          <type>xml</type>
+          <classifier>config</classifier>
+      </dependency>
+
+    <dependency>
+      <groupId>org.opendaylight.openflowplugin.applications</groupId>
+      <artifactId>lldp-speaker</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.openflowplugin.applications</groupId>
+      <artifactId>lldp-speaker</artifactId>
+      <version>${project.version}</version>
+      <type>xml</type>
+      <classifier>config</classifier>
+    </dependency>
+
     <dependency>
       <groupId>org.opendaylight.openflowplugin</groupId>
       <artifactId>drop-test-karaf</artifactId>
