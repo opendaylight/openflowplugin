@@ -7,7 +7,7 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.extension;
 
-import org.opendaylight.openflowjava.protocol.api.keys.experimenter.ExperimenterActionSerializerKey;
+import org.opendaylight.openflowjava.protocol.api.keys.ExperimenterActionSerializerKey;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.extension.api.ConvertorActionFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
