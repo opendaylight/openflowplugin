@@ -1915,6 +1915,7 @@ public abstract class OFRpcTaskFactory {
                 builder.setXid(xid);
                 builder.setFlags(flag);
                 builder.setMissSendLen(input.getMissSearchLength());
+                builder.setVersion(getVersion());
                 ListenableFuture<RpcResult<Void>> resultLib = JdkFutureAdapters.listenInPoolThread(taskContext.getSession().getPrimaryConductor().getConnectionAdapter().setConfig(builder.build()));
                 Futures.addCallback(resultLib, new ResultCallback<SetConfigOutput>(result) {
                     @Override
