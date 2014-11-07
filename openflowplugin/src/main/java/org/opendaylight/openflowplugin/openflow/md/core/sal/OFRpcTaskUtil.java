@@ -18,10 +18,8 @@ import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.sal.NotificationComposer;
 import org.opendaylight.openflowplugin.api.statistics.MessageSpy;
-import org.opendaylight.openflowplugin.openflow.md.core.MessageFactory;
-import org.opendaylight.openflowplugin.api.openflow.md.core.session.IMessageDispatchService;
-import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.openflow.md.util.RpcInputOutputTuple;
+import org.opendaylight.openflowplugin.openflow.md.util.TaskUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev131103.TransactionAware;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierOutput;
@@ -40,7 +38,6 @@ import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 
 /**
@@ -59,7 +56,7 @@ public abstract class OFRpcTaskUtil {
         Collection<RpcError> errors = null;
         if (Objects.firstNonNull(isBarrier, Boolean.FALSE)) {
             RpcInputOutputTuple<BarrierInput, ListenableFuture<RpcResult<BarrierOutput>>> sendBarrierRpc =
-                    sendBarrier(taskContext.getSession(), cookie, taskContext.getMessageService());
+                    TaskUtil.sendBarrier(taskContext.getSession(), cookie, taskContext.getMessageService());
             Future<RpcResult<BarrierOutput>> barrierFuture = sendBarrierRpc.getOutput();
             try {
                 RpcResult<BarrierOutput> barrierResult = barrierFuture.get(
@@ -84,22 +81,6 @@ public abstract class OFRpcTaskUtil {
         }
 
         return errors;
-    }
-
-    /**
-     * @param session
-     * @param cookie
-     * @param messageService
-     * @return barrier response
-     */
-    protected static RpcInputOutputTuple<BarrierInput, ListenableFuture<RpcResult<BarrierOutput>>> sendBarrier(SessionContext session,
-            SwitchConnectionDistinguisher cookie, IMessageDispatchService messageService) {
-        BarrierInput barrierInput = MessageFactory.createBarrier(
-                session.getFeatures().getVersion(), session.getNextXid());
-        Future<RpcResult<BarrierOutput>> barrierResult = messageService.barrier(barrierInput, cookie);
-        ListenableFuture<RpcResult<BarrierOutput>> output = JdkFutureAdapters.listenInPoolThread(barrierResult);
-
-        return new RpcInputOutputTuple<>(barrierInput, output);
     }
 
     /**
@@ -163,7 +144,7 @@ public abstract class OFRpcTaskUtil {
                 @Override
                 public ListenableFuture<RpcResult<TX>> apply(final RpcResult<TX> input) throws Exception {
                     if (input.isSuccessful()) {
-                        RpcInputOutputTuple<BarrierInput, ListenableFuture<RpcResult<BarrierOutput>>> sendBarrierRpc = sendBarrier(
+                        RpcInputOutputTuple<BarrierInput, ListenableFuture<RpcResult<BarrierOutput>>> sendBarrierRpc = TaskUtil.sendBarrier(
                                 task.getSession(), task.getCookie(), task.getMessageService());
                         ListenableFuture<RpcResult<TX>> barrierTxResult = Futures.transform(
                                 sendBarrierRpc.getOutput(),

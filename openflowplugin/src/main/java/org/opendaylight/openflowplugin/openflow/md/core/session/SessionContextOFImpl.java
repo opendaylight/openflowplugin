@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.session;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -18,13 +19,14 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.opendaylight.openflowplugin.api.openflow.md.core.session.IMessageDispatchService;
-import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
-import org.opendaylight.openflowplugin.api.openflow.md.core.session.SwitchSessionKeyOF;
 import org.opendaylight.openflowplugin.api.openflow.md.ModelDrivenSwitch;
 import org.opendaylight.openflowplugin.api.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.api.openflow.md.core.NotificationEnqueuer;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
+import org.opendaylight.openflowplugin.api.openflow.md.core.session.IMessageDispatchService;
+import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
+import org.opendaylight.openflowplugin.api.openflow.md.core.session.SwitchSessionKeyOF;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ControllerRole;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
 import org.opendaylight.yangtools.concepts.CompositeObjectRegistration;
@@ -46,6 +48,8 @@ public class SessionContextOFImpl implements SessionContext {
     private final Map<Long, Boolean> portBandwidth;
     private CompositeObjectRegistration<ModelDrivenSwitch> providerRegistration;
     private int seed;
+    private BigInteger generationId = null;
+    private ControllerRole roleOnDevice = ControllerRole.OFPCRROLEEQUAL;
     
 
     /**
@@ -235,5 +239,42 @@ public class SessionContextOFImpl implements SessionContext {
     @Override
     public NotificationEnqueuer getNotificationEnqueuer() {
         return notificationEnqueuer;
+    }
+    
+    /**
+     * @return the roleOnDevice
+     */
+    @Override
+    public ControllerRole getRoleOnDevice() {
+        return roleOnDevice;
+    }
+    
+    /**
+     * @param roleOnDevice the roleOnDevice to set
+     */
+    @Override
+    public void setRoleOnDevice(ControllerRole roleOnDevice) {
+        this.roleOnDevice = roleOnDevice;
+    }
+    
+    /**
+     * @return the generationId
+     */
+    @Override
+    public BigInteger getNextGenerationId() {
+        if (generationId == null) {
+            generationId = BigInteger.ZERO;
+        } else {
+            generationId.add(BigInteger.ONE);
+        }
+        return generationId;
+    }
+    
+    /**
+     * @param adoptedGenerationId the generationId to set
+     */
+    @Override
+    public void adoptGenerationId(BigInteger adoptedGenerationId) {
+        generationId = adoptedGenerationId;
     }
 }

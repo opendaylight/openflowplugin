@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.api.openflow.md.core.session;
 
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -18,6 +19,7 @@ import org.opendaylight.openflowplugin.api.openflow.md.core.NotificationEnqueuer
 import org.opendaylight.openflowplugin.api.openflow.md.ModelDrivenSwitch;
 import org.opendaylight.openflowplugin.api.openflow.md.core.NotificationQueueWrapper;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ControllerRole;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
 import org.opendaylight.yangtools.concepts.CompositeObjectRegistration;
@@ -166,4 +168,25 @@ public interface SessionContext {
      * @return (wrapped) notification enqueue service - {@link NotificationQueueWrapper}
      */
     NotificationEnqueuer getNotificationEnqueuer();
+
+    /**
+     * adopt generationId (in case generationId has been increased on device during last election)
+     * @param adoptedGenerationId
+     */
+    void adoptGenerationId(BigInteger adoptedGenerationId);
+
+    /**
+     * @return expected generationId for next election
+     */
+    BigInteger getNextGenerationId();
+
+    /**
+     * @param roleOnDevice
+     */
+    void setRoleOnDevice(ControllerRole roleOnDevice);
+
+    /**
+     * @return actual role
+     */
+    ControllerRole getRoleOnDevice();
 }

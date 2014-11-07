@@ -107,7 +107,7 @@ public class PacketInV10TranslatorTest{
      */
     @Test
     public void testTranslateDPIDNull(){
-        SessionContextOFImpl sessionContextOFImpl = new SessionContextOFImpl();
+        SessionContext sessionContextOFImpl = new SessionContextOFImpl();
 
         PacketInMessage message = createPacketInMessage(data, null);
 
