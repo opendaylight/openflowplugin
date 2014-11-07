@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import org.junit.Assert;
@@ -22,17 +21,18 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionReadyListener;
-import org.opendaylight.openflowplugin.api.openflow.md.core.session.IMessageDispatchService;
-import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
-import org.opendaylight.openflowplugin.api.openflow.md.core.session.SwitchSessionKeyOF;
-import org.opendaylight.openflowplugin.api.openflow.md.ModelDrivenSwitch;
 import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.api.openflow.md.ModelDrivenSwitch;
 import org.opendaylight.openflowplugin.api.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.api.openflow.md.core.ErrorHandler;
 import org.opendaylight.openflowplugin.api.openflow.md.core.NotificationEnqueuer;
 import org.opendaylight.openflowplugin.api.openflow.md.core.NotificationQueueWrapper;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
+import org.opendaylight.openflowplugin.api.openflow.md.core.session.IMessageDispatchService;
+import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
+import org.opendaylight.openflowplugin.api.openflow.md.core.session.SwitchSessionKeyOF;
 import org.opendaylight.openflowplugin.api.openflow.md.queue.QueueProcessor;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ControllerRole;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierOutput;
@@ -124,7 +124,7 @@ public class MessageDispatchServiceImplTest {
      * Test get async input with null cookie
      */
     @Test
-    public void testGetAsync() throws ExecutionException, InterruptedException {
+    public void testGetAsync() {
         MockConnectionConductor conductor = new MockConnectionConductor(1);
         SwitchConnectionDistinguisher cookie = conductor.getAuxiliaryKey();
         GetAsyncInputBuilder getAsyncInputBuilder = new GetAsyncInputBuilder();
@@ -299,7 +299,7 @@ class MockSessionContext implements SessionContext {
 
     MockSessionContext(int conductorNum) {
         conductor = new MockConnectionConductor(conductorNum);
-        map = new HashMap<SwitchConnectionDistinguisher, ConnectionConductor>();
+        map = new HashMap<>();
         messageService = new MessageDispatchServiceImpl(this);
     }
 
@@ -440,6 +440,16 @@ class MockSessionContext implements SessionContext {
     @Override
     public NotificationEnqueuer getNotificationEnqueuer() {
         return conductor;
+    }
+
+    @Override
+    public ControllerRole getRoleOnDevice() {
+        return null;
+    }
+
+    @Override
+    public void setRoleOnDevice(ControllerRole roleOnDevice) {
+        // NOOP
     }
 }
 

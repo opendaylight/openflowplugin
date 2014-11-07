@@ -43,6 +43,7 @@
     <properties>
       <project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
       <mdsal.version>1.2.0-SNAPSHOT</mdsal.version>
+      <netconf.version>1.2.0-SNAPSHOT</netconf.version>
       <nexusproxy>http://nexus.opendaylight.org/content</nexusproxy>
       <openflowjava.version>0.6.0-SNAPSHOT</openflowjava.version>
       <controller.model.version>1.2.0-SNAPSHOT</controller.model.version>
