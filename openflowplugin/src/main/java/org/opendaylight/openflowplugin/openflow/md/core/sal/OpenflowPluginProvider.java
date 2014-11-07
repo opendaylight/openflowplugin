@@ -9,6 +9,7 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal;
 
 import java.util.Collection;
 import java.util.Collections;
+
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ConsumerContext;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
@@ -21,6 +22,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionConve
 import org.opendaylight.openflowplugin.api.statistics.MessageCountDumper;
 import org.opendaylight.openflowplugin.api.statistics.MessageObservatory;
 import org.opendaylight.openflowplugin.statistics.MessageSpyCounterImpl;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.common.config.impl.rev140326.OfpRole;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.opendaylight.yangtools.yang.binding.RpcService;
 import org.osgi.framework.BundleContext;
@@ -47,6 +49,8 @@ public class OpenflowPluginProvider implements BindingAwareProvider, AutoCloseab
     private SalRegistrationManager registrationManager;
 
     private ExtensionConverterManager extensionConverterManager;
+
+    private OfpRole role;
 
     /**
      * Initialization of services and msgSpy counter
@@ -158,5 +162,35 @@ public class OpenflowPluginProvider implements BindingAwareProvider, AutoCloseab
      */
     public ExtensionConverterRegistrator getExtensionConverterRegistrator() {
         return extensionConverterManager;
+    }
+
+    /**
+     * @param role of instance
+     */
+    public void setRole(OfpRole role) {
+        this.role = role;
+    }
+
+    /**
+     * @param newRole
+     */
+    public void fireRoleChange(OfpRole newRole) {
+        if (!role.equals(newRole)) {
+            LOG.debug("my role was chaged from {} to {}", role, newRole);
+            role = newRole;
+            switch (role) {
+            case BECOMEMASTER:
+                //TODO: implement appropriate action
+                break;
+            case BECOMESLAVE:
+                //TODO: implement appropriate action
+                break;
+                
+            case NOCHANGE:
+            default:
+                LOG.warn("role not supported: {}", role);
+                break;
+            }
+        }
     }
 }
