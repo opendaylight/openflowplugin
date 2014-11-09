@@ -10,9 +10,8 @@ package org.opendaylight.openflowplugin.learningswitch;
 
 import java.util.Map;
 import java.util.Map.Entry;
-
-import org.opendaylight.controller.md.sal.common.api.data.DataChangeEvent;
-import org.opendaylight.controller.sal.binding.api.data.DataChangeListener;
+import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
+import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -20,27 +19,28 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 
+ *
  */
 public class WakeupOnNode implements DataChangeListener {
-    
+
     private static final Logger LOG = LoggerFactory
             .getLogger(WakeupOnNode.class);
-    
+
     private LearningSwitchHandler learningSwitchHandler;
 
     @Override
-    public void onDataChanged(DataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
+    public void onDataChanged(AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
         Short requiredTableId = 0;
-        
+
         // TODO add flow
-        Map<InstanceIdentifier<?>, DataObject> updated = change.getUpdatedOperationalData();
+
+        Map<InstanceIdentifier<?>, DataObject> updated = change.getUpdatedData();
         for (Entry<InstanceIdentifier<?>, DataObject> updateItem : updated.entrySet()) {
             DataObject table = updateItem.getValue();
             if (table instanceof Table) {
                 Table tableSure = (Table) table;
                 LOG.trace("table: {}", table);
-                
+
                 if (requiredTableId.equals(tableSure.getId())) {
                     @SuppressWarnings("unchecked")
                     InstanceIdentifier<Table> tablePath = (InstanceIdentifier<Table>) updateItem.getKey();
@@ -49,7 +49,7 @@ public class WakeupOnNode implements DataChangeListener {
             }
         }
     }
-    
+
     /**
      * @param learningSwitchHandler the learningSwitchHandler to set
      */
@@ -57,4 +57,5 @@ public class WakeupOnNode implements DataChangeListener {
             LearningSwitchHandler learningSwitchHandler) {
         this.learningSwitchHandler = learningSwitchHandler;
     }
+
 }

@@ -7,13 +7,14 @@
  */
 package org.opendaylight.openflowplugin.learningswitch.multi;
 
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.NotificationService;
-import org.opendaylight.controller.sal.binding.api.data.DataBrokerService;
-import org.opendaylight.controller.sal.binding.api.data.DataChangeListener;
 import org.opendaylight.openflowplugin.learningswitch.DataChangeListenerRegistrationHolder;
-import org.opendaylight.openflowplugin.learningswitch.LearningSwitchManager;
 import org.opendaylight.openflowplugin.learningswitch.FlowCommitWrapper;
 import org.opendaylight.openflowplugin.learningswitch.FlowCommitWrapperImpl;
+import org.opendaylight.openflowplugin.learningswitch.LearningSwitchManager;
 import org.opendaylight.openflowplugin.learningswitch.WakeupOnNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
@@ -23,33 +24,32 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.Pa
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.NotificationListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Listens to packetIn notification and 
+ * Listens to packetIn notification and
  * <ul>
  * <li>in HUB mode simply floods all switch ports (except ingress port)</li>
- * <li>in LSWITCH mode collects source MAC address of packetIn and bind it with ingress port. 
- * If target MAC address is already bound then a flow is created (for direct communication between 
+ * <li>in LSWITCH mode collects source MAC address of packetIn and bind it with ingress port.
+ * If target MAC address is already bound then a flow is created (for direct communication between
  * corresponding MACs)</li>
  * </ul>
  */
 public class LearningSwitchManagerMultiImpl implements DataChangeListenerRegistrationHolder,
         LearningSwitchManager {
-    
+
     protected static final Logger LOG = LoggerFactory
             .getLogger(LearningSwitchManagerMultiImpl.class);
 
     private NotificationService notificationService;
     private PacketProcessingService packetProcessingService;
-    private DataBrokerService data;
+    private DataBroker data;
 
     private Registration packetInRegistration;
 
-    private ListenerRegistration<DataChangeListener> dataChangeListenerRegistration; 
-    
+    private ListenerRegistration<DataChangeListener> dataChangeListenerRegistration;
+
     /**
      * @param notificationService the notificationService to set
      */
@@ -66,12 +66,12 @@ public class LearningSwitchManagerMultiImpl implements DataChangeListenerRegistr
             PacketProcessingService packetProcessingService) {
         this.packetProcessingService = packetProcessingService;
     }
-    
+
     /**
      * @param data the data to set
      */
     @Override
-    public void setDataBroker(DataBrokerService data) {
+    public void setDataBroker(DataBroker data) {
         this.data = data;
     }
 
@@ -90,20 +90,21 @@ public class LearningSwitchManagerMultiImpl implements DataChangeListenerRegistr
         learningSwitchHandler.setPacketProcessingService(packetProcessingService);
         learningSwitchHandler.setPacketInDispatcher(packetInDispatcher);
         packetInRegistration = notificationService.registerNotificationListener(packetInDispatcher);
-        
+
         WakeupOnNode wakeupListener = new WakeupOnNode();
         wakeupListener.setLearningSwitchHandler(learningSwitchHandler);
-        dataChangeListenerRegistration = data.registerDataChangeListener(
+        dataChangeListenerRegistration = data.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION,
                 InstanceIdentifier.builder(Nodes.class)
-                    .child(Node.class)
-                    .augmentation(FlowCapableNode.class)
-                    .child(Table.class).toInstance(),
-                wakeupListener);
+                        .child(Node.class)
+                        .augmentation(FlowCapableNode.class)
+                        .child(Table.class).toInstance(),
+                wakeupListener,
+                DataBroker.DataChangeScope.SUBTREE);
         LOG.debug("start() <--");
     }
-    
+
     /**
-     * stopping learning switch 
+     * stopping learning switch
      */
     @Override
     public void stop() {
@@ -121,8 +122,8 @@ public class LearningSwitchManagerMultiImpl implements DataChangeListenerRegistr
         }
         LOG.debug("stop() <--");
     }
-    
-   
+
+
     @Override
     public ListenerRegistration<DataChangeListener> getDataChangeListenerRegistration() {
         return dataChangeListenerRegistration;

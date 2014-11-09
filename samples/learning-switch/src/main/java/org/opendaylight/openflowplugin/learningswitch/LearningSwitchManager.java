@@ -8,12 +8,13 @@
 
 package org.opendaylight.openflowplugin.learningswitch;
 
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.NotificationService;
 import org.opendaylight.controller.sal.binding.api.data.DataBrokerService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService;
 
 /**
- * 
+ *
  */
 public interface LearningSwitchManager {
 
@@ -29,27 +30,28 @@ public interface LearningSwitchManager {
 
     /**
      * Set's Data Broker dependency.
-     * 
+     * <p/>
      * Data Broker is used to access overal operational and configuration
      * tree.
-     * 
-     *  In simple Learning Switch handler, data broker is used to listen 
-     *  for changes in Openflow tables and to configure flows which will
-     *  be provisioned down to the Openflow switch.
-     * 
-     * inject {@link DataBrokerService}
+     * <p/>
+     * In simple Learning Switch handler, data broker is used to listen
+     * for changes in Openflow tables and to configure flows which will
+     * be provisioned down to the Openflow switch.
+     * <p/>
+     * inject {@link DataBroker}
+     *
      * @param data
      */
-    void setDataBroker(DataBrokerService data);
+    void setDataBroker(DataBroker data);
 
     /**
      * Set's Packet Processing dependency.
-     * 
+     * <p/>
      * Packet Processing service is used to send packet Out on Openflow
      * switch.
-     * 
+     * <p/>
      * inject {@link PacketProcessingService}
-     * 
+     *
      * @param packetProcessingService
      */
     void setPacketProcessingService(
@@ -57,11 +59,12 @@ public interface LearningSwitchManager {
 
     /**
      * Set's Notification service dependency.
-     * 
-     * Notification service is used to register for listening 
+     * <p/>
+     * Notification service is used to register for listening
      * packet-in notifications.
-     * 
+     * <p/>
      * inject {@link NotificationService}
+     *
      * @param notificationService
      */
     void setNotificationService(NotificationService notificationService);

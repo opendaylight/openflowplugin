@@ -7,10 +7,10 @@
  */
 package org.opendaylight.openflowplugin.learningswitch;
 
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.AbstractBindingAwareConsumer;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ConsumerContext;
 import org.opendaylight.controller.sal.binding.api.NotificationService;
-import org.opendaylight.controller.sal.binding.api.data.DataBrokerService;
 import org.opendaylight.openflowplugin.learningswitch.multi.LearningSwitchManagerMultiImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService;
 import org.osgi.framework.BundleContext;
@@ -19,26 +19,25 @@ import org.slf4j.LoggerFactory;
 
 /**
  * learning switch activator
- * 
+ * <p/>
  * Activator is derived from AbstractBindingAwareConsumer, which takes care
  * of looking up MD-SAL in Service Registry and registering consumer
  * when MD-SAL is present.
  */
 public class Activator extends AbstractBindingAwareConsumer implements AutoCloseable {
-    
+
     private static final Logger LOG = LoggerFactory.getLogger(Activator.class);
 
     private LearningSwitchManager learningSwitch;
 
-    
+
     @Override
     protected void startImpl(BundleContext context) {
         LOG.info("startImpl() passing");
     }
-    
+
     /**
      * Invoked when consumer is registered to the MD-SAL.
-     * 
      */
     @Override
     public void onSessionInitialized(ConsumerContext session) {
@@ -46,15 +45,15 @@ public class Activator extends AbstractBindingAwareConsumer implements AutoClose
         /**
          * We create instance of our LearningSwitchManager
          * and set all required dependencies,
-         * 
+         *
          * which are 
          *   Data Broker (data storage service) - for configuring flows and reading stored switch state
          *   PacketProcessingService - for sending out packets
          *   NotificationService - for receiving notifications such as packet in.
-         * 
+         *
          */
         learningSwitch = new LearningSwitchManagerMultiImpl();
-        learningSwitch.setDataBroker(session.getSALService(DataBrokerService.class));
+        learningSwitch.setDataBroker(session.getSALService(DataBroker.class));
         learningSwitch.setPacketProcessingService(session.getRpcService(PacketProcessingService.class));
         learningSwitch.setNotificationService(session.getSALService(NotificationService.class));
         learningSwitch.start();
@@ -67,7 +66,7 @@ public class Activator extends AbstractBindingAwareConsumer implements AutoClose
             learningSwitch.stop();
         }
     }
-    
+
     @Override
     protected void stopImpl(BundleContext context) {
         close();

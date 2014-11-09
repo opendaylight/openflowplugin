@@ -7,9 +7,10 @@
  */
 package org.opendaylight.openflowplugin.learningswitch;
 
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.NotificationService;
-import org.opendaylight.controller.sal.binding.api.data.DataBrokerService;
-import org.opendaylight.controller.sal.binding.api.data.DataChangeListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -39,11 +40,11 @@ public class LearningSwitchManagerSimpleImpl implements DataChangeListenerRegist
 
     private NotificationService notificationService;
     private PacketProcessingService packetProcessingService;
-    private DataBrokerService data;
+    private DataBroker data;
 
     private Registration packetInRegistration;
 
-    private ListenerRegistration<DataChangeListener> dataChangeListenerRegistration; 
+    private ListenerRegistration<DataChangeListener> dataChangeListenerRegistration;
     
     /**
      * @param notificationService the notificationService to set
@@ -66,7 +67,7 @@ public class LearningSwitchManagerSimpleImpl implements DataChangeListenerRegist
      * @param data the data to set
      */
     @Override
-    public void setDataBroker(DataBrokerService data) {
+    public void setDataBroker(DataBroker data) {
         this.data = data;
     }
 
@@ -86,12 +87,13 @@ public class LearningSwitchManagerSimpleImpl implements DataChangeListenerRegist
         
         WakeupOnNode wakeupListener = new WakeupOnNode();
         wakeupListener.setLearningSwitchHandler(learningSwitchHandler);
-        dataChangeListenerRegistration = data.registerDataChangeListener(
+        dataChangeListenerRegistration = data.registerDataChangeListener(LogicalDatastoreType.OPERATIONAL,
                 InstanceIdentifier.builder(Nodes.class)
                     .child(Node.class)
                     .augmentation(FlowCapableNode.class)
                     .child(Table.class).toInstance(),
-                wakeupListener);
+                wakeupListener,
+                DataBroker.DataChangeScope.SUBTREE);
         LOG.debug("start() <--");
     }
     

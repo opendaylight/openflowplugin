@@ -8,7 +8,7 @@
 
 package org.opendaylight.openflowplugin.learningswitch;
 
-import org.opendaylight.controller.sal.binding.api.data.DataChangeListener;
+import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 
 /**

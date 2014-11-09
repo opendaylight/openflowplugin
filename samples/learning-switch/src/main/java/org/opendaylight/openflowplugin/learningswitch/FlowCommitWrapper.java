@@ -8,9 +8,11 @@
 
 package org.opendaylight.openflowplugin.learningswitch;
 
+import com.google.common.util.concurrent.CheckedFuture;
 import java.util.concurrent.Future;
 
 import org.opendaylight.controller.md.sal.common.api.TransactionStatus;
+import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -29,6 +31,6 @@ public interface FlowCommitWrapper {
      * @return transaction commit 
      * 
      */
-    Future<RpcResult<TransactionStatus>> writeFlowToConfig(InstanceIdentifier<Flow> flowPath, Flow flowBody);
+    CheckedFuture<Void, TransactionCommitFailedException> writeFlowToConfig(InstanceIdentifier<Flow> flowPath, Flow flowBody);
 
 }

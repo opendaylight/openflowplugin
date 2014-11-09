@@ -8,35 +8,37 @@
 
 package org.opendaylight.openflowplugin.learningswitch;
 
+import com.google.common.util.concurrent.CheckedFuture;
 import java.util.concurrent.Future;
-
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.TransactionStatus;
-import org.opendaylight.controller.sal.binding.api.data.DataBrokerService;
-import org.opendaylight.controller.sal.binding.api.data.DataModificationTransaction;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
 /**
- * 
+ *
  */
 public class FlowCommitWrapperImpl implements FlowCommitWrapper {
-    
-    private DataBrokerService dataBrokerService;
+
+    private DataBroker dataBrokerService;
 
     /**
      * @param dataBrokerService
      */
-    public FlowCommitWrapperImpl(DataBrokerService dataBrokerService) {
+    public FlowCommitWrapperImpl(DataBroker dataBrokerService) {
         this.dataBrokerService = dataBrokerService;
     }
 
     @Override
-    public Future<RpcResult<TransactionStatus>> writeFlowToConfig(InstanceIdentifier<Flow> flowPath, 
-            Flow flowBody) {
-        DataModificationTransaction addFlowTransaction = dataBrokerService.beginTransaction();
-        addFlowTransaction.putConfigurationData(flowPath, flowBody);
-        return addFlowTransaction.commit();
+    public CheckedFuture<Void, TransactionCommitFailedException> writeFlowToConfig(InstanceIdentifier<Flow> flowPath,
+                                                                  Flow flowBody) {
+        ReadWriteTransaction addFlowTransaction = dataBrokerService.newReadWriteTransaction();
+        addFlowTransaction.put(LogicalDatastoreType.CONFIGURATION, flowPath, flowBody);
+        return addFlowTransaction.submit();
     }
 
 }
