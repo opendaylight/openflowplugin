@@ -93,7 +93,7 @@ public class LearningSwitchManagerMultiImpl implements DataChangeListenerRegistr
 
         WakeupOnNode wakeupListener = new WakeupOnNode();
         wakeupListener.setLearningSwitchHandler(learningSwitchHandler);
-        dataChangeListenerRegistration = data.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION,
+        dataChangeListenerRegistration = data.registerDataChangeListener(LogicalDatastoreType.OPERATIONAL,
                 InstanceIdentifier.builder(Nodes.class)
                         .child(Node.class)
                         .augmentation(FlowCapableNode.class)
