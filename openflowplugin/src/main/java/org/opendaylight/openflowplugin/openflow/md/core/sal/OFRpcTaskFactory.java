@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2013 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2013-2014 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -38,6 +38,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.Remo
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.OriginalFlow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.UpdatedFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForAllFlowsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutputBuilder;
@@ -289,31 +291,34 @@ public abstract class OFRpcTaskFactory {
         
         OFRpcTask<UpdateFlowInput, RpcResult<UpdateFlowOutput>> task = 
                 new OFRpcTask<UpdateFlowInput, RpcResult<UpdateFlowOutput>>(taskContext, cookie, input) {
-            
+
             @Override
             public ListenableFuture<RpcResult<UpdateFlowOutput>> call() {
                 ListenableFuture<RpcResult<UpdateFlowOutput>> result = null;
-                    
-                boolean updatedFlow = (getInput().getUpdatedFlow().getMatch().equals(getInput().getOriginalFlow().getMatch())) &&
-                        (getInput().getUpdatedFlow().getPriority().equals(getInput().getOriginalFlow().getPriority()));
+
+                UpdateFlowInput in = getInput();
+                UpdatedFlow updated = in.getUpdatedFlow();
+                OriginalFlow original = in.getOriginalFlow();
+                Short version = getVersion();
 
                 List<FlowModInputBuilder> allFlowMods = new ArrayList<>();
                 List<FlowModInputBuilder> ofFlowModInputs;
 
-                if (updatedFlow == false) {
-                    // if neither match nor priority matches, then we would need to remove the flow and add it
+                if (!FlowCreatorUtil.canModifyFlow(original, updated, version)) {
+                    // We would need to remove original and add updated.
+
                     //remove flow
-                    RemoveFlowInputBuilder removeflow = new RemoveFlowInputBuilder(getInput().getOriginalFlow());
+                    RemoveFlowInputBuilder removeflow = new RemoveFlowInputBuilder(original);
                     List<FlowModInputBuilder> ofFlowRemoveInput = FlowConvertor.toFlowModInputs(removeflow.build(),
-                            getVersion(),getSession().getFeatures().getDatapathId());
+                            version, getSession().getFeatures().getDatapathId());
                     // remove flow should be the first
                     allFlowMods.addAll(ofFlowRemoveInput);
-                    AddFlowInputBuilder addFlowInputBuilder = new AddFlowInputBuilder(getInput().getUpdatedFlow());
+                    AddFlowInputBuilder addFlowInputBuilder = new AddFlowInputBuilder(updated);
                     ofFlowModInputs = FlowConvertor.toFlowModInputs(addFlowInputBuilder.build(),
-                            getVersion(), getSession().getFeatures().getDatapathId());
+                            version, getSession().getFeatures().getDatapathId());
                 } else {
-                    ofFlowModInputs = FlowConvertor.toFlowModInputs(getInput().getUpdatedFlow(),
-                            getVersion(), getSession().getFeatures().getDatapathId());
+                    ofFlowModInputs = FlowConvertor.toFlowModInputs(updated,
+                            version, getSession().getFeatures().getDatapathId());
                 }
 
                 allFlowMods.addAll(ofFlowModInputs);
@@ -323,7 +328,7 @@ public abstract class OFRpcTaskFactory {
                 result = OFRpcTaskUtil.chainFutureBarrier(this, result);
                 OFRpcTaskUtil.hookFutureNotification(this, result,
                         getRpcNotificationProviderService(),
-                        createFlowUpdatedNotification(getInput()));
+                        createFlowUpdatedNotification(in));
                 return result;
             }
             
@@ -1895,5 +1900,4 @@ public abstract class OFRpcTaskFactory {
         };
         return task;
     }
-    
 }
