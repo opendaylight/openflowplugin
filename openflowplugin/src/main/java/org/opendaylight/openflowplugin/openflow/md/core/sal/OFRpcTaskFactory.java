@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2013 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2013-2014 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -16,6 +16,7 @@ import com.google.common.util.concurrent.SettableFuture;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.Future;
 import org.opendaylight.openflowjava.protocol.api.util.BinContent;
 import org.opendaylight.openflowplugin.api.OFConstants;
@@ -42,6 +43,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.Remo
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.OriginalFlow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.UpdatedFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForAllFlowsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutputBuilder;
@@ -63,6 +66,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev131103.TransactionId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.port.mod.port.Port;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.GroupAdded;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.GroupAddedBuilder;
@@ -177,6 +182,13 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class OFRpcTaskFactory {
     protected static final Logger logger = LoggerFactory.getLogger(OFRpcTaskFactory.class);
+
+    private static final FlowModFlags  DEFAULT_FLOW_MOD_FLAGS =
+        new FlowModFlags(FlowConvertor.DEFAULT_OFPFF_CHECK_OVERLAP,
+                         FlowConvertor.DEFAULT_OFPFF_NO_BYT_COUNTS,
+                         FlowConvertor.DEFAULT_OFPFF_NO_PKT_COUNTS,
+                         FlowConvertor.DEFAULT_OFPFF_RESET_COUNTS,
+                         FlowConvertor.DEFAULT_OFPFF_FLOW_REM);
 
     /**
      * @param taskContext
@@ -298,26 +310,29 @@ public abstract class OFRpcTaskFactory {
                     public ListenableFuture<RpcResult<UpdateFlowOutput>> call() {
                         ListenableFuture<RpcResult<UpdateFlowOutput>> result = null;
 
-                        boolean updatedFlow = (getInput().getUpdatedFlow().getMatch().equals(getInput().getOriginalFlow().getMatch())) &&
-                                (getInput().getUpdatedFlow().getPriority().equals(getInput().getOriginalFlow().getPriority()));
+                        UpdateFlowInput in = getInput();
+                        UpdatedFlow updated = in.getUpdatedFlow();
+                        OriginalFlow original = in.getOriginalFlow();
+                        Short version = getVersion();
 
                         List<FlowModInputBuilder> allFlowMods = new ArrayList<>();
                         List<FlowModInputBuilder> ofFlowModInputs;
 
-                        if (updatedFlow == false) {
-                            // if neither match nor priority matches, then we would need to remove the flow and add it
+                        if (!OFRpcTaskFactory.canModifyFlow(original, updated, version)) {
+                            // We would need to remove original and add updated.
+
                             //remove flow
-                            RemoveFlowInputBuilder removeflow = new RemoveFlowInputBuilder(getInput().getOriginalFlow());
+                            RemoveFlowInputBuilder removeflow = new RemoveFlowInputBuilder(original);
                             List<FlowModInputBuilder> ofFlowRemoveInput = FlowConvertor.toFlowModInputs(removeflow.build(),
-                                    getVersion(), getSession().getFeatures().getDatapathId());
+                                    version, getSession().getFeatures().getDatapathId());
                             // remove flow should be the first
                             allFlowMods.addAll(ofFlowRemoveInput);
-                            AddFlowInputBuilder addFlowInputBuilder = new AddFlowInputBuilder(getInput().getUpdatedFlow());
+                            AddFlowInputBuilder addFlowInputBuilder = new AddFlowInputBuilder(updated);
                             ofFlowModInputs = FlowConvertor.toFlowModInputs(addFlowInputBuilder.build(),
-                                    getVersion(), getSession().getFeatures().getDatapathId());
+                                    version, getSession().getFeatures().getDatapathId());
                         } else {
-                            ofFlowModInputs = FlowConvertor.toFlowModInputs(getInput().getUpdatedFlow(),
-                                    getVersion(), getSession().getFeatures().getDatapathId());
+                            ofFlowModInputs = FlowConvertor.toFlowModInputs(updated,
+                                    version, getSession().getFeatures().getDatapathId());
                         }
 
                         allFlowMods.addAll(ofFlowModInputs);
@@ -327,7 +342,7 @@ public abstract class OFRpcTaskFactory {
                         result = OFRpcTaskUtil.chainFutureBarrier(this, result);
                         OFRpcTaskUtil.hookFutureNotification(this, result,
                                 getRpcNotificationProviderService(),
-                                createFlowUpdatedNotification(getInput()));
+                                createFlowUpdatedNotification(in));
                         return result;
                     }
 
@@ -1931,4 +1946,129 @@ public abstract class OFRpcTaskFactory {
         return rpcTask;
     }
 
+    /**
+     * Determine whether a flow entry can be modified or not.
+     *
+     * @param original  An original flow entry.
+     * @param updated   An updated flow entry.
+     * @param version   Protocol version.
+     * @return  {@code true} only if a flow entry can be modified.
+     */
+    static boolean canModifyFlow(OriginalFlow original, UpdatedFlow updated,
+                                 Short version) {
+        // FLOW_MOD does not change match, priority, idle_timeout, hard_timeout,
+        // flags, and cookie.
+        if (!Objects.equals(original.getMatch(), updated.getMatch()) ||
+            !equals(original.getPriority(), updated.getPriority(),
+                    FlowConvertor.DEFAULT_PRIORITY) ||
+            !equals(original.getIdleTimeout(), updated.getIdleTimeout(),
+                    FlowConvertor.DEFAULT_IDLE_TIMEOUT) ||
+            !equals(original.getHardTimeout(), updated.getHardTimeout(),
+                    FlowConvertor.DEFAULT_HARD_TIMEOUT) ||
+            !equals(original.getFlags(), updated.getFlags())) {
+            return false;
+        }
+
+        if (!Boolean.TRUE.equals(updated.isStrict()) &&
+            version != null &&
+            version.shortValue() != OFConstants.OFP_VERSION_1_0) {
+            FlowCookie cookieMask = updated.getCookieMask();
+            if (cookieMask != null) {
+                BigInteger mask = cookieMask.getValue();
+                if (mask != null && !mask.equals(BigInteger.ZERO)) {
+                    // Allow FLOW_MOD with filtering by cookie.
+                    return true;
+                }
+            }
+        }
+
+        FlowCookie oc = original.getCookie();
+        FlowCookie uc = updated.getCookie();
+        BigInteger orgCookie;
+        BigInteger updCookie;
+        if (oc == null) {
+            if (uc == null) {
+                return true;
+            }
+
+            orgCookie = OFConstants.DEFAULT_COOKIE;
+            updCookie = uc.getValue();
+        } else {
+            orgCookie = oc.getValue();
+            updCookie = (uc == null)
+                ? OFConstants.DEFAULT_COOKIE : uc.getValue();
+        }
+
+        return equals(orgCookie, updCookie, OFConstants.DEFAULT_COOKIE);
+    }
+
+    /**
+     * Return {@code true} only if given two FLOW_MOD flags are identical.
+     *
+     * @param flags1 A value to be compared.
+     * @param flags2 A value to be compared.
+     * @return
+     *   {@code true} only if {@code flags1} and {@code flags2} are identical.
+     */
+    static boolean equals(FlowModFlags flags1, FlowModFlags flags2) {
+        FlowModFlags f1;
+        FlowModFlags f2;
+        if (flags1 == null) {
+            if (flags2 == null) {
+                return true;
+            }
+
+            f1 = DEFAULT_FLOW_MOD_FLAGS;
+            f2 = flags2;
+        } else {
+            f1 = flags1;
+            f2 = (flags2 == null) ? DEFAULT_FLOW_MOD_FLAGS : flags2;
+        }
+
+        return equals(f1.isCHECKOVERLAP(), f2.isCHECKOVERLAP()) &&
+            equals(f1.isNOBYTCOUNTS(), f2.isNOBYTCOUNTS()) &&
+            equals(f1.isNOPKTCOUNTS(), f2.isNOPKTCOUNTS()) &&
+            equals(f1.isRESETCOUNTS(), f2.isRESETCOUNTS()) &&
+            equals(f1.isSENDFLOWREM(), f2.isSENDFLOWREM());
+    }
+
+    /**
+     * Return {@code true} only if given two {@link Boolean} objects are
+     * identical. Unlike {@link Boolean#equals(Object)}, this method
+     * interprets {@code null} as {@link Boolean#FALSE}.
+     *
+     * @param b1 A value to be compared.
+     * @param b2 A value to be compared.
+     * @return
+     *   {@code true} only if {@code b1} and {@code b2} are identical.
+     */
+    private static boolean equals(Boolean b1, Boolean b2) {
+        if (b1 == null) {
+            return !Boolean.TRUE.equals(b2);
+        } else if (b2 == null) {
+            return !b1.booleanValue();
+        }
+
+        return b1.equals(b2);
+    }
+
+    /**
+     * Return {@code true} only if given two values are identical.
+     *
+     * @param value1 A value to be compared.
+     * @param value2 A value to be compared.
+     * @param def Default value.
+     * @param <T> Type of values.
+     * @return
+     *   {@code true} only if {@code value1} and {@code value2} are identical.
+     */
+    private static <T> boolean equals(T value1, T value2, T def) {
+        if (value1 == null) {
+            return value2 == null || value2.equals(def);
+        } else if (value2 == null) {
+            return value1.equals(def);
+        }
+
+        return value1.equals(value2);
+    }
 }

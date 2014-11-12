@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2013 Ericsson. and others.  All rights reserved.
+ * Copyright (c) 2013-2014 Ericsson. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -84,12 +84,13 @@ public class FlowConvertor {
     private static final Logger logger = LoggerFactory.getLogger(FlowConvertor.class);
 
     // Default values for when things are null
-    private static final BigInteger DEFAULT_COOKIE = BigInteger.ZERO;
-    private static final BigInteger DEFAULT_COOKIE_MASK = BigInteger.ZERO;
     private static final TableId DEFAULT_TABLE_ID = new TableId(0L);
-    private static final Integer DEFAULT_IDLE_TIMEOUT = 5 * 60;
-    private static final Integer DEFAULT_HARD_TIMEOUT = 10 * 60;
-    private static final Integer DEFAULT_PRIORITY = Integer.parseInt("8000", 16);
+    /** Default idle timeout */
+    public static final Integer DEFAULT_IDLE_TIMEOUT = 5 * 60;
+    /** Default hard timeout */
+    public static final Integer DEFAULT_HARD_TIMEOUT = 10 * 60;
+    /** Default priority */
+    public static final Integer DEFAULT_PRIORITY = Integer.parseInt("8000", 16);
     private static final Long DEFAULT_BUFFER_ID = Long.parseLong("ffffffff", 16);
     private static final Long OFPP_ANY = Long.parseLong("ffffffff", 16);
     private static final Long DEFAULT_OUT_PORT = OFPP_ANY;
@@ -135,13 +136,13 @@ public class FlowConvertor {
         if (flow.getCookie() != null) {
             flowMod.setCookie(flow.getCookie().getValue());
         } else {
-            flowMod.setCookie(DEFAULT_COOKIE);
+            flowMod.setCookie(OFConstants.DEFAULT_COOKIE);
         }
 
         if (flow.getCookieMask() != null) {
             flowMod.setCookieMask(flow.getCookieMask().getValue());
         } else {
-            flowMod.setCookieMask(DEFAULT_COOKIE_MASK);
+            flowMod.setCookieMask(OFConstants.DEFAULT_COOKIE_MASK);
         }
 
         if (flow.getTableId() != null) {
