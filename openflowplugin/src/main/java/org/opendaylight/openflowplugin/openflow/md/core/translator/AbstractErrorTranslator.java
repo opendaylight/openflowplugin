@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2013 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2013-2014 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -15,7 +15,9 @@ import org.opendaylight.openflowplugin.api.openflow.md.core.IMDMessageTranslator
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.openflow.md.util.ByteUtil;
+import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.errors.rev131116.ErrorType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -23,7 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * general support for errorMessage OF-API to MD-SAL translation 
+ * general support for errorMessage OF-API to MD-SAL translation
  */
 public abstract class AbstractErrorTranslator implements IMDMessageTranslator<OfHeader, List<DataObject>> {
 
@@ -47,21 +49,24 @@ public abstract class AbstractErrorTranslator implements IMDMessageTranslator<Of
 
             // TODO -- Augmentation is not handled
             ErrorType type = decodeErrorType(message.getType());
-            
-            list.add(getGranularNodeErrors(message, type));
+            NodeRef node = new NodeRef(
+                InventoryDataServiceUtil.identifierFromDatapathId(
+                    sc.getFeatures().getDatapathId()));
+            list.add(getGranularNodeErrors(message, type, node));
             return list;
         } else {
             LOG.error("Message is not of Error Message ");
             return Collections.emptyList();
         }
     }
-    
+
     /**
      * @param message
      * @param errorType
-     * @return 
+     * @param node
+     * @return
      */
-    protected abstract org.opendaylight.yang.gen.v1.urn.opendaylight.flow.errors.rev131116.ErrorMessage getGranularNodeErrors(ErrorMessage message, ErrorType errorType);
+    protected abstract org.opendaylight.yang.gen.v1.urn.opendaylight.flow.errors.rev131116.ErrorMessage getGranularNodeErrors(ErrorMessage message, ErrorType errorType, NodeRef node);
 
     /**
      * @param type error type in source message
