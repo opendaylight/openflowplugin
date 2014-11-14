@@ -1,0 +1,106 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba8cc1f7_0d0a728a",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/OFRpcTaskFactory.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 186,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2014-11-14T16:28:45Z",
+      "side": 1,
+      "message": "please move this into separate util class in org.opendaylight.openflowplugin.openflow.md.util (e.g.: FlowUtil)",
+      "revId": "2656119f53897118d0271f3460992da1232d6c73",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba8cc1f7_cd032a72",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/OFRpcTaskFactory.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 1957,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2014-11-14T16:28:45Z",
+      "side": 1,
+      "message": "please move this into separate util class in org.opendaylight.openflowplugin.openflow.md.util (e.g.: FlowUtil)",
+      "revId": "2656119f53897118d0271f3460992da1232d6c73",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba8cc1f7_6df8de7c",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/OFRpcTaskFactory.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 2013,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2014-11-14T16:28:45Z",
+      "side": 1,
+      "message": "please move this into separate util class in org.opendaylight.openflowplugin.openflow.md.util (e.g.: FlowUtil)\n\nand also extend the name so it wont get mixed with Object.equals()",
+      "revId": "2656119f53897118d0271f3460992da1232d6c73",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba8cc1f7_8df52285",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/OFRpcTaskFactory.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 2045,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2014-11-14T16:28:45Z",
+      "side": 1,
+      "message": "please move this into separate util class in org.opendaylight.openflowplugin.openflow.md.util (e.g.: FlowUtil)\n\nand also extend the name so it wont get mixed with Object.equals()",
+      "revId": "2656119f53897118d0271f3460992da1232d6c73",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba8cc1f7_2df2d69a",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/OFRpcTaskFactory.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 2065,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2014-11-14T16:28:45Z",
+      "side": 1,
+      "message": "please move this into separate util class in org.opendaylight.openflowplugin.openflow.md.util (e.g.: FlowUtil)\n\nand also extend the name so it wont get mixed with Object.equals()",
+      "revId": "2656119f53897118d0271f3460992da1232d6c73",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba8cc1f7_4def1ab1",
+        "filename": "openflowplugin/src/test/java/org/opendaylight/openflowplugin/openflow/md/core/sal/OFRpcTaskFactoryTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2014-11-14T16:28:45Z",
+      "side": 1,
+      "message": "Please move these tests to new place according to OFRpcTaskFactory changes.",
+      "revId": "2656119f53897118d0271f3460992da1232d6c73",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
