@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a91bd0f_1caf24e5",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/OpenflowPluginProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 189,
+      "author": {
+        "id": 649
+      },
+      "writtenOn": "2014-11-21T12:28:14Z",
+      "side": 1,
+      "message": "missing break -- setting NOCHANGE will result in a warning.",
+      "revId": "01f615172f8ce3bbccd62a1c9cf6fb000ddb2c3e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a91bd0f_3cac68ed",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/yang/gen/v1/urn/opendaylight/params/xml/ns/yang/openflow/common/config/impl/rev140326/ConfigurableOpenFlowProviderModule.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 649
+      },
+      "writtenOn": "2014-11-21T12:28:14Z",
+      "side": 1,
+      "message": "more trailing whitespace",
+      "revId": "01f615172f8ce3bbccd62a1c9cf6fb000ddb2c3e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a91bd0f_7caaf0d5",
+        "filename": "openflowplugin/src/main/yang/openflow-plugin-cfg-impl.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 649
+      },
+      "writtenOn": "2014-11-21T12:28:14Z",
+      "side": 1,
+      "message": "trailing whitespace",
+      "revId": "01f615172f8ce3bbccd62a1c9cf6fb000ddb2c3e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
