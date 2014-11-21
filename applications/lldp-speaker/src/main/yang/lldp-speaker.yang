@@ -4,6 +4,7 @@ module lldp-speaker {
     prefix "lldp-speaker";
     import config {prefix config; revision-date 2013-04-05;}
     import opendaylight-md-sal-binding { prefix mdsal; revision-date 2013-10-28;}
+    import rpc-context { prefix rpcx; revision-date 2013-06-17; }
 
     description
         "Application that send LLDPDU frames to all Openflow switch ports.";
@@ -16,6 +17,17 @@ module lldp-speaker {
     identity lldp-speaker {
         base "config:module-type";
         config:java-name-prefix LLDPSpeaker;
+    }
+
+    typedef oper-status {
+        type enumeration {
+            enum STANDBY {
+                description "go to stand by mode";
+            }
+            enum RUN {
+                description "go to fully operational mode";
+            }
+        }
     }
 
     augment "/config:modules/config:module/config:configuration" {
@@ -39,4 +51,23 @@ module lldp-speaker {
             }
         }
     }
+
+    rpc change-operational-status {
+        input {
+            leaf operational-status {
+                type oper-status;
+                description "Change operational status of LLDP speaker.";
+            }
+         }
+    }
+    rpc get-operational-status {
+        output {
+            leaf operational-status {
+                type oper-status;
+                description "Change operational status of LLDP speaker.";
+            }
+         }
+    }
+
+
 }
