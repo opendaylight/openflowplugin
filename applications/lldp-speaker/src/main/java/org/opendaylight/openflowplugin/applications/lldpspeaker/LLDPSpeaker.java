@@ -16,12 +16,16 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.*;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.applications.lldp.speaker.rev141023.OperStatus;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +35,9 @@ import org.slf4j.LoggerFactory;
  * be discovered through inventory.
  */
 public class LLDPSpeaker implements AutoCloseable, NodeConnectorEventsObserver, Runnable {
+
+    private static OperStatus operationalStatus;
+
     private static final Logger LOG = LoggerFactory.getLogger(LLDPSpeaker.class);
     private static final long LLDP_FLOOD_PERIOD = 5;
 
@@ -42,6 +49,11 @@ public class LLDPSpeaker implements AutoCloseable, NodeConnectorEventsObserver, 
 
     public LLDPSpeaker(PacketProcessingService packetProcessingService) {
         this(packetProcessingService, Executors.newSingleThreadScheduledExecutor());
+    }
+
+    public static void setOperationalStatus(OperStatus operationalStatus) {
+        LOG.info("Setting operational status to {}", operationalStatus);
+        LLDPSpeaker.operationalStatus = operationalStatus;
     }
 
     public LLDPSpeaker(PacketProcessingService packetProcessingService,
@@ -69,12 +81,15 @@ public class LLDPSpeaker implements AutoCloseable, NodeConnectorEventsObserver, 
      */
     @Override
     public void run() {
-        LOG.debug("Sending LLDP frames to {} ports...", nodeConnectorMap.keySet().size());
+        if (operationalStatus.equals(OperStatus.STANDBY)) {
+        } else if (operationalStatus.equals(OperStatus.RUN)) {
+            LOG.debug("Sending LLDP frames to {} ports...", nodeConnectorMap.keySet().size());
 
-        for (InstanceIdentifier<NodeConnector> nodeConnectorInstanceId : nodeConnectorMap.keySet()) {
-            NodeConnectorId nodeConnectorId = InstanceIdentifier.keyOf(nodeConnectorInstanceId).getId();
-            LOG.trace("Sending LLDP through port {}", nodeConnectorId.getValue());
-            packetProcessingService.transmitPacket(nodeConnectorMap.get(nodeConnectorInstanceId));
+            for (InstanceIdentifier<NodeConnector> nodeConnectorInstanceId : nodeConnectorMap.keySet()) {
+                NodeConnectorId nodeConnectorId = InstanceIdentifier.keyOf(nodeConnectorInstanceId).getId();
+                LOG.trace("Sending LLDP through port {}", nodeConnectorId.getValue());
+                packetProcessingService.transmitPacket(nodeConnectorMap.get(nodeConnectorInstanceId));
+            }
         }
     }
 
