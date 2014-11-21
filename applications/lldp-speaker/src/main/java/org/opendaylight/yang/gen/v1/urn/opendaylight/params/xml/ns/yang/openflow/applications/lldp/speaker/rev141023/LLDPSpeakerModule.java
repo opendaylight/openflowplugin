@@ -4,6 +4,7 @@ import org.opendaylight.controller.config.api.DependencyResolver;
 import org.opendaylight.controller.config.api.ModuleIdentifier;
 import org.opendaylight.openflowplugin.applications.lldpspeaker.LLDPSpeaker;
 import org.opendaylight.openflowplugin.applications.lldpspeaker.NodeConnectorInventoryEventTranslator;
+import org.opendaylight.openflowplugin.applications.lldpspeaker.OperationalStatusChangeService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +36,8 @@ public class LLDPSpeakerModule extends AbstractLLDPSpeakerModule {
         final LLDPSpeaker lldpSpeaker = new LLDPSpeaker(packetProcessingService);
         final NodeConnectorInventoryEventTranslator eventTranslator =
                 new NodeConnectorInventoryEventTranslator(getDataBrokerDependency(), lldpSpeaker);
-
+        OperationalStatusChangeService operationalStatusChangeService = new OperationalStatusChangeService(lldpSpeaker);
+        getRpcRegistryDependency().addRpcImplementation(LldpSpeakerService.class, operationalStatusChangeService);
         return new AutoCloseable() {
             @Override
             public void close() {

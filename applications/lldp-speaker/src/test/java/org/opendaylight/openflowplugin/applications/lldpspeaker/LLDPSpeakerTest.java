@@ -29,6 +29,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.applications.lldp.speaker.rev141023.OperStatus;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 /**
@@ -64,6 +65,24 @@ public class LLDPSpeakerTest {
                 any(Runnable.class), anyLong(), anyLong(), any(TimeUnit.class)))
                 .thenReturn(scheduledSpeakerTask);
         lldpSpeaker = new LLDPSpeaker(packetProcessingService, scheduledExecutorService);
+        lldpSpeaker.setOperationalStatus(OperStatus.RUN);
+    }
+
+    /**
+     * Test that speaker does nothing when in {@link OperStatus.STANDBY} mode.
+     */
+    @Test
+    public void testStandBy() {
+        lldpSpeaker.setOperationalStatus(OperStatus.STANDBY);
+        // Add node connector - LLDP packet should be transmitted through packetProcessingService
+        lldpSpeaker.nodeConnectorAdded(id, fcnc);
+
+        // Execute one iteration of periodic task - LLDP packet should be transmitted second time
+        lldpSpeaker.run();
+
+        // Check packet transmission
+        verify(packetProcessingService, times(1)).transmitPacket(packet);
+        verifyNoMoreInteractions(packetProcessingService);
     }
 
     /**
