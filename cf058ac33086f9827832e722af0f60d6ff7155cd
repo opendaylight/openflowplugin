@@ -22,6 +22,24 @@
       "revId": "cf058ac33086f9827832e722af0f60d6ff7155cd",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_21dd2843",
+        "filename": "applications/lldp-speaker/src/main/java/org/opendaylight/openflowplugin/applications/lldpspeaker/OperationalStatusChangeService.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 917
+      },
+      "writtenOn": "2014-11-25T16:22:23Z",
+      "side": 1,
+      "message": "Oh yes, it would. My bad.",
+      "parentUuid": "7a96c907_01f6ecd7",
+      "revId": "cf058ac33086f9827832e722af0f60d6ff7155cd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
