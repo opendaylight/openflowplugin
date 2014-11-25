@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a96c907_01f6ecd7",
+        "filename": "applications/lldp-speaker/src/main/java/org/opendaylight/openflowplugin/applications/lldpspeaker/OperationalStatusChangeService.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 2809
+      },
+      "writtenOn": "2014-11-25T16:07:16Z",
+      "side": 1,
+      "message": "Isn\u0027t it will be more correct to return Futures.immediateFuture(RpcResultBuilder.\u003cVoid\u003esuccess(null)) ?",
+      "range": {
+        "startLine": 22,
+        "startChar": 8,
+        "endLine": 22,
+        "endChar": 14
+      },
+      "revId": "cf058ac33086f9827832e722af0f60d6ff7155cd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
