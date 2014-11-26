@@ -291,9 +291,9 @@ public class MatchConvertorImplTest {
                          getValue().intValue());
 
             Ipv4Match ipv4Match = (Ipv4Match)match.getLayer3Match();
-            assertEquals(IPV4_SRC.getValue(),
+            assertEquals(IPV4_SRC.getValue()+"/32",
                          ipv4Match.getIpv4Source().getValue());
-            assertEquals(IPV4_DST.getValue(),
+            assertEquals(IPV4_DST.getValue()+"/32",
                          ipv4Match.getIpv4Destination().getValue());
         }
 

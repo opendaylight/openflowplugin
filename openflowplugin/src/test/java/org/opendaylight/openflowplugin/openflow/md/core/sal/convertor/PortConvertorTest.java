@@ -30,7 +30,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 
 public class PortConvertorTest {
 
-    
+    /** defautl mac address */
+    private static final String DEFAULT_MAC_ADDRESS = "01:02:03:04:05:06";
+
     private PortFeatures features = new PortFeatures(true, null, null, null, null, null, null, null, null, null, null,
             null, null, null, null, null);
     
@@ -55,7 +57,7 @@ public class PortConvertorTest {
         portBld.setAdvertisedFeatures(features);
         portBld.setConfiguration(config);
         portBld.setPortNumber(new PortNumber(42L));
-        portBld.setHardwareAddress(new MacAddress(""));
+        portBld.setHardwareAddress(new MacAddress(DEFAULT_MAC_ADDRESS));
         
         PortModInput portOut = PortConvertor.toPortModInput(portBld.build(), EncodeConstants.OF13_VERSION_ID);
         
@@ -67,7 +69,7 @@ public class PortConvertorTest {
         portModInputBld.setMask(config31);
         portModInputBld.setPortNo(
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumber(42L));
-        portModInputBld.setHwAddress(new MacAddress(""));
+        portModInputBld.setHwAddress(new MacAddress(DEFAULT_MAC_ADDRESS));
         portModInputBld.setAdvertise(portf31);
         
         portModInputBld.setConfigV10(portConfV10);
@@ -95,7 +97,7 @@ public class PortConvertorTest {
         flowCapableNodeConnectorBuilder.setConfiguration(config);
         flowCapableNodeConnectorBuilder.setCurrentFeature(features);
         flowCapableNodeConnectorBuilder.setCurrentSpeed(null);
-        flowCapableNodeConnectorBuilder.setHardwareAddress(new MacAddress(""));
+        flowCapableNodeConnectorBuilder.setHardwareAddress(new MacAddress(DEFAULT_MAC_ADDRESS));
         flowCapableNodeConnectorBuilder.setMaximumSpeed(null);
         flowCapableNodeConnectorBuilder.setName("foo");
         flowCapableNodeConnectorBuilder.setPeerFeatures(features);
@@ -111,7 +113,7 @@ public class PortConvertorTest {
         portsB.setConfig(config31);
         portsB.setCurrentFeatures(portf31);
         portsB.setCurrSpeed(null);
-        portsB.setHwAddr(new MacAddress(""));
+        portsB.setHwAddr(new MacAddress(DEFAULT_MAC_ADDRESS));
         portsB.setMaxSpeed(null);
         portsB.setName("foo");
         portsB.setPeerFeatures(portf31);

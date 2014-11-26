@@ -9,18 +9,25 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.translator;
 
+import java.math.BigInteger;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 import org.opendaylight.openflowjava.util.ByteBufUtils;
+import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
+import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.extension.api.AugmentTuple;
 import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
-import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.IMDMessageTranslator;
-import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.MatchExtensionHelper;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchConvertorImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.openflow.md.util.ByteUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
-import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6FlowLabel;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Prefix;
@@ -133,13 +140,6 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.math.BigInteger;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, List<DataObject>> {
 
     protected static final Logger LOG = LoggerFactory.getLogger(FlowRemovedTranslator.class);
@@ -175,7 +175,7 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
                     FlowRemovedReason.OFPRRGROUPDELETE.equals(ofFlow.getReason()),
                     FlowRemovedReason.OFPRRHARDTIMEOUT.equals(ofFlow.getReason()),
                     FlowRemovedReason.OFPRRIDLETIMEOUT.equals(ofFlow.getReason())
-                    );
+            );
 
             salFlowRemoved.setRemovedReason(removeReasonFlag);
 
@@ -184,8 +184,7 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
                     .getMatch();
             if (ofMatch != null) {
                 salFlowRemoved.setMatch(fromMatch(ofMatch, sc.getFeatures().getDatapathId(), ofVersion));
-            }
-            else if(ofFlow.getMatchV10() != null){
+            } else if (ofFlow.getMatchV10() != null) {
                 MatchBuilder matchBuilder = new MatchBuilder(MatchConvertorImpl.fromOFMatchV10ToSALMatch(ofFlow.getMatchV10(), sc.getFeatures().getDatapathId(), ofVersion));
                 salFlowRemoved.setMatch(matchBuilder.build());
             }
@@ -201,7 +200,7 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
 
 
     public Match fromMatch(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.match.grouping.Match ofMatch,
-            BigInteger datapathid, OpenflowVersion ofVersion) {
+                           BigInteger datapathid, OpenflowVersion ofVersion) {
         MatchBuilder matchBuilder = new MatchBuilder();
         EthernetMatchBuilder ethernetMatch = null;
         VlanMatchBuilder vlanMatch = null;
@@ -239,14 +238,14 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
                     EthernetDestinationBuilder ethDst = new EthernetDestinationBuilder();
                     ethDst.setAddress(entry.getAugmentation(MacAddressMatchEntry.class).getMacAddress());
                     if (entry.isHasMask()) {
-                        ethDst.setMask(new MacAddress(ByteUtil.bytesToHexstring(entry.getAugmentation(MaskMatchEntry.class).getMask(),":")));
+                        ethDst.setMask(new MacAddress(ByteUtil.bytesToHexstring(entry.getAugmentation(MaskMatchEntry.class).getMask(), ":")));
                     }
                     ethernetMatch.setEthernetDestination(ethDst.build());
                 } else if (field.equals(EthSrc.class)) {
                     EthernetSourceBuilder ethSrc = new EthernetSourceBuilder();
                     ethSrc.setAddress(entry.getAugmentation(MacAddressMatchEntry.class).getMacAddress());
                     if (entry.isHasMask()) {
-                        ethSrc.setMask(new MacAddress(ByteUtil.bytesToHexstring(entry.getAugmentation(MaskMatchEntry.class).getMask(),":")));
+                        ethSrc.setMask(new MacAddress(ByteUtil.bytesToHexstring(entry.getAugmentation(MaskMatchEntry.class).getMask(), ":")));
                     }
                     ethernetMatch.setEthernetSource(ethSrc.build());
                 } else if (field.equals(EthType.class)) {
@@ -363,14 +362,14 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
                     ArpSourceHardwareAddressBuilder arpSha = new ArpSourceHardwareAddressBuilder();
                     arpSha.setAddress(entry.getAugmentation(MacAddressMatchEntry.class).getMacAddress());
                     if (entry.isHasMask()) {
-                        arpSha.setMask(new MacAddress(ByteUtil.bytesToHexstring(entry.getAugmentation(MaskMatchEntry.class).getMask(),":")));
+                        arpSha.setMask(new MacAddress(ByteUtil.bytesToHexstring(entry.getAugmentation(MaskMatchEntry.class).getMask(), ":")));
                     }
                     arpMatch.setArpSourceHardwareAddress(arpSha.build());
                 } else if (field.equals(ArpTha.class)) {
                     ArpTargetHardwareAddressBuilder arpTha = new ArpTargetHardwareAddressBuilder();
                     arpTha.setAddress(entry.getAugmentation(MacAddressMatchEntry.class).getMacAddress());
                     if (entry.isHasMask()) {
-                        arpTha.setMask(new MacAddress(ByteUtil.bytesToHexstring(entry.getAugmentation(MaskMatchEntry.class).getMask(),":")));
+                        arpTha.setMask(new MacAddress(ByteUtil.bytesToHexstring(entry.getAugmentation(MaskMatchEntry.class).getMask(), ":")));
                     }
                     arpMatch.setArpTargetHardwareAddress(arpTha.build());
                 }
@@ -424,7 +423,7 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
                     ipv6ExtHeaderBuilder.setIpv6Exthdr(bitmap);
                     if (entry.isHasMask()) {
                         ipv6ExtHeaderBuilder.setIpv6ExthdrMask(
-                            ByteUtil.bytesToUnsignedShort(entry.getAugmentation(MaskMatchEntry.class).getMask()));
+                                ByteUtil.bytesToUnsignedShort(entry.getAugmentation(MaskMatchEntry.class).getMask()));
                     }
                     ipv6Match.setIpv6ExtHeader(ipv6ExtHeaderBuilder.build());
                 }
@@ -455,17 +454,17 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
                     tunnel.setTunnelMask(new BigInteger(OFConstants.SIGNUM_UNSIGNED, entry.getAugmentation(MaskMatchEntry.class).getMask()));
                 }
                 matchBuilder.setTunnel(tunnel.build());
-            } 
+            }
         }
-        
-        AugmentTuple<Match> matchExtensionWrap = 
+
+        AugmentTuple<Match> matchExtensionWrap =
                 MatchExtensionHelper.processAllExtensions(
                         ofMatch.getMatchEntries(), ofVersion, MatchPath.SWITCHFLOWREMOVED_MATCH);
         if (matchExtensionWrap != null) {
             matchBuilder.addAugmentation(matchExtensionWrap.getAugmentationClass(), matchExtensionWrap.getAugmentationObject());
         }
-        
-        
+
+
         if (ethernetMatch != null) {
             matchBuilder.setEthernetMatch(ethernetMatch.build());
         }
@@ -508,6 +507,8 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
         if (entry.isHasMask()) {
             byte[] mask = entry.getAugmentation(MaskMatchEntry.class).getMask();
             ipv4Prefix = ipv4Prefix + PREFIX_SEPARATOR + countBits(mask);
+        } else {
+            ipv4Prefix += PREFIX_SEPARATOR + "32";
         }
         return new Ipv4Prefix(ipv4Prefix);
     }
