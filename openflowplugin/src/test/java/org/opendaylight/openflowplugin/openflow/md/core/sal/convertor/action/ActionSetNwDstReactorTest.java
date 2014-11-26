@@ -9,8 +9,7 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action;
 
 import java.math.BigInteger;
 
-import junit.framework.Assert;
-
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowplugin.api.OFConstants;
@@ -44,7 +43,7 @@ public class ActionSetNwDstReactorTest {
     @Before
     public void setUp() {
         addresses = new Address[] {
-                new Ipv4Builder().setIpv4Address(new Ipv4Prefix("10.0.10.1")).build(),
+                new Ipv4Builder().setIpv4Address(new Ipv4Prefix("10.0.10.1/32")).build(),
                 new Ipv4Builder().setIpv4Address(new Ipv4Prefix("10.0.10.1/16")).build(),
                 new Ipv6Builder().setIpv6Address(new Ipv6Prefix("1234:5678:9abc:def1:2345:6789:abcd:ef12")).build(),
                 new Ipv6Builder().setIpv6Address(new Ipv6Prefix("1234:5678:9abc:def1:2345:6789:abcd:ef12/42")).build(),

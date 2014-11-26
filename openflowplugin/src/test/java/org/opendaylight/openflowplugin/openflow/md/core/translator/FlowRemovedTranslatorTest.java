@@ -264,7 +264,7 @@ public class FlowRemovedTranslatorTest extends FlowRemovedTranslator {
         fieldClassesAndAugmentations.put(TunnelId.class, metadataMatchEntryBuilder.build());
 
         Ipv4AddressMatchEntryBuilder ipv4AddressMatchEntryBuilder = new Ipv4AddressMatchEntryBuilder();
-        ipv4AddressMatchEntryBuilder.setIpv4Address(new Ipv4Address("10.0.0.1/24"));
+        ipv4AddressMatchEntryBuilder.setIpv4Address(new Ipv4Address("10.0.0.1"));
         fieldClassesAndAugmentations.put(ArpTpa.class, ipv4AddressMatchEntryBuilder.build());
         fieldClassesAndAugmentations.put(ArpSpa.class, ipv4AddressMatchEntryBuilder.build());
 

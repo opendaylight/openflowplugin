@@ -9,10 +9,13 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 
 import java.lang.reflect.Constructor;
 import java.math.BigInteger;
+import java.util.Arrays;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.MaskMatchEntry;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.MaskMatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Ipv6ExthdrFlags;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,6 +86,55 @@ public class MatchConvertorUtilTest {
             Assert.assertEquals(128-i, cidr);
 
             maskSeed = maskSeed.clearBit(i);
+        }
+    }
+    
+    /**
+     * Test method for {@link MatchConvertorUtil#getIpv4Mask(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.MaskMatchEntry)}.
+     * @throws Exception
+     */
+    @Test
+    public void testGetIpv4Mask() {
+        MaskMatchEntryBuilder maskMatchEntry = new MaskMatchEntryBuilder();
+        byte[][] maskInputs = new byte[][] {
+                {(byte) 255, (byte) 255, (byte) 255, (byte) 255},
+                {(byte) 255, (byte) 255, (byte) 254, 0},
+                {(byte) 128, 0, 0, 0},
+                {0, 0, 0, 0},
+        };
+        
+        String[] maskOutputs = new String[] {
+                "/32", "/23", "/1", "/0"
+        };
+        
+        for (int i = 0; i < maskInputs.length; i++) {
+            MaskMatchEntry maskEntry = maskMatchEntry.setMask(maskInputs[i]).build();
+            String mask = MatchConvertorUtil.getIpv4Mask(maskEntry);
+            Assert.assertEquals(maskOutputs[i], mask);
+        }
+    }
+    
+    /**
+     * Test method for {@link MatchConvertorUtil#getIpv4Mask(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.MaskMatchEntry)}.
+     * @throws Exception
+     */
+    @Test
+    public void testGetIpv4MaskNegative() {
+        MaskMatchEntryBuilder maskMatchEntry = new MaskMatchEntryBuilder();
+        byte[][] maskInputs = new byte[][] {
+                {(byte) 127, 0, 0, 0},
+                {(byte) 127, 0, 0},
+        };
+        
+        for (int i = 0; i < maskInputs.length; i++) {
+            MaskMatchEntry maskEntry = maskMatchEntry.setMask(maskInputs[i]).build();
+            try {
+                MatchConvertorUtil.getIpv4Mask(maskEntry);
+                Assert.fail("invalid mask should not have passed: " + Arrays.toString(maskInputs[i]));
+            } catch (Exception e) {
+                // expected
+                LOG.info("ipv4 mask excepted exception: {}", e.getMessage(), e);
+            }
         }
     }
 }

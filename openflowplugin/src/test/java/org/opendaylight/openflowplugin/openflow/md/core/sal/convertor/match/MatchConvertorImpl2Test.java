@@ -208,8 +208,8 @@ public class MatchConvertorImpl2Test {
         tunnelBuilder.setTunnelId(new BigInteger("21"));
         builder.setTunnel(tunnelBuilder.build());
         Ipv4MatchBuilder ipv4MatchBuilder = new Ipv4MatchBuilder();
-        ipv4MatchBuilder.setIpv4Source(new Ipv4Prefix("10.0.0.1"));
-        ipv4MatchBuilder.setIpv4Destination(new Ipv4Prefix("10.0.0.2"));
+        ipv4MatchBuilder.setIpv4Source(new Ipv4Prefix("10.0.0.1/32"));
+        ipv4MatchBuilder.setIpv4Destination(new Ipv4Prefix("10.0.0.2/32"));
         builder.setLayer3Match(ipv4MatchBuilder.build());
         Match match = builder.build();
 
@@ -376,8 +376,8 @@ public class MatchConvertorImpl2Test {
         MatchBuilder builder = new MatchBuilder();
         ArpMatchBuilder arpBuilder = new ArpMatchBuilder();
         arpBuilder.setArpOp(5);
-        arpBuilder.setArpSourceTransportAddress(new Ipv4Prefix("10.0.0.3"));
-        arpBuilder.setArpTargetTransportAddress(new Ipv4Prefix("10.0.0.4"));
+        arpBuilder.setArpSourceTransportAddress(new Ipv4Prefix("10.0.0.3/32"));
+        arpBuilder.setArpTargetTransportAddress(new Ipv4Prefix("10.0.0.4/32"));
         ArpSourceHardwareAddressBuilder srcHwBuilder = new ArpSourceHardwareAddressBuilder();
         srcHwBuilder.setAddress(new MacAddress("00:00:00:00:00:05"));
         arpBuilder.setArpSourceHardwareAddress(srcHwBuilder.build());
@@ -419,7 +419,7 @@ public class MatchConvertorImpl2Test {
         MatchBuilder builder = new MatchBuilder();
         ArpMatchBuilder arpBuilder = new ArpMatchBuilder();
         arpBuilder.setArpSourceTransportAddress(new Ipv4Prefix("10.0.0.3/8"));
-        arpBuilder.setArpTargetTransportAddress(new Ipv4Prefix("10.0.0.4/32"));
+        arpBuilder.setArpTargetTransportAddress(new Ipv4Prefix("10.0.0.4/31"));
         ArpSourceHardwareAddressBuilder srcHwBuilder = new ArpSourceHardwareAddressBuilder();
         srcHwBuilder.setAddress(new MacAddress("00:00:00:00:00:05"));
         srcHwBuilder.setMask(new MacAddress("00:00:00:00:00:08"));
@@ -444,7 +444,7 @@ public class MatchConvertorImpl2Test {
         checkEntryHeader(entry, ArpTpa.class, true);
         Assert.assertEquals("Wrong arp tpa", "10.0.0.4", entry.getAugmentation(Ipv4AddressMatchEntry.class)
                 .getIpv4Address().getValue());
-        Assert.assertArrayEquals("Wrong arp tpa mask", new byte[]{(byte) 255, (byte) 255, (byte) 255, (byte) 255},
+        Assert.assertArrayEquals("Wrong arp tpa mask", new byte[]{(byte) 255, (byte) 255, (byte) 255, (byte) 254},
                 entry.getAugmentation(MaskMatchEntry.class).getMask());
         entry = entries.get(2);
         checkEntryHeader(entry, ArpSha.class, true);

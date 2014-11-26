@@ -32,7 +32,6 @@ public class NxmExtensionsConvertorTest {
 
     private static final Integer TCP_FLAG = new Integer(42);
     private static final Ipv4Prefix IPV_4_PREFIX = new Ipv4Prefix("10.0.0.1/24");
-    private static final Ipv4Prefix IPV_4_PREFIX_NO_MASK = new Ipv4Prefix("10.0.0.1");
 
     @Test
     /**
@@ -65,7 +64,6 @@ public class NxmExtensionsConvertorTest {
      */
     public void testAddNxmIpv4PrefixAugmentation() {
         assertTrue(NxmExtensionsConvertor.addNxmIpv4PrefixAugmentation(new MatchEntriesBuilder(), IPV_4_PREFIX));
-        assertFalse(NxmExtensionsConvertor.addNxmIpv4PrefixAugmentation(new MatchEntriesBuilder(), IPV_4_PREFIX_NO_MASK));
     }
 
 
