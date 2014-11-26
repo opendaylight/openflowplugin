@@ -208,8 +208,8 @@ public class MatchConvertorImpl2Test {
         tunnelBuilder.setTunnelId(new BigInteger("21"));
         builder.setTunnel(tunnelBuilder.build());
         Ipv4MatchBuilder ipv4MatchBuilder = new Ipv4MatchBuilder();
-        ipv4MatchBuilder.setIpv4Source(new Ipv4Prefix("10.0.0.1"));
-        ipv4MatchBuilder.setIpv4Destination(new Ipv4Prefix("10.0.0.2"));
+        ipv4MatchBuilder.setIpv4Source(new Ipv4Prefix("10.0.0.1/0"));
+        ipv4MatchBuilder.setIpv4Destination(new Ipv4Prefix("10.0.0.2/0"));
         builder.setLayer3Match(ipv4MatchBuilder.build());
         Match match = builder.build();
 
@@ -376,8 +376,8 @@ public class MatchConvertorImpl2Test {
         MatchBuilder builder = new MatchBuilder();
         ArpMatchBuilder arpBuilder = new ArpMatchBuilder();
         arpBuilder.setArpOp(5);
-        arpBuilder.setArpSourceTransportAddress(new Ipv4Prefix("10.0.0.3"));
-        arpBuilder.setArpTargetTransportAddress(new Ipv4Prefix("10.0.0.4"));
+        arpBuilder.setArpSourceTransportAddress(new Ipv4Prefix("10.0.0.3/0"));
+        arpBuilder.setArpTargetTransportAddress(new Ipv4Prefix("10.0.0.4/0"));
         ArpSourceHardwareAddressBuilder srcHwBuilder = new ArpSourceHardwareAddressBuilder();
         srcHwBuilder.setAddress(new MacAddress("00:00:00:00:00:05"));
         arpBuilder.setArpSourceHardwareAddress(srcHwBuilder.build());

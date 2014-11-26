@@ -788,8 +788,8 @@ public class MatchConvertorImplV13Test {
         
         ArpMatch arpMatch = (ArpMatch) builtMatch.getLayer3Match();
         Assert.assertEquals("Wrong arp op", 17, arpMatch.getArpOp().intValue());
-        Assert.assertEquals("Wrong arp spa", "10.0.0.3", arpMatch.getArpSourceTransportAddress().getValue());
-        Assert.assertEquals("Wrong arp tpa", "10.0.0.4", arpMatch.getArpTargetTransportAddress().getValue());
+        Assert.assertEquals("Wrong arp spa", "10.0.0.3/32", arpMatch.getArpSourceTransportAddress().getValue());
+        Assert.assertEquals("Wrong arp tpa", "10.0.0.4/32", arpMatch.getArpTargetTransportAddress().getValue());
         Assert.assertEquals("Wrong arp sha", "00:00:00:00:00:03", arpMatch.getArpSourceHardwareAddress().getAddress().getValue());
         Assert.assertEquals("Wrong arp tha", "00:00:00:00:00:04", arpMatch.getArpTargetHardwareAddress().getAddress().getValue());
     }
