@@ -40,6 +40,24 @@
       "revId": "b272951c6545d3b92fa6d3c26dc4d5e241eca207",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_8874589d",
+        "filename": "applications/lldp-speaker/src/main/java/org/opendaylight/openflowplugin/applications/lldpspeaker/LLDPSpeaker.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 2809
+      },
+      "writtenOn": "2014-11-27T06:47:46Z",
+      "side": 1,
+      "message": "OK, thank you for clarification.",
+      "parentUuid": "7a96c907_08412839",
+      "revId": "b272951c6545d3b92fa6d3c26dc4d5e241eca207",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
