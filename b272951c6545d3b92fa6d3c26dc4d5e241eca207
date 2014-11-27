@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a96c907_e8307cea",
+        "filename": "applications/lldp-speaker/src/main/java/org/opendaylight/openflowplugin/applications/lldpspeaker/LLDPSpeaker.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 2809
+      },
+      "writtenOn": "2014-11-27T06:40:34Z",
+      "side": 1,
+      "message": "Do we really need to clear nodeConnectorMap?\nIf we first change operational status to STANDBY and then change it back to RUN, then it looks like we don\u0027t have any other way to populate it again then reboot all switches",
+      "range": {
+        "startLine": 57,
+        "startChar": 0,
+        "endLine": 59,
+        "endChar": 9
+      },
+      "revId": "b272951c6545d3b92fa6d3c26dc4d5e241eca207",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
