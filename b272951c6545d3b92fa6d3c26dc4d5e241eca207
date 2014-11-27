@@ -22,6 +22,24 @@
       "revId": "b272951c6545d3b92fa6d3c26dc4d5e241eca207",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_08412839",
+        "filename": "applications/lldp-speaker/src/main/java/org/opendaylight/openflowplugin/applications/lldpspeaker/LLDPSpeaker.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 917
+      },
+      "writtenOn": "2014-11-27T06:45:29Z",
+      "side": 1,
+      "message": "I believe we do. Purpose of this switch is to stop flooding with lldp packets when OFP is in slave mode (clustering). When that happens, notifications are not sent to LLDP speaker so map becomes inaccurate.  When LLDP speaker \u0027s environment becomes master again, notification will be received and map values recreated.  All topology data are stored in distributed data store - this map doesn\u0027t represent current topology.",
+      "parentUuid": "7a96c907_e8307cea",
+      "revId": "b272951c6545d3b92fa6d3c26dc4d5e241eca207",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
