@@ -1,0 +1,7 @@
+Verified+1: jenkins-openflowplugin <jenkins-openflowplugin@opendaylight.org>
+Code-Review+2: michal rehak <mirehak@cisco.com>
+Submitted-by: michal rehak <mirehak@cisco.com>
+Submitted-at: Fri, 28 Nov 2014 12:09:44 +0000
+Reviewed-on: https://git.opendaylight.org/gerrit/13044
+Project: openflowplugin
+Branch: refs/heads/master
