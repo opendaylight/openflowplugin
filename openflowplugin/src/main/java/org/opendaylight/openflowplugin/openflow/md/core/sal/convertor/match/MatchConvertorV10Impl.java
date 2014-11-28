@@ -101,8 +101,8 @@ public class MatchConvertorV10Impl implements MatchConvertor<MatchV10> {
             if(l3Match != null){
                 if(l3Match instanceof Ipv4Match){
                     Ipv4Match ipv4 = (Ipv4Match)l3Match;
-                    _tPSRC = convertL3Ipv4SrcMatch(matchBuilder, ipv4);
-                    _tPDST = convertL3Ipv4DstMatch(matchBuilder, ipv4);
+                    convertL3Ipv4SrcMatch(matchBuilder, ipv4);
+                    convertL3Ipv4DstMatch(matchBuilder, ipv4);
                 }
             }
             IpMatch ipMatch = match.getIpMatch();
@@ -216,11 +216,12 @@ public class MatchConvertorV10Impl implements MatchConvertor<MatchV10> {
     }
 
     /**
+     * Method splits the IP address and its mask and set their respective values in MatchV10Builder instance.
+     * Wildcard value of the IP mask will be determined by Openflow java encoding library.
      * @param matchBuilder
      * @param ipv4
-     * @return is wildCard
      */
-    private static boolean convertL3Ipv4DstMatch(final MatchV10Builder matchBuilder,
+    private static void convertL3Ipv4DstMatch(final MatchV10Builder matchBuilder,
             final Ipv4Match ipv4) {
         if(ipv4.getIpv4Destination()!=null){
             Iterator<String> addressParts = MatchConvertorImpl.PREFIX_SPLITTER.split(ipv4.getIpv4Destination().getValue()).iterator();
@@ -228,17 +229,16 @@ public class MatchConvertorV10Impl implements MatchConvertor<MatchV10> {
             Integer prefix = buildPrefix(addressParts);
             matchBuilder.setNwDst(ipv4Address);
             matchBuilder.setNwDstMask(prefix.shortValue());
-            return false;
         }
-        return true;
     }
 
     /**
+     * Method splits the IP address and its mask and set their respective values in MatchV10Builder instance.
+     * Wildcard value of the IP mask will be determined by Openflow java encoding library.
      * @param matchBuilder
      * @param ipv4
-     * @return is wildCard
      */
-    private static boolean convertL3Ipv4SrcMatch(final MatchV10Builder matchBuilder,
+    private static void convertL3Ipv4SrcMatch(final MatchV10Builder matchBuilder,
             final Ipv4Match ipv4) {
         if(ipv4.getIpv4Source()!=null){
             Iterator<String> addressParts = MatchConvertorImpl.PREFIX_SPLITTER.split(ipv4.getIpv4Source().getValue()).iterator();
@@ -247,9 +247,7 @@ public class MatchConvertorV10Impl implements MatchConvertor<MatchV10> {
 
             matchBuilder.setNwSrc(ipv4Address);
             matchBuilder.setNwSrcMask((short) prefix);
-            return false;
         }
-        return true;
     }
 
     /**
