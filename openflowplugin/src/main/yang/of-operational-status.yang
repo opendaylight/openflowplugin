@@ -1,0 +1,34 @@
+module of-operational-status {
+	yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:openflow:of-operational-status";
+    prefix "of-operational-status";
+    import rpc-context { prefix rpcx; revision-date 2013-06-17; }
+
+   typedef oper-status {
+        type enumeration {
+            enum STANDBY {
+                description "go to stand by mode";
+            }
+            enum RUN {
+                description "go to fully operational mode";
+            }
+        }
+    }
+
+    rpc change-operational-status {
+        input {
+            leaf operational-status {
+                type oper-status;
+                description "Change operational status of OFP.";
+            }
+         }
+    }
+    rpc get-operational-status {
+        output {
+            leaf operational-status {
+                type oper-status;
+                description "Change operational status of OFP.";
+            }
+         }
+    }
+}

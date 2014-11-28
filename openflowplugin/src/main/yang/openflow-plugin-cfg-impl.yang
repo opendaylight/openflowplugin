@@ -57,7 +57,14 @@ module openflow-provider-impl {
     augment "/config:modules/config:module/config:configuration" {
         case openflow-provider-impl {
             when "/config:modules/config:module/config:type = 'openflow-provider-impl'";
-
+            container rpc-registry {
+                uses config:service-ref {
+                    refine type {
+                        mandatory true;
+                        config:required-identity md-sal-binding:binding-rpc-registry;
+                    }
+                }
+            }
             container binding-aware-broker {
                 uses config:service-ref {
                     refine type {
@@ -130,4 +137,5 @@ module openflow-provider-impl {
             }
         }
     }
+
 }
