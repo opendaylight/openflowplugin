@@ -140,6 +140,44 @@
       <version>${sal.api.version}</version>
     </dependency>
 
+    <!-- Nicira extensions -->
+    <dependency>
+      <groupId>org.opendaylight.openflowplugin</groupId>
+      <artifactId>openflowplugin-extension-config</artifactId>
+      <version>${project.version}</version>
+      <type>xml</type>
+      <classifier>nicira-extension-config</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.openflowplugin</groupId>
+      <artifactId>openflowplugin-extension-config</artifactId>
+      <version>${project.version}</version>
+      <type>xml</type>
+      <classifier>openflowjava-nx-api-config</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.openflowplugin</groupId>
+      <artifactId>openflowplugin-extension-config</artifactId>
+      <version>${project.version}</version>
+      <type>xml</type>
+      <classifier>openflowjava-nx-config</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.openflowplugin</groupId>
+      <artifactId>openflowplugin-extension-nicira</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.openflowplugin</groupId>
+      <artifactId>openflowjava-extension-nicira-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.openflowplugin</groupId>
+      <artifactId>openflowjava-extension-nicira</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
     <!-- test the features.xml -->
     <dependency>
       <groupId>org.opendaylight.yangtools</groupId>

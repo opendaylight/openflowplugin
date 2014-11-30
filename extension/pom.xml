@@ -22,6 +22,7 @@
         <module>openflowjava-extension-nicira</module>
         <module>openflowplugin-extension-api</module>
         <module>openflowplugin-extension-nicira</module>
+        <module>openflowplugin-extension-config</module>
         <module>test-extension</module>
     </modules>
 
