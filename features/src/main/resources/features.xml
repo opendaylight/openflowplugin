@@ -67,5 +67,5 @@
         <bundle>mvn:org.opendaylight.openflowplugin.applications/lldp-speaker/${project.version}</bundle>
         <configfile finalname="etc/opendaylight/karaf/71-lldp-speaker.xml">mvn:org.opendaylight.openflowplugin.applications/lldp-speaker/${project.version}/xml/config</configfile>
     </feature>
-    
+
 </features>
