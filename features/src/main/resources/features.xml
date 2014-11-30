@@ -68,4 +68,14 @@
         <configfile finalname="etc/opendaylight/karaf/71-lldp-speaker.xml">mvn:org.opendaylight.openflowplugin.applications/lldp-speaker/${project.version}/xml/config</configfile>
     </feature>
     
+    <feature name="odl-openflowplugin-nxm-extensions" description="OpenDaylight :: Openflow Plugin :: Nicira Extensions" version='${project.version}'>
+        <feature version="${project.version}">odl-openflowplugin-southbound</feature>
+        <configfile finalname="etc/opendaylight/karaf/43-openflowjava-nx-api-config.xml">mvn:org.opendaylight.openflowplugin/openflowplugin-extension-config/${project.version}/xml/openflowjava-nx-api-config</configfile>
+        <configfile finalname="etc/opendaylight/karaf/44-openflowjava-nx-config.xml">mvn:org.opendaylight.openflowplugin/openflowplugin-extension-config/${project.version}/xml/openflowjava-nx-config/</configfile>
+        <configfile finalname="etc/opendaylight/karaf/44-nicira-extension.xml">mvn:org.opendaylight.openflowplugin/openflowplugin-extension-config/${project.version}/xml/nicira-extension-config</configfile>
+        <bundle>mvn:org.opendaylight.openflowplugin/openflowjava-extension-nicira-api/${project.version}</bundle>
+        <bundle>mvn:org.opendaylight.openflowplugin/openflowjava-extension-nicira/${project.version}</bundle>
+        <bundle>mvn:org.opendaylight.openflowplugin/openflowplugin-extension-nicira/${project.version}</bundle>
+    </feature>
+
 </features>
