@@ -45,6 +45,7 @@
     <properties>
       <project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
       <mdsal.version>1.2.0-SNAPSHOT</mdsal.version>
+      <netconf.version>1.2.0-SNAPSHOT</netconf.version>
       <nexusproxy>http://nexus.opendaylight.org/content</nexusproxy>
       <openflowjava.version>0.6.0-SNAPSHOT</openflowjava.version>
       <openflowplugin.model.version>${project.version}</openflowplugin.model.version>
@@ -87,20 +88,22 @@
             <artifactId>yang-binding</artifactId>
             <version>${yang.binding.version}</version>
         </dependency>
-	<dependency>
-      	    <groupId>org.opendaylight.yangtools</groupId>
-     	    <artifactId>yang-common</artifactId>
-            <version>${yang.binding.version}</version>
-    	</dependency>
-    	<dependency>
-	    <groupId>org.opendaylight.yangtools.model</groupId>
-            <artifactId>ietf-inet-types</artifactId>
-	    <version>${ietf-inet-types.version}</version>
+        <dependency>
+          <groupId>org.opendaylight.yangtools</groupId>
+          <artifactId>yang-common</artifactId>
+          <version>${yang.binding.version}</version>
+          <scope>import</scope>
+          <type>pom</type>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.yangtools.model</groupId>
-            <artifactId>ietf-yang-types</artifactId>
-	    <version>${ietf-yang-types.version}</version>
+          <groupId>org.opendaylight.yangtools.model</groupId>
+          <artifactId>ietf-inet-types</artifactId>
+          <version>${ietf-inet-types.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.opendaylight.yangtools.model</groupId>
+          <artifactId>ietf-yang-types</artifactId>
+          <version>${ietf-yang-types.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.yangtools.model</groupId>
