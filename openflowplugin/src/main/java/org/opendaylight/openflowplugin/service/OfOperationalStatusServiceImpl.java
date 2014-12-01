@@ -1,11 +1,15 @@
 package org.opendaylight.openflowplugin.service;
 
+import com.google.common.base.Preconditions;
 import java.util.concurrent.Future;
 import org.opendaylight.controller.sal.common.util.Futures;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.OpenflowPluginProvider;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.common.config.impl.rev140326.OfpRole;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.of.operational.status.rev141128.ChangeOperationalStatusInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.of.operational.status.rev141128.GetOperationalStatusOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.of.operational.status.rev141128.GetOperationalStatusOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.of.operational.status.rev141128.OfOperationalStatusService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.of.operational.status.rev141128.OperStatus;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
@@ -14,12 +18,24 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
  */
 public class OfOperationalStatusServiceImpl implements OfOperationalStatusService {
 
+    private static OpenflowPluginProvider openflowPluginProvider;
+
+    public OfOperationalStatusServiceImpl(OpenflowPluginProvider openflowPluginProviderReference) {
+        Preconditions.checkNotNull(openflowPluginProviderReference, "Reference to OpenflowPluginProvider can't be null.");
+        this.openflowPluginProvider = openflowPluginProviderReference;
+    }
 
     @Override
     public Future<RpcResult<Void>> changeOperationalStatus(ChangeOperationalStatusInput input) {
         OfOperationalStatusHolder.setOperationalStatus(input.getOperationalStatus());
-        //TODO : implement propper OFP status change
-        return null;
+        if (OperStatus.RUN.equals(input.getOperationalStatus())) {
+            //we suggest that OperStat.RUN means we are with master controller
+            openflowPluginProvider.fireRoleChange(OfpRole.BECOMEMASTER);
+        } else if (OperStatus.STANDBY.equals(input.getOperationalStatus())) {
+            //we suggest that OperStat.STANDBY means we are with slave controller
+            openflowPluginProvider.fireRoleChange(OfpRole.BECOMESLAVE);
+        }
+        return Futures.immediateFuture(RpcResultBuilder.<Void>success().build());
     }
 
     @Override

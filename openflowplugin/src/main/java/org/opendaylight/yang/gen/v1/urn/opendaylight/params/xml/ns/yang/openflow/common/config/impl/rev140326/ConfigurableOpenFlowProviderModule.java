@@ -54,7 +54,7 @@ public final class ConfigurableOpenFlowProviderModule extends org.opendaylight.y
         pluginProvider.setSwitchConnectionProviders(getOpenflowSwitchConnectionProviderDependency());
         pluginProvider.setRole(getRole());
         pluginProvider.initialization();
-        OfOperationalStatusServiceImpl ofOperationalStatusService = new OfOperationalStatusServiceImpl();
+        OfOperationalStatusServiceImpl ofOperationalStatusService = new OfOperationalStatusServiceImpl(pluginProvider);
         getRpcRegistryDependency().addRpcImplementation(OfOperationalStatusService.class, ofOperationalStatusService);
         return pluginProvider;
     }
