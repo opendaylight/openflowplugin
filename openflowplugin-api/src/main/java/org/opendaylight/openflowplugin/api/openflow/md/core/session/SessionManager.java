@@ -134,4 +134,8 @@ public interface SessionManager extends AutoCloseable {
      */
     MessageSpy<DataContainer> getMessageSpy();
 
+    /**
+     * @return collection of current sessions
+     */
+    Collection<SessionContext> getAllSessions();
 }
