@@ -8,6 +8,7 @@
     <repository>mvn:org.opendaylight.controller/features-flow/${mdsal.version}/xml/features</repository>
     <repository>mvn:org.opendaylight.openflowjava/features-openflowjava/${openflowjava.version}/xml/features</repository>
     <repository>mvn:org.opendaylight.dlux/features-dlux/${dlux.version}/xml/features</repository>
+    <repository>mvn:org.opendaylight.controller/features-netconf-connector/${netconf.version}/xml/features</repository>
 
     <feature name='odl-openflowplugin-all' description="OpenDaylight :: Openflow Plugin :: All" version='${project.version}'>
         <feature version="${project.version}">odl-openflowplugin-southbound</feature>
@@ -34,6 +35,7 @@
         <feature version="${project.version}">odl-openflowplugin-app-lldp-speaker</feature>
     </feature>
     <feature name='odl-openflowplugin-flow-services-rest' description="OpenDaylight :: Openflow Plugin :: Flow Services :: REST" version='${project.version}'>
+        <feature version="${netconf.version}">odl-netconf-connector-ssh</feature>
         <feature version="${project.version}">odl-openflowplugin-flow-services</feature>
         <feature version="${mdsal.version}">odl-restconf</feature>
     </feature>
