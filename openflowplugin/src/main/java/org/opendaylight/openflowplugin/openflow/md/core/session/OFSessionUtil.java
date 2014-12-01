@@ -182,4 +182,11 @@ public abstract class OFSessionUtil {
         return getSessionManager().getExtensionConverterProvider();
     }
 
+    /**
+     * @return collection of all sessions
+     */
+    public static Collection<SessionContext> getAllSessions() {
+        return getSessionManager().getAllSessions();
+    }
+
 }
