@@ -242,5 +242,28 @@ public class InventoryDataServiceUtilTest {
         }
     }
 
-
+    /**
+     * Test method for {@link InventoryDataServiceUtil#portNoStringfromNodeConnectorID(String)}.
+     */
+    @Test
+    public void testNodeConnectorIDToPortNoString() {
+    	String[] nodeConnectorIDs = new String[]{
+    			"openflow:2",
+    			"openflow:2:3411",
+    			"INPORT",
+    			"openflow:628192264910264962"
+    	};
+    	
+    	String[] expectedPortNoStrings = new String[]{
+    			"2",
+    			"3411",
+    			"INPORT",
+    			"628192264910264962"
+    	};
+    	
+    	for (int i = 0; i < nodeConnectorIDs.length; i++) {
+    		String portNoString = InventoryDataServiceUtil.portNoStringfromNodeConnectorID(nodeConnectorIDs[i]);
+    		Assert.assertEquals(expectedPortNoStrings[i], portNoString);
+    	}
+    }
 }
