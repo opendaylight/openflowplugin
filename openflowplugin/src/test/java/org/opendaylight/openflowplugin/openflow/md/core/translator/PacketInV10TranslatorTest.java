@@ -17,7 +17,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,10 +47,10 @@ import org.slf4j.LoggerFactory;
  * Created by Jakub Toth jatoth@cisco.com on 3/10/14.
  */
 @RunWith(MockitoJUnitRunner.class)
-public class PacketInV10TranslatorTest{
+public class PacketInV10TranslatorTest {
     private static final Logger LOG = LoggerFactory
             .getLogger(PacketInV10TranslatorTest.class);
-    
+
     @Mock
     private SessionContext sc;
     @Mock
@@ -61,7 +60,7 @@ public class PacketInV10TranslatorTest{
 
     private SwitchConnectionDistinguisher cookie;
     private byte[] data;
-    
+
     /**
      * Initializes mocks
      */
@@ -72,11 +71,11 @@ public class PacketInV10TranslatorTest{
         when(sc.getFeatures()).thenReturn(features);
         when(features.getDatapathId()).thenReturn(new BigInteger("42"));
         OpenflowPortsUtil.init();
-        
+
         cookie = settingCookie();
         data = messageData();
     }
-    
+
     /**
      * test
      * {@link PacketInV10Translator#translate(SwitchConnectionDistinguisher, SessionContext, OfHeader)}
@@ -84,7 +83,7 @@ public class PacketInV10TranslatorTest{
      * MD-SAL model, supports OF-1.0
      */
     @Test
-    public void testTranslateWithAllNullParam(){
+    public void testTranslateWithAllNullParam() {
         SwitchConnectionDistinguisher cookieNull = null;
         SessionContext sessionContext = null;
         OfHeader msg = null;
@@ -106,8 +105,8 @@ public class PacketInV10TranslatorTest{
      * supports OF-1.0
      */
     @Test
-    public void testTranslateDPIDNull(){
-        SessionContextOFImpl sessionContextOFImpl = new SessionContextOFImpl();
+    public void testTranslateDPIDNull() {
+        SessionContext sessionContextOFImpl = new SessionContextOFImpl();
 
         PacketInMessage message = createPacketInMessage(data, null);
 
@@ -127,7 +126,7 @@ public class PacketInV10TranslatorTest{
      * supports OF-1.0
      */
     @Test
-    public void testTranslateInPortNull(){
+    public void testTranslateInPortNull() {
         BigInteger datapathId = dataPathId();
 
         GetFeaturesOutputBuilder featuresBuilder = new GetFeaturesOutputBuilder();
@@ -152,11 +151,11 @@ public class PacketInV10TranslatorTest{
      * test
      * {@link PacketInV10Translator#translate(SwitchConnectionDistinguisher, SessionContext, OfHeader)}
      * - translates packetIn from OF-API model to MD-SAL model, supports OF-1.0
-     * 
+     *
      * @throws IOException
      */
     @Test
-    public void testTranslate(){
+    public void testTranslate() {
         BigInteger datapathId = dataPathId();
 
         PacketInMessage message = createPacketInMessage(data, 5);
@@ -170,7 +169,7 @@ public class PacketInV10TranslatorTest{
         OpenflowPortsUtil.init();
         List<DataObject> salPacketIn = packetInV10Translator.translate(cookie,
                 sessionContextOFImpl, message);
-        
+
         //TODO: rewrite to object and involve object comparison in Assert
         String expectedString = "[PacketReceived [_ingress=NodeConnectorRef [_value=KeyedInstanceIdentifier"
                 + "{targetType=interface org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector,"
@@ -193,12 +192,12 @@ public class PacketInV10TranslatorTest{
 
     /**
      * create datapathID
-     * 
+     *
      * @return BigInteger
      */
-    private static BigInteger dataPathId(){
+    private static BigInteger dataPathId() {
         byte[] datapathIdByte = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-        for(int i = 0; i < datapathIdByte.length; i++){
+        for (int i = 0; i < datapathIdByte.length; i++) {
             datapathIdByte[i] = 1;
         }
         return new BigInteger(1, datapathIdByte);
@@ -206,23 +205,23 @@ public class PacketInV10TranslatorTest{
 
     /**
      * generate message from string to byte[]
-     * 
+     *
      * @return byte[]
      */
-    private static byte[] messageData(){
+    private static byte[] messageData() {
         String string = new String("sendOutputMsg_TEST");
         return string.getBytes();
     }
 
     /**
      * create PacketInMessage with setting Version, InPort, Data, Reason
-     * 
+     *
      * @param data
      * @param port
      * @return PacketInMessage
      */
     private static PacketInMessage createPacketInMessage(final byte[] data,
-            final java.lang.Integer port){
+                                                         final java.lang.Integer port) {
         PacketInReason reason = PacketInReason.OFPRACTION;
         return new PacketInMessageBuilder()
                 .setVersion((short) EncodeConstants.OF10_VERSION_ID)
@@ -232,10 +231,10 @@ public class PacketInV10TranslatorTest{
 
     /**
      * create cookie
-     * 
+     *
      * @return SwitchConnectionDistinguisher
      */
-    private static SwitchConnectionDistinguisher settingCookie(){
+    private static SwitchConnectionDistinguisher settingCookie() {
         SwitchConnectionCookieOFImpl key = new SwitchConnectionCookieOFImpl();
         key.setAuxiliaryId((short) 1);
         key.init(42);
@@ -244,24 +243,24 @@ public class PacketInV10TranslatorTest{
 
     /**
      * create GetFeatureOutput
-     * 
+     *
      * @param datapathId
      * @return GetFeaturesOutput
      */
-    private static GetFeaturesOutput createGetFeatureOutput(final BigInteger datapathId){
+    private static GetFeaturesOutput createGetFeatureOutput(final BigInteger datapathId) {
         return new GetFeaturesOutputBuilder().setDatapathId(datapathId)
                 .setVersion((short) 0x01).build();
     }
 
     /**
      * init connectionConductor
-     * 
+     *
      * @param connectionConductor
      * @param featuresOutput
      */
     private static void initConnectionConductor(
             final ConnectionConductorImpl connectionConductor,
-            final GetFeaturesOutput featuresOutput){
+            final GetFeaturesOutput featuresOutput) {
         TranslatorKey paramK = new TranslatorKey(1, PacketInMessage.class.getSimpleName());
         Collection<IMDMessageTranslator<OfHeader, List<DataObject>>> coll = new ArrayList<>();
         coll.add(new PacketInV10Translator());
