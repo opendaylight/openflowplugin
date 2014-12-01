@@ -874,7 +874,8 @@ public final class ActionConvertor {
         if (OpenflowPortsUtil.checkPortValidity(ofVersion, portNumber)) {
             portAction.setPort(new PortNumber(portNumber));
         } else {
-            logger.error("Invalid Port specified " + portNumber + " for Output Action for OF version:" + ofVersion);
+            logger.error("Invalid Port specified " + InventoryDataServiceUtil.portNoStringfromNodeConnectorID(uri.getValue()) 
+            		+ " for Output Action for OF version:" + ofVersion);
         }
 
         actionBuilder.setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.Output.class);
