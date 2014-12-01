@@ -9,7 +9,11 @@
 */
 package org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.common.config.impl.rev140326;
 
+import javax.management.ObjectName;
+
 import org.opendaylight.openflowplugin.openflow.md.core.sal.OpenflowPluginProvider;
+
+import com.google.common.base.MoreObjects;
 
 /**
 *
@@ -48,7 +52,31 @@ public final class ConfigurableOpenFlowProviderModule extends org.opendaylight.y
         pluginProvider =  new OpenflowPluginProvider();
         pluginProvider.setBroker(getBindingAwareBrokerDependency());
         pluginProvider.setSwitchConnectionProviders(getOpenflowSwitchConnectionProviderDependency());
+        pluginProvider.setRole(getRole());
         pluginProvider.initialization();
         return pluginProvider;
+    }
+
+    @Override
+    public boolean canReuseInstance(
+            AbstractConfigurableOpenFlowProviderModule oldModule) {
+        // we can reuse if only the role field changed
+        boolean noChangeExceptRole = true;
+        noChangeExceptRole &= dependencyResolver.canReuseDependency(
+                getBindingAwareBroker(), bindingAwareBrokerJmxAttribute);
+        for (ObjectName ofSwitchProvider : getOpenflowSwitchConnectionProvider()) {
+            noChangeExceptRole &= dependencyResolver.canReuseDependency(
+                    ofSwitchProvider, openflowSwitchConnectionProviderJmxAttribute); 
+        }
+        return noChangeExceptRole;
+    }
+
+    @Override
+    public AutoCloseable reuseInstance(AutoCloseable oldInstance) {
+        OpenflowPluginProvider recycled = (OpenflowPluginProvider) super.reuseInstance(oldInstance);
+        // change role if different
+        recycled.fireRoleChange(MoreObjects.firstNonNull(getRole(), getRole()));
+
+        return recycled;
     }
 }
