@@ -70,7 +70,7 @@ public class SessionManagerOFImpl implements ConjunctSessionManager {
     }
 
     /**
-     * close and release singleton instace
+     * close and release singleton instance
      */
     public static void releaseInstance() {
         if (instance != null) {
@@ -316,5 +316,10 @@ public class SessionManagerOFImpl implements ConjunctSessionManager {
     @Override
     public ExtensionConverterProvider getExtensionConverterProvider() {
         return extensionConverterProvider;
+    }
+    
+    @Override
+    public Collection<SessionContext> getAllSessions() {
+        return sessionLot.values();
     }
 }

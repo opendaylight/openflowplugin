@@ -20,7 +20,6 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.opendaylight.controller.sal.common.util.Futures;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.core.ConnectionConductor;
@@ -36,10 +35,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.hello.Elements;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.hello.ElementsBuilder;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
+import com.google.common.util.concurrent.Futures;
 
 /**
  * testing handshake
@@ -75,10 +76,11 @@ public class HandshakeManagerImplTest {
         handshakeManager.setHandshakeListener(handshakeListener);
         handshakeManager.setUseVersionBitmap(false);
         
-        resultFeatures = RpcResultsUtil.createRpcResult(true, new GetFeaturesOutputBuilder().build(), null);
+        resultFeatures = RpcResultBuilder.success(new GetFeaturesOutputBuilder().build()).build();
         
         Mockito.when(adapter.hello(Matchers.any(HelloInput.class)))
-            .thenReturn(Futures.immediateFuture(RpcResultsUtil.createRpcResult(true, (Void) null, null)));
+            .thenReturn(Futures.immediateFuture(
+                    RpcResultBuilder.success((Void) null).build()));
     }
     
     /**
