@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  */
 public class LLDPSpeaker implements AutoCloseable, NodeConnectorEventsObserver, Runnable {
 
-    private static OperStatus operationalStatus;
+    private static OperStatus operationalStatus = OperStatus.RUN;
 
     private static final Logger LOG = LoggerFactory.getLogger(LLDPSpeaker.class);
     private static final long LLDP_FLOOD_PERIOD = 5;
@@ -88,7 +88,7 @@ public class LLDPSpeaker implements AutoCloseable, NodeConnectorEventsObserver, 
      */
     @Override
     public void run() {
-        if (operationalStatus.equals(OperStatus.RUN)) {
+        if (OperStatus.RUN.equals(operationalStatus)) {
             LOG.debug("Sending LLDP frames to {} ports...", nodeConnectorMap.keySet().size());
 
             for (InstanceIdentifier<NodeConnector> nodeConnectorInstanceId : nodeConnectorMap.keySet()) {
