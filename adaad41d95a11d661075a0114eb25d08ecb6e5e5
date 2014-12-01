@@ -22,6 +22,30 @@
       "revId": "adaad41d95a11d661075a0114eb25d08ecb6e5e5",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_015256dd",
+        "filename": "samples/learning-switch/src/main/java/org/opendaylight/openflowplugin/learningswitch/multi/LearningSwitchManagerMultiImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2014-12-01T11:52:08Z",
+      "side": 1,
+      "message": "nevermind - https://git.opendaylight.org/gerrit/#/c/12819/3",
+      "parentUuid": "7a96c907_46add430",
+      "range": {
+        "startLine": 96,
+        "startChar": 0,
+        "endLine": 96,
+        "endChar": 108
+      },
+      "revId": "adaad41d95a11d661075a0114eb25d08ecb6e5e5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
