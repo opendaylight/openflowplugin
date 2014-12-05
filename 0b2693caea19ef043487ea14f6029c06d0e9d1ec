@@ -19,6 +19,23 @@
     },
     {
       "key": {
+        "uuid": "7a96c907_b85e30e8",
+        "filename": "features/src/main/resources/features.xml",
+        "patchSetId": 7
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 917
+      },
+      "writtenOn": "2014-12-05T15:29:47Z",
+      "side": 1,
+      "message": "This seems to be needed for bundle reconfiguration by config subsystem.",
+      "revId": "0b2693caea19ef043487ea14f6029c06d0e9d1ec",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a96c907_1d55d61c",
         "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/session/OFRoleManager.java",
         "patchSetId": 7
@@ -30,6 +47,24 @@
       "writtenOn": "2014-12-05T13:00:03Z",
       "side": 1,
       "message": "should be final",
+      "revId": "0b2693caea19ef043487ea14f6029c06d0e9d1ec",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_7841880a",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/session/OFRoleManager.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 917
+      },
+      "writtenOn": "2014-12-05T15:29:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a96c907_1d55d61c",
       "revId": "0b2693caea19ef043487ea14f6029c06d0e9d1ec",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -53,6 +88,24 @@
     },
     {
       "key": {
+        "uuid": "7a96c907_9846d422",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/session/OFRoleManager.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 917
+      },
+      "writtenOn": "2014-12-05T15:29:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a96c907_dd368e03",
+      "revId": "0b2693caea19ef043487ea14f6029c06d0e9d1ec",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a96c907_7d3bbaeb",
         "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/session/OFRoleManager.java",
         "patchSetId": 7
@@ -64,6 +117,24 @@
       "writtenOn": "2014-12-05T13:00:03Z",
       "side": 1,
       "message": "should be final",
+      "revId": "0b2693caea19ef043487ea14f6029c06d0e9d1ec",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_384b002d",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/session/OFRoleManager.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 917
+      },
+      "writtenOn": "2014-12-05T15:29:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a96c907_7d3bbaeb",
       "revId": "0b2693caea19ef043487ea14f6029c06d0e9d1ec",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -87,6 +158,24 @@
     },
     {
       "key": {
+        "uuid": "7a96c907_58484c2d",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/session/OFRoleManager.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 917
+      },
+      "writtenOn": "2014-12-05T15:29:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a96c907_9d400658",
+      "revId": "0b2693caea19ef043487ea14f6029c06d0e9d1ec",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a96c907_fd57ca24",
         "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/session/OFRoleManager.java",
         "patchSetId": 7
@@ -98,6 +187,24 @@
       "writtenOn": "2014-12-05T13:00:03Z",
       "side": 1,
       "message": "cleanup whitespace",
+      "revId": "0b2693caea19ef043487ea14f6029c06d0e9d1ec",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_f854b8cb",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/session/OFRoleManager.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 917
+      },
+      "writtenOn": "2014-12-05T15:29:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a96c907_fd57ca24",
       "revId": "0b2693caea19ef043487ea14f6029c06d0e9d1ec",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -121,6 +228,24 @@
     },
     {
       "key": {
+        "uuid": "7a96c907_1852c4dd",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/session/OFRoleManager.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 917
+      },
+      "writtenOn": "2014-12-05T15:29:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a96c907_bd31420d",
+      "revId": "0b2693caea19ef043487ea14f6029c06d0e9d1ec",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a96c907_3d2532c2",
         "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/session/RolePushException.java",
         "patchSetId": 7
@@ -132,6 +257,24 @@
       "writtenOn": "2014-12-05T13:00:03Z",
       "side": 1,
       "message": "trailing whitespace",
+      "revId": "0b2693caea19ef043487ea14f6029c06d0e9d1ec",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_d863fcaf",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/session/RolePushException.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 917
+      },
+      "writtenOn": "2014-12-05T15:29:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a96c907_3d2532c2",
       "revId": "0b2693caea19ef043487ea14f6029c06d0e9d1ec",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -155,6 +298,24 @@
     },
     {
       "key": {
+        "uuid": "7a96c907_7858a8fa",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/session/RolePushTask.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 917
+      },
+      "writtenOn": "2014-12-05T15:29:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a96c907_5d227eba",
+      "revId": "0b2693caea19ef043487ea14f6029c06d0e9d1ec",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a96c907_fd2eeaa4",
         "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/session/RolePushTask.java",
         "patchSetId": 7
@@ -166,6 +327,24 @@
       "writtenOn": "2014-12-05T13:00:03Z",
       "side": 1,
       "message": "pass the entire exception (without placeholder) to logger",
+      "revId": "0b2693caea19ef043487ea14f6029c06d0e9d1ec",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_985d74ec",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/session/RolePushTask.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 917
+      },
+      "writtenOn": "2014-12-05T15:29:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a96c907_fd2eeaa4",
       "revId": "0b2693caea19ef043487ea14f6029c06d0e9d1ec",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -189,6 +368,24 @@
     },
     {
       "key": {
+        "uuid": "7a96c907_3872207d",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/session/SessionContextOFImpl.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 255,
+      "author": {
+        "id": 917
+      },
+      "writtenOn": "2014-12-05T15:29:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a96c907_dd1d2e75",
+      "revId": "0b2693caea19ef043487ea14f6029c06d0e9d1ec",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a96c907_7d12da63",
         "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/util/RoleUtil.java",
         "patchSetId": 7
@@ -200,6 +397,24 @@
       "writtenOn": "2014-12-05T13:00:03Z",
       "side": 1,
       "message": "UnsupportedOperationException",
+      "revId": "0b2693caea19ef043487ea14f6029c06d0e9d1ec",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_586fec92",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/util/RoleUtil.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 917
+      },
+      "writtenOn": "2014-12-05T15:29:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a96c907_7d12da63",
       "revId": "0b2693caea19ef043487ea14f6029c06d0e9d1ec",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -223,6 +438,24 @@
     },
     {
       "key": {
+        "uuid": "7a96c907_1869648b",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/util/RoleUtil.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 140,
+      "author": {
+        "id": 917
+      },
+      "writtenOn": "2014-12-05T15:29:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a96c907_9d17a651",
+      "revId": "0b2693caea19ef043487ea14f6029c06d0e9d1ec",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a96c907_5d091e30",
         "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/util/RpcResultUtil.java",
         "patchSetId": 7
@@ -234,6 +467,24 @@
       "writtenOn": "2014-12-05T13:00:03Z",
       "side": 1,
       "message": "UnsupportedOperationException",
+      "revId": "0b2693caea19ef043487ea14f6029c06d0e9d1ec",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_180084a9",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/util/RpcResultUtil.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 917
+      },
+      "writtenOn": "2014-12-05T15:29:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a96c907_5d091e30",
       "revId": "0b2693caea19ef043487ea14f6029c06d0e9d1ec",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -257,6 +508,24 @@
     },
     {
       "key": {
+        "uuid": "7a96c907_b82cf04b",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/util/RpcResultUtil.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 917
+      },
+      "writtenOn": "2014-12-05T15:29:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a96c907_3d0c5242",
+      "revId": "0b2693caea19ef043487ea14f6029c06d0e9d1ec",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a96c907_fd058a14",
         "filename": "openflowplugin/src/test/java/org/opendaylight/openflowplugin/openflow/md/core/session/OFRoleManagerTest.java",
         "patchSetId": 7
@@ -268,6 +537,24 @@
       "writtenOn": "2014-12-05T13:00:03Z",
       "side": 1,
       "message": "cleanup whitespace",
+      "revId": "0b2693caea19ef043487ea14f6029c06d0e9d1ec",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_7826686a",
+        "filename": "openflowplugin/src/test/java/org/opendaylight/openflowplugin/openflow/md/core/session/OFRoleManagerTest.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 917
+      },
+      "writtenOn": "2014-12-05T15:29:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a96c907_fd058a14",
       "revId": "0b2693caea19ef043487ea14f6029c06d0e9d1ec",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
