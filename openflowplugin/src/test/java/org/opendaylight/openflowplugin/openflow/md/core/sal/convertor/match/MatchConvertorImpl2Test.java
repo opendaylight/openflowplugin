@@ -652,9 +652,8 @@ public class MatchConvertorImpl2Test {
         checkEntryHeader(entry, PbbIsid.class, true);
         Assert.assertEquals("Wrong pbb isid", 20, entry.getAugmentation(IsidMatchEntry.class)
                 .getIsid().intValue());
-        // FIXME - fix mask computation (length should be 3 instead of 4)
-//        Assert.assertArrayEquals("Wrong pbb isid mask", new byte[]{0, 0, 8},
-//                entry.getAugmentation(MaskMatchEntry.class).getMask());
+        Assert.assertArrayEquals("Wrong pbb isid mask", new byte[]{0, 0, 8},
+                entry.getAugmentation(MaskMatchEntry.class).getMask());
         entry = entries.get(7);
         checkEntryHeader(entry, TunnelId.class, true);
         Assert.assertArrayEquals("Wrong tunnel id", new byte[]{0, 0, 0, 0, 0, 0, 0, 21},

@@ -971,7 +971,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
                     pbbBuilder.setPbbIsid(isidMatchEntry.getIsid());
                     MaskMatchEntry maskMatchEntry = ofMatch.getAugmentation(MaskMatchEntry.class);
                     if (maskMatchEntry != null) {
-                        pbbBuilder.setPbbMask(ByteUtil.bytesToUnsignedInt(maskMatchEntry.getMask()));
+                        pbbBuilder.setPbbMask(ByteUtil.bytesToUnsignedMedium(maskMatchEntry.getMask()));
                     }
                     protocolMatchFieldsBuilder.setPbb(pbbBuilder.build());
                     matchBuilder.setProtocolMatchFields(protocolMatchFieldsBuilder.build());
@@ -1011,7 +1011,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
         matchEntriesBuilder.addAugmentation(IsidMatchEntry.class, isidBuilder.build());
         if (pbb.getPbbMask() != null) {
             hasmask = true;
-            addMaskAugmentation(matchEntriesBuilder, ByteUtil.unsignedIntToBytes(pbb.getPbbMask()));
+            addMaskAugmentation(matchEntriesBuilder, ByteUtil.unsignedMediumToBytes(pbb.getPbbMask()));
         }
         matchEntriesBuilder.setHasMask(hasmask);
         return matchEntriesBuilder.build();

@@ -7,12 +7,11 @@
 
 package org.opendaylight.openflowplugin.openflow.md.util;
 
-import org.junit.Test;
-
-import java.math.BigInteger;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+
+import java.math.BigInteger;
+import org.junit.Test;
 
 /**
  * Created by Martin Bobak mbobak@cisco.com on 6/30/14.
@@ -27,11 +26,19 @@ public class ByteUtilTest {
     private static final byte[] testBytes00 = {0, 0, 0, 0};
     private static final byte[] testBytesFF = {(byte) 255, (byte) 255, (byte) 255, (byte) 255};
 
+    private static final byte[] test3Bytes = {100, 101, 102};
+    private static final byte[] test3Bytes00 = {0, 0, 0};
+    private static final byte[] test3BytesFF = {(byte) 255, (byte) 255, (byte) 255};
+
     private static final BigInteger bigInteger = new BigInteger("1684367103");
     private static final BigInteger bigIntFF = new BigInteger("4294967295");
+
+    private static final Integer mediumInteger = new Integer("6579558");
+    private static final Integer mediumIntegerFF = new Integer("16777215");
     private static final int int00 = 0;
 
     private static final int shortByteLength = 2;
+    private static final int mediumByteLength = 3;
     private static final int intByteLength = 4;
 
     @Test
@@ -81,6 +88,18 @@ public class ByteUtilTest {
         assertEquals(bigIntFF.shiftRight(16).intValue(), unsigned);
     }
 
+    @Test
+    public void testBytesToUnsignedMedium() {
+        long unsigned = ByteUtil.bytesToUnsignedMedium(test3Bytes);
+        assertEquals(mediumInteger.longValue(), unsigned);
+
+        unsigned = ByteUtil.bytesToUnsignedMedium(test3Bytes00);
+        assertEquals(0, unsigned);
+
+        unsigned = ByteUtil.bytesToUnsignedMedium(test3BytesFF);
+        assertEquals(mediumIntegerFF.longValue(), unsigned);
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void exceptionTestBytesToUnsignedShort() {
         ByteUtil.bytesToUnsignedShort(testBytes);
@@ -123,4 +142,21 @@ public class ByteUtilTest {
         bytes = ByteUtil.unsignedShortToBytes(intValue);
         assertTrue(bytes.length == shortByteLength);
     }
+
+    @Test
+    public void testUnsignedMediumToBytes() {
+        long intValue = 255;
+        byte[] bytes = ByteUtil.unsignedMediumToBytes(intValue);
+
+        assertTrue(bytes.length == mediumByteLength);
+
+        intValue += 256;
+        bytes = ByteUtil.unsignedMediumToBytes(intValue);
+        assertTrue(bytes.length == mediumByteLength);
+
+        intValue += 256;
+        bytes = ByteUtil.unsignedMediumToBytes(intValue);
+        assertTrue(bytes.length == mediumByteLength);
+    }
+
 }
