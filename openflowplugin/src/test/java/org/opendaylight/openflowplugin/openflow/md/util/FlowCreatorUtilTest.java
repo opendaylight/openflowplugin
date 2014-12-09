@@ -7,11 +7,12 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.util;
 
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
 
 import java.math.BigInteger;
+
 import org.junit.Test;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
@@ -79,24 +80,24 @@ public class FlowCreatorUtilTest {
      */
     @Test
     public void testCanModifyFlow() {
-        Short of10 = Short.valueOf(OFConstants.OFP_VERSION_1_0);
-        Short of13 = Short.valueOf(OFConstants.OFP_VERSION_1_3);
-        Short[] versions = {null, of10, of13};
-        Boolean[] bools = {null, Boolean.TRUE, Boolean.FALSE};
+        final Short of10 = Short.valueOf(OFConstants.OFP_VERSION_1_0);
+        final Short of13 = Short.valueOf(OFConstants.OFP_VERSION_1_3);
+        final Short[] versions = {null, of10, of13};
+        final Boolean[] bools = {null, Boolean.TRUE, Boolean.FALSE};
 
-        Integer defPri = Integer.valueOf(0x8000);
-        Integer defIdle = Integer.valueOf(300);
-        Integer defHard = Integer.valueOf(600);
-        FlowModFlags defFlags = FlowModFlags.getDefaultInstance("sENDFLOWREM");
-        FlowModFlags flags = new FlowModFlags(false, true, false, true, false);
-        FlowCookie defCookie = new FlowCookie(BigInteger.ZERO);
-        FlowCookie cookie = new FlowCookie(BigInteger.valueOf(0x12345L));
-        FlowCookie cookie1 = new FlowCookie(BigInteger.valueOf(0x67890L));
-        FlowCookie cookieMask = new FlowCookie(BigInteger.valueOf(0xffff00L));
+        final Integer defPri = Integer.valueOf(0x8000);
+        final Integer defIdle = Integer.valueOf(300);
+        final Integer defHard = Integer.valueOf(600);
+        final FlowModFlags defFlags = FlowModFlags.getDefaultInstance("sENDFLOWREM");
+        final FlowModFlags flags = new FlowModFlags(false, true, false, true, false);
+        final FlowCookie defCookie = new FlowCookie(BigInteger.ZERO);
+        final FlowCookie cookie = new FlowCookie(BigInteger.valueOf(0x12345L));
+        final FlowCookie cookie1 = new FlowCookie(BigInteger.valueOf(0x67890L));
+        final FlowCookie cookieMask = new FlowCookie(BigInteger.valueOf(0xffff00L));
 
-        for (Short ver: versions) {
-            OriginalFlowBuilder originalBuilder = new OriginalFlowBuilder();
-            UpdatedFlowBuilder updatedBuilder = new UpdatedFlowBuilder();
+        for (final Short ver: versions) {
+            final OriginalFlowBuilder originalBuilder = new OriginalFlowBuilder();
+            final UpdatedFlowBuilder updatedBuilder = new UpdatedFlowBuilder();
             canModifyFlowTest(true, originalBuilder, updatedBuilder, ver);
 
             // Default value tests.
@@ -118,10 +119,10 @@ public class FlowCreatorUtilTest {
             canModifyFlowTest(true, originalBuilder,
                               new UpdatedFlowBuilder().setHardTimeout(defHard),
                               ver);
-            canModifyFlowTest(true,
+            canModifyFlowTest(false,
                               new OriginalFlowBuilder().setFlags(defFlags),
                               updatedBuilder, ver);
-            canModifyFlowTest(true, originalBuilder,
+            canModifyFlowTest(false, originalBuilder,
                               new UpdatedFlowBuilder().setFlags(defFlags),
                               ver);
             canModifyFlowTest(true,
@@ -147,12 +148,12 @@ public class FlowCreatorUtilTest {
             canModifyFlowTest(true, originalBuilder.setCookie(cookie),
                               updatedBuilder.setCookie(cookie), ver);
 
-            OriginalFlow org = originalBuilder.build();
-            UpdatedFlow upd = updatedBuilder.build();
+            final OriginalFlow org = originalBuilder.build();
+            final UpdatedFlow upd = updatedBuilder.build();
 
             // Set different match.
-            org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match[] matches = {null, createMatch(0x86ddL)};
-            for (org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match m: matches) {
+            final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match[] matches = {null, createMatch(0x86ddL)};
+            for (final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match m: matches) {
                 canModifyFlowTest(false, originalBuilder,
                                   new UpdatedFlowBuilder(upd).setMatch(m),
                                   ver);
@@ -162,8 +163,8 @@ public class FlowCreatorUtilTest {
             }
 
             // Set different idle-timeout, hard-timeout, priority.
-            Integer[] integers = {null, Integer.valueOf(3600)};
-            for (Integer i: integers) {
+            final Integer[] integers = {null, Integer.valueOf(3600)};
+            for (final Integer i: integers) {
                 canModifyFlowTest(false, originalBuilder,
                                   new UpdatedFlowBuilder(upd).setIdleTimeout(i),
                                   ver);
@@ -187,12 +188,12 @@ public class FlowCreatorUtilTest {
             }
 
             // Set different FLOW_MOD flags.
-            FlowModFlags[] flowModFlags = {
+            final FlowModFlags[] flowModFlags = {
                 null,
                 defFlags,
                 new FlowModFlags(true, true, true, true, true),
             };
-            for (FlowModFlags f: flowModFlags) {
+            for (final FlowModFlags f: flowModFlags) {
                 canModifyFlowTest(false, originalBuilder,
                                   new UpdatedFlowBuilder(upd).setFlags(f),
                                   ver);
@@ -202,12 +203,12 @@ public class FlowCreatorUtilTest {
             }
 
             // Set different cookie.
-            FlowCookie[] cookies = {
+            final FlowCookie[] cookies = {
                 null,
                 defCookie,
                 new FlowCookie(BigInteger.valueOf(0x123456L)),
             };
-            for (FlowCookie c: cookies) {
+            for (final FlowCookie c: cookies) {
                 canModifyFlowTest(false, originalBuilder,
                                   new UpdatedFlowBuilder(upd).setCookie(c),
                                   ver);
@@ -219,7 +220,7 @@ public class FlowCreatorUtilTest {
             // Cookie mask test.
             // Cookie mask is used by OF13 non-strict MODIFY command.
             updatedBuilder.setCookie(cookie1);
-            for (Boolean strict: bools) {
+            for (final Boolean strict: bools) {
                 updatedBuilder.setCookieMask(null).setStrict(strict);
                 canModifyFlowTest(false, originalBuilder, updatedBuilder, ver);
 
@@ -227,7 +228,7 @@ public class FlowCreatorUtilTest {
                 canModifyFlowTest(false, originalBuilder, updatedBuilder, ver);
 
                 updatedBuilder.setCookieMask(cookieMask);
-                boolean expected = (of13.equals(ver) &&
+                final boolean expected = (of13.equals(ver) &&
                                     !Boolean.TRUE.equals(strict));
                 canModifyFlowTest(expected, originalBuilder, updatedBuilder,
                                   ver);
@@ -239,18 +240,18 @@ public class FlowCreatorUtilTest {
      * Test method for
      * {@link FlowCreatorUtil#equalsFlowModFlags(FlowModFlags, FlowModFlags)}.
      */
+    @SuppressWarnings("deprecation")
     @Test
     public void testEqualsFlowModFlags() {
-        FlowModFlags[] defaults = {
+        final FlowModFlags[] defaults = {
             null,
-            FlowModFlags.getDefaultInstance("sENDFLOWREM"),
-            new FlowModFlags(false, false, false, false, true),
-            new FlowModFlags(false, null, false, null, Boolean.TRUE),
+            new FlowModFlags(false, false, false, false, false),
+            new FlowModFlags(false, null, false, null, Boolean.FALSE),
         };
-        FlowModFlags all = new FlowModFlags(true, true, true, true, true);
-        FlowModFlags none = new FlowModFlags(null, null, null, null, null);
+        final FlowModFlags all = new FlowModFlags(true, true, true, true, true);
+        final FlowModFlags none = new FlowModFlags(null, null, null, null, null);
 
-        for (FlowModFlags f: defaults) {
+        for (final FlowModFlags f: defaults) {
             assertTrue(FlowCreatorUtil.
                        equalsFlowModFlags(f, (FlowModFlags)null));
             assertTrue(FlowCreatorUtil.
@@ -259,13 +260,13 @@ public class FlowCreatorUtilTest {
                         equalsFlowModFlags((FlowModFlags)null, all));
             assertFalse(FlowCreatorUtil.
                         equalsFlowModFlags(all, (FlowModFlags)null));
-            assertFalse(FlowCreatorUtil.
+            assertTrue(FlowCreatorUtil.
                         equalsFlowModFlags((FlowModFlags)null, none));
-            assertFalse(FlowCreatorUtil.
+            assertTrue(FlowCreatorUtil.
                         equalsFlowModFlags(none, (FlowModFlags)null));
         }
 
-        String[] bitNames = {
+        final String[] bitNames = {
             "cHECKOVERLAP",
             "nOBYTCOUNTS",
             "nOPKTCOUNTS",
@@ -273,27 +274,27 @@ public class FlowCreatorUtilTest {
             "sENDFLOWREM"
         };
         int bit = 0;
-        for (String name: bitNames) {
-            FlowModFlags flags = FlowModFlags.getDefaultInstance(name);
+        for (final String name: bitNames) {
+            final FlowModFlags flags = FlowModFlags.getDefaultInstance(name);
             assertFalse(FlowCreatorUtil.equalsFlowModFlags(flags, all));
             assertFalse(FlowCreatorUtil.equalsFlowModFlags(all, flags));
             assertFalse(FlowCreatorUtil.equalsFlowModFlags(flags, none));
             assertFalse(FlowCreatorUtil.equalsFlowModFlags(none, flags));
 
-            for (String nm: bitNames) {
-                FlowModFlags f = FlowModFlags.getDefaultInstance(nm);
-                boolean expected = nm.equals(name);
+            for (final String nm: bitNames) {
+                final FlowModFlags f = FlowModFlags.getDefaultInstance(nm);
+                final boolean expected = nm.equals(name);
                 assertEquals(expected,
                              FlowCreatorUtil.equalsFlowModFlags(flags, f));
                 assertEquals(expected,
                              FlowCreatorUtil.equalsFlowModFlags(f, flags));
             }
 
-            boolean overlap = (bit == 0);
-            boolean noByte = (bit == 1);
-            boolean noPacket = (bit == 2);
-            boolean reset = (bit == 3);
-            boolean flowRem = (bit == 4);
+            final boolean overlap = (bit == 0);
+            final boolean noByte = (bit == 1);
+            final boolean noPacket = (bit == 2);
+            final boolean reset = (bit == 3);
+            final boolean flowRem = (bit == 4);
             FlowModFlags f =
                 new FlowModFlags(overlap, noByte, noPacket, reset, flowRem);
             assertTrue(FlowCreatorUtil.equalsFlowModFlags(flags, f));
@@ -323,56 +324,56 @@ public class FlowCreatorUtilTest {
     @Test
     public void testEqualsWithDefault() {
         // Boolean
-        for (Boolean def: new Boolean[]{Boolean.TRUE, Boolean.FALSE}) {
+        for (final Boolean def: new Boolean[]{Boolean.TRUE, Boolean.FALSE}) {
             assertTrue(FlowCreatorUtil.equalsWithDefault(null, null, def));
             assertTrue(FlowCreatorUtil.equalsWithDefault(def, null, def));
             assertTrue(FlowCreatorUtil.equalsWithDefault(null, def, def));
 
-            Boolean inv = Boolean.valueOf(!def.booleanValue());
+            final Boolean inv = Boolean.valueOf(!def.booleanValue());
             assertFalse(FlowCreatorUtil.equalsWithDefault(null, inv, def));
             assertFalse(FlowCreatorUtil.equalsWithDefault(inv, null, def));
         }
 
         // Integer
-        Integer[] integers = {
+        final Integer[] integers = {
             Integer.valueOf(-100),
             Integer.valueOf(0),
             Integer.valueOf(100),
         };
-        for (Integer def: integers) {
-            Integer same = new Integer(def.intValue());
+        for (final Integer def: integers) {
+            final Integer same = new Integer(def.intValue());
             assertTrue(FlowCreatorUtil.equalsWithDefault(null, null, def));
             assertTrue(FlowCreatorUtil.equalsWithDefault(same, null, def));
             assertTrue(FlowCreatorUtil.equalsWithDefault(null, same, def));
 
-            Integer diff = new Integer(def.intValue() +1);
+            final Integer diff = new Integer(def.intValue() +1);
             assertFalse(FlowCreatorUtil.equalsWithDefault(null, diff, def));
             assertFalse(FlowCreatorUtil.equalsWithDefault(diff, null, def));
         }
 
         // String
-        String[] strings = {
+        final String[] strings = {
             "",
             "test string 1",
             "test string 2",
         };
-        for (String def: strings) {
-            String same = new String(def);
+        for (final String def: strings) {
+            final String same = new String(def);
             assertTrue(FlowCreatorUtil.equalsWithDefault(null, null, def));
             assertTrue(FlowCreatorUtil.equalsWithDefault(same, null, def));
             assertTrue(FlowCreatorUtil.equalsWithDefault(null, same, def));
 
-            String diff = def + "-1";
+            final String diff = def + "-1";
             assertFalse(FlowCreatorUtil.equalsWithDefault(null, diff, def));
             assertFalse(FlowCreatorUtil.equalsWithDefault(diff, null, def));
         }
     }
 
-    private void assertMatch(Match match) {
+    private void assertMatch (final Match match) {
         assertTrue(match.getType().getClass().isInstance(OxmMatchType.class));
     }
 
-    private void assertMatch(MatchV10 matchV10) {
+    private void assertMatch (final MatchV10 matchV10) {
         assertEquals(matchV10.getDlDst(), macAddress);
         assertEquals(matchV10.getDlSrc(), macAddress);
 
@@ -407,9 +408,9 @@ public class FlowCreatorUtilTest {
      * @param version
      *     OpenFlow protocol version.
      */
-    private void canModifyFlowTest(boolean expected, OriginalFlowBuilder org,
-                                   UpdatedFlowBuilder upd, Short version) {
-        boolean result = FlowCreatorUtil.
+    private void canModifyFlowTest (final boolean expected, final OriginalFlowBuilder org,
+                                   final UpdatedFlowBuilder upd, final Short version) {
+        final boolean result = FlowCreatorUtil.
             canModifyFlow(org.build(), upd.build(), version);
         assertEquals(expected, result);
     }
@@ -420,10 +421,10 @@ public class FlowCreatorUtilTest {
      * @param etherType  An ethernet type value.
      * @return  A flow match that specifies the given ethernet type.
      */
-    private org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match createMatch(long etherType) {
-        EthernetTypeBuilder ethType = new EthernetTypeBuilder().
+    private org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match createMatch (final long etherType) {
+        final EthernetTypeBuilder ethType = new EthernetTypeBuilder().
             setType(new EtherType(etherType));
-        EthernetMatchBuilder ether = new EthernetMatchBuilder().
+        final EthernetMatchBuilder ether = new EthernetMatchBuilder().
             setEthernetType(ethType.build());
         return new MatchBuilder().setEthernetMatch(ether.build()).build();
     }
