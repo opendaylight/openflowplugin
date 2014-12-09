@@ -97,7 +97,7 @@ public class FlowConvertor {
     private static final Long OFPG_ANY = Long.parseLong("ffffffff", 16);
     private static final Long DEFAULT_OUT_GROUP = OFPG_ANY;
     /** flow flag: remove */
-    public static final boolean DEFAULT_OFPFF_FLOW_REM = true;
+    public static final boolean DEFAULT_OFPFF_FLOW_REM = false;
     /** flow flag: check overlap */
     public static final boolean DEFAULT_OFPFF_CHECK_OVERLAP = false;
     /** flow flag: reset counts */
