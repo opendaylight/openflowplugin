@@ -17,7 +17,6 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,7 +47,7 @@ public class OFPluginToLibraryTest {
     private static final Logger LOG = LoggerFactory
             .getLogger(OFPluginToLibraryTest.class);
 
-    private static final ArrayBlockingQueue<Runnable> SCENARIO_POOL_QUEUE = new ArrayBlockingQueue<>(1);
+    private final ArrayBlockingQueue<Runnable> SCENARIO_POOL_QUEUE = new ArrayBlockingQueue<>(1);
 
     @Inject @Filter(timeout=20000)
     OpenflowPluginProvider openflowPluginProvider;
@@ -66,9 +65,8 @@ public class OFPluginToLibraryTest {
     @Before
     public void setUp() throws InterruptedException {
         LOG.debug("openflowPluginProvider: "+openflowPluginProvider);
+        switchSim = createSimpleClient();
         scenarioPool = new ThreadPoolLoggingExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, SCENARIO_POOL_QUEUE, "scenario");
-        //FIXME: plugin should provide service exposing startup result via future
-        Thread.sleep(5000);
     }
 
     /**
@@ -76,27 +74,8 @@ public class OFPluginToLibraryTest {
      */
     @After
     public void tearDown() {
-        try {
-            LOG.debug("tearing down simulator");
-            switchSim.getScenarioDone().get(getFailSafeTimeout(), TimeUnit.MILLISECONDS);
-        } catch (Exception e) {
-            String msg = "waiting for scenario to finish failed: "+e.getMessage();
-            LOG.error(msg, e);
-            Assert.fail(msg);
-        } finally {
-            scenarioPool.shutdownNow();
-            SCENARIO_POOL_QUEUE.clear();
-        }
-
-        try {
-            LOG.debug("checking if simulator succeeded to connect to controller");
-            boolean simulatorWasOnline = switchSim.getIsOnlineFuture().get(100, TimeUnit.MILLISECONDS);
-            Assert.assertTrue("simulator failed to connect to controller", simulatorWasOnline);
-        } catch (Exception e) {
-            String message = "simulator probably failed to connect to controller";
-            LOG.error(message, e);
-            Assert.fail(message);
-        }
+        SimulatorAssistant.waitForSwitchSimulatorOn(switchSim);
+        SimulatorAssistant.tearDownSwitchSimulatorAfterScenario(switchSim, scenarioPool, getFailSafeTimeout());
     }
 
     /**
@@ -107,7 +86,6 @@ public class OFPluginToLibraryTest {
     public void handshakeOk1() throws Exception {
         LOG.debug("handshakeOk1 integration test");
 
-        switchSim = createSimpleClient();
         switchSim.setSecuredClient(false);
         Deque<ClientEvent> handshakeScenario = ScenarioFactory.createHandshakeScenarioVBM(
                 ScenarioFactory.VERSION_BITMAP_13, (short) 0, ScenarioFactory.VERSION_BITMAP_10_13);
