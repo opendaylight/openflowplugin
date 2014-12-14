@@ -14,11 +14,12 @@ import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
-import org.junit.Assert;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,6 +30,7 @@ import org.opendaylight.controller.sal.binding.api.NotificationService;
 import org.opendaylight.controller.test.sal.binding.it.TestHelper;
 import org.opendaylight.openflowjava.protocol.impl.clients.ScenarioHandler;
 import org.opendaylight.openflowjava.protocol.impl.clients.SimpleClient;
+import org.opendaylight.openflowplugin.openflow.md.core.ThreadPoolLoggingExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.OpenflowPluginProvider;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorUpdated;
@@ -49,8 +51,13 @@ import org.slf4j.LoggerFactory;
 @RunWith(PaxExam.class)
 public class SalIntegrationTest {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SalIntegrationTest.class);
+    static final Logger LOG = LoggerFactory.getLogger(SalIntegrationTest.class);
 
+    private final ArrayBlockingQueue<Runnable> SCENARIO_POOL_QUEUE = new ArrayBlockingQueue<>(1);
+    private ThreadPoolLoggingExecutor scenarioPool;
+    private SimpleClient switchSim;
+    private Runnable finalCheck;
+    
     @Inject
     BundleContext ctx;
 
@@ -64,7 +71,7 @@ public class SalIntegrationTest {
     /**
      * @return timeout for case of failure
      */
-    private static long getFailSafeTimeout() {
+    static long getFailSafeTimeout() {
         return 30000;
     }
     
@@ -74,10 +81,24 @@ public class SalIntegrationTest {
      */
     @Before
     public void setUp() throws InterruptedException {
-        //FIXME: plugin should provide service exposing startup result via future 
-        Thread.sleep(6000);
+        switchSim = new SimpleClient("localhost", 6653);
+        scenarioPool = new ThreadPoolLoggingExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, SCENARIO_POOL_QUEUE, "scenario");
     }
-    
+
+    /**
+     * test tear down
+     */
+    @After
+    public void tearDown() {
+        SimulatorAssistant.waitForSwitchSimulatorOn(switchSim);
+        SimulatorAssistant.tearDownSwitchSimulatorAfterScenario(switchSim, scenarioPool, getFailSafeTimeout());
+        
+        if (finalCheck != null) {
+            LOG.info("starting final check");
+            finalCheck.run();
+        }
+    }
+
     /**
      * test basic integration with OFLib running the handshake
      *
@@ -100,35 +121,19 @@ public class SalIntegrationTest {
         LOG.debug("handshake integration test");
         LOG.debug("openflowPluginProvider: " + openflowPluginProvider);
 
-        SimpleClient switchSim = new SimpleClient("localhost", 6653);
         switchSim.setSecuredClient(false);
         ScenarioHandler scenario = new ScenarioHandler(ScenarioFactory.createHandshakeScenarioVBM(
                 ScenarioFactory.VERSION_BITMAP_13, (short) 0, ScenarioFactory.VERSION_BITMAP_10_13));
         switchSim.setScenarioHandler(scenario);
-        switchSim.run();
+        scenarioPool.execute(switchSim);
 
-        try {
-            LOG.debug("tearing down simulator");
-            switchSim.getScenarioDone().get(getFailSafeTimeout(), TimeUnit.MILLISECONDS);
-        } catch (Exception e) {
-            String msg = "waiting for scenario to finish failed: "+e.getMessage();
-            LOG.error(msg, e);
-            Assert.fail(msg);
-        }
-        
-        try {
-            LOG.debug("checking if simulator succeeded to connect to controller");
-            boolean simulatorWasOnline = switchSim.getIsOnlineFuture().get(100, TimeUnit.MILLISECONDS);
-            Assert.assertTrue("simulator failed to connect to controller", simulatorWasOnline);
-        } catch (Exception e) {
-            String message = "simulator probably failed to connect to controller";
-            LOG.error(message, e);
-            Assert.fail(message);
-        }
-        
-        Thread.sleep(1000);
-        assertEquals(1, listener.nodeUpdated.size());
-        assertNotNull(listener.nodeUpdated.get(0));
+        finalCheck = new Runnable() {
+            @Override
+            public void run() {
+                assertEquals(1, listener.nodeUpdated.size());
+                assertNotNull(listener.nodeUpdated.get(0));
+            }
+        };
     }
 
     /**
