@@ -10,15 +10,13 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListeningExecutorService;
-
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,18 +26,17 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
-import org.opendaylight.controller.sal.binding.api.NotificationListener;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.controller.sal.common.util.Rpcs;
-import org.opendaylight.openflowplugin.api.openflow.md.ModelDrivenSwitch;
 import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.api.openflow.md.ModelDrivenSwitch;
 import org.opendaylight.openflowplugin.api.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.api.openflow.md.core.NotificationEnqueuer;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.IMessageDispatchService;
-import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
-import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SwitchSessionKeyOF;
+import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
+import org.opendaylight.openflowplugin.openflow.md.core.session.SessionContextOFImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -48,10 +45,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yangtools.concepts.CompositeObjectRegistration;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.Notification;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
@@ -65,8 +60,8 @@ public class SalRegistrationManagerTest {
     private static final BigInteger dataPathId = BigInteger.ONE;
 
     private SalRegistrationManager salRegistrationManager;
-    @Mock
-    private SessionContext context;
+
+    private SessionContextOFImpl context;
     @Mock
     private ConnectionConductor conductor;
     @Mock
@@ -90,20 +85,19 @@ public class SalRegistrationManagerTest {
     @Before
     public void setUp() {
         OFSessionUtil.getSessionManager().setRpcPool(rpcPool);
-
-        Mockito.when(context.getPrimaryConductor()).thenReturn(conductor);
-        Mockito.when(context.getMessageDispatchService()).thenReturn(messageDispatchService);
         Mockito.when(conductor.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_0)
                 .thenReturn(OFConstants.OFP_VERSION_1_3);
-        Mockito.when(context.getFeatures()).thenReturn(features);
+        context = new SessionContextOFImpl();
+        context.setPrimaryConductor(conductor);
+        Mockito.when(features.getDatapathId()).thenReturn(BigInteger.valueOf(1));
+        Mockito.when(features.getVersion()).thenReturn((short) 1);
+        context.setFeatures(features);
+        context.setNotificationEnqueuer(notificationEnqueuer);
 
         mdSwitchOF13 = new ModelDrivenSwitchImpl(null, null, context);
         registration = new CompositeObjectRegistration<>(mdSwitchOF13, Collections.EMPTY_LIST);
+        context.setProviderRegistration(registration);
 
-        Mockito.when(context.getProviderRegistration()).thenReturn(registration);
-        Mockito.when(context.getNotificationEnqueuer()).thenReturn(notificationEnqueuer);
-        Mockito.when(features.getDatapathId()).thenReturn(BigInteger.valueOf(1));
-        Mockito.when(features.getVersion()).thenReturn((short) 1);
 
         Set<RpcError> errorSet = Collections.emptySet();
         UpdateFlowOutputBuilder updateFlowOutput = new UpdateFlowOutputBuilder();
@@ -116,8 +110,9 @@ public class SalRegistrationManagerTest {
         salRegistrationManager = new SalRegistrationManager();
         salRegistrationManager.onSessionInitiated(providerContext);
         salRegistrationManager.setPublishService(notificationProviderService);
+
     }
-    
+
     /**
      * free sesion manager
      */
@@ -170,7 +165,9 @@ public class SalRegistrationManagerTest {
      */
     @Test
     public void testOnSessionRemoved() {
+        assertNotNull(context.getProviderRegistration());
         salRegistrationManager.onSessionRemoved(context);
+        assertNull(context.getProviderRegistration());
     }
 
     /**
