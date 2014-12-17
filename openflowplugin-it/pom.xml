@@ -120,11 +120,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.yangtools.thirdparty</groupId>
-            <artifactId>xtend-lib-osgi</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
             <artifactId>pax-exam-container-forked</artifactId>
             <version>${exam.version}</version>
