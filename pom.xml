@@ -54,7 +54,6 @@
       <netconf.parent.version>0.3.0-SNAPSHOT</netconf.parent.version>
       <config.parent.version>0.3.0-SNAPSHOT</config.parent.version>
       <build.helper.version>1.8</build.helper.version>
-      <xtend.dstdir>src/main/xtend-gen</xtend.dstdir>
       <jmxGeneratorPath>src/main/yang-gen-config</jmxGeneratorPath>
       <salGeneratorPath>src/main/yang-gen-sal</salGeneratorPath>
       <exi.nagasena.version>0000.0002.0038.0</exi.nagasena.version>
@@ -237,12 +236,6 @@
             <artifactId>xml-apis</artifactId>
             <version>1.4.01</version>
         </dependency>
-        <dependency>
-            <groupId>org.opendaylight.yangtools.thirdparty</groupId>
-            <artifactId>xtend-lib-osgi</artifactId>
-            <version>2.4.3</version>
-            <scope>test</scope>
-        </dependency>
       </dependencies>
     </dependencyManagement>
 
@@ -306,31 +299,10 @@
               <artifactId>maven-paxexam-plugin</artifactId>
               <version>1.2.4</version>
             </plugin>
-            <plugin>
-              <groupId>org.eclipse.xtend</groupId>
-              <artifactId>xtend-maven-plugin</artifactId>
-              <version>${xtend.version}</version>
-              <executions>
-                  <execution>
-                      <goals>
-                          <goal>compile</goal>
-                      </goals>
-                      <configuration>
-                          <outputDirectory>${xtend.dstdir}</outputDirectory>
-                      </configuration>
-                  </execution>
-              </executions>
-          </plugin>
           <plugin>
               <artifactId>maven-clean-plugin</artifactId>
               <configuration>
                   <filesets>
-                      <fileset>
-                          <directory>${xtend.dstdir}</directory>
-                          <includes>
-                              <include>**</include>
-                          </includes>
-                      </fileset>
                       <fileset>
                           <directory>${jmxGeneratorPath}</directory>
                           <includes>
@@ -361,7 +333,6 @@
                       <sources>
                          <source>${jmxGeneratorPath}</source>
                          <source>${salGeneratorPath}</source>
-                         <source>${xtend.dstdir}</source>
                       </sources>
                    </configuration>
                 </execution>
