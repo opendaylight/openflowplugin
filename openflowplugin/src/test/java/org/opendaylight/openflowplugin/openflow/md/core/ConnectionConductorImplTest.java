@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.openflow.md.core;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -701,6 +702,12 @@ public class ConnectionConductorImplTest {
         Assert.assertEquals(connectionConductor.getSessionContext().getPhysicalPort(portNumberV10), msg);
     }
 
+
+    @Test
+    public void testHandshakeFailOperations(){
+        connectionConductor.onHandshakeFailure();
+        connectionConductor.checkState(ConnectionConductor.CONDUCTOR_STATE.RIP);
+    }
     private void simulateV13PostHandshakeState(ConnectionConductorImpl conductor) {
         GetFeaturesOutputBuilder featureOutput = getFeatureResponseMsg();
         conductor.postHandshakeBasic(featureOutput.build(), OFConstants.OFP_VERSION_1_3);

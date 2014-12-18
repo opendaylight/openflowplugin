@@ -116,6 +116,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
         } catch (Exception ex) {
             errorHandler.handleException(ex, null);
             connectionAdapter.disconnect();
+            handshakeListener.onHandshakeFailure();
             LOG.trace("ret - shake fail: {}", ex.getMessage());
         }
     }
@@ -291,6 +292,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
             if (LOG.isTraceEnabled()) {
                 LOG.trace("FIRST HELLO sent.", e);
             }
+            handshakeListener.onHandshakeFailure();
             throw new ConnectionException("FIRST HELLO sending failed because of connection issue.");
         }
     }
@@ -333,11 +335,13 @@ public class HandshakeManagerImpl implements HandshakeManager {
             // handshake failed
             LOG.warn("issuing disconnect during handshake, reason: future expired", e);
             connectionAdapter.disconnect();
+            handshakeListener.onHandshakeFailure();
             throw e;
         } catch (Exception e) {
             // handshake failed
             LOG.warn("issuing disconnect during handshake, reason - RPC: {}", e.getMessage(), e);
             connectionAdapter.disconnect();
+            handshakeListener.onHandshakeFailure();
             throw e;
         }
         
