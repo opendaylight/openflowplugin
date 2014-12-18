@@ -21,4 +21,10 @@ public interface HandshakeListener {
      */
     void onHandshakeSuccessfull(GetFeaturesOutput featureOutput, Short version);
 
+    /**
+     * This method is called when handshake fails for some reason. It allows
+     * all necessary cleanup operations.
+     */
+    void onHandshakeFailure();
+
 }
