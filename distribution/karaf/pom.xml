@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opendaylight.openflowplugin</groupId>
     <artifactId>openflowplugin-parent</artifactId>
-    <version>0.0.4-Helium-SR1</version>
+    <version>0.0.4-Helium-SR1.1</version>
     <relativePath>../../</relativePath>
   </parent>
   <artifactId>openflowplugin-karaf</artifactId>
@@ -13,8 +13,8 @@
     <maven>3.0</maven>
   </prerequisites>
   <properties>
-    <branding.version>1.0.1-Helium-SR1</branding.version>
-    <karaf.resources.version>1.4.3-Helium-SR1</karaf.resources.version>
+    <branding.version>1.0.1-Helium-SR1.1</branding.version>
+    <karaf.resources.version>1.4.3-Helium-SR1.1</karaf.resources.version>
   </properties>
 
   <dependencies>
