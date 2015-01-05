@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.session;
 
+import java.math.BigInteger;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -296,11 +297,14 @@ class MockSessionContext implements SessionContext {
     private boolean isValid = true;
     private CompositeObjectRegistration<ModelDrivenSwitch> registration;
     private int seed;
+    private SwitchSessionKeyOF sessionKey;
 
     MockSessionContext(int conductorNum) {
         conductor = new MockConnectionConductor(conductorNum);
         map = new HashMap<SwitchConnectionDistinguisher, ConnectionConductor>();
         messageService = new MessageDispatchServiceImpl(this);
+        sessionKey = new SwitchSessionKeyOF();
+        sessionKey.setDatapathId(new BigInteger("0"));
     }
 
     @Override
@@ -350,8 +354,7 @@ class MockSessionContext implements SessionContext {
 
     @Override
     public SwitchSessionKeyOF getSessionKey() {
-        // TODO Auto-generated method stub
-        return null;
+        return sessionKey;
     }
 
     @Override
