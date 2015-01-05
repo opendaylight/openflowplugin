@@ -74,7 +74,7 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
     private ConnectionAdapter getConnectionAdapter(SwitchConnectionDistinguisher cookie) throws ConnectionException {
 
         if (!session.isValid()) {
-            LOG.warn("Session for the cookie {} is invalid.", cookie);
+            LOG.warn("No valid connection found for the node [datapath-id : {}]", session.getSessionKey().getId());
             throw new ConnectionException(CONNECTION_ERROR_MESSAGE);
         }
         LOG.debug("finding connecton for cookie value {}. ", cookie);
