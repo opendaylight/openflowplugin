@@ -7,12 +7,12 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal;
 
+import com.google.common.base.Preconditions;
 import java.math.BigInteger;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
@@ -44,8 +44,6 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier.InstanceIdentifierBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Preconditions;
 
 /**
  * session and inventory listener implementation
@@ -106,7 +104,7 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
         LOG.debug("ModelDrivenSwitch for {} registered to MD-SAL.", datapathId.toString());
 
         NotificationQueueWrapper wrappedNotification = new NotificationQueueWrapper(
-                nodeAdded(ofSwitch, features, nodeRef), 
+                nodeAdded(ofSwitch, features, nodeRef),
                 context.getFeatures().getVersion());
         context.getNotificationEnqueuer().enqueueNotification(wrappedNotification);
     }
@@ -118,13 +116,14 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
         InstanceIdentifier<Node> identifier = identifierFromDatapathId(datapathId);
         NodeRef nodeRef = new NodeRef(identifier);
         NodeRemoved nodeRemoved = nodeRemoved(nodeRef);
-        if (context.isValid()) {
-            CompositeObjectRegistration<ModelDrivenSwitch> registration = context.getProviderRegistration();
-            registration.close();
-        }
 
+        CompositeObjectRegistration<ModelDrivenSwitch> registration = context.getProviderRegistration();
+        if (null != registration) {
+            registration.close();
+            context.setProviderRegistration(null);
+        }
         LOG.debug("ModelDrivenSwitch for {} unregistered from MD-SAL.", datapathId.toString());
-        
+
         NotificationQueueWrapper wrappedNotification = new NotificationQueueWrapper(
                 nodeRemoved, context.getFeatures().getVersion());
         context.getNotificationEnqueuer().enqueueNotification(wrappedNotification);
@@ -153,10 +152,10 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
 //            LOG.warn("IP address of the node {} cannot be obtained. Session is not valid.", sw.getNodeId());
 //            return null;
 //        }
-        Preconditions.checkNotNull(sessionContext.getPrimaryConductor(), 
-                "primary conductor must not be NULL -> "+sw.getNodeId());
+        Preconditions.checkNotNull(sessionContext.getPrimaryConductor(),
+                "primary conductor must not be NULL -> " + sw.getNodeId());
         Preconditions.checkNotNull(sessionContext.getPrimaryConductor().getConnectionAdapter(),
-                "connection adapter of primary conductor must not be NULL -> "+sw.getNodeId());
+                "connection adapter of primary conductor must not be NULL -> " + sw.getNodeId());
         InetSocketAddress remoteAddress = sessionContext.getPrimaryConductor().getConnectionAdapter()
                 .getRemoteAddress();
         if (remoteAddress == null) {
@@ -213,7 +212,7 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
             sessionListenerRegistration.close();
         }
     }
-    
+
     /**
      * @param providerContext the providerContext to set
      */
