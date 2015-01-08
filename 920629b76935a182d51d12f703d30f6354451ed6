@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a96c907_2b7aacf1",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/util/ByteUtil.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2015-01-08T13:28:05Z",
+      "side": 1,
+      "message": "very suspicious message\n.. three?",
+      "range": {
+        "startLine": 83,
+        "startChar": 89,
+        "endLine": 83,
+        "endChar": 92
+      },
+      "revId": "920629b76935a182d51d12f703d30f6354451ed6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
