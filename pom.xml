@@ -10,9 +10,11 @@
     <prerequisites>
         <maven>3.0</maven>
     </prerequisites>
+
     <groupId>org.opendaylight.openflowplugin</groupId>
     <artifactId>openflowplugin-parent</artifactId>
     <version>0.1.0-SNAPSHOT</version>
+    <name>openflowplugin</name> <!-- Used by Sonar to set project name -->
     <packaging>pom</packaging>
 
     <scm>
