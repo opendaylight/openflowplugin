@@ -93,21 +93,6 @@ public class OpenflowPluginProvider implements BindingAwareProvider, AutoCloseab
         registrationManager = null;
     }
 
-    @Override
-    public void onSessionInitialized(ConsumerContext session) {
-        // NOOP
-    }
-
-    @Override
-    public Collection<? extends ProviderFunctionality> getFunctionality() {
-        return Collections.emptySet();
-    }
-
-    @Override
-    public java.util.Collection<? extends RpcService> getImplementations() {
-        return Collections.emptySet();
-    }
-
     /**
      * @return BA default broker
      */
