@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a96c907_3cc6714a",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/ActionConvertor.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 878,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2015-01-14T08:57:37Z",
+      "side": 1,
+      "message": "There are best practices for logging. Could you please update this log to form:\nlogger.error(\"log message with some value1: {} and value2: {}\", value1, value2);\n\nThis makes code more readable and easier to search for loggings. Thank you.",
+      "range": {
+        "startLine": 877,
+        "startChar": 12,
+        "endLine": 878,
+        "endChar": 66
+      },
+      "revId": "5b672b780197baafb86c5124863197149a5ab04d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_dcc42d42",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/util/InventoryDataServiceUtil.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 134,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2015-01-14T08:57:37Z",
+      "side": 1,
+      "message": "Please consider the guava splitter. Here is why:\nhttps://code.google.com/p/guava-libraries/wiki/StringsExplained#Splitter\nThere are performance and usage arguments. Thank you.",
+      "range": {
+        "startLine": 134,
+        "startChar": 27,
+        "endLine": 134,
+        "endChar": 32
+      },
+      "revId": "5b672b780197baafb86c5124863197149a5ab04d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
