@@ -185,7 +185,7 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
     public static InstanceIdentifier<Node> identifierFromDatapathId(BigInteger datapathId) {
         NodeKey nodeKey = nodeKeyFromDatapathId(datapathId);
         InstanceIdentifierBuilder<Node> builder = InstanceIdentifier.builder(Nodes.class).child(Node.class, nodeKey);
-        return builder.toInstance();
+        return builder.build();
     }
 
     public static NodeKey nodeKeyFromDatapathId(BigInteger datapathId) {

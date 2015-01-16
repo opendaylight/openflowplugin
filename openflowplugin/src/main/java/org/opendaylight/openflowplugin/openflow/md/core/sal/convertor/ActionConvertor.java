@@ -205,7 +205,7 @@ public final class ActionConvertor {
         List<Action> actionsList = new ArrayList<>();
         Action ofAction;
 
-        actions = Ordering.from(OrderComparator.<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>toInstance())
+        actions = Ordering.from(OrderComparator.<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>build())
             .sortedCopy(actions);
 
         for (int actionItem = 0; actionItem < actions.size(); actionItem++) {

@@ -86,7 +86,7 @@ public class DropTestRpcSender extends AbstractDropTest {
         // Construct the flow instance id
         final InstanceIdentifier<Node> flowInstanceId = InstanceIdentifier
                 .builder(Nodes.class) // File under nodes
-                .child(Node.class, node).toInstance(); // A particular node identified by nodeKey
+                .child(Node.class, node).build(); // A particular node identified by nodeKey
         fb.setNode(new NodeRef(flowInstanceId));
 
         // Add flow

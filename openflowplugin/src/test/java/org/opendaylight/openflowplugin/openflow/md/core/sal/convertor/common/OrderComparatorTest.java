@@ -13,7 +13,7 @@ public class OrderComparatorTest {
     @Test
     public void testBothObjectsNull() {
         try {
-            OrderComparator.<MockOrderedObject>toInstance().compare(null, null);
+            OrderComparator.<MockOrderedObject>build().compare(null, null);
             org.junit.Assert.fail("Passing null to OrderCompartor should raise " +
                 "a NullPointerException");
         } catch (NullPointerException npe) {
@@ -28,7 +28,7 @@ public class OrderComparatorTest {
             obj1.setOrder(0);
             MockOrderedObject obj2 = null;
 
-            OrderComparator.<MockOrderedObject>toInstance().compare(obj1, obj2);
+            OrderComparator.<MockOrderedObject>build().compare(obj1, obj2);
             org.junit.Assert.fail("Passing null to OrderCompartor should raise " +
                 "a NullPointerException");
         } catch (NullPointerException npe) {
@@ -40,7 +40,7 @@ public class OrderComparatorTest {
             MockOrderedObject obj2 = new MockOrderedObject();
             obj2.setOrder(1);
 
-            OrderComparator.<MockOrderedObject>toInstance().compare(obj1, obj2);
+            OrderComparator.<MockOrderedObject>build().compare(obj1, obj2);
             org.junit.Assert.fail("Passing null to OrderCompartor should raise " +
                 "a NullPointerException");
         } catch (NullPointerException npe) {
@@ -56,7 +56,7 @@ public class OrderComparatorTest {
         obj2.setOrder(1);
 
         Assert.assertEquals(-1,
-            OrderComparator.<MockOrderedObject>toInstance().compare(obj1, obj2));
+            OrderComparator.<MockOrderedObject>build().compare(obj1, obj2));
 
         obj1 = new MockOrderedObject();
         obj1.setOrder(1);
@@ -64,7 +64,7 @@ public class OrderComparatorTest {
         obj2.setOrder(0);
 
         Assert.assertEquals(1,
-            OrderComparator.<MockOrderedObject>toInstance().compare(obj1, obj2));
+            OrderComparator.<MockOrderedObject>build().compare(obj1, obj2));
 
         obj1 = new MockOrderedObject();
         obj1.setOrder(1);
@@ -72,7 +72,7 @@ public class OrderComparatorTest {
         obj2.setOrder(1);
 
         Assert.assertEquals(0,
-            OrderComparator.<MockOrderedObject>toInstance().compare(obj1, obj2));
+            OrderComparator.<MockOrderedObject>build().compare(obj1, obj2));
     }
 
 

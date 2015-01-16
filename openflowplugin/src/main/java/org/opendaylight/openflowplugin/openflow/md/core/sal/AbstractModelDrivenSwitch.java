@@ -132,7 +132,7 @@ public abstract class AbstractModelDrivenSwitch implements ModelDrivenSwitch {
         queueStatisticsRegistration.registerPath(NodeContext.class, getIdentifier());
         builder.add(queueStatisticsRegistration);
 
-        return builder.toInstance();
+        return builder.build();
     }
 
     /**

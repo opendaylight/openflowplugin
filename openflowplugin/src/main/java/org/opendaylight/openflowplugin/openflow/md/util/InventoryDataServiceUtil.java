@@ -85,7 +85,7 @@ public abstract class InventoryDataServiceUtil {
 
     public static InstanceIdentifier<Node> identifierFromDatapathId(BigInteger datapathId) {
         NodeKey nodeKey = nodeKeyFromDatapathId(datapathId);
-        return InstanceIdentifier.builder(Nodes.class).child(Node.class, nodeKey).toInstance();
+        return InstanceIdentifier.builder(Nodes.class).child(Node.class, nodeKey).build();
     }
 
     public static NodeKey nodeKeyFromDatapathId(BigInteger datapathId) {
@@ -117,7 +117,7 @@ public abstract class InventoryDataServiceUtil {
     }
 
     public static InstanceIdentifier<Node> nodeKeyToInstanceIdentifier(NodeKey nodeKey) {
-        return InstanceIdentifier.builder(Nodes.class).child(Node.class, nodeKey).toInstance();
+        return InstanceIdentifier.builder(Nodes.class).child(Node.class, nodeKey).build();
     }
 
     public static NodeConnectorId nodeConnectorIdfromDatapathPortNo(BigInteger datapathid, Long portNo,
@@ -153,7 +153,7 @@ public abstract class InventoryDataServiceUtil {
         NodeConnectorId nodeConnectorId = nodeConnectorIdfromDatapathPortNo(datapathId, portNo, ofVersion);
         return InstanceIdentifier.builder(Nodes.class) //
                 .child(Node.class, new NodeKey(nodeId)) //
-                .child(NodeConnector.class, new NodeConnectorKey(nodeConnectorId)).toInstance();
+                .child(NodeConnector.class, new NodeConnectorKey(nodeConnectorId)).build();
     }
 
     public static NodeConnectorUpdatedBuilder nodeConnectorUpdatedBuilderFromDatapathIdPortNo(BigInteger datapathId,

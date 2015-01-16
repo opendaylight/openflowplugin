@@ -12,7 +12,7 @@ import java.util.Comparator;
 public class OrderComparator<T extends Ordered> implements Comparator<T> {
 
     private static OrderComparator instance = new OrderComparator();
-    public static OrderComparator toInstance() {
+    public static OrderComparator build() {
         return instance;
     }
 

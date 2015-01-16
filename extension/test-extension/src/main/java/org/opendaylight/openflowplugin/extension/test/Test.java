@@ -88,7 +88,7 @@ public class Test implements TestService {
         // Construct the flow instance id
         final InstanceIdentifier<Node> flowInstanceId = InstanceIdentifier
                 .builder(Nodes.class) // File under nodes
-                .child(Node.class, new NodeKey(new NodeId("openflow:1"))).toInstance(); // A particular node identified by nodeKey
+                .child(Node.class, new NodeKey(new NodeId("openflow:1"))).build(); // A particular node identified by nodeKey
         flow.setNode(new NodeRef(flowInstanceId));
         
         pushFlowViaRpc(flow.build());

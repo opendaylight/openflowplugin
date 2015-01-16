@@ -129,7 +129,7 @@ public class OutputTestUtil {
         NodeKey key = new NodeKey(new NodeId(nodeId));
         InstanceIdentifier<Node> path = InstanceIdentifier.<Nodes>builder(Nodes.class)
                 .<Node, NodeKey>child(Node.class, key)
-                .toInstance();
+                .build();
         return new NodeRef(path);
     }
 
@@ -142,7 +142,7 @@ public class OutputTestUtil {
         InstanceIdentifier<NodeConnector> path = InstanceIdentifier.<Nodes>builder(Nodes.class)
                 .<Node, NodeKey>child(Node.class, new NodeKey(new NodeId(nodeId)))
                 .<NodeConnector, NodeConnectorKey>child(NodeConnector.class, nConKey)
-                .toInstance();
+                .build();
 
         return new NodeConnectorRef(path);
     }

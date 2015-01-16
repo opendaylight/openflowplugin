@@ -125,7 +125,7 @@ public class MeterConvertorTest {
         // NodeKey key = new NodeKey(new NodeId("24"));
         // InstanceIdentifier<Node> path =
         // InstanceIdentifier.builder().node(Nodes.class).node(Node.class,
-        // key).toInstance();
+        // key).build();
 
         addMeterFromSAL
                 .setMeterId(new org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId(10L));
@@ -258,7 +258,7 @@ public class MeterConvertorTest {
         // NodeKey key = new NodeKey(new NodeId("24"));
         // InstanceIdentifier<Node> path =
         // InstanceIdentifier.builder().node(Nodes.class).node(Node.class,
-        // key).toInstance();
+        // key).build();
 
         addMeterFromSAL
                 .setMeterId(new org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId(10L));
@@ -320,7 +320,7 @@ public class MeterConvertorTest {
         // NodeKey key = new NodeKey(new NodeId("24"));
         // InstanceIdentifier<Node> path =
         // InstanceIdentifier.builder().node(Nodes.class).node(Node.class,
-        // key).toInstance();
+        // key).build();
 
         addMeterFromSAL
                 .setMeterId(new org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId(10L));
@@ -401,7 +401,7 @@ public class MeterConvertorTest {
         // NodeKey key = new NodeKey(new NodeId("24"));
         // InstanceIdentifier<Node> path =
         // InstanceIdentifier.builder().node(Nodes.class).node(Node.class,
-        // key).toInstance();
+        // key).build();
 
         addMeterFromSAL
                 .setMeterId(new org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId(10L));

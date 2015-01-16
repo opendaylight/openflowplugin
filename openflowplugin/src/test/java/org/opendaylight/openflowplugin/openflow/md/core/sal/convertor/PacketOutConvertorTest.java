@@ -234,7 +234,7 @@ public class PacketOutConvertorTest{
                 .<Node, NodeKey> child(Node.class,
                         new NodeKey(new NodeId(nodeId)))
                 .<NodeConnector, NodeConnectorKey> child(NodeConnector.class,
-                        nConKey).toInstance();
+                        nConKey).build();
 
         return new NodeConnectorRef(path);
     }
@@ -264,7 +264,7 @@ public class PacketOutConvertorTest{
         NodeKey key = new NodeKey(new NodeId(nodeId));
         InstanceIdentifier<Node> path = InstanceIdentifier
                 .<Nodes> builder(Nodes.class)
-                .<Node, NodeKey> child(Node.class, key).toInstance();
+                .<Node, NodeKey> child(Node.class, key).build();
         return new NodeRef(path);
     }
 }

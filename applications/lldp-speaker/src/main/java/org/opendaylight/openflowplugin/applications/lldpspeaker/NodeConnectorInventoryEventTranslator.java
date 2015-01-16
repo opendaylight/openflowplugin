@@ -47,7 +47,7 @@ public class NodeConnectorInventoryEventTranslator implements DataChangeListener
                         .child(Node.class)
                         .child(NodeConnector.class)
                         .augmentation(FlowCapableNodeConnector.class)
-                        .toInstance(),
+                        .build(),
                 this, AsyncDataBroker.DataChangeScope.BASE);
     }
 
