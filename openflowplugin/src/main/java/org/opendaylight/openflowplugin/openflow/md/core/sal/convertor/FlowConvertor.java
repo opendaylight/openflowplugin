@@ -91,7 +91,7 @@ public class FlowConvertor {
     public static final Integer DEFAULT_HARD_TIMEOUT = 10 * 60;
     /** Default priority */
     public static final Integer DEFAULT_PRIORITY = Integer.parseInt("8000", 16);
-    private static final Long DEFAULT_BUFFER_ID = Long.parseLong("ffffffff", 16);
+    private static final Long DEFAULT_BUFFER_ID = OFConstants.OFP_NO_BUFFER;
     private static final Long OFPP_ANY = Long.parseLong("ffffffff", 16);
     private static final Long DEFAULT_OUT_PORT = OFPP_ANY;
     private static final Long OFPG_ANY = Long.parseLong("ffffffff", 16);
@@ -199,7 +199,7 @@ public class FlowConvertor {
             flowMod.setOutGroup(DEFAULT_OUT_GROUP);
         }
 
-        
+
         // convert and inject flowFlags
         FlowFlagReactor.getInstance().convert(flow.getFlags(), version, flowMod,datapathid);
 
@@ -211,7 +211,7 @@ public class FlowConvertor {
             flowMod.setAction(getActions(version,datapathid, flow));
         }
         flowMod.setVersion(version);
-        
+
         return flowMod;
     }
 
@@ -298,12 +298,12 @@ public class FlowConvertor {
         }
         return instructionsList;
     }
-    
+
     /*private static List<Action> getActions(
             org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Instructions instructions,
             short version,BigInteger datapathid) {*/
     private static List<Action> getActions(short version,BigInteger datapathid, Flow flow) {
-        
+
         org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Instructions instructions = flow.getInstructions();
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction> sortedInstructions =
             Ordering.from(OrderComparator.<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction>build())
@@ -454,13 +454,13 @@ public class FlowConvertor {
 
         org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder instructionBuilder =
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder();
-        
+
         for (int i=0; i < srcInstructionList.size(); i++) {
-            org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction srcInstruction = 
+            org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction srcInstruction =
                     srcInstructionList.get(i);
-            org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction curSrcInstruction = 
+            org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction curSrcInstruction =
                     srcInstruction.getInstruction();
-            
+
             if (curSrcInstruction instanceof ApplyActionsCase) {
                 ApplyActionsCase applyActionscase = (ApplyActionsCase) curSrcInstruction;
                 ApplyActions applyActions = applyActionscase.getApplyActions();
@@ -502,7 +502,7 @@ public class FlowConvertor {
                         actionBuilder.setOrder(actionItem.getOrder() + offset);
                         actionItem = actionBuilder.build();
                     }
-                    
+
                     targetActionList.add(actionItem);
                 }
 
@@ -510,17 +510,17 @@ public class FlowConvertor {
                 ApplyActionsBuilder applyActionsBuilder = new ApplyActionsBuilder();
                 applyActionsBuilder.setAction(targetActionList);
                 applyActionsCaseBuilder.setApplyActions(applyActionsBuilder.build());
-                    
+
                 instructionBuilder.setInstruction(applyActionsCaseBuilder.build());
             } else {
                 instructionBuilder.setInstruction(curSrcInstruction);
             }
-            
+
             instructionBuilder
                 .setKey(srcInstruction.getKey())
                 .setOrder(srcInstruction.getOrder());
             targetInstructionList.add(instructionBuilder.build());
-            
+
         }
 
         return targetInstructionList;

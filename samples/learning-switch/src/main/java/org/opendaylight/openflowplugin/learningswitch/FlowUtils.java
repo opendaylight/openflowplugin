@@ -3,6 +3,7 @@ package org.opendaylight.openflowplugin.learningswitch;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCaseBuilder;
@@ -95,7 +96,7 @@ public class FlowUtils {
                         .setInstruction(ImmutableList.of(applyActionsInstruction)) //
                         .build()) //
                 .setPriority(priority) //
-                .setBufferId(0L) //
+                .setBufferId(OFConstants.OFP_NO_BUFFER) //
                 .setHardTimeout(0) //
                 .setIdleTimeout(0) //
                 .setFlags(new FlowModFlags(false, false, false, false, false));
@@ -149,7 +150,7 @@ public class FlowUtils {
             .setMatch(matchBuilder.build()) //
             .setInstructions(isb.build()) //
             .setPriority(priority) //
-            .setBufferId(0L) //
+            .setBufferId(OFConstants.OFP_NO_BUFFER) //
             .setHardTimeout(0) //
             .setIdleTimeout(0) //
             .setFlags(new FlowModFlags(false, false, false, false, false));
