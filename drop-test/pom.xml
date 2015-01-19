@@ -38,15 +38,18 @@
             <groupId>org.opendaylight.controller.model</groupId>
             <artifactId>model-inventory</artifactId>
         </dependency>
-         <dependency>
+        <dependency>
 	        <groupId>equinoxSDK381</groupId>
 	        <artifactId>org.eclipse.osgi</artifactId>
-	      </dependency>
-	      <dependency>
+	    </dependency>
+	    <dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
-          </dependency>
-	      
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin</groupId>
+            <artifactId>openflowplugin-api</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
