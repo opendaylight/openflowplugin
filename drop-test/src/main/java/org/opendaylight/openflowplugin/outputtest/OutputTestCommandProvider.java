@@ -14,6 +14,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
+import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.output.action._case.OutputActionBuilder;
@@ -138,7 +139,7 @@ public class OutputTestCommandProvider implements CommandProvider {
             packet_out.setNode(ref);
             packet_out.setIngress(nIngressConRef);
             packet_out.setEgress(nEngressConRef);
-            packet_out.setBufferId(Long.valueOf(0xffffffffL));
+            packet_out.setBufferId(OFConstants.OFP_NO_BUFFER);
 
             packetProcessingService.transmitPacket(packet_out.build());
         } else {
