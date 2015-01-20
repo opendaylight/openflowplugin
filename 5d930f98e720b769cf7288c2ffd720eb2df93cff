@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "7a96c907_3669a5be",
+        "filename": "extension/features/pom.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2015-01-20T14:20:12Z",
+      "side": 1,
+      "message": "I missed that, will fix it.",
+      "parentUuid": "7a96c907_60220303",
+      "range": {
+        "startLine": 40,
+        "startChar": 18,
+        "endLine": 40,
+        "endChar": 32
+      },
+      "revId": "5d930f98e720b769cf7288c2ffd720eb2df93cff",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a96c907_a0100ba9",
         "filename": "extension/features/pom.xml",
         "patchSetId": 2
@@ -36,6 +60,30 @@
       "writtenOn": "2015-01-19T19:08:01Z",
       "side": 1,
       "message": "Can just \"config\" be used here? In the existing code that is all that is there.",
+      "range": {
+        "startLine": 43,
+        "startChar": 25,
+        "endLine": 43,
+        "endChar": 34
+      },
+      "revId": "5d930f98e720b769cf7288c2ffd720eb2df93cff",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_d651610f",
+        "filename": "extension/features/pom.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2015-01-20T14:20:12Z",
+      "side": 1,
+      "message": "Here we end up with 3 config files and classifier is the only distinguisher. I agree that this naming is not clear and there is probably no suitable strategy for that right now. But as soon as some better naming emerges then we should file a bug.",
+      "parentUuid": "7a96c907_a0100ba9",
       "range": {
         "startLine": 43,
         "startChar": 25,
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "7a96c907_b627f5b5",
+        "filename": "extension/features/src/main/resources/features.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2015-01-20T14:20:12Z",
+      "side": 1,
+      "message": "We do not have the variable here and yes it sounds like a good idea. But it would be nice to change the usage by all config files here, not just by extensions. I think we should file a bug and fix it separate change.",
+      "parentUuid": "7a96c907_4027c712",
+      "range": {
+        "startLine": 10,
+        "startChar": 31,
+        "endLine": 10,
+        "endChar": 34
+      },
+      "revId": "5d930f98e720b769cf7288c2ffd720eb2df93cff",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a96c907_e07db3e8",
         "filename": "features/src/main/resources/features.xml",
         "patchSetId": 2
@@ -94,6 +166,30 @@
     },
     {
       "key": {
+        "uuid": "7a96c907_5636b1e8",
+        "filename": "features/src/main/resources/features.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2015-01-20T14:20:12Z",
+      "side": 1,
+      "message": "the reason is openflowplugin-extension-api and registration provider",
+      "parentUuid": "7a96c907_e07db3e8",
+      "range": {
+        "startLine": 72,
+        "startChar": 35,
+        "endLine": 72,
+        "endChar": 36
+      },
+      "revId": "5d930f98e720b769cf7288c2ffd720eb2df93cff",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a96c907_0021bffa",
         "filename": "features/src/main/resources/features.xml",
         "patchSetId": 2
@@ -105,6 +201,30 @@
       "writtenOn": "2015-01-20T01:22:47Z",
       "side": 1,
       "message": "Again, might make sense to define a variable for etc/opendaylight/karaf.",
+      "range": {
+        "startLine": 73,
+        "startChar": 34,
+        "endLine": 73,
+        "endChar": 35
+      },
+      "revId": "5d930f98e720b769cf7288c2ffd720eb2df93cff",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_363be5d2",
+        "filename": "features/src/main/resources/features.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2015-01-20T14:20:12Z",
+      "side": 1,
+      "message": "yes - in separate change",
+      "parentUuid": "7a96c907_0021bffa",
       "range": {
         "startLine": 73,
         "startChar": 34,
