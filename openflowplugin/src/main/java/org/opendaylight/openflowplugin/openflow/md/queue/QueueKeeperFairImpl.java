@@ -15,7 +15,7 @@ import org.opendaylight.openflowplugin.api.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.api.openflow.md.queue.HarvesterHandle;
 import org.opendaylight.openflowplugin.api.openflow.md.queue.QueueItem;
 import org.opendaylight.openflowplugin.api.openflow.md.queue.QueueKeeper;
-import org.opendaylight.openflowplugin.api.openflow.md.util.PollableQueuesZipper;
+import org.opendaylight.openflowplugin.api.openflow.md.util.PollableQueuesPriorityZipper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,34 +23,34 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Preconditions;
 
 /**
- * QueueKeeper implementation based on {@link OfHeader} 
+ * QueueKeeper implementation based on {@link OfHeader}
  */
 public class QueueKeeperFairImpl implements QueueKeeper<OfHeader> {
 
     private static Logger LOG = LoggerFactory
             .getLogger(QueueKeeperFairImpl.class);
-    
+
     private Queue<QueueItem<OfHeader>> queueDefault;
     private BlockingQueue<QueueItem<OfHeader>> queueUnordered;
     private AutoCloseable pollRegistration;
     private int capacity = 5000;
     private HarvesterHandle harvesterHandle;
-    private PollableQueuesZipper<QueueItem<OfHeader>> queueZipper;
+    private PollableQueuesPriorityZipper<QueueItem<OfHeader>> queueZipper;
 
     @Override
     public void close() throws Exception {
-        Preconditions.checkNotNull(pollRegistration, "pollRegistration not available");
+        Preconditions.checkNotNull(pollRegistration,
+                "pollRegistration not available");
         pollRegistration.close();
     }
 
     @Override
-    public void push(
-            OfHeader message,
-            ConnectionConductor conductor,
+    public void push(OfHeader message, ConnectionConductor conductor,
             QueueKeeper.QueueType queueType) {
-        QueueItemOFImpl qItem = new QueueItemOFImpl(message, conductor, queueType);
+        QueueItemOFImpl qItem = new QueueItemOFImpl(message, conductor,
+                queueType);
         boolean enqueued = false;
-        
+
         switch (queueType) {
         case DEFAULT:
             enqueued = queueDefault.offer(qItem);
@@ -59,18 +59,19 @@ public class QueueKeeperFairImpl implements QueueKeeper<OfHeader> {
             enqueued = queueUnordered.offer(qItem);
             break;
         default:
-            LOG.warn("unsupported queue type: [{}] -> dropping message [{}]", queueType, message.getImplementedInterface());
+            LOG.warn("unsupported queue type: [{}] -> dropping message [{}]",
+                    queueType, message.getImplementedInterface());
         }
-        
+
         if (enqueued) {
             harvesterHandle.ping();
         } else {
             LOG.debug("ingress throttling is use -> {}", queueType);
         }
-        
-        // if enqueueing fails -> message will be dropped 
+
+        // if enqueueing fails -> message will be dropped
     }
-    
+
     /**
      * @return the ingressQueue
      */
@@ -81,29 +82,31 @@ public class QueueKeeperFairImpl implements QueueKeeper<OfHeader> {
     }
 
     /**
-     * @param processingRegistration the processingRegistration to set
+     * @param processingRegistration
+     *            the processingRegistration to set
      */
     @Override
     public void setPollRegistration(AutoCloseable processingRegistration) {
         this.pollRegistration = processingRegistration;
     }
-    
+
     /**
-     * @param capacity the capacity of internal blocking queue
+     * @param capacity
+     *            the capacity of internal blocking queue
      */
     public void setCapacity(int capacity) {
         this.capacity = capacity;
     }
-    
+
     /**
      * init blocking queue
      */
     public void init() {
         queueUnordered = new ArrayBlockingQueue<>(capacity);
         queueDefault = new ArrayBlockingQueue<>(capacity);
-        queueZipper = new PollableQueuesZipper<>();
-        queueZipper.addSource(queueDefault);
+        queueZipper = new PollableQueuesPriorityZipper<>();
         queueZipper.addSource(queueUnordered);
+        queueZipper.setPrioritizedSource(queueDefault);
     }
 
     /**
