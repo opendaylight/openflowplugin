@@ -48,6 +48,29 @@
     },
     {
       "key": {
+        "uuid": "7a96c907_4027c712",
+        "filename": "extension/features/src/main/resources/features.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 226
+      },
+      "writtenOn": "2015-01-20T01:22:47Z",
+      "side": 1,
+      "message": "Not a requirement, but I\u0027ve noticed that some projects use a variable for etc/opendaylight/karaf (e.g. config.configfile.directory, defined in an upper-level pom file).",
+      "range": {
+        "startLine": 10,
+        "startChar": 31,
+        "endLine": 10,
+        "endChar": 34
+      },
+      "revId": "5d930f98e720b769cf7288c2ffd720eb2df93cff",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a96c907_e07db3e8",
         "filename": "features/src/main/resources/features.xml",
         "patchSetId": 2
@@ -64,6 +87,29 @@
         "startChar": 35,
         "endLine": 72,
         "endChar": 36
+      },
+      "revId": "5d930f98e720b769cf7288c2ffd720eb2df93cff",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_0021bffa",
+        "filename": "features/src/main/resources/features.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 226
+      },
+      "writtenOn": "2015-01-20T01:22:47Z",
+      "side": 1,
+      "message": "Again, might make sense to define a variable for etc/opendaylight/karaf.",
+      "range": {
+        "startLine": 73,
+        "startChar": 34,
+        "endLine": 73,
+        "endChar": 35
       },
       "revId": "5d930f98e720b769cf7288c2ffd720eb2df93cff",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
