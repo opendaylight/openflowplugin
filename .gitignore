@@ -16,8 +16,6 @@ target
 .settings
 MANIFEST.MF
 xtend-gen
-yang-gen-sal
-yang-gen-config
 .externalToolBuilders
 maven-eclipse.xml
-.metadata/
+
