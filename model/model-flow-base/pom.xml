@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.opendaylight.openflowplugin.model</groupId>
+    <artifactId>model-parent</artifactId>
+    <version>1.2.0-SNAPSHOT</version>
+  </parent>
+  <artifactId>model-flow-base</artifactId>
+  <packaging>bundle</packaging>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.opendaylight.controller.model</groupId>
+      <artifactId>model-inventory</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.yangtools.model</groupId>
+      <artifactId>opendaylight-l2-types</artifactId>
+    </dependency>
+  </dependencies>
+
+  <scm>
+    <connection>scm:git:ssh://git.opendaylight.org:29418/openflowplugin.git</connection>
+    <developerConnection>scm:git:ssh://git.opendaylight.org:29418/openflowplugin.git</developerConnection>
+    <url>https://wiki.opendaylight.org/view/OpenDaylight_OpenFlow_Plugin:Main</url>
+    <tag>HEAD</tag>
+  </scm>
+
+</project>
