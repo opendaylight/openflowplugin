@@ -1,7 +1,7 @@
 module statistics-manager {
 
     yang-version 1;
-    namespace "urn:opendaylight:params:xml:ns:yang:controller:md:sal:statistics-manager";
+    namespace "urn:opendaylight:params:xml:ns:yang:openflowplugin:app:statistics-manager";
     prefix "statistics-manager";
 
     import config { prefix config; revision-date 2013-04-05; }

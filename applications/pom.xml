@@ -36,6 +36,9 @@
 											<namespaceToPackage1>
 												urn:opendaylight:params:xml:ns:yang:controller==org.opendaylight.controller.config.yang
 											</namespaceToPackage1>
+                                            <namespaceToPackage2>
+                                                urn:opendaylight:params:xml:ns:yang:openflowplugin:app==org.opendaylight.openflowplugin.applications.config.yang
+                                            </namespaceToPackage2>
 										</additionalConfiguration>
 									</generator>
 									<generator>

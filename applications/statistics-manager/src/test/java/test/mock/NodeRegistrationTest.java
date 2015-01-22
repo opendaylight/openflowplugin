@@ -1,10 +1,11 @@
 package test.mock;
 
 import org.junit.Test;
-import org.opendaylight.controller.md.statistics.manager.StatisticsManager;
+import org.opendaylight.openflowplugin.applications.statistics.manager.StatisticsManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+
 import test.mock.util.StatisticsManagerTest;
 
 import java.util.concurrent.ExecutionException;
