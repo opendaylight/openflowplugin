@@ -5,13 +5,14 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.controller.frm.impl;
+package org.opendaylight.openflowplugin.applications.frm.impl;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import org.opendaylight.controller.frm.ForwardingRulesCommiter;
-import org.opendaylight.controller.frm.ForwardingRulesManager;
+
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
+import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesCommiter;
+import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;

@@ -41,7 +41,7 @@
         <artifactId>maven-bundle-plugin</artifactId>
         <configuration>
           <instructions>
-            <Bundle-Activator>org.opendaylight.controller.frm.FRMActivator</Bundle-Activator>
+            <Bundle-Activator>org.opendaylight.openflowplugin.applications.frm.FRMActivator</Bundle-Activator>
           </instructions>
         </configuration>
       </plugin>

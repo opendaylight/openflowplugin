@@ -6,18 +6,18 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.controller.frm.impl;
+package org.opendaylight.openflowplugin.applications.frm.impl;
 
 import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.opendaylight.controller.frm.FlowNodeReconciliation;
-import org.opendaylight.controller.frm.ForwardingRulesCommiter;
-import org.opendaylight.controller.frm.ForwardingRulesManager;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.sal.binding.api.RpcConsumerRegistry;
+import org.opendaylight.openflowplugin.applications.frm.FlowNodeReconciliation;
+import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesCommiter;
+import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
@@ -34,7 +34,7 @@ import com.google.common.collect.Sets;
 
 /**
  * forwardingrules-manager
- * org.opendaylight.controller.frm.impl
+ * org.opendaylight.openflowplugin.applications.frm.impl
  *
  * Manager and middle point for whole module.
  * It contains ActiveNodeHolder and provide all RPC services.

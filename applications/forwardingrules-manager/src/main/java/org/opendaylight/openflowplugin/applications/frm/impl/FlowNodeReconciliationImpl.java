@@ -6,20 +6,20 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.controller.frm.impl;
+package org.opendaylight.openflowplugin.applications.frm.impl;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import org.opendaylight.controller.frm.FlowNodeReconciliation;
-import org.opendaylight.controller.frm.ForwardingRulesManager;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker.DataChangeScope;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.openflowplugin.applications.frm.FlowNodeReconciliation;
+import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.MeterKey;
@@ -43,7 +43,7 @@ import com.google.common.base.Preconditions;
 
 /**
  * forwardingrules-manager
- * org.opendaylight.controller.frm
+ * org.opendaylight.openflowplugin.applications.frm
  *
  * FlowNode Reconciliation Listener
  * Reconciliation for a new FlowNode

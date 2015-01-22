@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.controller.frm;
+package org.opendaylight.openflowplugin.applications.frm;
 
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -15,7 +15,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 /**
  * forwardingrules-manager
- * org.opendaylight.controller.frm
+ * org.opendaylight.openflowplugin.applications.frm
  *
  * ForwardingRulesCommiter
  * It represent a contract between DataStore DataChangeEvent and relevant
