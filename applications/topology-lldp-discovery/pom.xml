@@ -63,8 +63,8 @@
         <extensions>true</extensions>
         <configuration>
           <instructions>
-            <Bundle-Activator>org.opendaylight.md.controller.topology.lldp.LLDPActivator</Bundle-Activator>
-            <Export-Package>org.opendaylight.md.controller.topology.lldp.utils</Export-Package>
+            <Bundle-Activator>org.opendaylight.openflowplugin.applications.topology.lldp.LLDPActivator</Bundle-Activator>
+            <Export-Package>org.opendaylight.openflowplugin.applications.topology.lldp.utils</Export-Package>
             <Embed-Dependency>commons-lang</Embed-Dependency>
             <Bundle-Name>${project.groupId}.${project.artifactId}</Bundle-Name>
           </instructions>

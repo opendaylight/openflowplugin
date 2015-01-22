@@ -59,8 +59,8 @@
         <artifactId>maven-bundle-plugin</artifactId>
         <configuration>
           <instructions>
-            <Bundle-Activator>org.opendaylight.md.controller.topology.manager.FlowCapableTopologyProvider</Bundle-Activator>
-            <Private-Package>org.opendaylight.md.controller.topology.manager</Private-Package>
+            <Bundle-Activator>org.opendaylight.openflowplugin.applications.topology.manager.FlowCapableTopologyProvider</Bundle-Activator>
+            <Private-Package>org.opendaylight.openflowplugin.applications.topology.manager</Private-Package>
           </instructions>
         </configuration>
       </plugin>
