@@ -19,6 +19,7 @@
     <feature name='odl-openflowplugin-southbound' description="OpenDaylight :: Openflow Plugin :: SouthBound" version='${project.version}'>
         <feature version="${mdsal.version}">odl-mdsal-broker</feature>
         <feature version="${mdsal.version}">odl-flow-model</feature>
+        <feature version="${project.version}">odl-openflowplugin-nsf-model</feature>
         <feature version="${openflowjava.version}">odl-openflowjava-protocol</feature>
         <bundle>mvn:org.opendaylight.openflowplugin/openflowplugin/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.openflowplugin/openflowplugin-api/${project.version}</bundle>
@@ -28,11 +29,34 @@
         <configfile finalname="etc/opendaylight/karaf/43-msg-spy.xml">mvn:org.opendaylight.openflowplugin/openflowplugin-controller-config/${project.version}/xml/configmsgspy</configfile>
     </feature>
     <feature name='odl-openflowplugin-flow-services' description="OpenDaylight :: Openflow Plugin :: Flow Services" version='${project.version}'>
-        <feature version="${mdsal.version}">odl-flow-services</feature>
+        <!-- move nsf services here -->
+        <feature version="${project.version}">odl-openflowplugin-nsf-services</feature>
         <feature version="${project.version}">odl-openflowplugin-southbound</feature>
         <feature version="${project.version}">odl-openflowplugin-app-config-pusher</feature>
         <feature version="${project.version}">odl-openflowplugin-app-lldp-speaker</feature>
     </feature>
+    
+    <feature name='odl-openflowplugin-nsf-services' version='${project.version}'
+        description="OpenDaylight :: OpenflowPlugin :: NSF :: Services">
+        <feature version='${mdsal.version}'>odl-mdsal-broker</feature>
+        <feature version='${project.version}'>odl-openflowplugin-nsf-model</feature>
+        <bundle>mvn:org.opendaylight.openflowplugin.applications/topology-manager/${project.version}</bundle>
+        <bundle>mvn:org.opendaylight.openflowplugin.applications/topology-lldp-discovery/${project.version}</bundle>
+        <bundle>mvn:org.opendaylight.openflowplugin.applications/statistics-manager/${project.version}</bundle>
+        <bundle>mvn:org.opendaylight.openflowplugin.applications/inventory-manager/${project.version}</bundle>
+        <bundle>mvn:org.opendaylight.openflowplugin.applications/forwardingrules-manager/${project.version}</bundle>
+        <bundle>mvn:org.opendaylight.controller/liblldp/${sal.api.version}</bundle>
+        <configfile finalname="${config.configfile.directory}/${config.statistics.manager.configfile}">mvn:org.opendaylight.openflowplugin.applications/statistics-manager-config/${project.version}/xml/config</configfile>
+    </feature>
+    
+    <feature name='odl-openflowplugin-nsf-model' version='${project.version}'
+        description="OpenDaylight :: OpenflowPlugin :: NSF :: Model">
+        <feature version='${mdsal.version}'>odl-flow-model</feature>
+        <bundle>mvn:org.opendaylight.openflowplugin.model/model-flow-base/${project.version}</bundle>
+        <bundle>mvn:org.opendaylight.openflowplugin.model/model-flow-statistics/${project.version}</bundle>
+        <bundle>mvn:org.opendaylight.openflowplugin.model/model-flow-service/${project.version}</bundle>
+    </feature>
+    
     <feature name='odl-openflowplugin-flow-services-rest' description="OpenDaylight :: Openflow Plugin :: Flow Services :: REST" version='${project.version}'>
         <feature version="${project.version}">odl-openflowplugin-flow-services</feature>
         <feature version="${mdsal.version}">odl-restconf</feature>
