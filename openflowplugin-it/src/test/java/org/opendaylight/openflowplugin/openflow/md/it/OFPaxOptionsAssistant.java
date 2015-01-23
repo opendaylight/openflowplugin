@@ -29,8 +29,10 @@ public abstract class OFPaxOptionsAssistant {
     public static final String CONTROLLER = "org.opendaylight.controller";
     /** OFLibrary package */
     public static final String OFLIBRARY = "org.opendaylight.openflowjava";
-    /** OFLibrary package */
+    /** OFPlugin package */
     public static final String OFPLUGIN = "org.opendaylight.openflowplugin";
+    /** OFPlugin model package */
+    public static final String OFPLUGIN_MODEL = "org.opendaylight.openflowplugin.model";
     /** controller.model package */
     public static final String CONTROLLER_MODEL = "org.opendaylight.controller.model";
 
@@ -75,7 +77,9 @@ public abstract class OFPaxOptionsAssistant {
         return new DefaultCompositeOption(
                 baseSalBundles(),
                 ofLibraryBundles(),
-                mavenBundle(CONTROLLER_MODEL, "model-flow-statistics").versionAsInProject(),
+                mavenBundle(OFPLUGIN_MODEL, "model-flow-statistics").versionAsInProject(),
+                mavenBundle(OFPLUGIN_MODEL, "model-flow-base").versionAsInProject(),
+                mavenBundle(OFPLUGIN_MODEL, "model-flow-service").versionAsInProject(),
                 mavenBundle(OFPLUGIN, "openflowplugin-api").versionAsInProject(),
                 mavenBundle(OFPLUGIN, "openflowplugin-extension-api").versionAsInProject(),
                 mavenBundle(OFPLUGIN, "openflowplugin").versionAsInProject(),
