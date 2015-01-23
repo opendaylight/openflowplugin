@@ -29,7 +29,7 @@
             <artifactId>model-inventory</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.controller.model</groupId>
+            <groupId>org.opendaylight.openflowplugin.model</groupId>
             <artifactId>model-flow-service</artifactId>
         </dependency>
         <dependency>
@@ -42,12 +42,8 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.opendaylight.controller.model</groupId>
-            <artifactId>model-flow-service</artifactId>
-        </dependency>
-
     </dependencies>
+    
     <build>
         <plugins>
             <plugin>
