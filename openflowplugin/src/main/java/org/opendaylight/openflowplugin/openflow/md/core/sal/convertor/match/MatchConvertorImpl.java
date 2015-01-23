@@ -680,11 +680,14 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
                 }
             } else if (ofMatch.getOxmMatchField().equals(VlanVid.class)) {
                 VlanVidMatchEntry vlanVidMatchEntry = ofMatch.getAugmentation(VlanVidMatchEntry.class);
+                
                 if (vlanVidMatchEntry != null) {
                     VlanIdBuilder vlanBuilder = new VlanIdBuilder();
-                    vlanBuilder.setVlanId(new org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId(
+                    Boolean cfiBit = vlanVidMatchEntry.isCfiBit();
+					vlanBuilder.setVlanId(new org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId(
                             vlanVidMatchEntry.getVlanVid()))
-                            .setVlanIdPresent(vlanVidMatchEntry.isCfiBit());
+                            .setVlanIdPresent(cfiBit);					
+                    vlanBuilder.setVlanIdPresent(cfiBit);
                     vlanMatchBuilder.setVlanId(vlanBuilder.build());
                     matchBuilder.setVlanMatch(vlanMatchBuilder.build());
                 }
