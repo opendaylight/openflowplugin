@@ -253,7 +253,6 @@ public class OFPluginFlowTest {
                 TestHelper.mdSalCoreBundles(),
                 TestHelper.configMinumumBundles(),
                 TestHelper.baseModelBundles(),
-                TestHelper.flowCapableModelBundles(),
 
                 OFPaxOptionsAssistant.ofPluginBundles());
     }

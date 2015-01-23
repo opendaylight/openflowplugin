@@ -234,7 +234,6 @@ public class OFPluginToLibraryTest {
                 TestHelper.mdSalCoreBundles(),
                 TestHelper.configMinumumBundles(),
                 TestHelper.baseModelBundles(),
-                TestHelper.flowCapableModelBundles(),
 
                 OFPaxOptionsAssistant.ofPluginBundles());
     }
