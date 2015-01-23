@@ -35,11 +35,11 @@
     </build>
     <dependencies>
         <dependency>
-            <groupId>org.opendaylight.controller.model</groupId>
+            <groupId>org.opendaylight.openflowplugin.model</groupId>
             <artifactId>model-flow-base</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.controller.model</groupId>
+            <groupId>org.opendaylight.openflowplugin.model</groupId>
             <artifactId>model-flow-service</artifactId>
         </dependency>
         <dependency>
