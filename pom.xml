@@ -47,7 +47,9 @@
       <mdsal.version>1.2.0-SNAPSHOT</mdsal.version>
       <nexusproxy>http://nexus.opendaylight.org/content</nexusproxy>
       <openflowjava.version>0.6.0-SNAPSHOT</openflowjava.version>
+      <openflowplugin.model.version>${project.version}</openflowplugin.model.version>
       <controller.model.version>1.2.0-SNAPSHOT</controller.model.version>
+      <sal.binding.api.version>1.2.0-SNAPSHOT</sal.binding.api.version>
       <sal.api.version>0.9.0-SNAPSHOT</sal.api.version>
       <sal.connection.api.version>0.2.0-SNAPSHOT</sal.connection.api.version>
       <sal.common.util.version>1.2.0-SNAPSHOT</sal.common.util.version>
@@ -140,21 +142,23 @@
           <artifactId>simple-client</artifactId>
           <version>${openflowjava.version}</version>
         </dependency>
+
         <dependency>
-          <groupId>org.opendaylight.controller.model</groupId>
+          <groupId>org.opendaylight.openflowplugin.model</groupId>
           <artifactId>model-flow-base</artifactId>
-          <version>${controller.model.version}</version>
+          <version>${openflowplugin.model.version}</version>
         </dependency>
         <dependency>
-          <groupId>org.opendaylight.controller.model</groupId>
+          <groupId>org.opendaylight.openflowplugin.model</groupId>
           <artifactId>model-flow-service</artifactId>
-          <version>${controller.model.version}</version>
+          <version>${openflowplugin.model.version}</version>
         </dependency>
         <dependency>
-          <groupId>org.opendaylight.controller.model</groupId>
+          <groupId>org.opendaylight.openflowplugin.model</groupId>
           <artifactId>model-flow-statistics</artifactId>
-          <version>${controller.model.version}</version>
+          <version>${openflowplugin.model.version}</version>
         </dependency>
+
         <dependency>
           <groupId>org.opendaylight.controller.model</groupId>
           <artifactId>model-inventory</artifactId>
@@ -169,12 +173,12 @@
         <dependency>
           <groupId>org.opendaylight.controller</groupId>
           <artifactId>sal-binding-api</artifactId>
-          <version>${controller.model.version}</version>
+          <version>${sal.binding.api.version}</version>
         </dependency>
         <dependency>
           <groupId>org.opendaylight.controller</groupId>
           <artifactId>sal-binding-config</artifactId>
-          <version>${controller.model.version}</version>
+          <version>${sal.binding.api.version}</version>
         </dependency>
         <dependency>
           <groupId>org.opendaylight.controller</groupId>
@@ -190,14 +194,9 @@
         <dependency>
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>sal-common-util</artifactId>
-            <version>${controller.model.version}</version>
-        </dependency>
-        <!-- IT -->
-        <dependency>
-            <groupId>org.opendaylight.controller</groupId>
-            <artifactId>sal-common-util</artifactId>
             <version>${sal.common.util.version}</version>
         </dependency>
+        <!-- IT -->
         <dependency>
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>config-netconf-connector</artifactId>
@@ -206,27 +205,44 @@
         <dependency>
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>sal-binding-it</artifactId>
-            <version>${controller.model.version}</version>
+            <version>${sal.binding.api.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.controller</groupId>
-            <artifactId>sal-binding-broker-impl</artifactId>
-            <version>${controller.model.version}</version>
+          <groupId>org.opendaylight.controller</groupId>
+          <artifactId>sal-binding-broker-impl</artifactId>
+          <version>${sal.binding.api.version}</version>
+
+          <!-- excluding old models pulled as transient dependencies 
+               TODO: remove -->
+          <exclusions>
+            <exclusion>
+              <groupId>org.opendaylight.controller.model</groupId>
+              <artifactId>model-flow-base</artifactId>
+            </exclusion>
+            <exclusion>
+              <groupId>org.opendaylight.controller.model</groupId>
+              <artifactId>model-flow-service</artifactId>
+            </exclusion>
+            <exclusion>
+              <groupId>org.opendaylight.controller.model</groupId>
+              <artifactId>model-flow-statistics</artifactId>
+            </exclusion>
+          </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.controller</groupId>
-            <artifactId>config-manager</artifactId>
-            <version>${config.parent.version}</version>
+          <groupId>org.opendaylight.controller</groupId>
+          <artifactId>config-manager</artifactId>
+          <version>${config.parent.version}</version>
         </dependency>
-          <dependency>
-              <groupId>org.opendaylight.controller</groupId>
-              <artifactId>config-api</artifactId>
-              <version>${config.parent.version}</version>
-          </dependency>
         <dependency>
-            <groupId>org.opendaylight.yangtools.thirdparty</groupId>
-            <artifactId>antlr4-runtime-osgi-nohead</artifactId>
-            <version>4.0</version>
+          <groupId>org.opendaylight.controller</groupId>
+          <artifactId>config-api</artifactId>
+          <version>${config.parent.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.opendaylight.yangtools.thirdparty</groupId>
+          <artifactId>antlr4-runtime-osgi-nohead</artifactId>
+          <version>4.0</version>
         </dependency>
         <dependency>
           <groupId>org.opendaylight.controller</groupId>
@@ -605,85 +621,6 @@
           </plugins>
         </reporting>
       </profile>
-
-      <profile>
-        <id>nsf-migration</id>
-        <activation>
-          <activeByDefault>false</activeByDefault>
-          <file>
-            <exists>${basedir}/migrationStep.1</exists>
-          </file>
-        </activation>
-
-        <properties>
-          <!-- TODO: pull out into parent -->
-          <openflowplugin.model.version>${project.version}</openflowplugin.model.version>
-        </properties>
-
-        <dependencyManagement>
-          <!-- TODO: pull out into parent -->
-          <dependencies>
-            <dependency>
-              <groupId>org.opendaylight.openflowplugin.model</groupId>
-              <artifactId>model-flow-base</artifactId>
-              <version>${openflowplugin.model.version}</version>
-            </dependency>
-            <dependency>
-              <groupId>org.opendaylight.openflowplugin.model</groupId>
-              <artifactId>model-flow-service</artifactId>
-              <version>${openflowplugin.model.version}</version>
-            </dependency>
-            <dependency>
-              <groupId>org.opendaylight.openflowplugin.model</groupId>
-              <artifactId>model-flow-statistics</artifactId>
-              <version>${openflowplugin.model.version}</version>
-            </dependency>
-
-            <!-- excluding old models pulled as transient dependencies 
-                 TODO: remove -->
-            <dependency>
-              <groupId>org.opendaylight.openflowplugin</groupId>
-              <artifactId>openflowplugin-api</artifactId>
-              <version>${project.version}</version>
-              <exclusions>
-                <exclusion>
-                  <groupId>org.opendaylight.controller.model</groupId>
-                  <artifactId>model-flow-base</artifactId>
-                </exclusion>
-                <exclusion>
-                  <groupId>org.opendaylight.controller.model</groupId>
-                  <artifactId>model-flow-service</artifactId>
-                </exclusion>
-                <exclusion>
-                  <groupId>org.opendaylight.controller.model</groupId>
-                  <artifactId>model-flow-statistics</artifactId>
-                </exclusion>
-              </exclusions>
-            </dependency>
-            <dependency>
-              <groupId>org.opendaylight.controller</groupId>
-              <artifactId>sal-binding-broker-impl</artifactId>
-              <version>${controller.model.version}</version>
-              <exclusions>
-                <exclusion>
-                  <groupId>org.opendaylight.controller.model</groupId>
-                  <artifactId>model-flow-base</artifactId>
-                </exclusion>
-                <exclusion>
-                  <groupId>org.opendaylight.controller.model</groupId>
-                  <artifactId>model-flow-service</artifactId>
-                </exclusion>
-                <exclusion>
-                  <groupId>org.opendaylight.controller.model</groupId>
-                  <artifactId>model-flow-statistics</artifactId>
-                </exclusion>
-              </exclusions>
-            </dependency>
-          </dependencies>
-
-        </dependencyManagement>
-      </profile>
-
     </profiles>
 
     <repositories>

@@ -39,7 +39,7 @@
         <configuration>
           <instructions>
             <Bundle-Name>${project.name}</Bundle-Name>
-            <Bundle-Activator>org.opendaylight.controller.sal.compatibility.ComponentActivator</Bundle-Activator>
+            <Bundle-Activator>org.opendaylight.openflowplugin.legacy.sal.compatibility.ComponentActivator</Bundle-Activator>
           </instructions>
         </configuration>
       </plugin>
@@ -52,5 +52,5 @@
     <url>https://wiki.opendaylight.org/view/OpenDaylight_OpenFlow_Plugin:Main</url>
     <tag>HEAD</tag>
   </scm>
-  
+
 </project>
