@@ -12,7 +12,7 @@
         <data xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
             <modules xmlns="urn:opendaylight:params:xml:ns:yang:controller:config">
                 <module>
-                    <type xmlns:statsmanager="urn:opendaylight:params:xml:ns:yang:controller:md:sal:statistics-manager">
+                    <type xmlns:statsmanager="urn:opendaylight:params:xml:ns:yang:openflowplugin:app:statistics-manager">
                         statsmanager:statistics-manager
                     </type>
                     <name>statistics-manager</name>
@@ -45,7 +45,7 @@
     </configuration>
 
     <required-capabilities>
-        <capability>urn:opendaylight:params:xml:ns:yang:controller:md:sal:statistics-manager?module=statistics-manager&amp;revision=2014-09-25</capability>
+        <capability>urn:opendaylight:params:xml:ns:yang:openflowplugin:app:statistics-manager?module=statistics-manager&amp;revision=2014-09-25</capability>
     </required-capabilities>
 
 </snapshot>

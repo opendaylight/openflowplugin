@@ -5,13 +5,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.statistics.manager.StatisticsManager;
-import org.opendaylight.controller.md.statistics.manager.impl.StatisticsManagerConfig;
-import org.opendaylight.controller.md.statistics.manager.impl.StatisticsManagerImpl;
+import org.opendaylight.openflowplugin.applications.statistics.manager.StatisticsManager;
+import org.opendaylight.openflowplugin.applications.statistics.manager.impl.StatisticsManagerConfig;
+import org.opendaylight.openflowplugin.applications.statistics.manager.impl.StatisticsManagerImpl;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.Counter32;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.Counter64;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FeatureCapability;
