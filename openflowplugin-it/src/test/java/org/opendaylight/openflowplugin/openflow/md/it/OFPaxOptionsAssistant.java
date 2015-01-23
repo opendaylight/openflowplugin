@@ -31,8 +31,12 @@ public abstract class OFPaxOptionsAssistant {
     public static final String CONTROLLER_MD = "org.opendaylight.controller.md";
     /** OFLibrary package */
     public static final String OFLIBRARY = "org.opendaylight.openflowjava";
-    /** OFLibrary package */
+    /** OFPlugin package */
     public static final String OFPLUGIN = "org.opendaylight.openflowplugin";
+    /** OFPlugin applications package */
+    public static final String OFPLUGIN_APPS = "org.opendaylight.openflowplugin.applications";
+    /** OFPlugin model package */
+    public static final String OFPLUGIN_MODEL = "org.opendaylight.openflowplugin.model";
     /** controller.model package */
     public static final String CONTROLLER_MODEL = "org.opendaylight.controller.model";
 
@@ -77,12 +81,15 @@ public abstract class OFPaxOptionsAssistant {
         return new DefaultCompositeOption(
                 baseSalBundles(),
                 ofLibraryBundles(),
-                mavenBundle(CONTROLLER_MODEL, "model-flow-statistics").versionAsInProject(),
+                mavenBundle(CONTROLLER_MODEL, "model-inventory").versionAsInProject(),
+                mavenBundle(OFPLUGIN_MODEL, "model-flow-statistics").versionAsInProject(),
+                mavenBundle(OFPLUGIN_MODEL, "model-flow-base").versionAsInProject(),
+                mavenBundle(OFPLUGIN_MODEL, "model-flow-service").versionAsInProject(),
                 mavenBundle(OFPLUGIN, "openflowplugin-api").versionAsInProject(),
                 mavenBundle(OFPLUGIN, "openflowplugin-extension-api").versionAsInProject(),
                 mavenBundle(OFPLUGIN, "openflowplugin").versionAsInProject(),
-                mavenBundle(CONTROLLER_MD, "forwardingrules-manager").versionAsInProject(),
-                mavenBundle(CONTROLLER_MD, "inventory-manager").versionAsInProject(),
+                mavenBundle(OFPLUGIN_APPS, "forwardingrules-manager").versionAsInProject(),
+                mavenBundle(OFPLUGIN_APPS, "inventory-manager").versionAsInProject(),
                 mavenBundle("org.openexi", "nagasena").versionAsInProject()
                 );
     }

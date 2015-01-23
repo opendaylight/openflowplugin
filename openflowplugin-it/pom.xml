@@ -113,6 +113,21 @@
             <artifactId>simple-client</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin.model</groupId>
+            <artifactId>model-flow-base</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin.model</groupId>
+            <artifactId>model-flow-statistics</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin.model</groupId>
+            <artifactId>model-flow-service</artifactId>
+            <scope>test</scope>
+        </dependency>
 
         <dependency>
             <groupId>org.javassist</groupId>
@@ -246,16 +261,16 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.controller.md</groupId>
+            <groupId>org.opendaylight.openflowplugin.applications</groupId>
             <artifactId>forwardingrules-manager</artifactId>
             <scope>test</scope>
-            <version>${mdsal.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.controller.md</groupId>
+            <groupId>org.opendaylight.openflowplugin.applications</groupId>
             <artifactId>inventory-manager</artifactId>
             <scope>test</scope>
-            <version>${mdsal.version}</version>
+            <version>${project.version}</version>
         </dependency>
         
         <dependency>

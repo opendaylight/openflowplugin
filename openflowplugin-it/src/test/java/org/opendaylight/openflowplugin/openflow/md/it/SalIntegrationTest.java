@@ -149,7 +149,6 @@ public class SalIntegrationTest {
                 TestHelper.mdSalCoreBundles(), 
                 TestHelper.configMinumumBundles(),
                 TestHelper.baseModelBundles(),
-                TestHelper.flowCapableModelBundles(), 
                 OFPaxOptionsAssistant.ofLibraryBundles(),
                 OFPaxOptionsAssistant.ofPluginBundles()
                 );
