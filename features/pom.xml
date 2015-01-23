@@ -15,6 +15,8 @@
     <features.file>features.xml</features.file>
     <karaf.empty.distro.version>1.5.0-SNAPSHOT</karaf.empty.distro.version>
     <yangtools.version>0.7.0-SNAPSHOT</yangtools.version>
+    <config.configfile.directory>etc/opendaylight/karaf</config.configfile.directory>
+    <config.statistics.manager.configfile>30-statistics-manager.xml</config.statistics.manager.configfile>
   </properties>
 
   <dependencies>
@@ -47,6 +49,50 @@
       <classifier>features</classifier>
       <type>xml</type>
     </dependency>
+    
+    <!-- bundle dependencies -->
+    <dependency>
+      <groupId>org.opendaylight.openflowplugin.model</groupId>
+      <artifactId>model-flow-base</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.openflowplugin.model</groupId>
+      <artifactId>model-flow-service</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.openflowplugin.model</groupId>
+      <artifactId>model-flow-statistics</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.opendaylight.openflowplugin.applications</groupId>
+      <artifactId>forwardingrules-manager</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.openflowplugin.applications</groupId>
+      <artifactId>inventory-manager</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.openflowplugin.applications</groupId>
+      <artifactId>lldp-speaker</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.openflowplugin.applications</groupId>
+      <artifactId>statistics-manager</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.openflowplugin.applications</groupId>
+      <artifactId>statistics-manager-config</artifactId>
+      <version>${project.version}</version>
+      <classifier>config</classifier>
+      <type>xml</type>
+    </dependency>
+    
+    
     <dependency>
       <groupId>org.opendaylight.dlux</groupId>
       <artifactId>features-dlux</artifactId>
@@ -82,6 +128,17 @@
       <version>${project.version}</version>
       <type>xml</type>
       <classifier>config</classifier>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.opendaylight.openflowplugin.applications</groupId>
+      <artifactId>topology-lldp-discovery</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.openflowplugin.applications</groupId>
+      <artifactId>topology-manager</artifactId>
+      <version>${project.version}</version>
     </dependency>
 
       <dependency>
