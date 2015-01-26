@@ -96,7 +96,7 @@ public class PacketOutConvertorTest{
         Assert.assertEquals(new PortNumber(0xfffffffdL), message.getInPort());
         Assert.assertEquals(version, message.getVersion());
         Assert.assertEquals(xid, message.getXid());
-        Assert.assertEquals(transmitPacketInput.getPayload(), message.getData());
+        Assert.assertArrayEquals(transmitPacketInput.getPayload(), message.getData());
     }
 
     /**
@@ -177,7 +177,7 @@ public class PacketOutConvertorTest{
         Assert.assertEquals(
                 ActionConvertor.getActions(actionList, version, datapathId, null),
                 message.getAction());
-        Assert.assertEquals(transmitPacketInput.getPayload(), message.getData());
+        Assert.assertArrayEquals(transmitPacketInput.getPayload(), message.getData());
     }
 
     /**
