@@ -397,8 +397,7 @@ public class MatchConvertorImplV13Test {
         Assert.assertEquals("Wrong eth src", new MacAddress("00:00:00:00:00:02"), builtMatch.getEthernetMatch().getEthernetSource().getAddress());
         Assert.assertEquals("Wrong eth type", 3, builtMatch.getEthernetMatch().getEthernetType().getType().getValue().intValue());
         Assert.assertEquals("Wrong vlan id", 4, builtMatch.getVlanMatch().getVlanId().getVlanId().getValue().intValue());
-        // TODO - finish implementation by setting the vlanIdPresent flag
-//        Assert.assertEquals("Wrong vlan id entries", true, builtMatch.getVlanMatch().getVlanId().isVlanIdPresent());
+        Assert.assertEquals("Wrong vlan id entries", true, builtMatch.getVlanMatch().getVlanId().isVlanIdPresent());
         Assert.assertEquals("Wrong vlan pcp", 5, builtMatch.getVlanMatch().getVlanPcp().getValue().intValue());
         Assert.assertEquals("Wrong ip dscp", 6, builtMatch.getIpMatch().getIpDscp().getValue().intValue());
         Assert.assertEquals("Wrong ip ecn", 7, builtMatch.getIpMatch().getIpEcn().intValue());
@@ -534,12 +533,11 @@ public class MatchConvertorImplV13Test {
         Assert.assertEquals("Wrong eth src", new MacAddress("00:00:00:00:00:02"), builtMatch.getEthernetMatch().getEthernetSource().getAddress());
 //        Assert.assertEquals("Wrong eth src mask", new MacAddress("00:00:00:00:00:03"), builtMatch.getEthernetMatch().getEthernetSource().getMask());
         Assert.assertEquals("Wrong vlan id", 4, builtMatch.getVlanMatch().getVlanId().getVlanId().getValue().intValue());
-        // TODO - finish implementation by setting the vlanIdPresent flag
-//        Assert.assertEquals("Wrong vlan id entries", true, builtMatch.getVlanMatch().getVlanId().isVlanIdPresent());
+        Assert.assertEquals("Wrong vlan id entries", true, builtMatch.getVlanMatch().getVlanId().isVlanIdPresent());
         Ipv4Match ipv4Match = (Ipv4Match) builtMatch.getLayer3Match();
         Assert.assertEquals("Wrong ipv4 src address", "10.0.0.1/24", ipv4Match.getIpv4Source().getValue());
         Assert.assertEquals("Wrong ipv4 dst address", "10.0.0.2/20", ipv4Match.getIpv4Destination().getValue());
-//        Assert.assertEquals("Wrong pbb isid", 23, builtMatch.getProtocolMatchFields().getPbb().getPbbIsid().intValue());
+        Assert.assertEquals("Wrong pbb isid", 23, builtMatch.getProtocolMatchFields().getPbb().getPbbIsid().intValue());
         Assert.assertEquals("Wrong tunnel id", new BigInteger(1, new byte[]{1, 2, 3, 4, 5, 6, 7, 8}),
                 builtMatch.getTunnel().getTunnelId());
     }
@@ -852,9 +850,8 @@ public class MatchConvertorImplV13Test {
         org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match builtMatch = salMatchBuilder.build();
         
         ArpMatch arpMatch = (ArpMatch) builtMatch.getLayer3Match();
-        // FIXME - fix mask computation
-//        Assert.assertEquals("Wrong arp spa", "10.0.0.3/8", arpMatch.getArpSourceTransportAddress().getValue());
-//        Assert.assertEquals("Wrong arp tpa", "10.0.0.4/9", arpMatch.getArpTargetTransportAddress().getValue());
+        Assert.assertEquals("Wrong arp spa", "10.0.0.3/24", arpMatch.getArpSourceTransportAddress().getValue());
+        Assert.assertEquals("Wrong arp tpa", "10.0.0.4/9", arpMatch.getArpTargetTransportAddress().getValue());
         Assert.assertEquals("Wrong arp sha", "00:00:00:00:00:03", arpMatch.getArpSourceHardwareAddress().getAddress().getValue());
         Assert.assertEquals("Wrong arp sha mask", "00:00:01:00:04:00", arpMatch.getArpSourceHardwareAddress().getMask().getValue());
         Assert.assertEquals("Wrong arp tha", "00:00:00:00:00:04", arpMatch.getArpTargetHardwareAddress().getAddress().getValue());
