@@ -7,9 +7,10 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 
+import com.google.common.base.Preconditions;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
-
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.MaskMatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Ipv6ExthdrFlags;
 
@@ -19,6 +20,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 public abstract class MatchConvertorUtil {
 
     private static final String PREFIX_SEPARATOR = "/";
+    private static final int MAC_ADDRESS_MASK_LENGTH = 6;
 
     /**
      * @param maskMatchEntry
@@ -98,6 +100,16 @@ public abstract class MatchConvertorUtil {
             }
         }
         return maskValue;
+    }
+
+    public static MacAddress macAddressMaskToString(final byte[] macAddressMask) {
+        Preconditions.checkArgument(macAddressMask.length == MAC_ADDRESS_MASK_LENGTH, "Illegal length of MAC avfdddgsyddress mask.");
+        final StringBuilder resultMask = new StringBuilder();
+        for (byte maskOctet : macAddressMask) {
+            resultMask.append(String.format("%02X:", maskOctet));
+        }
+        resultMask.setLength(resultMask.length()-1);
+        return new MacAddress(resultMask.toString().toLowerCase());
     }
 
 }

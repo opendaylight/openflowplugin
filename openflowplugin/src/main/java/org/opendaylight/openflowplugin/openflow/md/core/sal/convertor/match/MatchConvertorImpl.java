@@ -8,6 +8,8 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 
+import static org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchConvertorUtil.macAddressMaskToString;
+
 import com.google.common.base.Optional;
 import com.google.common.base.Splitter;
 import java.math.BigInteger;
@@ -654,17 +656,25 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
                 }
             } else if (ofMatch.getOxmMatchField().equals(EthSrc.class)) {
                 MacAddressMatchEntry macAddressMatchEntry = ofMatch.getAugmentation(MacAddressMatchEntry.class);
+                final MaskMatchEntry sourceMask = ofMatch.getAugmentation(MaskMatchEntry.class);
                 if (macAddressMatchEntry != null) {
                     EthernetSourceBuilder ethSourceBuilder = new EthernetSourceBuilder();
                     ethSourceBuilder.setAddress(macAddressMatchEntry.getMacAddress());
+                    if (sourceMask != null) {
+                        ethSourceBuilder.setMask(macAddressMaskToString(sourceMask.getMask()));
+                    }
                     ethMatchBuilder.setEthernetSource(ethSourceBuilder.build());
                     matchBuilder.setEthernetMatch(ethMatchBuilder.build());
                 }
             } else if (ofMatch.getOxmMatchField().equals(EthDst.class)) {
                 MacAddressMatchEntry macAddressMatchEntry = ofMatch.getAugmentation(MacAddressMatchEntry.class);
+                final MaskMatchEntry destinationMask = ofMatch.getAugmentation(MaskMatchEntry.class);
                 if (macAddressMatchEntry != null) {
                     EthernetDestinationBuilder ethDestinationBuilder = new EthernetDestinationBuilder();
                     ethDestinationBuilder.setAddress(macAddressMatchEntry.getMacAddress());
+                    if (destinationMask != null) {
+                        ethDestinationBuilder.setMask(macAddressMaskToString(destinationMask.getMask()));
+                    }
                     ethMatchBuilder.setEthernetDestination(ethDestinationBuilder.build());
                     matchBuilder.setEthernetMatch(ethMatchBuilder.build());
                 }

@@ -448,7 +448,7 @@ public class MatchConvertorImplV13Test {
         macAddressBuilder.setMacAddress(new MacAddress("00:00:00:00:00:01"));
         entriesBuilder.addAugmentation(MacAddressMatchEntry.class, macAddressBuilder.build());
         maskBuilder = new MaskMatchEntryBuilder();
-        maskBuilder.setMask(new byte[]{0, 0, 0, 0, 0, 2});
+        maskBuilder.setMask(new byte[]{0, 0, 0, 0, 1, 1});
         entriesBuilder.addAugmentation(MaskMatchEntry.class, maskBuilder.build());
         entries.add(entriesBuilder.build());
         entriesBuilder = new MatchEntriesBuilder();
@@ -459,7 +459,7 @@ public class MatchConvertorImplV13Test {
         macAddressBuilder.setMacAddress(new MacAddress("00:00:00:00:00:02"));
         entriesBuilder.addAugmentation(MacAddressMatchEntry.class, macAddressBuilder.build());
         maskBuilder = new MaskMatchEntryBuilder();
-        maskBuilder.setMask(new byte[]{0, 0, 0, 0, 0, 3});
+        maskBuilder.setMask(new byte[]{0, 0, 0, 0, 2, 2});
         entriesBuilder.addAugmentation(MaskMatchEntry.class, maskBuilder.build());
         entries.add(entriesBuilder.build());
         entriesBuilder = new MatchEntriesBuilder();
@@ -529,9 +529,9 @@ public class MatchConvertorImplV13Test {
         Assert.assertEquals("Wrong metadata mask", new BigInteger(1, new byte[]{0, 0, 0, 0, 0, 0, 0, 1}),
                 builtMatch.getMetadata().getMetadataMask());
         Assert.assertEquals("Wrong eth dst", new MacAddress("00:00:00:00:00:01"), builtMatch.getEthernetMatch().getEthernetDestination().getAddress());
-//        Assert.assertEquals("Wrong eth dst mask", new MacAddress("00:00:00:00:00:01"), builtMatch.getEthernetMatch().getEthernetDestination().getMask());
+        Assert.assertEquals("Wrong eth dst mask", new MacAddress("00:00:00:00:01:01"), builtMatch.getEthernetMatch().getEthernetDestination().getMask());
         Assert.assertEquals("Wrong eth src", new MacAddress("00:00:00:00:00:02"), builtMatch.getEthernetMatch().getEthernetSource().getAddress());
-//        Assert.assertEquals("Wrong eth src mask", new MacAddress("00:00:00:00:00:03"), builtMatch.getEthernetMatch().getEthernetSource().getMask());
+        Assert.assertEquals("Wrong eth src mask", new MacAddress("00:00:00:00:02:02"), builtMatch.getEthernetMatch().getEthernetSource().getMask());
         Assert.assertEquals("Wrong vlan id", 4, builtMatch.getVlanMatch().getVlanId().getVlanId().getValue().intValue());
         Assert.assertEquals("Wrong vlan id entries", true, builtMatch.getVlanMatch().getVlanId().isVlanIdPresent());
         Ipv4Match ipv4Match = (Ipv4Match) builtMatch.getLayer3Match();
