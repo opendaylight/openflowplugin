@@ -52,6 +52,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanPcp;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.IpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.DlAddressAction;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.IpAddressAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.MaxLengthAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.MaxLengthActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.NwTosAction;
@@ -185,15 +186,13 @@ public class ActionConvertorV10Test {
         action = actions.get(4);
         Assert.assertEquals("Wrong action type", "org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common"
                 + ".action.rev130731.SetNwSrc", action.getType().getName());
-        // FIXME - fix ipv4 address translation - cut off network mask
-//        Assert.assertEquals("Wrong nw src", "10.0.0.1", action.getAugmentation(IpAddressAction.class)
-//                .getIpAddress().getValue());
+        Assert.assertEquals("Wrong nw src", "10.0.0.1", action.getAugmentation(IpAddressAction.class)
+                .getIpAddress().getValue());
         action = actions.get(5);
         Assert.assertEquals("Wrong action type", "org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common"
                 + ".action.rev130731.SetNwDst", action.getType().getName());
-        // FIXME - fix ipv4 address translation - cut off network mask
-//        Assert.assertEquals("Wrong nw dst", "10.0.0.2", action.getAugmentation(IpAddressAction.class)
-//                .getIpAddress().getValue());
+        Assert.assertEquals("Wrong nw dst", "10.0.0.2", action.getAugmentation(IpAddressAction.class)
+                .getIpAddress().getValue());
         action = actions.get(6);
         Assert.assertEquals("Wrong action type", "org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common"
                 + ".action.rev130731.SetTpSrc", action.getType().getName());
