@@ -7,7 +7,8 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.it;
 
-import java.util.Stack;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 import org.opendaylight.openflowjava.protocol.impl.clients.ClientEvent;
 import org.opendaylight.openflowjava.protocol.impl.clients.SendEvent;
@@ -38,19 +39,19 @@ public abstract class ScenarioFactory {
      * @param pluginVersionBitmap
      * @return stack filled with Handshake messages
      */
-    public static Stack<ClientEvent> createHandshakeScenarioVBM(
+    public static Deque<ClientEvent> createHandshakeScenarioVBM(
             String switchVersionBitmap, short auxId, String pluginVersionBitmap) {
-        Stack<ClientEvent> stack = new Stack<>();
+        Deque<ClientEvent> stack = new ArrayDeque<>();
 
-        stack.add(0, new SendEvent(ByteBufUtils
+        stack.addFirst(new SendEvent(ByteBufUtils
                 .hexStringToBytes("04 00 00 10 00 00 00 01 "
                         + switchVersionBitmap)));
-        stack.add(0, new WaitForMessageEvent(ByteBufUtils
+        stack.addFirst(new WaitForMessageEvent(ByteBufUtils
                 .hexStringToBytes("04 00 00 10 00 00 00 15 "
                         + pluginVersionBitmap)));
-        stack.add(0, new WaitForMessageEvent(ByteBufUtils
+        stack.addFirst(new WaitForMessageEvent(ByteBufUtils
                 .hexStringToBytes("04 05 00 08 00 00 00 02")));
-        stack.add(0, new SendEvent(ByteBufUtils
+        stack.addFirst(new SendEvent(ByteBufUtils
                 .hexStringToBytes("04 06 00 20 00 00 00 02 "
                         + "00 01 02 03 04 05 06 07 " + "00 01 02 03 01 "
                         + Integer.toHexString(auxId)
@@ -62,8 +63,8 @@ public abstract class ScenarioFactory {
     /**
      * @param stack
      */
-    private static void addSleep(Stack<ClientEvent> stack) {
-        stack.add(0, new SleepEvent(2000));
+    private static void addSleep(Deque<ClientEvent> stack) {
+        stack.addFirst(new SleepEvent(2000));
     }
 
     /**
@@ -71,18 +72,18 @@ public abstract class ScenarioFactory {
      * @param pluginVersionBitmap
      * @return handshake scenario without switch version bitmap
      */
-    public static Stack<ClientEvent> createHandshakeScenario(short auxId,
+    public static Deque<ClientEvent> createHandshakeScenario(short auxId,
             String pluginVersionBitmap) {
-        Stack<ClientEvent> stack = new Stack<>();
+        Deque<ClientEvent> stack = new ArrayDeque<>();
 
-        stack.add(0, new SendEvent(ByteBufUtils
+        stack.addFirst(new SendEvent(ByteBufUtils
                 .hexStringToBytes("04 00 00 08 00 00 00 01")));
-        stack.add(0, new WaitForMessageEvent(ByteBufUtils
+        stack.addFirst(new WaitForMessageEvent(ByteBufUtils
                 .hexStringToBytes("04 00 00 10 00 00 00 15 "
                         + pluginVersionBitmap)));
-        stack.add(0, new WaitForMessageEvent(ByteBufUtils
+        stack.addFirst(new WaitForMessageEvent(ByteBufUtils
                 .hexStringToBytes("04 05 00 08 00 00 00 02")));
-        stack.add(0, new SendEvent(ByteBufUtils
+        stack.addFirst(new SendEvent(ByteBufUtils
                 .hexStringToBytes("04 06 00 20 00 00 00 02 "
                         + "00 01 02 03 04 05 06 07 " + "00 01 02 03 01 "
                         + Integer.toHexString(auxId)
@@ -98,23 +99,23 @@ public abstract class ScenarioFactory {
      * @param pluginVersionBitmap
      * @return handshake scenario without switch version bitmap
      */
-    public static Stack<ClientEvent> createHandshakeScenarioNoVBM_OF10_TwoHello() {
-        Stack<ClientEvent> stack = new Stack<>();
+    public static Deque<ClientEvent> createHandshakeScenarioNoVBM_OF10_TwoHello() {
+        Deque<ClientEvent> stack = new ArrayDeque<>();
 
-        stack.add(0, new SendEvent(ByteBufUtils
+        stack.addFirst(new SendEvent(ByteBufUtils
                 .hexStringToBytes("01 00 00 08 00 00 01 67")));
-        stack.add(0, new WaitForMessageEvent(ByteBufUtils
+        stack.addFirst(new WaitForMessageEvent(ByteBufUtils
                         .hexStringToBytes("04 00 00 10 00 00 00 15 00 01 00 08 00 00 00 12")));
-        stack.add(0, new SendEvent(ByteBufUtils
+        stack.addFirst(new SendEvent(ByteBufUtils
                 .hexStringToBytes("01 01 00 0c 00 00 00 15 00 00 00 00")));
-        stack.add(0, new WaitForMessageEvent(ByteBufUtils
+        stack.addFirst(new WaitForMessageEvent(ByteBufUtils
                 .hexStringToBytes("01 00 00 08 00 00 01 68")));
-        stack.add(0, new SendEvent(ByteBufUtils
+        stack.addFirst(new SendEvent(ByteBufUtils
                 .hexStringToBytes("01 00 00 08 00 00 01 68")));
-        stack.add(0, new WaitForMessageEvent(ByteBufUtils
+        stack.addFirst(new WaitForMessageEvent(ByteBufUtils
                 .hexStringToBytes("01 05 00 08 00 00 01 69")));
 
-        stack.add(0, new SendEvent(
+        stack.addFirst(new SendEvent(
                 ByteBufUtils
                         .hexStringToBytes("01 06 00 80 00 00 01 69 cc 4e 24 1c 4a 00 00 00"
                                 + " 00 00 01 00 01 00 00 00 00 00 00 07 00 00 01 0f"
@@ -125,10 +126,10 @@ public abstract class ScenarioFactory {
                                 + " 00 00 00 00 00 00 00 00 00 00 00 11 00 00 00 01"
                                 + " 00 00 01 40 00 00 01 40 00 00 01 40 00 00 01 40")));
 
-        stack.add(0, new WaitForMessageEvent(ByteBufUtils
+        stack.addFirst(new WaitForMessageEvent(ByteBufUtils
                 .hexStringToBytes("01 10 00 0c 00 00 00 01 00 00 00 00")));
 
-        stack.add(0, new SendEvent(
+        stack.addFirst(new SendEvent(
                 ByteBufUtils
                         .hexStringToBytes("01 11 04 2c 00 00 00 01 00 00 00 00 42 72 6f 63"
                                 + " 61 64 65 20 43 6f 6d 6d 75 6e 69 63 61 74 69"
@@ -203,7 +204,7 @@ public abstract class ScenarioFactory {
                                 + " 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00"
                                 + " 00 00")));
 
-        stack.add(0, new SleepEvent(5000));
+        stack.addFirst(new SleepEvent(5000));
 
         addSleep(stack);
         return stack;
@@ -216,24 +217,24 @@ public abstract class ScenarioFactory {
      * @param pluginVersionBitmap
      * @return handshake scenario without switch version bitmap
      */
-    public static Stack<ClientEvent> createHandshakeScenarioNOVBM_OF10_OneHello() {
+    public static Deque<ClientEvent> createHandshakeScenarioNOVBM_OF10_OneHello() {
         System.out.println("createHandshakeScenarioMininet");
-        Stack<ClientEvent> stack = new Stack<>();
+        Deque<ClientEvent> stack = new ArrayDeque<>();
 
-        stack.add(0, new SendEvent(ByteBufUtils
+        stack.addFirst(new SendEvent(ByteBufUtils
                 .hexStringToBytes("01 00 00 08 00 00 00 0d")));
-        stack.add(0, new WaitForMessageEvent(ByteBufUtils
+        stack.addFirst(new WaitForMessageEvent(ByteBufUtils
                 .hexStringToBytes("04 00 00 10 00 00 00 15")));
-        stack.add(0, new WaitForMessageEvent(ByteBufUtils
+        stack.addFirst(new WaitForMessageEvent(ByteBufUtils
                 .hexStringToBytes("01 00 00 08 00 00 00 0e")));
-        stack.add(0, new WaitForMessageEvent(ByteBufUtils
+        stack.addFirst(new WaitForMessageEvent(ByteBufUtils
                 .hexStringToBytes("01 05 00 08 00 00 00 0f")));
 
-        stack.add(0, new SendEvent(
+        stack.addFirst(new SendEvent(
                 ByteBufUtils
                         .hexStringToBytes("01 01 00 14 00 00 00 0e 00 01 00 01 01 00 00 08 00 00 00 0e")));
 
-        stack.add(0, new SendEvent(
+        stack.addFirst(new SendEvent(
                 ByteBufUtils
                         .hexStringToBytes(" 01 06 00 b0 00 00 00 0f 00 00 00 00 00 00 00 01 00 00 01 00 fe 00"
                                 + " 00 00 00 00 00 c7 00 00 0f ff 00 01 fa 01 ff 57 86 aa 73 31 2d"

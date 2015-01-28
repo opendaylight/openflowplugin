@@ -10,7 +10,7 @@ package org.opendaylight.openflowplugin.openflow.md.it;
 import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 
-import java.util.Stack;
+import java.util.Deque;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -109,7 +109,7 @@ public class OFPluginToLibraryTest {
 
         switchSim = createSimpleClient();
         switchSim.setSecuredClient(false);
-        Stack<ClientEvent> handshakeScenario = ScenarioFactory.createHandshakeScenarioVBM(
+        Deque<ClientEvent> handshakeScenario = ScenarioFactory.createHandshakeScenarioVBM(
                 ScenarioFactory.VERSION_BITMAP_13, (short) 0, ScenarioFactory.VERSION_BITMAP_10_13);
 
         ScenarioHandler scenario = new ScenarioHandler(handshakeScenario);
@@ -127,7 +127,7 @@ public class OFPluginToLibraryTest {
 
         switchSim = createSimpleClient();
         switchSim.setSecuredClient(false);
-        Stack<ClientEvent> handshakeScenario = ScenarioFactory.createHandshakeScenario(
+        Deque<ClientEvent> handshakeScenario = ScenarioFactory.createHandshakeScenario(
                 (short) 0, ScenarioFactory.VERSION_BITMAP_10_13);
 
         ScenarioHandler scenario = new ScenarioHandler(handshakeScenario);
@@ -146,7 +146,7 @@ public class OFPluginToLibraryTest {
 
         switchSim = createSimpleClient();
         switchSim.setSecuredClient(false);
-        Stack<ClientEvent> handshakeScenario = ScenarioFactory.createHandshakeScenario((short) 1,
+        Deque<ClientEvent> handshakeScenario = ScenarioFactory.createHandshakeScenario((short) 1,
                 ScenarioFactory.VERSION_BITMAP_10_13);
 
         ScenarioHandler scenario = new ScenarioHandler(handshakeScenario);
@@ -166,10 +166,9 @@ public class OFPluginToLibraryTest {
 
         switchSim = createSimpleClient();
         switchSim.setSecuredClient(false);
-        Stack<ClientEvent> handshakeScenario = ScenarioFactory.createHandshakeScenario((short) 0,
+        Deque<ClientEvent> handshakeScenario = ScenarioFactory.createHandshakeScenario((short) 0,
                 ScenarioFactory.VERSION_BITMAP_10_13);
-        handshakeScenario.setElementAt(new SleepEvent(5000), 0);
-
+        handshakeScenario.addFirst(new SleepEvent(5000));
         ScenarioHandler scenario = new ScenarioHandler(handshakeScenario);
         switchSim.setScenarioHandler(scenario);
         scenarioPool.execute(switchSim);
@@ -190,7 +189,7 @@ public class OFPluginToLibraryTest {
 
         switchSim = createSimpleClient();
         switchSim.setSecuredClient(false);
-        Stack<ClientEvent> handshakeScenario = ScenarioFactory
+        Deque<ClientEvent> handshakeScenario = ScenarioFactory
                 .createHandshakeScenarioNoVBM_OF10_TwoHello();
         // handshakeScenario.setElementAt(new SleepEvent(5000),
         // handshakeScenario
@@ -216,7 +215,7 @@ public class OFPluginToLibraryTest {
 
         switchSim = createSimpleClient();
         switchSim.setSecuredClient(false);
-        Stack<ClientEvent> handshakeScenario = ScenarioFactory
+        Deque<ClientEvent> handshakeScenario = ScenarioFactory
                 .createHandshakeScenarioNOVBM_OF10_OneHello();
 
         ScenarioHandler scenario = new ScenarioHandler(handshakeScenario);
