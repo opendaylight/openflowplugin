@@ -664,5 +664,6 @@
       <module>samples/learning-switch</module>
       <module>applications</module>
       <module>model</module>
+      <module>legacy</module>  
   </modules>
 </project>
