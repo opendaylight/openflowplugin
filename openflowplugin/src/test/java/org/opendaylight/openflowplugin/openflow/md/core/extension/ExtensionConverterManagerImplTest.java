@@ -14,7 +14,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.opendaylight.openflowjava.protocol.api.keys.experimenter.ExperimenterActionSerializerKey;
+import org.opendaylight.openflowjava.protocol.api.keys.ExperimenterActionSerializerKey;
 import org.opendaylight.openflowplugin.extension.api.ConvertorActionFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorActionToOFJava;
 import org.opendaylight.openflowplugin.extension.api.TypeVersionKey;
