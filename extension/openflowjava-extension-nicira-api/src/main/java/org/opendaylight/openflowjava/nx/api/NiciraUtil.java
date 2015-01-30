@@ -7,7 +7,7 @@
  */
 package org.opendaylight.openflowjava.nx.api;
 
-import org.opendaylight.openflowjava.protocol.api.keys.experimenter.ExperimenterActionSerializerKey;
+import org.opendaylight.openflowjava.protocol.api.keys.ExperimenterActionSerializerKey;
 
 /**
  * @author msunal
