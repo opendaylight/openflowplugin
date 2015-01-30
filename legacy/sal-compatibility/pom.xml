@@ -20,17 +20,14 @@
     <dependency>
       <groupId>org.opendaylight.controller</groupId>
       <artifactId>sal-binding-util</artifactId>
-      <version>1.2.0-SNAPSHOT</version>
     </dependency>
     <dependency>
-      <groupId>org.opendaylight.controller.model</groupId>
+      <groupId>org.opendaylight.openflowplugin.model</groupId>
       <artifactId>model-flow-statistics</artifactId>
-      <version>1.2.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.opendaylight.controller.model</groupId>
       <artifactId>model-topology</artifactId>
-      <version>1.2.0-SNAPSHOT</version>
     </dependency>
   </dependencies>
 
@@ -46,37 +43,14 @@
           </instructions>
         </configuration>
       </plugin>
-      <plugin>
-        <groupId>org.jacoco</groupId>
-        <artifactId>jacoco-maven-plugin</artifactId>
-        <configuration>
-          <includes>
-            <include>org.opendaylight.controller.*</include>
-          </includes>
-        </configuration>
-        <executions>
-          <execution>
-            <id>pre-test</id>
-            <goals>
-              <goal>prepare-agent</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>post-test</id>
-            <goals>
-              <goal>report</goal>
-            </goals>
-            <phase>test</phase>
-          </execution>
-        </executions>
-      </plugin>
     </plugins>
   </build>
+  
   <scm>
-    <connection>scm:git:ssh://git.opendaylight.org:29418/controller.git</connection>
-    <developerConnection>scm:git:ssh://git.opendaylight.org:29418/controller.git</developerConnection>
+    <connection>scm:git:ssh://git.opendaylight.org:29418/openflowplugin.git</connection>
+    <developerConnection>scm:git:ssh://git.opendaylight.org:29418/openflowplugin.git</developerConnection>
+    <url>https://wiki.opendaylight.org/view/OpenDaylight_OpenFlow_Plugin:Main</url>
     <tag>HEAD</tag>
-    <url>https://wiki.opendaylight.org/view/OpenDaylight_Controller:MD-SAL</url>
   </scm>
-
+  
 </project>
