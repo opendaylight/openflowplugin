@@ -8,11 +8,16 @@
 package org.opendaylight.openflowplugin.openflow.md.util;
 
 import java.math.BigInteger;
+
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnectorBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnectorUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnectorUpdatedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.flow.capable.port.State;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.flow.capable.port.StateBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRemoved;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRemovedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorUpdatedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortConfig;
@@ -142,6 +147,13 @@ public abstract class PortTranslatorUtil {
         fcncub.setName(port.getName());
         fcncub.setPortNumber(OpenflowPortsUtil.getProtocolAgnosticPort(ofVersion, portNumber));
         builder.addAugmentation(FlowCapableNodeConnectorUpdated.class, fcncub.build());
+        return builder.build();
+    }
+
+    public static NodeConnectorRemoved translatePortRemoved(Short version, BigInteger datapathId, Long portNumber, PortGrouping port) {
+        OpenflowVersion ofVersion = OpenflowVersion.get(version);
+        NodeConnectorRemovedBuilder builder = new NodeConnectorRemovedBuilder();
+        builder.setNodeConnectorRef(InventoryDataServiceUtil.nodeConnectorRefFromDatapathIdPortno(datapathId, portNumber, ofVersion));
         return builder.build();
     }
 }
