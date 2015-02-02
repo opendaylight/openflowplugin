@@ -7,11 +7,12 @@
  */
 package org.opendaylight.openflowplugin.testcommon;
 
+import static org.opendaylight.openflowjava.util.ByteBufUtils.macAddressToString;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
-
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DropActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.drop.action._case.DropAction;
@@ -40,23 +41,29 @@ import org.slf4j.LoggerFactory;
 abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractDropTest.class);
 
-    private static final AtomicIntegerFieldUpdater<AbstractDropTest> SENT_UPDATER = AtomicIntegerFieldUpdater.newUpdater(AbstractDropTest.class, "_sent");
-    private volatile int _sent;
+    protected static final Integer PRIORITY = 4;
+    protected static final Long BUFFER_ID = 0L;
+    protected static final Integer HARD_TIMEOUT = 300;
+    protected static final Integer IDLE_TIMEOUT = 240;
+    protected static final short TABLE_ID = 0;
 
-    private static final AtomicIntegerFieldUpdater<AbstractDropTest> RCVD_UPDATER = AtomicIntegerFieldUpdater.newUpdater(AbstractDropTest.class, "_rcvd");
-    private volatile int _rcvd;
+    private static final AtomicIntegerFieldUpdater<AbstractDropTest> SENT_UPDATER = AtomicIntegerFieldUpdater.newUpdater(AbstractDropTest.class, "sent");
+    private volatile int sent;
 
-    private static final AtomicIntegerFieldUpdater<AbstractDropTest> EXCS_UPDATER = AtomicIntegerFieldUpdater.newUpdater(AbstractDropTest.class, "_excs");
-    private volatile int _excs;
+    private static final AtomicIntegerFieldUpdater<AbstractDropTest> RCVD_UPDATER = AtomicIntegerFieldUpdater.newUpdater(AbstractDropTest.class, "rcvd");
+    private volatile int rcvd;
+
+    private static final AtomicIntegerFieldUpdater<AbstractDropTest> EXCS_UPDATER = AtomicIntegerFieldUpdater.newUpdater(AbstractDropTest.class, "excs");
+    private volatile int excs;
 
     public final DropTestStats getStats() {
-        return new DropTestStats(this._sent, this._rcvd, this._excs);
+        return new DropTestStats(this.sent, this.rcvd, this.excs);
     }
 
     public final void clearStats(){
-        this._sent = 0;
-        this._rcvd = 0;
-        this._excs = 0;
+        this.sent = 0;
+        this.rcvd = 0;
+        this.excs = 0;
     }
 
     @Override
@@ -67,14 +74,7 @@ abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseab
 
         try {
             final byte[] rawPacket = notification.getPayload();
-
-            // LOG.debug("onPacketReceived - received Packet on Node {} and NodeConnector {} payload {}",
-            //        nodeKey.getId(), ncKey.getId(), Hex.encodeHexString(rawPacket));
-
             final byte[] srcMac = Arrays.copyOfRange(rawPacket, 6, 12);
-
-            //LOG.debug("onPacketReceived - received Packet on Node {} and NodeConnector {} srcMac {}",
-            //        nodeKey.getId(), ncKey.getId(), Hex.encodeHexString(srcMac));
 
             final MatchBuilder match = new MatchBuilder();
             final EthernetMatchBuilder ethernetMatch = new EthernetMatchBuilder();
@@ -83,7 +83,7 @@ abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseab
             //TODO: use HEX, use binary form
             //Hex.decodeHex("000000000001".toCharArray());
 
-            ethSourceBuilder.setAddress(new MacAddress(DropTestUtils.macToString(srcMac)));
+            ethSourceBuilder.setAddress(new MacAddress(macAddressToString(srcMac)));
             ethernetMatch.setEthernetSource(ethSourceBuilder.build());
             match.setEthernetMatch(ethernetMatch.build());
 
