@@ -56,6 +56,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GroupFeaturesUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GroupStatisticsUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorUpdated;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.MeterConfigStatsUpdated;
@@ -181,6 +182,7 @@ public class MDController implements IMDController, AutoCloseable {
         addMessagePopListener(TableFeaturesErrorNotification.class, notificationPopListener);
         addMessagePopListener(TableModErrorNotification.class, notificationPopListener);
         addMessagePopListener(NodeConnectorUpdated.class,notificationPopListener);
+        addMessagePopListener(NodeConnectorRemoved.class,notificationPopListener);
         addMessagePopListener(PacketReceived.class,notificationPopListener);
         addMessagePopListener(TransmitPacketInput.class, notificationPopListener);
         addMessagePopListener(NodeUpdated.class, notificationPopListener);
