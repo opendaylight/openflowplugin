@@ -7,8 +7,13 @@
  */
 package org.opendaylight.openflowplugin.testcommon;
 
-import java.math.BigInteger;
+import static org.opendaylight.openflowplugin.testcommon.AbstractDropTest.BUFFER_ID;
+import static org.opendaylight.openflowplugin.testcommon.AbstractDropTest.HARD_TIMEOUT;
+import static org.opendaylight.openflowplugin.testcommon.AbstractDropTest.IDLE_TIMEOUT;
+import static org.opendaylight.openflowplugin.testcommon.AbstractDropTest.PRIORITY;
+import static org.opendaylight.openflowplugin.testcommon.AbstractDropTest.TABLE_ID;
 
+import java.math.BigInteger;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
@@ -28,14 +33,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * provides cbench responder behavior: upon packetIn arrival addFlow action is sent out to 
+ * provides cbench responder behavior: upon packetIn arrival addFlow action is sent out to
  * device using {@link SalFlowService} strategy
  */
 public class DropTestRpcSender extends AbstractDropTest {
-    private final static Logger LOG = LoggerFactory.getLogger(DropTestRpcSender.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DropTestRpcSender.class);
 
     private SalFlowService flowService;
-    
+
     /**
      * @param flowService the flowService to set
      */
@@ -48,15 +53,15 @@ public class DropTestRpcSender extends AbstractDropTest {
         protected AddFlowInputBuilder initialValue() {
             final AddFlowInputBuilder fb = new AddFlowInputBuilder();
 
-            fb.setPriority(4);
-            fb.setBufferId(0L);
+            fb.setPriority(PRIORITY);
+            fb.setBufferId(BUFFER_ID);
 
             final FlowCookie cookie = new FlowCookie(BigInteger.TEN);
             fb.setCookie(cookie);
             fb.setCookieMask(cookie);
-            fb.setTableId((short) 0);
-            fb.setHardTimeout(300);
-            fb.setIdleTimeout(240);
+            fb.setTableId(TABLE_ID);
+            fb.setHardTimeout(HARD_TIMEOUT);
+            fb.setIdleTimeout(IDLE_TIMEOUT);
             fb.setFlags(new FlowModFlags(false, false, false, false, false));
 
             return fb;
@@ -66,7 +71,7 @@ public class DropTestRpcSender extends AbstractDropTest {
     private NotificationProviderService notificationService;
 
     private ListenerRegistration<NotificationListener> notificationRegistration;
-    
+
     /**
      * start listening on packetIn
      */
@@ -85,8 +90,10 @@ public class DropTestRpcSender extends AbstractDropTest {
 
         // Construct the flow instance id
         final InstanceIdentifier<Node> flowInstanceId = InstanceIdentifier
-                .builder(Nodes.class) // File under nodes
-                .child(Node.class, node).build(); // A particular node identified by nodeKey
+                // File under nodes
+                .builder(Nodes.class)
+                // A particular node identified by nodeKey
+                .child(Node.class, node).build();
         fb.setNode(new NodeRef(flowInstanceId));
 
         // Add flow
@@ -103,7 +110,7 @@ public class DropTestRpcSender extends AbstractDropTest {
     public void setNotificationService(NotificationProviderService notificationService) {
         this.notificationService = notificationService;
     }
-    
+
     @Override
     public void close() {
         try {

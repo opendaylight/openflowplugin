@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
  * provides activation and deactivation of drop responder service - responds on packetIn
  */
 public class DropTestDsProvider implements AutoCloseable {
-    private final static Logger LOG = LoggerFactory.getLogger(DropTestDsProvider.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DropTestDsProvider.class);
 
     private DataBroker dataService;
     private NotificationProviderService notificationService;
@@ -71,7 +71,7 @@ public class DropTestDsProvider implements AutoCloseable {
             active = false;
         }
     }
-    
+
     /**
      * @return the active
      */
