@@ -59,7 +59,7 @@ public class NodeConnectorDataChangeListener implements DataChangeListener{
             try {
                 nodeConnector = NodeMapping.toADNodeConnector(nodeConnectorRef);
             } catch (ConstructionException e) {
-                e.printStackTrace();
+                LOG.debug("Construction exception: %s",e.getMessage());
             }
             HashSet<Property> _aDNodeConnectorProperties = NodeMapping.toADNodeConnectorProperties((org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector) entry.getValue());
             this.publishNodeConnectorUpdate(nodeConnector, updateType, _aDNodeConnectorProperties);
