@@ -50,7 +50,7 @@ public class OutputTestCommandProvider implements CommandProvider {
         this.sessionInitiated = true;
     }
 
-    public void _sendOutputMsg(final CommandInterpreter ci) {
+    public void sendOutputMsg(final CommandInterpreter ci) {
         /* Sending package OUT */
         LOG.debug("SendOutMsg");
         if (sessionInitiated) {
@@ -70,7 +70,7 @@ public class OutputTestCommandProvider implements CommandProvider {
         }
     }
 
-    public void _sendPacketOutputMsg(final CommandInterpreter ci) {
+    public void sendPacketOutputMsg(final CommandInterpreter ci) {
         /* Sending package OUT with action */
         LOG.debug("SendOutMsgWithAction");
         if (sessionInitiated) {
@@ -147,7 +147,7 @@ public class OutputTestCommandProvider implements CommandProvider {
         }
     }
 
-    public void _sendOutTopologyMsg(final CommandInterpreter ci) {
+    public void sendOutTopologyMsg(final CommandInterpreter ci) {
         /* Sending package OUT */
         LOG.debug("SendOutTopologyMsg");
 
