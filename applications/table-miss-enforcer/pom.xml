@@ -50,17 +50,6 @@
     <build>
      <plugins>
          <plugin>
-             <groupId>org.jacoco</groupId>
-             <artifactId>jacoco-maven-plugin</artifactId>
-             <configuration>
-                 <excludes>
-                     <exclude>
-                         ${project.basedir}/src/main/java/org/opendaylight/yang/gen/v1/urn/opendaylight/params/xml/ns/yang/openflow/**/*.java
-                     </exclude>
-                 </excludes>
-             </configuration>
-         </plugin>
-         <plugin>
              <groupId>org.opendaylight.yangtools</groupId>
              <artifactId>yang-maven-plugin</artifactId>
          </plugin>

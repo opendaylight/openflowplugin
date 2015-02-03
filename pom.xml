@@ -331,8 +331,16 @@
                         </configuration>
                     </execution>
                 </executions>
+
+                <configuration>
+                  <includes>
+                    <include>org.opendaylight.openflowplugin.*</include>
+                  </includes>
+                </configuration>
+
             </plugin>
         </plugins>
+
         <pluginManagement>
           <plugins>
             <plugin>
