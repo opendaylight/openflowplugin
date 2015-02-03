@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.opendaylight.openflowplugin</groupId>
         <artifactId>openflowplugin-parent</artifactId>
-        <version>0.0.5-Helium-SR2</version>
+        <version>0.0.6-SNAPSHOT</version>
         <relativePath>../</relativePath>
     </parent>
     <artifactId>test-provider</artifactId>
