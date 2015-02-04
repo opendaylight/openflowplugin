@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opendaylight.odlparent</groupId>
         <artifactId>odlparent</artifactId>
-        <version>1.4.4-SNAPSHOT</version>
+        <version>1.4.4-Helium-SR2</version>
         <relativePath/>
     </parent>
     <prerequisites>
@@ -13,7 +13,7 @@
 
     <groupId>org.opendaylight.openflowplugin</groupId>
     <artifactId>openflowplugin-parent</artifactId>
-    <version>0.0.5-SNAPSHOT</version>
+    <version>0.0.5-Helium-SR2</version>
     <name>openflowplugin</name> <!-- Used by Sonar to set project name -->
     <packaging>pom</packaging>
 
@@ -44,21 +44,21 @@
 
     <properties>
       <project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
-      <mdsal.version>1.1.2-SNAPSHOT</mdsal.version>
+      <mdsal.version>1.1.2-Helium-SR2</mdsal.version>
       <nexusproxy>http://nexus.opendaylight.org/content</nexusproxy>
-      <openflowjava.version>0.5.2-SNAPSHOT</openflowjava.version>
-      <controller.model.version>1.1.2-SNAPSHOT</controller.model.version>
-      <sal.api.version>0.8.3-SNAPSHOT</sal.api.version>
-      <sal.connection.api.version>0.1.4-SNAPSHOT</sal.connection.api.version>
-      <sal.common.util.version>1.1.2-SNAPSHOT</sal.common.util.version>
-      <netconf.parent.version>0.2.7-SNAPSHOT</netconf.parent.version>
-      <config.parent.version>0.2.7-SNAPSHOT</config.parent.version>
+      <openflowjava.version>0.5.2-Helium-SR2</openflowjava.version>
+      <controller.model.version>1.1.2-Helium-SR2</controller.model.version>
+      <sal.api.version>0.8.3-Helium-SR2</sal.api.version>
+      <sal.connection.api.version>0.1.4-Helium-SR2</sal.connection.api.version>
+      <sal.common.util.version>1.1.2-Helium-SR2</sal.common.util.version>
+      <netconf.parent.version>0.2.7-Helium-SR2</netconf.parent.version>
+      <config.parent.version>0.2.7-Helium-SR2</config.parent.version>
       <build.helper.version>1.8</build.helper.version>
       <xtend.dstdir>src/main/xtend-gen</xtend.dstdir>
       <jmxGeneratorPath>src/main/yang-gen-config</jmxGeneratorPath>
       <salGeneratorPath>src/main/yang-gen-sal</salGeneratorPath>
       <exi.nagasena.version>0000.0002.0038.0</exi.nagasena.version>
-      <controller.distribution.version>0.1.4-SNAPSHOT</controller.distribution.version>
+      <controller.distribution.version>0.1.4-Helium-SR2</controller.distribution.version>
 
       <!-- Sonar config -->
       <sonar-jacoco-listeners.version>2.4</sonar-jacoco-listeners.version>
@@ -67,9 +67,9 @@
       <sonar.jacoco.itReportPath>target/code-coverage/jacoco-it.exec</sonar.jacoco.itReportPath>
       <sonar.profile>Sonar way with Findbugs</sonar.profile>
 
-      <karaf.distro.empty.version>1.4.4-SNAPSHOT</karaf.distro.empty.version>
-      <yang.binding.version>0.6.4-SNAPSHOT</yang.binding.version>
-      <dlux.version>0.1.2-SNAPSHOT</dlux.version>
+      <karaf.distro.empty.version>1.4.4-Helium-SR2</karaf.distro.empty.version>
+      <yang.binding.version>0.6.4-Helium-SR2</yang.binding.version>
+      <dlux.version>0.1.2-Helium-SR2</dlux.version>
     </properties>
 
     <dependencyManagement>
@@ -230,7 +230,7 @@
         <dependency>
           <groupId>org.opendaylight.controller.thirdparty</groupId>
           <artifactId>ganymed</artifactId>
-          <version>1.1.2-SNAPSHOT</version>
+          <version>1.1.2-Helium-SR2</version>
         </dependency>
         <dependency>
             <groupId>xml-apis</groupId>
