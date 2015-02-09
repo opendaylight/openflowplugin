@@ -218,12 +218,7 @@
           <artifactId>nagasena-rta</artifactId>
           <scope>test</scope>
         </dependency>
-        <dependency>
-          <groupId>org.opendaylight.controller.thirdparty</groupId>
-          <artifactId>ganymed</artifactId>
-          <scope>test</scope>
-        </dependency>
-            
+
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>log4j-over-slf4j</artifactId>
