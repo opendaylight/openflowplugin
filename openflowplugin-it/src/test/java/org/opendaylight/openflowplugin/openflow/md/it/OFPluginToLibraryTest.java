@@ -110,7 +110,7 @@ public class OFPluginToLibraryTest {
         switchSim = createSimpleClient();
         switchSim.setSecuredClient(false);
         Deque<ClientEvent> handshakeScenario = ScenarioFactory.createHandshakeScenarioVBM(
-                ScenarioFactory.VERSION_BITMAP_13, (short) 0, ScenarioFactory.VERSION_BITMAP_10_13);
+                ScenarioFactory.VERSION_BITMAP_13, (short) 0, ScenarioFactory.VERSION_BITMAP_10_13, true);
 
         ScenarioHandler scenario = new ScenarioHandler(handshakeScenario);
         switchSim.setScenarioHandler(scenario);
