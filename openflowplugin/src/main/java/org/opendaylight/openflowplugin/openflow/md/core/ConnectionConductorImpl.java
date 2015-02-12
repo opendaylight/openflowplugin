@@ -8,11 +8,11 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core;
 
-import com.google.common.util.concurrent.Futures;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionReadyListener;
 import org.opendaylight.openflowplugin.api.OFConstants;
@@ -27,6 +27,8 @@ import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionManag
 import org.opendaylight.openflowplugin.api.openflow.md.queue.QueueKeeper;
 import org.opendaylight.openflowplugin.api.openflow.md.queue.QueueKeeper.QueueType;
 import org.opendaylight.openflowplugin.api.openflow.md.queue.QueueProcessor;
+import org.opendaylight.openflowplugin.api.openflow.md.queue.WaterMarkListener;
+import org.opendaylight.openflowplugin.api.openflow.md.queue.WaterMarkListenerImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.session.PortFeaturesUtil;
 import org.opendaylight.openflowplugin.openflow.md.queue.QueueKeeperFactory;
@@ -62,11 +64,15 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.util.concurrent.Futures;
+
 /**
  * @author mirehak
  */
 public class ConnectionConductorImpl implements OpenflowProtocolListener,
-        SystemNotificationsListener, ConnectionConductor, ConnectionReadyListener, HandshakeListener, NotificationEnqueuer, AutoCloseable {
+        SystemNotificationsListener, ConnectionConductor,
+        ConnectionReadyListener, HandshakeListener, NotificationEnqueuer,
+        AutoCloseable {
 
     /**
      * ingress queue limit
@@ -76,9 +82,10 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     protected static final Logger LOG = LoggerFactory
             .getLogger(ConnectionConductorImpl.class);
 
-    /* variable to make BitMap-based negotiation enabled / disabled.
-     * it will help while testing and isolating issues related to processing of
-     * BitMaps from switches.
+    /*
+     * variable to make BitMap-based negotiation enabled / disabled. it will
+     * help while testing and isolating issues related to processing of BitMaps
+     * from switches.
      */
     private boolean isBitmapNegotiationEnable = true;
     protected ErrorHandler errorHandler;
@@ -104,7 +111,6 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
 
     private int ingressMaxQueueSize;
 
-
     /**
      * @param connectionAdapter
      */
@@ -114,15 +120,18 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
 
     /**
      * @param connectionAdapter
-     * @param ingressMaxQueueSize ingress queue limit (blocking)
+     * @param ingressMaxQueueSize
+     *            ingress queue limit (blocking)
      */
-    public ConnectionConductorImpl(ConnectionAdapter connectionAdapter, int ingressMaxQueueSize) {
+    public ConnectionConductorImpl(ConnectionAdapter connectionAdapter,
+            int ingressMaxQueueSize) {
         this.connectionAdapter = connectionAdapter;
         this.ingressMaxQueueSize = ingressMaxQueueSize;
         conductorState = CONDUCTOR_STATE.HANDSHAKING;
         firstHelloProcessed = false;
         handshakeManager = new HandshakeManagerImpl(connectionAdapter,
-                ConnectionConductor.versionOrder.get(0), ConnectionConductor.versionOrder);
+                ConnectionConductor.versionOrder.get(0),
+                ConnectionConductor.versionOrder);
         handshakeManager.setUseVersionBitmap(isBitmapNegotiationEnable);
         handshakeManager.setHandshakeListener(this);
         portFeaturesUtils = PortFeaturesUtil.getInstance();
@@ -131,23 +140,29 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     @Override
     public void init() {
         int handshakeThreadLimit = 1;
-        hsPool = new ThreadPoolLoggingExecutor(handshakeThreadLimit, handshakeThreadLimit, 0L,
-                TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(),
-                "OFHandshake-" + conductorId);
+        hsPool = new ThreadPoolLoggingExecutor(handshakeThreadLimit,
+                handshakeThreadLimit, 0L, TimeUnit.MILLISECONDS,
+                new LinkedBlockingQueue<Runnable>(), "OFHandshake-"
+                        + conductorId);
 
         connectionAdapter.setMessageListener(this);
         connectionAdapter.setSystemListener(this);
         connectionAdapter.setConnectionReadyListener(this);
-        queue = QueueKeeperFactory.createFairQueueKeeper(queueProcessor, ingressMaxQueueSize);
+        WaterMarkListener waterMarkListener = new WaterMarkListenerImpl(
+                connectionAdapter);
+        queue = QueueKeeperFactory.createFairQueueKeeper(queueProcessor,
+                ingressMaxQueueSize, waterMarkListener);
     }
 
     @Override
-    public void setQueueProcessor(QueueProcessor<OfHeader, DataObject> queueProcessor) {
+    public void setQueueProcessor(
+            QueueProcessor<OfHeader, DataObject> queueProcessor) {
         this.queueProcessor = queueProcessor;
     }
 
     /**
-     * @param errorHandler the errorHandler to set
+     * @param errorHandler
+     *            the errorHandler to set
      */
     @Override
     public void setErrorHandler(ErrorHandler errorHandler) {
@@ -160,7 +175,8 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         new Thread(new Runnable() {
             @Override
             public void run() {
-                LOG.debug("echo request received: " + echoRequestMessage.getXid());
+                LOG.debug("echo request received: "
+                        + echoRequestMessage.getXid());
                 EchoReplyInputBuilder builder = new EchoReplyInputBuilder();
                 builder.setVersion(echoRequestMessage.getVersion());
                 builder.setXid(echoRequestMessage.getXid());
@@ -176,7 +192,6 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         enqueueMessage(errorMessage);
     }
 
-
     /**
      * @param message
      */
@@ -191,7 +206,8 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
 
     /**
      * @param message
-     * @param queueType enqueue type
+     * @param queueType
+     *            enqueue type
      */
     private void enqueueMessage(OfHeader message, QueueType queueType) {
         queue.push(message, this, queueType);
@@ -207,15 +223,15 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         enqueueMessage(message);
     }
 
-
     /**
-     * version negotiation happened as per following steps:
-     * 1. If HelloMessage version field has same version, continue connection processing.
-     * If HelloMessage version is lower than supported versions, just disconnect.
+     * version negotiation happened as per following steps: 1. If HelloMessage
+     * version field has same version, continue connection processing. If
+     * HelloMessage version is lower than supported versions, just disconnect.
      * 2. If HelloMessage contains bitmap and common version found in bitmap
-     * then continue connection processing. if no common version found, just disconnect.
-     * 3. If HelloMessage version is not supported, send HelloMessage with lower supported version.
-     * 4. If Hello message received again with not supported version, just disconnect.
+     * then continue connection processing. if no common version found, just
+     * disconnect. 3. If HelloMessage version is not supported, send
+     * HelloMessage with lower supported version. 4. If Hello message received
+     * again with not supported version, just disconnect.
      */
     @Override
     public void onHelloMessage(final HelloMessage hello) {
@@ -274,10 +290,13 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         Boolean portBandwidth = portFeaturesUtils.getPortBandwidth(msg);
 
         if (portBandwidth == null) {
-            LOG.debug("can't get bandwidth info from port: {}, aborting port update", msg.toString());
+            LOG.debug(
+                    "can't get bandwidth info from port: {}, aborting port update",
+                    msg.toString());
         } else {
             this.getSessionContext().getPhysicalPorts().put(portNumber, msg);
-            this.getSessionContext().getPortsBandwidth().put(portNumber, portBandwidth);
+            this.getSessionContext().getPortsBandwidth()
+                    .put(portNumber, portBandwidth);
         }
     }
 
@@ -294,12 +313,17 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
             @Override
             public void run() {
                 if (!CONDUCTOR_STATE.WORKING.equals(getConductorState())) {
-                    // idle state in any other conductorState than WORKING means real
-                    // problem and wont be handled by echoReply, but disconnection
+                    // idle state in any other conductorState than WORKING means
+                    // real
+                    // problem and wont be handled by echoReply, but
+                    // disconnection
                     disconnect();
-                    OFSessionUtil.getSessionManager().invalidateOnDisconnect(ConnectionConductorImpl.this);
+                    OFSessionUtil.getSessionManager().invalidateOnDisconnect(
+                            ConnectionConductorImpl.this);
                 } else {
-                    LOG.debug("first idle state occured, sessionCtx={}|auxId={}", sessionContext, auxiliaryKey);
+                    LOG.debug(
+                            "first idle state occured, sessionCtx={}|auxId={}",
+                            sessionContext, auxiliaryKey);
                     EchoInputBuilder builder = new EchoInputBuilder();
                     builder.setVersion(getVersion());
                     builder.setXid(getSessionContext().getNextXid());
@@ -308,27 +332,30 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
                             .echo(builder.build());
 
                     try {
-                        RpcResult<EchoOutput> echoReplyValue = echoReplyFuture.get(getMaxTimeout(),
-                                getMaxTimeoutUnit());
+                        RpcResult<EchoOutput> echoReplyValue = echoReplyFuture
+                                .get(getMaxTimeout(), getMaxTimeoutUnit());
                         if (echoReplyValue.isSuccessful()) {
                             setConductorState(CONDUCTOR_STATE.WORKING);
                         } else {
-                            for (RpcError replyError : echoReplyValue.getErrors()) {
+                            for (RpcError replyError : echoReplyValue
+                                    .getErrors()) {
                                 Throwable cause = replyError.getCause();
                                 LOG.error(
                                         "while receiving echoReply in TIMEOUTING state: "
                                                 + cause.getMessage(), cause);
                             }
-                            //switch issue occurred
+                            // switch issue occurred
                             throw new Exception("switch issue occurred");
                         }
                     } catch (Exception e) {
                         LOG.error("while waiting for echoReply in TIMEOUTING state: "
                                 + e.getMessage());
                         errorHandler.handleException(e, sessionContext);
-                        //switch is not responding
+                        // switch is not responding
                         disconnect();
-                        OFSessionUtil.getSessionManager().invalidateOnDisconnect(ConnectionConductorImpl.this);
+                        OFSessionUtil.getSessionManager()
+                                .invalidateOnDisconnect(
+                                        ConnectionConductorImpl.this);
                     }
                 }
             }
@@ -337,7 +364,8 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     }
 
     /**
-     * @param conductorState the connectionState to set
+     * @param conductorState
+     *            the connectionState to set
      */
     @Override
     public void setConductorState(CONDUCTOR_STATE conductorState) {
@@ -373,7 +401,8 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
 
     @Override
     public Future<Boolean> disconnect() {
-        LOG.trace("disconnecting: sessionCtx={}|auxId={}", sessionContext, auxiliaryKey);
+        LOG.trace("disconnecting: sessionCtx={}|auxId={}", sessionContext,
+                auxiliaryKey);
 
         Future<Boolean> result = null;
         if (connectionAdapter.isAlive()) {
@@ -426,7 +455,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
 
     @Override
     public void onHandshakeSuccessfull(GetFeaturesOutput featureOutput,
-                                       Short negotiatedVersion) {
+            Short negotiatedVersion) {
         postHandshakeBasic(featureOutput, negotiatedVersion);
 
         // post-handshake actions
@@ -447,19 +476,21 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
 
     /**
      * used by tests
-     *
+     * 
      * @param featureOutput
      * @param negotiatedVersion
      */
     protected void postHandshakeBasic(GetFeaturesOutput featureOutput,
-                                      Short negotiatedVersion) {
+            Short negotiatedVersion) {
         version = negotiatedVersion;
         if (version == OFConstants.OFP_VERSION_1_0) {
-            //  Because the GetFeaturesOutput contains information about the port
-            //  in OF1.0 (that we would otherwise get from the PortDesc) we have to pass
-            //  it up for parsing to convert into a NodeConnectorUpdate
+            // Because the GetFeaturesOutput contains information about the port
+            // in OF1.0 (that we would otherwise get from the PortDesc) we have
+            // to pass
+            // it up for parsing to convert into a NodeConnectorUpdate
             //
-            // BUG-1988 - this must be the first item in queue in order not to get behind link-up message
+            // BUG-1988 - this must be the first item in queue in order not to
+            // get behind link-up message
             enqueueMessage(featureOutput);
         }
 
@@ -471,14 +502,15 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     }
 
     /*
-     *  Send an OFPMP_DESC request message to the switch
+     * Send an OFPMP_DESC request message to the switch
      */
     private void requestDesc() {
         MultipartRequestInputBuilder builder = new MultipartRequestInputBuilder();
         builder.setType(MultipartType.OFPMPDESC);
         builder.setVersion(getVersion());
         builder.setFlags(new MultipartRequestFlags(false));
-        builder.setMultipartRequestBody(new MultipartRequestDescCaseBuilder().build());
+        builder.setMultipartRequestBody(new MultipartRequestDescCaseBuilder()
+                .build());
         builder.setXid(getSessionContext().getNextXid());
         getConnectionAdapter().multipartRequest(builder.build());
     }
@@ -488,7 +520,8 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         builder.setType(MultipartType.OFPMPPORTDESC);
         builder.setVersion(getVersion());
         builder.setFlags(new MultipartRequestFlags(false));
-        builder.setMultipartRequestBody(new MultipartRequestPortDescCaseBuilder().build());
+        builder.setMultipartRequestBody(new MultipartRequestPortDescCaseBuilder()
+                .build());
         builder.setXid(getSessionContext().getNextXid());
         getConnectionAdapter().multipartRequest(builder.build());
     }
@@ -500,11 +533,11 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         mprInput.setFlags(new MultipartRequestFlags(false));
         mprInput.setXid(getSessionContext().getNextXid());
 
-        MultipartRequestGroupFeaturesCaseBuilder mprGroupFeaturesBuild =
-                new MultipartRequestGroupFeaturesCaseBuilder();
+        MultipartRequestGroupFeaturesCaseBuilder mprGroupFeaturesBuild = new MultipartRequestGroupFeaturesCaseBuilder();
         mprInput.setMultipartRequestBody(mprGroupFeaturesBuild.build());
 
-        LOG.debug("Send group features statistics request :{}", mprGroupFeaturesBuild);
+        LOG.debug("Send group features statistics request :{}",
+                mprGroupFeaturesBuild);
         getConnectionAdapter().multipartRequest(mprInput.build());
 
     }
@@ -516,20 +549,20 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         mprInput.setFlags(new MultipartRequestFlags(false));
         mprInput.setXid(getSessionContext().getNextXid());
 
-        MultipartRequestMeterFeaturesCaseBuilder mprMeterFeaturesBuild =
-                new MultipartRequestMeterFeaturesCaseBuilder();
+        MultipartRequestMeterFeaturesCaseBuilder mprMeterFeaturesBuild = new MultipartRequestMeterFeaturesCaseBuilder();
         mprInput.setMultipartRequestBody(mprMeterFeaturesBuild.build());
 
-        LOG.debug("Send meter features statistics request :{}", mprMeterFeaturesBuild);
+        LOG.debug("Send meter features statistics request :{}",
+                mprMeterFeaturesBuild);
         getConnectionAdapter().multipartRequest(mprInput.build());
 
     }
 
     /**
-     * @param isBitmapNegotiationEnable the isBitmapNegotiationEnable to set
+     * @param isBitmapNegotiationEnable
+     *            the isBitmapNegotiationEnable to set
      */
-    public void setBitmapNegotiationEnable(
-            boolean isBitmapNegotiationEnable) {
+    public void setBitmapNegotiationEnable(boolean isBitmapNegotiationEnable) {
         this.isBitmapNegotiationEnable = isBitmapNegotiationEnable;
     }
 

@@ -23,16 +23,16 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionReadyListener;
-import org.opendaylight.openflowplugin.api.openflow.md.core.session.IMessageDispatchService;
-import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
-import org.opendaylight.openflowplugin.api.openflow.md.core.session.SwitchSessionKeyOF;
-import org.opendaylight.openflowplugin.api.openflow.md.ModelDrivenSwitch;
 import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.api.openflow.md.ModelDrivenSwitch;
 import org.opendaylight.openflowplugin.api.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.api.openflow.md.core.ErrorHandler;
 import org.opendaylight.openflowplugin.api.openflow.md.core.NotificationEnqueuer;
 import org.opendaylight.openflowplugin.api.openflow.md.core.NotificationQueueWrapper;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
+import org.opendaylight.openflowplugin.api.openflow.md.core.session.IMessageDispatchService;
+import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
+import org.opendaylight.openflowplugin.api.openflow.md.core.session.SwitchSessionKeyOF;
 import org.opendaylight.openflowplugin.api.openflow.md.queue.QueueProcessor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInputBuilder;
@@ -97,7 +97,7 @@ public class MessageDispatchServiceImplTest {
 
     /**
      * Test barrier message for null cookie
-     *
+     * 
      * @throws Exception
      */
     @Test
@@ -106,7 +106,8 @@ public class MessageDispatchServiceImplTest {
         SwitchConnectionDistinguisher cookie = conductor.getAuxiliaryKey();
         BarrierInputBuilder barrierMsg = new BarrierInputBuilder();
         session.getMessageDispatchService().barrier(barrierMsg.build(), cookie);
-        Assert.assertEquals(MessageType.BARRIER, session.getPrimaryConductor().getMessageType());
+        Assert.assertEquals(MessageType.BARRIER, session.getPrimaryConductor()
+                .getMessageType());
     }
 
     /**
@@ -117,8 +118,10 @@ public class MessageDispatchServiceImplTest {
         MockConnectionConductor conductor = new MockConnectionConductor(1);
         SwitchConnectionDistinguisher cookie = conductor.getAuxiliaryKey();
         ExperimenterInputBuilder experimenterInputBuilder = new ExperimenterInputBuilder();
-        session.getMessageDispatchService().experimenter(experimenterInputBuilder.build(), cookie);
-        Assert.assertEquals(MessageType.NONE, session.getPrimaryConductor().getMessageType());
+        session.getMessageDispatchService().experimenter(
+                experimenterInputBuilder.build(), cookie);
+        Assert.assertEquals(MessageType.NONE, session.getPrimaryConductor()
+                .getMessageType());
     }
 
     /**
@@ -129,8 +132,10 @@ public class MessageDispatchServiceImplTest {
         MockConnectionConductor conductor = new MockConnectionConductor(1);
         SwitchConnectionDistinguisher cookie = conductor.getAuxiliaryKey();
         GetAsyncInputBuilder getAsyncInputBuilder = new GetAsyncInputBuilder();
-        session.getMessageDispatchService().getAsync(getAsyncInputBuilder.build(), cookie);
-        Assert.assertEquals(MessageType.NONE, session.getPrimaryConductor().getMessageType());
+        session.getMessageDispatchService().getAsync(
+                getAsyncInputBuilder.build(), cookie);
+        Assert.assertEquals(MessageType.NONE, session.getPrimaryConductor()
+                .getMessageType());
     }
 
     /**
@@ -141,8 +146,10 @@ public class MessageDispatchServiceImplTest {
         MockConnectionConductor conductor = new MockConnectionConductor(1);
         SwitchConnectionDistinguisher cookie = conductor.getAuxiliaryKey();
         GetConfigInputBuilder getConfigInputBuilder = new GetConfigInputBuilder();
-        session.getMessageDispatchService().getConfig(getConfigInputBuilder.build(), cookie);
-        Assert.assertEquals(MessageType.NONE, session.getPrimaryConductor().getMessageType());
+        session.getMessageDispatchService().getConfig(
+                getConfigInputBuilder.build(), cookie);
+        Assert.assertEquals(MessageType.NONE, session.getPrimaryConductor()
+                .getMessageType());
     }
 
     /**
@@ -153,8 +160,10 @@ public class MessageDispatchServiceImplTest {
         MockConnectionConductor conductor = new MockConnectionConductor(1);
         SwitchConnectionDistinguisher cookie = conductor.getAuxiliaryKey();
         GetFeaturesInputBuilder getFeaturesInputBuilder = new GetFeaturesInputBuilder();
-        session.getMessageDispatchService().getFeatures(getFeaturesInputBuilder.build(), cookie);
-        Assert.assertEquals(MessageType.NONE, session.getPrimaryConductor().getMessageType());
+        session.getMessageDispatchService().getFeatures(
+                getFeaturesInputBuilder.build(), cookie);
+        Assert.assertEquals(MessageType.NONE, session.getPrimaryConductor()
+                .getMessageType());
     }
 
     /**
@@ -165,8 +174,10 @@ public class MessageDispatchServiceImplTest {
         MockConnectionConductor conductor = new MockConnectionConductor(1);
         SwitchConnectionDistinguisher cookie = conductor.getAuxiliaryKey();
         GetQueueConfigInputBuilder getQueueConfigInputBuilder = new GetQueueConfigInputBuilder();
-        session.getMessageDispatchService().getQueueConfig(getQueueConfigInputBuilder.build(), cookie);
-        Assert.assertEquals(MessageType.NONE, session.getPrimaryConductor().getMessageType());
+        session.getMessageDispatchService().getQueueConfig(
+                getQueueConfigInputBuilder.build(), cookie);
+        Assert.assertEquals(MessageType.NONE, session.getPrimaryConductor()
+                .getMessageType());
     }
 
     /**
@@ -177,8 +188,10 @@ public class MessageDispatchServiceImplTest {
         MockConnectionConductor conductor = new MockConnectionConductor(1);
         SwitchConnectionDistinguisher cookie = conductor.getAuxiliaryKey();
         MultipartRequestInputBuilder multipartRequestInputBuilder = new MultipartRequestInputBuilder();
-        session.getMessageDispatchService().multipartRequest(multipartRequestInputBuilder.build(), cookie);
-        Assert.assertEquals(MessageType.NONE, session.getPrimaryConductor().getMessageType());
+        session.getMessageDispatchService().multipartRequest(
+                multipartRequestInputBuilder.build(), cookie);
+        Assert.assertEquals(MessageType.NONE, session.getPrimaryConductor()
+                .getMessageType());
     }
 
     /**
@@ -189,8 +202,10 @@ public class MessageDispatchServiceImplTest {
         MockConnectionConductor conductor = new MockConnectionConductor(1);
         SwitchConnectionDistinguisher cookie = conductor.getAuxiliaryKey();
         RoleRequestInputBuilder roleRequestInputBuilder = new RoleRequestInputBuilder();
-        session.getMessageDispatchService().roleRequest(roleRequestInputBuilder.build(), cookie);
-        Assert.assertEquals(MessageType.NONE, session.getPrimaryConductor().getMessageType());
+        session.getMessageDispatchService().roleRequest(
+                roleRequestInputBuilder.build(), cookie);
+        Assert.assertEquals(MessageType.NONE, session.getPrimaryConductor()
+                .getMessageType());
     }
 
     /**
@@ -201,25 +216,27 @@ public class MessageDispatchServiceImplTest {
         MockConnectionConductor conductor = new MockConnectionConductor(1);
         SwitchConnectionDistinguisher cookie = conductor.getAuxiliaryKey();
         TableModInputBuilder tableModInputBuilder = new TableModInputBuilder();
-        session.getMessageDispatchService().tableMod(tableModInputBuilder.build(), cookie);
-        Assert.assertEquals(MessageType.TABLEMOD, session.getPrimaryConductor().getMessageType());
+        session.getMessageDispatchService().tableMod(
+                tableModInputBuilder.build(), cookie);
+        Assert.assertEquals(MessageType.TABLEMOD, session.getPrimaryConductor()
+                .getMessageType());
     }
-
 
     /**
      * Test packet out message for primary connection
-     *
+     * 
      * @throws Exception
      */
     @Test
     public void testPacketOutMessageForPrimary() throws Exception {
         session.getMessageDispatchService().packetOut(null, null);
-        Assert.assertEquals(MessageType.PACKETOUT, session.getPrimaryConductor().getMessageType());
+        Assert.assertEquals(MessageType.PACKETOUT, session
+                .getPrimaryConductor().getMessageType());
     }
 
     /**
      * Test packet out message for auxiliary connection
-     *
+     * 
      * @throws Exception
      */
     @Test
@@ -228,14 +245,16 @@ public class MessageDispatchServiceImplTest {
         SwitchConnectionDistinguisher cookie = conductor.getAuxiliaryKey();
         session.addAuxiliaryConductor(cookie, conductor);
         session.getMessageDispatchService().packetOut(null, cookie);
-        Assert.assertEquals(MessageType.NONE, session.getPrimaryConductor().getMessageType());
-        conductor = (MockConnectionConductor) session.getAuxiliaryConductor(cookie);
+        Assert.assertEquals(MessageType.NONE, session.getPrimaryConductor()
+                .getMessageType());
+        conductor = (MockConnectionConductor) session
+                .getAuxiliaryConductor(cookie);
         Assert.assertEquals(MessageType.PACKETOUT, conductor.getMessageType());
     }
 
     /**
      * Test packet out message when multiple auxiliary connection exist
-     *
+     * 
      * @throws Exception
      */
     @Test
@@ -253,28 +272,33 @@ public class MessageDispatchServiceImplTest {
         // send message
         session.getMessageDispatchService().packetOut(builder.build(), cookie2);
 
-        Assert.assertEquals(MessageType.NONE, session.getPrimaryConductor().getMessageType());
+        Assert.assertEquals(MessageType.NONE, session.getPrimaryConductor()
+                .getMessageType());
 
-        conductor3 = (MockConnectionConductor) session.getAuxiliaryConductor(cookie3);
+        conductor3 = (MockConnectionConductor) session
+                .getAuxiliaryConductor(cookie3);
         Assert.assertEquals(MessageType.NONE, conductor3.getMessageType());
 
-        conductor2 = (MockConnectionConductor) session.getAuxiliaryConductor(cookie2);
+        conductor2 = (MockConnectionConductor) session
+                .getAuxiliaryConductor(cookie2);
         Assert.assertEquals(MessageType.PACKETOUT, conductor2.getMessageType());
 
-        conductor1 = (MockConnectionConductor) session.getAuxiliaryConductor(cookie1);
+        conductor1 = (MockConnectionConductor) session
+                .getAuxiliaryConductor(cookie1);
         Assert.assertEquals(MessageType.NONE, conductor1.getMessageType());
 
     }
 
     /**
      * Test for invalid session
-     *
+     * 
      * @throws Exception
      */
     @Test
     public void testInvalidSession() throws Exception {
         session.setValid(false);
-        Future<RpcResult<Void>> resultFuture = session.getMessageDispatchService().packetOut(null, null);
+        Future<RpcResult<Void>> resultFuture = session
+                .getMessageDispatchService().packetOut(null, null);
         if (resultFuture.isDone()) {
             RpcResult<Void> rpcResult = resultFuture.get();
             Assert.assertTrue(!rpcResult.getErrors().isEmpty());
@@ -282,9 +306,12 @@ public class MessageDispatchServiceImplTest {
             Iterator<RpcError> it = rpcResult.getErrors().iterator();
             RpcError rpcError = it.next();
 
-            Assert.assertTrue(rpcError.getApplicationTag().equals(OFConstants.APPLICATION_TAG));
-            Assert.assertTrue(rpcError.getTag().equals(OFConstants.ERROR_TAG_TIMEOUT));
-            Assert.assertTrue(rpcError.getErrorType().equals(RpcError.ErrorType.TRANSPORT));
+            Assert.assertTrue(rpcError.getApplicationTag().equals(
+                    OFConstants.APPLICATION_TAG));
+            Assert.assertTrue(rpcError.getTag().equals(
+                    OFConstants.ERROR_TAG_TIMEOUT));
+            Assert.assertTrue(rpcError.getErrorType().equals(
+                    RpcError.ErrorType.TRANSPORT));
         }
     }
 
@@ -320,7 +347,8 @@ class MockSessionContext implements SessionContext {
     }
 
     @Override
-    public ConnectionConductor getAuxiliaryConductor(SwitchConnectionDistinguisher auxiliaryKey) {
+    public ConnectionConductor getAuxiliaryConductor(
+            SwitchConnectionDistinguisher auxiliaryKey) {
 
         return map.get(auxiliaryKey);
     }
@@ -332,12 +360,15 @@ class MockSessionContext implements SessionContext {
     }
 
     @Override
-    public void addAuxiliaryConductor(SwitchConnectionDistinguisher auxiliaryKey, ConnectionConductor conductorArg) {
+    public void addAuxiliaryConductor(
+            SwitchConnectionDistinguisher auxiliaryKey,
+            ConnectionConductor conductorArg) {
         map.put(auxiliaryKey, conductorArg);
     }
 
     @Override
-    public ConnectionConductor removeAuxiliaryConductor(SwitchConnectionDistinguisher connectionCookie) {
+    public ConnectionConductor removeAuxiliaryConductor(
+            SwitchConnectionDistinguisher connectionCookie) {
         return map.remove(connectionCookie);
     }
 
@@ -434,19 +465,21 @@ class MockSessionContext implements SessionContext {
     }
 
     /**
-     * @param seed the seed to set
+     * @param seed
+     *            the seed to set
      */
     public void setSeed(int seed) {
         this.seed = seed;
     }
-    
+
     @Override
     public NotificationEnqueuer getNotificationEnqueuer() {
         return conductor;
     }
 }
 
-class MockConnectionConductor implements ConnectionConductor, NotificationEnqueuer {
+class MockConnectionConductor implements ConnectionConductor,
+        NotificationEnqueuer {
 
     private int conductorNum;
     private MockConnectionAdapter adapter;
@@ -526,7 +559,8 @@ class MockConnectionConductor implements ConnectionConductor, NotificationEnqueu
     }
 
     @Override
-    public void setQueueProcessor(QueueProcessor<OfHeader, DataObject> queueKeeper) {
+    public void setQueueProcessor(
+            QueueProcessor<OfHeader, DataObject> queueKeeper) {
         // NOOP
     }
 
@@ -539,7 +573,7 @@ class MockConnectionConductor implements ConnectionConductor, NotificationEnqueu
     public void setId(int conductorId) {
         // NOOP
     }
-    
+
     @Override
     public void enqueueNotification(NotificationQueueWrapper notification) {
         // NOOP
@@ -602,13 +636,15 @@ class MockConnectionAdapter implements ConnectionAdapter {
     }
 
     @Override
-    public Future<RpcResult<GetFeaturesOutput>> getFeatures(GetFeaturesInput input) {
+    public Future<RpcResult<GetFeaturesOutput>> getFeatures(
+            GetFeaturesInput input) {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public Future<RpcResult<GetQueueConfigOutput>> getQueueConfig(GetQueueConfigInput input) {
+    public Future<RpcResult<GetQueueConfigOutput>> getQueueConfig(
+            GetQueueConfigInput input) {
         // TODO Auto-generated method stub
         return null;
     }
@@ -644,7 +680,8 @@ class MockConnectionAdapter implements ConnectionAdapter {
     }
 
     @Override
-    public Future<RpcResult<RoleRequestOutput>> roleRequest(RoleRequestInput input) {
+    public Future<RpcResult<RoleRequestOutput>> roleRequest(
+            RoleRequestInput input) {
         // TODO Auto-generated method stub
         return null;
     }
@@ -705,7 +742,8 @@ class MockConnectionAdapter implements ConnectionAdapter {
     }
 
     /**
-     * @param messageType the messageType to set
+     * @param messageType
+     *            the messageType to set
      */
     public void setMessageType(MessageType messageType) {
         this.messageType = messageType;
@@ -723,18 +761,33 @@ class MockConnectionAdapter implements ConnectionAdapter {
     }
 
     @Override
-    public Future<RpcResult<Void>> multipartRequest(
-            MultipartRequestInput input) {
+    public Future<RpcResult<Void>> multipartRequest(MultipartRequestInput input) {
         // TODO Auto-generated method stub
         return null;
     }
 
-    /* (non-Javadoc)
-     * @see org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter#getRemoteAddress()
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter
+     * #getRemoteAddress()
      */
     @Override
     public InetSocketAddress getRemoteAddress() {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    public boolean isAutoRead() {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public void setAutoRead(boolean arg0) {
+        // TODO Auto-generated method stub
+
     }
 }
