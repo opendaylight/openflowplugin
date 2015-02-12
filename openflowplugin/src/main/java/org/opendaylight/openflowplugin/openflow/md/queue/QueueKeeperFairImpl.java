@@ -36,6 +36,7 @@ public class QueueKeeperFairImpl implements QueueKeeper<OfHeader> {
     private int capacity = 5000;
     private HarvesterHandle harvesterHandle;
     private PollableQueuesPriorityZipper<QueueItem<OfHeader>> queueZipper;
+    private WrapperQueueImpl wrapperQueueImpl;
 
     @Override
     public void close() throws Exception {
@@ -53,7 +54,8 @@ public class QueueKeeperFairImpl implements QueueKeeper<OfHeader> {
 
         switch (queueType) {
         case DEFAULT:
-            enqueued = queueDefault.offer(qItem);
+            enqueued = wrapperQueueImpl.checkItemOffer(queueDefault, qItem,
+                    conductor.getConnectionAdapter());
             break;
         case UNORDERED:
             enqueued = queueUnordered.offer(qItem);
@@ -77,8 +79,7 @@ public class QueueKeeperFairImpl implements QueueKeeper<OfHeader> {
      */
     @Override
     public QueueItem<OfHeader> poll() {
-        QueueItem<OfHeader> nextQueueItem = queueZipper.poll();
-        return nextQueueItem;
+        return wrapperQueueImpl.poll();
     }
 
     /**
@@ -107,6 +108,8 @@ public class QueueKeeperFairImpl implements QueueKeeper<OfHeader> {
         queueZipper = new PollableQueuesPriorityZipper<>();
         queueZipper.addSource(queueUnordered);
         queueZipper.setPrioritizedSource(queueDefault);
+
+        wrapperQueueImpl = new WrapperQueueImpl(capacity, queueZipper);
     }
 
     /**
