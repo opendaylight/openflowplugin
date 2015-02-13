@@ -13,9 +13,13 @@ import org.opendaylight.controller.sal.binding.api.AbstractBindingAwareProvider;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.osgi.framework.BundleContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class OpenflowpluginTestActivator extends AbstractBindingAwareProvider {
-
+    private static final Logger LOG = LoggerFactory
+            .getLogger(OpenflowpluginTestActivator.class);
+    
     private static OpenflowpluginTestServiceProvider provider = new OpenflowpluginTestServiceProvider();
     private static OpenflowpluginGroupTestServiceProvider groupProvider = new OpenflowpluginGroupTestServiceProvider();
     private static OpenflowpluginMeterTestServiceProvider meterProvider = new OpenflowpluginMeterTestServiceProvider();
@@ -39,7 +43,7 @@ public class OpenflowpluginTestActivator extends AbstractBindingAwareProvider {
 
     private OpenflowPluginBulkGroupTransactionProvider groupCmdProvider;
 
-    public final static String NODE_ID = "foo:node:1";
+    public static final String NODE_ID = "foo:node:1";
 
     /*
      * (non-Javadoc)
@@ -88,33 +92,33 @@ public class OpenflowpluginTestActivator extends AbstractBindingAwareProvider {
     public void startImpl(final BundleContext ctx) {
         super.startImpl(ctx);
 
-        OpenflowpluginTestCommandProvider _openflowpluginTestCommandProvider = new OpenflowpluginTestCommandProvider(
+        OpenflowpluginTestCommandProvider openflowpluginTestCommandProvider = new OpenflowpluginTestCommandProvider(
                 ctx);
-        this.cmdProvider = _openflowpluginTestCommandProvider;
-        OpenflowpluginGroupTestCommandProvider _openflowpluginGroupTestCommandProvider = new OpenflowpluginGroupTestCommandProvider(
+        this.cmdProvider = openflowpluginTestCommandProvider;
+        OpenflowpluginGroupTestCommandProvider openflowpluginGroupTestCommandProvider = new OpenflowpluginGroupTestCommandProvider(
                 ctx);
-        this.cmdGroupProvider = _openflowpluginGroupTestCommandProvider;
-        OpenflowpluginMeterTestCommandProvider _openflowpluginMeterTestCommandProvider = new OpenflowpluginMeterTestCommandProvider(
+        this.cmdGroupProvider = openflowpluginGroupTestCommandProvider;
+        OpenflowpluginMeterTestCommandProvider openflowpluginMeterTestCommandProvider = new OpenflowpluginMeterTestCommandProvider(
                 ctx);
-        this.cmdMeterProvider = _openflowpluginMeterTestCommandProvider;
-        OpenflowpluginTableFeaturesTestCommandProvider _openflowpluginTableFeaturesTestCommandProvider = new OpenflowpluginTableFeaturesTestCommandProvider(
+        this.cmdMeterProvider = openflowpluginMeterTestCommandProvider;
+        OpenflowpluginTableFeaturesTestCommandProvider openflowpluginTableFeaturesTestCommandProvider = new OpenflowpluginTableFeaturesTestCommandProvider(
                 ctx);
-        this.cmdTableProvider = _openflowpluginTableFeaturesTestCommandProvider;
-        OpenflowpluginStatsTestCommandProvider _openflowpluginStatsTestCommandProvider = new OpenflowpluginStatsTestCommandProvider(
+        this.cmdTableProvider = openflowpluginTableFeaturesTestCommandProvider;
+        OpenflowpluginStatsTestCommandProvider openflowpluginStatsTestCommandProvider = new OpenflowpluginStatsTestCommandProvider(
                 ctx);
-        this.cmdStatsProvider = _openflowpluginStatsTestCommandProvider;
-        OpenflowpluginTestNodeConnectorNotification _openflowpluginTestNodeConnectorNotification = new OpenflowpluginTestNodeConnectorNotification(
+        this.cmdStatsProvider = openflowpluginStatsTestCommandProvider;
+        OpenflowpluginTestNodeConnectorNotification openflowpluginTestNodeConnectorNotification = new OpenflowpluginTestNodeConnectorNotification(
                 ctx);
-        this.cmdNodeConnectorNotification = _openflowpluginTestNodeConnectorNotification;
-        OpenflowpluginTestTopologyNotification _openflowpluginTestTopologyNotification = new OpenflowpluginTestTopologyNotification(
+        this.cmdNodeConnectorNotification = openflowpluginTestNodeConnectorNotification;
+        OpenflowpluginTestTopologyNotification openflowpluginTestTopologyNotification = new OpenflowpluginTestTopologyNotification(
                 ctx);
-        this.cmdTopologyNotification = _openflowpluginTestTopologyNotification;
-        OpenflowPluginBulkTransactionProvider _openflowPluginBulkTransactionProvider = new OpenflowPluginBulkTransactionProvider(
+        this.cmdTopologyNotification = openflowpluginTestTopologyNotification;
+        OpenflowPluginBulkTransactionProvider openflowPluginBulkTransactionProvider = new OpenflowPluginBulkTransactionProvider(
                 ctx);
-        this.bulkCmdProvider = _openflowPluginBulkTransactionProvider;
-        OpenflowPluginBulkGroupTransactionProvider _openflowPluginBulkGroupTransactionProvider = new OpenflowPluginBulkGroupTransactionProvider(
+        this.bulkCmdProvider = openflowPluginBulkTransactionProvider;
+        OpenflowPluginBulkGroupTransactionProvider openflowPluginBulkGroupTransactionProvider = new OpenflowPluginBulkGroupTransactionProvider(
                 ctx);
-        this.groupCmdProvider = _openflowPluginBulkGroupTransactionProvider;
+        this.groupCmdProvider = openflowPluginBulkGroupTransactionProvider;
     }
 
     /*
@@ -130,7 +134,7 @@ public class OpenflowpluginTestActivator extends AbstractBindingAwareProvider {
             OpenflowpluginTestActivator.provider.close();
         } catch (Exception e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.error("Stopping bundle OpenflowpluginTestActivator failed.", e);
         }
     }
 
