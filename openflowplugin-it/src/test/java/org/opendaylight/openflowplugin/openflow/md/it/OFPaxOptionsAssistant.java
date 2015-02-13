@@ -27,6 +27,8 @@ public abstract class OFPaxOptionsAssistant {
     public static final String DEBUG_PORT = "6000";
     /** base controller package */
     public static final String CONTROLLER = "org.opendaylight.controller";
+    /** base controller.md package */
+    public static final String CONTROLLER_MD = "org.opendaylight.controller.md";
     /** OFLibrary package */
     public static final String OFLIBRARY = "org.opendaylight.openflowjava";
     /** OFLibrary package */
@@ -79,6 +81,8 @@ public abstract class OFPaxOptionsAssistant {
                 mavenBundle(OFPLUGIN, "openflowplugin-api").versionAsInProject(),
                 mavenBundle(OFPLUGIN, "openflowplugin-extension-api").versionAsInProject(),
                 mavenBundle(OFPLUGIN, "openflowplugin").versionAsInProject(),
+                mavenBundle(CONTROLLER_MD, "forwardingrules-manager").versionAsInProject(),
+                mavenBundle(CONTROLLER_MD, "inventory-manager").versionAsInProject(),
                 mavenBundle("org.openexi", "nagasena").versionAsInProject()
                 );
     }

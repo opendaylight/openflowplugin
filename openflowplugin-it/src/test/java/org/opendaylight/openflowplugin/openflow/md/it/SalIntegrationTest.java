@@ -123,7 +123,7 @@ public class SalIntegrationTest {
 
         switchSim.setSecuredClient(false);
         ScenarioHandler scenario = new ScenarioHandler(ScenarioFactory.createHandshakeScenarioVBM(
-                ScenarioFactory.VERSION_BITMAP_13, (short) 0, ScenarioFactory.VERSION_BITMAP_10_13));
+                ScenarioFactory.VERSION_BITMAP_13, (short) 0, ScenarioFactory.VERSION_BITMAP_10_13, true));
         switchSim.setScenarioHandler(scenario);
         scenarioPool.execute(switchSim);
 

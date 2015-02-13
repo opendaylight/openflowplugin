@@ -21,6 +21,8 @@ import org.opendaylight.openflowjava.util.ByteBufUtils;
  */
 public abstract class ScenarioFactory {
 
+    /** default sleep time [ms] - at scenario end */
+    public static final int DEFAULT_SCENARIO_SLEEP = 2000;
     /** version bitmap hex-string containing version 1.3 */
     public static final String VERSION_BITMAP_13 = "00 01 00 08 00 00 00 10";
     /** version bitmap hex-string containing versions: 1.0 + 1.3 */
@@ -37,10 +39,11 @@ public abstract class ScenarioFactory {
      * @param switchVersionBitmap
      * @param auxId
      * @param pluginVersionBitmap
+     * @param addSleep if true - then add final sleep {@link #DEFAULT_SCENARIO_SLEEP} 
      * @return stack filled with Handshake messages
      */
     public static Deque<ClientEvent> createHandshakeScenarioVBM(
-            String switchVersionBitmap, short auxId, String pluginVersionBitmap) {
+            String switchVersionBitmap, short auxId, String pluginVersionBitmap, boolean addSleep) {
         Deque<ClientEvent> stack = new ArrayDeque<>();
 
         stack.addFirst(new SendEvent(ByteBufUtils
@@ -56,15 +59,45 @@ public abstract class ScenarioFactory {
                         + "00 01 02 03 04 05 06 07 " + "00 01 02 03 01 "
                         + Integer.toHexString(auxId)
                         + " 00 00 00 01 02 03 00 01 02 03")));
-        addSleep(stack);
+        
+        if (addSleep) {
+            addSleep(stack);
+        }
+        
         return stack;
     }
-
+    
+    /**
+     * @param stack
+     * @param addSleep if true - then add final sleep {@link #DEFAULT_SCENARIO_SLEEP}
+     * @return
+     */
+    public static Deque<ClientEvent> appendPostHandshakeScenario(Deque<ClientEvent> stack, boolean addSleep) {
+        stack.addFirst(new WaitForMessageEvent(ByteBufUtils
+                .hexStringToBytes("04 12 00 10 00 00 00 01 "+
+                                  "00 0d 00 00 00 00 00 00"  )));
+        stack.addFirst(new WaitForMessageEvent(ByteBufUtils
+                .hexStringToBytes("04 12 00 10 00 00 00 02 "+
+                                  "00 08 00 00 00 00 00 00"  )));
+        stack.addFirst(new WaitForMessageEvent(ByteBufUtils
+                .hexStringToBytes("04 12 00 10 00 00 00 03 "+
+                                  "00 0b 00 00 00 00 00 00"  )));
+        stack.addFirst(new WaitForMessageEvent(ByteBufUtils
+                .hexStringToBytes("04 12 00 10 00 00 00 04 "+
+                                  "00 00 00 00 00 00 00 00"  )));
+        
+        if (addSleep) {
+            addSleep(stack);
+        }
+        
+        return stack;
+    }
+    
     /**
      * @param stack
      */
     private static void addSleep(Deque<ClientEvent> stack) {
-        stack.addFirst(new SleepEvent(2000));
+        stack.addFirst(new SleepEvent(DEFAULT_SCENARIO_SLEEP));
     }
 
     /**
