@@ -41,5 +41,6 @@ public abstract class QueueKeeperFactory {
             QueueKeeper<V> queueKeeper) {
         AutoCloseable registration = sourceRegistrator.registerMessageSource(queueKeeper);
         queueKeeper.setPollRegistration(registration);
+        sourceRegistrator.getHarvesterHandle().ping();
     }
 }
