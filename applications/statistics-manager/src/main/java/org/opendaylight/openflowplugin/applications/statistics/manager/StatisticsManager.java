@@ -54,7 +54,7 @@ public interface StatisticsManager extends AutoCloseable, TransactionChainListen
      * Internal {@link TransactionChainListener} joining all DS commits
      * to Set of chained changes for prevent often DataStore touches.
      */
-    public abstract class StatDataStoreOperation {
+    abstract class StatDataStoreOperation {
         public enum StatsManagerOperationType {
             /**
              * Operation will carry out work related to new node addition /

@@ -42,6 +42,8 @@ public abstract class StatAbstractNotifyCommit<N extends NotificationListener> i
 
     private static final Logger LOG = LoggerFactory.getLogger(StatAbstractNotifyCommit.class);
 
+    private static final long MAX_WAIT_TIME = 10;
+
     protected final StatisticsManager manager;
     private ListenerRegistration<NotificationListener> notifyListenerRegistration;
 
@@ -59,7 +61,8 @@ public abstract class StatAbstractNotifyCommit<N extends NotificationListener> i
                 notifyListenerRegistration.close();
             }
             catch (final Exception e) {
-                LOG.error("Error by stop {} StatNotificationListener.", this.getClass().getSimpleName());
+                LOG.error("Error by stop {} StatNotificationListener. Exception %s was raised.",
+                        this.getClass().getSimpleName(), e.getMessage());
             }
             notifyListenerRegistration = null;
         }
@@ -101,7 +104,7 @@ public abstract class StatAbstractNotifyCommit<N extends NotificationListener> i
     protected Optional<TransactionCacheContainer<?>> getTransactionCacheContainer(final TransactionId transId, final NodeId nodeId) {
         Optional<TransactionCacheContainer<?>> txContainer;
         try {
-            txContainer = manager.getRpcMsgManager().getTransactionCacheContainer(transId, nodeId).get(10, TimeUnit.SECONDS);
+            txContainer = manager.getRpcMsgManager().getTransactionCacheContainer(transId, nodeId).get(MAX_WAIT_TIME, TimeUnit.SECONDS);
         }
         catch (InterruptedException | ExecutionException | TimeoutException e) {
             LOG.warn("Get TransactionCacheContainer fail!", e);
@@ -145,7 +148,7 @@ public abstract class StatAbstractNotifyCommit<N extends NotificationListener> i
     protected boolean isExpectedStatistics(final TransactionId transId, final NodeId nodeId) {
         Boolean isExpectedStat = Boolean.FALSE;
         try {
-            isExpectedStat = manager.getRpcMsgManager().isExpectedStatistics(transId, nodeId).get(10, TimeUnit.SECONDS);
+            isExpectedStat = manager.getRpcMsgManager().isExpectedStatistics(transId, nodeId).get(MAX_WAIT_TIME, TimeUnit.SECONDS);
         }
         catch (InterruptedException | ExecutionException | TimeoutException e) {
             LOG.warn("Check Transaction registraion {} fail!", transId, e);

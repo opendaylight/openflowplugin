@@ -330,7 +330,8 @@ public class StatListenCommitFlow extends StatAbstractListenCommit<Flow, Openday
                         try {
                             flowIdByHash.put(flowHashId.getKey(), flowHashId.getFlowId());
                         } catch (final Exception e) {
-                            LOG.warn("flow hashing hit a duplicate for {} -> {}", flowHashId.getKey(), flowHashId.getFlowId());
+                            LOG.warn("flow hashing hit a duplicate for {} -> {}. Exception %s was raised.",
+                                    flowHashId.getKey(), flowHashId.getFlowId(), e.getMessage());
                         }
                     }
                 }
@@ -348,7 +349,7 @@ public class StatListenCommitFlow extends StatAbstractListenCommit<Flow, Openday
         }
 
         private FlowKey searchInConfiguration(final FlowAndStatisticsMapList flowStat, final ReadWriteTransaction trans) {
-            initConfigFlows(trans);
+            initConfigFlows();
             final Iterator<Flow> it = configFlows.iterator();
             while(it.hasNext()) {
                 final Flow cfgFlow = it.next();
@@ -363,7 +364,7 @@ public class StatListenCommitFlow extends StatAbstractListenCommit<Flow, Openday
             return null;
         }
 
-        private void initConfigFlows(final ReadWriteTransaction trans) {
+        private void initConfigFlows() {
             final Optional<Table> table = readLatestConfiguration(tableRef);
             List<Flow> localList = null;
             if(table.isPresent()) {
@@ -447,7 +448,8 @@ public class StatListenCommitFlow extends StatAbstractListenCommit<Flow, Openday
                     }
                 } else {
                     if (listMissingConfigFlows.remove(flowRef)) {
-                        break; // we probably lost some multipart msg
+                        // it is probable that some multipart message was lost
+                        break;
                     }
                 }
                 final InstanceIdentifier<FlowHashIdMap> flHashIdent =

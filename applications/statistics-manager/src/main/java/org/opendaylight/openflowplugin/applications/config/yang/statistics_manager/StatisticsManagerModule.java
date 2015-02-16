@@ -7,14 +7,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class StatisticsManagerModule extends org.opendaylight.openflowplugin.applications.config.yang.statistics_manager.AbstractStatisticsManagerModule {
-    
+
     private final static Logger LOG = LoggerFactory.getLogger(StatisticsManagerModule.class);
 
-    private final static int MAX_NODES_FOR_COLLECTOR_DEFAULT = 16;
-    private final static int MIN_REQUEST_NET_MONITOR_INTERVAL_DEFAULT = 3000;
+    private static final int MAX_NODES_FOR_COLLECTOR_DEFAULT = 16;
+    private static final int MIN_REQUEST_NET_MONITOR_INTERVAL_DEFAULT = 3000;
 
-    private StatisticsManager statisticsManagerProvider;
-    
     public StatisticsManagerModule(org.opendaylight.controller.config.api.ModuleIdentifier identifier, org.opendaylight.controller.config.api.DependencyResolver dependencyResolver) {
         super(identifier, dependencyResolver);
     }
@@ -32,9 +30,9 @@ public class StatisticsManagerModule extends org.opendaylight.openflowplugin.app
     public java.lang.AutoCloseable createInstance() {
         LOG.info("StatisticsManager module initialization.");
         final StatisticsManagerConfig config = createConfig();
-        statisticsManagerProvider = new StatisticsManagerImpl(getDataBrokerDependency(), config);
+        final StatisticsManager statisticsManagerProvider = new StatisticsManagerImpl(getDataBrokerDependency(), config);
         statisticsManagerProvider.start(getNotificationServiceDependency(), getRpcRegistryDependency());
-        
+
         final StatisticsManager statisticsManagerProviderExposed = statisticsManagerProvider;
         LOG.info("StatisticsManager started successfully.");
         return new AutoCloseable() {
