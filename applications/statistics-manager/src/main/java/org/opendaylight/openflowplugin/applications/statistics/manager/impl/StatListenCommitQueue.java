@@ -202,6 +202,8 @@ public class StatListenCommitQueue extends StatAbstractListenCommit<Queue, Opend
             }
             catch (final ReadFailedException e) {
                 // NOOP - probably another transaction delete that node
+                LOG.debug("Queue %s was probably deleted via another transaction. Exception %s was raised.",
+                        queueIdent, e.getMessage());
             }
             if (delQueue.isPresent()) {
                 tx.delete(LogicalDatastoreType.OPERATIONAL, queueIdent);

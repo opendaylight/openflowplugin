@@ -1,6 +1,6 @@
 package org.opendaylight.openflowplugin.applications.statistics.manager.impl;
 
-public class StatisticsManagerConfig {
+public final class StatisticsManagerConfig {
     private final int maxNodesForCollector;
     private final int minRequestNetMonitorInterval;
 
