@@ -8,11 +8,12 @@
 
 package org.opendaylight.openflowplugin.applications.statistics.manager.impl;
 
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
@@ -21,8 +22,8 @@ import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.openflowplugin.applications.statistics.manager.StatNodeRegistration;
-import org.opendaylight.openflowplugin.applications.statistics.manager.StatisticsManager;
 import org.opendaylight.openflowplugin.applications.statistics.manager.StatPermCollector.StatCapabTypes;
+import org.opendaylight.openflowplugin.applications.statistics.manager.StatisticsManager;
 import org.opendaylight.openflowplugin.applications.statistics.manager.StatisticsManager.StatDataStoreOperation;
 import org.opendaylight.openflowplugin.applications.statistics.manager.StatisticsManager.StatDataStoreOperation.StatsManagerOperationType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FeatureCapability;
@@ -47,9 +48,6 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 
 /**
  * statistics-manager
@@ -94,7 +92,8 @@ public class StatNodeRegistrationImpl implements StatNodeRegistration, DataChang
                 notifListenerRegistration.close();
             }
             catch (final Exception e) {
-                LOG.warn("Error by stop FlowCapableNode Notification StatNodeRegistration.");
+                LOG.warn("Error by stop FlowCapableNode Notification StatNodeRegistration. Exception %s was thrown.",
+                        e.getMessage());
             }
             notifListenerRegistration = null;
         }
@@ -127,15 +126,15 @@ public class StatNodeRegistrationImpl implements StatNodeRegistration, DataChang
                 final List<Class<? extends FeatureCapability>> capabilities = data.getCapabilities() != null
                         ? data.getCapabilities() : Collections.<Class<? extends FeatureCapability>> emptyList();
                 for (final Class<? extends FeatureCapability> capability : capabilities) {
-                    if (capability == FlowFeatureCapabilityTableStats.class) {
+                    if (capability.equals(FlowFeatureCapabilityTableStats.class)) {
                         statCapabTypes.add(StatCapabTypes.TABLE_STATS);
-                    } else if (capability == FlowFeatureCapabilityFlowStats.class) {
+                    } else if (capability.equals(FlowFeatureCapabilityFlowStats.class)) {
                         statCapabTypes.add(StatCapabTypes.FLOW_STATS);
-                    } else if (capability == FlowFeatureCapabilityGroupStats.class) {
+                    } else if (capability.equals(FlowFeatureCapabilityGroupStats.class)) {
                         statCapabTypes.add(StatCapabTypes.GROUP_STATS);
-                    } else if (capability == FlowFeatureCapabilityPortStats.class) {
+                    } else if (capability.equals(FlowFeatureCapabilityPortStats.class)) {
                         statCapabTypes.add(StatCapabTypes.PORT_STATS);
-                    } else if (capability == FlowFeatureCapabilityQueueStats.class) {
+                    } else if (capability.equals(FlowFeatureCapabilityQueueStats.class)) {
                         statCapabTypes.add(StatCapabTypes.QUEUE_STATS);
                     }
                 }
