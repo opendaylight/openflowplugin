@@ -140,6 +140,8 @@ public abstract class StatAbstractListenCommit<T extends DataObject, N extends N
         try {
             return currentReadTx.read(LogicalDatastoreType.CONFIGURATION, path).checkedGet();
         } catch (final ReadFailedException e) {
+            LOG.debug("It wasn't possible to read %s from datastore. Exception %s was raised.",
+                    path, e.getMessage());
             return Optional.absent();
         }
     }
