@@ -61,8 +61,8 @@ public abstract class StatAbstractNotifyCommit<N extends NotificationListener> i
                 notifyListenerRegistration.close();
             }
             catch (final Exception e) {
-                LOG.error("Error by stop {} StatNotificationListener. Exception %s was raised.",
-                        this.getClass().getSimpleName(), e.getMessage());
+                LOG.error("Error by stop {} StatNotificationListener. Exception {}",
+                        this.getClass().getSimpleName(), e);
             }
             notifyListenerRegistration = null;
         }

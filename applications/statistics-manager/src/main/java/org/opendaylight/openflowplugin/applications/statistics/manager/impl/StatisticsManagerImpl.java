@@ -123,33 +123,34 @@ public class StatisticsManagerImpl implements StatisticsManager, Runnable {
        LOG.info("Statistics Manager started successfully!");
    }
 
-   private <T extends AutoCloseable> T closeClosable(final T closeable) throws Exception {
+   private <T extends AutoCloseable> T close(final T closeable) throws Exception {
        if (closeable != null) {
            closeable.close();
        }
        return null;
    }
+
    @Override
    public void close() throws Exception {
        LOG.info("StatisticsManager close called");
        finishing = true;
-       nodeRegistrator = closeClosable(nodeRegistrator);
-       flowListeningCommiter = closeClosable(flowListeningCommiter);
-       meterListeningCommiter = closeClosable(meterListeningCommiter);
-       groupListeningCommiter = closeClosable(groupListeningCommiter);
-       tableNotifCommiter = closeClosable(tableNotifCommiter);
-       portNotifyCommiter = closeClosable(portNotifyCommiter);
-       queueNotifyCommiter = closeClosable(queueNotifyCommiter);
+       nodeRegistrator = close(nodeRegistrator);
+       flowListeningCommiter = close(flowListeningCommiter);
+       meterListeningCommiter = close(meterListeningCommiter);
+       groupListeningCommiter = close(groupListeningCommiter);
+       tableNotifCommiter = close(tableNotifCommiter);
+       portNotifyCommiter = close(portNotifyCommiter);
+       queueNotifyCommiter = close(queueNotifyCommiter);
        if (statCollectors != null) {
            for (StatPermCollector collector : statCollectors) {
-               collector = closeClosable(collector);
+               collector = close(collector);
            }
            statCollectors = null;
        }
-       rpcMsgManager = closeClosable(rpcMsgManager);
+       rpcMsgManager = close(rpcMsgManager);
        statRpcMsgManagerExecutor.shutdown();
        statDataStoreOperationServ.shutdown();
-       txChain = closeClosable(txChain);
+       txChain = close(txChain);
    }
 
    @Override
@@ -212,7 +213,7 @@ public class StatisticsManagerImpl implements StatisticsManager, Runnable {
                    op.applyOperation(null);
                } catch (final Exception e) {
                    LOG.warn("Unhandled exception while cleaning up internal data of node [{}]. "
-                           + "Exception %s was raised",op.getNodeId(), e.getMessage());
+                           + "Exception {}",op.getNodeId(), e);
                }
            }
        }
