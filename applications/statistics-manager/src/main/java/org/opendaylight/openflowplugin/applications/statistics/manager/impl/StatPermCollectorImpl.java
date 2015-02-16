@@ -7,22 +7,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
+import java.util.co
+ncurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
-
 import org.opendaylight.openflowplugin.applications.statistics.manager.StatPermCollector;
 import org.opendaylight.openflowplugin.applications.statistics.manager.StatisticsManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev131103.TransactionId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableId;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendayimport com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+
+light.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Preconditions;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 /**
  * statistics-manager
@@ -40,9 +40,15 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
  */
 public class StatPermCollectorImpl implements StatPermCollector {
 
-    private final static Logger LOG = LoggerFactory.getLogger(StatPermCollectorImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(StatPermCollectorImpl.class);
 
-    private final static long STAT_COLLECT_TIME_OUT = 3000L;
+    private static final long STAT_COLLECT_TIME_OUT = 3000L;
+
+    /**
+        sleep 5 second before collecting all statistics cycles is important
+        for loading all Nodes to Operational/DS
+     */
+    private static final long WAIT_BEFORE_COLLECTING_STATS = 5000;
 
     private final ExecutorService statNetCollectorServ;
     private final StatisticsManager manager;
@@ -99,26 +105,24 @@ public class StatPermCollectorImpl implements StatPermCollector {
     @Override
     public boolean connectedNodeRegistration(final InstanceIdentifier<Node> ident,
             final List<StatCapabTypes> statTypes, final Short nrOfSwitchTables) {
-        if (isNodeIdentValidForUse(ident)) {
-            if ( ! statNodeHolder.containsKey(ident)) {
-                synchronized (statNodeHolderLock) {
-                    final boolean startStatCollecting = statNodeHolder.size() == 0;
-                    if ( ! statNodeHolder.containsKey(ident)) {
-                        if (statNodeHolder.size() >= maxNodeForCollector) {
-                            return false;
-                        }
-                        final Map<InstanceIdentifier<Node>, StatNodeInfoHolder> statNode =
-                                new HashMap<>(statNodeHolder);
-                        final NodeRef nodeRef = new NodeRef(ident);
-                        final StatNodeInfoHolder nodeInfoHolder = new StatNodeInfoHolder(nodeRef,
-                                statTypes, nrOfSwitchTables);
-                        statNode.put(ident, nodeInfoHolder);
-                        statNodeHolder = Collections.unmodifiableMap(statNode);
+        if (isNodeIdentValidForUse(ident) && ! statNodeHolder.containsKey(ident)) {
+            synchronized (statNodeHolderLock) {
+                final boolean startStatCollecting = statNodeHolder.size() == 0;
+                if ( ! statNodeHolder.containsKey(ident)) {
+                    if (statNodeHolder.size() >= maxNodeForCollector) {
+                        return false;
                     }
-                    if (startStatCollecting) {
-                        finishing = false;
-                        statNetCollectorServ.execute(this);
-                    }
+                    final Map<InstanceIdentifier<Node>, StatNodeInfoHolder> statNode =
+                            new HashMap<>(statNodeHolder);
+                    final NodeRef nodeRef = new NodeRef(ident);
+                    final StatNodeInfoHolder nodeInfoHolder = new StatNodeInfoHolder(nodeRef,
+                            statTypes, nrOfSwitchTables);
+                    statNode.put(ident, nodeInfoHolder);
+                    statNodeHolder = Collections.unmodifiableMap(statNode);
+                }
+                if (startStatCollecting) {
+                    finishing = false;
+                    statNetCollectorServ.execute(this);
                 }
             }
         }
@@ -127,22 +131,20 @@ public class StatPermCollectorImpl implements StatPermCollector {
 
     @Override
     public boolean disconnectedNodeUnregistration(final InstanceIdentifier<Node> ident) {
-        if (isNodeIdentValidForUse(ident)) {
-            if (statNodeHolder.containsKey(ident)) {
-                synchronized (statNodeHolderLock) {
-                    if (statNodeHolder.containsKey(ident)) {
-                        final Map<InstanceIdentifier<Node>, StatNodeInfoHolder> statNode =
-                                new HashMap<>(statNodeHolder);
-                        statNode.remove(ident);
-                        statNodeHolder = Collections.unmodifiableMap(statNode);
-                    }
-                    if (statNodeHolder.isEmpty()) {
-                        finishing = true;
-                        collectNextStatistics(actualTransactionId);
-                        statNetCollectorServ.shutdown();
-                    }
-                    return true;
+        if (isNodeIdentValidForUse(ident) && statNodeHolder.containsKey(ident)) {
+            synchronized (statNodeHolderLock) {
+                if (statNodeHolder.containsKey(ident)) {
+                    final Map<InstanceIdentifier<Node>, StatNodeInfoHolder> statNode =
+                            new HashMap<>(statNodeHolder);
+                    statNode.remove(ident);
+                    statNodeHolder = Collections.unmodifiableMap(statNode);
                 }
+                if (statNodeHolder.isEmpty()) {
+                    finishing = true;
+                    collectNextStatistics(actualTransactionId);
+                    statNetCollectorServ.shutdown();
+                }
+                return true;
             }
         }
         return false;
@@ -177,13 +179,11 @@ public class StatPermCollectorImpl implements StatPermCollector {
 
     @Override
     public void collectNextStatistics(final TransactionId xid) {
-        if (checkTransactionId(xid)) {
-            if (wakeMe) {
-                synchronized (statCollectorLock) {
-                    if (wakeMe) {
-                        LOG.trace("STAT-COLLECTOR is notified to conntinue");
-                        statCollectorLock.notify();
-                    }
+        if (checkTransactionId(xid) && wakeMe) {
+            synchronized (statCollectorLock) {
+                if (wakeMe) {
+                    LOG.trace("STAT-COLLECTOR is notified to conntinue");
+                    statCollectorLock.notify();
                 }
             }
         }
@@ -192,9 +192,7 @@ public class StatPermCollectorImpl implements StatPermCollector {
     @Override
     public void run() {
         try {
-            // sleep 5 second before collecting all statistics cycles is important
-            // for loading all Nodes to Operational/DS
-            Thread.sleep(5000);
+            Thread.sleep(WAIT_BEFORE_COLLECTING_STATS);
         }
         catch (final InterruptedException e1) {
             // NOOP

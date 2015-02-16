@@ -8,6 +8,9 @@
 
 package org.opendaylight.openflowplugin.applications.statistics.manager.impl;
 
+import com.google.common.base.Optional;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -17,14 +20,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
-
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
-import org.opendaylight.openflowplugin.applications.statistics.manager.StatisticsManager;
 import org.opendaylight.openflowplugin.applications.statistics.manager.StatRpcMsgManager.TransactionCacheContainer;
+import org.opendaylight.openflowplugin.applications.statistics.manager.StatisticsManager;
 import org.opendaylight.openflowplugin.applications.statistics.manager.StatisticsManager.StatDataStoreOperation;
 import org.opendaylight.openflowplugin.applications.statistics.manager.StatisticsManager.StatDataStoreOperation.StatsManagerOperationType;
 import org.opendaylight.openflowplugin.applications.statistics.manager.impl.helper.FlowComparator;
@@ -63,10 +65,6 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Optional;
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
 
 /**
  * statistics-manager
@@ -330,7 +328,8 @@ public class StatListenCommitFlow extends StatAbstractListenCommit<Flow, Openday
                         try {
                             flowIdByHash.put(flowHashId.getKey(), flowHashId.getFlowId());
                         } catch (final Exception e) {
-                            LOG.warn("flow hashing hit a duplicate for {} -> {}", flowHashId.getKey(), flowHashId.getFlowId());
+                            LOG.warn("flow hashing hit a duplicate for {} -> {}. Exception %s was raised.",
+                                    flowHashId.getKey(), flowHashId.getFlowId(), e.getMessage());
                         }
                     }
                 }
@@ -348,7 +347,7 @@ public class StatListenCommitFlow extends StatAbstractListenCommit<Flow, Openday
         }
 
         private FlowKey searchInConfiguration(final FlowAndStatisticsMapList flowStat, final ReadWriteTransaction trans) {
-            initConfigFlows(trans);
+            initConfigFlows();
             final Iterator<Flow> it = configFlows.iterator();
             while(it.hasNext()) {
                 final Flow cfgFlow = it.next();
@@ -363,7 +362,7 @@ public class StatListenCommitFlow extends StatAbstractListenCommit<Flow, Openday
             return null;
         }
 
-        private void initConfigFlows(final ReadWriteTransaction trans) {
+        private void initConfigFlows() {
             final Optional<Table> table = readLatestConfiguration(tableRef);
             List<Flow> localList = null;
             if(table.isPresent()) {
@@ -447,7 +446,8 @@ public class StatListenCommitFlow extends StatAbstractListenCommit<Flow, Openday
                     }
                 } else {
                     if (listMissingConfigFlows.remove(flowRef)) {
-                        break; // we probably lost some multipart msg
+                        // it is probable that some multipart message was lost
+                        break;
                     }
                 }
                 final InstanceIdentifier<FlowHashIdMap> flHashIdent =

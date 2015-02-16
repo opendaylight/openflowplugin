@@ -81,11 +81,22 @@ import com.google.common.util.concurrent.SettableFuture;
  */
 public class StatRpcMsgManagerImpl implements StatRpcMsgManager {
 
-    private final static Logger LOG = LoggerFactory.getLogger(StatRpcMsgManagerImpl.class);
+
+    private static final Logger LOG = LoggerFactory.getLogger(StatRpcMsgManagerImpl.class);
 
     private final Cache<String, TransactionCacheContainer<? super TransactionAware>> txCache;
 
-    private final int queueCapacity = 5000;
+    private static final int MAX_CACHE_SIZE = 10000;
+    private static final int QUEUE_CAPACITY = 5000;
+
+    private static final String MSG_TRANS_ID_NOT_NULL = "TransactionId can not be null!";
+    private static final String MSG_NODE_ID_NOT_NULL = "NodeId can not be null!";
+    private static final String MSG_NODE_REF_NOT_NULL = "NodeRef can not be null!";
+    /**
+     *  Number of possible statistic which are waiting for notification
+     *      - check it in StatPermCollectorImpl method collectStatCrossNetwork()
+     */
+    private static final long POSSIBLE_STAT_WAIT_FOR_NOTIFICATION = 7;
 
     private final OpendaylightGroupStatisticsService groupStatsService;
     private final OpendaylightMeterStatisticsService meterStatsService;
@@ -121,11 +132,9 @@ public class StatRpcMsgManagerImpl implements StatRpcMsgManager {
                 rpcRegistry.getRpcService(OpendaylightQueueStatisticsService.class),
                 "OpendaylightQueueStatisticsService can not be null!");
 
-        statsRpcJobQueue = new LinkedBlockingQueue<>(queueCapacity);
-        /* nr. 7 is here nr. of possible statistic which are waiting for notification
-         *      - check it in StatPermCollectorImpl method collectStatCrossNetwork */
-        txCache = CacheBuilder.newBuilder().expireAfterWrite((maxNodeForCollector * 7), TimeUnit.SECONDS)
-                .maximumSize(10000).build();
+        statsRpcJobQueue = new LinkedBlockingQueue<>(QUEUE_CAPACITY);
+        txCache = CacheBuilder.newBuilder().expireAfterWrite((maxNodeForCollector * POSSIBLE_STAT_WAIT_FOR_NOTIFICATION), TimeUnit.SECONDS)
+                .maximumSize(MAX_CACHE_SIZE).build();
     }
 
     @Override
@@ -170,9 +179,7 @@ public class StatRpcMsgManagerImpl implements StatRpcMsgManager {
             final Future<RpcResult<T>> future, final D inputObj, final NodeRef nodeRef,
             final SettableFuture<TransactionId> resultTransId) {
 
-        Futures.addCallback(JdkFutureAdapters.listenInPoolThread(future),
-                new FutureCallback<RpcResult<? extends TransactionAware>>() {
-
+        class FutureCallbackImpl implements FutureCallback<RpcResult<? extends TransactionAware>> {
             @Override
             public void onSuccess(final RpcResult<? extends TransactionAware> result) {
                 final TransactionId id = result.getResult().getTransactionId();
@@ -197,7 +204,9 @@ public class StatRpcMsgManagerImpl implements StatRpcMsgManager {
                 LOG.warn("Response Registration for Statistics RPC call fail!", t);
             }
 
-        });
+        }
+
+        Futures.addCallback(JdkFutureAdapters.listenInPoolThread(future),new FutureCallbackImpl());
     }
 
     private String buildCacheKey(final TransactionId id, final NodeId nodeId) {
@@ -207,8 +216,8 @@ public class StatRpcMsgManagerImpl implements StatRpcMsgManager {
     @Override
     public Future<Optional<TransactionCacheContainer<?>>> getTransactionCacheContainer(
             final TransactionId id, final NodeId nodeId) {
-        Preconditions.checkArgument(id != null, "TransactionId can not be null!");
-        Preconditions.checkArgument(nodeId != null, "NodeId can not be null!");
+        Preconditions.checkArgument(id != null, MSG_TRANS_ID_NOT_NULL);
+        Preconditions.checkArgument(nodeId != null, MSG_NODE_ID_NOT_NULL);
 
         final String key = buildCacheKey(id, nodeId);
         final SettableFuture<Optional<TransactionCacheContainer<?>>> result = SettableFuture.create();
@@ -232,8 +241,8 @@ public class StatRpcMsgManagerImpl implements StatRpcMsgManager {
 
     @Override
     public Future<Boolean> isExpectedStatistics(final TransactionId id, final NodeId nodeId) {
-        Preconditions.checkArgument(id != null, "TransactionId can not be null!");
-        Preconditions.checkArgument(nodeId != null, "NodeId can not be null!");
+        Preconditions.checkArgument(id != null, MSG_TRANS_ID_NOT_NULL);
+        Preconditions.checkArgument(nodeId != null, MSG_NODE_ID_NOT_NULL);
 
         final String key = buildCacheKey(id, nodeId);
         final SettableFuture<Boolean> checkStatId = SettableFuture.create();
@@ -255,7 +264,7 @@ public class StatRpcMsgManagerImpl implements StatRpcMsgManager {
     @Override
     public void addNotification(final TransactionAware notification, final NodeId nodeId) {
         Preconditions.checkArgument(notification != null, "TransactionAware can not be null!");
-        Preconditions.checkArgument(nodeId != null, "NodeId can not be null!");
+        Preconditions.checkArgument(nodeId != null, MSG_NODE_ID_NOT_NULL);
 
         final RpcJobsQueue addNotification = new RpcJobsQueue() {
 
@@ -275,7 +284,7 @@ public class StatRpcMsgManagerImpl implements StatRpcMsgManager {
 
     @Override
     public Future<TransactionId> getAllGroupsStat(final NodeRef nodeRef) {
-        Preconditions.checkArgument(nodeRef != null, "NodeRef can not be null!");
+        Preconditions.checkArgument(nodeRef != null, MSG_NODE_REF_NOT_NULL);
         final SettableFuture<TransactionId> result = SettableFuture.create();
         final RpcJobsQueue getAllGroupStat = new RpcJobsQueue() {
 
@@ -295,7 +304,7 @@ public class StatRpcMsgManagerImpl implements StatRpcMsgManager {
 
     @Override
     public Future<TransactionId> getAllMetersStat(final NodeRef nodeRef) {
-        Preconditions.checkArgument(nodeRef != null, "NodeRef can not be null!");
+        Preconditions.checkArgument(nodeRef != null, MSG_NODE_REF_NOT_NULL);
         final SettableFuture<TransactionId> result = SettableFuture.create();
         final RpcJobsQueue getAllMeterStat = new RpcJobsQueue() {
 
@@ -315,7 +324,7 @@ public class StatRpcMsgManagerImpl implements StatRpcMsgManager {
 
     @Override
     public Future<TransactionId> getAllFlowsStat(final NodeRef nodeRef) {
-        Preconditions.checkArgument(nodeRef != null, "NodeRef can not be null!");
+        Preconditions.checkArgument(nodeRef != null, MSG_NODE_REF_NOT_NULL);
         final SettableFuture<TransactionId> result = SettableFuture.create();
         final RpcJobsQueue getAllFlowStat = new RpcJobsQueue() {
 
@@ -335,7 +344,7 @@ public class StatRpcMsgManagerImpl implements StatRpcMsgManager {
 
     @Override
     public void getAggregateFlowStat(final NodeRef nodeRef, final TableId tableId) {
-        Preconditions.checkArgument(nodeRef != null, "NodeRef can not be null!");
+        Preconditions.checkArgument(nodeRef != null, MSG_NODE_REF_NOT_NULL);
         Preconditions.checkArgument(tableId != null, "TableId can not be null!");
         final RpcJobsQueue getAggregateFlowStat = new RpcJobsQueue() {
 
@@ -359,7 +368,7 @@ public class StatRpcMsgManagerImpl implements StatRpcMsgManager {
 
     @Override
     public Future<TransactionId> getAllPortsStat(final NodeRef nodeRef) {
-        Preconditions.checkArgument(nodeRef != null, "NodeRef can not be null!");
+        Preconditions.checkArgument(nodeRef != null, MSG_NODE_REF_NOT_NULL);
         final SettableFuture<TransactionId> result = SettableFuture.create();
         final RpcJobsQueue getAllPortsStat = new RpcJobsQueue() {
 
@@ -380,7 +389,7 @@ public class StatRpcMsgManagerImpl implements StatRpcMsgManager {
 
     @Override
     public Future<TransactionId> getAllTablesStat(final NodeRef nodeRef) {
-        Preconditions.checkArgument(nodeRef != null, "NodeRef can not be null!");
+        Preconditions.checkArgument(nodeRef != null, MSG_NODE_REF_NOT_NULL);
         final SettableFuture<TransactionId> result = SettableFuture.create();
         final RpcJobsQueue getAllTableStat = new RpcJobsQueue() {
 
@@ -400,7 +409,7 @@ public class StatRpcMsgManagerImpl implements StatRpcMsgManager {
 
     @Override
     public Future<TransactionId>  getAllQueueStat(final NodeRef nodeRef) {
-        Preconditions.checkArgument(nodeRef != null, "NodeRef can not be null!");
+        Preconditions.checkArgument(nodeRef != null, MSG_NODE_REF_NOT_NULL);
         final SettableFuture<TransactionId> result = SettableFuture.create();
         final RpcJobsQueue getAllQueueStat = new RpcJobsQueue() {
 
@@ -420,7 +429,7 @@ public class StatRpcMsgManagerImpl implements StatRpcMsgManager {
 
     @Override
     public Future<TransactionId> getAllMeterConfigStat(final NodeRef nodeRef) {
-        Preconditions.checkArgument(nodeRef != null, "NodeRef can not be null!");
+        Preconditions.checkArgument(nodeRef != null, MSG_NODE_REF_NOT_NULL);
         final SettableFuture<TransactionId> result = SettableFuture.create();
         final RpcJobsQueue qetAllMeterConfStat = new RpcJobsQueue() {
 
@@ -440,7 +449,7 @@ public class StatRpcMsgManagerImpl implements StatRpcMsgManager {
 
     @Override
     public void getGroupFeaturesStat(final NodeRef nodeRef) {
-        Preconditions.checkArgument(nodeRef != null, "NodeRef can not be null!");
+        Preconditions.checkArgument(nodeRef != null, MSG_NODE_REF_NOT_NULL);
         final RpcJobsQueue getGroupFeaturesStat = new RpcJobsQueue() {
 
             @Override
@@ -457,7 +466,7 @@ public class StatRpcMsgManagerImpl implements StatRpcMsgManager {
 
     @Override
     public void getMeterFeaturesStat(final NodeRef nodeRef) {
-        Preconditions.checkArgument(nodeRef != null, "NodeRef can not be null!");
+        Preconditions.checkArgument(nodeRef != null, MSG_NODE_REF_NOT_NULL);
         final RpcJobsQueue getMeterFeaturesStat = new RpcJobsQueue() {
 
             @Override
@@ -474,7 +483,7 @@ public class StatRpcMsgManagerImpl implements StatRpcMsgManager {
 
     @Override
     public Future<TransactionId> getAllGroupsConfStats(final NodeRef nodeRef) {
-        Preconditions.checkArgument(nodeRef != null, "NodeRef can not be null!");
+        Preconditions.checkArgument(nodeRef != null, MSG_NODE_REF_NOT_NULL);
         final SettableFuture<TransactionId> result = SettableFuture.create();
         final RpcJobsQueue getAllGropConfStat = new RpcJobsQueue() {
 
@@ -501,7 +510,7 @@ public class StatRpcMsgManagerImpl implements StatRpcMsgManager {
         private final Optional<? extends DataObject> confInput;
 
         public <D extends DataObject> TransactionCacheContainerImpl (final TransactionId id, final D input, final NodeId nodeId) {
-            this.id = Preconditions.checkNotNull(id, "TransactionId can not be null!");
+            this.id = Preconditions.checkNotNull(id, MSG_TRANS_ID_NOT_NULL);
             notifications = new CopyOnWriteArrayList<T>();
             confInput = Optional.fromNullable(input);
             nId = nodeId;
