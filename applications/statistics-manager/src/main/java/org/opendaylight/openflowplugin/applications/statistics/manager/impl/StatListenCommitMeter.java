@@ -339,6 +339,8 @@ public class StatListenCommitMeter extends StatAbstractListenCommit<Meter, Opend
             }
             catch (final ReadFailedException e) {
                 // NOOP - probably another transaction delete that node
+                LOG.debug("Meter %s was probably deleted via other transaction. Exception %s was raised.",
+                        delMeterIdent, e.getMessage());
             }
             if (delMeter.isPresent()) {
                 tx.delete(LogicalDatastoreType.OPERATIONAL, delMeterIdent);

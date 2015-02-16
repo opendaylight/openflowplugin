@@ -67,7 +67,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 */
 public class StatisticsManagerImpl implements StatisticsManager, Runnable {
 
-   private final static Logger LOG = LoggerFactory.getLogger(StatisticsManagerImpl.class);
+   private static final Logger LOG = LoggerFactory.getLogger(StatisticsManagerImpl.class);
 
    private static final int QUEUE_DEPTH = 5000;
    private static final int MAX_BATCH = 100;
@@ -123,55 +123,33 @@ public class StatisticsManagerImpl implements StatisticsManager, Runnable {
        LOG.info("Statistics Manager started successfully!");
    }
 
+   private <T extends AutoCloseable> T closeClosable(final T closeable) throws Exception {
+       if (closeable != null) {
+           closeable.close();
+       }
+       return null;
+   }
    @Override
    public void close() throws Exception {
        LOG.info("StatisticsManager close called");
        finishing = true;
-       if (nodeRegistrator != null) {
-           nodeRegistrator.close();
-           nodeRegistrator = null;
-       }
-       if (flowListeningCommiter != null) {
-           flowListeningCommiter.close();
-           flowListeningCommiter = null;
-       }
-       if (meterListeningCommiter != null) {
-           meterListeningCommiter.close();
-           meterListeningCommiter = null;
-       }
-       if (groupListeningCommiter != null) {
-           groupListeningCommiter.close();
-           groupListeningCommiter = null;
-       }
-       if (tableNotifCommiter != null) {
-           tableNotifCommiter.close();
-           tableNotifCommiter = null;
-       }
-       if (portNotifyCommiter != null) {
-           portNotifyCommiter.close();
-           portNotifyCommiter = null;
-       }
-       if (queueNotifyCommiter != null) {
-           queueNotifyCommiter.close();
-           queueNotifyCommiter = null;
-       }
+       nodeRegistrator = closeClosable(nodeRegistrator);
+       flowListeningCommiter = closeClosable(flowListeningCommiter);
+       meterListeningCommiter = closeClosable(meterListeningCommiter);
+       groupListeningCommiter = closeClosable(groupListeningCommiter);
+       tableNotifCommiter = closeClosable(tableNotifCommiter);
+       portNotifyCommiter = closeClosable(portNotifyCommiter);
+       queueNotifyCommiter = closeClosable(queueNotifyCommiter);
        if (statCollectors != null) {
            for (StatPermCollector collector : statCollectors) {
-               collector.close();
-               collector = null;
+               collector = closeClosable(collector);
            }
            statCollectors = null;
        }
-       if (rpcMsgManager != null) {
-           rpcMsgManager.close();
-           rpcMsgManager = null;
-       }
+       rpcMsgManager = closeClosable(rpcMsgManager);
        statRpcMsgManagerExecutor.shutdown();
        statDataStoreOperationServ.shutdown();
-       if (txChain != null) {
-           txChain.close();
-           txChain = null;
-       }
+       txChain = closeClosable(txChain);
    }
 
    @Override
@@ -232,8 +210,9 @@ public class StatisticsManagerImpl implements StatisticsManager, Runnable {
                try {
                    LOG.debug("Node {} disconnected. Cleaning internal data.",op.getNodeId());
                    op.applyOperation(null);
-               } catch (final Exception ex) {
-                   LOG.warn("Unhandled exception while cleaning up internal data of node [{}]",op.getNodeId());
+               } catch (final Exception e) {
+                   LOG.warn("Unhandled exception while cleaning up internal data of node [{}]. "
+                           + "Exception %s was raised",op.getNodeId(), e.getMessage());
                }
            }
        }
