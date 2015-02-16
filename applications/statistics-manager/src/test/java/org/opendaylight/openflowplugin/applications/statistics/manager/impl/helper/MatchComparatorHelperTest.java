@@ -4,9 +4,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
-import org.opendaylight.openflowplugin.applications.statistics.manager.impl.helper.FlowComparator.IntegerIpAddress;
 
-public class FlowComparatorTest {
+/**
+ * test of {@link MatchComparatorHelper}
+ */
+public class MatchComparatorHelperTest {
 
     /**
      * mask for /32
@@ -24,7 +26,7 @@ public class FlowComparatorTest {
      */
     @Test
     public void validIpWithoutMaskTest() {
-        IntegerIpAddress intIp = FlowComparator.StrIpToIntIp("192.168.1.1");
+        IntegerIpAddress intIp = MatchComparatorHelper.strIpToIntIp("192.168.1.1");
         assertEquals(IP_ADDRESS, intIp.getIp());
         assertEquals(DEFAULT_IPV4_MASK, intIp.getMask());
     }
@@ -34,7 +36,7 @@ public class FlowComparatorTest {
      */
     @Test
     public void validIpWithValidMaskTest() {
-        IntegerIpAddress intIp = FlowComparator.StrIpToIntIp("192.168.1.1/30");
+        IntegerIpAddress intIp = MatchComparatorHelper.strIpToIntIp("192.168.1.1/30");
         assertEquals(IP_ADDRESS, intIp.getIp());
         assertEquals(IPV4_30_MASK, intIp.getMask());
     }
@@ -45,7 +47,7 @@ public class FlowComparatorTest {
     @Test
     public void validIpWithInvalidMaskTest() {
         try {
-            FlowComparator.StrIpToIntIp("192.168.1.1/40");
+            MatchComparatorHelper.strIpToIntIp("192.168.1.1/40");
         } catch (IllegalStateException e) {
             assertEquals("Valid values for mask are from range 0 - 32. Value 40 is invalid.", e.getMessage());
             return;
@@ -59,7 +61,7 @@ public class FlowComparatorTest {
     @Test
     public void invalidIpWithValidMaskTest() {
         try {
-            FlowComparator.StrIpToIntIp("257.168.1.1/25");
+            MatchComparatorHelper.strIpToIntIp("257.168.1.1/25");
         } catch (IllegalArgumentException e) {
             assertEquals("'257.168.1.1' is not an IP string literal.", e.getMessage());
         }

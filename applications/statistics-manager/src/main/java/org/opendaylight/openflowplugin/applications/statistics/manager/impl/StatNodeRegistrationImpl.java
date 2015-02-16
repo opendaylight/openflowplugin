@@ -94,8 +94,7 @@ public class StatNodeRegistrationImpl implements StatNodeRegistration, DataChang
                 notifListenerRegistration.close();
             }
             catch (final Exception e) {
-                LOG.warn("Error by stop FlowCapableNode Notification StatNodeRegistration. Exception %s was thrown.",
-                        e.getMessage());
+                LOG.warn("Error by stop FlowCapableNode Notification StatNodeRegistration. Exception {}", e);
             }
             notifListenerRegistration = null;
         }
@@ -128,15 +127,15 @@ public class StatNodeRegistrationImpl implements StatNodeRegistration, DataChang
                 final List<Class<? extends FeatureCapability>> capabilities = data.getCapabilities() != null
                         ? data.getCapabilities() : Collections.<Class<? extends FeatureCapability>> emptyList();
                 for (final Class<? extends FeatureCapability> capability : capabilities) {
-                    if (capability.equals(FlowFeatureCapabilityTableStats.class)) {
+                    if (FlowFeatureCapabilityTableStats.class.equals(capability)) {
                         statCapabTypes.add(StatCapabTypes.TABLE_STATS);
-                    } else if (capability.equals(FlowFeatureCapabilityFlowStats.class)) {
+                    } else if (FlowFeatureCapabilityFlowStats.class.equals(capability)) {
                         statCapabTypes.add(StatCapabTypes.FLOW_STATS);
-                    } else if (capability.equals(FlowFeatureCapabilityGroupStats.class)) {
+                    } else if (FlowFeatureCapabilityGroupStats.class.equals(capability)) {
                         statCapabTypes.add(StatCapabTypes.GROUP_STATS);
-                    } else if (capability.equals(FlowFeatureCapabilityPortStats.class)) {
+                    } else if (FlowFeatureCapabilityPortStats.class.equals(capability)) {
                         statCapabTypes.add(StatCapabTypes.PORT_STATS);
-                    } else if (capability.equals(FlowFeatureCapabilityQueueStats.class)) {
+                    } else if (FlowFeatureCapabilityQueueStats.class.equals(capability)) {
                         statCapabTypes.add(StatCapabTypes.QUEUE_STATS);
                     }
                 }

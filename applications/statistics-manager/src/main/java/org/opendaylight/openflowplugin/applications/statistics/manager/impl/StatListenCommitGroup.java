@@ -339,8 +339,7 @@ public class StatListenCommitGroup extends StatAbstractListenCommit<Group, Opend
             }
             catch (final ReadFailedException e) {
                 // NOOP - probably another transaction delete that node
-                LOG.debug("Group %s was probably deleted via other transaction. Exception %s was raised.",
-                        delGroupIdent, e.getMessage());
+                LOG.debug("Group {} was probably deleted via other transaction. Exception {}", delGroupIdent, e);
             }
             if (delGroup.isPresent()) {
                 trans.delete(LogicalDatastoreType.OPERATIONAL, delGroupIdent);

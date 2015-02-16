@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.applications.statistics.manager.impl.hel
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.opendaylight.openflowplugin.applications.statistics.manager.impl.helper.FlowComparator;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.EtherType;
@@ -98,7 +97,7 @@ public class StatisticsUpdateCommiterTest {
         final Ipv4Match m2Layer3 = prepareIPv4Match(m2Source, msDestination);
         boolean comparisonResult;
         try {
-            comparisonResult = FlowComparator.layer3MatchEquals(m1Layer3, m2Layer3);
+            comparisonResult = MatchComparatorHelper.layer3MatchEquals(m1Layer3, m2Layer3);
             Assert.assertEquals("failed to compare: "+m1Layer3+" vs. "+m2Layer3,
                     matches, comparisonResult);
         } catch (final Exception e) {
@@ -119,7 +118,7 @@ public class StatisticsUpdateCommiterTest {
         return ipv4MatchBuilder.build();
     }
     /**
-     * Test method for {@link org.opendaylight.openflowplugin.applications.statistics.manager.impl.helper.FlowComparator#ethernetMatchEquals(EthernetMatch, EthernetMatch)
+     * Test method for {@link org.opendaylight.openflowplugin.applications.statistics.manager.impl.helper.MatchComparatorHelper#ethernetMatchEquals(EthernetMatch, EthernetMatch)
      */
     @Test
     public void testEthernetMatchEquals() {
@@ -183,7 +182,7 @@ public class StatisticsUpdateCommiterTest {
         final EthernetMatch ethernetMatch2 = prepareEthernetMatch(macAddress2, macAddressMask2,etherType2);
         boolean comparisonResult;
         try {
-            comparisonResult = FlowComparator.ethernetMatchEquals(ethernetMatch1, ethernetMatch2);
+            comparisonResult = MatchComparatorHelper.ethernetMatchEquals(ethernetMatch1, ethernetMatch2);
             Assert.assertEquals("failed to compare: "+ethernetMatch1+" vs. "+ethernetMatch2,
                     expectedResult, comparisonResult);
         } catch (final Exception e) {
