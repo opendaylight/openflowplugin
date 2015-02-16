@@ -57,7 +57,7 @@ import com.google.common.base.Optional;
 public class StatNotifyCommitTable extends StatAbstractNotifyCommit<OpendaylightFlowTableStatisticsListener>
                                         implements OpendaylightFlowTableStatisticsListener {
 
-    private final static Logger LOG = LoggerFactory.getLogger(StatNotifyCommitTable.class);
+    private static final Logger LOG = LoggerFactory.getLogger(StatNotifyCommitTable.class);
 
     public StatNotifyCommitTable(final StatisticsManager manager,
             final NotificationProviderService nps) {
