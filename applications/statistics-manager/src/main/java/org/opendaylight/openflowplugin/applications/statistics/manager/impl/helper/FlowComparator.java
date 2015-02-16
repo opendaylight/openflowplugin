@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowplugin.applications.statistics.manager.impl.helper;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.net.InetAddresses;
 import java.net.Inet4Address;
@@ -24,10 +26,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
  */
 public final class FlowComparator {
 
-    private static class EqualityException extends RuntimeException {
-    }
-
     private static final int DEFAULT_SUBNET = 32;
+    private static final int IPV4_MASK_LENGTH = 32;
     private static final int SHIFT_OCTET_1 = 24;
     private static final int SHIFT_OCTET_2 = 16;
     private static final int SHIFT_OCTET_3 = 8;
@@ -41,59 +41,306 @@ public final class FlowComparator {
         throw new UnsupportedOperationException("Utilities class should not be instantiated");
     }
 
+    private interface Comparator<T> {
+        boolean areObjectsEqual(final T statsFlow, final T storedFlow);
+    }
+    
+    private interface FlowComp extends Comparator<Flow>{
+    }
+
+    private interface MatchComp extends Comparator<Match>{
+    }
+
+    private static final Collection<FlowComp> FLOW_COMPARATORS = new ArrayList<>();
+    static {
+        FLOW_COMPARATORS.add(new FlowComp() {
+            /**
+             * Compares flows by container name
+             */
+            @Override
+            public boolean areObjectsEqual(Flow statsFlow, Flow storedFlow) {
+                if (statsFlow.getContainerName()== null) {
+                    if (storedFlow.getContainerName()!= null) {
+                        return false;
+                    }
+                } else if(!statsFlow.getContainerName().equals(storedFlow.getContainerName())) {
+                    return false;
+                }
+                return true;
+            }
+        });
+
+        FLOW_COMPARATORS.add(new FlowComp() {
+            /**
+             * Compares flows by priority
+             */
+            @Override
+            public boolean areObjectsEqual(final Flow statsFlow, final Flow storedFlow) {
+                if (storedFlow.getPriority() == null) {
+                    if (statsFlow.getPriority() != null && statsFlow.getPriority()!= 0x8000) {
+                        return false;
+                    }
+                } else if(!statsFlow.getPriority().equals(storedFlow.getPriority())) {
+                    return false;
+                }
+                return true;
+            }
+        });
+        
+        FLOW_COMPARATORS.add(new FlowComp() {
+            /**
+             * Compares flows by whole match
+             */
+            @Override
+            public boolean areObjectsEqual(final Flow statsFlow, final Flow storedFlow) {
+                if (statsFlow.getMatch()== null) {
+                    if (storedFlow.getMatch() != null) {
+                        return false;
+                    }
+                } else if(!matchEquals(statsFlow.getMatch(), storedFlow.getMatch())) {
+                    return false;
+                }
+                return true;
+            }
+        });
+
+        FLOW_COMPARATORS.add(new FlowComp() {
+            /**
+             * Compares flows by table ID
+             */
+            @Override
+            public boolean areObjectsEqual(final Flow statsFlow, final Flow storedFlow) {
+                if (statsFlow.getTableId() == null) {
+                    if (storedFlow.getTableId() != null) {
+                        return false;
+                    }
+                } else if(!statsFlow.getTableId().equals(storedFlow.getTableId())) {
+                    return false;
+                }
+                return true;
+            }
+        });
+    }
+
     public static boolean flowEquals(final Flow statsFlow, final Flow storedFlow) {
         if (statsFlow == null || storedFlow == null) {
             return false;
         }
-        try {
-            compareFlowsByContainerName(statsFlow, storedFlow);
-            compareFlowsByPriority(statsFlow, storedFlow);
-            compareFlowsByMatch(statsFlow, storedFlow);
-            compareFlowsByTableId(statsFlow, storedFlow);
-        } catch (EqualityException e) {
-            return false;
+
+        for (FlowComp flowComp : FLOW_COMPARATORS) {
+            if (!flowComp.areObjectsEqual(statsFlow, storedFlow)) {
+                return false;
+            }
         }
+
         return true;
     }
 
-    private static void compareFlowsByContainerName(final Flow statsFlow, final Flow storedFlow) throws EqualityException {
-        if (statsFlow.getContainerName()== null) {
-            if (storedFlow.getContainerName()!= null) {
-                throw new EqualityException();
+    private static final Collection<MatchComp> MATCH_COMPARATORS = new ArrayList<>();
+    static {
+        MATCH_COMPARATORS.add(new MatchComp() {
+            /**
+             * Comparation by whole object
+             */
+            @Override
+            public boolean areObjectsEqual(Match statsMatch, Match storedMatch) {
+                if (storedMatch == null && statsMatch != null) {
+                    return false;
+                }
+                if (statsMatch == null && storedMatch != null) {
+                    return false;
+                }
+                return true;
             }
-        } else if(!statsFlow.getContainerName().equals(storedFlow.getContainerName())) {
-            throw new EqualityException();
-        }
-    }
+        });
 
-    private static void compareFlowsByPriority(final Flow statsFlow, final Flow storedFlow) throws EqualityException {
-        if (storedFlow.getPriority() == null) {
-            if (statsFlow.getPriority() != null && statsFlow.getPriority()!= 0x8000) {
-                throw new EqualityException();
+        MATCH_COMPARATORS.add(new MatchComp() {
+            /**
+             * Comparation by VLAN
+             */
+            @Override
+            public boolean areObjectsEqual(Match statsMatch, Match storedMatch) {
+                if (storedMatch.getVlanMatch()== null) {
+                    if (statsMatch.getVlanMatch() != null) {
+                        return false;
+                    }
+                } else if(!storedMatch.getVlanMatch().equals(statsMatch.getVlanMatch())) {
+                    return false;
+                }
+                return true;
             }
-        } else if(!statsFlow.getPriority().equals(storedFlow.getPriority())) {
-            throw new EqualityException();
-        }
-    }
+        });
 
-    private static void compareFlowsByMatch(final Flow statsFlow, final Flow storedFlow) throws EqualityException {
-        if (statsFlow.getMatch()== null) {
-            if (storedFlow.getMatch() != null) {
-                throw new EqualityException();
+        MATCH_COMPARATORS.add(new MatchComp() {
+            /**
+             * Comparation by tunnel
+             */
+            @Override
+            public boolean areObjectsEqual(Match statsMatch, Match storedMatch) {
+                if (storedMatch.getTunnel()== null) {
+                    if (statsMatch.getTunnel() != null) {
+                        return false;
+                    }
+                } else if(!storedMatch.getTunnel().equals(statsMatch.getTunnel())) {
+                    return false;
+                }
+                return true;
             }
-        } else if(!matchEquals(statsFlow.getMatch(), storedFlow.getMatch())) {
-            throw new EqualityException();
-        }
-    }
+        });
 
-    private static void compareFlowsByTableId(final Flow statsFlow, final Flow storedFlow) throws EqualityException {
-        if (statsFlow.getTableId() == null) {
-            if (storedFlow.getTableId() != null) {
-                throw new EqualityException();
+        MATCH_COMPARATORS.add(new MatchComp() {
+            /**
+             * Comparation by protocol fields
+             */
+            @Override
+            public boolean areObjectsEqual(Match statsMatch, Match storedMatch) {
+                if (storedMatch.getProtocolMatchFields() == null) {
+                    if (statsMatch.getProtocolMatchFields() != null) {
+                        return false;
+                    }
+                } else if(!storedMatch.getProtocolMatchFields().equals(statsMatch.getProtocolMatchFields())) {
+                    return false;
+                }
+                return true;
             }
-        } else if(!statsFlow.getTableId().equals(storedFlow.getTableId())) {
-            throw new EqualityException();
-        }
+        });
+
+        MATCH_COMPARATORS.add(new MatchComp() {
+            /**
+             * Comparation by metadata
+             */
+            @Override
+            public boolean areObjectsEqual(Match statsMatch, Match storedMatch) {
+                if (storedMatch.getMetadata() == null) {
+                    if (statsMatch.getMetadata() != null) {
+                        return false;
+                    }
+                } else if(!storedMatch.getMetadata().equals(statsMatch.getMetadata())) {
+                    return false;
+                }
+                return true;
+            }
+        });
+
+        MATCH_COMPARATORS.add(new MatchComp() {
+            /**
+             * Comparation by layer4
+             */
+            @Override
+            public boolean areObjectsEqual(Match statsMatch, Match storedMatch) {
+                if (storedMatch.getLayer4Match()== null) {
+                    if (statsMatch.getLayer4Match() != null) {
+                        return false;
+                    }
+                } else if(!storedMatch.getLayer4Match().equals(statsMatch.getLayer4Match())) {
+                    return false;
+                }
+                return true;
+            }
+        });
+
+        MATCH_COMPARATORS.add(new MatchComp() {
+            /**
+             * Comparation by layer3
+             */
+            @Override
+            public boolean areObjectsEqual(Match statsMatch, Match storedMatch) {
+                if (storedMatch.getLayer3Match()== null) {
+                    if (statsMatch.getLayer3Match() != null) {
+                        return false;
+                    }
+                } else if(!layer3MatchEquals(statsMatch.getLayer3Match(),storedMatch.getLayer3Match())) {
+                    return false;
+                }
+                return true;
+            }
+        });
+
+        MATCH_COMPARATORS.add(new MatchComp() {
+            /**
+             * Comparation by Ip
+             */
+            @Override
+            public boolean areObjectsEqual(Match statsMatch, Match storedMatch) {
+                if (storedMatch.getIpMatch()== null) {
+                    if (statsMatch.getIpMatch() != null) {
+                        return false;
+                    }
+                } else if(!storedMatch.getIpMatch().equals(statsMatch.getIpMatch())) {
+                    return false;
+                }
+                return true;
+            }
+        });
+
+        MATCH_COMPARATORS.add(new MatchComp() {
+            /**
+             * Comparation by InPort
+             */
+            @Override
+            public boolean areObjectsEqual(Match statsMatch, Match storedMatch) {
+                if (storedMatch.getInPort()== null) {
+                    if (statsMatch.getInPort() != null) {
+                        return false;
+                    }
+                } else if(!storedMatch.getInPort().equals(statsMatch.getInPort())) {
+                    return false;
+                }
+                return true;
+            }
+        });
+
+        MATCH_COMPARATORS.add(new MatchComp() {
+            /**
+             * Comparation by InPhyPort
+             */
+            @Override
+            public boolean areObjectsEqual(Match statsMatch, Match storedMatch) {
+                if (storedMatch.getInPhyPort() == null) {
+                    if (statsMatch.getInPhyPort() != null) {
+                        return false;
+                    }
+                } else if(!storedMatch.getInPhyPort().equals(statsMatch.getInPhyPort())) {
+                    return false;
+                }
+                return true;
+            }
+        });
+
+        MATCH_COMPARATORS.add(new MatchComp() {
+            /**
+             * Comparation by Ethernet
+             */
+            @Override
+            public boolean areObjectsEqual(Match statsMatch, Match storedMatch) {
+                if (storedMatch.getEthernetMatch() == null) {
+                    if (statsMatch.getEthernetMatch() != null) {
+                        return false;
+                    }
+                } else if(!ethernetMatchEquals(statsMatch.getEthernetMatch(),storedMatch.getEthernetMatch())) {
+                    return false;
+                }
+                return true;
+            }
+        });
+
+        MATCH_COMPARATORS.add(new MatchComp() {
+            /**
+             * Comparation by Icmpv4
+             */
+            @Override
+            public boolean areObjectsEqual(Match statsMatch, Match storedMatch) {
+                if (storedMatch.getIcmpv4Match()== null) {
+                    if (statsMatch.getIcmpv4Match() != null) {
+                        return false;
+                    }
+                } else if(!storedMatch.getIcmpv4Match().equals(statsMatch.getIcmpv4Match())) {
+                    return false;
+                }
+                return true;
+            }
+        });
+
     }
 
     /**
@@ -116,150 +363,21 @@ public final class FlowComparator {
      * in the customer flow/match equal function.
      *
      *
-     * @param statsFlow
-     * @param storedFlow
+     * @param statsMatch
+     * @param storedMatch
      * @return
      */
-    public static boolean matchEquals(final Match statsFlow, final Match storedFlow) {
-        if (statsFlow == storedFlow) {
+    public static boolean matchEquals(final Match statsMatch, final Match storedMatch) {
+        if (statsMatch == storedMatch) {
             return true;
         }
-        try {
-            compareMathesAsWholeObject(statsFlow, storedFlow);
-            compareMatchesByEthernet(statsFlow, storedFlow);
-            compareMatchesByIcmpv4(statsFlow, storedFlow);
-            compareMatchesByInPhyPort(statsFlow, storedFlow);
-            compareMatchesByInPort(statsFlow, storedFlow);
-            compareMatchesByIp(statsFlow, storedFlow);
-            compareMatchesByLayer3(statsFlow, storedFlow);
-            compareMatchesByLayer4(statsFlow, storedFlow);
-            compareMatchesByMetadata(statsFlow, storedFlow);
-            compareMatchesByProtocolFields(statsFlow, storedFlow);
-            compareMatchesByTunnel(statsFlow, storedFlow);
-            compareMatchesByVlan(statsFlow, storedFlow);
-        } catch (IllegalStateException e) {
-            return false;
+
+        for (MatchComp matchComp : MATCH_COMPARATORS) {
+            if (!matchComp.areObjectsEqual(statsMatch, storedMatch)) {
+                return false;
+            }
         }
         return true;
-    }
-
-    private static void compareMathesAsWholeObject(final Match statsFlow, final Match storedFlow) {
-        if (storedFlow == null && statsFlow != null) {
-            throw new EqualityException();
-        }
-        if (statsFlow == null && storedFlow != null) {
-            throw new EqualityException();
-        }
-    }
-
-    private static void compareMatchesByVlan(Match statsFlow, Match storedFlow) {
-        if (storedFlow.getVlanMatch()== null) {
-            if (statsFlow.getVlanMatch() != null) {
-                throw new EqualityException();
-            }
-        } else if(!storedFlow.getVlanMatch().equals(statsFlow.getVlanMatch())) {
-            throw new EqualityException();
-        }
-    }
-
-    private static void compareMatchesByTunnel(Match statsFlow, Match storedFlow) {
-        if (storedFlow.getTunnel()== null) {
-            if (statsFlow.getTunnel() != null) {
-                throw new EqualityException();
-            }
-        } else if(!storedFlow.getTunnel().equals(statsFlow.getTunnel())) {
-            throw new EqualityException();
-        }
-    }
-
-    private static void compareMatchesByProtocolFields(Match statsFlow, Match storedFlow) {
-        if (storedFlow.getProtocolMatchFields() == null) {
-            if (statsFlow.getProtocolMatchFields() != null) {
-                throw new EqualityException();
-            }
-        } else if(!storedFlow.getProtocolMatchFields().equals(statsFlow.getProtocolMatchFields())) {
-            throw new EqualityException();
-        }
-    }
-
-    private static void compareMatchesByMetadata(Match statsFlow, Match storedFlow) {
-        if (storedFlow.getMetadata() == null) {
-            if (statsFlow.getMetadata() != null) {
-                throw new EqualityException();
-            }
-        } else if(!storedFlow.getMetadata().equals(statsFlow.getMetadata())) {
-            throw new EqualityException();
-        }
-    }
-
-    private static void compareMatchesByLayer4(Match statsFlow, Match storedFlow) {
-        if (storedFlow.getLayer4Match()== null) {
-            if (statsFlow.getLayer4Match() != null) {
-                throw new EqualityException();
-            }
-        } else if(!storedFlow.getLayer4Match().equals(statsFlow.getLayer4Match())) {
-            throw new EqualityException();
-        }
-    }
-
-    private static void compareMatchesByLayer3(Match statsFlow, Match storedFlow) {
-        if (storedFlow.getLayer3Match()== null) {
-            if (statsFlow.getLayer3Match() != null) {
-                throw new EqualityException();
-            }
-        } else if(!layer3MatchEquals(statsFlow.getLayer3Match(),storedFlow.getLayer3Match())) {
-            throw new EqualityException();
-        }
-    }
-
-    private static void compareMatchesByIp(Match statsFlow, Match storedFlow) {
-        if (storedFlow.getIpMatch()== null) {
-            if (statsFlow.getIpMatch() != null) {
-                throw new EqualityException();
-            }
-        } else if(!storedFlow.getIpMatch().equals(statsFlow.getIpMatch())) {
-            throw new EqualityException();
-        }
-    }
-
-    private static void compareMatchesByInPort(Match statsFlow, Match storedFlow) {
-        if (storedFlow.getInPort()== null) {
-            if (statsFlow.getInPort() != null) {
-                throw new EqualityException();
-            }
-        } else if(!storedFlow.getInPort().equals(statsFlow.getInPort())) {
-            throw new EqualityException();
-        }
-    }
-
-    private static void compareMatchesByInPhyPort(Match statsFlow, Match storedFlow) {
-        if (storedFlow.getInPhyPort() == null) {
-            if (statsFlow.getInPhyPort() != null) {
-                throw new EqualityException();
-            }
-        } else if(!storedFlow.getInPhyPort().equals(statsFlow.getInPhyPort())) {
-            throw new EqualityException();
-        }
-    }
-
-    private static void compareMatchesByEthernet(Match statsFlow, Match storedFlow) {
-        if (storedFlow.getEthernetMatch() == null) {
-            if (statsFlow.getEthernetMatch() != null) {
-                throw new EqualityException();
-            }
-        } else if(!ethernetMatchEquals(statsFlow.getEthernetMatch(),storedFlow.getEthernetMatch())) {
-            throw new EqualityException();
-        }
-    }
-
-    private static void compareMatchesByIcmpv4(Match statsFlow, Match storedFlow) {
-        if (storedFlow.getIcmpv4Match()== null) {
-            if (statsFlow.getIcmpv4Match() != null) {
-                throw new EqualityException();
-            }
-        } else if(!storedFlow.getIcmpv4Match().equals(statsFlow.getIcmpv4Match())) {
-            throw new EqualityException();
-        }
     }
 
     /*
@@ -414,10 +532,10 @@ public final class FlowComparator {
         int prefix;
 
         if (parts.length < 2) {
-            prefix = 32;
+            prefix = DEFAULT_SUBNET;
         } else {
             prefix = Integer.parseInt(parts[1]);
-            if (prefix < 0 || prefix > 32) {
+            if (prefix < 0 || prefix > IPV4_MASK_LENGTH) {
                 final StringBuilder stringBuilder = new StringBuilder("Valid values for mask are from range 0 - 32. Value ");
                 stringBuilder.append(prefix);
                 stringBuilder.append(" is invalid.");
@@ -429,13 +547,14 @@ public final class FlowComparator {
 
             final Inet4Address addr = ((Inet4Address) InetAddresses.forString(ip));
             final byte[] addrBytes = addr.getAddress();
-            final int ipInt = ((addrBytes[0] & 0xFF) << 24) |
-                    ((addrBytes[1] & 0xFF) << 16) |
-                    ((addrBytes[2] & 0xFF) << 8)  |
-                    ((addrBytes[3] & 0xFF) << 0);
+            //FIXME: what is meaning of anding with 0xFF? Probably could be removed.
+            final int ipInt = ((addrBytes[POSITION_OCTET_1] & 0xFF) << SHIFT_OCTET_1) |
+                    ((addrBytes[POSITION_OCTET_2] & 0xFF) << SHIFT_OCTET_2) |
+                    ((addrBytes[POSITION_OCTET_3] & 0xFF) << SHIFT_OCTET_3)  |
+                    ((addrBytes[POSITION_OCTET_4] & 0xFF) << SHIFT_OCTET_4);
 
             // FIXME: Is this valid?
-            final int mask = 0xffffffff << 32 - prefix;
+            final int mask = 0xffffffff << DEFAULT_SUBNET - prefix;
 
             integerIpAddress = new IntegerIpAddress(ipInt, mask);
 
