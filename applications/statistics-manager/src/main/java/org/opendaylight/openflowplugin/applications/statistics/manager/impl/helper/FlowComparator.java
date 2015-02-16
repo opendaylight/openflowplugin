@@ -18,14 +18,24 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Layer3Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4Match;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Utility class for comparing flows.
  */
 public final class FlowComparator {
-    private final static Logger LOG = LoggerFactory.getLogger(FlowComparator.class);
+
+    private static class EqualityException extends RuntimeException {
+    }
+
+    private static final int DEFAULT_SUBNET = 32;
+    private static final int SHIFT_OCTET_1 = 24;
+    private static final int SHIFT_OCTET_2 = 16;
+    private static final int SHIFT_OCTET_3 = 8;
+    private static final int SHIFT_OCTET_4 = 0;
+    private static final int POSITION_OCTET_1 = 0;
+    private static final int POSITION_OCTET_2 = 1;
+    private static final int POSITION_OCTET_3 = 2;
+    private static final int POSITION_OCTET_4 = 3;
 
     private FlowComparator() {
         throw new UnsupportedOperationException("Utilities class should not be instantiated");
@@ -35,35 +45,55 @@ public final class FlowComparator {
         if (statsFlow == null || storedFlow == null) {
             return false;
         }
-        if (statsFlow.getContainerName()== null) {
-            if (storedFlow.getContainerName()!= null) {
-                return false;
-            }
-        } else if(!statsFlow.getContainerName().equals(storedFlow.getContainerName())) {
-            return false;
-        }
-        if (storedFlow.getPriority() == null) {
-            if (statsFlow.getPriority() != null && statsFlow.getPriority()!= 0x8000) {
-                return false;
-            }
-        } else if(!statsFlow.getPriority().equals(storedFlow.getPriority())) {
-            return false;
-        }
-        if (statsFlow.getMatch()== null) {
-            if (storedFlow.getMatch() != null) {
-                return false;
-            }
-        } else if(!matchEquals(statsFlow.getMatch(), storedFlow.getMatch())) {
-            return false;
-        }
-        if (statsFlow.getTableId() == null) {
-            if (storedFlow.getTableId() != null) {
-                return false;
-            }
-        } else if(!statsFlow.getTableId().equals(storedFlow.getTableId())) {
+        try {
+            compareFlowsByContainerName(statsFlow, storedFlow);
+            compareFlowsByPriority(statsFlow, storedFlow);
+            compareFlowsByMatch(statsFlow, storedFlow);
+            compareFlowsByTableId(statsFlow, storedFlow);
+        } catch (EqualityException e) {
             return false;
         }
         return true;
+    }
+
+    private static void compareFlowsByContainerName(final Flow statsFlow, final Flow storedFlow) throws EqualityException {
+        if (statsFlow.getContainerName()== null) {
+            if (storedFlow.getContainerName()!= null) {
+                throw new EqualityException();
+            }
+        } else if(!statsFlow.getContainerName().equals(storedFlow.getContainerName())) {
+            throw new EqualityException();
+        }
+    }
+
+    private static void compareFlowsByPriority(final Flow statsFlow, final Flow storedFlow) throws EqualityException {
+        if (storedFlow.getPriority() == null) {
+            if (statsFlow.getPriority() != null && statsFlow.getPriority()!= 0x8000) {
+                throw new EqualityException();
+            }
+        } else if(!statsFlow.getPriority().equals(storedFlow.getPriority())) {
+            throw new EqualityException();
+        }
+    }
+
+    private static void compareFlowsByMatch(final Flow statsFlow, final Flow storedFlow) throws EqualityException {
+        if (statsFlow.getMatch()== null) {
+            if (storedFlow.getMatch() != null) {
+                throw new EqualityException();
+            }
+        } else if(!matchEquals(statsFlow.getMatch(), storedFlow.getMatch())) {
+            throw new EqualityException();
+        }
+    }
+
+    private static void compareFlowsByTableId(final Flow statsFlow, final Flow storedFlow) throws EqualityException {
+        if (statsFlow.getTableId() == null) {
+            if (storedFlow.getTableId() != null) {
+                throw new EqualityException();
+            }
+        } else if(!statsFlow.getTableId().equals(storedFlow.getTableId())) {
+            throw new EqualityException();
+        }
     }
 
     /**
@@ -94,97 +124,142 @@ public final class FlowComparator {
         if (statsFlow == storedFlow) {
             return true;
         }
-        if (storedFlow == null && statsFlow != null) {
-            return false;
-        }
-        if (statsFlow == null && storedFlow != null) {
-            return false;
-        }
-        if (storedFlow.getEthernetMatch() == null) {
-            if (statsFlow.getEthernetMatch() != null) {
-                return false;
-            }
-        } else if(!ethernetMatchEquals(statsFlow.getEthernetMatch(),storedFlow.getEthernetMatch())) {
-            return false;
-        }
-        if (storedFlow.getIcmpv4Match()== null) {
-            if (statsFlow.getIcmpv4Match() != null) {
-                return false;
-            }
-        } else if(!storedFlow.getIcmpv4Match().equals(statsFlow.getIcmpv4Match())) {
-            return false;
-        }
-        if (storedFlow.getIcmpv6Match() == null) {
-            if (statsFlow.getIcmpv6Match() != null) {
-                return false;
-            }
-        } else if(!storedFlow.getIcmpv6Match().equals(statsFlow.getIcmpv6Match())) {
-            return false;
-        }
-        if (storedFlow.getInPhyPort() == null) {
-            if (statsFlow.getInPhyPort() != null) {
-                return false;
-            }
-        } else if(!storedFlow.getInPhyPort().equals(statsFlow.getInPhyPort())) {
-            return false;
-        }
-        if (storedFlow.getInPort()== null) {
-            if (statsFlow.getInPort() != null) {
-                return false;
-            }
-        } else if(!storedFlow.getInPort().equals(statsFlow.getInPort())) {
-            return false;
-        }
-        if (storedFlow.getIpMatch()== null) {
-            if (statsFlow.getIpMatch() != null) {
-                return false;
-            }
-        } else if(!storedFlow.getIpMatch().equals(statsFlow.getIpMatch())) {
-            return false;
-        }
-        if (storedFlow.getLayer3Match()== null) {
-            if (statsFlow.getLayer3Match() != null) {
-                    return false;
-            }
-        } else if(!layer3MatchEquals(statsFlow.getLayer3Match(),storedFlow.getLayer3Match())) {
-            return false;
-        }
-        if (storedFlow.getLayer4Match()== null) {
-            if (statsFlow.getLayer4Match() != null) {
-                return false;
-            }
-        } else if(!storedFlow.getLayer4Match().equals(statsFlow.getLayer4Match())) {
-            return false;
-        }
-        if (storedFlow.getMetadata() == null) {
-            if (statsFlow.getMetadata() != null) {
-                return false;
-            }
-        } else if(!storedFlow.getMetadata().equals(statsFlow.getMetadata())) {
-            return false;
-        }
-        if (storedFlow.getProtocolMatchFields() == null) {
-            if (statsFlow.getProtocolMatchFields() != null) {
-                return false;
-            }
-        } else if(!storedFlow.getProtocolMatchFields().equals(statsFlow.getProtocolMatchFields())) {
-            return false;
-        }
-        if (storedFlow.getTunnel()== null) {
-            if (statsFlow.getTunnel() != null) {
-                return false;
-            }
-        } else if(!storedFlow.getTunnel().equals(statsFlow.getTunnel())) {
-            return false;
-        }
-        if (storedFlow.getVlanMatch()== null) {
-            if (statsFlow.getVlanMatch() != null) {
-                return false;
-            }
-        } else if(!storedFlow.getVlanMatch().equals(statsFlow.getVlanMatch())) {
+        try {
+            compareMathesAsWholeObject(statsFlow, storedFlow);
+            compareMatchesByEthernet(statsFlow, storedFlow);
+            compareMatchesByIcmpv4(statsFlow, storedFlow);
+            compareMatchesByInPhyPort(statsFlow, storedFlow);
+            compareMatchesByInPort(statsFlow, storedFlow);
+            compareMatchesByIp(statsFlow, storedFlow);
+            compareMatchesByLayer3(statsFlow, storedFlow);
+            compareMatchesByLayer4(statsFlow, storedFlow);
+            compareMatchesByMetadata(statsFlow, storedFlow);
+            compareMatchesByProtocolFields(statsFlow, storedFlow);
+            compareMatchesByTunnel(statsFlow, storedFlow);
+            compareMatchesByVlan(statsFlow, storedFlow);
+        } catch (IllegalStateException e) {
             return false;
         }
         return true;
+    }
+
+    private static void compareMathesAsWholeObject(final Match statsFlow, final Match storedFlow) {
+        if (storedFlow == null && statsFlow != null) {
+            throw new EqualityException();
+        }
+        if (statsFlow == null && storedFlow != null) {
+            throw new EqualityException();
+        }
+    }
+
+    private static void compareMatchesByVlan(Match statsFlow, Match storedFlow) {
+        if (storedFlow.getVlanMatch()== null) {
+            if (statsFlow.getVlanMatch() != null) {
+                throw new EqualityException();
+            }
+        } else if(!storedFlow.getVlanMatch().equals(statsFlow.getVlanMatch())) {
+            throw new EqualityException();
+        }
+    }
+
+    private static void compareMatchesByTunnel(Match statsFlow, Match storedFlow) {
+        if (storedFlow.getTunnel()== null) {
+            if (statsFlow.getTunnel() != null) {
+                throw new EqualityException();
+            }
+        } else if(!storedFlow.getTunnel().equals(statsFlow.getTunnel())) {
+            throw new EqualityException();
+        }
+    }
+
+    private static void compareMatchesByProtocolFields(Match statsFlow, Match storedFlow) {
+        if (storedFlow.getProtocolMatchFields() == null) {
+            if (statsFlow.getProtocolMatchFields() != null) {
+                throw new EqualityException();
+            }
+        } else if(!storedFlow.getProtocolMatchFields().equals(statsFlow.getProtocolMatchFields())) {
+            throw new EqualityException();
+        }
+    }
+
+    private static void compareMatchesByMetadata(Match statsFlow, Match storedFlow) {
+        if (storedFlow.getMetadata() == null) {
+            if (statsFlow.getMetadata() != null) {
+                throw new EqualityException();
+            }
+        } else if(!storedFlow.getMetadata().equals(statsFlow.getMetadata())) {
+            throw new EqualityException();
+        }
+    }
+
+    private static void compareMatchesByLayer4(Match statsFlow, Match storedFlow) {
+        if (storedFlow.getLayer4Match()== null) {
+            if (statsFlow.getLayer4Match() != null) {
+                throw new EqualityException();
+            }
+        } else if(!storedFlow.getLayer4Match().equals(statsFlow.getLayer4Match())) {
+            throw new EqualityException();
+        }
+    }
+
+    private static void compareMatchesByLayer3(Match statsFlow, Match storedFlow) {
+        if (storedFlow.getLayer3Match()== null) {
+            if (statsFlow.getLayer3Match() != null) {
+                throw new EqualityException();
+            }
+        } else if(!layer3MatchEquals(statsFlow.getLayer3Match(),storedFlow.getLayer3Match())) {
+            throw new EqualityException();
+        }
+    }
+
+    private static void compareMatchesByIp(Match statsFlow, Match storedFlow) {
+        if (storedFlow.getIpMatch()== null) {
+            if (statsFlow.getIpMatch() != null) {
+                throw new EqualityException();
+            }
+        } else if(!storedFlow.getIpMatch().equals(statsFlow.getIpMatch())) {
+            throw new EqualityException();
+        }
+    }
+
+    private static void compareMatchesByInPort(Match statsFlow, Match storedFlow) {
+        if (storedFlow.getInPort()== null) {
+            if (statsFlow.getInPort() != null) {
+                throw new EqualityException();
+            }
+        } else if(!storedFlow.getInPort().equals(statsFlow.getInPort())) {
+            throw new EqualityException();
+        }
+    }
+
+    private static void compareMatchesByInPhyPort(Match statsFlow, Match storedFlow) {
+        if (storedFlow.getInPhyPort() == null) {
+            if (statsFlow.getInPhyPort() != null) {
+                throw new EqualityException();
+            }
+        } else if(!storedFlow.getInPhyPort().equals(statsFlow.getInPhyPort())) {
+            throw new EqualityException();
+        }
+    }
+
+    private static void compareMatchesByEthernet(Match statsFlow, Match storedFlow) {
+        if (storedFlow.getEthernetMatch() == null) {
+            if (statsFlow.getEthernetMatch() != null) {
+                throw new EqualityException();
+            }
+        } else if(!ethernetMatchEquals(statsFlow.getEthernetMatch(),storedFlow.getEthernetMatch())) {
+            throw new EqualityException();
+        }
+    }
+
+    private static void compareMatchesByIcmpv4(Match statsFlow, Match storedFlow) {
+        if (storedFlow.getIcmpv4Match()== null) {
+            if (statsFlow.getIcmpv4Match() != null) {
+                throw new EqualityException();
+            }
+        } else if(!storedFlow.getIcmpv4Match().equals(statsFlow.getIcmpv4Match())) {
+            throw new EqualityException();
+        }
     }
 
     /*
@@ -308,23 +383,23 @@ public final class FlowComparator {
      * @return true if IPv4prefixes equals
      */
     private static boolean IpAddressEquals(final Ipv4Prefix statsIpAddress, final Ipv4Prefix storedIpAddress) {
-        final IntegerIpAddress statsIpAddressInt = StrIpToIntIp(statsIpAddress.getValue());
-        final IntegerIpAddress storedIpAddressInt = StrIpToIntIp(storedIpAddress.getValue());
+        final IntegerIpAddress statsIpAddressInt = strIpToIntIp(statsIpAddress.getValue());
+        final IntegerIpAddress storedIpAddressInt = strIpToIntIp(storedIpAddress.getValue());
 
-        if(IpAndMaskBasedMatch(statsIpAddressInt,storedIpAddressInt)){
+        if(ipAndMaskBasedMatch(statsIpAddressInt,storedIpAddressInt)){
             return true;
         }
-        if(IpBasedMatch(statsIpAddressInt,storedIpAddressInt)){
+        if(ipBasedMatch(statsIpAddressInt,storedIpAddressInt)){
             return true;
         }
         return false;
     }
 
-    private static boolean IpAndMaskBasedMatch(final IntegerIpAddress statsIpAddressInt,final IntegerIpAddress storedIpAddressInt){
+    private static boolean ipAndMaskBasedMatch(final IntegerIpAddress statsIpAddressInt,final IntegerIpAddress storedIpAddressInt){
         return ((statsIpAddressInt.getIp() & statsIpAddressInt.getMask()) ==  (storedIpAddressInt.getIp() & storedIpAddressInt.getMask()));
     }
 
-    private static boolean IpBasedMatch(final IntegerIpAddress statsIpAddressInt,final IntegerIpAddress storedIpAddressInt){
+    private static boolean ipBasedMatch(final IntegerIpAddress statsIpAddressInt,final IntegerIpAddress storedIpAddressInt){
         return (statsIpAddressInt.getIp() == storedIpAddressInt.getIp());
     }
 
@@ -332,14 +407,14 @@ public final class FlowComparator {
      * Method return integer version of ip address. Converted int will be mask if
      * mask specified
      */
-    private static IntegerIpAddress StrIpToIntIp(final String ipAddresss){
+    private static IntegerIpAddress strIpToIntIp(final String ipAddresss){
 
         final String[] parts = ipAddresss.split("/");
         final String ip = parts[0];
         int prefix;
 
         if (parts.length < 2) {
-            prefix = 32;
+            prefix = DEFAULT_SUBNET;
         } else {
             prefix = Integer.parseInt(parts[1]);
         }
@@ -348,13 +423,14 @@ public final class FlowComparator {
 
             final Inet4Address addr = ((Inet4Address) InetAddresses.forString(ip));
             final byte[] addrBytes = addr.getAddress();
-            final int ipInt = ((addrBytes[0] & 0xFF) << 24) |
-                    ((addrBytes[1] & 0xFF) << 16) |
-                    ((addrBytes[2] & 0xFF) << 8)  |
-                    ((addrBytes[3] & 0xFF) << 0);
+            //FIXME: what is meaning of anding with 0xFF? Probably could be removed.
+            final int ipInt = ((addrBytes[POSITION_OCTET_1] & 0xFF) << SHIFT_OCTET_1) |
+                    ((addrBytes[POSITION_OCTET_2] & 0xFF) << SHIFT_OCTET_2) |
+                    ((addrBytes[POSITION_OCTET_3] & 0xFF) << SHIFT_OCTET_3)  |
+                    ((addrBytes[POSITION_OCTET_4] & 0xFF) << SHIFT_OCTET_4);
 
             // FIXME: Is this valid?
-            final int mask = 0xffffffff << 32 - prefix;
+            final int mask = 0xffffffff << DEFAULT_SUBNET - prefix;
 
             integerIpAddress = new IntegerIpAddress(ipInt, mask);
 
