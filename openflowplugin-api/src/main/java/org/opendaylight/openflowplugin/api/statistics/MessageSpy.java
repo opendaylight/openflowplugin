@@ -11,19 +11,19 @@ package org.opendaylight.openflowplugin.api.statistics;
 
 /**
  * ticket spy - aimed on collecting intel about tickets 
- * @param <MSG_TYPE> type of watched message
+ * @param <M> type of watched message
  */
-public interface MessageSpy<MSG_TYPE> extends Runnable {
+public interface MessageSpy<M> extends Runnable {
 
     /**
      * @param message content of ticket
      */
-    void spyIn(MSG_TYPE message);
+    void spyIn(M message);
 
     /**
      * @param message content of ticket
      */
-    void spyOut(MSG_TYPE message);
+    void spyOut(M message);
     
     
     // TODO: temporary solution, should be refactored and moved to managed bean
@@ -59,5 +59,5 @@ public interface MessageSpy<MSG_TYPE> extends Runnable {
      * @param message from switch or to switch - depends on statGroup
      * @param statGroup 
      */
-    void spyMessage(MSG_TYPE message, STATISTIC_GROUP statGroup);
+    void spyMessage(M message, STATISTIC_GROUP statGroup);
     }

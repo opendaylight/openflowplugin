@@ -16,7 +16,7 @@ import org.opendaylight.openflowplugin.api.openflow.md.core.IMDMessageTranslator
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 
 /**
- * This processing mechanism based on queue. Processing consists of 2 steps: translate and publish. 
+ * This processing mechanism based on queue. Processing consists of 2 steps: translate and publish.
  * Proposed workflow (might slightly deviate in implementations):
  * <ol>
  * <li>messages of input type are pushed in (via {@link QueueProcessor#push(Object, ConnectionConductor)} and similar)</li>
@@ -25,18 +25,18 @@ import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
  * <li>ticket is dequeued and result is published by appropriate popListener</li>
  * </ol>
  * Message order might be not important, e.g. when speed is of the essence
- * @param <IN> source type
- * @param <OUT> result type
+ * @param <I> source type (IN)
+ * @param <O> result type (OUT)
  */
-public interface QueueProcessor<IN, OUT> extends MessageSourcePollRegistrator<QueueKeeper<IN>>, Enqueuer<QueueItem<IN>> {
-    
+public interface QueueProcessor<I, O> extends MessageSourcePollRegistrator<QueueKeeper<I>>, Enqueuer<QueueItem<I>> {
+
     /**
      * @param translatorMapping translators for message processing
      */
-    void setTranslatorMapping(Map<TranslatorKey, Collection<IMDMessageTranslator<IN, List<OUT>>>> translatorMapping);
+    void setTranslatorMapping(Map<TranslatorKey, Collection<IMDMessageTranslator<I, List<O>>>> translatorMapping);
 
     /**
      * @param popListenersMapping listeners invoked when processing done
      */
-    void setPopListenersMapping(Map<Class<? extends OUT>, Collection<PopListener<OUT>>> popListenersMapping);
+    void setPopListenersMapping(Map<Class<? extends O>, Collection<PopListener<O>>> popListenersMapping);
 }
