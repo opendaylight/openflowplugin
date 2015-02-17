@@ -10,11 +10,11 @@ package org.opendaylight.openflowplugin.api.statistics;
 
 
 /**
- * @param <MSG_TYPE> 
- * 
+ * @param <M> message type
+ *
  */
-public interface MessageObservatory<MSG_TYPE> extends MessageSpy<MSG_TYPE>, MessageCountDumper {
+public interface MessageObservatory<M> extends MessageSpy<M>, MessageCountDumper {
 
     // just unifying iface
-    
+
 }
