@@ -11,23 +11,23 @@ import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionConte
 
 /**
  * translates between messages
- * @param <IN> source message type
- * @param <OUT> result message type
+ * @param <I> source message type (IN)
+ * @param <O> result message type (OUT)
  */
-public interface IMDMessageTranslator<IN, OUT> {
+public interface IMDMessageTranslator<I, O> {
 
     /**
-     * This method is called in order to translate message to MD-SAL or from MD-SAL. 
-     * 
-     * @param cookie 
-     *            auxiliary connection identifier 
+     * This method is called in order to translate message to MD-SAL or from MD-SAL.
+     *
+     * @param cookie
+     *            auxiliary connection identifier
      * @param sc
      *            The SessionContext which sent the OF message
      * @param msg
      *            The OF message
-     *            
+     *
      * @return translated message
      */
-    public OUT translate(SwitchConnectionDistinguisher cookie, SessionContext sc, IN msg);
+    O translate(SwitchConnectionDistinguisher cookie, SessionContext sc, I msg);
 
 }
