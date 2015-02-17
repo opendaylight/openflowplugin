@@ -11,10 +11,10 @@ package org.opendaylight.openflowplugin.api.openflow.md.core;
  * @author mirehak
  */
 public class TranslatorKey {
-    
+
     private int version;
     private String messageClass;
-    
+
     /**
      * @param version
      * @param messageClass
@@ -23,7 +23,7 @@ public class TranslatorKey {
         this.version = version;
         this.messageClass = messageClass;
     }
-    
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -36,20 +36,26 @@ public class TranslatorKey {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         TranslatorKey other = (TranslatorKey) obj;
         if (messageClass == null) {
-            if (other.messageClass != null)
+            if (other.messageClass != null) {
                 return false;
-        } else if (!messageClass.equals(other.messageClass))
+            }
+        } else if (!messageClass.equals(other.messageClass)) {
             return false;
-        if (version != other.version)
+        }
+        if (version != other.version) {
             return false;
+        }
         return true;
     }
 
