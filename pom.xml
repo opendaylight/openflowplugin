@@ -689,45 +689,6 @@
 
     </profiles>
 
-    <repositories>
-      <repository>
-        <id>opendaylight-snapshot</id>
-        <name>opendaylight-snapshot</name>
-        <url>http://nexus.opendaylight.org/content/repositories/opendaylight.snapshot</url>
-        <releases>
-          <enabled>false</enabled>
-        </releases>
-      </repository>
-      <repository>
-        <id>public</id>
-        <name>public</name>
-        <url>http://nexus.opendaylight.org/content/groups/public</url>
-        <snapshots>
-          <enabled>false</enabled>
-        </snapshots>
-      </repository>
-
-    </repositories>
-
-    <pluginRepositories>
-      <pluginRepository>
-        <id>opendaylight-central</id>
-        <name>opendaylight-central</name>
-        <url>http://nexus.opendaylight.org/content/repositories/public</url>
-        <snapshots>
-          <enabled>false</enabled>
-        </snapshots>
-      </pluginRepository>
-      <pluginRepository>
-        <id>opendaylight-snapshot</id>
-        <name>central2</name>
-        <url>http://nexus.opendaylight.org/content/repositories/opendaylight.snapshot</url>
-        <releases>
-          <enabled>false</enabled>
-        </releases>
-      </pluginRepository>
-    </pluginRepositories>
-
     <modules>
       <module>openflowplugin-api</module>
       <module>openflowplugin</module>
