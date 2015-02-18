@@ -22,6 +22,24 @@
       "revId": "c4d38ca14ea80c5f146e5e6e1829cc5e315943d8",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_3c34d8fa",
+        "filename": "samples/learning-switch/src/main/java/org/opendaylight/openflowplugin/learningswitch/multi/LearningSwitchManagerMultiImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 552
+      },
+      "writtenOn": "2015-02-18T09:32:10Z",
+      "side": 1,
+      "message": "After discussion %s was removed (my mistake) and to solve sonar warning whole exeption was logged via logger.",
+      "parentUuid": "7a96c907_fcfc3074",
+      "revId": "c4d38ca14ea80c5f146e5e6e1829cc5e315943d8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
