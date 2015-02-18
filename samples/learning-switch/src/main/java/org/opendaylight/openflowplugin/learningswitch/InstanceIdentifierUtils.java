@@ -16,6 +16,10 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 public class InstanceIdentifierUtils {
 
+    private InstanceIdentifierUtils() {
+        //hiding constructor for util class
+    }
+
     /**
      * Creates an Instance Identifier (path) for node with specified id
      * 
@@ -23,8 +27,8 @@ public class InstanceIdentifierUtils {
      * @return
      */
     public static final InstanceIdentifier<Node> createNodePath(NodeId nodeId) {
-        return InstanceIdentifier.builder(Nodes.class) //
-                .child(Node.class, new NodeKey(nodeId)) //
+        return InstanceIdentifier.builder(Nodes.class)
+                .child(Node.class, new NodeKey(nodeId))
                 .build();
     }
 
@@ -88,8 +92,8 @@ public class InstanceIdentifierUtils {
     
     //
     public static final InstanceIdentifier<NodeConnector> createNodeConnectorPath(InstanceIdentifier<Node> nodeKey,NodeConnectorKey nodeConnectorKey) {
-        return InstanceIdentifier.builder(nodeKey) //
-                .child(NodeConnector.class,nodeConnectorKey) //
+        return InstanceIdentifier.builder(nodeKey)
+                .child(NodeConnector.class,nodeConnectorKey)
                 .build();
     }
 }

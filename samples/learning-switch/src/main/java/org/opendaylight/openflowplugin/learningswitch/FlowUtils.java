@@ -35,6 +35,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import com.google.common.collect.ImmutableList;
 
 public class FlowUtils {
+    private FlowUtils() {
+        //prohibite to instantiate util class
+    }
+
     /**
      * @param tableId
      * @param priority
@@ -45,18 +49,18 @@ public class FlowUtils {
      */
     public static FlowBuilder createDirectMacToMacFlow(final Short tableId, final int priority, final MacAddress srcMac,
             final MacAddress dstMac, final NodeConnectorRef dstPort) {
-        FlowBuilder macToMacFlow = new FlowBuilder() //
-                .setTableId(tableId) //
+        FlowBuilder macToMacFlow = new FlowBuilder()
+                .setTableId(tableId)
                 .setFlowName("mac2mac");
         macToMacFlow.setId(new FlowId(Long.toString(macToMacFlow.hashCode())));
 
-        EthernetMatch ethernetMatch = new EthernetMatchBuilder() //
-                .setEthernetSource(new EthernetSourceBuilder() //
-                        .setAddress(srcMac) //
-                        .build()) //
-                .setEthernetDestination(new EthernetDestinationBuilder() //
-                        .setAddress(dstMac) //
-                        .build()) //
+        EthernetMatch ethernetMatch = new EthernetMatchBuilder()
+                .setEthernetSource(new EthernetSourceBuilder()
+                        .setAddress(srcMac)
+                        .build())
+                .setEthernetDestination(new EthernetDestinationBuilder()
+                        .setAddress(dstMac)
+                        .build())
                 .build();
 
         MatchBuilder match = new MatchBuilder();
@@ -64,14 +68,14 @@ public class FlowUtils {
 
         Uri outputPort = dstPort.getValue().firstKeyOf(NodeConnector.class, NodeConnectorKey.class).getId();
 
-        Action outputToControllerAction = new ActionBuilder() //
+        Action outputToControllerAction = new ActionBuilder()
                 .setOrder(0)
-                .setAction(new OutputActionCaseBuilder() //
-                        .setOutputAction(new OutputActionBuilder() //
-                                .setMaxLength(new Integer(0xffff)) //
-                                .setOutputNodeConnector(outputPort) //
-                                .build()) //
-                        .build()) //
+                .setAction(new OutputActionCaseBuilder()
+                        .setOutputAction(new OutputActionBuilder()
+                                .setMaxLength(Integer.valueOf(0xffff))
+                                .setOutputNodeConnector(outputPort)
+                                .build())
+                        .build())
                 .build();
 
         // Create an Apply Action
@@ -79,26 +83,26 @@ public class FlowUtils {
                 .build();
 
         // Wrap our Apply Action in an Instruction
-        Instruction applyActionsInstruction = new InstructionBuilder() //
+        Instruction applyActionsInstruction = new InstructionBuilder()
                 .setOrder(0)
-                .setInstruction(new ApplyActionsCaseBuilder()//
-                        .setApplyActions(applyActions) //
-                        .build()) //
+                .setInstruction(new ApplyActionsCaseBuilder()
+                        .setApplyActions(applyActions)
+                        .build())
                 .build();
 
         // Put our Instruction in a list of Instructions
 
-        macToMacFlow //
-                .setMatch(new MatchBuilder() //
-                        .setEthernetMatch(ethernetMatch) //
-                        .build()) //
-                .setInstructions(new InstructionsBuilder() //
-                        .setInstruction(ImmutableList.of(applyActionsInstruction)) //
-                        .build()) //
-                .setPriority(priority) //
-                .setBufferId(OFConstants.OFP_NO_BUFFER) //
-                .setHardTimeout(0) //
-                .setIdleTimeout(0) //
+        macToMacFlow
+                .setMatch(new MatchBuilder()
+                        .setEthernetMatch(ethernetMatch)
+                        .build())
+                .setInstructions(new InstructionsBuilder()
+                        .setInstruction(ImmutableList.of(applyActionsInstruction))
+                        .build())
+                .setPriority(priority)
+                .setBufferId(OFConstants.OFP_NO_BUFFER)
+                .setHardTimeout(0)
+                .setIdleTimeout(0)
                 .setFlags(new FlowModFlags(false, false, false, false, false));
 
         return macToMacFlow;
@@ -118,7 +122,7 @@ public class FlowUtils {
 
         // Create output action -> send to controller
         OutputActionBuilder output = new OutputActionBuilder();
-        output.setMaxLength(new Integer(0xffff));
+        output.setMaxLength(Integer.valueOf(0xffff));
         Uri controllerPort = new Uri(OutputPortValues.CONTROLLER.toString());
         output.setOutputNodeConnector(controllerPort);
 
@@ -146,13 +150,13 @@ public class FlowUtils {
         instructions.add(ib.build());
         isb.setInstruction(instructions);
 
-        allToCtrlFlow //
-            .setMatch(matchBuilder.build()) //
-            .setInstructions(isb.build()) //
-            .setPriority(priority) //
-            .setBufferId(OFConstants.OFP_NO_BUFFER) //
-            .setHardTimeout(0) //
-            .setIdleTimeout(0) //
+        allToCtrlFlow
+            .setMatch(matchBuilder.build())
+            .setInstructions(isb.build())
+            .setPriority(priority)
+            .setBufferId(OFConstants.OFP_NO_BUFFER)
+            .setHardTimeout(0)
+            .setIdleTimeout(0)
             .setFlags(new FlowModFlags(false, false, false, false, false));
 
         return allToCtrlFlow;

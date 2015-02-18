@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.learningswitch;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.NotificationService;
-import org.opendaylight.controller.sal.binding.api.data.DataBrokerService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService;
 
 /**
