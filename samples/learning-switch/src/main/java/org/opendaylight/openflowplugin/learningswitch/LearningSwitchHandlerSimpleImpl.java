@@ -43,8 +43,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Simple Learning Switch implementation which does mac learning for one switch.
- * 
- * 
+ *
+ *
  */
 public class LearningSwitchHandlerSimpleImpl implements LearningSwitchHandler, PacketProcessingListener {
 
@@ -63,7 +63,7 @@ public class LearningSwitchHandlerSimpleImpl implements LearningSwitchHandler, P
     private NodeId nodeId;
     private AtomicLong flowIdInc = new AtomicLong();
     private AtomicLong flowCookieInc = new AtomicLong(0x2a00000000000000L);
-    
+
     private InstanceIdentifier<Node> nodePath;
     private InstanceIdentifier<Table> tablePath;
 
@@ -90,7 +90,7 @@ public class LearningSwitchHandlerSimpleImpl implements LearningSwitchHandler, P
         }
 
         iAmLearning = true;
-        
+
         tablePath = appearedTablePath;
         nodePath = tablePath.firstIdentifierOf(Node.class);
         nodeId = nodePath.firstKeyOf(Node.class, NodeKey.class).getId();
@@ -235,11 +235,11 @@ public class LearningSwitchHandlerSimpleImpl implements LearningSwitchHandler, P
 
     private void sendPacketOut(byte[] payload, NodeConnectorRef ingress, NodeConnectorRef egress) {
         InstanceIdentifier<Node> egressNodePath = InstanceIdentifierUtils.getNodePath(egress.getValue());
-        TransmitPacketInput input = new TransmitPacketInputBuilder() //
-                .setPayload(payload) //
-                .setNode(new NodeRef(egressNodePath)) //
-                .setEgress(egress) //
-                .setIngress(ingress) //
+        TransmitPacketInput input = new TransmitPacketInputBuilder()
+                .setPayload(payload)
+                .setNode(new NodeRef(egressNodePath))
+                .setEgress(egress)
+                .setIngress(ingress)
                 .build();
         packetProcessingService.transmitPacket(input);
     }
