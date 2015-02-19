@@ -8,10 +8,11 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowModCommand;
+
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.collect.Ordering;
-
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.OrderComparator;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flowflag.FlowFlagReactor;
@@ -43,7 +44,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.WriteMetadataCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.apply.actions._case.ApplyActions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.apply.actions._case.ApplyActionsBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.clear.actions._case.ClearActions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.go.to.table._case.GoToTable;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.meter._case.Meter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.write.actions._case.WriteActions;
@@ -63,7 +63,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping.InstructionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowModCommand;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MatchTypeBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.TableId;
@@ -72,7 +71,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
@@ -81,7 +79,7 @@ import java.util.List;
  * Utility class for converting a MD-SAL Flow into the OF flow mod
  */
 public class FlowConvertor {
-    private static final Logger logger = LoggerFactory.getLogger(FlowConvertor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(FlowConvertor.class);
 
     // Default values for when things are null
     private static final TableId DEFAULT_TABLE_ID = new TableId(0L);
@@ -114,6 +112,10 @@ public class FlowConvertor {
     public static final List<MatchEntries> DEFAULT_MATCH_ENTRIES = new ArrayList<MatchEntries>();
 
 
+    private FlowConvertor() {
+        //hiding implicit constructor
+    }
+
     /**
      * This method converts the SAL Flow to OF Flow.
      * It checks if there is a set-vlan-id (1.0) action made on OF1.3.
@@ -133,24 +135,81 @@ public class FlowConvertor {
     public static FlowModInputBuilder toFlowModInput(Flow flow, short version, BigInteger datapathid) {
 
         FlowModInputBuilder flowMod = new FlowModInputBuilder();
-        if (flow.getCookie() != null) {
-            flowMod.setCookie(flow.getCookie().getValue());
-        } else {
-            flowMod.setCookie(OFConstants.DEFAULT_COOKIE);
-        }
+        salToOFFlowCookie(flow, flowMod);
+        salToOFFlowCookieMask(flow, flowMod);
+        salToOFFlowTableId(flow, flowMod);
+        salToOFFlowCommand(flow, flowMod);
+        salToOFFlowIdleTimeout(flow, flowMod);
+        salToOFFlowHardTimeout(flow, flowMod);
+        salToOFFlowPriority(flow, flowMod);
+        salToOFFlowBufferId(flow, flowMod);
+        salToOFFlowOutPort(flow, flowMod);
+        salToOFFlowOutGroup(flow, flowMod);
 
-        if (flow.getCookieMask() != null) {
-            flowMod.setCookieMask(flow.getCookieMask().getValue());
-        } else {
-            flowMod.setCookieMask(OFConstants.DEFAULT_COOKIE_MASK);
-        }
+        // convert and inject flowFlags
+        FlowFlagReactor.getInstance().convert(flow.getFlags(), version, flowMod,datapathid);
 
-        if (flow.getTableId() != null) {
-            flowMod.setTableId(new TableId(flow.getTableId().longValue()));
-        } else {
-            flowMod.setTableId(DEFAULT_TABLE_ID);
-        }
+        // convert and inject match
+        MatchReactor.getInstance().convert(flow.getMatch(), version, flowMod,datapathid);
 
+        if (flow.getInstructions() != null) {
+            flowMod.setInstruction(toInstructions(flow, version,datapathid));
+            flowMod.setAction(getActions(version,datapathid, flow));
+        }
+        flowMod.setVersion(version);
+
+        return flowMod;
+    }
+
+    private static void salToOFFlowOutGroup(Flow flow, FlowModInputBuilder flowMod) {
+        if (flow.getOutGroup() != null) {
+            flowMod.setOutGroup(flow.getOutGroup());
+        } else {
+            flowMod.setOutGroup(DEFAULT_OUT_GROUP);
+        }
+    }
+
+    private static void salToOFFlowOutPort(Flow flow, FlowModInputBuilder flowMod) {
+        if (flow.getOutPort() != null) {
+            flowMod.setOutPort(new PortNumber(flow.getOutPort().longValue()));
+        } else {
+            flowMod.setOutPort(new PortNumber(DEFAULT_OUT_PORT));
+        }
+    }
+
+    private static void salToOFFlowBufferId(Flow flow, FlowModInputBuilder flowMod) {
+        if (flow.getBufferId() != null) {
+            flowMod.setBufferId(flow.getBufferId());
+        } else {
+            flowMod.setBufferId(DEFAULT_BUFFER_ID);
+        }
+    }
+
+    private static void salToOFFlowPriority(Flow flow, FlowModInputBuilder flowMod) {
+        if (flow.getPriority() != null) {
+            flowMod.setPriority(flow.getPriority());
+        } else {
+            flowMod.setPriority(DEFAULT_PRIORITY);
+        }
+    }
+
+    private static void salToOFFlowHardTimeout(Flow flow, FlowModInputBuilder flowMod) {
+        if (flow.getHardTimeout() != null) {
+            flowMod.setHardTimeout(flow.getHardTimeout());
+        } else {
+            flowMod.setHardTimeout(DEFAULT_HARD_TIMEOUT);
+        }
+    }
+
+    private static void salToOFFlowIdleTimeout(Flow flow, FlowModInputBuilder flowMod) {
+        if (flow.getIdleTimeout() != null) {
+            flowMod.setIdleTimeout(flow.getIdleTimeout());
+        } else {
+            flowMod.setIdleTimeout(DEFAULT_IDLE_TIMEOUT);
+        }
+    }
+
+    private static void salToOFFlowCommand(Flow flow, FlowModInputBuilder flowMod) {
         if (flow instanceof AddFlowInput) {
             flowMod.setCommand(FlowModCommand.OFPFCADD);
         } else if (flow instanceof RemoveFlowInput) {
@@ -166,53 +225,30 @@ public class FlowConvertor {
                 flowMod.setCommand(FlowModCommand.OFPFCMODIFY);
             }
         }
+    }
 
-        if (flow.getIdleTimeout() != null) {
-            flowMod.setIdleTimeout(flow.getIdleTimeout());
+    private static void salToOFFlowTableId(Flow flow, FlowModInputBuilder flowMod) {
+        if (flow.getTableId() != null) {
+            flowMod.setTableId(new TableId(flow.getTableId().longValue()));
         } else {
-            flowMod.setIdleTimeout(DEFAULT_IDLE_TIMEOUT);
+            flowMod.setTableId(DEFAULT_TABLE_ID);
         }
-        if (flow.getHardTimeout() != null) {
-            flowMod.setHardTimeout(flow.getHardTimeout());
+    }
+
+    private static void salToOFFlowCookieMask(Flow flow, FlowModInputBuilder flowMod) {
+        if (flow.getCookieMask() != null) {
+            flowMod.setCookieMask(flow.getCookieMask().getValue());
         } else {
-            flowMod.setHardTimeout(DEFAULT_HARD_TIMEOUT);
+            flowMod.setCookieMask(OFConstants.DEFAULT_COOKIE_MASK);
         }
-        if (flow.getPriority() != null) {
-            flowMod.setPriority(flow.getPriority());
+    }
+
+    private static void salToOFFlowCookie(Flow flow, FlowModInputBuilder flowMod) {
+        if (flow.getCookie() != null) {
+            flowMod.setCookie(flow.getCookie().getValue());
         } else {
-            flowMod.setPriority(DEFAULT_PRIORITY);
+            flowMod.setCookie(OFConstants.DEFAULT_COOKIE);
         }
-        if (flow.getBufferId() != null) {
-            flowMod.setBufferId(flow.getBufferId());
-        } else {
-            flowMod.setBufferId(DEFAULT_BUFFER_ID);
-        }
-
-        if (flow.getOutPort() != null) {
-            flowMod.setOutPort(new PortNumber(flow.getOutPort().longValue()));
-        } else {
-            flowMod.setOutPort(new PortNumber(DEFAULT_OUT_PORT));
-        }
-        if (flow.getOutGroup() != null) {
-            flowMod.setOutGroup(flow.getOutGroup());
-        } else {
-            flowMod.setOutGroup(DEFAULT_OUT_GROUP);
-        }
-
-
-        // convert and inject flowFlags
-        FlowFlagReactor.getInstance().convert(flow.getFlags(), version, flowMod,datapathid);
-
-        // convert and inject match
-        MatchReactor.getInstance().convert(flow.getMatch(), version, flowMod,datapathid);
-
-        if (flow.getInstructions() != null) {
-            flowMod.setInstruction(toInstructions(flow, version,datapathid));
-            flowMod.setAction(getActions(version,datapathid, flow));
-        }
-        flowMod.setVersion(version);
-
-        return flowMod;
     }
 
     private static List<Instruction> toInstructions(
@@ -277,8 +313,6 @@ public class FlowConvertor {
             }
 
             else if (curInstruction instanceof ClearActionsCase) {
-                ClearActionsCase clearActionscase = (ClearActionsCase) curInstruction;
-                ClearActions clearActions = clearActionscase.getClearActions();
                 instructionBuilder
                         .setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.ClearActions.class);
                 instructionsList.add(instructionBuilder.build());
@@ -299,9 +333,6 @@ public class FlowConvertor {
         return instructionsList;
     }
 
-    /*private static List<Action> getActions(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Instructions instructions,
-            short version,BigInteger datapathid) {*/
     private static List<Action> getActions(short version,BigInteger datapathid, Flow flow) {
 
         org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Instructions instructions = flow.getInstructions();
