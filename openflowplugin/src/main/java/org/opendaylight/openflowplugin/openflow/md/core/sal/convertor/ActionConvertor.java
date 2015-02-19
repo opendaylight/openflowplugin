@@ -170,12 +170,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ge
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.grouping.Extension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author usha@ericsson Action List:This class takes data from SAL layer and
@@ -184,7 +181,8 @@ import java.util.Map;
  *         actions
  */
 public final class ActionConvertor {
-    private static final Logger logger = LoggerFactory.getLogger(ActionConvertor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ActionConvertor.class);
+    private static final String UNKNOWN_ACTION_TYPE_VERSION = "Unknown Action Type for the Version";
     
     private ActionConvertor() {
         // NOOP
@@ -205,84 +203,82 @@ public final class ActionConvertor {
         List<Action> actionsList = new ArrayList<>();
         Action ofAction;
 
-        actions = Ordering.from(OrderComparator.<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>build())
+        final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> sortedActions = 
+                Ordering.from(OrderComparator.<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>build())
             .sortedCopy(actions);
 
-        for (int actionItem = 0; actionItem < actions.size(); actionItem++) {
+        for (int actionItem = 0; actionItem < sortedActions.size(); actionItem++) {
             ofAction = null;
             ActionBuilder actionBuilder = new ActionBuilder();
 
-            org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action = actions.get(
+            org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action = sortedActions.get(
                     actionItem).getAction();
 
-            if (action instanceof OutputActionCase)
-                ofAction = salToOFOutputAction(action, actionBuilder, version);
-            else if (action instanceof GroupActionCase)
-                ofAction = SalToOFGroupAction(action, actionBuilder);
-            else if (action instanceof CopyTtlOutCase)
-                ofAction = SalToOFCopyTTLIOut(actionBuilder);
-            else if (action instanceof CopyTtlInCase)
-                ofAction = SalToOFCopyTTLIIn(actionBuilder);
-            else if (action instanceof SetMplsTtlActionCase)
-                ofAction = SalToOFSetMplsTtl(action, actionBuilder);
-            else if (action instanceof DecMplsTtlCase)
-                ofAction = SalToOFDecMplsTtl(actionBuilder);
-            else if (action instanceof PushVlanActionCase)
-                ofAction = SalToOFPushVlanAction(action, actionBuilder, version);
-            else if (action instanceof PopVlanActionCase)
+            if (action instanceof OutputActionCase) {
+                ofAction = salToOFAction((OutputActionCase)action, actionBuilder, version);
+            } else if (action instanceof GroupActionCase) {
+                ofAction = salToOFGroupAction(action, actionBuilder);
+            } else if (action instanceof CopyTtlOutCase) {
+                ofAction = salToOFCopyTTLIOut(actionBuilder);
+            } else if (action instanceof CopyTtlInCase) {
+                ofAction = salToOFCopyTTLIIn(actionBuilder);
+            } else if (action instanceof SetMplsTtlActionCase) {
+                ofAction = salToOFSetMplsTtl(action, actionBuilder);
+            } else if (action instanceof DecMplsTtlCase) {
+                ofAction = salToOFDecMplsTtl(actionBuilder);
+            } else if (action instanceof PushVlanActionCase) {
+                ofAction = salToOFPushVlanAction(action, actionBuilder, version);
+            } else if (action instanceof PopVlanActionCase) {
                 ofAction = (version == OFConstants.OFP_VERSION_1_0) ?
-                    SalToOFStripVlan(actionBuilder, version)
-                        : SalToOFPopVlan(actionBuilder);
-            else if (action instanceof PushMplsActionCase)
-                ofAction = SalToOFPushMplsAction(action, actionBuilder);
-            else if (action instanceof PopMplsActionCase)
-                ofAction = SalToOFPopMpls(action, actionBuilder);
-            else if (action instanceof SetQueueActionCase)
-                ofAction = SalToOFSetQueue(action, actionBuilder);
-            else if (action instanceof SetNwTtlActionCase)
-                ofAction = SalToOFSetNwTtl(action, actionBuilder);
-            else if (action instanceof DecNwTtlCase)
-                ofAction = SalToOFDecNwTtl(actionBuilder);
-            else if (action instanceof SetFieldCase)
-                ofAction = SalToOFSetField(action, actionBuilder, version, datapathid);
-            else if (action instanceof PushPbbActionCase)
-                ofAction = SalToOFPushPbbAction(action, actionBuilder);
-            else if (action instanceof PopPbbActionCase)
-                ofAction = SalToOFPopPBB(actionBuilder);
+                    salToOFStripVlan(actionBuilder, version)
+                        : salToOFPopVlan(actionBuilder);
+            } else if (action instanceof PushMplsActionCase) {
+                ofAction = salToOFPushMplsAction(action, actionBuilder);
+            } else if (action instanceof PopMplsActionCase) {
+                ofAction = salToOFPopMpls(action, actionBuilder);
+            } else if (action instanceof SetQueueActionCase) {
+                ofAction = salToOFSetQueue(action, actionBuilder);
+            } else if (action instanceof SetNwTtlActionCase) {
+                ofAction = salToOFSetNwTtl(action, actionBuilder);
+            } else if (action instanceof DecNwTtlCase) {
+                ofAction = salToOFDecNwTtl(actionBuilder);
+            } else if (action instanceof SetFieldCase) {
+                ofAction = salToOFSetField(action, actionBuilder, version, datapathid); 
+            } else if (action instanceof PushPbbActionCase) {
+                ofAction = salToOFPushPbbAction(action, actionBuilder);
+            } else if (action instanceof PopPbbActionCase) {
+                ofAction = salToOFPopPBB(actionBuilder);
 
                 // 1.0 Actions
-            else if (action instanceof SetVlanIdActionCase) {
+            } else if (action instanceof SetVlanIdActionCase) {
                 /*if (version == OFConstants.OFP_VERSION_1_0) {
 
                 } else {
                     List<Action> setVlanIdActionsList = convertToOF13(action, actionBuilder);
                     actionsList.addAll(setVlanIdActionsList);
                 }*/
-                ofAction = SalToOFSetVlanId(action, actionBuilder, version);
-            }
-            else if (action instanceof SetVlanPcpActionCase)
-                ofAction = SalToOFSetVlanpcp(action, actionBuilder, version);
-            else if (action instanceof StripVlanActionCase)
-                ofAction = SalToOFStripVlan(actionBuilder, version);
-            else if (action instanceof SetDlSrcActionCase)
-                ofAction = SalToOFSetDlSrc(action, actionBuilder, version);
-            else if (action instanceof SetDlDstActionCase)
-                ofAction = SalToOFSetDlDst(action, actionBuilder, version);
-            else if (action instanceof SetNwSrcActionCase)
-                ofAction = SalToOFSetNwSrc(action, actionBuilder, version);
-            else if (action instanceof SetNwDstActionCase)
-                ofAction = SalToOFSetNwDst(action, actionBuilder, version);
-            else if (action instanceof SetTpSrcActionCase) {
-                ofAction = SalToOFSetTpSrc(action, actionBuilder, version, IPProtocols.fromProtocolNum(flow.getMatch().
+                ofAction = salToOFSetVlanId(action, actionBuilder, version);
+            } else if (action instanceof SetVlanPcpActionCase) {
+                ofAction = salToOFSetVlanpcp(action, actionBuilder, version);
+            } else if (action instanceof StripVlanActionCase) {
+                ofAction = salToOFStripVlan(actionBuilder, version);
+            } else if (action instanceof SetDlSrcActionCase) {
+                ofAction = salToOFSetDlSrc(action, actionBuilder, version);
+            } else if (action instanceof SetDlDstActionCase) {
+                ofAction = salToOFSetDlDst(action, actionBuilder, version);
+            } else if (action instanceof SetNwSrcActionCase) {
+                ofAction = salToOFSetNwSrc(action, actionBuilder, version);
+            } else if (action instanceof SetNwDstActionCase) {
+                ofAction = salToOFSetNwDst(action, actionBuilder, version);
+            } else if (action instanceof SetTpSrcActionCase) {
+                ofAction = salToOFSetTpSrc(action, actionBuilder, version, IPProtocols.fromProtocolNum(flow.getMatch().
                         getIpMatch().getIpProtocol()));
-            }
-            else if (action instanceof SetTpDstActionCase) {
-                ofAction = SalToOFSetTpDst(action, actionBuilder, version, IPProtocols.fromProtocolNum(flow.getMatch().
+            } else if (action instanceof SetTpDstActionCase) {
+                ofAction = salToOFSetTpDst(action, actionBuilder, version, IPProtocols.fromProtocolNum(flow.getMatch().
                         getIpMatch().getIpProtocol()));
-            }
-            else if (action instanceof SetNwTosActionCase)
-                ofAction = SalToOFSetNwTos(action, actionBuilder, version);
-            else if (action instanceof GeneralExtensionGrouping) {
+            } else if (action instanceof SetNwTosActionCase) {
+                ofAction = salToOFSetNwTos(action, actionBuilder, version);
+            } else if (action instanceof GeneralExtensionGrouping) {
                 
                 /**
                  * TODO: EXTENSION PROPOSAL (action, MD-SAL to OFJava)
@@ -318,7 +314,7 @@ public final class ActionConvertor {
         return actionsList;
     }
 
-    private static Action SalToOFSetField(
+    private static Action salToOFSetField(
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
             ActionBuilder actionBuilder, short version, BigInteger datapathid) {
 
@@ -352,31 +348,31 @@ public final class ActionConvertor {
 
     }
 
-    private static Action SalToOFDecNwTtl(ActionBuilder actionBuilder) {
+    private static Action salToOFDecNwTtl(ActionBuilder actionBuilder) {
         actionBuilder
                 .setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.DecNwTtl.class);
         return emtpyAction(actionBuilder);
     }
 
-    private static Action SalToOFPushMplsAction(
+    private static Action salToOFPushMplsAction(
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
             ActionBuilder actionBuilder) {
         PushMplsActionCase pushMplsActionCase = (PushMplsActionCase) action;
         actionBuilder.setType(PushMpls.class);
 
-        return SalToOFPushAction(pushMplsActionCase.getPushMplsAction().getEthernetType(), actionBuilder);
+        return salToOFPushAction(pushMplsActionCase.getPushMplsAction().getEthernetType(), actionBuilder);
     }
 
-    private static Action SalToOFPushPbbAction(
+    private static Action salToOFPushPbbAction(
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
             ActionBuilder actionBuilder) {
         PushPbbActionCase pushPbbActionCase = (PushPbbActionCase) action;
         actionBuilder.setType(PushPbb.class);
 
-        return SalToOFPushAction(pushPbbActionCase.getPushPbbAction().getEthernetType(), actionBuilder);
+        return salToOFPushAction(pushPbbActionCase.getPushPbbAction().getEthernetType(), actionBuilder);
     }
 
-    private static Action SalToOFPushVlanAction(
+    private static Action salToOFPushVlanAction(
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
             ActionBuilder actionBuilder, short version) {
         if (version == OFConstants.OFP_VERSION_1_0) {
@@ -389,10 +385,10 @@ public final class ActionConvertor {
         PushVlanAction pushVlanAction = pushVlanActionCase.getPushVlanAction();
         actionBuilder.setType(PushVlan.class);
 
-        return SalToOFPushAction(pushVlanAction.getEthernetType(), actionBuilder);
+        return salToOFPushAction(pushVlanAction.getEthernetType(), actionBuilder);
     }
 
-    private static Action SalToOFSetNwTtl(
+    private static Action salToOFSetNwTtl(
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
             ActionBuilder actionBuilder) {
         SetNwTtlActionCase nwTtlActionCase = (SetNwTtlActionCase) action;
@@ -403,7 +399,7 @@ public final class ActionConvertor {
         return actionBuilder.build();
     }
 
-    private static Action SalToOFSetQueue(
+    private static Action salToOFSetQueue(
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
             ActionBuilder actionBuilder) {
         SetQueueActionCase setQueueActionCase = (SetQueueActionCase) action;
@@ -417,27 +413,27 @@ public final class ActionConvertor {
         return actionBuilder.build();
     }
 
-    private static Action SalToOFPopMpls(
+    private static Action salToOFPopMpls(
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
             ActionBuilder actionBuilder) {
         PopMplsActionCase popMplsActionCase = (PopMplsActionCase) action;
         actionBuilder.setType(PopMpls.class);
 
-        return SalToOFPushAction(popMplsActionCase.getPopMplsAction().getEthernetType(), actionBuilder);
+        return salToOFPushAction(popMplsActionCase.getPopMplsAction().getEthernetType(), actionBuilder);
     }
 
-    private static Action SalToOFPopVlan(ActionBuilder actionBuilder) {
+    private static Action salToOFPopVlan(ActionBuilder actionBuilder) {
         actionBuilder.setType(PopVlan.class);
         return emtpyAction(actionBuilder);
     }
 
-    private static Action SalToOFPopPBB(ActionBuilder actionBuilder) {
+    private static Action salToOFPopPBB(ActionBuilder actionBuilder) {
         actionBuilder.setType(PopPbb.class);
         return emtpyAction(actionBuilder);
     }
 
     // set-vlan-id (1.0 feature) can be called on  1.3 switches as well using ADSAL apis
-    private static Action SalToOFSetVlanId(
+    private static Action salToOFSetVlanId(
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
             ActionBuilder actionBuilder, short version) {
 
@@ -471,12 +467,12 @@ public final class ActionConvertor {
             actionBuilder.addAugmentation(OxmFieldsAction.class, oxmFieldsActionBuilder.build());
             return actionBuilder.build();
         } else {
-            logger.error("Unknown Action Type for the Version", version);
+            LOG.error(UNKNOWN_ACTION_TYPE_VERSION, version);
             return null;
         }
     }
 
-    private static Action SalToOFSetVlanpcp(
+    private static Action salToOFSetVlanpcp(
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
             ActionBuilder actionBuilder, short version) {
 
@@ -500,12 +496,12 @@ public final class ActionConvertor {
             actionBuilder.addAugmentation(OxmFieldsAction.class, oxmFieldsActionBuilder.build());
             return actionBuilder.build();
         } else {
-            logger.error("Unknown Action Type for the Version", version);
+            LOG.error(UNKNOWN_ACTION_TYPE_VERSION, version);
             return null;
         }
     }
 
-    private static Action SalToOFStripVlan(ActionBuilder actionBuilder, short version) {
+    private static Action salToOFStripVlan(ActionBuilder actionBuilder, short version) {
         if (version == OFConstants.OFP_VERSION_1_0) {
             actionBuilder
                     .setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.StripVlan.class);
@@ -529,12 +525,12 @@ public final class ActionConvertor {
             actionBuilder.addAugmentation(OxmFieldsAction.class, oxmFieldsActionBuilder.build());
             return actionBuilder.build();
         } else {
-            logger.error("Unknown Action Type for the Version", version);
+            LOG.error(UNKNOWN_ACTION_TYPE_VERSION, version);
             return null;
         }
     }
 
-    private static Action SalToOFSetDlSrc(
+    private static Action salToOFSetDlSrc(
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
             ActionBuilder actionBuilder, short version) {
 
@@ -558,12 +554,12 @@ public final class ActionConvertor {
             actionBuilder.addAugmentation(OxmFieldsAction.class, oxmFieldsActionBuilder.build());
             return actionBuilder.build();
         } else {
-            logger.error("Unknown Action Type for the Version", version);
+            LOG.error(UNKNOWN_ACTION_TYPE_VERSION, version);
             return null;
         }
     }
 
-    private static Action SalToOFSetDlDst(
+    private static Action salToOFSetDlDst(
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
             ActionBuilder actionBuilder, short version) {
 
@@ -587,40 +583,40 @@ public final class ActionConvertor {
             actionBuilder.addAugmentation(OxmFieldsAction.class, oxmFieldsActionBuilder.build());
             return actionBuilder.build();
         } else {
-            logger.error("Unknown Action Type for the Version", version);
+            LOG.error(UNKNOWN_ACTION_TYPE_VERSION, version);
             return null;
         }
     }
 
-    protected static Action SalToOFSetNwSrc(
+    protected static Action salToOFSetNwSrc(
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
             ActionBuilder actionBuilder, short version) {
 
         try {
             ActionSetNwSrcReactor.getInstance().convert((SetNwSrcActionCase) action, version, actionBuilder, null);
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            LOG.error(e.getMessage(), e);
             return null;
         }
 
         return actionBuilder.build();
     }
 
-    protected static Action SalToOFSetNwDst(
+    protected static Action salToOFSetNwDst(
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
             ActionBuilder actionBuilder, short version) {
 
         try {
             ActionSetNwDstReactor.getInstance().convert((SetNwDstActionCase) action, version, actionBuilder, null);
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            LOG.error(e.getMessage(), e);
             return null;
         }
 
         return actionBuilder.build();
     }
 
-    private static Action SalToOFSetNwTos(
+    private static Action salToOFSetNwTos(
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
             ActionBuilder actionBuilder, short version) {
 
@@ -647,13 +643,13 @@ public final class ActionConvertor {
             actionBuilder.addAugmentation(OxmFieldsAction.class, oxmFieldsActionBuilder.build());
             return actionBuilder.build();
         } else {
-            logger.error("Unknown Action Type for the Version", version);
+            LOG.error(UNKNOWN_ACTION_TYPE_VERSION, version);
             return null;
         }
 
     }
 
-    private static Action SalToOFSetTpSrc(
+    private static Action salToOFSetTpSrc(
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
             ActionBuilder actionBuilder, short version, IPProtocols protocol) {
 
@@ -703,7 +699,7 @@ public final class ActionConvertor {
                 portMatchEntryBuilder.setPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber(port));
                 matchEntriesBuilder.addAugmentation(PortMatchEntry.class, portMatchEntryBuilder.build());
                 break;
-            default: logger.warn("Unknown protocol with combination of SetSourcePort: {}", protocol);
+            default: LOG.warn("Unknown protocol with combination of SetSourcePort: {}", protocol);
                 break;
             }
             
@@ -718,11 +714,11 @@ public final class ActionConvertor {
             actionBuilder.addAugmentation(OxmFieldsAction.class, oxmFieldsActionBuilder.build());
             return actionBuilder.build();
         }
-        logger.error("Unknown Action Type for the Version", version);
+        LOG.error(UNKNOWN_ACTION_TYPE_VERSION, version);
         return null;
     }
 
-    private static Action SalToOFSetTpDst(
+    private static Action salToOFSetTpDst(
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
             ActionBuilder actionBuilder, short version, IPProtocols protocol) {
 
@@ -771,7 +767,7 @@ public final class ActionConvertor {
                 portMatchEntryBuilder.setPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber(port));
                 matchEntriesBuilder.addAugmentation(PortMatchEntry.class, portMatchEntryBuilder.build());
                 break;
-            default: logger.warn("Unknown protocol with combination of SetDestinationPort: {}", protocol);
+            default: LOG.warn("Unknown protocol with combination of SetDestinationPort: {}", protocol);
                 break;
             }
             
@@ -786,11 +782,11 @@ public final class ActionConvertor {
             actionBuilder.addAugmentation(OxmFieldsAction.class, oxmFieldsActionBuilder.build());
             return actionBuilder.build();
         }
-        logger.error("Unknown Action Type for the Version", version);
+        LOG.error(UNKNOWN_ACTION_TYPE_VERSION, version);
         return null;
     }
 
-    private static Action SalToOFGroupAction(
+    private static Action salToOFGroupAction(
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
             ActionBuilder actionBuilder) {
 
@@ -804,7 +800,7 @@ public final class ActionConvertor {
         return actionBuilder.build();
     }
 
-    private static Action SalToOFPushAction(Integer ethernetType, ActionBuilder actionBuilder) {
+    private static Action salToOFPushAction(Integer ethernetType, ActionBuilder actionBuilder) {
         EthertypeActionBuilder ethertypeActionBuilder = new EthertypeActionBuilder();
         if (ethernetType != null) {
             ethertypeActionBuilder.setEthertype(new EtherType(ethernetType));
@@ -815,13 +811,13 @@ public final class ActionConvertor {
         return actionBuilder.build();
     }
 
-    private static Action SalToOFDecMplsTtl(ActionBuilder actionBuilder) {
+    private static Action salToOFDecMplsTtl(ActionBuilder actionBuilder) {
         actionBuilder
                 .setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.DecMplsTtl.class);
         return emtpyAction(actionBuilder);
     }
 
-    private static Action SalToOFSetMplsTtl(
+    private static Action salToOFSetMplsTtl(
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
             ActionBuilder actionBuilder) {
         SetMplsTtlActionCase mplsTtlActionCase = (SetMplsTtlActionCase) action;
@@ -835,13 +831,13 @@ public final class ActionConvertor {
         return actionBuilder.build();
     }
 
-    private static Action SalToOFCopyTTLIIn(ActionBuilder actionBuilder) {
+    private static Action salToOFCopyTTLIIn(ActionBuilder actionBuilder) {
         actionBuilder
                 .setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.CopyTtlIn.class);
         return emtpyAction(actionBuilder);
     }
 
-    private static Action SalToOFCopyTTLIOut(ActionBuilder actionBuilder) {
+    private static Action salToOFCopyTTLIOut(ActionBuilder actionBuilder) {
         actionBuilder
                 .setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.CopyTtlOut.class);
         return emtpyAction(actionBuilder);
@@ -852,11 +848,10 @@ public final class ActionConvertor {
         return actionBuilder.build();
     }
 
-    private static Action salToOFOutputAction(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action,
+    private static Action salToOFAction(
+            OutputActionCase outputActionCase,
             ActionBuilder actionBuilder, short version) {
 
-        OutputActionCase outputActionCase = ((OutputActionCase) action);
         OutputAction outputAction = outputActionCase.getOutputAction();
         PortActionBuilder portAction = new PortActionBuilder();
         MaxLengthActionBuilder maxLenActionBuilder = new MaxLengthActionBuilder();
@@ -874,7 +869,7 @@ public final class ActionConvertor {
         if (OpenflowPortsUtil.checkPortValidity(ofVersion, portNumber)) {
             portAction.setPort(new PortNumber(portNumber));
         } else {
-            logger.error("Invalid Port specified " + portNumber + " for Output Action for OF version:" + ofVersion);
+            LOG.error("Invalid Port specified " + portNumber + " for Output Action for OF version:" + ofVersion);
         }
 
         actionBuilder.setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.Output.class);
@@ -1002,14 +997,14 @@ public final class ActionConvertor {
             String portNumberAsString = OpenflowPortsUtil.portNumberToString(protocolAgnosticPort);
             outputAction.setOutputNodeConnector(new Uri(portNumberAsString));
         } else {
-            logger.error("Provided action is not OF Output action, no associated port found!");
+            LOG.error("Provided action is not OF Output action, no associated port found!");
         }
 
         MaxLengthAction length = action.getAugmentation(MaxLengthAction.class);
         if (length != null) {
             outputAction.setMaxLength(length.getMaxLength());
         } else {
-            logger.error("Provided action is not OF Output action, no associated length found!");
+            LOG.error("Provided action is not OF Output action, no associated length found!");
         }
 
         return new OutputActionCaseBuilder().setOutputAction(outputAction.build()).build();

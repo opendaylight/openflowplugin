@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public final class PortConvertor {
-    private static final Logger log = LoggerFactory.getLogger(PortConvertor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PortConvertor.class);
 
     private PortConvertor() {
 
@@ -128,29 +128,29 @@ public final class PortConvertor {
         PortConfig config = null;
         PortState portState = null;
 
-        PortsBuilder OFPortDescDataBuilder = new PortsBuilder();
+        PortsBuilder oFPortDescDataBuilder = new PortsBuilder();
 
-        OFPortDescDataBuilder.setPortNo(
+        oFPortDescDataBuilder.setPortNo(
                 OpenflowPortsUtil.getProtocolPortNumber(OpenflowVersion.get(version), source.getPortNumber())); // portNO
 
-        OFPortDescDataBuilder.setHwAddr(source.getHardwareAddress());
-        OFPortDescDataBuilder.setName(source.getName());
+        oFPortDescDataBuilder.setHwAddr(source.getHardwareAddress());
+        oFPortDescDataBuilder.setName(source.getName());
 
         config = maskPortConfigFields(source.getConfiguration());
 
-        OFPortDescDataBuilder.setConfig(config);
+        oFPortDescDataBuilder.setConfig(config);
 
         portState = getPortState(source.getState());
 
-        OFPortDescDataBuilder.setState(portState);
-        OFPortDescDataBuilder.setCurrentFeatures(getPortFeatures(source.getCurrentFeature()));
-        OFPortDescDataBuilder.setAdvertisedFeatures(getPortFeatures(source.getAdvertisedFeatures()));
-        OFPortDescDataBuilder.setSupportedFeatures(getPortFeatures(source.getSupported()));
-        OFPortDescDataBuilder.setPeerFeatures(getPortFeatures(source.getPeerFeatures()));
-        OFPortDescDataBuilder.setCurrSpeed(source.getCurrentSpeed());
-        OFPortDescDataBuilder.setMaxSpeed(source.getMaximumSpeed());
+        oFPortDescDataBuilder.setState(portState);
+        oFPortDescDataBuilder.setCurrentFeatures(getPortFeatures(source.getCurrentFeature()));
+        oFPortDescDataBuilder.setAdvertisedFeatures(getPortFeatures(source.getAdvertisedFeatures()));
+        oFPortDescDataBuilder.setSupportedFeatures(getPortFeatures(source.getSupported()));
+        oFPortDescDataBuilder.setPeerFeatures(getPortFeatures(source.getPeerFeatures()));
+        oFPortDescDataBuilder.setCurrSpeed(source.getCurrentSpeed());
+        oFPortDescDataBuilder.setMaxSpeed(source.getMaximumSpeed());
 
-        return OFPortDescDataBuilder.build();
+        return oFPortDescDataBuilder.build();
 
     }
 

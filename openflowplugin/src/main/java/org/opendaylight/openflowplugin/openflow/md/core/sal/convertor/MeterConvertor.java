@@ -46,8 +46,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public final class MeterConvertor {
-    private static final Logger logger = LoggerFactory.getLogger(MeterConvertor.class);
-    private static final String PREFIX_SEPARATOR = "/";
+    private static final Logger LOG = LoggerFactory.getLogger(MeterConvertor.class);
 
     private MeterConvertor() {
 
@@ -95,7 +94,7 @@ public final class MeterConvertor {
             getBandsFromSAL(source.getMeterBandHeaders(), bands);
             meterModInputBuilder.setBands(bands);
         } else {
-            logger.error("For this meter Id" + source.getMeterId().getValue() + ",no associated band data found!");
+            LOG.error("For this meter Id" + source.getMeterId().getValue() + ",no associated band data found!");
         }
 
         meterModInputBuilder.setVersion(version);
@@ -128,10 +127,10 @@ public final class MeterConvertor {
                         meterBandItem = dropCaseBuilder.build();
                         bandsB = new BandsBuilder();
                         bandsB.setMeterBand(meterBandItem);
-                        bands.add(bandsB.build()); // Bands list
-
+                        // Bands list
+                        bands.add(bandsB.build());
                     } else {
-                        logger.error("BandType: " + MeterBandType.OFPMBTDROP + "No Band Data found");
+                        logBandTypeMissing(MeterBandType.OFPMBTDROP);
                     }
                 } else if (meterBandHeader.getMeterBandTypes().getFlags().isOfpmbtDscpRemark()) {
                     if (meterBandHeader.getBandType() != null) {
@@ -146,10 +145,10 @@ public final class MeterConvertor {
                         meterBandItem = dscpCaseBuilder.build();
                         bandsB = new BandsBuilder();
                         bandsB.setMeterBand(meterBandItem);
-                        bands.add(bandsB.build()); // Bands list
-
+                        // Bands list
+                        bands.add(bandsB.build());
                     } else {
-                        logger.error("BandType: " + MeterBandType.OFPMBTDSCPREMARK + "No Band Data found");
+                        logBandTypeMissing(MeterBandType.OFPMBTDSCPREMARK);
                     }
                 } else if (meterBandHeader.getMeterBandTypes().getFlags().isOfpmbtExperimenter()) {
                     if (meterBandHeader.getBandType() != null) {
@@ -167,18 +166,22 @@ public final class MeterConvertor {
                         meterBandItem = experimenterCaseBuilder.build();
                         bandsB = new BandsBuilder();
                         bandsB.setMeterBand(meterBandItem);
-                        bands.add(bandsB.build()); // Bands list
-
+                        // Bands list
+                        bands.add(bandsB.build());
                     } else {
-                        logger.error("BandType: " + MeterBandType.OFPMBTEXPERIMENTER + "No Band Data found");
+                        logBandTypeMissing(MeterBandType.OFPMBTEXPERIMENTER);
                     }
                 }
 
             } else {
-                logger.error("Invalid meter band data found.");
+                LOG.error("Invalid meter band data found.");
             }
         }
 
+    }
+
+    private static void logBandTypeMissing(final MeterBandType meterBandType) {
+        LOG.error("BandType: {} No Band Data found", meterBandType);
     }
 
 }

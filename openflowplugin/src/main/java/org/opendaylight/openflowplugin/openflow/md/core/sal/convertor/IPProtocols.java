@@ -36,10 +36,6 @@ public enum IPProtocols {
         this.protocol = value;
     }
 
-    private byte getValue() {
-        return (byte) this.protocol;
-    }
-    
     public static IPProtocols fromProtocolNum(Short protocolNum) {
         return valueMap.get(protocolNum);
     }
