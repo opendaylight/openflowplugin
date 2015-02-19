@@ -462,7 +462,7 @@ public class ActionConvertorTest {
     }
 
     /**
-     * testing {@link ActionConvertor#SalToOFSetNwDst(org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder, short)}
+     * testing {@link ActionConvertor#salToOFSetNwDst(org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder, short)}
      * with OF-1.0, IPv4
      */
     @Test
@@ -472,13 +472,13 @@ public class ActionConvertorTest {
         Address address;
         address = new Ipv4Builder().setIpv4Address(new Ipv4Prefix("10.0.0.1/32")).build();
         SetNwDstActionCase action = provisionNwDstActionBuilder(address);
-        ActionConvertor.SalToOFSetNwDst(action, actionBuilder, version);
+        ActionConvertor.salToOFSetNwDst(action, actionBuilder, version);
         Assert.assertEquals(SetNwDst.class, actionBuilder.getType());
         Assert.assertEquals("10.0.0.1", actionBuilder.getAugmentation(IpAddressAction.class).getIpAddress().getValue());
     }
 
     /**
-     * testing {@link ActionConvertor#SalToOFSetNwDst(org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder, short)}
+     * testing {@link ActionConvertor#salToOFSetNwDst(org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder, short)}
      * with OF-1.0, IPv6
      */
     @Test
@@ -488,13 +488,13 @@ public class ActionConvertorTest {
         Address address;
         address = new Ipv6Builder().setIpv6Address(new Ipv6Prefix("2001:0db8:85a3:0042:1000:8a2e:0370:7334")).build();
         SetNwDstActionCase action = provisionNwDstActionBuilder(address);
-        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action ofAction = ActionConvertor.SalToOFSetNwDst(action, actionBuilder, version);
+        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action ofAction = ActionConvertor.salToOFSetNwDst(action, actionBuilder, version);
         Assert.assertNull(ofAction);
     }
 
 
     /**
-     * testing {@link ActionConvertor#SalToOFSetNwDst(org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder, short)}
+     * testing {@link ActionConvertor#salToOFSetNwDst(org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder, short)}
      * with OF-1.3, IPv4
      */
     @Test
@@ -504,7 +504,7 @@ public class ActionConvertorTest {
         Address address;
         address = new Ipv4Builder().setIpv4Address(new Ipv4Prefix("10.0.0.1/32")).build();
         SetNwDstActionCase action = provisionNwDstActionBuilder(address);
-        ActionConvertor.SalToOFSetNwDst(action, actionBuilder, version);
+        ActionConvertor.salToOFSetNwDst(action, actionBuilder, version);
         Assert.assertEquals(SetField.class, actionBuilder.getType());
         MatchEntries matchEntry = actionBuilder.getAugmentation(OxmFieldsAction.class).getMatchEntries().get(0);
         Assert.assertEquals(Ipv4Dst.class, matchEntry.getOxmMatchField());
@@ -513,7 +513,7 @@ public class ActionConvertorTest {
 
 
     /**
-     * testing {@link ActionConvertor#SalToOFSetNwDst(org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder, short)}
+     * testing {@link ActionConvertor#salToOFSetNwDst(org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder, short)}
      * with OF-1.3, IPv6
      */
     @Test
@@ -523,7 +523,7 @@ public class ActionConvertorTest {
         Address address;
         address = new Ipv6Builder().setIpv6Address(new Ipv6Prefix("2001:0db8:85a3:0042:1000:8a2e:0370:7334")).build();
         SetNwDstActionCase action = provisionNwDstActionBuilder(address);
-        ActionConvertor.SalToOFSetNwDst(action, actionBuilder, version);
+        ActionConvertor.salToOFSetNwDst(action, actionBuilder, version);
         Assert.assertEquals(SetField.class, actionBuilder.getType());
         MatchEntries matchEntry = actionBuilder.getAugmentation(OxmFieldsAction.class).getMatchEntries().get(0);
         Assert.assertEquals(Ipv6Dst.class, matchEntry.getOxmMatchField());
@@ -533,7 +533,7 @@ public class ActionConvertorTest {
 
 
     /**
-     * testing {@link ActionConvertor#SalToOFSetNwSrc(org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder, short)}
+     * testing {@link ActionConvertor#salToOFSetNwSrc(org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder, short)}
      * with OF-1.0, IPv4
      */
     @Test
@@ -543,13 +543,13 @@ public class ActionConvertorTest {
         Address address;
         address = new Ipv4Builder().setIpv4Address(new Ipv4Prefix("10.0.0.1/32")).build();
         SetNwSrcActionCase action = provisionNwSrcActionBuilder(address);
-        ActionConvertor.SalToOFSetNwSrc(action, actionBuilder, version);
+        ActionConvertor.salToOFSetNwSrc(action, actionBuilder, version);
         Assert.assertEquals(SetNwSrc.class, actionBuilder.getType());
         Assert.assertEquals("10.0.0.1", actionBuilder.getAugmentation(IpAddressAction.class).getIpAddress().getValue());
     }
 
     /**
-     * testing {@link ActionConvertor#SalToOFSetNwSrc(org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder, short)}
+     * testing {@link ActionConvertor#salToOFSetNwSrc(org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder, short)}
      * with OF-1.0, IPv6
      */
     @Test
@@ -559,12 +559,12 @@ public class ActionConvertorTest {
         Address address;
         address = new Ipv6Builder().setIpv6Address(new Ipv6Prefix("2001:0db8:85a3:0042:1000:8a2e:0370:7334")).build();
         SetNwSrcActionCase action = provisionNwSrcActionBuilder(address);
-        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action ofAction = ActionConvertor.SalToOFSetNwSrc(action, actionBuilder, version);
+        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action ofAction = ActionConvertor.salToOFSetNwSrc(action, actionBuilder, version);
         Assert.assertNull(ofAction);
     }
 
     /**
-     * testing {@link ActionConvertor#SalToOFSetNwSrc(org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder, short)}
+     * testing {@link ActionConvertor#salToOFSetNwSrc(org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder, short)}
      * with OF-1.3, IPv4
      */
     @Test
@@ -574,7 +574,7 @@ public class ActionConvertorTest {
         Address address;
         address = new Ipv4Builder().setIpv4Address(new Ipv4Prefix("10.0.0.1/32")).build();
         SetNwSrcActionCase action = provisionNwSrcActionBuilder(address);
-        ActionConvertor.SalToOFSetNwSrc(action, actionBuilder, version);
+        ActionConvertor.salToOFSetNwSrc(action, actionBuilder, version);
         Assert.assertEquals(SetField.class, actionBuilder.getType());
         MatchEntries matchEntry = actionBuilder.getAugmentation(OxmFieldsAction.class).getMatchEntries().get(0);
         Assert.assertEquals(Ipv4Src.class, matchEntry.getOxmMatchField());
@@ -582,7 +582,7 @@ public class ActionConvertorTest {
     }
 
     /**
-     * testing {@link ActionConvertor#SalToOFSetNwSrc(org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder, short)}
+     * testing {@link ActionConvertor#salToOFSetNwSrc(org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder, short)}
      * with OF-1.3, IPv6
      */
     @Test
@@ -592,7 +592,7 @@ public class ActionConvertorTest {
         Address address;
         address = new Ipv6Builder().setIpv6Address(new Ipv6Prefix("2001:0db8:85a3:0042:1000:8a2e:0370:7334")).build();
         SetNwSrcActionCase action = provisionNwSrcActionBuilder(address);
-        ActionConvertor.SalToOFSetNwSrc(action, actionBuilder, version);
+        ActionConvertor.salToOFSetNwSrc(action, actionBuilder, version);
         Assert.assertEquals(SetField.class, actionBuilder.getType());
         MatchEntries matchEntry = actionBuilder.getAugmentation(OxmFieldsAction.class).getMatchEntries().get(0);
         Assert.assertEquals(Ipv6Src.class, matchEntry.getOxmMatchField());

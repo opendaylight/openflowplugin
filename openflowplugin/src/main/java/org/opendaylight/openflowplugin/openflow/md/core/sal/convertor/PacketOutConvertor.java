@@ -32,9 +32,8 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PacketOutConvertor {
-    private static final Logger logger = LoggerFactory.getLogger(MeterConvertor.class);
-    private static final String PREFIX_SEPARATOR = "/";
+public final class PacketOutConvertor {
+    private static final Logger LOG = LoggerFactory.getLogger(MeterConvertor.class);
 
     private PacketOutConvertor() {
 
@@ -77,9 +76,8 @@ public class PacketOutConvertor {
         if (outArgs.size() >= 3) {
             outPort = getPortNumber(outArgs.get(2), version);
         } else {
-            new Exception("PORT NR not exist in Egress"); // TODO : P4 search
-                                                          // for some normal
-                                                          // exception
+            // TODO : P4 search for some normal exception
+            new Exception("PORT NR not exist in Egress");
         }
 
         // TODO VD P! wait for way to move Actions (e.g. augmentation)
