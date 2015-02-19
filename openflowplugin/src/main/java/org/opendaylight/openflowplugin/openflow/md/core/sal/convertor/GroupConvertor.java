@@ -9,11 +9,12 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.Bucket;
+
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupTypes;
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-
 import org.opendaylight.openflowjava.protocol.api.util.BinContent;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.group.update.UpdatedGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.Buckets;
@@ -38,8 +39,7 @@ import org.slf4j.LoggerFactory;
  */
 public final class GroupConvertor {
 
-    private static final Logger logger = LoggerFactory.getLogger(GroupConvertor.class);
-    private static final String PREFIX_SEPARATOR = "/";
+    private static final Logger LOG = LoggerFactory.getLogger(GroupConvertor.class);
 
     private static final Integer DEFAULT_WEIGHT = 0;
     private static final Long OFPP_ANY = Long.parseLong("ffffffff", 16);
@@ -63,20 +63,20 @@ public final class GroupConvertor {
         } else if (source instanceof UpdatedGroup) {
             groupModInputBuilder.setCommand(GroupModCommand.OFPGCMODIFY);
         }
-        
-        if (source.getGroupType().getIntValue() == 0) {
+
+        if (source.getGroupType().equals(GroupTypes.GroupAll)) {
             groupModInputBuilder.setType(GroupType.OFPGTALL);
         }
 
-        if (source.getGroupType().getIntValue() == 1) {
+        if (source.getGroupType().equals(GroupTypes.GroupSelect)) {
             groupModInputBuilder.setType(GroupType.OFPGTSELECT);
         }
 
-        if (source.getGroupType().getIntValue() == 2) {
+        if (source.getGroupType().equals(GroupTypes.GroupIndirect)) {
             groupModInputBuilder.setType(GroupType.OFPGTINDIRECT);
         }
 
-        if (source.getGroupType().getIntValue() == 3) {
+        if (source.getGroupType().equals(GroupTypes.GroupFf)) {
             groupModInputBuilder.setType(GroupType.OFPGTFF);
         }
 
@@ -84,8 +84,7 @@ public final class GroupConvertor {
         // Only if the bucket is configured for the group then add it
         if ((source.getBuckets() != null) && (source.getBuckets().getBucket().size() != 0)) {
 
-            bucketLists = new ArrayList<BucketsList>();
-            getbucketList(source.getBuckets(), bucketLists, version, source.getGroupType().getIntValue(),datapathid);
+            bucketLists = salToOFBucketList(source.getBuckets(), version, source.getGroupType().getIntValue(),datapathid);
             groupModInputBuilder.setBucketsList(bucketLists);
         }
         groupModInputBuilder.setVersion(version);
@@ -93,58 +92,56 @@ public final class GroupConvertor {
 
     }
 
-    private static void getbucketList(Buckets buckets, List<BucketsList> bucketLists, short version, int groupType,BigInteger datapathid) {
-
-        Iterator<org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.Bucket> groupBucketIterator = buckets
-                .getBucket().iterator();
-        org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.Bucket groupBucket;
-        
-        while (groupBucketIterator.hasNext()) {
-            groupBucket = groupBucketIterator.next();
+    private static List<BucketsList> salToOFBucketList(Buckets buckets, short version, int groupType,BigInteger datapathid) {
+        final List<BucketsList> bucketLists = new ArrayList<>();
+        for (org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.Bucket groupBucket : buckets
+                .getBucket()) {
             BucketsListBuilder bucketBuilder = new BucketsListBuilder();
 
-            if ((groupType == GroupType.OFPGTSELECT.getIntValue()) && (groupBucket.getWeight() == null)) {
+            salToOFBucketListWeight(groupBucket, bucketBuilder, groupType);
+            salToOFBucketListWatchGroup(groupBucket, bucketBuilder, groupType);
+            salToOFBucketListWatchPort(groupBucket, bucketBuilder, groupType);
 
-                logger.error("Weight value required for this OFPGT_SELECT");
-
-            }
-
-            if (null != groupBucket.getWeight()) {
-                bucketBuilder.setWeight(groupBucket.getWeight().intValue());
-            } else {
-                bucketBuilder.setWeight(DEFAULT_WEIGHT);
-            }
-
-            if ((groupType == GroupType.OFPGTFF.getIntValue()) && (groupBucket.getWatchGroup() == null)) {
-
-                logger.error("WatchGroup required for this OFPGT_FF");
-
-            }
-            
-            if (null != groupBucket.getWatchGroup()) {
-                bucketBuilder.setWatchGroup(groupBucket.getWatchGroup());
-            } else {
-                bucketBuilder.setWatchGroup(BinContent.intToUnsignedLong(DEFAULT_WATCH_GROUP.intValue()));
-            }
-
-            if ((groupType == GroupType.OFPGTFF.getIntValue()) && (groupBucket.getWatchPort() == null)) {
-
-                logger.error("WatchPort required for this OFPGT_FF");
-
-            }
-
-            if (null != groupBucket.getWatchPort()) {
-                bucketBuilder.setWatchPort(new PortNumber(groupBucket.getWatchPort()));
-            } else {
-                bucketBuilder.setWatchPort(new PortNumber(BinContent.intToUnsignedLong(DEFAULT_WATCH_PORT.intValue())));
-            }
-
-            List<Action> bucketActionList = ActionConvertor.getActions(groupBucket.getAction(), version,datapathid, null);
+            List<Action> bucketActionList = ActionConvertor.getActions(groupBucket.getAction(), version, datapathid, null);
             bucketBuilder.setAction(bucketActionList);
             BucketsList bucket = bucketBuilder.build();
             bucketLists.add(bucket);
         }
+        return bucketLists;
 
+    }
+
+    private static void salToOFBucketListWatchPort(Bucket groupBucket, BucketsListBuilder bucketBuilder, int groupType) {
+        if (null != groupBucket.getWatchPort()) {
+            bucketBuilder.setWatchPort(new PortNumber(groupBucket.getWatchPort()));
+        } else {
+            bucketBuilder.setWatchPort(new PortNumber(BinContent.intToUnsignedLong(DEFAULT_WATCH_PORT.intValue())));
+            if (groupType == GroupType.OFPGTFF.getIntValue()) {
+                LOG.error("WatchPort required for this OFPGT_FF");
+            }
+        }
+    }
+
+    private static void salToOFBucketListWatchGroup(Bucket groupBucket, BucketsListBuilder bucketBuilder, int groupType) {
+        if (null != groupBucket.getWatchGroup()) {
+            bucketBuilder.setWatchGroup(groupBucket.getWatchGroup());
+        } else {
+            bucketBuilder.setWatchGroup(BinContent.intToUnsignedLong(DEFAULT_WATCH_GROUP.intValue()));
+            if (groupType == GroupType.OFPGTFF.getIntValue()) {
+                LOG.error("WatchGroup required for this OFPGT_FF");
+            }
+        }
+    }
+
+    private static void salToOFBucketListWeight(Bucket groupBucket, BucketsListBuilder bucketBuilder, int groupType) {
+        if (null != groupBucket.getWeight()) {
+            bucketBuilder.setWeight(groupBucket.getWeight().intValue());
+        } else {
+            bucketBuilder.setWeight(DEFAULT_WEIGHT);
+            if (groupType == GroupType.OFPGTSELECT.getIntValue()) {
+                LOG.error("Weight value required for this OFPGT_SELECT");
+            }
+        }
     }
 
 }
