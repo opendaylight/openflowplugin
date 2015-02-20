@@ -98,7 +98,6 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     private final NodeId nodeId;
     private final IMessageDispatchService messageService;
     private short version = 0;
-    private NotificationProviderService rpcNotificationProviderService;
     private OFRpcTaskContext rpcTaskContext;
 
     // TODO:read timeout from configSubsystem
@@ -111,7 +110,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         this.nodeId = nodeId;
         messageService = sessionContext.getMessageDispatchService();
         version = sessionContext.getPrimaryConductor().getVersion();
-        rpcNotificationProviderService = OFSessionUtil.getSessionManager().getNotificationProviderService();
+        final NotificationProviderService rpcNotificationProviderService = OFSessionUtil.getSessionManager().getNotificationProviderService();
 
         rpcTaskContext = new OFRpcTaskContext();
         rpcTaskContext.setSession(sessionContext);
@@ -284,248 +283,201 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     @Override
     public Future<RpcResult<GetGroupDescriptionOutput>> getGroupDescription(final GetGroupDescriptionInput input) {
         LOG.debug("Calling the getGroupDescription RPC method on MessageDispatchService");
-        SwitchConnectionDistinguisher cookie = null;
 
         OFRpcTask<GetGroupDescriptionInput, RpcResult<GetGroupDescriptionOutput>> task =
-                OFRpcTaskFactory.createGetGroupDescriptionTask(rpcTaskContext, input, cookie);
-        ListenableFuture<RpcResult<GetGroupDescriptionOutput>> result = task.submit();
-        return result;
+                OFRpcTaskFactory.createGetGroupDescriptionTask(rpcTaskContext, input, null);
+        return task.submit();
     }
 
     @Override
     public Future<RpcResult<GetGroupFeaturesOutput>> getGroupFeatures(final GetGroupFeaturesInput input) {
         LOG.debug("Calling the getGroupFeatures RPC method on MessageDispatchService");
-        SwitchConnectionDistinguisher cookie = null;
 
         OFRpcTask<GetGroupFeaturesInput, RpcResult<GetGroupFeaturesOutput>> task =
-                OFRpcTaskFactory.createGetGroupFeaturesTask(rpcTaskContext, input, cookie);
-        ListenableFuture<RpcResult<GetGroupFeaturesOutput>> result = task.submit();
-        return result;
+                OFRpcTaskFactory.createGetGroupFeaturesTask(rpcTaskContext, input, null);
+        return task.submit();
     }
 
     @Override
     public Future<RpcResult<GetGroupStatisticsOutput>> getGroupStatistics(final GetGroupStatisticsInput input) {
         LOG.debug("Calling the getGroupStatistics RPC method on MessageDispatchService");
-        SwitchConnectionDistinguisher cookie = null;
 
         OFRpcTask<GetGroupStatisticsInput, RpcResult<GetGroupStatisticsOutput>> task =
-                OFRpcTaskFactory.createGetGroupStatisticsTask(rpcTaskContext, input, cookie);
-        ListenableFuture<RpcResult<GetGroupStatisticsOutput>> result = task.submit();
-        return result;
+                OFRpcTaskFactory.createGetGroupStatisticsTask(rpcTaskContext, input, null);
+        return task.submit();
     }
 
     @Override
     public Future<RpcResult<GetAllMeterConfigStatisticsOutput>> getAllMeterConfigStatistics(
             final GetAllMeterConfigStatisticsInput input) {
         LOG.debug("Calling the getAllMeterConfigStatistics RPC method on MessageDispatchService");
-        SwitchConnectionDistinguisher cookie = null;
 
         OFRpcTask<GetAllMeterConfigStatisticsInput, RpcResult<GetAllMeterConfigStatisticsOutput>> task =
-                OFRpcTaskFactory.createGetAllMeterConfigStatisticsTask(rpcTaskContext, input, cookie);
-        ListenableFuture<RpcResult<GetAllMeterConfigStatisticsOutput>> result = task.submit();
-        return result;
+                OFRpcTaskFactory.createGetAllMeterConfigStatisticsTask(rpcTaskContext, input, null);
+        return task.submit();
     }
 
     @Override
     public Future<RpcResult<GetAllMeterStatisticsOutput>> getAllMeterStatistics(
             final GetAllMeterStatisticsInput input) {
         LOG.debug("Calling the getAllMeterStatistics RPC method on MessageDispatchService");
-        SwitchConnectionDistinguisher cookie = null;
 
         OFRpcTask<GetAllMeterStatisticsInput, RpcResult<GetAllMeterStatisticsOutput>> task =
-                OFRpcTaskFactory.createGetAllMeterStatisticsTask(rpcTaskContext, input, cookie);
-        ListenableFuture<RpcResult<GetAllMeterStatisticsOutput>> result = task.submit();
-        return result;
+                OFRpcTaskFactory.createGetAllMeterStatisticsTask(rpcTaskContext, input, null);
+        return task.submit();
     }
 
     @Override
     public Future<RpcResult<GetMeterFeaturesOutput>> getMeterFeatures(
             final GetMeterFeaturesInput input) {
         LOG.debug("Calling the getMeterFeatures RPC method on MessageDispatchService");
-        SwitchConnectionDistinguisher cookie = null;
 
         OFRpcTask<GetMeterFeaturesInput, RpcResult<GetMeterFeaturesOutput>> task =
-                OFRpcTaskFactory.createGetMeterFeaturesTask(rpcTaskContext, input, cookie);
-        ListenableFuture<RpcResult<GetMeterFeaturesOutput>> result = task.submit();
-        return result;
+                OFRpcTaskFactory.createGetMeterFeaturesTask(rpcTaskContext, input, null);
+        return task.submit();
     }
 
     @Override
     public Future<RpcResult<GetMeterStatisticsOutput>> getMeterStatistics(
             final GetMeterStatisticsInput input) {
         LOG.debug("Calling the getMeterStatistics RPC method on MessageDispatchService");
-        SwitchConnectionDistinguisher cookie = null;
 
         OFRpcTask<GetMeterStatisticsInput, RpcResult<GetMeterStatisticsOutput>> task =
-                OFRpcTaskFactory.createGetMeterStatisticsTask(rpcTaskContext, input, cookie);
-        ListenableFuture<RpcResult<GetMeterStatisticsOutput>> result = task.submit();
-        return result;
+                OFRpcTaskFactory.createGetMeterStatisticsTask(rpcTaskContext, input, null);
+        return task.submit();
     }
 
     @Override
     public Future<RpcResult<GetAllNodeConnectorsStatisticsOutput>> getAllNodeConnectorsStatistics(
             final GetAllNodeConnectorsStatisticsInput input) {
         LOG.debug("Calling the getAllNodeConnectorsStatistics RPC method on MessageDispatchService");
-        SwitchConnectionDistinguisher cookie = null;
 
         OFRpcTask<GetAllNodeConnectorsStatisticsInput, RpcResult<GetAllNodeConnectorsStatisticsOutput>> task =
-                OFRpcTaskFactory.createGetAllNodeConnectorsStatisticsTask(rpcTaskContext, input, cookie);
-        ListenableFuture<RpcResult<GetAllNodeConnectorsStatisticsOutput>> result = task.submit();
-        return result;
+                OFRpcTaskFactory.createGetAllNodeConnectorsStatisticsTask(rpcTaskContext, input, null);
+        return task.submit();
     }
 
     @Override
     public Future<RpcResult<GetNodeConnectorStatisticsOutput>> getNodeConnectorStatistics(
             final GetNodeConnectorStatisticsInput input) {
         LOG.debug("Calling the getNodeConnectorStatistics RPC method on MessageDispatchService");
-        SwitchConnectionDistinguisher cookie = null;
 
         OFRpcTask<GetNodeConnectorStatisticsInput, RpcResult<GetNodeConnectorStatisticsOutput>> task =
-                OFRpcTaskFactory.createGetNodeConnectorStatisticsTask(rpcTaskContext, input, cookie);
-        ListenableFuture<RpcResult<GetNodeConnectorStatisticsOutput>> result = task.submit();
-        return result;
+                OFRpcTaskFactory.createGetNodeConnectorStatisticsTask(rpcTaskContext, input, null);
+        return task.submit();
     }
 
     @Override
     public Future<RpcResult<UpdatePortOutput>> updatePort(final UpdatePortInput input) {
         LOG.debug("Calling the updatePort RPC method on MessageDispatchService");
 
-        // use primary connection
-        SwitchConnectionDistinguisher cookie = null;
-
         OFRpcTask<UpdatePortInput, RpcResult<UpdatePortOutput>> task =
-                OFRpcTaskFactory.createUpdatePortTask(rpcTaskContext, input, cookie);
-        ListenableFuture<RpcResult<UpdatePortOutput>> result = task.submit();
-
-        return result;
+                OFRpcTaskFactory.createUpdatePortTask(rpcTaskContext, input, null);
+        return task.submit();
     }
 
     @Override
     public Future<RpcResult<UpdateTableOutput>> updateTable(final UpdateTableInput input) {
         LOG.debug("Calling the updateTable RPC method on MessageDispatchService");
 
-        SwitchConnectionDistinguisher cookie = null;
-
         OFRpcTask<UpdateTableInput, RpcResult<UpdateTableOutput>> task =
-                OFRpcTaskFactory.createUpdateTableTask(rpcTaskContext, input, cookie);
-        ListenableFuture<RpcResult<UpdateTableOutput>> result = task.submit();
-
-        return result;
+                OFRpcTaskFactory.createUpdateTableTask(rpcTaskContext, input, null);
+        return task.submit();
     }
 
     @Override
     public Future<RpcResult<GetAllFlowStatisticsFromFlowTableOutput>> getAllFlowStatisticsFromFlowTable(
             final GetAllFlowStatisticsFromFlowTableInput input) {
         LOG.debug("Calling the getAllFlowStatisticsFromFlowTable RPC method on MessageDispatchService");
-        SwitchConnectionDistinguisher cookie = null;
 
         OFRpcTask<GetAllFlowStatisticsFromFlowTableInput, RpcResult<GetAllFlowStatisticsFromFlowTableOutput>> task =
-                OFRpcTaskFactory.createGetAllFlowStatisticsFromFlowTableTask(rpcTaskContext, input, cookie);
-        ListenableFuture<RpcResult<GetAllFlowStatisticsFromFlowTableOutput>> result = task.submit();
-        return result;
+                OFRpcTaskFactory.createGetAllFlowStatisticsFromFlowTableTask(rpcTaskContext, input, null);
+        return task.submit();
     }
 
     @Override
     public Future<RpcResult<GetAllFlowsStatisticsFromAllFlowTablesOutput>> getAllFlowsStatisticsFromAllFlowTables(
             final GetAllFlowsStatisticsFromAllFlowTablesInput input) {
         LOG.debug("Calling the getAllFlowsStatisticsFromAllFlowTables RPC method on MessageDispatchService");
-        SwitchConnectionDistinguisher cookie = null;
 
         OFRpcTask<GetAllFlowsStatisticsFromAllFlowTablesInput, RpcResult<GetAllFlowsStatisticsFromAllFlowTablesOutput>> task =
-                OFRpcTaskFactory.createGetAllFlowsStatisticsFromAllFlowTablesTask(rpcTaskContext, input, cookie);
-        ListenableFuture<RpcResult<GetAllFlowsStatisticsFromAllFlowTablesOutput>> result = task.submit();
-        return result;
+                OFRpcTaskFactory.createGetAllFlowsStatisticsFromAllFlowTablesTask(rpcTaskContext, input, null);
+        return task.submit();
     }
 
     @Override
     public Future<RpcResult<GetFlowStatisticsFromFlowTableOutput>> getFlowStatisticsFromFlowTable(
             final GetFlowStatisticsFromFlowTableInput input) {
         LOG.debug("Calling the getFlowStatisticsFromFlowTable RPC method on MessageDispatchService");
-        SwitchConnectionDistinguisher cookie = null;
 
         OFRpcTask<GetFlowStatisticsFromFlowTableInput, RpcResult<GetFlowStatisticsFromFlowTableOutput>> task =
-                OFRpcTaskFactory.createGetFlowStatisticsFromFlowTableTask(rpcTaskContext, input, cookie);
-        ListenableFuture<RpcResult<GetFlowStatisticsFromFlowTableOutput>> result = task.submit();
-        return result;
+                OFRpcTaskFactory.createGetFlowStatisticsFromFlowTableTask(rpcTaskContext, input, null);
+        return task.submit();
     }
 
     @Override
     public Future<RpcResult<GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput>> getAggregateFlowStatisticsFromFlowTableForAllFlows(
             final GetAggregateFlowStatisticsFromFlowTableForAllFlowsInput input) {
         LOG.debug("Calling the getAggregateFlowStatisticsFromFlowTableForAllFlows RPC method on MessageDispatchService");
-        SwitchConnectionDistinguisher cookie = null;
 
         OFRpcTask<GetAggregateFlowStatisticsFromFlowTableForAllFlowsInput, RpcResult<GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput>> task =
-                OFRpcTaskFactory.createGetAggregateFlowStatisticsFromFlowTableForAllFlowsTask(rpcTaskContext, input, cookie);
-        ListenableFuture<RpcResult<GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput>> result = task.submit();
-        return result;
+                OFRpcTaskFactory.createGetAggregateFlowStatisticsFromFlowTableForAllFlowsTask(rpcTaskContext, input, null);
+        return task.submit();
     }
 
     @Override
     public Future<RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>> getAggregateFlowStatisticsFromFlowTableForGivenMatch(
             final GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput input) {
         LOG.debug("Calling the getAggregateFlowStatisticsFromFlowTableForGivenMatch RPC method on MessageDispatchService");
-        SwitchConnectionDistinguisher cookie = null;
 
         OFRpcTask<GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput, RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>> task =
-                OFRpcTaskFactory.createGetAggregateFlowStatisticsFromFlowTableForGivenMatchTask(rpcTaskContext, input, cookie);
-        ListenableFuture<RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>> result = task.submit();
-        return result;
+                OFRpcTaskFactory.createGetAggregateFlowStatisticsFromFlowTableForGivenMatchTask(rpcTaskContext, input, null);
+        return task.submit();
     }
 
     @Override
     public Future<RpcResult<GetFlowTablesStatisticsOutput>> getFlowTablesStatistics(
             final GetFlowTablesStatisticsInput input) {
         LOG.debug("Calling the getFlowTablesStatistics RPC method on MessageDispatchService");
-        SwitchConnectionDistinguisher cookie = null;
 
         OFRpcTask<GetFlowTablesStatisticsInput, RpcResult<GetFlowTablesStatisticsOutput>> task =
-                OFRpcTaskFactory.createGetFlowTablesStatisticsTask(rpcTaskContext, input, cookie);
-        ListenableFuture<RpcResult<GetFlowTablesStatisticsOutput>> result = task.submit();
-        return result;
+                OFRpcTaskFactory.createGetFlowTablesStatisticsTask(rpcTaskContext, input, null);
+        return task.submit();
     }
 
     @Override
     public Future<RpcResult<GetAllQueuesStatisticsFromAllPortsOutput>> getAllQueuesStatisticsFromAllPorts(
             final GetAllQueuesStatisticsFromAllPortsInput input) {
         LOG.debug("Calling the getAllQueuesStatisticsFromAllPorts RPC method on MessageDispatchService");
-        SwitchConnectionDistinguisher cookie = null;
 
         OFRpcTask<GetAllQueuesStatisticsFromAllPortsInput, RpcResult<GetAllQueuesStatisticsFromAllPortsOutput>> task =
-                OFRpcTaskFactory.createGetAllQueuesStatisticsFromAllPortsTask(rpcTaskContext, input, cookie);
-        ListenableFuture<RpcResult<GetAllQueuesStatisticsFromAllPortsOutput>> result = task.submit();
-        return result;
+                OFRpcTaskFactory.createGetAllQueuesStatisticsFromAllPortsTask(rpcTaskContext, input, null);
+        return task.submit();
     }
 
     @Override
     public Future<RpcResult<GetAllQueuesStatisticsFromGivenPortOutput>> getAllQueuesStatisticsFromGivenPort(
             final GetAllQueuesStatisticsFromGivenPortInput input) {
         LOG.debug("Calling the getAllQueuesStatisticsFromGivenPort RPC method on MessageDispatchService");
-        SwitchConnectionDistinguisher cookie = null;
 
         OFRpcTask<GetAllQueuesStatisticsFromGivenPortInput, RpcResult<GetAllQueuesStatisticsFromGivenPortOutput>> task =
-                OFRpcTaskFactory.createGetAllQueuesStatisticsFromGivenPortTask(rpcTaskContext, input, cookie);
-        ListenableFuture<RpcResult<GetAllQueuesStatisticsFromGivenPortOutput>> result = task.submit();
-        return result;
+                OFRpcTaskFactory.createGetAllQueuesStatisticsFromGivenPortTask(rpcTaskContext, input, null);
+        return task.submit();
     }
 
     @Override
     public Future<RpcResult<GetQueueStatisticsFromGivenPortOutput>> getQueueStatisticsFromGivenPort(
             final GetQueueStatisticsFromGivenPortInput input) {
         LOG.debug("Calling the getQueueStatisticsFromGivenPort RPC method on MessageDispatchService");
-        SwitchConnectionDistinguisher cookie = null;
 
         OFRpcTask<GetQueueStatisticsFromGivenPortInput, RpcResult<GetQueueStatisticsFromGivenPortOutput>> task =
-                OFRpcTaskFactory.createGetQueueStatisticsFromGivenPortTask(rpcTaskContext, input, cookie);
-        ListenableFuture<RpcResult<GetQueueStatisticsFromGivenPortOutput>> result = task.submit();
-        return result;
+                OFRpcTaskFactory.createGetQueueStatisticsFromGivenPortTask(rpcTaskContext, input, null);
+        return task.submit();
     }
 
     @Override
     public Future<RpcResult<SetConfigOutput>> setConfig(SetConfigInput input) {
-        SwitchConnectionDistinguisher cookie = null;
-        OFRpcTask<SetConfigInput, RpcResult<SetConfigOutput>> task = OFRpcTaskFactory.createSetNodeConfigTask(rpcTaskContext, input, cookie);
-        ListenableFuture<RpcResult<SetConfigOutput>> result = task.submit();
-        return result;
+        OFRpcTask<SetConfigInput, RpcResult<SetConfigOutput>> task = OFRpcTaskFactory.createSetNodeConfigTask(rpcTaskContext, input, null);
+        return task.submit();
     }
 }
