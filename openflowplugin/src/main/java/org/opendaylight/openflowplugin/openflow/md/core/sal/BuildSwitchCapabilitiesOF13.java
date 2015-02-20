@@ -29,7 +29,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * @author jsebin
  *
  */
-public class BuildSwitchCapabilitiesOF13 implements BuildSwitchFeatures {
+public final class BuildSwitchCapabilitiesOF13 implements BuildSwitchFeatures {
 
 private static BuildSwitchCapabilitiesOF13 instance = new BuildSwitchCapabilitiesOF13();
     
