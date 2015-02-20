@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
  */
 public class SalRegistrationManager implements SessionListener, AutoCloseable {
 
-    private final static Logger LOG = LoggerFactory.getLogger(SalRegistrationManager.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SalRegistrationManager.class);
 
     private ProviderContext providerContext;
 
@@ -138,7 +138,7 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
         try {
             builder2.setIpAddress(getIpAddressOf(sw));
         } catch (Exception e) {
-            LOG.warn("IP address of the node {} cannot be obtained: {}", sw.getNodeId(), e.getMessage());
+            LOG.warn("IP address of the node {} cannot be obtained.", sw.getNodeId(), e);
         }
         builder2.setSwitchFeatures(swFeaturesUtil.buildSwitchFeatures(features));
         builder.addAugmentation(FlowCapableNodeUpdated.class, builder2.build());
@@ -148,10 +148,6 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
 
     private static IpAddress getIpAddressOf(ModelDrivenSwitch sw) {
         SessionContext sessionContext = sw.getSessionContext();
-//        if (!sessionContext.isValid()) {
-//            LOG.warn("IP address of the node {} cannot be obtained. Session is not valid.", sw.getNodeId());
-//            return null;
-//        }
         Preconditions.checkNotNull(sessionContext.getPrimaryConductor(),
                 "primary conductor must not be NULL -> " + sw.getNodeId());
         Preconditions.checkNotNull(sessionContext.getPrimaryConductor().getConnectionAdapter(),

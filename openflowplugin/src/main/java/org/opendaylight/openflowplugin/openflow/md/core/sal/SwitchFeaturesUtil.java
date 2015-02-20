@@ -7,6 +7,9 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal;
 
+import static org.opendaylight.openflowplugin.api.OFConstants.OFP_VERSION_1_0;
+import static org.opendaylight.openflowplugin.api.OFConstants.OFP_VERSION_1_3;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,17 +23,17 @@ import org.slf4j.LoggerFactory;
  * @author jsebin
  *
  */
-public class SwitchFeaturesUtil {
+public final class SwitchFeaturesUtil {
 
-    protected static final Logger LOG = LoggerFactory.getLogger(SwitchFeaturesUtil.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SwitchFeaturesUtil.class);
     
     private static SwitchFeaturesUtil instance = new SwitchFeaturesUtil();
     private Map<Short, BuildSwitchFeatures> swFeaturesBuilders;
     
     private SwitchFeaturesUtil() {
         swFeaturesBuilders = new HashMap<>();
-        swFeaturesBuilders.put((short) 1, BuildSwitchCapabilitiesOF10.getInstance());
-        swFeaturesBuilders.put((short) 4, BuildSwitchCapabilitiesOF13.getInstance());
+        swFeaturesBuilders.put(OFP_VERSION_1_0, BuildSwitchCapabilitiesOF10.getInstance());
+        swFeaturesBuilders.put(OFP_VERSION_1_3, BuildSwitchCapabilitiesOF13.getInstance());
     }
     
     /**
@@ -48,7 +51,7 @@ public class SwitchFeaturesUtil {
      */
     public SwitchFeatures buildSwitchFeatures(GetFeaturesOutput features) {
 
-        if(swFeaturesBuilders.containsKey(features.getVersion()) == true) {
+        if(swFeaturesBuilders.containsKey(features.getVersion())) {
             LOG.debug("map contains version {}", features.getVersion());
             try {
                 return swFeaturesBuilders.get(features.getVersion()).build(features);

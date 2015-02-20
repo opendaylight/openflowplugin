@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2013 Cisco Systems, Inc. and others.  All rights reserved.
- * 
+ *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal;
 
 import java.util.Collection;
-
 import org.opendaylight.controller.sal.common.util.Rpcs;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutputBuilder;
@@ -29,14 +28,14 @@ import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.google.common.base.Function;
 
 /**
- * collection of transformation functions dedicated to rpc future results  
+ * collection of transformation functions dedicated to rpc future results
  */
 public abstract class OFRpcFutureResultTransformFactory {
-    
+
+    private static final String MSG_ADD_FLOW_RPC = "Returning the Add Flow RPC result to MD-SAL";
     protected static Logger LOG = LoggerFactory
             .getLogger(OFRpcFutureResultTransformFactory.class);
 
@@ -47,8 +46,7 @@ public abstract class OFRpcFutureResultTransformFactory {
      */
     protected static <E> RpcResult<E> assembleRpcResult(RpcResult<?> input, E result) {
         Collection<RpcError> errors = input.getErrors();
-        RpcResult<E> rpcResult = Rpcs.getRpcResult(input.isSuccessful(), result, errors);
-        return rpcResult;
+        return Rpcs.getRpcResult(input.isSuccessful(), result, errors);
     }
 
     /**
@@ -67,13 +65,13 @@ public abstract class OFRpcFutureResultTransformFactory {
                 AddFlowOutput result = addFlowOutput.build();
 
                 RpcResult<AddFlowOutput> rpcResult = assembleRpcResult(input, result);
-                LOG.debug("Returning the Add Flow RPC result to MD-SAL");
+                LOG.debug(MSG_ADD_FLOW_RPC);
                 return rpcResult;
             }
 
         };
     }
-    
+
     /**
      * @return translator from {@link UpdateFlowOutput} to {@link RemoveFlowOutput}
      */
@@ -90,13 +88,13 @@ public abstract class OFRpcFutureResultTransformFactory {
                 RemoveFlowOutput result = removeFlowOutput.build();
 
                 RpcResult<RemoveFlowOutput> rpcResult = assembleRpcResult(input, result);
-                LOG.debug("Returning the Add Flow RPC result to MD-SAL");
+                LOG.debug(MSG_ADD_FLOW_RPC);
                 return rpcResult;
             }
 
         };
     }
-    
+
     /**
      * @return translator from {@link UpdateGroupOutput} to {@link AddGroupOutput}
      */
@@ -106,7 +104,7 @@ public abstract class OFRpcFutureResultTransformFactory {
             @Override
             public RpcResult<AddGroupOutput> apply(final RpcResult<UpdateGroupOutput> input) {
                 UpdateGroupOutput updateGroupOutput = input.getResult();
-                
+
                 AddGroupOutputBuilder addGroupOutput = new AddGroupOutputBuilder();
                 addGroupOutput.setTransactionId(updateGroupOutput.getTransactionId());
                 AddGroupOutput result = addGroupOutput.build();
@@ -117,7 +115,7 @@ public abstract class OFRpcFutureResultTransformFactory {
             }
         };
     }
-    
+
     /**
      * @return
      */
@@ -134,13 +132,13 @@ public abstract class OFRpcFutureResultTransformFactory {
                 RemoveGroupOutput result = removeGroupOutput.build();
 
                 RpcResult<RemoveGroupOutput> rpcResult = assembleRpcResult(input, result);
-                LOG.debug("Returning the Add Flow RPC result to MD-SAL");
+                LOG.debug(MSG_ADD_FLOW_RPC);
                 return rpcResult;
             }
 
         };
     }
-    
+
     /**
      * @return translator from {@link UpdateMeterOutput} to {@link AddMeterOutput}
      */
@@ -150,7 +148,7 @@ public abstract class OFRpcFutureResultTransformFactory {
             @Override
             public RpcResult<AddMeterOutput> apply(final RpcResult<UpdateMeterOutput> input) {
                 UpdateMeterOutput updateMeterOutput = input.getResult();
-                
+
                 AddMeterOutputBuilder addMeterOutput = new AddMeterOutputBuilder();
                 addMeterOutput.setTransactionId(updateMeterOutput.getTransactionId());
                 AddMeterOutput result = addMeterOutput.build();
@@ -161,8 +159,8 @@ public abstract class OFRpcFutureResultTransformFactory {
             }
         };
     }
-    
-    
+
+
     /**
      * @return
      */
@@ -172,7 +170,7 @@ public abstract class OFRpcFutureResultTransformFactory {
             @Override
             public RpcResult<RemoveMeterOutput> apply(final RpcResult<UpdateMeterOutput> input) {
                 UpdateMeterOutput updateMeterOutput = input.getResult();
-                
+
                 RemoveMeterOutputBuilder removeMeterOutput = new RemoveMeterOutputBuilder();
                 removeMeterOutput.setTransactionId(updateMeterOutput.getTransactionId());
                 RemoveMeterOutput result = removeMeterOutput.build();
@@ -183,8 +181,8 @@ public abstract class OFRpcFutureResultTransformFactory {
             }
         };
     }
-    
-    
-    
-    
+
+
+
+
 }
