@@ -37,32 +37,6 @@ public abstract class AbstractModelDrivenSwitch implements ModelDrivenSwitch {
 
     private final InstanceIdentifier<Node> identifier;
 
-    private RoutedRpcRegistration<SalFlowService> flowRegistration;
-
-    private RoutedRpcRegistration<SalGroupService> groupRegistration;
-    
-    private RoutedRpcRegistration<SalTableService> tableRegistration;
-
-    private RoutedRpcRegistration<SalMeterService> meterRegistration;
-    
-    private RoutedRpcRegistration<SalPortService> portRegistration;
-    
-    private RoutedRpcRegistration<NodeConfigService> nodeConfigRegistration;
-
-    private RoutedRpcRegistration<PacketProcessingService> packetRegistration;
-
-    private RoutedRpcRegistration<OpendaylightFlowStatisticsService> flowStatisticsRegistration;
-
-    private RoutedRpcRegistration<OpendaylightGroupStatisticsService> groupStatisticsRegistration;
-
-    private RoutedRpcRegistration<OpendaylightMeterStatisticsService> meterStatisticsRegistration;
-
-    private RoutedRpcRegistration<OpendaylightPortStatisticsService> portStatisticsRegistration;
-
-    private RoutedRpcRegistration<OpendaylightFlowTableStatisticsService> flowTableStatisticsRegistration;
-
-    private RoutedRpcRegistration<OpendaylightQueueStatisticsService> queueStatisticsRegistration;
-
     protected final SessionContext sessionContext;
 
     protected AbstractModelDrivenSwitch(InstanceIdentifier<Node> identifier,SessionContext conductor) {
@@ -80,55 +54,55 @@ public abstract class AbstractModelDrivenSwitch implements ModelDrivenSwitch {
         CompositeObjectRegistrationBuilder<ModelDrivenSwitch> builder = CompositeObjectRegistration
                 .<ModelDrivenSwitch> builderFor(this);
 
-        flowRegistration = ctx.addRoutedRpcImplementation(SalFlowService.class, this);
+        final RoutedRpcRegistration<SalFlowService> flowRegistration = ctx.addRoutedRpcImplementation(SalFlowService.class, this);
         flowRegistration.registerPath(NodeContext.class, getIdentifier());
         builder.add(flowRegistration);
-        
-        portRegistration = ctx.addRoutedRpcImplementation(SalPortService.class, this);
+
+        final RoutedRpcRegistration<SalPortService> portRegistration = ctx.addRoutedRpcImplementation(SalPortService.class, this);
         portRegistration.registerPath(NodeContext.class, getIdentifier());
         builder.add(portRegistration);
 
-        meterRegistration = ctx.addRoutedRpcImplementation(SalMeterService.class, this);
+        final RoutedRpcRegistration<SalMeterService> meterRegistration = ctx.addRoutedRpcImplementation(SalMeterService.class, this);
         meterRegistration.registerPath(NodeContext.class, getIdentifier());
         builder.add(meterRegistration);
 
-        groupRegistration = ctx.addRoutedRpcImplementation(SalGroupService.class, this);
+        final RoutedRpcRegistration<SalGroupService> groupRegistration = ctx.addRoutedRpcImplementation(SalGroupService.class, this);
         groupRegistration.registerPath(NodeContext.class, getIdentifier());
         builder.add(groupRegistration);
-        
-        tableRegistration = ctx.addRoutedRpcImplementation(SalTableService.class, this);
+
+        final RoutedRpcRegistration<SalTableService> tableRegistration = ctx.addRoutedRpcImplementation(SalTableService.class, this);
         tableRegistration.registerPath(NodeContext.class, getIdentifier());
         builder.add(tableRegistration);
 
-        packetRegistration = ctx.addRoutedRpcImplementation(PacketProcessingService.class, this);
+        final RoutedRpcRegistration<PacketProcessingService> packetRegistration = ctx.addRoutedRpcImplementation(PacketProcessingService.class, this);
         packetRegistration.registerPath(NodeContext.class, getIdentifier());
         builder.add(packetRegistration);
 
-        flowStatisticsRegistration = ctx.addRoutedRpcImplementation(OpendaylightFlowStatisticsService.class, this);
+        final RoutedRpcRegistration<OpendaylightFlowStatisticsService> flowStatisticsRegistration = ctx.addRoutedRpcImplementation(OpendaylightFlowStatisticsService.class, this);
         flowStatisticsRegistration.registerPath(NodeContext.class, getIdentifier());
         builder.add(flowStatisticsRegistration);
 
-        groupStatisticsRegistration = ctx.addRoutedRpcImplementation(OpendaylightGroupStatisticsService.class, this);
+        final RoutedRpcRegistration<OpendaylightGroupStatisticsService> groupStatisticsRegistration = ctx.addRoutedRpcImplementation(OpendaylightGroupStatisticsService.class, this);
         groupStatisticsRegistration.registerPath(NodeContext.class, getIdentifier());
         builder.add(groupStatisticsRegistration);
 
-        meterStatisticsRegistration = ctx.addRoutedRpcImplementation(OpendaylightMeterStatisticsService.class, this);
+        final RoutedRpcRegistration<OpendaylightMeterStatisticsService> meterStatisticsRegistration = ctx.addRoutedRpcImplementation(OpendaylightMeterStatisticsService.class, this);
         meterStatisticsRegistration.registerPath(NodeContext.class, getIdentifier());
         builder.add(meterStatisticsRegistration);
 
-        portStatisticsRegistration = ctx.addRoutedRpcImplementation(OpendaylightPortStatisticsService.class, this);
+        final RoutedRpcRegistration<OpendaylightPortStatisticsService> portStatisticsRegistration = ctx.addRoutedRpcImplementation(OpendaylightPortStatisticsService.class, this);
         portStatisticsRegistration.registerPath(NodeContext.class, getIdentifier());
         builder.add(portStatisticsRegistration);
 
-        nodeConfigRegistration = ctx.addRoutedRpcImplementation(NodeConfigService.class, this);
+        final RoutedRpcRegistration<NodeConfigService> nodeConfigRegistration = ctx.addRoutedRpcImplementation(NodeConfigService.class, this);
         nodeConfigRegistration.registerPath(NodeContext.class, getIdentifier());
         builder.add(nodeConfigRegistration);
-        
-        flowTableStatisticsRegistration = ctx.addRoutedRpcImplementation(OpendaylightFlowTableStatisticsService.class, this);
+
+        final RoutedRpcRegistration<OpendaylightFlowTableStatisticsService> flowTableStatisticsRegistration = ctx.addRoutedRpcImplementation(OpendaylightFlowTableStatisticsService.class, this);
         flowTableStatisticsRegistration.registerPath(NodeContext.class, getIdentifier());
         builder.add(flowTableStatisticsRegistration);
-        
-        queueStatisticsRegistration = ctx.addRoutedRpcImplementation(OpendaylightQueueStatisticsService.class, this);
+
+        final RoutedRpcRegistration<OpendaylightQueueStatisticsService> queueStatisticsRegistration = ctx.addRoutedRpcImplementation(OpendaylightQueueStatisticsService.class, this);
         queueStatisticsRegistration.registerPath(NodeContext.class, getIdentifier());
         builder.add(queueStatisticsRegistration);
 
