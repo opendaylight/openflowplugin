@@ -54,6 +54,10 @@ public abstract class OFRpcTaskUtil {
      * @param cookie
      * @return rpcResult of given type, containing wrapped errors of barrier sending (if any) or success
      */
+    private OFRpcTaskUtil() {
+        //hiding implicit constructor
+    }
+
     public static Collection<RpcError> manageBarrier(OFRpcTaskContext taskContext, Boolean isBarrier,
             SwitchConnectionDistinguisher cookie) {
         Collection<RpcError> errors = null;
@@ -108,13 +112,14 @@ public abstract class OFRpcTaskUtil {
      * @param notificationProviderService
      * @param notificationComposer lazy notification composer
      */
-    public static <R extends RpcResult<? extends TransactionAware>, N extends Notification, INPUT extends DataContainer>
+    public static <R extends RpcResult<? extends TransactionAware>, N extends Notification, I extends DataContainer>
     void hookFutureNotification(
-            final OFRpcTask<INPUT, R> task,
+            final OFRpcTask<I, R> task,
             ListenableFuture<R> originalResult,
             final NotificationProviderService notificationProviderService,
             final NotificationComposer<N> notificationComposer) {
-        Futures.addCallback(originalResult, new FutureCallback<R>() {
+
+        class FutureCallbackImpl implements FutureCallback<R> {
             @Override
             public void onSuccess(R result) {
                 if(null == notificationProviderService) {
@@ -140,7 +145,9 @@ public abstract class OFRpcTaskUtil {
                 task.getTaskContext().getMessageSpy().spyMessage(
                         task.getInput(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_FAILURE);
             }
-        });
+        }
+
+        Futures.addCallback(originalResult, new FutureCallbackImpl());
     }
 
     /**
@@ -150,22 +157,22 @@ public abstract class OFRpcTaskUtil {
      * @param notificationComposer lazy notification composer
      * @return chained result with barrier
      */
-    public static <TX extends TransactionAware, INPUT extends DataContainer>
-    ListenableFuture<RpcResult<TX>> chainFutureBarrier(
-            final OFRpcTask<INPUT, RpcResult<TX>> task,
-            final ListenableFuture<RpcResult<TX>> originalResult) {
+    public static <T extends TransactionAware, I extends DataContainer>
+    ListenableFuture<RpcResult<T>> chainFutureBarrier(
+            final OFRpcTask<I, RpcResult<T>> task,
+            final ListenableFuture<RpcResult<T>> originalResult) {
 
-        ListenableFuture<RpcResult<TX>> chainResult = originalResult;
+        ListenableFuture<RpcResult<T>> chainResult = originalResult;
         if (Objects.firstNonNull(task.isBarrier(), Boolean.FALSE)) {
 
-            chainResult = Futures.transform(originalResult, new AsyncFunction<RpcResult<TX>, RpcResult<TX>>() {
+            chainResult = Futures.transform(originalResult, new AsyncFunction<RpcResult<T>, RpcResult<T>>() {
 
                 @Override
-                public ListenableFuture<RpcResult<TX>> apply(final RpcResult<TX> input) throws Exception {
+                public ListenableFuture<RpcResult<T>> apply(final RpcResult<T> input) throws Exception {
                     if (input.isSuccessful()) {
                         RpcInputOutputTuple<BarrierInput, ListenableFuture<RpcResult<BarrierOutput>>> sendBarrierRpc = sendBarrier(
                                 task.getSession(), task.getCookie(), task.getMessageService());
-                        ListenableFuture<RpcResult<TX>> barrierTxResult = Futures.transform(
+                        ListenableFuture<RpcResult<T>> barrierTxResult = Futures.transform(
                                 sendBarrierRpc.getOutput(),
                                 transformBarrierToTransactionAware(input, sendBarrierRpc.getInput()));
                         return barrierTxResult;
@@ -184,17 +191,18 @@ public abstract class OFRpcTaskUtil {
      * @param originalInput
      * @return
      */
-    protected static <TX extends TransactionAware> Function<RpcResult<BarrierOutput>, RpcResult<TX>> transformBarrierToTransactionAware(
-            final RpcResult<TX> originalInput, final BarrierInput barrierInput) {
-        return new Function<RpcResult<BarrierOutput>, RpcResult<TX>>() {
+    protected static <T extends TransactionAware> Function<RpcResult<BarrierOutput>, RpcResult<T>> transformBarrierToTransactionAware(
+            final RpcResult<T> originalInput, final BarrierInput barrierInput) {
+
+        class FunctionImpl implements Function<RpcResult<BarrierOutput>, RpcResult<T>> {
 
             @Override
-            public RpcResult<TX> apply(final RpcResult<BarrierOutput> barrierResult) {
-                RpcResultBuilder<TX> rpcBuilder = null;
+            public RpcResult<T> apply(final RpcResult<BarrierOutput> barrierResult) {
+                RpcResultBuilder<T> rpcBuilder = null;
                 if (barrierResult.isSuccessful()) {
-                    rpcBuilder = RpcResultBuilder.<TX>success();
+                    rpcBuilder = RpcResultBuilder.<T>success();
                 } else {
-                    rpcBuilder = RpcResultBuilder.<TX>failed();
+                    rpcBuilder = RpcResultBuilder.<T>failed();
                     RpcError rpcError = RpcResultBuilder.newWarning(
                             ErrorType.RPC,
                             OFConstants.ERROR_TAG_TIMEOUT,
@@ -212,7 +220,8 @@ public abstract class OFRpcTaskUtil {
 
                 return rpcBuilder.build();
             }
+        }
 
-        };
+        return new FunctionImpl();
     }
 }
