@@ -142,9 +142,8 @@
 
     <!-- test the features.xml -->
     <dependency>
-      <groupId>org.opendaylight.yangtools</groupId>
+      <groupId>org.opendaylight.odlparent</groupId>
       <artifactId>features-test</artifactId>
-      <version>${yangtools.version}</version>
     </dependency>
     <!-- dependency for opendaylight-karaf-empty for use by testing -->
     <dependency>
@@ -209,7 +208,7 @@
             <karaf.distro.version>${karaf.empty.distro.version}</karaf.distro.version>
           </systemPropertyVariables>
           <dependenciesToScan>
-           <dependency>org.opendaylight.yangtools:features-test</dependency>
+           <dependency>org.opendaylight.odlparent:features-test</dependency>
           </dependenciesToScan>
         </configuration>
       </plugin>

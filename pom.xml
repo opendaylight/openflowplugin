@@ -58,6 +58,7 @@
       <salGeneratorPath>src/main/yang-gen-sal</salGeneratorPath>
       <exi.nagasena.version>0000.0002.0038.0</exi.nagasena.version>
       <controller.distribution.version>0.2.0-SNAPSHOT</controller.distribution.version>
+      <features.test.version>1.5.0-SNAPSHOT</features.test.version>
 
       <!-- Sonar config -->
       <sonar-jacoco-listeners.version>2.4</sonar-jacoco-listeners.version>
@@ -262,6 +263,12 @@
           <groupId>org.opendaylight.controller</groupId>
           <artifactId>netconf-impl</artifactId>
           <version>${netconf.parent.version}</version>
+        </dependency>
+
+        <dependency>
+          <groupId>org.opendaylight.odlparent</groupId>
+          <artifactId>features-test</artifactId>
+          <version>${features.test.version}</version>
         </dependency>
 
         <!-- thirdparty -->
@@ -642,7 +649,7 @@
               <version>${openflowplugin.model.version}</version>
             </dependency>
 
-            <!-- excluding old models pulled as transient dependencies 
+            <!-- excluding old models pulled as transient dependencies
                  TODO: remove -->
             <dependency>
               <groupId>org.opendaylight.openflowplugin</groupId>
@@ -707,6 +714,6 @@
       <module>samples/learning-switch</module>
       <module>applications</module>
       <module>model</module>
-      <module>legacy</module>  
+      <module>legacy</module>
   </modules>
 </project>

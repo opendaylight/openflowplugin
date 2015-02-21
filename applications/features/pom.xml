@@ -3,72 +3,90 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.opendaylight.openflowplugin</groupId>
-    <artifactId>openflowplugin-extension-parent</artifactId>
+    <artifactId>openflowplugin-parent</artifactId>
     <version>0.1.0-SNAPSHOT</version>
-    <relativePath>../</relativePath>
+    <relativePath>../../</relativePath>
   </parent>
-  <artifactId>features-openflowplugin-extension</artifactId>
+  <artifactId>features-flow</artifactId>
 
   <packaging>jar</packaging>
 
   <properties>
     <features.file>features.xml</features.file>
-    <karaf.empty.distro.version>1.5.0-SNAPSHOT</karaf.empty.distro.version>
-    <yangtools.version>0.7.0-SNAPSHOT</yangtools.version>
   </properties>
 
   <dependencies>
-    <!-- feature dependencies -->
     <dependency>
-      <groupId>org.opendaylight.openflowplugin</groupId>
-      <artifactId>features-openflowplugin</artifactId>
-      <version>${project.version}</version>
+      <groupId>org.opendaylight.controller</groupId>
+      <artifactId>features-mdsal</artifactId>
+      <version>${mdsal.version}</version>
       <classifier>features</classifier>
       <type>xml</type>
     </dependency>
 
-    <!-- bundle dependencies -->
-    <dependency>
-      <groupId>org.opendaylight.openflowplugin</groupId>
-      <artifactId>openflowplugin-extension-api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-
-    <!-- Nicira extensions -->
-    <dependency>
-      <groupId>org.opendaylight.openflowplugin</groupId>
-      <artifactId>openflowplugin-extension-nicira-config</artifactId>
+  <dependency>
+      <groupId>org.opendaylight.openflowplugin.applications</groupId>
+      <artifactId>statistics-manager-config</artifactId>
       <version>${project.version}</version>
       <type>xml</type>
       <classifier>config</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.opendaylight.openflowplugin</groupId>
-      <artifactId>openflowplugin-extension-nicira</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opendaylight.openflowplugin</groupId>
-      <artifactId>openflowjava-extension-nicira-api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opendaylight.openflowplugin</groupId>
-      <artifactId>openflowjava-extension-nicira</artifactId>
-      <version>${project.version}</version>
-    </dependency>
+  </dependency>
 
-    <!-- test the features.xml -->
+    <dependency>
+      <groupId>org.opendaylight.openflowplugin.model</groupId>
+      <artifactId>model-flow-base</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.openflowplugin.model</groupId>
+      <artifactId>model-flow-service</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.openflowplugin.model</groupId>
+      <artifactId>model-flow-statistics</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.controller.model</groupId>
+      <artifactId>model-inventory</artifactId>
+      <version>${mdsal.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.controller.model</groupId>
+      <artifactId>model-topology</artifactId>
+      <version>${mdsal.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.openflowplugin.applications</groupId>
+      <artifactId>topology-manager</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.openflowplugin.applications</groupId>
+      <artifactId>topology-lldp-discovery</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.openflowplugin.applications</groupId>
+      <artifactId>statistics-manager</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.openflowplugin.applications</groupId>
+      <artifactId>inventory-manager</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.openflowplugin.applications</groupId>
+      <artifactId>forwardingrules-manager</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <!-- test to validate features.xml -->
     <dependency>
       <groupId>org.opendaylight.odlparent</groupId>
       <artifactId>features-test</artifactId>
-    </dependency>
-    <!-- dependency for opendaylight-karaf-empty for use by testing -->
-    <dependency>
-      <groupId>org.opendaylight.controller</groupId>
-      <artifactId>opendaylight-karaf-empty</artifactId>
-      <version>${karaf.distro.empty.version}</version>
-      <type>zip</type>
+      <version>1.5.0-SNAPSHOT</version>
     </dependency>
   </dependencies>
 
@@ -118,12 +136,11 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.16</version>
         <configuration>
           <systemPropertyVariables>
             <karaf.distro.groupId>org.opendaylight.controller</karaf.distro.groupId>
             <karaf.distro.artifactId>opendaylight-karaf-empty</karaf.distro.artifactId>
-            <karaf.distro.version>${karaf.empty.distro.version}</karaf.distro.version>
+            <karaf.distro.version>${commons.opendaylight.version}</karaf.distro.version>
           </systemPropertyVariables>
           <dependenciesToScan>
            <dependency>org.opendaylight.odlparent:features-test</dependency>
@@ -132,5 +149,10 @@
       </plugin>
     </plugins>
   </build>
-
+  <scm>
+    <connection>scm:git:ssh://git.opendaylight.org:29418/controller.git</connection>
+    <developerConnection>scm:git:ssh://git.opendaylight.org:29418/controller.git</developerConnection>
+    <tag>HEAD</tag>
+    <url>https://wiki.opendaylight.org/view/OpenDaylight_Controller:MD-SAL</url>
+  </scm>
 </project>
