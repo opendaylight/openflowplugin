@@ -199,7 +199,7 @@ public class OFPluginFlowTest {
         switchSim.setSecuredClient(false);
         Deque<ClientEvent> handshakeScenario = ScenarioFactory.createHandshakeScenarioVBM(
                 ScenarioFactory.VERSION_BITMAP_13, (short) 0, ScenarioFactory.VERSION_BITMAP_10_13, false);
-        handshakeScenario.addFirst(new SleepEvent(3000L));
+        handshakeScenario.addFirst(new SleepEvent(6000L));
         ScenarioFactory.appendPostHandshakeScenario(handshakeScenario, true);
         WaitForMessageEvent flowModEvent = new WaitForMessageEvent(ByteBufUtils
                 .hexStringToBytes(
