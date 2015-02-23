@@ -51,7 +51,7 @@ public class ErrorTranslator extends AbstractErrorTranslator {
             builder.setTransactionId(txnId);
             builder.setType(errorType);
             builder.setCode(message.getCode());
-            builder.setNode(node);
+            
             if (message.getData() != null) {
                 builder.setData(new String(message.getData()));
             }
@@ -61,7 +61,7 @@ public class ErrorTranslator extends AbstractErrorTranslator {
             builder.setTransactionId(txnId);
             builder.setType(errorType);
             builder.setCode(message.getCode());
-            builder.setNode(node);
+            
             if (message.getData() != null) {
                 builder.setData(new String(message.getData()));
             }
@@ -71,7 +71,7 @@ public class ErrorTranslator extends AbstractErrorTranslator {
             builder.setTransactionId(txnId);
             builder.setType(errorType);
             builder.setCode(message.getCode());
-            builder.setNode(node);
+            
             if (message.getData() != null) {
                 builder.setData(new String(message.getData()));
             }
@@ -81,7 +81,7 @@ public class ErrorTranslator extends AbstractErrorTranslator {
             builder.setTransactionId(txnId);
             builder.setType(errorType);
             builder.setCode(message.getCode());
-            builder.setNode(node);
+            
             if (message.getData() != null) {
                 builder.setData(new String(message.getData()));
             }
@@ -91,7 +91,7 @@ public class ErrorTranslator extends AbstractErrorTranslator {
             builder.setTransactionId(txnId);
             builder.setType(errorType);
             builder.setCode(message.getCode());
-            builder.setNode(node);
+            
             if (message.getData() != null) {
                 builder.setData(new String(message.getData()));
             }
@@ -101,7 +101,7 @@ public class ErrorTranslator extends AbstractErrorTranslator {
             builder.setTransactionId(txnId);
             builder.setType(errorType);
             builder.setCode(message.getCode());
-            builder.setNode(node);
+            
             if (message.getData() != null) {
                 builder.setData(new String(message.getData()));
             }
@@ -111,7 +111,7 @@ public class ErrorTranslator extends AbstractErrorTranslator {
             builder.setTransactionId(txnId);
             builder.setType(errorType);
             builder.setCode(message.getCode());
-            builder.setNode(node);
+            
             if (message.getData() != null) {
                 builder.setData(new String(message.getData()));
             }
@@ -121,7 +121,7 @@ public class ErrorTranslator extends AbstractErrorTranslator {
             builder.setTransactionId(txnId);
             builder.setType(errorType);
             builder.setCode(message.getCode());
-            builder.setNode(node);
+            
             if (message.getData() != null) {
                 builder.setData(new String(message.getData()));
             }
@@ -131,7 +131,7 @@ public class ErrorTranslator extends AbstractErrorTranslator {
             builder.setTransactionId(txnId);
             builder.setType(errorType);
             builder.setCode(message.getCode());
-            builder.setNode(node);
+            
             if (message.getData() != null) {
                 builder.setData(new String(message.getData()));
             }
@@ -141,7 +141,7 @@ public class ErrorTranslator extends AbstractErrorTranslator {
             builder.setTransactionId(txnId);
             builder.setType(errorType);
             builder.setCode(message.getCode());
-            builder.setNode(node);
+            
             if (message.getData() != null) {
                 builder.setData(new String(message.getData()));
             }
@@ -151,7 +151,7 @@ public class ErrorTranslator extends AbstractErrorTranslator {
             builder.setTransactionId(txnId);
             builder.setType(errorType);
             builder.setCode(message.getCode());
-            builder.setNode(node);
+            
             if (message.getData() != null) {
                 builder.setData(new String(message.getData()));
             }
@@ -161,7 +161,7 @@ public class ErrorTranslator extends AbstractErrorTranslator {
             builder.setTransactionId(txnId);
             builder.setType(errorType);
             builder.setCode(message.getCode());
-            builder.setNode(node);
+            
             if (message.getData() != null) {
                 builder.setData(new String(message.getData()));
             }
@@ -171,7 +171,7 @@ public class ErrorTranslator extends AbstractErrorTranslator {
             builder.setTransactionId(txnId);
             builder.setType(errorType);
             builder.setCode(message.getCode());
-            builder.setNode(node);
+            
             if (message.getData() != null) {
                 builder.setData(new String(message.getData()));
             }
@@ -181,7 +181,7 @@ public class ErrorTranslator extends AbstractErrorTranslator {
             builder.setTransactionId(txnId);
             builder.setType(errorType);
             builder.setCode(message.getCode());
-            builder.setNode(node);
+            
             if (message.getData() != null) {
                 builder.setData(new String(message.getData()));
             }
@@ -191,7 +191,7 @@ public class ErrorTranslator extends AbstractErrorTranslator {
             builder.setTransactionId(txnId);
             builder.setType(errorType);
             builder.setCode(message.getCode());
-            builder.setNode(node);
+            
             if (message.getData() != null) {
                 builder.setData(new String(message.getData()));
             }

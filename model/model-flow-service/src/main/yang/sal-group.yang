@@ -65,31 +65,4 @@ module sal-group {
             uses tr:transaction-aware;
         }
     } 
-
-    notification group-added {
-        uses tr:transaction-metadata;
-        leaf group-ref {
-            type group-type:group-ref;
-        }
-        uses node-group;
-        uses tr:transaction-aware;
-    }
-
-    notification group-updated {
-        uses tr:transaction-metadata;
-        leaf group-ref {
-            type group-type:group-ref;
-        }
-        uses node-group;
-        uses tr:transaction-aware;
-    }
-
-    notification group-removed {
-        uses tr:transaction-metadata;
-        leaf group-ref {
-            type group-type:group-ref;
-        }
-        uses node-group;
-        uses tr:transaction-aware;
-    }    
 }

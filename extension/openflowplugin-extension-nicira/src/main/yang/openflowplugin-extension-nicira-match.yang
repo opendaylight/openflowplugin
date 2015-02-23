@@ -232,10 +232,6 @@ module openflowplugin-extension-nicira-match {
     }
     
     // NOTIFICATIONS
-    augment "/sal-flow:switch-flow-removed/sal-flow:match/ext-gen:extension-list/ext-gen:extension" {
-        ext:augment-identifier "nx-aug-match-notif-switch-flow-removed";
-        uses all-matches-grouping;
-    }
     augment "/sal-packet:packet-received/sal-packet:match/ext-gen:extension-list/ext-gen:extension" {
         ext:augment-identifier "nx-aug-match-notif-packet-in";
         uses all-matches-grouping;

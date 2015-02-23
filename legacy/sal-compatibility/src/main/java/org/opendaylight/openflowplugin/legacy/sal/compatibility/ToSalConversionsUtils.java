@@ -96,7 +96,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.address.Address;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.address.address.Ipv4;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.address.address.Ipv6;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SwitchFlowRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.GenericFlowAttributes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
@@ -142,20 +141,6 @@ public class ToSalConversionsUtils {
         if (actions != null) {
             target.setActions(actionFrom(actions, node));
         }
-
-        return target;
-    }
-
-    /**
-     * @param source notification, missing instructions
-     * @param node corresponding node where the flow change occured
-     * @return ad-sal node, build from given data
-     */
-    public static Flow toFlow(SwitchFlowRemoved source, Node node) {
-        final Flow target = new Flow();
-        genericFlowToAdFlow(source, target);
-
-        target.setMatch(toMatch(source.getMatch()));
 
         return target;
     }

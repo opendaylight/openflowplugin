@@ -9,12 +9,6 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.translator;
 
-import java.math.BigInteger;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.core.IMDMessageTranslator;
@@ -24,7 +18,6 @@ import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.extension.api.AugmentTuple;
 import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.MatchExtensionHelper;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchConvertorImpl;
 import org.opendaylight.openflowplugin.openflow.md.util.ByteUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
@@ -32,12 +25,8 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SwitchFlowRemovedBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.RemovedReasonFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.mod.removed.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.mod.removed.MatchBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.EtherType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.arp.match.fields.ArpSourceHardwareAddressBuilder;
@@ -87,7 +76,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.TcMatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.VlanPcpMatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.VlanVidMatchEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowRemovedReason;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Ipv6ExthdrFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.ArpOp;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.ArpSha;
@@ -133,11 +121,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.UdpS
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.VlanPcp;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.VlanVid;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.grouping.MatchEntries;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemovedMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.math.BigInteger;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, List<DataObject>> {
 
@@ -146,55 +138,7 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
 
     @Override
     public List<DataObject> translate(SwitchConnectionDistinguisher cookie, SessionContext sc, OfHeader msg) {
-        if (msg instanceof FlowRemovedMessage) {
-            FlowRemovedMessage ofFlow = (FlowRemovedMessage) msg;
-            List<DataObject> list = new CopyOnWriteArrayList<DataObject>();
-            LOG.debug("Flow Removed Message received: Table Id={}, Flow removed reason={} ", ofFlow.getTableId(),
-                    ofFlow.getReason());
-
-            SwitchFlowRemovedBuilder salFlowRemoved = new SwitchFlowRemovedBuilder();
-
-            if (ofFlow.getCookie() != null) {
-                salFlowRemoved.setCookie(new FlowCookie(ofFlow.getCookie()));
-            }
-            salFlowRemoved.setPriority(ofFlow.getPriority());
-
-            if (ofFlow.getTableId() != null) {
-                salFlowRemoved.setTableId(ofFlow.getTableId().getValue().shortValue());
-            }
-
-            salFlowRemoved.setDurationSec(ofFlow.getDurationSec());
-            salFlowRemoved.setDurationNsec(ofFlow.getDurationNsec());
-            salFlowRemoved.setIdleTimeout(ofFlow.getIdleTimeout());
-            salFlowRemoved.setHardTimeout(ofFlow.getHardTimeout());
-            salFlowRemoved.setPacketCount(ofFlow.getPacketCount());
-            salFlowRemoved.setByteCount(ofFlow.getByteCount());
-            RemovedReasonFlags removeReasonFlag = new RemovedReasonFlags(
-                    FlowRemovedReason.OFPRRDELETE.equals(ofFlow.getReason()),
-                    FlowRemovedReason.OFPRRGROUPDELETE.equals(ofFlow.getReason()),
-                    FlowRemovedReason.OFPRRHARDTIMEOUT.equals(ofFlow.getReason()),
-                    FlowRemovedReason.OFPRRIDLETIMEOUT.equals(ofFlow.getReason())
-            );
-
-            salFlowRemoved.setRemovedReason(removeReasonFlag);
-
-            OpenflowVersion ofVersion = OpenflowVersion.get(sc.getPrimaryConductor().getVersion());
-            org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.match.grouping.Match ofMatch = ofFlow
-                    .getMatch();
-            if (ofMatch != null) {
-                salFlowRemoved.setMatch(fromMatch(ofMatch, sc.getFeatures().getDatapathId(), ofVersion));
-            } else if (ofFlow.getMatchV10() != null) {
-                MatchBuilder matchBuilder = new MatchBuilder(MatchConvertorImpl.fromOFMatchV10ToSALMatch(ofFlow.getMatchV10(), sc.getFeatures().getDatapathId(), ofVersion));
-                salFlowRemoved.setMatch(matchBuilder.build());
-            }
-            salFlowRemoved.setNode(new NodeRef(InventoryDataServiceUtil.identifierFromDatapathId(sc.getFeatures()
-                    .getDatapathId())));
-            list.add(salFlowRemoved.build());
-            return list;
-        } else {
-            LOG.error("Message is not a flow removed message ");
-            return Collections.emptyList();
-        }
+        return Collections.emptyList();
     }
 
 
@@ -455,14 +399,6 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
                 matchBuilder.setTunnel(tunnel.build());
             }
         }
-
-        AugmentTuple<Match> matchExtensionWrap =
-                MatchExtensionHelper.processAllExtensions(
-                        ofMatch.getMatchEntries(), ofVersion, MatchPath.SWITCHFLOWREMOVED_MATCH);
-        if (matchExtensionWrap != null) {
-            matchBuilder.addAugmentation(matchExtensionWrap.getAugmentationClass(), matchExtensionWrap.getAugmentationObject());
-        }
-
 
         if (ethernetMatch != null) {
             matchBuilder.setEthernetMatch(ethernetMatch.build());
