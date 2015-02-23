@@ -170,6 +170,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ge
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.grouping.Extension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
@@ -285,7 +286,6 @@ public final class ActionConvertor {
                  * - we might need sessionContext as converter input
                  * 
                  */
-                
                 GeneralExtensionGrouping extensionCaseGrouping = (GeneralExtensionGrouping) action;
                 Extension extAction = extensionCaseGrouping.getExtension();
                 ConverterExtensionKey<? extends ExtensionKey> key = new ConverterExtensionKey<>(extensionCaseGrouping.getExtensionKey(), version);
@@ -306,7 +306,6 @@ public final class ActionConvertor {
                     ofAction = convertor.convert(action);
                 }
             }
-            
             if (ofAction != null) {
                 actionsList.add(ofAction);
             }

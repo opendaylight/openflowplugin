@@ -37,7 +37,8 @@ import com.google.common.base.Function;
  */
 public abstract class OFRpcFutureResultTransformFactory {
     
-    protected static Logger LOG = LoggerFactory
+    private static final String MSG_ADD_FLOW_RPC = "Returning the Add Flow RPC result to MD-SAL";
+    protected static final Logger LOG = LoggerFactory
             .getLogger(OFRpcFutureResultTransformFactory.class);
 
     /**
@@ -47,8 +48,7 @@ public abstract class OFRpcFutureResultTransformFactory {
      */
     protected static <E> RpcResult<E> assembleRpcResult(RpcResult<?> input, E result) {
         Collection<RpcError> errors = input.getErrors();
-        RpcResult<E> rpcResult = Rpcs.getRpcResult(input.isSuccessful(), result, errors);
-        return rpcResult;
+        return Rpcs.getRpcResult(input.isSuccessful(), result, errors);
     }
 
     /**
@@ -67,7 +67,7 @@ public abstract class OFRpcFutureResultTransformFactory {
                 AddFlowOutput result = addFlowOutput.build();
 
                 RpcResult<AddFlowOutput> rpcResult = assembleRpcResult(input, result);
-                LOG.debug("Returning the Add Flow RPC result to MD-SAL");
+                LOG.debug(MSG_ADD_FLOW_RPC);
                 return rpcResult;
             }
 
@@ -90,7 +90,7 @@ public abstract class OFRpcFutureResultTransformFactory {
                 RemoveFlowOutput result = removeFlowOutput.build();
 
                 RpcResult<RemoveFlowOutput> rpcResult = assembleRpcResult(input, result);
-                LOG.debug("Returning the Add Flow RPC result to MD-SAL");
+                LOG.debug(MSG_ADD_FLOW_RPC);
                 return rpcResult;
             }
 
@@ -134,7 +134,7 @@ public abstract class OFRpcFutureResultTransformFactory {
                 RemoveGroupOutput result = removeGroupOutput.build();
 
                 RpcResult<RemoveGroupOutput> rpcResult = assembleRpcResult(input, result);
-                LOG.debug("Returning the Add Flow RPC result to MD-SAL");
+                LOG.debug(MSG_ADD_FLOW_RPC);
                 return rpcResult;
             }
 

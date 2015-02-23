@@ -40,12 +40,10 @@ public class NotificationPopListener<T> implements PopListener<T> {
     @Override
     public void onPop(T processedMessage) {
         boolean published = false;
-        if(processedMessage instanceof Notification) {
-            if (notificationProviderService != null) {
-                notificationProviderService.publish((Notification) processedMessage);
-                messageSpy.spyMessage(processedMessage, MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS);
-                published = true;
-            }
+        if(processedMessage instanceof Notification && notificationProviderService != null) {
+            notificationProviderService.publish((Notification) processedMessage);
+            messageSpy.spyMessage(processedMessage, MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS);
+            published = true;
         }
         
         if (! published) {

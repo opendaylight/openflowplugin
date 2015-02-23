@@ -200,7 +200,7 @@ import org.slf4j.LoggerFactory;
  * Utility class for converting a MD-SAL Flow into the OF flow mod
  */
 public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
-    private static final Logger logger = LoggerFactory.getLogger(MatchConvertorImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MatchConvertorImpl.class);
     static final String PREFIX_SEPARATOR = "/";
     static final Splitter PREFIX_SPLITTER = Splitter.on('/');
     private static final byte[] VLAN_VID_MASK = new byte[]{16, 0};
@@ -429,10 +429,8 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
         //FIXME: move to extensible support
         // TODO: Move to seperate bundle as soon as OF extensibility is supported by ofplugin/java
         TcpFlagMatch tcpFlagMatch = match.getTcpFlagMatch();
-        if (tcpFlagMatch != null) {
-            if (tcpFlagMatch.getTcpFlag() != null) {
+        if (tcpFlagMatch != null && tcpFlagMatch.getTcpFlag() != null) {
                 matchEntriesList.add(NxmExtensionsConvertor.toNxmTcpFlag(tcpFlagMatch.getTcpFlag()));
-            }
         }
 
         org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Tunnel tunnel = match
@@ -608,10 +606,10 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
     public static MatchBuilder fromOFMatchToSALMatch(
             final org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.match.grouping.Match swMatch,
             final BigInteger datapathid, final OpenflowVersion ofVersion) {
-        return OfMatchToSALMatchConvertor(swMatch.getMatchEntries(), datapathid, ofVersion);
+        return ofMatchToSALMatchConvertor(swMatch.getMatchEntries(), datapathid, ofVersion);
     }
 
-    private static MatchBuilder OfMatchToSALMatchConvertor(List<MatchEntries> swMatchList, final BigInteger datapathid,
+    private static MatchBuilder ofMatchToSALMatchConvertor(List<MatchEntries> swMatchList, final BigInteger datapathid,
                                                            OpenflowVersion ofVersion) {
 
         MatchBuilder matchBuilder = new MatchBuilder();
@@ -1423,10 +1421,10 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
      */
     public static SetField fromOFSetFieldToSALSetFieldAction(
             final Action action, OpenflowVersion ofVersion) {
-        logger.debug("Converting OF SetField action to SAL SetField action");
+        LOG.debug("Converting OF SetField action to SAL SetField action");
         SetFieldBuilder setField = new SetFieldBuilder();
         OxmFieldsAction oxmFields = action.getAugmentation(OxmFieldsAction.class);
-        MatchBuilder match = OfMatchToSALMatchConvertor(oxmFields.getMatchEntries(), null, ofVersion);
+        MatchBuilder match = ofMatchToSALMatchConvertor(oxmFields.getMatchEntries(), null, ofVersion);
         setField.fieldsFrom(match.build());
         return setField.build();
     }

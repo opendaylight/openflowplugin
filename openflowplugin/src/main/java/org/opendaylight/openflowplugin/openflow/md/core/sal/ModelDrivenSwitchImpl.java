@@ -128,11 +128,9 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         LOG.debug("Calling the FlowMod RPC method on MessageDispatchService");
         // use primary connection
         SwitchConnectionDistinguisher cookie = null;
-
         OFRpcTask<AddFlowInput, RpcResult<UpdateFlowOutput>> task =
                 OFRpcTaskFactory.createAddFlowTask(rpcTaskContext, input, cookie);
         ListenableFuture<RpcResult<UpdateFlowOutput>> result = task.submit();
-
         return Futures.transform(result, OFRpcFutureResultTransformFactory.createForAddFlowOutput());
     }
 
@@ -140,65 +138,53 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     @Override
     public Future<RpcResult<AddGroupOutput>> addGroup(final AddGroupInput input) {
         LOG.debug("Calling the GroupMod RPC method on MessageDispatchService");
-
         // use primary connection
         SwitchConnectionDistinguisher cookie = null;
-
         OFRpcTask<AddGroupInput, RpcResult<UpdateGroupOutput>> task =
                 OFRpcTaskFactory.createAddGroupTask(rpcTaskContext, input, cookie);
         ListenableFuture<RpcResult<UpdateGroupOutput>> result = task.submit();
-
         return Futures.transform(result, OFRpcFutureResultTransformFactory.createForAddGroupOutput());
     }
 
     @Override
     public Future<RpcResult<AddMeterOutput>> addMeter(final AddMeterInput input) {
         LOG.debug("Calling the MeterMod RPC method on MessageDispatchService");
-
         // use primary connection
         SwitchConnectionDistinguisher cookie = null;
-
         OFRpcTask<AddMeterInput, RpcResult<UpdateMeterOutput>> task =
                 OFRpcTaskFactory.createAddMeterTask(rpcTaskContext, input, cookie);
         ListenableFuture<RpcResult<UpdateMeterOutput>> result = task.submit();
-
         return Futures.transform(result, OFRpcFutureResultTransformFactory.createForAddMeterOutput());
     }
 
     @Override
     public Future<RpcResult<RemoveFlowOutput>> removeFlow(final RemoveFlowInput input) {
         LOG.debug("Calling the removeFlow RPC method on MessageDispatchService");
-
         // use primary connection
         SwitchConnectionDistinguisher cookie = null;
         OFRpcTask<RemoveFlowInput, RpcResult<UpdateFlowOutput>> task =
                 OFRpcTaskFactory.createRemoveFlowTask(rpcTaskContext, input, cookie);
         ListenableFuture<RpcResult<UpdateFlowOutput>> result = task.submit();
-
         return Futures.transform(result, OFRpcFutureResultTransformFactory.createForRemoveFlowOutput());
     }
 
     @Override
     public Future<RpcResult<RemoveGroupOutput>> removeGroup(final RemoveGroupInput input) {
         LOG.debug("Calling the Remove Group RPC method on MessageDispatchService");
-
         SwitchConnectionDistinguisher cookie = null;
         OFRpcTask<RemoveGroupInput, RpcResult<UpdateGroupOutput>> task =
                 OFRpcTaskFactory.createRemoveGroupTask(rpcTaskContext, input, cookie);
         ListenableFuture<RpcResult<UpdateGroupOutput>> result = task.submit();
-
         return Futures.transform(result, OFRpcFutureResultTransformFactory.createForRemoveGroupOutput());
     }
 
     @Override
     public Future<RpcResult<RemoveMeterOutput>> removeMeter(final RemoveMeterInput input) {
         LOG.debug("Calling the Remove MeterMod RPC method on MessageDispatchService");
-
         SwitchConnectionDistinguisher cookie = null;
         OFRpcTask<RemoveMeterInput, RpcResult<UpdateMeterOutput>> task =
                 OFRpcTaskFactory.createRemoveMeterTask(rpcTaskContext, input, cookie);
         ListenableFuture<RpcResult<UpdateMeterOutput>> result = task.submit();
-
         return Futures.transform(result, OFRpcFutureResultTransformFactory.createForRemoveMeterOutput());
     }
 
@@ -222,43 +208,31 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
     @Override
     public Future<RpcResult<UpdateFlowOutput>> updateFlow(final UpdateFlowInput input) {
         LOG.debug("Calling the updateFlow RPC method on MessageDispatchService");
-
         // use primary connection
         SwitchConnectionDistinguisher cookie = null;
-
         OFRpcTask<UpdateFlowInput, RpcResult<UpdateFlowOutput>> task =
                 OFRpcTaskFactory.createUpdateFlowTask(rpcTaskContext, input, cookie);
-        ListenableFuture<RpcResult<UpdateFlowOutput>> result = task.submit();
-
-        return result;
+        return task.submit();
     }
 
     @Override
     public Future<RpcResult<UpdateGroupOutput>> updateGroup(final UpdateGroupInput input) {
         LOG.debug("Calling the update Group Mod RPC method on MessageDispatchService");
-
         // use primary connection
         SwitchConnectionDistinguisher cookie = null;
-
         OFRpcTask<UpdateGroupInput, RpcResult<UpdateGroupOutput>> task =
                 OFRpcTaskFactory.createUpdateGroupTask(rpcTaskContext, input, cookie);
-        ListenableFuture<RpcResult<UpdateGroupOutput>> result = task.submit();
-
-        return result;
+        return task.submit();
     }
 
     @Override
     public Future<RpcResult<UpdateMeterOutput>> updateMeter(final UpdateMeterInput input) {
         LOG.debug("Calling the MeterMod RPC method on MessageDispatchService");
-
         // use primary connection
         SwitchConnectionDistinguisher cookie = null;
-
         OFRpcTask<UpdateMeterInput, RpcResult<UpdateMeterOutput>> task =
                 OFRpcTaskFactory.createUpdateMeterTask(rpcTaskContext, input, cookie);
-        ListenableFuture<RpcResult<UpdateMeterOutput>> result = task.submit();
-
-        return result;
+        return task.submit();
     }
 
     @Override
@@ -272,12 +246,9 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
         // use primary connection
         LOG.debug("Calling the getAllGroupStatistics RPC method on MessageDispatchService");
         SwitchConnectionDistinguisher cookie = null;
-
         OFRpcTask<GetAllGroupStatisticsInput, RpcResult<GetAllGroupStatisticsOutput>> task =
                 OFRpcTaskFactory.createGetAllGroupStatisticsTask(rpcTaskContext, input, cookie);
-        ListenableFuture<RpcResult<GetAllGroupStatisticsOutput>> result = task.submit();
-
-        return result;
+        return task.submit();
 
     }
 

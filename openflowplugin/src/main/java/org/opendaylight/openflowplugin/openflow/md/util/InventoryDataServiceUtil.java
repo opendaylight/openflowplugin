@@ -35,9 +35,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class InventoryDataServiceUtil {
-    private final static Logger LOG = LoggerFactory.getLogger(InventoryDataServiceUtil.class);
+    private static final Logger LOG = LoggerFactory.getLogger(InventoryDataServiceUtil.class);
 
-    public final static String OF_URI_PREFIX = "openflow:";
+    public static final String OF_URI_PREFIX = "openflow:";
     /*
      * Get an InstanceIdentifier for the Nodes class that is the root of the
      * inventory tree We use this alot, so its worth keeping around
@@ -107,8 +107,8 @@ public abstract class InventoryDataServiceUtil {
 
     public static BigInteger dataPathIdFromNodeId(NodeId nodeId) {
         String dpids = nodeId.getValue().replace(OF_URI_PREFIX, "");
-        BigInteger dpid = new BigInteger(dpids);
-        return dpid;
+//        BigInteger dpid = new BigInteger(dpids);
+        return new BigInteger(dpids);
     }
 
 
@@ -132,14 +132,11 @@ public abstract class InventoryDataServiceUtil {
 
     public static Long portNumberfromNodeConnectorId(OpenflowVersion ofVersion, String ncId) {
         String[] split = ncId.split(":");
-
         // It can happen that token length will be just 1 i.e 2 or CONTROLLER
         // If the length is just one then this cannot be the new MD-SAL style node connector Id which
         // is of the form openflow:1:3.
-
         String portNoString = split[split.length - 1];
-        Long portNo = OpenflowPortsUtil.getPortFromLogicalName(ofVersion, portNoString);
-        return portNo;
+        return OpenflowPortsUtil.getPortFromLogicalName(ofVersion, portNoString);
     }
 
 
