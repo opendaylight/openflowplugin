@@ -10,8 +10,11 @@ package org.opendaylight.openflowplugin.outputtest;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang.ArrayUtils;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
@@ -53,17 +56,22 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInputBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class OutputTestUtil {
-
+public final class OutputTestUtil {
+    private static final String OUTPUT_MSG = "sendOutputMsg_TEST";
+    private static final Logger LOG = LoggerFactory
+            .getLogger(OutputTestUtil.class);
+    
     private OutputTestUtil() {
         throw new UnsupportedOperationException("Utility class. Instantiation is not allowed.");
     }
 
-    public static TransmitPacketInput buildTransmitInputPacket(final String nodeId, final byte[] packValue,
-                                                               final String outPort, final String inPort) {
-        ArrayList<Byte> list = new ArrayList<Byte>(40);
-        byte[] msg = new String("sendOutputMsg_TEST").getBytes();
+    public static TransmitPacketInput buildTransmitInputPacket(final String nodeId, final String outPort,
+                                                               final String inPort) {
+        List<Byte> list = new ArrayList<Byte>(40);
+        byte[] msg = OUTPUT_MSG.getBytes();
 
         int index = 0;
         for (byte b : msg) {
@@ -82,9 +90,9 @@ public class OutputTestUtil {
 
         TransmitPacketInputBuilder tPackBuilder = new TransmitPacketInputBuilder();
 
-        final ArrayList<Byte> _converted_list = list;
-        byte[] _primitive = ArrayUtils.toPrimitive(_converted_list.toArray(new Byte[0]));
-        tPackBuilder.setPayload(_primitive);
+        final List<Byte> convertedList = list;
+        byte[] primitive = ArrayUtils.toPrimitive(convertedList.toArray(new Byte[0]));
+        tPackBuilder.setPayload(primitive);
 
         tPackBuilder.setNode(ref);
         // TODO VD P2 missing cookies in Test
@@ -110,7 +118,7 @@ public class OutputTestUtil {
 
         modif.put(LogicalDatastoreType.CONFIGURATION, path, flowBuilder.build());
         CheckedFuture<Void, TransactionCommitFailedException> commitFuture = modif.submit();
-        final StringBuffer aggregator = new StringBuffer();
+        final StringBuilder aggregator = new StringBuilder();
         Futures.addCallback(commitFuture, new FutureCallback<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
@@ -135,7 +143,6 @@ public class OutputTestUtil {
 
     public static NodeConnectorRef createNodeConnRef(final String nodeId, final String port) {
         StringBuilder sBuild = new StringBuilder(nodeId).append(':').append(port);
-        NodeConnectorId _nodeConnectorId = new NodeConnectorId(sBuild.toString());
 
         NodeConnectorKey nConKey = new NodeConnectorKey(new NodeConnectorId(sBuild.toString()));
 
@@ -162,7 +169,6 @@ public class OutputTestUtil {
 
         FlowKey key = new FlowKey(new FlowId(Long.toString(flowId)));
         fBuild.setBarrier(false);
-        // flow.setBufferId(new Long(12));
         final BigInteger value = BigInteger.valueOf(10);
         fBuild.setCookie(new FlowCookie(value));
         fBuild.setCookieMask(new FlowCookie(value));
@@ -185,7 +191,7 @@ public class OutputTestUtil {
     }
 
     private static InstructionsBuilder createPingInstructionsBuilder() {
-        ArrayList<Action> aList = new ArrayList<Action>();
+        List<Action> aList = new ArrayList<Action>();
         ActionBuilder aBuild = new ActionBuilder();
 
         OutputActionBuilder output = new OutputActionBuilder();
@@ -203,7 +209,7 @@ public class OutputTestUtil {
         iBuild.setOrder(0);
         iBuild.setKey(new InstructionKey(0));
 
-        ArrayList<Instruction> instr = new ArrayList<Instruction>();
+        List<Instruction> instr = new ArrayList<Instruction>();
         instr.add(iBuild.build());
         return new InstructionsBuilder().setInstruction(instr);
     }
@@ -212,6 +218,7 @@ public class OutputTestUtil {
         try {
             return Short.parseShort(tableId);
         } catch (Exception ex) {
+            LOG.debug("TableId problem: ",ex);
             return 2;
         }
     }

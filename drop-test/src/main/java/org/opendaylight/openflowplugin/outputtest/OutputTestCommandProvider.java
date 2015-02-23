@@ -33,18 +33,18 @@ import org.slf4j.LoggerFactory;
 
 public class OutputTestCommandProvider implements CommandProvider {
 
+    private static final String OUTPUT_MSG = "sendOutputMsg_TEST";
+    private static final String OUT_PORT = "0xfffffffd";
     private PacketProcessingService packetProcessingService;
-    private ProviderContext pc;
     private final BundleContext ctx;
     private boolean sessionInitiated = false;
-    private static Logger LOG = LoggerFactory.getLogger(OutputTestCommandProvider.class);
+    private static final Logger LOG = LoggerFactory.getLogger(OutputTestCommandProvider.class);
 
     public OutputTestCommandProvider(final BundleContext ctx) {
         this.ctx = ctx;
     }
 
     public void onSessionInitiated(final ProviderContext session) {
-        pc = session;
         packetProcessingService = session.getRpcService(PacketProcessingService.class);
         ctx.registerService(CommandProvider.class.getName(), this, null);
         this.sessionInitiated = true;
@@ -56,13 +56,7 @@ public class OutputTestCommandProvider implements CommandProvider {
         if (sessionInitiated) {
             String inNodeKey = ci.nextArgument();
 
-            // String resultOfPingFlow =
-            // OutputTestUtil.makePingFlowForNode(inNodeKey, pc);
-            // ci.println(resultOfPingFlow);
-
-            TransmitPacketInput input = OutputTestUtil.buildTransmitInputPacket(inNodeKey, new String(
-                    "sendOutputMsg_TEST").getBytes(), "0xfffffffd", // port
-                    "0");
+            TransmitPacketInput input = OutputTestUtil.buildTransmitInputPacket(inNodeKey, OUT_PORT, "0");
 
             packetProcessingService.transmitPacket(input);
         } else {
@@ -76,50 +70,42 @@ public class OutputTestCommandProvider implements CommandProvider {
         if (sessionInitiated) {
             String inNodeKey = ci.nextArgument();
             String inPort = ci.nextArgument();
-            String outPort = "0xfffffffd";
 
-            ArrayList<Byte> _arrayList = new ArrayList<Byte>(40);
-            ArrayList<Byte> list = _arrayList;
-            String _string = new String("sendOutputMsg_TEST");
-            byte[] msg = _string.getBytes();
+            List<Byte> list = new ArrayList<Byte>(40);
+            byte[] msg = OUTPUT_MSG.getBytes();
             int index = 0;
             for (final byte b : msg) {
                 {
                     list.add(Byte.valueOf(b));
-                    boolean _lessThan = (index < 7);
-                    if (_lessThan) {
-                        int _plus = (index + 1);
-                        index = _plus;
+                    boolean lessThan = (index < 7);
+                    if (lessThan) {
+                        int indexIncrement = (index + 1);
+                        index = indexIncrement;
                     } else {
                         index = 0;
                     }
                 }
             }
-            boolean _lessThan = (index < 8);
-            boolean _while = _lessThan;
-            while (_while) {
+            boolean lessThan = (index < 8);
+            boolean condition = lessThan;
+            while (condition) {
                 {
                     list.add((byte)0);
-                    int _plus = (index + 1);
-                    index = _plus;
+                    int indexIncrement = (index + 1);
+                    index = indexIncrement;
                 }
-                boolean _lessThan_1 = (index < 8);
-                _while = _lessThan_1;
+                boolean lessThan1 = (index < 8);
+                condition = lessThan1;
             }
             NodeRef ref = OutputTestUtil.createNodeRef(inNodeKey);
 
-            TransmitPacketInputBuilder packet_out = new TransmitPacketInputBuilder();
+            TransmitPacketInputBuilder packetOut = new TransmitPacketInputBuilder();
 
-            NodeConnectorRef _createNodeConnRef_1 = OutputTestUtil.createNodeConnRef(inNodeKey, inPort);
-            NodeConnectorRef _nodeConnectorRef_1 = new NodeConnectorRef(_createNodeConnRef_1);
-            NodeConnectorRef nIngressConRef = _nodeConnectorRef_1;
+            NodeConnectorRef nIngressConRef = OutputTestUtil.createNodeConnRef(inNodeKey, inPort);
+            NodeConnectorRef nEngressConRef = OutputTestUtil.createNodeConnRef(inNodeKey, OUT_PORT);
 
-            NodeConnectorRef _createNodeConnRef_2 = OutputTestUtil.createNodeConnRef(inNodeKey, outPort);
-            NodeConnectorRef _nodeConnectorRef_2 = new NodeConnectorRef(_createNodeConnRef_2);
-            NodeConnectorRef nEngressConRef = _nodeConnectorRef_2;
-
-            final ArrayList<Byte> _converted_list = list;
-            byte[] _primitive = ArrayUtils.toPrimitive(_converted_list.toArray(new Byte[0]));
+            final List<Byte> convertedList = list;
+            byte[] primitive = ArrayUtils.toPrimitive(convertedList.toArray(new Byte[0]));
 
             List<Action> actionList = new ArrayList<Action>();
             ActionBuilder ab = new ActionBuilder();
@@ -133,15 +119,15 @@ public class OutputTestCommandProvider implements CommandProvider {
             ab.setKey(new ActionKey(0));
             actionList.add(ab.build());
 
-            packet_out.setConnectionCookie(null);
-            packet_out.setAction(actionList);
-            packet_out.setPayload(_primitive);
-            packet_out.setNode(ref);
-            packet_out.setIngress(nIngressConRef);
-            packet_out.setEgress(nEngressConRef);
-            packet_out.setBufferId(OFConstants.OFP_NO_BUFFER);
+            packetOut.setConnectionCookie(null);
+            packetOut.setAction(actionList);
+            packetOut.setPayload(primitive);
+            packetOut.setNode(ref);
+            packetOut.setIngress(nIngressConRef);
+            packetOut.setEgress(nEngressConRef);
+            packetOut.setBufferId(OFConstants.OFP_NO_BUFFER);
 
-            packetProcessingService.transmitPacket(packet_out.build());
+            packetProcessingService.transmitPacket(packetOut.build());
         } else {
             ci.println("Session not initiated, try again in a few seconds");
         }

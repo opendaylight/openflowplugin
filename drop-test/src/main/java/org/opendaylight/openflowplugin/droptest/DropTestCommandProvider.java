@@ -17,7 +17,12 @@ import org.opendaylight.openflowplugin.testcommon.DropTestRpcProvider;
 import org.osgi.framework.BundleContext;
 
 public class DropTestCommandProvider implements CommandProvider {
-
+    
+    private static final String SESSION_NOT_INIT = "Session not initiated, try again in a few seconds";
+    private static final String DROP_ON = "DropAllFlows transitions to on";
+    private static final String DROP_ALREADY_ON = "DropAllFlows is already on";
+    private static final String DROP_OFF = "DropAllFlows transitions to off";
+    private static final String DROP_ALREADY_OFF = "DropAllFlows is already off";
     private final BundleContext ctx;
     private final DropTestDsProvider provider;
     private final DropTestRpcProvider rpcProvider;
@@ -42,20 +47,20 @@ public class DropTestCommandProvider implements CommandProvider {
             if (onoff.equalsIgnoreCase("on")) {
                 if (! provider.isActive()) {
                     provider.start();
-                    ci.println("DropAllFlows transitions to on");
+                    ci.println(DROP_ON);
                 } else {
-                    ci.println("DropAllFlows is already on");
+                    ci.println(DROP_ALREADY_ON);
                 }
             } else if (onoff.equalsIgnoreCase("off")) {
                 if (provider.isActive()) {
                     provider.close();
-                    ci.println("DropAllFlows transitions to off");
+                    ci.println(DROP_OFF);
                 } else {
-                    ci.println("DropAllFlows is already off");
+                    ci.println(DROP_ALREADY_OFF);
                 }
             }
         } else {
-            ci.println("Session not initiated, try again in a few seconds");
+            ci.println(SESSION_NOT_INIT);
         }
     }
 
@@ -65,20 +70,20 @@ public class DropTestCommandProvider implements CommandProvider {
             if (onoff.equalsIgnoreCase("on")) {
                 if (! rpcProvider.isActive()) {
                     rpcProvider.start();
-                    ci.println("DropAllFlows transitions to on");
+                    ci.println(DROP_ON);
                 } else {
-                    ci.println("DropAllFlows is already on");
+                    ci.println(DROP_ALREADY_ON);
                 }
             } else if (onoff.equalsIgnoreCase("off")) {
                 if (rpcProvider.isActive()) {
                     rpcProvider.close();
-                    ci.println("DropAllFlows transitions to off");
+                    ci.println(DROP_OFF);
                 } else {
-                    ci.println("DropAllFlows is already off");
+                    ci.println(DROP_ALREADY_OFF);
                 }
             }
         } else {
-            ci.println("Session not initiated, try again in a few seconds");
+            ci.println(SESSION_NOT_INIT);
         }
     }
 
@@ -87,7 +92,7 @@ public class DropTestCommandProvider implements CommandProvider {
             ci.println("RPC Test Statistics: " + this.rpcProvider.getStats().toString());
             ci.println("FRM Test Statistics: " + this.provider.getStats().toString());
         } else {
-            ci.println("Session not initiated, try again in a few seconds");
+            ci.println(SESSION_NOT_INIT);
         }
     }
 
@@ -99,13 +104,13 @@ public class DropTestCommandProvider implements CommandProvider {
             ci.println("Done.");
 
         } else {
-            ci.println("Session not initiated, try again in a few seconds");
+            ci.println(SESSION_NOT_INIT);
         }
     }
 
     @Override
     public String getHelp() {
-        StringBuffer help = new StringBuffer();
+        StringBuilder help = new StringBuilder();
         help.append("---dropAllPackets---\n");
         help.append("\t dropAllPackets on     - Start dropping all packets\n");
         help.append("\t dropAllPackets off    - Stop dropping all packets\n");
