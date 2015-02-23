@@ -21,7 +21,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
  */
 public class ThreadPoolLoggingExecutor extends ThreadPoolExecutor {
     
-    private static Logger LOG = LoggerFactory.getLogger(ThreadPoolLoggingExecutor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ThreadPoolLoggingExecutor.class);
 
     /**
      * @param corePoolSize
