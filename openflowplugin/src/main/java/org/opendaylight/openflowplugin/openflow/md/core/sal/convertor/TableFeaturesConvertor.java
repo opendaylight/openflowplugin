@@ -127,7 +127,6 @@ import java.util.List;
  * features.
  */
 public class TableFeaturesConvertor {
-    private static final Logger logger = LoggerFactory.getLogger(TableFeaturesConvertor.class);
 
     public static List<TableFeatures> toTableFeaturesRequest(
             org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableFeatures salTableFeaturesList) {

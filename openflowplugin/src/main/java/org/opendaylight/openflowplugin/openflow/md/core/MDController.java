@@ -115,8 +115,8 @@ public class MDController implements IMDController, AutoCloseable {
     private Map<Class<? extends DataObject>, Collection<PopListener<DataObject>>> popListeners;
     private MessageSpy<DataContainer> messageSpyCounter;
 
-    final private int OF10 = OFConstants.OFP_VERSION_1_0;
-    final private int OF13 = OFConstants.OFP_VERSION_1_3;
+    private static final int OF10 = OFConstants.OFP_VERSION_1_0;
+    private static final int OF13 = OFConstants.OFP_VERSION_1_3;
 
     private ErrorHandlerSimpleImpl errorHandler;
 
@@ -299,8 +299,6 @@ public class MDController implements IMDController, AutoCloseable {
             ListenableFuture<Boolean> isOnlineFuture = switchConnectionPrv.startup();
             starterChain.add(isOnlineFuture);
         }
-
-        Future<List<Boolean>> srvStarted = Futures.allAsList(starterChain);
     }
 
     /**

@@ -8,21 +8,19 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal;
 
 import java.util.Collection;
-import java.util.Collections;
+
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ConsumerContext;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.BindingAwareProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
+import org.opendaylight.openflowplugin.api.statistics.MessageCountDumper;
+import org.opendaylight.openflowplugin.api.statistics.MessageObservatory;
 import org.opendaylight.openflowplugin.extension.api.ExtensionConverterRegistrator;
 import org.opendaylight.openflowplugin.openflow.md.core.MDController;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionConverterManager;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionConverterManagerImpl;
-import org.opendaylight.openflowplugin.api.statistics.MessageCountDumper;
-import org.opendaylight.openflowplugin.api.statistics.MessageObservatory;
 import org.opendaylight.openflowplugin.statistics.MessageSpyCounterImpl;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
-import org.opendaylight.yangtools.yang.binding.RpcService;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +30,7 @@ import org.slf4j.LoggerFactory;
  */
 public class OpenflowPluginProvider implements BindingAwareProvider, AutoCloseable {
 
-    private static Logger LOG = LoggerFactory.getLogger(OpenflowPluginProvider.class);
+    private static final Logger LOG = LoggerFactory.getLogger(OpenflowPluginProvider.class);
 
     private BindingAwareBroker broker;
 

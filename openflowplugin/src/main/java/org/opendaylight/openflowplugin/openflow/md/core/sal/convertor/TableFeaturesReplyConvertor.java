@@ -115,7 +115,7 @@ import org.slf4j.LoggerFactory;
  * features.
  */
 public class TableFeaturesReplyConvertor {
-    private static final Logger logger = LoggerFactory.getLogger(TableFeaturesReplyConvertor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TableFeaturesReplyConvertor.class);
 
     public static List<TableFeatures> toTableFeaturesReply(
             final MultipartReplyTableFeatures ofTableFeaturesList) {
@@ -256,7 +256,7 @@ public class TableFeaturesReplyConvertor {
                     // Experimenter miss Table features are unhandled
                     break;
                 default:
-                    logger.error("Unsupported table feature property : " + propType);
+                    LOG.error("Unsupported table feature property : " + propType);
                     break;
                 }
                 salTablePropertiesList.add(propBuilder.build());

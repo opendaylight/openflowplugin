@@ -37,7 +37,7 @@ import com.google.common.base.Function;
  */
 public abstract class OFRpcFutureResultTransformFactory {
     
-    protected static Logger LOG = LoggerFactory
+    protected static final Logger LOG = LoggerFactory
             .getLogger(OFRpcFutureResultTransformFactory.class);
 
     /**

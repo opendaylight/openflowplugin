@@ -27,6 +27,7 @@ import com.google.common.util.concurrent.ListeningExecutorService;
  */
 public class RpcListeningExecutorService implements ListeningExecutorService {
     
+    private static final String NOT_SUPPORTED = "not supported";
     private MessageSpy<DataContainer> messageSpy;
     private ListeningExecutorService executorServiceDelegate;
     private DataContainer notSupportedTask = new NoDataContainerTask();
@@ -72,12 +73,12 @@ public class RpcListeningExecutorService implements ListeningExecutorService {
 
     @Override
     public ListenableFuture<?> submit(Runnable task) {
-        throw new IllegalAccessError("not supported");
+        throw new IllegalAccessError(NOT_SUPPORTED);
     }
 
     @Override
     public <T> ListenableFuture<T> submit(Runnable task, T result) {
-        throw new IllegalAccessError("not supported");
+        throw new IllegalAccessError(NOT_SUPPORTED);
     }
 
     @Override
@@ -95,7 +96,7 @@ public class RpcListeningExecutorService implements ListeningExecutorService {
 
     @Override
     public void execute(Runnable command) {
-        throw new IllegalAccessError("not supported");
+        throw new IllegalAccessError(NOT_SUPPORTED);
     }
 
     @Override
@@ -122,14 +123,14 @@ public class RpcListeningExecutorService implements ListeningExecutorService {
     @Override
     public <T> T invokeAny(Collection<? extends Callable<T>> tasks)
             throws InterruptedException, ExecutionException {
-        throw new IllegalAccessError("not supported");
+        throw new IllegalAccessError(NOT_SUPPORTED);
     }
 
     @Override
     public <T> T invokeAny(Collection<? extends Callable<T>> tasks,
             long timeout, TimeUnit unit) throws InterruptedException,
             ExecutionException, TimeoutException {
-        throw new IllegalAccessError("not supported");
+        throw new IllegalAccessError(NOT_SUPPORTED);
     }
     
     protected static class NoDataContainerTask implements DataContainer {

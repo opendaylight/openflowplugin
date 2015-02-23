@@ -178,7 +178,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public abstract class OFRpcTaskFactory {
-    protected static final Logger logger = LoggerFactory.getLogger(OFRpcTaskFactory.class);
+    protected static final Logger LOG = LoggerFactory.getLogger(OFRpcTaskFactory.class);
 
     /**
      * @param taskContext
@@ -195,23 +195,17 @@ public abstract class OFRpcTaskFactory {
                     @Override
                     public ListenableFuture<RpcResult<UpdateFlowOutput>> call() {
                         ListenableFuture<RpcResult<UpdateFlowOutput>> result = SettableFuture.create();
-
                         // Convert the AddFlowInput to FlowModInput
                         List<FlowModInputBuilder> ofFlowModInputs = FlowConvertor.toFlowModInputs(getInput(),
                                 getVersion(), getSession().getFeatures().getDatapathId());
-
-                        logger.debug("Number of flows to push to switch: {}", ofFlowModInputs.size());
-
+                        LOG.debug("Number of flows to push to switch: {}", ofFlowModInputs.size());
                         result = chainFlowMods(ofFlowModInputs, 0, getTaskContext(), getCookie());
-
-
                         result = OFRpcTaskUtil.chainFutureBarrier(this, result);
                         OFRpcTaskUtil.hookFutureNotification(this, result,
                                 getRpcNotificationProviderService(),
                                 createFlowAddedNotification(getInput()));
                         return result;
                     }
-
                     @Override
                     public Boolean isBarrier() {
                         return getInput().isBarrier();
@@ -246,7 +240,7 @@ public abstract class OFRpcTaskFactory {
                             if (input.isSuccessful()) {
                                 return chainFlowMods(ofFlowModInputs, index + 1, taskContext, cookie);
                             } else {
-                                logger.warn("Flowmod failed. Any chained flowmods are ignored. xid:{}",
+                                LOG.warn("Flowmod failed. Any chained flowmods are ignored. xid:{}",
                                         ofFlowModInputs.get(index).getXid());
                                 return Futures.immediateFuture(input);
                             }
@@ -326,7 +320,7 @@ public abstract class OFRpcTaskFactory {
                         }
 
                         allFlowMods.addAll(ofFlowModInputs);
-                        logger.debug("Number of flows to push to switch: {}", allFlowMods.size());
+                        LOG.debug("Number of flows to push to switch: {}", allFlowMods.size());
                         result = chainFlowMods(allFlowMods, 0, getTaskContext(), getCookie());
 
                         result = OFRpcTaskUtil.chainFutureBarrier(this, result);
