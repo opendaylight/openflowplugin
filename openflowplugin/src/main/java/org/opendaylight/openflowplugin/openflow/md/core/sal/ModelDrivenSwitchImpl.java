@@ -227,9 +227,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 
         OFRpcTask<UpdateFlowInput, RpcResult<UpdateFlowOutput>> task =
                 OFRpcTaskFactory.createUpdateFlowTask(rpcTaskContext, input, cookie);
-        ListenableFuture<RpcResult<UpdateFlowOutput>> result = task.submit();
-
-        return result;
+        return task.submit();
     }
 
     @Override
@@ -241,9 +239,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 
         OFRpcTask<UpdateGroupInput, RpcResult<UpdateGroupOutput>> task =
                 OFRpcTaskFactory.createUpdateGroupTask(rpcTaskContext, input, cookie);
-        ListenableFuture<RpcResult<UpdateGroupOutput>> result = task.submit();
-
-        return result;
+        return task.submit();
     }
 
     @Override
@@ -255,9 +251,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 
         OFRpcTask<UpdateMeterInput, RpcResult<UpdateMeterOutput>> task =
                 OFRpcTaskFactory.createUpdateMeterTask(rpcTaskContext, input, cookie);
-        ListenableFuture<RpcResult<UpdateMeterOutput>> result = task.submit();
-
-        return result;
+        return task.submit();
     }
 
     @Override
@@ -274,9 +268,7 @@ public class ModelDrivenSwitchImpl extends AbstractModelDrivenSwitch {
 
         OFRpcTask<GetAllGroupStatisticsInput, RpcResult<GetAllGroupStatisticsOutput>> task =
                 OFRpcTaskFactory.createGetAllGroupStatisticsTask(rpcTaskContext, input, cookie);
-        ListenableFuture<RpcResult<GetAllGroupStatisticsOutput>> result = task.submit();
-
-        return result;
+        return task.submit();
 
     }
 
