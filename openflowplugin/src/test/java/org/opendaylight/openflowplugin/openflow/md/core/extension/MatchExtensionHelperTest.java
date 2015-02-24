@@ -73,8 +73,6 @@ public class MatchExtensionHelperTest {
         augmentTuple = MatchExtensionHelper.processAllExtensions(matchEntries, OpenflowVersion.OF13, MatchPath.PACKETRECEIVED_MATCH);
         assertNotNull(augmentTuple);
 
-        augmentTuple = MatchExtensionHelper.processAllExtensions(matchEntries, OpenflowVersion.OF13, MatchPath.SWITCHFLOWREMOVED_MATCH);
-        assertNotNull(augmentTuple);
     }
 
 
