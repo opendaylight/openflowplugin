@@ -12,10 +12,10 @@ package org.opendaylight.openflowplugin.api.openflow.md.core;
  * @author mirehak
  */
 public interface SwitchConnectionDistinguisher {
-    
+
     /**
      * @return encoded switch session identifier
      */
-    public long getCookie();
+    long getCookie();
 
 }
