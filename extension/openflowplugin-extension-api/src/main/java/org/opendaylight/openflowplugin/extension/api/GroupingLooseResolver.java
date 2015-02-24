@@ -25,18 +25,18 @@ import com.google.common.base.Preconditions;
  * corresponding {@link Augmentation}s (1:1..n binding). And those {@link Augmentation}s 
  * are sharing the same grouping so that they could be processed in the same way.
  * 
- * @param <GROUPING>
+ * @param <G> grouping
  */
-public class GroupingLooseResolver<GROUPING> {
+public class GroupingLooseResolver<G> {
 
-    Class<GROUPING> commonInterface;
+    Class<G> commonInterface;
     Set<Class<? extends Augmentation<?>>> classes;
 
     /**
      * @param commonInterface
      * @param common grouping Interface
      */
-    public GroupingLooseResolver(Class<GROUPING> commonInterface) {
+    public GroupingLooseResolver(Class<G> commonInterface) {
         this.commonInterface = commonInterface;
         classes = new HashSet<>();
     }
@@ -45,7 +45,7 @@ public class GroupingLooseResolver<GROUPING> {
      * @param cls equivalent augmentation class
      * @return this for chaining
      */
-    public GroupingLooseResolver<GROUPING> add(Class<? extends Augmentation<?>> cls) {
+    public GroupingLooseResolver<G> add(Class<? extends Augmentation<?>> cls) {
         Preconditions.checkArgument(commonInterface.isAssignableFrom(cls),
                 "oh man! I got " + cls);
         classes.add(cls);
@@ -57,14 +57,14 @@ public class GroupingLooseResolver<GROUPING> {
      * @return shared grouping
      */
     @SuppressWarnings("unchecked")
-    public <T extends Augmentable<T>> Optional<GROUPING> getExtension(DataObject data) {
+    public <T extends Augmentable<T>> Optional<G> getExtension(DataObject data) {
         T guessData = (T) data;
 
         for (Class<? extends Augmentation<?>> cls : classes) {
             Augmentation<T> potential = guessData
                     .getAugmentation((Class<Augmentation<T>>) cls);
             if (potential != null) {
-                return Optional.of((GROUPING) potential);
+                return Optional.of((G) potential);
             }
         }
 

@@ -24,18 +24,18 @@ import com.google.common.base.Preconditions;
  * multiple {@link Augmentation}s depending on origin. And those {@link Augmentation}s 
  * are sharing the same grouping so that they could be processed in the same way.
  * 
- * @param <GROUPING>
+ * @param <G> grouping
  * @param <T>
  */
-public class GroupingResolver<GROUPING, T extends Augmentable<T>> {
+public class GroupingResolver<G, T extends Augmentable<T>> {
 
-    Class<GROUPING> commonInterface;
+    Class<G> commonInterface;
     Set<Class<? extends Augmentation<T>>> classes;
 
     /**
      * @param commonInterface
      */
-    public GroupingResolver(Class<GROUPING> commonInterface) {
+    public GroupingResolver(Class<G> commonInterface) {
         this.commonInterface = commonInterface;
         classes = new HashSet<>();
     }
@@ -44,7 +44,7 @@ public class GroupingResolver<GROUPING, T extends Augmentable<T>> {
      * @param cls equivalent augmentation class
      * @return this for chaining
      */
-    public <X extends Augmentation<T>> GroupingResolver<GROUPING, T> add(Class<X> cls) {
+    public <X extends Augmentation<T>> GroupingResolver<G, T> add(Class<X> cls) {
         Preconditions.checkArgument(commonInterface.isAssignableFrom(cls));
         classes.add(cls);
         return this;
@@ -65,11 +65,11 @@ public class GroupingResolver<GROUPING, T extends Augmentable<T>> {
      * @return shared grouping
      */
     @SuppressWarnings("unchecked")
-    public Optional<GROUPING> getExtension(T data) {
+    public Optional<G> getExtension(T data) {
         for (Class<? extends Augmentation<T>> cls : classes) {
             Augmentation<T> potential = data.getAugmentation(cls);
             if (potential != null) {
-                return Optional.of((GROUPING) potential);
+                return Optional.of((G) potential);
             }
         }
         return Optional.absent();
