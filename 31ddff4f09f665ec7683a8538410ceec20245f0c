@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a96c907_dc4046a7",
+        "filename": "applications/statistics-manager/src/main/java/org/opendaylight/openflowplugin/applications/statistics/manager/impl/StatisticsManagerImpl.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 552
+      },
+      "writtenOn": "2015-02-24T09:23:10Z",
+      "side": 1,
+      "message": "safe close",
+      "revId": "31ddff4f09f665ec7683a8538410ceec20245f0c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_bc43faad",
+        "filename": "applications/statistics-manager/src/main/java/org/opendaylight/openflowplugin/applications/statistics/manager/impl/helper/FlowComparator.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 552
+      },
+      "writtenOn": "2015-02-24T09:23:10Z",
+      "side": 1,
+      "message": "compare time efectivity",
+      "revId": "31ddff4f09f665ec7683a8538410ceec20245f0c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_7c19f2d5",
+        "filename": "applications/statistics-manager/src/main/java/org/opendaylight/openflowplugin/applications/statistics/manager/impl/helper/FlowComparator.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 140,
+      "author": {
+        "id": 552
+      },
+      "writtenOn": "2015-02-24T09:23:10Z",
+      "side": 1,
+      "message": "wrong exception",
+      "revId": "31ddff4f09f665ec7683a8538410ceec20245f0c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_3c0fea89",
+        "filename": "applications/statistics-manager/src/main/java/org/opendaylight/openflowplugin/applications/statistics/manager/impl/helper/FlowComparator.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 409,
+      "author": {
+        "id": 552
+      },
+      "writtenOn": "2015-02-24T09:23:10Z",
+      "side": 1,
+      "message": "prepare test",
+      "revId": "31ddff4f09f665ec7683a8538410ceec20245f0c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
