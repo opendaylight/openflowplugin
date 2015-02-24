@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.legacy.sal.compatibility;
 
+import com.google.common.base.Preconditions;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.BindingAwareProvider;
@@ -23,8 +24,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.OpendaylightPortStatisticsService;
 
-import com.google.common.base.Preconditions;
-
 class SalCompatibilityProvider implements BindingAwareProvider {
     private final ComponentActivator activator;
 
@@ -40,7 +39,6 @@ class SalCompatibilityProvider implements BindingAwareProvider {
         flow.setDelegate(session.getRpcService(SalFlowService.class));
         flow.setDataBrokerService(session.getSALService(DataBrokerService.class));
         // FIXME: remember registration for clean shutdown
-        subscribe.registerNotificationListener(flow);
 
         final InventoryAndReadAdapter inv = activator.getInventory();
         inv.setDataService(session.getSALService(DataBrokerService.class));
@@ -50,8 +48,8 @@ class SalCompatibilityProvider implements BindingAwareProvider {
         inv.setTopologyDiscovery(session.getRpcService(FlowTopologyDiscoveryService.class));
         inv.setDataProviderService(session.getSALService(DataProviderService.class));
 
-        final NodeDataChangeListener ndcl = new NodeDataChangeListener(inv,session.getSALService(DataBroker.class));
-        final NCDataChangeListener ncdcl = new NCDataChangeListener(inv,session.getSALService(DataBroker.class));
+        final NodeDataChangeListener ndcl = new NodeDataChangeListener(inv, session.getSALService(DataBroker.class));
+        final NCDataChangeListener ncdcl = new NCDataChangeListener(inv, session.getSALService(DataBroker.class));
 
         // FIXME: remember registration for clean shutdown
         subscribe.registerNotificationListener(inv);

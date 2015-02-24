@@ -7,13 +7,6 @@
  */
 package org.opendaylight.openflowplugin.legacy.sal.compatibility;
 
-import java.util.EnumSet;
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-
 import org.opendaylight.controller.clustering.services.CacheConfigException;
 import org.opendaylight.controller.clustering.services.CacheExistException;
 import org.opendaylight.controller.clustering.services.IClusterGlobalServices;
@@ -21,7 +14,6 @@ import org.opendaylight.controller.clustering.services.IClusterServices.cacheMod
 import org.opendaylight.controller.md.sal.common.api.TransactionStatus;
 import org.opendaylight.controller.sal.binding.api.data.DataBrokerService;
 import org.opendaylight.controller.sal.binding.api.data.DataModificationTransaction;
-import org.opendaylight.controller.sal.core.ConstructionException;
 import org.opendaylight.controller.sal.core.Node;
 import org.opendaylight.controller.sal.flowprogrammer.Flow;
 import org.opendaylight.controller.sal.flowprogrammer.IPluginInFlowProgrammerService;
@@ -32,24 +24,22 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.Fl
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowAdded;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowRemoved;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowUpdated;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.NodeErrorNotification;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.NodeExperimenterErrorNotification;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SwitchFlowRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.util.EnumSet;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
-public class FlowProgrammerAdapter implements IPluginInFlowProgrammerService, SalFlowListener {
+public class FlowProgrammerAdapter implements IPluginInFlowProgrammerService {
     private final static Logger LOG = LoggerFactory.getLogger(FlowProgrammerAdapter.class);
 
     // Note: clustering services manipulate this
@@ -156,71 +146,6 @@ public class FlowProgrammerAdapter implements IPluginInFlowProgrammerService, Sa
         return toStatus(result.isSuccessful());
     }
 
-    @Override
-    public void onFlowAdded(final FlowAdded notification) {
-        // FIXME: unfinished?
-    }
-
-    @Override
-    public void onFlowRemoved(final FlowRemoved notification) {
-        // notified upon remove flow rpc successfully invoked
-        if (notification == null) {
-            return;
-        }
-
-        final NodeRef node = notification.getNode();
-        if (node == null) {
-            LOG.debug("Notification {} has not node, ignoring it", notification);
-            return;
-        }
-
-        Node adNode;
-        try {
-            adNode = NodeMapping.toADNode(notification.getNode());
-        } catch (ConstructionException e) {
-            LOG.warn("Failed to construct AD node for {}, ignoring notification", node, e);
-            return;
-        }
-        flowProgrammerPublisher.flowRemoved(adNode, ToSalConversionsUtils.toFlow(notification, adNode));
-    }
-
-    @Override
-    public void onFlowUpdated(final FlowUpdated notification) {
-        // FIXME: unfinished?
-    }
-
-    @Override
-    public void onSwitchFlowRemoved(final SwitchFlowRemoved notification) {
-        // notified upon remove flow message from device arrives
-        if (notification == null) {
-            return;
-        }
-
-        final NodeRef node = notification.getNode();
-        if (node == null) {
-            LOG.debug("Notification {} has not node, ignoring it", notification);
-            return;
-        }
-
-        Node adNode;
-        try {
-            adNode = NodeMapping.toADNode(notification.getNode());
-        } catch (ConstructionException e) {
-            LOG.warn("Failed to construct AD node for {}, ignoring notification", node, e);
-            return;
-        }
-        flowProgrammerPublisher.flowRemoved(adNode, ToSalConversionsUtils.toFlow(notification, adNode));
-    }
-
-    @Override
-    public void onNodeErrorNotification(final NodeErrorNotification notification) {
-        // FIXME: unfinished?
-    }
-
-    @Override
-    public void onNodeExperimenterErrorNotification(final NodeExperimenterErrorNotification notification) {
-        // FIXME: unfinished?
-    }
 
     private static final InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow> flowPath(
             final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow flow, final NodeKey nodeKey) {
@@ -239,7 +164,7 @@ public class FlowProgrammerAdapter implements IPluginInFlowProgrammerService, Sa
     }
 
     private Future<RpcResult<TransactionStatus>> internalAddFlowAsync(final Node node, final Flow flow, final long rid) {
-        final Map<Flow,UUID> cache = this.getCache();
+        final Map<Flow, UUID> cache = this.getCache();
         UUID flowId = cache.get(flow);
         if (flowId != null) {
             this.removeFlow(node, flow);
@@ -252,7 +177,7 @@ public class FlowProgrammerAdapter implements IPluginInFlowProgrammerService, Sa
     }
 
     private Future<RpcResult<TransactionStatus>> internalModifyFlowAsync(final Node node, final Flow oldFlow, final Flow newFlow, final long rid) {
-        final Map<Flow,UUID> cache = this.getCache();
+        final Map<Flow, UUID> cache = this.getCache();
 
         UUID flowId = cache.remove(oldFlow);
         if (flowId == null) {
@@ -267,7 +192,7 @@ public class FlowProgrammerAdapter implements IPluginInFlowProgrammerService, Sa
     }
 
     private Future<RpcResult<TransactionStatus>> internalRemoveFlowAsync(final Node node, final Flow adflow, final long rid) {
-        final Map<Flow,UUID> cache = this.getCache();
+        final Map<Flow, UUID> cache = this.getCache();
 
         final UUID flowId = cache.remove(adflow);
         if (flowId == null) {
@@ -301,7 +226,7 @@ public class FlowProgrammerAdapter implements IPluginInFlowProgrammerService, Sa
     }
 
     @SuppressWarnings("unchecked")
-    private Map<Flow,UUID> getCache() {
+    private Map<Flow, UUID> getCache() {
         final IClusterGlobalServices cgs = getClusterGlobalServices();
         if (cgs == null) {
             return new ConcurrentHashMap<Flow, UUID>();
