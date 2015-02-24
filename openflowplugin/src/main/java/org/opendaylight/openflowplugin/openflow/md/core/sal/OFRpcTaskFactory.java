@@ -32,12 +32,6 @@ import org.opendaylight.openflowplugin.openflow.md.util.FlowCreatorUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowAdded;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowAddedBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowRemoved;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowRemovedBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowUpdated;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowUpdatedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInput;
@@ -66,12 +60,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev131103.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.port.mod.port.Port;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.GroupAdded;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.GroupAddedBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.GroupRemoved;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.GroupRemovedBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.GroupUpdated;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.GroupUpdatedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupOutput;
@@ -89,12 +77,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetGroupStatisticsOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.MeterAdded;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.MeterAddedBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.MeterRemoved;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.MeterRemovedBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.MeterUpdated;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.MeterUpdatedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeterOutput;
@@ -206,9 +188,6 @@ public abstract class OFRpcTaskFactory {
 
 
                         result = OFRpcTaskUtil.chainFutureBarrier(this, result);
-                        OFRpcTaskUtil.hookFutureNotification(this, result,
-                                getRpcNotificationProviderService(),
-                                createFlowAddedNotification(getInput()));
                         return result;
                     }
 
@@ -267,23 +246,6 @@ public abstract class OFRpcTaskFactory {
 
 
     /**
-     * @param input
-     * @return
-     */
-    protected static NotificationComposer<FlowAdded> createFlowAddedNotification(
-            final AddFlowInput input) {
-        return new NotificationComposer<FlowAdded>() {
-            @Override
-            public FlowAdded compose(TransactionId tXid) {
-                FlowAddedBuilder newFlow = new FlowAddedBuilder((Flow) input);
-                newFlow.setTransactionId(tXid);
-                newFlow.setFlowRef(input.getFlowRef());
-                return newFlow.build();
-            }
-        };
-    }
-
-    /**
      * @param taskContext
      * @param input
      * @param cookie
@@ -330,9 +292,6 @@ public abstract class OFRpcTaskFactory {
                         result = chainFlowMods(allFlowMods, 0, getTaskContext(), getCookie());
 
                         result = OFRpcTaskUtil.chainFutureBarrier(this, result);
-                        OFRpcTaskUtil.hookFutureNotification(this, result,
-                                getRpcNotificationProviderService(),
-                                createFlowUpdatedNotification(in));
                         return result;
                     }
 
@@ -344,23 +303,6 @@ public abstract class OFRpcTaskFactory {
         return task;
     }
 
-
-    /**
-     * @param xId
-     * @param input
-     * @return
-     */
-    protected static NotificationComposer<FlowUpdated> createFlowUpdatedNotification(final UpdateFlowInput input) {
-        return new NotificationComposer<FlowUpdated>() {
-            @Override
-            public FlowUpdated compose(TransactionId tXid) {
-                FlowUpdatedBuilder updFlow = new FlowUpdatedBuilder(input.getUpdatedFlow());
-                updFlow.setTransactionId(tXid);
-                updFlow.setFlowRef(input.getFlowRef());
-                return updFlow.build();
-            }
-        };
-    }
 
     /**
      * @param taskContext
@@ -389,9 +331,6 @@ public abstract class OFRpcTaskFactory {
                         result = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
 
                         result = OFRpcTaskUtil.chainFutureBarrier(this, result);
-                        OFRpcTaskUtil.hookFutureNotification(this, result,
-                                getRpcNotificationProviderService(), createGroupAddedNotification(getInput()));
-
                         return result;
                     }
 
@@ -404,23 +343,6 @@ public abstract class OFRpcTaskFactory {
         return task;
     }
 
-
-    /**
-     * @param input
-     * @return
-     */
-    protected static NotificationComposer<GroupAdded> createGroupAddedNotification(
-            final AddGroupInput input) {
-        return new NotificationComposer<GroupAdded>() {
-            @Override
-            public GroupAdded compose(TransactionId tXid) {
-                GroupAddedBuilder groupMod = new GroupAddedBuilder((Group) input);
-                groupMod.setTransactionId(tXid);
-                groupMod.setGroupRef(input.getGroupRef());
-                return groupMod.build();
-            }
-        };
-    }
 
     /**
      * @param taskContext
@@ -448,9 +370,6 @@ public abstract class OFRpcTaskFactory {
                         result = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
 
                         result = OFRpcTaskUtil.chainFutureBarrier(this, result);
-                        OFRpcTaskUtil.hookFutureNotification(this, result,
-                                getRpcNotificationProviderService(), createMeterAddedNotification(getInput()));
-
                         return result;
                     }
 
@@ -464,22 +383,6 @@ public abstract class OFRpcTaskFactory {
 
     }
 
-    /**
-     * @param input
-     * @return
-     */
-    protected static NotificationComposer<MeterAdded> createMeterAddedNotification(
-            final AddMeterInput input) {
-        return new NotificationComposer<MeterAdded>() {
-            @Override
-            public MeterAdded compose(TransactionId tXid) {
-                MeterAddedBuilder meterMod = new MeterAddedBuilder((Meter) input);
-                meterMod.setTransactionId(tXid);
-                meterMod.setMeterRef(input.getMeterRef());
-                return meterMod.build();
-            }
-        };
-    }
 
     /**
      * @param taskContext
@@ -509,30 +412,10 @@ public abstract class OFRpcTaskFactory {
                         result = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
 
                         result = OFRpcTaskUtil.chainFutureBarrier(this, result);
-                        OFRpcTaskUtil.hookFutureNotification(this, result,
-                                getRpcNotificationProviderService(), createGroupUpdatedNotification(getInput()));
-
                         return result;
                     }
                 };
         return task;
-    }
-
-    /**
-     * @param input
-     * @return
-     */
-    protected static NotificationComposer<GroupUpdated> createGroupUpdatedNotification(
-            final UpdateGroupInput input) {
-        return new NotificationComposer<GroupUpdated>() {
-            @Override
-            public GroupUpdated compose(TransactionId tXid) {
-                GroupUpdatedBuilder groupMod = new GroupUpdatedBuilder(input.getUpdatedGroup());
-                groupMod.setTransactionId(tXid);
-                groupMod.setGroupRef(input.getGroupRef());
-                return groupMod.build();
-            }
-        };
     }
 
     /**
@@ -562,31 +445,11 @@ public abstract class OFRpcTaskFactory {
                         result = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
 
                         result = OFRpcTaskUtil.chainFutureBarrier(this, result);
-                        OFRpcTaskUtil.hookFutureNotification(this, result,
-                                getRpcNotificationProviderService(), createMeterUpdatedNotification(getInput()));
                         return result;
                     }
                 };
         return task;
     }
-
-    /**
-     * @param input
-     * @return
-     */
-    protected static NotificationComposer<MeterUpdated> createMeterUpdatedNotification(
-            final UpdateMeterInput input) {
-        return new NotificationComposer<MeterUpdated>() {
-            @Override
-            public MeterUpdated compose(TransactionId tXid) {
-                MeterUpdatedBuilder meterMod = new MeterUpdatedBuilder(input.getUpdatedMeter());
-                meterMod.setTransactionId(tXid);
-                meterMod.setMeterRef(input.getMeterRef());
-                return meterMod.build();
-            }
-        };
-    }
-
 
     /**
      * @param taskContext
@@ -615,33 +478,12 @@ public abstract class OFRpcTaskFactory {
                         result = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
 
                         result = OFRpcTaskUtil.chainFutureBarrier(this, result);
-                        OFRpcTaskUtil.hookFutureNotification(this, result,
-                                getRpcNotificationProviderService(), createFlowRemovedNotification(getInput()));
-
                         return result;
                     }
                 };
 
         return task;
     }
-
-    /**
-     * @param input
-     * @return
-     */
-    protected static NotificationComposer<FlowRemoved> createFlowRemovedNotification(
-            final RemoveFlowInput input) {
-        return new NotificationComposer<FlowRemoved>() {
-            @Override
-            public FlowRemoved compose(TransactionId tXid) {
-                FlowRemovedBuilder removedFlow = new FlowRemovedBuilder((Flow) input);
-                removedFlow.setTransactionId(tXid);
-                removedFlow.setFlowRef(input.getFlowRef());
-                return removedFlow.build();
-            }
-        };
-    }
-
 
     /**
      * @param taskContext
@@ -670,31 +512,11 @@ public abstract class OFRpcTaskFactory {
                         result = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
 
                         result = OFRpcTaskUtil.chainFutureBarrier(this, result);
-                        OFRpcTaskUtil.hookFutureNotification(this, result,
-                                getRpcNotificationProviderService(), createGroupRemovedNotification(getInput()));
-
                         return result;
                     }
                 };
 
         return task;
-    }
-
-    /**
-     * @param input
-     * @return
-     */
-    protected static NotificationComposer<GroupRemoved> createGroupRemovedNotification(
-            final RemoveGroupInput input) {
-        return new NotificationComposer<GroupRemoved>() {
-            @Override
-            public GroupRemoved compose(TransactionId tXid) {
-                GroupRemovedBuilder removedGroup = new GroupRemovedBuilder((Group) input);
-                removedGroup.setTransactionId(tXid);
-                removedGroup.setGroupRef(input.getGroupRef());
-                return removedGroup.build();
-            }
-        };
     }
 
     /**
@@ -723,32 +545,12 @@ public abstract class OFRpcTaskFactory {
                         result = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
 
                         result = OFRpcTaskUtil.chainFutureBarrier(this, result);
-                        OFRpcTaskUtil.hookFutureNotification(this, result,
-                                getRpcNotificationProviderService(), createMeterRemovedNotification(getInput()));
-
                         return result;
                     }
                 };
 
         return task;
 
-    }
-
-    /**
-     * @param input
-     * @return
-     */
-    protected static NotificationComposer<MeterRemoved> createMeterRemovedNotification(
-            final RemoveMeterInput input) {
-        return new NotificationComposer<MeterRemoved>() {
-            @Override
-            public MeterRemoved compose(TransactionId tXid) {
-                MeterRemovedBuilder meterRemoved = new MeterRemovedBuilder((Meter) input);
-                meterRemoved.setTransactionId(tXid);
-                meterRemoved.setMeterRef(input.getMeterRef());
-                return meterRemoved.build();
-            }
-        };
     }
 
     /**
