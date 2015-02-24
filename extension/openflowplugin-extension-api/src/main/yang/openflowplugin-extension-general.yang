@@ -71,11 +71,6 @@ module openflowplugin-extension-general {
         uses general-extension-list-grouping;
     }
     
-    // NOTIFICATIONS
-    augment "/sal-flow:switch-flow-removed/sal-flow:match" {
-        ext:augment-identifier "general-aug-match-notif-switch-flow-removed";
-        uses general-extension-list-grouping;
-    }
     augment "/sal-packet:packet-received/sal-packet:match" {
         ext:augment-identifier "general-aug-match-notif-packet-in";
         uses general-extension-list-grouping;

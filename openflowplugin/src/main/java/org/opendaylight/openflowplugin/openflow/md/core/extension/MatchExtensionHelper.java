@@ -23,8 +23,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.OxmC
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.grouping.MatchEntries;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNotifPacketIn;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNotifPacketInBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNotifSwitchFlowRemoved;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNotifSwitchFlowRemovedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNotifUpdateFlowStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNotifUpdateFlowStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.grouping.Extension;
@@ -86,13 +84,6 @@ public final class MatchExtensionHelper {
                 augmentTuple = (AugmentTuple<EXT_POINT>) 
                         new AugmentTuple<Match>(GeneralAugMatchNotifPacketIn.class, generalExtMatchAugBld2.build());
                 break;
-            case SWITCHFLOWREMOVED_MATCH:
-                GeneralAugMatchNotifSwitchFlowRemovedBuilder generalExtMatchAugBld3 = new GeneralAugMatchNotifSwitchFlowRemovedBuilder();
-                generalExtMatchAugBld3.setExtensionList(extensionsList);    
-                augmentTuple = (AugmentTuple<EXT_POINT>) 
-                        new AugmentTuple<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.mod.removed.Match>(
-                                GeneralAugMatchNotifSwitchFlowRemoved.class, generalExtMatchAugBld3.build());
-                break;
             default:
                 LOG.warn("matchPath not supported: {}", matchPath);
             }
@@ -104,9 +95,8 @@ public final class MatchExtensionHelper {
     /**
      * @param ofVersion 
      * @param matchPath
-     * @param matchBuilder
-     * @param match
-     * @return 
+     * @param matchEntry
+     * @return
      */
     private static ExtensionListBuilder processExtension(MatchEntries matchEntry, OpenflowVersion ofVersion, MatchPath matchPath) {
         ExtensionListBuilder extListBld = null;

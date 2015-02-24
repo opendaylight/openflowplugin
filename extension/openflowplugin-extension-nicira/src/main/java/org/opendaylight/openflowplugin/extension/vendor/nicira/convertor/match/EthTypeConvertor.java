@@ -1,12 +1,13 @@
 /**
  * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
- * 
+ *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 package org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match;
 
+import com.google.common.base.Optional;
 import org.opendaylight.openflowplugin.extension.api.ConvertorFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorToOFJava;
 import org.opendaylight.openflowplugin.extension.api.ExtensionAugment;
@@ -22,8 +23,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ge
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.grouping.Extension;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifPacketIn;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifPacketInBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifSwitchFlowRemoved;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifSwitchFlowRemovedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifUpdateFlowStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifUpdateFlowStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfEthTypeGrouping;
@@ -32,11 +31,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.of.eth.type.grouping.NxmOfEthTypeBuilder;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
 
-import com.google.common.base.Optional;
-
 /**
  * @author msunal
- *
  */
 public class EthTypeConvertor implements ConvertorToOFJava<MatchEntries>, ConvertorFromOFJava<MatchEntries, MatchPath> {
 
@@ -56,19 +52,16 @@ public class EthTypeConvertor implements ConvertorToOFJava<MatchEntries>, Conver
     }
 
     private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(NxmOfEthType value,
-            MatchPath path, Class<? extends ExtensionKey> key) {
+                                                                                           MatchPath path, Class<? extends ExtensionKey> key) {
         switch (path) {
-        case FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH:
-            return new ExtensionAugment<>(NxAugMatchNotifUpdateFlowStats.class,
-                    new NxAugMatchNotifUpdateFlowStatsBuilder().setNxmOfEthType(value).build(), key);
-        case PACKETRECEIVED_MATCH:
-            return new ExtensionAugment<>(NxAugMatchNotifPacketIn.class, new NxAugMatchNotifPacketInBuilder()
-                    .setNxmOfEthType(value).build(), key);
-        case SWITCHFLOWREMOVED_MATCH:
-            return new ExtensionAugment<>(NxAugMatchNotifSwitchFlowRemoved.class,
-                    new NxAugMatchNotifSwitchFlowRemovedBuilder().setNxmOfEthType(value).build(), key);
-        default:
-            throw new CodecPreconditionException(path);
+            case FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH:
+                return new ExtensionAugment<>(NxAugMatchNotifUpdateFlowStats.class,
+                        new NxAugMatchNotifUpdateFlowStatsBuilder().setNxmOfEthType(value).build(), key);
+            case PACKETRECEIVED_MATCH:
+                return new ExtensionAugment<>(NxAugMatchNotifPacketIn.class, new NxAugMatchNotifPacketInBuilder()
+                        .setNxmOfEthType(value).build(), key);
+            default:
+                throw new CodecPreconditionException(path);
         }
     }
 
