@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a96c907_fcd982f3",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/OFRpcFutureResultTransformFactory.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 552
+      },
+      "writtenOn": "2015-02-24T10:38:06Z",
+      "side": 1,
+      "message": "please revert to protected - omit synthetic accessor",
+      "revId": "046605edb1f2c176aef1caa6d7946bfd0d32130e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_1ce6aeb0",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/SwitchFeaturesUtil.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 552
+      },
+      "writtenOn": "2015-02-24T10:38:06Z",
+      "side": 1,
+      "message": "use OFConstants",
+      "revId": "046605edb1f2c176aef1caa6d7946bfd0d32130e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
