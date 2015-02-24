@@ -10,7 +10,7 @@ package org.opendaylight.openflowplugin.api.openflow.md.queue;
 import org.opendaylight.openflowplugin.api.openflow.md.core.ConnectionConductor;
 
 /**
- * This processing mechanism based on queue. Processing consists of 2 steps: translate and publish. 
+ * This processing mechanism based on queue. Processing consists of 2 steps: translate and publish.
  * Proposed workflow (might slightly deviate in implementations):
  * <ol>
  * <li>messages of input type are pushed in (via {@link QueueKeeper#push(Object, ConnectionConductor)} and similar)</li>
@@ -19,11 +19,11 @@ import org.opendaylight.openflowplugin.api.openflow.md.core.ConnectionConductor;
  * <li>ticket is dequeued and result is published by appropriate popListener</li>
  * </ol>
  * Message order might be not important, e.g. when speed is of the essence
- * @param <IN> source type
- * @param <OUT> result type
+ * @param <I> source type (IN)
+ * @param <O> result type (OUT)
  */
-public interface QueueKeeper<IN> extends AutoCloseable {
-    
+public interface QueueKeeper<I> extends AutoCloseable {
+
     /** type of message enqueue */
     public enum QueueType {
         /** ordered processing */
@@ -37,12 +37,12 @@ public interface QueueKeeper<IN> extends AutoCloseable {
      * @param conductor source of message
      * @param queueType - {@link QueueType#DEFAULT} if message order matters, {@link QueueType#UNORDERED} otherwise
      */
-    void push(IN message, ConnectionConductor conductor, QueueType queueType);
+    void push(I message, ConnectionConductor conductor, QueueType queueType);
 
     /**
      * @return oldest item from queue - if available and remove it from queue
      */
-    QueueItem<IN> poll();
+    QueueItem<I> poll();
 
     /**
      * @param processingRegistration the processingRegistration to set (in order to provide close method)
