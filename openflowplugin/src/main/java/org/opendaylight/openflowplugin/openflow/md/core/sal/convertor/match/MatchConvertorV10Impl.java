@@ -36,15 +36,16 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.matc
 public class MatchConvertorV10Impl implements MatchConvertor<MatchV10> {
 
     /** default MAC */
-    public static final MacAddress zeroMac = new MacAddress("00:00:00:00:00:00");
+    public static final MacAddress ZERO_MAC = new MacAddress("00:00:00:00:00:00");
     /** default IPv4 */
-    public static final Ipv4Address zeroIPv4 = new Ipv4Address("0.0.0.0");
+    public static final Ipv4Address ZERO_IP_V4 = new Ipv4Address("0.0.0.0");
 
     /*
      * The value 0xffff (OFP_VLAN_NONE) is used to indicate
      * that no VLAN ID is set for OF Flow.
      */
     private static final int OFP_VLAN_NONE = 0xffff;
+    private static final int DEFAULT_IV4_MASK = 32;
 
     /**
      * Method builds openflow 1.0 specific match (MatchV10) from MD-SAL match.
@@ -55,26 +56,26 @@ public class MatchConvertorV10Impl implements MatchConvertor<MatchV10> {
     @Override
     public MatchV10 convert(final Match match,final BigInteger datapathid) {
         MatchV10Builder matchBuilder = new MatchV10Builder();
-        boolean _dLDST = true;
-        boolean _dLSRC = true;
-        boolean _dLTYPE = true;
-        boolean _dLVLAN = true;
-        boolean _dLVLANPCP = true;
-        boolean _iNPORT = true;
-        boolean _nWPROTO = true;
-        boolean _nWTOS = true;
-        boolean _tPDST = true;
-        boolean _tPSRC = true;
+        boolean isDataLinkDstWildcard = true;
+        boolean isDataLinkSrcWildcard = true;
+        boolean isDataLinkTypeWildcard = true;
+        boolean isDataLinkVLANWildcard = true;
+        boolean isDataLinkVLANPCPWildcard = true;
+        boolean isInPortWildcard = true;
+        boolean isNetworkProtocolWildcard = true;
+        boolean isNetworkTOSWildcard = true;
+        boolean isTransportDstWildcard = true;
+        boolean isTransportSrcWildcard = true;
 
         matchBuilder.setInPort(0);
-        matchBuilder.setDlDst(zeroMac);
-        matchBuilder.setDlSrc(zeroMac);
+        matchBuilder.setDlDst(ZERO_MAC);
+        matchBuilder.setDlSrc(ZERO_MAC);
         matchBuilder.setDlType(0);
         matchBuilder.setDlVlan(OFP_VLAN_NONE);
         matchBuilder.setDlVlanPcp((short) 0);
-        matchBuilder.setNwDst(zeroIPv4);
+        matchBuilder.setNwDst(ZERO_IP_V4);
         matchBuilder.setNwDstMask((short) 0);
-        matchBuilder.setNwSrc(zeroIPv4);
+        matchBuilder.setNwSrc(ZERO_IP_V4);
         matchBuilder.setNwSrcMask((short) 0);
         matchBuilder.setNwProto((short) 0);
         matchBuilder.setNwTos((short) 0);
@@ -84,49 +85,47 @@ public class MatchConvertorV10Impl implements MatchConvertor<MatchV10> {
         if (match != null) {
             EthernetMatch ethernetMatch = match.getEthernetMatch();
             if(ethernetMatch!= null){
-                _dLDST = convertEthernetDlDst(matchBuilder, ethernetMatch);
-                _dLSRC = convertEthernetDlSrc(matchBuilder, ethernetMatch);
-                _dLTYPE = convertEthernetDlType(matchBuilder, ethernetMatch);
+                isDataLinkDstWildcard = convertEthernetDlDst(matchBuilder, ethernetMatch);
+                isDataLinkSrcWildcard = convertEthernetDlSrc(matchBuilder, ethernetMatch);
+                isDataLinkTypeWildcard = convertEthernetDlType(matchBuilder, ethernetMatch);
             }
             VlanMatch vlanMatch = match.getVlanMatch();
             if(vlanMatch!= null){
-                _dLVLAN = convertDlVlan(matchBuilder, vlanMatch);
-                _dLVLANPCP = convertDlVlanPcp(matchBuilder, vlanMatch);
+                isDataLinkVLANWildcard = convertDlVlan(matchBuilder, vlanMatch);
+                isDataLinkVLANPCPWildcard = convertDlVlanPcp(matchBuilder, vlanMatch);
             }
             NodeConnectorId inPort = match.getInPort();
             if(inPort!=null){
-                _iNPORT = convertInPortMatch(matchBuilder, inPort);
+                isInPortWildcard = convertInPortMatch(matchBuilder, inPort);
             }
             Layer3Match l3Match = match.getLayer3Match();
-            if(l3Match != null){
-                if(l3Match instanceof Ipv4Match){
-                    Ipv4Match ipv4 = (Ipv4Match)l3Match;
-                    convertL3Ipv4SrcMatch(matchBuilder, ipv4);
-                    convertL3Ipv4DstMatch(matchBuilder, ipv4);
-                }
+            if(l3Match != null && l3Match instanceof Ipv4Match) {
+                Ipv4Match ipv4 = (Ipv4Match)l3Match;
+                convertL3Ipv4SrcMatch(matchBuilder, ipv4);
+                convertL3Ipv4DstMatch(matchBuilder, ipv4);
             }
             IpMatch ipMatch = match.getIpMatch();
             if(ipMatch!=null){
-                _nWPROTO = convertNwProto(matchBuilder, ipMatch);
-                _nWTOS = convertNwTos(matchBuilder, ipMatch);
+                isNetworkProtocolWildcard = convertNwProto(matchBuilder, ipMatch);
+                isNetworkTOSWildcard = convertNwTos(matchBuilder, ipMatch);
             }
             Layer4Match layer4Match = match.getLayer4Match();
             if (layer4Match != null) {
                 if (layer4Match instanceof TcpMatch) {
                     TcpMatch tcpMatch = (TcpMatch) layer4Match;
-                    _tPSRC = convertL4TpSrcMatch(matchBuilder, tcpMatch);
-                    _tPDST = convertL4TpDstMatch(matchBuilder, tcpMatch);
+                    isTransportSrcWildcard = convertL4TpSrcMatch(matchBuilder, tcpMatch);
+                    isTransportDstWildcard = convertL4TpDstMatch(matchBuilder, tcpMatch);
                 } else if (layer4Match instanceof UdpMatch) {
                     UdpMatch udpMatch = (UdpMatch) layer4Match;
-                    _tPSRC = convertL4UdpSrcMatch(matchBuilder, udpMatch);
-                    _tPDST = convertL4UdpDstMatch(matchBuilder, udpMatch);
+                    isTransportSrcWildcard = convertL4UdpSrcMatch(matchBuilder, udpMatch);
+                    isTransportDstWildcard = convertL4UdpDstMatch(matchBuilder, udpMatch);
                 }
             }
         }
 
         FlowWildcardsV10 wildCards = new FlowWildcardsV10(
-                _dLDST, _dLSRC, _dLTYPE, _dLVLAN,
-                _dLVLANPCP, _iNPORT, _nWPROTO, _nWTOS, _tPDST, _tPSRC);
+                isDataLinkDstWildcard, isDataLinkSrcWildcard, isDataLinkTypeWildcard, isDataLinkVLANWildcard,
+                isDataLinkVLANPCPWildcard, isInPortWildcard, isNetworkProtocolWildcard, isNetworkTOSWildcard, isTransportDstWildcard, isTransportSrcWildcard);
         matchBuilder.setWildcards(wildCards);
 
         return matchBuilder.build();
@@ -255,7 +254,7 @@ public class MatchConvertorV10Impl implements MatchConvertor<MatchV10> {
      * @return
      */
     private static int buildPrefix(final Iterator<String> addressParts) {
-        int prefix = 32;
+        int prefix = DEFAULT_IV4_MASK;
         if (addressParts.hasNext()) {
             prefix = Integer.parseInt(addressParts.next());
         }
