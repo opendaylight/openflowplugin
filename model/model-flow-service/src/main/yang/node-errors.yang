@@ -21,7 +21,6 @@ module node-error {
         uses error:error-message;
         uses tr:transaction-aware;
         uses tr:transaction-metadata;
-        uses flow:base-node-error-notification;
         uses flow:node-error-reference;
     }
 
@@ -31,7 +30,6 @@ module node-error {
         uses error:error-message;
         uses tr:transaction-aware;
         uses tr:transaction-metadata;
-        uses flow:base-node-error-notification;
         uses flow:node-error-reference;
     }
 
@@ -41,7 +39,6 @@ module node-error {
         uses error:error-message;
         uses tr:transaction-aware;
         uses tr:transaction-metadata;
-        uses flow:base-node-error-notification;
         uses flow:node-error-reference;
     }
 
@@ -51,7 +48,6 @@ module node-error {
             uses error:error-message;
             uses tr:transaction-aware;
             uses tr:transaction-metadata;
-            uses flow:base-node-error-notification;
             uses flow:node-error-reference;
         }
 
@@ -61,7 +57,6 @@ module node-error {
             uses error:error-message;
             uses tr:transaction-aware;
             uses tr:transaction-metadata;
-            uses flow:base-node-error-notification;
             uses flow:node-error-reference;
         }
 
@@ -71,7 +66,6 @@ module node-error {
             uses error:error-message;
             uses tr:transaction-aware;
             uses tr:transaction-metadata;
-            uses flow:base-node-error-notification;
             uses flow:node-error-reference;
         }
 
@@ -81,7 +75,6 @@ module node-error {
             uses error:error-message;
             uses tr:transaction-aware;
             uses tr:transaction-metadata;
-            uses flow:base-node-error-notification;
             uses flow:node-error-reference;
         }
 
@@ -91,7 +84,6 @@ module node-error {
             uses error:error-message;
             uses tr:transaction-aware;
             uses tr:transaction-metadata;
-            uses flow:base-node-error-notification;
             uses flow:node-error-reference;
         }
 
@@ -101,7 +93,6 @@ module node-error {
             uses error:error-message;
             uses tr:transaction-aware;
             uses tr:transaction-metadata;
-            uses flow:base-node-error-notification;
             uses flow:node-error-reference;
         }
 
@@ -111,7 +102,6 @@ module node-error {
             uses error:error-message;
             uses tr:transaction-aware;
             uses tr:transaction-metadata;
-            uses flow:base-node-error-notification;
             uses flow:node-error-reference;
         }
 
@@ -121,7 +111,6 @@ module node-error {
             uses error:error-message;
             uses tr:transaction-aware;
             uses tr:transaction-metadata;
-            uses flow:base-node-error-notification;
             uses flow:node-error-reference;
         }
 
@@ -131,7 +120,6 @@ module node-error {
             uses error:error-message;
             uses tr:transaction-aware;
             uses tr:transaction-metadata;
-            uses flow:base-node-error-notification;
             uses flow:node-error-reference;
         }
 
@@ -141,7 +129,6 @@ module node-error {
             uses error:error-message;
             uses tr:transaction-aware;
             uses tr:transaction-metadata;
-            uses flow:base-node-error-notification;
             uses flow:node-error-reference;
         }
 
@@ -151,7 +138,6 @@ module node-error {
             uses error:error-message;
             uses tr:transaction-aware;
             uses tr:transaction-metadata;
-            uses flow:base-node-error-notification;
             uses flow:node-error-reference;
         }
 
@@ -160,7 +146,6 @@ module node-error {
             uses error:error-message;
             uses tr:transaction-aware;
             uses tr:transaction-metadata;
-            uses flow:base-node-error-notification;
             uses flow:node-error-reference;
         }
 }
