@@ -120,7 +120,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.OutputPortValues;
@@ -193,7 +192,6 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
     private static final String IPV4_PREFIX = "10.0.0.1/24";
     private static final String DEST_MAC_ADDRESS = "ff:ff:ff:ff:ff:ff";
     private static final String SRC_MAC_ADDRESS = "00:00:00:00:23:ae";
-    private final SalFlowListener flowEventListener = new FlowEventListenerLoggingImpl();
     private final NodeErrorListener nodeErrorListener = new NodeErrorListenerLoggingImpl();
     private static NotificationService notificationService;
 
@@ -204,7 +202,6 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
     public void onSessionInitiated(ProviderContext session) {
         notificationService = session.getSALService(NotificationService.class);
         // For switch events
-        notificationService.registerNotificationListener(flowEventListener);
         notificationService.registerNotificationListener(nodeErrorListener);
         dataBroker = session.getSALService(DataBroker.class);
         ctx.registerService(CommandProvider.class.getName(), this, null);
