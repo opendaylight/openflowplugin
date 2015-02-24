@@ -7,11 +7,10 @@
  */
 package org.opendaylight.openflowplugin.legacy.sal.compatibility.adsal;
 
-import java.math.BigInteger;
-
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.controller.sal.flowprogrammer.Flow;
-import org.opendaylight.controller.sal.flowprogrammer.IFlowProgrammerListener;
 import org.opendaylight.controller.sal.flowprogrammer.IFlowProgrammerService;
 import org.opendaylight.controller.sal.utils.Status;
 import org.opendaylight.openflowplugin.legacy.sal.compatibility.InventoryMapping;
@@ -19,7 +18,6 @@ import org.opendaylight.openflowplugin.legacy.sal.compatibility.ToSalConversions
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowRemovedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowOutputBuilder;
@@ -34,11 +32,9 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.math.BigInteger;
 
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
-
-public class FlowServiceAdapter implements SalFlowService, IFlowProgrammerListener {
+public class FlowServiceAdapter implements SalFlowService {
 
     private static final Logger LOG = LoggerFactory.getLogger(FlowServiceAdapter.class);
 
@@ -46,18 +42,6 @@ public class FlowServiceAdapter implements SalFlowService, IFlowProgrammerListen
 
     private NotificationProviderService publish;
 
-    @Override
-    public void flowRemoved(org.opendaylight.controller.sal.core.Node node, Flow flow) {
-        FlowRemovedBuilder flowRemovedBuilder = new FlowRemovedBuilder();
-        flowRemovedBuilder.setNode(InventoryMapping.toNodeRef(node));
-        publish.publish(flowRemovedBuilder.build());
-    }
-
-    @Override
-    public void flowErrorReported(org.opendaylight.controller.sal.core.Node node, long rid, Object err) {
-        // TODO Auto-generated method stub
-
-    }
 
     @Override
     public ListenableFuture<RpcResult<AddFlowOutput>> addFlow(AddFlowInput input) {
@@ -86,7 +70,7 @@ public class FlowServiceAdapter implements SalFlowService, IFlowProgrammerListen
         builder.setTransactionId(new TransactionId(BigInteger.valueOf(status.getRequestId())));
         RemoveFlowOutput rpcResultType = builder.build();
         return Futures.immediateFuture(RpcResultBuilder.<RemoveFlowOutput>status(status.isSuccess())
-                                                         .withResult(rpcResultType).build());
+                .withResult(rpcResultType).build());
 
     }
 
