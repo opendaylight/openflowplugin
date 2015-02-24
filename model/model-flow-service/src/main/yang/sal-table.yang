@@ -30,10 +30,4 @@ module sal-table {
             uses tr:transaction-aware;
         }
     }
-    
-    notification table-updated {
-        uses "inv:node-context-ref";
-        uses tr:multipart-transaction-aware;
-        uses table-type:table-features;
-    }
 }
