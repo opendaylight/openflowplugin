@@ -87,38 +87,6 @@ public class TestFromSalConversionsUtils {
         other, untagged, ipv4, ipv6, arp, sctp, tcp, udp
     }
 
-    @Test
-    public void testFromSalConversion() throws ConstructionException {
-
-        Flow salFlow = prepareSalFlowCommon();
-        NodeFlow odNodeFlow = MDFlowMapping.flowAdded(salFlow);
-
-        checkOdFlow(odNodeFlow);
-
-        odNodeFlow = MDFlowMapping.flowAdded(prepareSalMatch(salFlow, MtchType.other));
-        checkOdMatch(odNodeFlow.getMatch(), MtchType.other);
-
-        odNodeFlow = MDFlowMapping.flowAdded(prepareSalMatch(salFlow, MtchType.untagged));
-        checkOdMatch(odNodeFlow.getMatch(), MtchType.untagged);
-
-        odNodeFlow = MDFlowMapping.flowAdded(prepareSalMatch(salFlow, MtchType.arp));
-        checkOdMatch(odNodeFlow.getMatch(), MtchType.arp);
-
-        odNodeFlow = MDFlowMapping.flowAdded(prepareSalMatch(salFlow, MtchType.ipv4));
-        checkOdMatch(odNodeFlow.getMatch(), MtchType.ipv4);
-
-        odNodeFlow = MDFlowMapping.flowAdded(prepareSalMatch(salFlow, MtchType.ipv6));
-        checkOdMatch(odNodeFlow.getMatch(), MtchType.ipv6);
-
-        odNodeFlow = MDFlowMapping.flowAdded(prepareSalMatch(salFlow, MtchType.sctp));
-        checkOdMatch(odNodeFlow.getMatch(), MtchType.sctp);
-
-        odNodeFlow = MDFlowMapping.flowAdded(prepareSalMatch(salFlow, MtchType.tcp));
-        checkOdMatch(odNodeFlow.getMatch(), MtchType.tcp);
-
-        odNodeFlow = MDFlowMapping.flowAdded(prepareSalMatch(salFlow, MtchType.udp));
-        checkOdMatch(odNodeFlow.getMatch(), MtchType.udp);
-    }
 
     private void checkOdMatch(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match match,
             MtchType mt) {
