@@ -39,12 +39,4 @@ module sal-port {
         }
     }
     
-    notification port-updated {
-        uses port-update;
-        uses tr:transaction-aware;
-    }
-    
-    notification port-removed {
-        uses node-port;       
-    }
 }
