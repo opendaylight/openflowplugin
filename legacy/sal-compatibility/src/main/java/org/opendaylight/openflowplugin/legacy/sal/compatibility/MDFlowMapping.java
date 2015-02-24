@@ -32,7 +32,6 @@ import org.opendaylight.controller.sal.action.SetVlanCfi;
 import org.opendaylight.controller.sal.action.SetVlanId;
 import org.opendaylight.controller.sal.action.SetVlanPcp;
 import org.opendaylight.controller.sal.action.SwPath;
-import org.opendaylight.controller.sal.core.Node;
 import org.opendaylight.controller.sal.core.NodeConnector;
 import org.opendaylight.controller.sal.flowprogrammer.Flow;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
@@ -113,16 +112,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.addr
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.address.address.Ipv6Builder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowAdded;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowAddedBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.OriginalFlowBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.UpdatedFlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Instructions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.InstructionsBuilder;
@@ -133,7 +122,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeCon
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.EtherType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanPcp;
-
 import java.math.BigInteger;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
@@ -159,35 +147,21 @@ public final class MDFlowMapping {
         return ret;
     }
 
-    public static FlowAdded flowAdded(final Flow sourceFlow) {
-        Preconditions.checkArgument(sourceFlow != null);
-
-        return new FlowAddedBuilder()
-        .setHardTimeout(Integer.valueOf(sourceFlow.getHardTimeout()))
-        .setIdleTimeout(Integer.valueOf(sourceFlow.getIdleTimeout()))
-        .setCookie(new FlowCookie(BigInteger.valueOf(sourceFlow.getId())))
-        .setPriority(Integer.valueOf(sourceFlow.getPriority()))
-        .setInstructions(MDFlowMapping.toApplyInstruction(toMDActions(sourceFlow.getActions())))
-        .setMatch(FromSalConversionsUtils.toMatch(sourceFlow.getMatch()))
-        .setTableId((short)0)
-        .build();
-    }
-
     private static FlowBuilder internalToMDFlow(final Flow sourceFlow) {
         Preconditions.checkArgument(sourceFlow != null);
 
         return new FlowBuilder()
-        .setHardTimeout(Integer.valueOf(sourceFlow.getHardTimeout()))
-        .setIdleTimeout(Integer.valueOf(sourceFlow.getIdleTimeout()))
-        .setCookie(new FlowCookie(BigInteger.valueOf(sourceFlow.getId())))
-        .setPriority(Integer.valueOf((sourceFlow.getPriority())))
-        .setInstructions(MDFlowMapping.toApplyInstruction(toMDActions(sourceFlow.getActions())))
-        .setMatch(FromSalConversionsUtils.toMatch(sourceFlow.getMatch()));
+                .setHardTimeout(Integer.valueOf(sourceFlow.getHardTimeout()))
+                .setIdleTimeout(Integer.valueOf(sourceFlow.getIdleTimeout()))
+                .setCookie(new FlowCookie(BigInteger.valueOf(sourceFlow.getId())))
+                .setPriority(Integer.valueOf((sourceFlow.getPriority())))
+                .setInstructions(MDFlowMapping.toApplyInstruction(toMDActions(sourceFlow.getActions())))
+                .setMatch(FromSalConversionsUtils.toMatch(sourceFlow.getMatch()));
     }
 
     public static org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow toMDFlow(final Flow sourceFlow, final String flowId) {
         return internalToMDFlow(sourceFlow)
-                .setTableId((short)0)
+                .setTableId((short) 0)
                 .setId(new FlowId(flowId))
                 .build();
     }
@@ -198,38 +172,16 @@ public final class MDFlowMapping {
 
     public static Instructions toApplyInstruction(final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> actions) {
         return new InstructionsBuilder()
-        .setInstruction(
-                Collections.singletonList(
-                        new InstructionBuilder()
-                        .setOrder(0)
-                        .setInstruction(
-                                new ApplyActionsCaseBuilder()
-                                .setApplyActions(new ApplyActionsBuilder().setAction(actions).build())
-                                .build()
-                                ).build())
+                .setInstruction(
+                        Collections.singletonList(
+                                new InstructionBuilder()
+                                        .setOrder(0)
+                                        .setInstruction(
+                                                new ApplyActionsCaseBuilder()
+                                                        .setApplyActions(new ApplyActionsBuilder().setAction(actions).build())
+                                                        .build()
+                                        ).build())
                 ).build();
-    }
-
-    public static RemoveFlowInput removeFlowInput(final Node sourceNode, final Flow sourceFlow) {
-        final FlowAdded source = MDFlowMapping.flowAdded(sourceFlow);
-        return new RemoveFlowInputBuilder((org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow) source)
-        .setNode(NodeMapping.toNodeRef(sourceNode))
-        .build();
-    }
-
-    public static AddFlowInput addFlowInput(final Node sourceNode, final Flow sourceFlow) {
-        final FlowAdded source = MDFlowMapping.flowAdded(sourceFlow);
-        return new AddFlowInputBuilder(((org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow) source))
-        .setNode(NodeMapping.toNodeRef(sourceNode))
-        .build();
-    }
-
-    public static UpdateFlowInput updateFlowInput(final Node sourceNode, final Flow oldFlow, final Flow newFlow) {
-        return new UpdateFlowInputBuilder()
-        .setOriginalFlow(new OriginalFlowBuilder(MDFlowMapping.flowAdded(newFlow)).build())
-        .setUpdatedFlow(new UpdatedFlowBuilder(MDFlowMapping.flowAdded(newFlow)).build())
-        .setNode(NodeMapping.toNodeRef(sourceNode))
-        .build();
     }
 
     private static ControllerActionCase _toAction(final Controller sourceAction) {
@@ -253,13 +205,13 @@ public final class MDFlowMapping {
     }
 
     private static LoopbackActionCase _toAction(final Loopback sourceAction) {
-        return new LoopbackActionCaseBuilder().setLoopbackAction( new LoopbackActionBuilder().build()).build();
+        return new LoopbackActionCaseBuilder().setLoopbackAction(new LoopbackActionBuilder().build()).build();
     }
 
     private static OutputActionCase _toAction(final Output sourceAction) {
         return new OutputActionCaseBuilder()
-        .setOutputAction(
-                new OutputActionBuilder().setOutputNodeConnector(MDFlowMapping.toUri(sourceAction.getPort())).build()
+                .setOutputAction(
+                        new OutputActionBuilder().setOutputNodeConnector(MDFlowMapping.toUri(sourceAction.getPort())).build()
                 ).build();
     }
 
@@ -270,83 +222,83 @@ public final class MDFlowMapping {
 
     private static PushVlanActionCase _toAction(final PushVlan sourceAction) {
         return new PushVlanActionCaseBuilder()
-        .setPushVlanAction(
-                new PushVlanActionBuilder()
-                .setEthernetType(Integer.valueOf(sourceAction.getTag()))
-                .build()
+                .setPushVlanAction(
+                        new PushVlanActionBuilder()
+                                .setEthernetType(Integer.valueOf(sourceAction.getTag()))
+                                .build()
                 ).build();
     }
 
     private static SetDlDstActionCase _toAction(final SetDlDst sourceAction) {
         return new SetDlDstActionCaseBuilder()
-        .setSetDlDstAction(new SetDlDstActionBuilder().setAddress(MDFlowMapping.toMacAddress(sourceAction.getDlAddress())).build())
-        .build();
+                .setSetDlDstAction(new SetDlDstActionBuilder().setAddress(MDFlowMapping.toMacAddress(sourceAction.getDlAddress())).build())
+                .build();
     }
 
     private static SetDlSrcActionCase _toAction(final SetDlSrc sourceAction) {
         return new SetDlSrcActionCaseBuilder()
-        .setSetDlSrcAction(new SetDlSrcActionBuilder().setAddress(MDFlowMapping.toMacAddress(sourceAction.getDlAddress())).build())
-        .build();
+                .setSetDlSrcAction(new SetDlSrcActionBuilder().setAddress(MDFlowMapping.toMacAddress(sourceAction.getDlAddress())).build())
+                .build();
     }
 
     private static SetDlTypeActionCase _toAction(final SetDlType sourceAction) {
         return new SetDlTypeActionCaseBuilder()
-        .setSetDlTypeAction(new SetDlTypeActionBuilder().setDlType(new EtherType(Long.valueOf(sourceAction.getDlType()))).build())
-        .build();
+                .setSetDlTypeAction(new SetDlTypeActionBuilder().setDlType(new EtherType(Long.valueOf(sourceAction.getDlType()))).build())
+                .build();
     }
 
     private static SetNextHopActionCase _toAction(final SetNextHop sourceAction) {
         return new SetNextHopActionCaseBuilder()
-        .setSetNextHopAction(new SetNextHopActionBuilder().setAddress(MDFlowMapping.toInetAddress(sourceAction.getAddress())).build())
-        .build();
+                .setSetNextHopAction(new SetNextHopActionBuilder().setAddress(MDFlowMapping.toInetAddress(sourceAction.getAddress())).build())
+                .build();
     }
 
     private static SetNwDstActionCase _toAction(final SetNwDst sourceAction) {
         return new SetNwDstActionCaseBuilder()
-        .setSetNwDstAction(new SetNwDstActionBuilder().setAddress(MDFlowMapping.toInetAddress(sourceAction.getAddress())).build())
-        .build();
+                .setSetNwDstAction(new SetNwDstActionBuilder().setAddress(MDFlowMapping.toInetAddress(sourceAction.getAddress())).build())
+                .build();
     }
 
     private static SetNwSrcActionCase _toAction(final SetNwSrc sourceAction) {
         return new SetNwSrcActionCaseBuilder()
-        .setSetNwSrcAction(new SetNwSrcActionBuilder().setAddress(MDFlowMapping.toInetAddress(sourceAction.getAddress())).build())
-        .build();
+                .setSetNwSrcAction(new SetNwSrcActionBuilder().setAddress(MDFlowMapping.toInetAddress(sourceAction.getAddress())).build())
+                .build();
     }
 
     private static SetNwTosActionCase _toAction(final SetNwTos sourceAction) {
         return new SetNwTosActionCaseBuilder()
-        .setSetNwTosAction(new SetNwTosActionBuilder().setTos(FromSalConversionsUtils.dscpToTos(sourceAction.getNwTos())).build())
-        .build();
+                .setSetNwTosAction(new SetNwTosActionBuilder().setTos(FromSalConversionsUtils.dscpToTos(sourceAction.getNwTos())).build())
+                .build();
     }
 
     private static SetTpDstActionCase _toAction(final SetTpDst sourceAction) {
         return new SetTpDstActionCaseBuilder()
-        .setSetTpDstAction(new SetTpDstActionBuilder().setPort(new PortNumber(sourceAction.getPort())).build())
-        .build();
+                .setSetTpDstAction(new SetTpDstActionBuilder().setPort(new PortNumber(sourceAction.getPort())).build())
+                .build();
     }
 
     private static SetTpSrcActionCase _toAction(final SetTpSrc sourceAction) {
         return new SetTpSrcActionCaseBuilder()
-        .setSetTpSrcAction(new SetTpSrcActionBuilder().setPort(new PortNumber(sourceAction.getPort())).build())
-        .build();
+                .setSetTpSrcAction(new SetTpSrcActionBuilder().setPort(new PortNumber(sourceAction.getPort())).build())
+                .build();
     }
 
     private static SetVlanCfiActionCase _toAction(final SetVlanCfi sourceAction) {
         return new SetVlanCfiActionCaseBuilder()
-        .setSetVlanCfiAction(new SetVlanCfiActionBuilder().setVlanCfi(new VlanCfi(sourceAction.getCfi())).build())
-        .build();
+                .setSetVlanCfiAction(new SetVlanCfiActionBuilder().setVlanCfi(new VlanCfi(sourceAction.getCfi())).build())
+                .build();
     }
 
     private static SetVlanIdActionCase _toAction(final SetVlanId sourceAction) {
         return new SetVlanIdActionCaseBuilder()
-        .setSetVlanIdAction(new SetVlanIdActionBuilder().setVlanId(new VlanId(sourceAction.getVlanId())).build())
-        .build();
+                .setSetVlanIdAction(new SetVlanIdActionBuilder().setVlanId(new VlanId(sourceAction.getVlanId())).build())
+                .build();
     }
 
     private static SetVlanPcpActionCase _toAction(final SetVlanPcp sourceAction) {
         return new SetVlanPcpActionCaseBuilder()
-        .setSetVlanPcpAction(new SetVlanPcpActionBuilder().setVlanPcp(new VlanPcp((short) sourceAction.getPcp())).build())
-        .build();
+                .setSetVlanPcpAction(new SetVlanPcpActionBuilder().setVlanPcp(new VlanPcp((short) sourceAction.getPcp())).build())
+                .build();
     }
 
     private static SwPathActionCase _toAction(final SwPath sourceAction) {
@@ -376,49 +328,49 @@ public final class MDFlowMapping {
         final ActionBuilder ret = new ActionBuilder().setOrder(order);
 
         if (sourceAction instanceof Controller) {
-            ret.setAction(_toAction((Controller)sourceAction));
+            ret.setAction(_toAction((Controller) sourceAction));
         } else if (sourceAction instanceof Drop) {
-            ret.setAction(_toAction((Drop)sourceAction));
+            ret.setAction(_toAction((Drop) sourceAction));
         } else if (sourceAction instanceof Flood) {
-            ret.setAction(_toAction((Flood)sourceAction));
+            ret.setAction(_toAction((Flood) sourceAction));
         } else if (sourceAction instanceof FloodAll) {
-            ret.setAction(_toAction((FloodAll)sourceAction));
+            ret.setAction(_toAction((FloodAll) sourceAction));
         } else if (sourceAction instanceof HwPath) {
-            ret.setAction(_toAction((HwPath)sourceAction));
+            ret.setAction(_toAction((HwPath) sourceAction));
         } else if (sourceAction instanceof Loopback) {
-            ret.setAction(_toAction((Loopback)sourceAction));
+            ret.setAction(_toAction((Loopback) sourceAction));
         } else if (sourceAction instanceof Output) {
-            ret.setAction(_toAction((Output)sourceAction));
+            ret.setAction(_toAction((Output) sourceAction));
         } else if (sourceAction instanceof PopVlan) {
-            ret.setAction(_toAction((PopVlan)sourceAction));
+            ret.setAction(_toAction((PopVlan) sourceAction));
         } else if (sourceAction instanceof PushVlan) {
-            ret.setAction(_toAction((PushVlan)sourceAction));
+            ret.setAction(_toAction((PushVlan) sourceAction));
         } else if (sourceAction instanceof SetDlDst) {
-            ret.setAction(_toAction((SetDlDst)sourceAction));
+            ret.setAction(_toAction((SetDlDst) sourceAction));
         } else if (sourceAction instanceof SetDlSrc) {
-            ret.setAction(_toAction((SetDlSrc)sourceAction));
+            ret.setAction(_toAction((SetDlSrc) sourceAction));
         } else if (sourceAction instanceof SetDlType) {
-            ret.setAction(_toAction((SetDlType)sourceAction));
+            ret.setAction(_toAction((SetDlType) sourceAction));
         } else if (sourceAction instanceof SetNextHop) {
-            ret.setAction(_toAction((SetNextHop)sourceAction));
+            ret.setAction(_toAction((SetNextHop) sourceAction));
         } else if (sourceAction instanceof SetNwDst) {
-            ret.setAction(_toAction((SetNwDst)sourceAction));
+            ret.setAction(_toAction((SetNwDst) sourceAction));
         } else if (sourceAction instanceof SetNwSrc) {
-            ret.setAction(_toAction((SetNwSrc)sourceAction));
+            ret.setAction(_toAction((SetNwSrc) sourceAction));
         } else if (sourceAction instanceof SetNwTos) {
-            ret.setAction(_toAction((SetNwTos)sourceAction));
+            ret.setAction(_toAction((SetNwTos) sourceAction));
         } else if (sourceAction instanceof SetTpDst) {
-            ret.setAction(_toAction((SetTpDst)sourceAction));
+            ret.setAction(_toAction((SetTpDst) sourceAction));
         } else if (sourceAction instanceof SetTpSrc) {
-            ret.setAction(_toAction((SetTpSrc)sourceAction));
+            ret.setAction(_toAction((SetTpSrc) sourceAction));
         } else if (sourceAction instanceof SetVlanCfi) {
-            ret.setAction(_toAction((SetVlanCfi)sourceAction));
+            ret.setAction(_toAction((SetVlanCfi) sourceAction));
         } else if (sourceAction instanceof SetVlanId) {
-            ret.setAction(_toAction((SetVlanId)sourceAction));
+            ret.setAction(_toAction((SetVlanId) sourceAction));
         } else if (sourceAction instanceof SetVlanPcp) {
-            ret.setAction(_toAction((SetVlanPcp)sourceAction));
+            ret.setAction(_toAction((SetVlanPcp) sourceAction));
         } else if (sourceAction instanceof SwPath) {
-            ret.setAction(_toAction((SwPath)sourceAction));
+            ret.setAction(_toAction((SwPath) sourceAction));
         } else {
             throw new IllegalArgumentException(String.format("Unhandled action class %s", sourceAction.getClass()));
         }
@@ -429,13 +381,13 @@ public final class MDFlowMapping {
     public static Address toInetAddress(final InetAddress address) {
         if (address instanceof Inet4Address) {
             return new Ipv4Builder()
-            .setIpv4Address(new Ipv4Prefix(InetAddresses.toAddrString(address) + "/32"))
-            .build();
+                    .setIpv4Address(new Ipv4Prefix(InetAddresses.toAddrString(address) + "/32"))
+                    .build();
         }
         if (address instanceof Inet6Address) {
             return new Ipv6Builder()
-            .setIpv6Address(new Ipv6Prefix(InetAddresses.toAddrString(address) + "/128"))
-            .build();
+                    .setIpv6Address(new Ipv6Prefix(InetAddresses.toAddrString(address) + "/128"))
+                    .build();
         }
 
         throw new IllegalArgumentException(String.format("Unhandled address class %s", address.getClass()));
