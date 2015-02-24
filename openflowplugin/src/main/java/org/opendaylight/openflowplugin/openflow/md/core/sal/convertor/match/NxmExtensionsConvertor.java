@@ -30,6 +30,14 @@ import java.util.Iterator;
  */
 public class NxmExtensionsConvertor {
     static final Splitter PREFIX_SPLITTER = Splitter.on('/');
+    private static final int BITS_IN_IPV4_MASK = 32;
+    private static final int SWITH_BY_3_BYTES = 24;
+    private static final int SWITH_BY_2_BYTES = 16;
+    private static final int SWITH_BY_1_BYTE = 8;
+
+    private NxmExtensionsConvertor() {
+        // hiding implicit constructor
+    }
 
     static MatchEntries toNxmTcpFlag(Integer tcpFlag) {
         MatchEntriesBuilder matchBuilder = new MatchEntriesBuilder();
@@ -77,8 +85,9 @@ public class NxmExtensionsConvertor {
         ipv4AddressBuilder.setIpv4Address(ipv4Address);
         builder.addAugmentation(Ipv4AddressMatchEntry.class, ipv4AddressBuilder.build());
         if (prefix != 0) {
-            int mask = 0xffffffff << (32 - prefix);
-            byte[] maskBytes = new byte[] { (byte) (mask >>> 24), (byte) (mask >>> 16), (byte) (mask >>> 8),
+            int mask = 0xffffffff << (BITS_IN_IPV4_MASK - prefix);
+            byte[] maskBytes = new byte[] { (byte) (mask >>> SWITH_BY_3_BYTES),
+                    (byte) (mask >>> SWITH_BY_2_BYTES), (byte) (mask >>> SWITH_BY_1_BYTE),
                     (byte) mask };
             addNxmMaskAugmentation(builder, maskBytes);
             hasMask = true;
