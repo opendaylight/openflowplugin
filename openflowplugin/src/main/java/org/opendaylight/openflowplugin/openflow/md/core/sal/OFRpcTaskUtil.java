@@ -115,6 +115,7 @@ public abstract class OFRpcTaskUtil {
             final NotificationProviderService notificationProviderService,
             final NotificationComposer<N> notificationComposer) {
         Futures.addCallback(originalResult, new FutureCallback<R>() {
+            //FIXME : after removing notifications from OFP this method should be removed as well
             @Override
             public void onSuccess(R result) {
                 if(null == notificationProviderService) {
