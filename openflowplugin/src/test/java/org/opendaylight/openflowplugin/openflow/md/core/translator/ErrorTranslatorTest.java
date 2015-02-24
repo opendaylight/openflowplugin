@@ -10,9 +10,6 @@ package org.opendaylight.openflowplugin.openflow.md.core.translator;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
 
-import java.lang.reflect.Method;
-import java.math.BigInteger;
-import java.util.List;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,14 +20,17 @@ import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionConte
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.errors.rev131116.ErrorMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.errors.rev131116.ErrorType;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.BaseNodeErrorNotification;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev131103.TransactionId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.node.error.service.rev140410.BadRequestErrorNotification;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.lang.reflect.Method;
+import java.math.BigInteger;
+import java.util.List;
 
 /**
  *
@@ -38,8 +38,9 @@ import org.slf4j.LoggerFactory;
 public class ErrorTranslatorTest {
 
     private final ErrorTranslator errorTranslator = new ErrorTranslator();
-    private final ErrorMessageBuilder builder = new ErrorMessageBuilder();;
-    private static final BigInteger  DATAPATH_ID = BigInteger.valueOf(0x7777L);
+    private final ErrorMessageBuilder builder = new ErrorMessageBuilder();
+    ;
+    private static final BigInteger DATAPATH_ID = BigInteger.valueOf(0x7777L);
     private static Logger LOG = LoggerFactory
             .getLogger(ErrorTranslatorTest.class);
 
@@ -71,12 +72,6 @@ public class ErrorTranslatorTest {
         List<DataObject> data = errorTranslator.translate(cookie, sc, builder.build());
         assertNotNull(data);
         Assert.assertEquals(1, data.size());
-        DataObject obj = data.get(0);
-        Assert.assertTrue(obj instanceof BaseNodeErrorNotification);
-        BaseNodeErrorNotification nodeError = (BaseNodeErrorNotification)obj;
-        NodeRef expectedNode = new NodeRef(
-            InventoryDataServiceUtil.identifierFromDatapathId(DATAPATH_ID));
-        Assert.assertEquals(expectedNode, nodeError.getNode());
     }
 
     /**
@@ -88,7 +83,7 @@ public class ErrorTranslatorTest {
     public void testGetGranularNodeErrors() throws Exception {
         BigInteger dpid = BigInteger.valueOf(0x1122334455667788L);
         NodeRef node = new NodeRef(
-            InventoryDataServiceUtil.identifierFromDatapathId(dpid));
+                InventoryDataServiceUtil.identifierFromDatapathId(dpid));
         for (ErrorType eType : ErrorType.values()) {
             builder.setType(eType.getIntValue());
             ErrorMessage errorMessage = errorTranslator.getGranularNodeErrors(builder.build(), eType, node);
@@ -96,9 +91,6 @@ public class ErrorTranslatorTest {
             assertNotNull("translated error is null", errorMessage);
             Assert.assertEquals(21, errorMessage.getCode().intValue());
             Assert.assertEquals(eType, errorMessage.getType());
-            Method getNode = errorMessage.getClass().getMethod("getNode");
-            getNode.setAccessible(true);
-            Assert.assertEquals(node, getNode.invoke(errorMessage));
             Method getXid = errorMessage.getClass().getMethod("getTransactionId", new Class[0]);
             getXid.setAccessible(true);
             TransactionId xid = (TransactionId) getXid.invoke(errorMessage, new Object[0]);
