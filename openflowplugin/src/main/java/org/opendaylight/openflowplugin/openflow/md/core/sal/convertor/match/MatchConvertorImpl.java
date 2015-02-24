@@ -8,8 +8,20 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 
+import static org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchConvertorUtil.AUTH_BIT_POSITION;
+import static org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchConvertorUtil.DEST_BIT_POSITION;
+import static org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchConvertorUtil.ESP_BIT_POSITION;
+import static org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchConvertorUtil.FRAG_BIT_POSITION;
+import static org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchConvertorUtil.HOP_BIT_POSITION;
+import static org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchConvertorUtil.NONEXT_BIT_POSITION;
+import static org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchConvertorUtil.ROUTER_BIT_POSITION;
+import static org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchConvertorUtil.UNREP_BIT_POSITION;
+import static org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchConvertorUtil.UNSEQ_BIT_POSITION;
 import static org.opendaylight.openflowjava.util.ByteBufUtils.macAddressToString;
 
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Tunnel;
+
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import com.google.common.base.Optional;
 import com.google.common.base.Splitter;
 import java.math.BigInteger;
@@ -200,84 +212,219 @@ import org.slf4j.LoggerFactory;
  * Utility class for converting a MD-SAL Flow into the OF flow mod
  */
 public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
-    private static final Logger logger = LoggerFactory.getLogger(MatchConvertorImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MatchConvertorImpl.class);
     static final String PREFIX_SEPARATOR = "/";
     static final Splitter PREFIX_SPLITTER = Splitter.on('/');
     private static final byte[] VLAN_VID_MASK = new byte[]{16, 0};
     private static final short PROTO_TCP = 6;
     private static final short PROTO_UDP = 17;
-    private static final String noIp = "0.0.0.0/0";
+    private static final String NO_IP = "0.0.0.0/0";
+    private static final int OCTETS_IN_IPV6 = 16;
+    private static final int BITS_IN_BYTE = 8;
+
+    /**
+     * number of bits in IPv4 mask
+     */
+    private static final int IP_V4_MASK_SIZE = 32;
+    private static final int SWITCH_BY_3_BYTES = 24;
+    private static final int SWITCH_BY_2_BYTES = 16;
+    private static final int SWITCH_BY_1_BYTE = 8;
 
     @Override
     public List<MatchEntries> convert(
             final org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match match, final BigInteger datapathid) {
         List<MatchEntries> matchEntriesList = new ArrayList<>();
-        if (match == null) return matchEntriesList;
-        if (match.getInPort() != null) {
-            //TODO: currently this matchconverter is mapped to OF1.3 in MatchReactorMappingFactory. Will need to revisit during 1.4+
-            matchEntriesList.add(toOfPort(InPort.class,
-                    InventoryDataServiceUtil.portNumberfromNodeConnectorId(OpenflowVersion.OF13, match.getInPort())));
+        if (match == null) {
+            return matchEntriesList;
         }
 
-        if (match.getInPhyPort() != null) {
-            //TODO: currently this matchconverter is mapped to OF1.3 in MatchReactorMappingFactory. Will need to revisit during 1.4+
-            matchEntriesList.add(toOfPort(InPhyPort.class,
-                    InventoryDataServiceUtil.portNumberfromNodeConnectorId(OpenflowVersion.OF13, match.getInPhyPort())));
-        }
+        salToOfMatchInPort(match.getInPort(), matchEntriesList);
+        salToOfMatchInPhyPort(match.getInPhyPort(), matchEntriesList);
+        salToOfMatchMetadata(match.getMetadata(),matchEntriesList);
+        salToOfMatchEthernet(match.getEthernetMatch(),matchEntriesList);
+        salToOfMatchVlanMatch(match.getVlanMatch(), matchEntriesList);
+        salToOfMatchIp(match.getIpMatch(), matchEntriesList);
+        salToOfMatchLayer4(match.getLayer4Match(), matchEntriesList);
+        salToOfMatchIcmp4(match.getIcmpv4Match(), matchEntriesList);
+        salToOfMatchIcmp6(match.getIcmpv6Match(), matchEntriesList);
+        salToOfMatchLayer3(match.getLayer3Match(), matchEntriesList);
+        salToOfMatchProtocolFields(match.getProtocolMatchFields(), matchEntriesList);
+        salToOfMatchTcpFlag(match.getTcpFlagMatch(), matchEntriesList);
+        salToOfMatchTunnelMask(match.getTunnel(), matchEntriesList);
+        salToOfMatchExtension(match, matchEntriesList);
 
-        org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Metadata metadata = match
-                .getMetadata();
-        if (metadata != null) {
-            matchEntriesList.add(toOfMetadata(Metadata.class, metadata.getMetadata(), metadata.getMetadataMask()));
-        }
+        return matchEntriesList;
+    }
 
-        EthernetMatch ethernetMatch = match.getEthernetMatch();
-        if (ethernetMatch != null) {
-            EthernetDestination ethernetDestination = ethernetMatch.getEthernetDestination();
-            if (ethernetDestination != null) {
-                matchEntriesList.add(toOfMacAddress(EthDst.class, ethernetDestination.getAddress(),
-                        ethernetDestination.getMask()));
-            }
-
-            EthernetSource ethernetSource = ethernetMatch.getEthernetSource();
-            if (ethernetSource != null) {
-                matchEntriesList
-                        .add(toOfMacAddress(EthSrc.class, ethernetSource.getAddress(), ethernetSource.getMask()));
-            }
-
-            if (ethernetMatch.getEthernetType() != null) {
-                matchEntriesList.add(toOfEthernetType(ethernetMatch.getEthernetType()));
-            }
-        }
-
-        VlanMatch vlanMatch = match.getVlanMatch();
-        if (vlanMatch != null) {
-            if (vlanMatch.getVlanId() != null) {
-                matchEntriesList.add(toOfVlanVid(vlanMatch.getVlanId()));
-            }
-
-            if (vlanMatch.getVlanPcp() != null) {
-                matchEntriesList.add(toOfVlanPcp(vlanMatch.getVlanPcp()));
+    private void salToOfMatchExtension(
+            final org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match match,
+            final List<MatchEntries> matchEntriesList) {
+        /**
+         * TODO: EXTENSION PROPOSAL (match, MD-SAL to OFJava)
+         * - we might need version for conversion and for key
+         * - sanitize NPE
+         */
+        Optional<GeneralExtensionListGrouping> extensionListOpt = ExtensionResolvers.getMatchExtensionResolver().getExtension(match);
+        if (extensionListOpt.isPresent()) {
+            for (ExtensionList extensionItem : extensionListOpt.get().getExtensionList()) {
+                // TODO: get real version
+                ConverterExtensionKey<? extends ExtensionKey> key = new ConverterExtensionKey<>(extensionItem.getExtensionKey(), OFConstants.OFP_VERSION_1_3);
+                ConvertorToOFJava<MatchEntries> convertor =
+                        OFSessionUtil.getExtensionConvertorProvider().getConverter(key);
+                MatchEntries ofMatch = convertor.convert(extensionItem.getExtension());
+                matchEntriesList.add(ofMatch);
             }
         }
+    }
 
-        IpMatch ipMatch = match.getIpMatch();
-        if (ipMatch != null) {
-            if (ipMatch.getIpDscp() != null) {
-                matchEntriesList.add(toOfIpDscp(ipMatch.getIpDscp()));
+    private void salToOfMatchTunnelMask(final Tunnel tunnel, final List<MatchEntries> matchEntriesList) {
+        if (tunnel != null) {
+            matchEntriesList.add(toOfMetadata(TunnelId.class, tunnel.getTunnelId(), tunnel.getTunnelMask()));
+        }
+    }
+
+    private void salToOfMatchTcpFlag(final TcpFlagMatch tcpFlagMatch, final List<MatchEntries> matchEntriesList) {
+        //FIXME: move to extensible support
+        // TODO: Move to seperate bundle as soon as OF extensibility is supported by ofplugin/java
+        if (tcpFlagMatch != null && tcpFlagMatch.getTcpFlag() != null) {
+            matchEntriesList.add(NxmExtensionsConvertor.toNxmTcpFlag(tcpFlagMatch.getTcpFlag()));
+        }
+    }
+
+    private void salToOfMatchProtocolFields(ProtocolMatchFields protocolMatchFields, List<MatchEntries> matchEntriesList) {
+        if (protocolMatchFields != null) {
+            if (protocolMatchFields.getMplsLabel() != null) {
+                matchEntriesList.add(toOfMplsLabel(protocolMatchFields.getMplsLabel()));
             }
 
-            if (ipMatch.getIpEcn() != null) {
-                matchEntriesList.add(toOfIpEcn(ipMatch.getIpEcn()));
+            if (protocolMatchFields.getMplsBos() != null) {
+                matchEntriesList.add(toOfMplsBos(protocolMatchFields.getMplsBos()));
             }
 
-            if (ipMatch.getIpProtocol() != null) {
-                matchEntriesList.add(toOfIpProto(ipMatch.getIpProtocol()));
+            if (protocolMatchFields.getMplsTc() != null) {
+                matchEntriesList.add(toOfMplsTc(protocolMatchFields.getMplsTc()));
             }
 
+            if (protocolMatchFields.getPbb() != null) {
+                matchEntriesList.add(toOfMplsPbb(protocolMatchFields.getPbb()));
+            }
+        }
+    }
+
+    private void salToOfMatchLayer3(final Layer3Match layer3Match, final List<MatchEntries> matchEntriesList) {
+        if (layer3Match != null) {
+            if (layer3Match instanceof Ipv4Match) {
+                salToOfMatchIpv4((Ipv4Match)layer3Match, matchEntriesList);
+            }
+            if (layer3Match instanceof TunnelIpv4Match) {
+                salToOfMatchTunnelIpv4((TunnelIpv4Match)layer3Match, matchEntriesList);
+            } else if (layer3Match instanceof ArpMatch) {
+                salToOfMatchArp((ArpMatch) layer3Match, matchEntriesList);
+            } else if (layer3Match instanceof Ipv6Match) {
+                salToOfMatchLayer3Ipv6((Ipv6Match) layer3Match, matchEntriesList);
+            }
+        }
+    }
+
+    private void salToOfMatchIpv4(final Ipv4Match ipv4Match, final List<MatchEntries> matchEntriesList) {
+        if (ipv4Match.getIpv4Source() != null) {
+            matchEntriesList.add(toOfIpv4Prefix(Ipv4Src.class, ipv4Match.getIpv4Source()));
+        }
+        if (ipv4Match.getIpv4Destination() != null) {
+            matchEntriesList.add(toOfIpv4Prefix(Ipv4Dst.class, ipv4Match.getIpv4Destination()));
+        }
+    }
+
+    private void salToOfMatchTunnelIpv4(final TunnelIpv4Match tunnelIpv4Src, final List<MatchEntries> matchEntriesList) {
+        if (tunnelIpv4Src.getTunnelIpv4Source() != null) {
+            matchEntriesList.add(NxmExtensionsConvertor.toNxmIpv4Tunnel(TunnelIpv4Src.class, tunnelIpv4Src.getTunnelIpv4Source()));
+        }
+        if (tunnelIpv4Src.getTunnelIpv4Destination() != null) {
+            matchEntriesList.add(NxmExtensionsConvertor.toNxmIpv4Tunnel(TunnelIpv4Dst.class, tunnelIpv4Src.getTunnelIpv4Destination()));
+        }
+    }
+
+    private void salToOfMatchArp(final ArpMatch arpMatch, final List<MatchEntries> matchEntriesList) {
+        if (arpMatch.getArpOp() != null) {
+            matchEntriesList.add(toOfArpOpCode(arpMatch.getArpOp()));
         }
 
-        Layer4Match layer4Match = match.getLayer4Match();
+        if (arpMatch.getArpSourceTransportAddress() != null) {
+            matchEntriesList.add(toOfIpv4Prefix(ArpSpa.class, arpMatch.getArpSourceTransportAddress()));
+        }
+
+        if (arpMatch.getArpTargetTransportAddress() != null) {
+            matchEntriesList.add(toOfIpv4Prefix(ArpTpa.class, arpMatch.getArpTargetTransportAddress()));
+        }
+
+        ArpSourceHardwareAddress arpSourceHardwareAddress = arpMatch.getArpSourceHardwareAddress();
+        if (arpSourceHardwareAddress != null) {
+            matchEntriesList.add(toOfMacAddress(ArpSha.class, arpSourceHardwareAddress.getAddress(),
+                    arpSourceHardwareAddress.getMask()));
+        }
+
+        ArpTargetHardwareAddress arpTargetHardwareAddress = arpMatch.getArpTargetHardwareAddress();
+        if (arpTargetHardwareAddress != null) {
+            matchEntriesList.add(toOfMacAddress(ArpTha.class, arpTargetHardwareAddress.getAddress(),
+                    arpTargetHardwareAddress.getMask()));
+        }
+    }
+
+    private void salToOfMatchLayer3Ipv6(final Ipv6Match ipv6Match, final List<MatchEntries> matchEntriesList) {
+        if (ipv6Match.getIpv6Source() != null) {
+            matchEntriesList.add(toOfIpv6Prefix(Ipv6Src.class, ipv6Match.getIpv6Source()));
+        }
+
+        if (ipv6Match.getIpv6Destination() != null) {
+            matchEntriesList.add(toOfIpv6Prefix(Ipv6Dst.class, ipv6Match.getIpv6Destination()));
+        }
+
+        if (ipv6Match.getIpv6Label() != null) {
+            matchEntriesList.add(toOfIpv6FlowLabel(ipv6Match.getIpv6Label()));
+        }
+
+        if (ipv6Match.getIpv6NdTarget() != null) {
+            matchEntriesList.add(toOfIpv6Address(ipv6Match.getIpv6NdTarget()));
+        }
+
+        if (ipv6Match.getIpv6NdSll() != null) {
+            matchEntriesList.add(toOfMacAddress(Ipv6NdSll.class, ipv6Match.getIpv6NdSll(), null));
+        }
+
+        if (ipv6Match.getIpv6NdTll() != null) {
+            matchEntriesList.add(toOfMacAddress(Ipv6NdTll.class, ipv6Match.getIpv6NdTll(), null));
+        }
+
+        if (ipv6Match.getIpv6ExtHeader() != null) {
+            matchEntriesList.add(toOfIpv6ExtHeader(ipv6Match.getIpv6ExtHeader()));
+        }
+    }
+
+    private void salToOfMatchIcmp6(final Icmpv6Match icmpv6Match, final List<MatchEntries> matchEntriesList) {
+        if (icmpv6Match != null) {
+            if (icmpv6Match.getIcmpv6Type() != null) {
+                matchEntriesList.add(toOfIcmpv6Type(icmpv6Match.getIcmpv6Type()));
+            }
+
+            if (icmpv6Match.getIcmpv6Code() != null) {
+                matchEntriesList.add(toOfIcmpv6Code(icmpv6Match.getIcmpv6Code()));
+            }
+        }
+    }
+
+    private void salToOfMatchIcmp4(final Icmpv4Match icmpv4Match, final List<MatchEntries> matchEntriesList) {
+        if (icmpv4Match != null) {
+            if (icmpv4Match.getIcmpv4Type() != null) {
+                matchEntriesList.add(toOfIcmpv4Type(icmpv4Match.getIcmpv4Type()));
+            }
+
+            if (icmpv4Match.getIcmpv4Code() != null) {
+                matchEntriesList.add(toOfIcmpv4Code(icmpv4Match.getIcmpv4Code()));
+            }
+        }
+    }
+
+    private void salToOfMatchLayer4(final Layer4Match layer4Match, final List<MatchEntries> matchEntriesList) {
         if (layer4Match != null) {
             if (layer4Match instanceof TcpMatch) {
                 TcpMatch tcpMatch = (TcpMatch) layer4Match;
@@ -308,158 +455,82 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
                 }
             }
         }
+    }
 
-        Icmpv4Match icmpv4Match = match.getIcmpv4Match();
-        if (icmpv4Match != null) {
-            if (icmpv4Match.getIcmpv4Type() != null) {
-                matchEntriesList.add(toOfIcmpv4Type(icmpv4Match.getIcmpv4Type()));
+    private void salToOfMatchIp(final IpMatch ipMatch, final List<MatchEntries> matchEntriesList) {
+        if (ipMatch != null) {
+            if (ipMatch.getIpDscp() != null) {
+                matchEntriesList.add(toOfIpDscp(ipMatch.getIpDscp()));
             }
 
-            if (icmpv4Match.getIcmpv4Code() != null) {
-                matchEntriesList.add(toOfIcmpv4Code(icmpv4Match.getIcmpv4Code()));
+            if (ipMatch.getIpEcn() != null) {
+                matchEntriesList.add(toOfIpEcn(ipMatch.getIpEcn()));
+            }
+
+            if (ipMatch.getIpProtocol() != null) {
+                matchEntriesList.add(toOfIpProto(ipMatch.getIpProtocol()));
+            }
+
+        }
+    }
+
+    private void salToOfMatchVlanMatch(final VlanMatch vlanMatch, final List<MatchEntries> matchEntriesList) {
+        if (vlanMatch != null) {
+            if (vlanMatch.getVlanId() != null) {
+                matchEntriesList.add(toOfVlanVid(vlanMatch.getVlanId()));
+            }
+
+            if (vlanMatch.getVlanPcp() != null) {
+                matchEntriesList.add(toOfVlanPcp(vlanMatch.getVlanPcp()));
             }
         }
+    }
 
-        Icmpv6Match icmpv6Match = match.getIcmpv6Match();
-        if (icmpv6Match != null) {
-            if (icmpv6Match.getIcmpv6Type() != null) {
-                matchEntriesList.add(toOfIcmpv6Type(icmpv6Match.getIcmpv6Type()));
+    private void salToOfMatchEthernet(
+            final EthernetMatch ethernetMatch, final List<MatchEntries> matchEntriesList) {
+        if (ethernetMatch != null) {
+            EthernetDestination ethernetDestination = ethernetMatch.getEthernetDestination();
+            if (ethernetDestination != null) {
+                matchEntriesList.add(toOfMacAddress(EthDst.class, ethernetDestination.getAddress(),
+                        ethernetDestination.getMask()));
             }
 
-            if (icmpv6Match.getIcmpv6Code() != null) {
-                matchEntriesList.add(toOfIcmpv6Code(icmpv6Match.getIcmpv6Code()));
+            EthernetSource ethernetSource = ethernetMatch.getEthernetSource();
+            if (ethernetSource != null) {
+                matchEntriesList
+                        .add(toOfMacAddress(EthSrc.class, ethernetSource.getAddress(), ethernetSource.getMask()));
             }
-        }
 
-        Layer3Match layer3Match = match.getLayer3Match();
-        if (layer3Match != null) {
-            if (layer3Match instanceof Ipv4Match) {
-                Ipv4Match ipv4Match = (Ipv4Match) layer3Match;
-                if (ipv4Match.getIpv4Source() != null) {
-                    matchEntriesList.add(toOfIpv4Prefix(Ipv4Src.class, ipv4Match.getIpv4Source()));
-                }
-                if (ipv4Match.getIpv4Destination() != null) {
-                    matchEntriesList.add(toOfIpv4Prefix(Ipv4Dst.class, ipv4Match.getIpv4Destination()));
-                }
-            }
-            if (layer3Match instanceof TunnelIpv4Match) {
-                TunnelIpv4Match tunnelIpv4Src = (TunnelIpv4Match) layer3Match;
-                if (tunnelIpv4Src.getTunnelIpv4Source() != null) {
-                    matchEntriesList.add(NxmExtensionsConvertor.toNxmIpv4Tunnel(TunnelIpv4Src.class, tunnelIpv4Src.getTunnelIpv4Source()));
-                }
-                if (tunnelIpv4Src.getTunnelIpv4Destination() != null) {
-                    matchEntriesList.add(NxmExtensionsConvertor.toNxmIpv4Tunnel(TunnelIpv4Dst.class, tunnelIpv4Src.getTunnelIpv4Destination()));
-                }
-            } else if (layer3Match instanceof ArpMatch) {
-                ArpMatch arpMatch = (ArpMatch) layer3Match;
-                if (arpMatch.getArpOp() != null) {
-                    matchEntriesList.add(toOfArpOpCode(arpMatch.getArpOp()));
-                }
-
-                if (arpMatch.getArpSourceTransportAddress() != null) {
-                    matchEntriesList.add(toOfIpv4Prefix(ArpSpa.class, arpMatch.getArpSourceTransportAddress()));
-                }
-
-                if (arpMatch.getArpTargetTransportAddress() != null) {
-                    matchEntriesList.add(toOfIpv4Prefix(ArpTpa.class, arpMatch.getArpTargetTransportAddress()));
-                }
-
-                ArpSourceHardwareAddress arpSourceHardwareAddress = arpMatch.getArpSourceHardwareAddress();
-                if (arpSourceHardwareAddress != null) {
-                    matchEntriesList.add(toOfMacAddress(ArpSha.class, arpSourceHardwareAddress.getAddress(),
-                            arpSourceHardwareAddress.getMask()));
-                }
-
-                ArpTargetHardwareAddress arpTargetHardwareAddress = arpMatch.getArpTargetHardwareAddress();
-                if (arpTargetHardwareAddress != null) {
-                    matchEntriesList.add(toOfMacAddress(ArpTha.class, arpTargetHardwareAddress.getAddress(),
-                            arpTargetHardwareAddress.getMask()));
-                }
-            } else if (layer3Match instanceof Ipv6Match) {
-                Ipv6Match ipv6Match = (Ipv6Match) layer3Match;
-                if (ipv6Match.getIpv6Source() != null) {
-                    matchEntriesList.add(toOfIpv6Prefix(Ipv6Src.class, ipv6Match.getIpv6Source()));
-                }
-
-                if (ipv6Match.getIpv6Destination() != null) {
-                    matchEntriesList.add(toOfIpv6Prefix(Ipv6Dst.class, ipv6Match.getIpv6Destination()));
-                }
-
-                if (ipv6Match.getIpv6Label() != null) {
-                    matchEntriesList.add(toOfIpv6FlowLabel(ipv6Match.getIpv6Label()));
-                }
-
-                if (ipv6Match.getIpv6NdTarget() != null) {
-                    matchEntriesList.add(toOfIpv6Address(ipv6Match.getIpv6NdTarget()));
-                }
-
-                if (ipv6Match.getIpv6NdSll() != null) {
-                    matchEntriesList.add(toOfMacAddress(Ipv6NdSll.class, ipv6Match.getIpv6NdSll(), null));
-                }
-
-                if (ipv6Match.getIpv6NdTll() != null) {
-                    matchEntriesList.add(toOfMacAddress(Ipv6NdTll.class, ipv6Match.getIpv6NdTll(), null));
-                }
-
-                if (ipv6Match.getIpv6ExtHeader() != null) {
-                    matchEntriesList.add(toOfIpv6ExtHeader(ipv6Match.getIpv6ExtHeader()));
-                }
+            if (ethernetMatch.getEthernetType() != null) {
+                matchEntriesList.add(toOfEthernetType(ethernetMatch.getEthernetType()));
             }
         }
+    }
 
-        ProtocolMatchFields protocolMatchFields = match.getProtocolMatchFields();
-        if (protocolMatchFields != null) {
-            if (protocolMatchFields.getMplsLabel() != null) {
-                matchEntriesList.add(toOfMplsLabel(protocolMatchFields.getMplsLabel()));
-            }
-
-            if (protocolMatchFields.getMplsBos() != null) {
-                matchEntriesList.add(toOfMplsBos(protocolMatchFields.getMplsBos()));
-            }
-
-            if (protocolMatchFields.getMplsTc() != null) {
-                matchEntriesList.add(toOfMplsTc(protocolMatchFields.getMplsTc()));
-            }
-
-            if (protocolMatchFields.getPbb() != null) {
-                matchEntriesList.add(toOfMplsPbb(protocolMatchFields.getPbb()));
-            }
+    private void salToOfMatchMetadata(
+            final org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Metadata metadata,
+            final List<MatchEntries> matchEntriesList) {
+        if (metadata != null) {
+            matchEntriesList.add(toOfMetadata(Metadata.class, metadata.getMetadata(), metadata.getMetadataMask()));
         }
+    }
 
-        //FIXME: move to extensible support
-        // TODO: Move to seperate bundle as soon as OF extensibility is supported by ofplugin/java
-        TcpFlagMatch tcpFlagMatch = match.getTcpFlagMatch();
-        if (tcpFlagMatch != null) {
-            if (tcpFlagMatch.getTcpFlag() != null) {
-                matchEntriesList.add(NxmExtensionsConvertor.toNxmTcpFlag(tcpFlagMatch.getTcpFlag()));
-            }
+    private void salToOfMatchInPhyPort(
+            final NodeConnectorId inPhyPort, final List<MatchEntries> matchEntriesList) {
+        if (inPhyPort != null) {
+            //TODO: currently this matchconverter is mapped to OF1.3 in MatchReactorMappingFactory. Will need to revisit during 1.4+
+            matchEntriesList.add(toOfPort(InPhyPort.class,
+                    InventoryDataServiceUtil.portNumberfromNodeConnectorId(OpenflowVersion.OF13, inPhyPort)));
         }
+    }
 
-        org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Tunnel tunnel = match
-                .getTunnel();
-        if (tunnel != null) {
-            matchEntriesList.add(toOfMetadata(TunnelId.class, tunnel.getTunnelId(), tunnel.getTunnelMask()));
+    private void salToOfMatchInPort(
+            final NodeConnectorId inPort, final List<MatchEntries> matchEntriesList) {
+        if (inPort != null) {
+            //TODO: currently this matchconverter is mapped to OF1.3 in MatchReactorMappingFactory. Will need to revisit during 1.4+
+            matchEntriesList.add(toOfPort(InPort.class,
+                    InventoryDataServiceUtil.portNumberfromNodeConnectorId(OpenflowVersion.OF13, inPort)));
         }
-
-
-        /**
-         * TODO: EXTENSION PROPOSAL (match, MD-SAL to OFJava)
-         * - we might need version for conversion and for key
-         * - sanitize NPE
-         */
-        Optional<GeneralExtensionListGrouping> extensionListOpt = ExtensionResolvers.getMatchExtensionResolver().getExtension(match);
-        if (extensionListOpt.isPresent()) {
-            for (ExtensionList extensionItem : extensionListOpt.get().getExtensionList()) {
-                // TODO: get real version
-                ConverterExtensionKey<? extends ExtensionKey> key = new ConverterExtensionKey<>(extensionItem.getExtensionKey(), OFConstants.OFP_VERSION_1_3);
-                ConvertorToOFJava<MatchEntries> convertor =
-                        OFSessionUtil.getExtensionConvertorProvider().getConverter(key);
-                MatchEntries ofMatch = convertor.convert(extensionItem.getExtension());
-                matchEntriesList.add(ofMatch);
-            }
-        }
-
-        return matchEntriesList;
     }
 
     /**
@@ -476,98 +547,31 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
         VlanMatchBuilder vlanMatchBuilder = new VlanMatchBuilder();
         Ipv4MatchBuilder ipv4MatchBuilder = new Ipv4MatchBuilder();
         IpMatchBuilder ipMatchBuilder = new IpMatchBuilder();
-        if (!swMatch.getWildcards().isINPORT().booleanValue() && swMatch.getInPort() != null) {
-            matchBuilder.setInPort(InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(datapathid,
-                    (long) swMatch.getInPort(), ofVersion));
-        }
+        oFv10ToSALMatchInPort(swMatch, datapathid, ofVersion, matchBuilder);
+        oFv10ToSALMatchDlScr(swMatch, matchBuilder, ethMatchBuilder);
+        oFv10ToSalMatchDlDst(swMatch, matchBuilder, ethMatchBuilder);
+        oFv10ToSalMatchDlType(swMatch, matchBuilder, ethMatchBuilder);
+        oFv10ToSalMatchVlan(swMatch, matchBuilder, vlanMatchBuilder);
+        oFv10ToSalMatchDlVlanPcp(swMatch, matchBuilder, vlanMatchBuilder);
+        oFv10ToSalMatchNwSrc(swMatch, matchBuilder, ipv4MatchBuilder);
+        oFv10ToSalMatchNwDst(swMatch, matchBuilder, ipv4MatchBuilder);
+        oFv10ToSalMatchNwProto(swMatch, matchBuilder, ipMatchBuilder);
+        oFv10ToSalMatchNwProtoTcp(swMatch, matchBuilder);
+        oFv10ToSalMatchNwProtoUdp(swMatch, matchBuilder);
+        oFv10ToSalMatchNwTos(swMatch, matchBuilder, ipMatchBuilder);
 
-        if (!swMatch.getWildcards().isDLSRC().booleanValue() && swMatch.getDlSrc() != null) {
-            EthernetSourceBuilder ethSrcBuilder = new EthernetSourceBuilder();
-            ethSrcBuilder.setAddress(swMatch.getDlSrc());
-            ethMatchBuilder.setEthernetSource(ethSrcBuilder.build());
-            matchBuilder.setEthernetMatch(ethMatchBuilder.build());
-        }
-        if (!swMatch.getWildcards().isDLDST().booleanValue() && swMatch.getDlDst() != null) {
-            EthernetDestinationBuilder ethDstBuilder = new EthernetDestinationBuilder();
-            ethDstBuilder.setAddress(swMatch.getDlDst());
-            ethMatchBuilder.setEthernetDestination(ethDstBuilder.build());
-            matchBuilder.setEthernetMatch(ethMatchBuilder.build());
-        }
-        if (!swMatch.getWildcards().isDLTYPE().booleanValue() && swMatch.getDlType() != null) {
-            EthernetTypeBuilder ethTypeBuilder = new EthernetTypeBuilder();
-            ethTypeBuilder.setType(new org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.EtherType(
-                    (long) swMatch.getDlType()));
-            ethMatchBuilder.setEthernetType(ethTypeBuilder.build());
-            matchBuilder.setEthernetMatch(ethMatchBuilder.build());
-        }
-        if (!swMatch.getWildcards().isDLVLAN().booleanValue() && swMatch.getDlVlan() != null) {
-            VlanIdBuilder vlanIdBuilder = new VlanIdBuilder();
-            int vlanId = (swMatch.getDlVlan() == ((int) 0xffff)) ? 0 : swMatch.getDlVlan();
-            vlanIdBuilder.setVlanId(new org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId(vlanId));
-            vlanIdBuilder.setVlanIdPresent(vlanId == 0 ? false : true);
-            vlanMatchBuilder.setVlanId(vlanIdBuilder.build());
-            matchBuilder.setVlanMatch(vlanMatchBuilder.build());
-        }
-        if (!swMatch.getWildcards().isDLVLANPCP().booleanValue() && swMatch.getDlVlanPcp() != null) {
-            vlanMatchBuilder.setVlanPcp(new org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanPcp(
-                    swMatch.getDlVlanPcp()));
-            matchBuilder.setVlanMatch(vlanMatchBuilder.build());
-        }
-        if (!swMatch.getWildcards().isDLTYPE().booleanValue() && swMatch.getNwSrc() != null) {
-            String ipv4PrefixStr = swMatch.getNwSrc().getValue();
-            if (swMatch.getNwSrcMask() != null) {
-                ipv4PrefixStr += PREFIX_SEPARATOR + swMatch.getNwSrcMask();
-            } else {
-                //Openflow Spec : 1.3.2
-                //An all-one-bits oxm_mask is equivalent to specifying 0 for oxm_hasmask and omitting oxm_mask.
-                // So when user specify 32 as a mast, switch omit that mast and we get null as a mask in flow
-                // statistics response.
+        return matchBuilder.build();
+    }
 
-                ipv4PrefixStr += PREFIX_SEPARATOR + "32";
-            }
-            if (!ipv4PrefixStr.equals(noIp)) {
-                ipv4MatchBuilder.setIpv4Source(new Ipv4Prefix(ipv4PrefixStr));
-                matchBuilder.setLayer3Match(ipv4MatchBuilder.build());
-            }
-        }
-        if (!swMatch.getWildcards().isDLTYPE().booleanValue() && swMatch.getNwDst() != null) {
-            String ipv4PrefixStr = swMatch.getNwDst().getValue();
-            if (swMatch.getNwDstMask() != null) {
-                ipv4PrefixStr += PREFIX_SEPARATOR + swMatch.getNwDstMask();
-            } else {
-                //Openflow Spec : 1.3.2
-                //An all-one-bits oxm_mask is equivalent to specifying 0 for oxm_hasmask and omitting oxm_mask.
-                // So when user specify 32 as a mast, switch omit that mast and we get null as a mask in flow
-                // statistics response.
-
-                ipv4PrefixStr += PREFIX_SEPARATOR + "32";
-            }
-            if (!ipv4PrefixStr.equals(noIp)) {
-                ipv4MatchBuilder.setIpv4Destination(new Ipv4Prefix(ipv4PrefixStr));
-                matchBuilder.setLayer3Match(ipv4MatchBuilder.build());
-            }
-        }
-        if (!swMatch.getWildcards().isNWPROTO().booleanValue() && swMatch.getNwProto() != null) {
-            ipMatchBuilder.setIpProtocol(swMatch.getNwProto());
+    private static void oFv10ToSalMatchNwTos(final MatchV10 swMatch, MatchBuilder matchBuilder, IpMatchBuilder ipMatchBuilder) {
+        if (!swMatch.getWildcards().isNWTOS().booleanValue() && swMatch.getNwTos() != null) {
+            Short dscp = ActionUtil.tosToDscp(swMatch.getNwTos().shortValue());
+            ipMatchBuilder.setIpDscp(new Dscp(dscp));
             matchBuilder.setIpMatch(ipMatchBuilder.build());
         }
-        if (!swMatch.getWildcards().isNWPROTO().booleanValue() && swMatch.getNwProto() == PROTO_TCP) {
-            TcpMatchBuilder tcpMatchBuilder = new TcpMatchBuilder();
-            if (!swMatch.getWildcards().isTPSRC().booleanValue() && swMatch.getTpSrc() != null) {
-                tcpMatchBuilder
-                        .setTcpSourcePort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber(
-                                swMatch.getTpSrc()));
-            }
-            if (!swMatch.getWildcards().isTPDST().booleanValue() && swMatch.getTpDst() != null) {
-                tcpMatchBuilder
-                        .setTcpDestinationPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber(
-                                swMatch.getTpDst()));
-            }
+    }
 
-            if (!swMatch.getWildcards().isTPSRC().booleanValue() || !swMatch.getWildcards().isTPDST().booleanValue()) {
-                matchBuilder.setLayer4Match(tcpMatchBuilder.build());
-            }
-        }
+    private static void oFv10ToSalMatchNwProtoUdp(final MatchV10 swMatch, MatchBuilder matchBuilder) {
         if (!swMatch.getWildcards().isNWPROTO().booleanValue() && swMatch.getNwProto() == PROTO_UDP) {
             UdpMatchBuilder udpMatchBuilder = new UdpMatchBuilder();
             if (!swMatch.getWildcards().isTPSRC().booleanValue() && swMatch.getTpSrc() != null) {
@@ -585,13 +589,130 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
                 matchBuilder.setLayer4Match(udpMatchBuilder.build());
             }
         }
-        if (!swMatch.getWildcards().isNWTOS().booleanValue() && swMatch.getNwTos() != null) {
-            Short dscp = ActionUtil.tosToDscp(swMatch.getNwTos().shortValue());
-            ipMatchBuilder.setIpDscp(new Dscp(dscp));
+    }
+
+    private static void oFv10ToSalMatchNwProtoTcp(final MatchV10 swMatch, MatchBuilder matchBuilder) {
+        if (!swMatch.getWildcards().isNWPROTO().booleanValue() && swMatch.getNwProto() == PROTO_TCP) {
+            TcpMatchBuilder tcpMatchBuilder = new TcpMatchBuilder();
+            if (!swMatch.getWildcards().isTPSRC().booleanValue() && swMatch.getTpSrc() != null) {
+                tcpMatchBuilder
+                        .setTcpSourcePort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber(
+                                swMatch.getTpSrc()));
+            }
+            if (!swMatch.getWildcards().isTPDST().booleanValue() && swMatch.getTpDst() != null) {
+                tcpMatchBuilder
+                        .setTcpDestinationPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber(
+                                swMatch.getTpDst()));
+            }
+
+            if (!swMatch.getWildcards().isTPSRC().booleanValue() || !swMatch.getWildcards().isTPDST().booleanValue()) {
+                matchBuilder.setLayer4Match(tcpMatchBuilder.build());
+            }
+        }
+    }
+
+    private static void oFv10ToSalMatchNwProto(final MatchV10 swMatch, MatchBuilder matchBuilder, IpMatchBuilder ipMatchBuilder) {
+        if (!swMatch.getWildcards().isNWPROTO().booleanValue() && swMatch.getNwProto() != null) {
+            ipMatchBuilder.setIpProtocol(swMatch.getNwProto());
             matchBuilder.setIpMatch(ipMatchBuilder.build());
         }
+    }
 
-        return matchBuilder.build();
+    private static void oFv10ToSalMatchNwDst(final MatchV10 swMatch, MatchBuilder matchBuilder, Ipv4MatchBuilder ipv4MatchBuilder) {
+        if (!swMatch.getWildcards().isDLTYPE().booleanValue() && swMatch.getNwDst() != null) {
+            String ipv4PrefixStr = swMatch.getNwDst().getValue();
+            if (swMatch.getNwDstMask() != null) {
+                ipv4PrefixStr += PREFIX_SEPARATOR + swMatch.getNwDstMask();
+            } else {
+                //Openflow Spec : 1.3.2
+                //An all-one-bits oxm_mask is equivalent to specifying 0 for oxm_hasmask and omitting oxm_mask.
+                // So when user specify 32 as a mast, switch omit that mast and we get null as a mask in flow
+                // statistics response.
+
+                ipv4PrefixStr += PREFIX_SEPARATOR + "32";
+            }
+            if (!ipv4PrefixStr.equals(NO_IP)) {
+                ipv4MatchBuilder.setIpv4Destination(new Ipv4Prefix(ipv4PrefixStr));
+                matchBuilder.setLayer3Match(ipv4MatchBuilder.build());
+            }
+        }
+    }
+
+    private static void oFv10ToSalMatchNwSrc(final MatchV10 swMatch, MatchBuilder matchBuilder, Ipv4MatchBuilder ipv4MatchBuilder) {
+        if (!swMatch.getWildcards().isDLTYPE().booleanValue() && swMatch.getNwSrc() != null) {
+            String ipv4PrefixStr = swMatch.getNwSrc().getValue();
+            if (swMatch.getNwSrcMask() != null) {
+                ipv4PrefixStr += PREFIX_SEPARATOR + swMatch.getNwSrcMask();
+            } else {
+                //Openflow Spec : 1.3.2
+                //An all-one-bits oxm_mask is equivalent to specifying 0 for oxm_hasmask and omitting oxm_mask.
+                // So when user specify 32 as a mast, switch omit that mast and we get null as a mask in flow
+                // statistics response.
+
+                ipv4PrefixStr += PREFIX_SEPARATOR + "32";
+            }
+            if (!ipv4PrefixStr.equals(NO_IP)) {
+                ipv4MatchBuilder.setIpv4Source(new Ipv4Prefix(ipv4PrefixStr));
+                matchBuilder.setLayer3Match(ipv4MatchBuilder.build());
+            }
+        }
+    }
+
+    private static void oFv10ToSalMatchDlVlanPcp(final MatchV10 swMatch, MatchBuilder matchBuilder, VlanMatchBuilder vlanMatchBuilder) {
+        if (!swMatch.getWildcards().isDLVLANPCP().booleanValue() && swMatch.getDlVlanPcp() != null) {
+            vlanMatchBuilder.setVlanPcp(new org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanPcp(
+                    swMatch.getDlVlanPcp()));
+            matchBuilder.setVlanMatch(vlanMatchBuilder.build());
+        }
+    }
+
+    private static void oFv10ToSalMatchVlan(final MatchV10 swMatch, MatchBuilder matchBuilder, VlanMatchBuilder vlanMatchBuilder) {
+        if (!swMatch.getWildcards().isDLVLAN().booleanValue() && swMatch.getDlVlan() != null) {
+            VlanIdBuilder vlanIdBuilder = new VlanIdBuilder();
+            int vlanId = (swMatch.getDlVlan() == ((int) 0xffff)) ? 0 : swMatch.getDlVlan();
+            vlanIdBuilder.setVlanId(new org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId(vlanId));
+            vlanIdBuilder.setVlanIdPresent(vlanId == 0 ? false : true);
+            vlanMatchBuilder.setVlanId(vlanIdBuilder.build());
+            matchBuilder.setVlanMatch(vlanMatchBuilder.build());
+        }
+    }
+
+    private static void oFv10ToSalMatchDlType(final MatchV10 swMatch, MatchBuilder matchBuilder,
+            EthernetMatchBuilder ethMatchBuilder) {
+        if (!swMatch.getWildcards().isDLTYPE().booleanValue() && swMatch.getDlType() != null) {
+            EthernetTypeBuilder ethTypeBuilder = new EthernetTypeBuilder();
+            ethTypeBuilder.setType(new org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.EtherType(
+                    (long) swMatch.getDlType()));
+            ethMatchBuilder.setEthernetType(ethTypeBuilder.build());
+            matchBuilder.setEthernetMatch(ethMatchBuilder.build());
+        }
+    }
+
+    private static void oFv10ToSalMatchDlDst(final MatchV10 swMatch, final MatchBuilder matchBuilder,
+            final EthernetMatchBuilder ethMatchBuilder) {
+        if (!swMatch.getWildcards().isDLDST().booleanValue() && swMatch.getDlDst() != null) {
+            EthernetDestinationBuilder ethDstBuilder = new EthernetDestinationBuilder();
+            ethDstBuilder.setAddress(swMatch.getDlDst());
+            ethMatchBuilder.setEthernetDestination(ethDstBuilder.build());
+            matchBuilder.setEthernetMatch(ethMatchBuilder.build());
+        }
+    }
+
+    private static void oFv10ToSALMatchDlScr(final MatchV10 swMatch, final MatchBuilder matchBuilder, final EthernetMatchBuilder ethMatchBuilder) {
+        if (!swMatch.getWildcards().isDLSRC().booleanValue() && swMatch.getDlSrc() != null) {
+            EthernetSourceBuilder ethSrcBuilder = new EthernetSourceBuilder();
+            ethSrcBuilder.setAddress(swMatch.getDlSrc());
+            ethMatchBuilder.setEthernetSource(ethSrcBuilder.build());
+            matchBuilder.setEthernetMatch(ethMatchBuilder.build());
+        }
+    }
+
+    private static void oFv10ToSALMatchInPort(final MatchV10 swMatch, final BigInteger datapathid, final OpenflowVersion ofVersion,
+            MatchBuilder matchBuilder) {
+        if (!swMatch.getWildcards().isINPORT().booleanValue() && swMatch.getInPort() != null) {
+            matchBuilder.setInPort(InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(datapathid,
+                    (long) swMatch.getInPort(), ofVersion));
+        }
     }
 
     /**
@@ -608,10 +729,10 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
     public static MatchBuilder fromOFMatchToSALMatch(
             final org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.match.grouping.Match swMatch,
             final BigInteger datapathid, final OpenflowVersion ofVersion) {
-        return OfMatchToSALMatchConvertor(swMatch.getMatchEntries(), datapathid, ofVersion);
+        return oFMatchToSALMatchConvertor(swMatch.getMatchEntries(), datapathid, ofVersion);
     }
 
-    private static MatchBuilder OfMatchToSALMatchConvertor(List<MatchEntries> swMatchList, final BigInteger datapathid,
+    private static MatchBuilder oFMatchToSALMatchConvertor(List<MatchEntries> swMatchList, final BigInteger datapathid,
                                                            OpenflowVersion ofVersion) {
 
         MatchBuilder matchBuilder = new MatchBuilder();
@@ -1071,16 +1192,16 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
         matchEntriesBuilder.setOxmMatchField(Ipv6Exthdr.class);
         PseudoFieldMatchEntryBuilder pseudoBuilder = new PseudoFieldMatchEntryBuilder();
         Integer bitmap = ipv6ExtHeader.getIpv6Exthdr();
-        final Boolean NONEXT = ((bitmap) & (1 << 0)) != 0;
-        final Boolean ESP = ((bitmap) & (1 << 1)) != 0;
-        final Boolean AUTH = ((bitmap) & (1 << 2)) != 0;
-        final Boolean DEST = ((bitmap) & (1 << 3)) != 0;
-        final Boolean FRAG = ((bitmap) & (1 << 4)) != 0;
-        final Boolean ROUTER = ((bitmap) & (1 << 5)) != 0;
-        final Boolean HOP = ((bitmap) & (1 << 6)) != 0;
-        final Boolean UNREP = ((bitmap) & (1 << 7)) != 0;
-        final Boolean UNSEQ = ((bitmap) & (1 << 8)) != 0;
-        pseudoBuilder.setPseudoField(new Ipv6ExthdrFlags(AUTH, DEST, ESP, FRAG, HOP, NONEXT, ROUTER, UNREP, UNSEQ));
+        final Boolean nonext = ((bitmap) & (1 << NONEXT_BIT_POSITION)) != 0;
+        final Boolean esp = ((bitmap) & (1 << ESP_BIT_POSITION)) != 0;
+        final Boolean auth = ((bitmap) & (1 << AUTH_BIT_POSITION)) != 0;
+        final Boolean dest = ((bitmap) & (1 << DEST_BIT_POSITION)) != 0;
+        final Boolean frag = ((bitmap) & (1 << FRAG_BIT_POSITION)) != 0;
+        final Boolean router = ((bitmap) & (1 << ROUTER_BIT_POSITION)) != 0;
+        final Boolean hop = ((bitmap) & (1 << HOP_BIT_POSITION)) != 0;
+        final Boolean unrep = ((bitmap) & (1 << UNREP_BIT_POSITION)) != 0;
+        final Boolean unseq = ((bitmap) & (1 << UNSEQ_BIT_POSITION)) != 0;
+        pseudoBuilder.setPseudoField(new Ipv6ExthdrFlags(auth, dest, esp, frag, hop, nonext, router, unrep, unseq));
         matchEntriesBuilder.addAugmentation(PseudoFieldMatchEntry.class, pseudoBuilder.build());
         if (ipv6ExtHeader.getIpv6ExthdrMask() != null) {
             hasmask = true;
@@ -1353,21 +1474,29 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
         return hasMask;
     }
 
+    /**
+     * Mark prefix value as N. Result of this method is bit array where first N bits
+     * is set to 1 and remaing are set to 0 (if prefix is bigger then 128 then returning
+     * array are all 1s)
+     * @param prefix
+     * @return array of bits which can be devided to left side which contains 1s and
+     * right size which contains 0s. 1s or 0s sets can have size 0.
+     */
     private static byte[] convertIpv6PrefixToByteArray(final int prefix) {
         // TODO: Temporary fix. Has performance impacts.
-        byte[] mask = new byte[16];
+        byte[] mask = new byte[OCTETS_IN_IPV6];
         int oneCount = prefix;
-        for (int count = 0; count < 16; count++) {
+        for (int count = 0; count < OCTETS_IN_IPV6; count++) {
             int byteBits = 0;
-            if (oneCount >= 8) {
-                byteBits = 8;
-                oneCount = oneCount - 8;
+            if (oneCount >= BITS_IN_BYTE) {
+                byteBits = BITS_IN_BYTE;
+                oneCount = oneCount - BITS_IN_BYTE;
             } else {
                 byteBits = oneCount;
                 oneCount = 0;
             }
 
-            mask[count] = (byte) (256 - Math.pow(2, 8 - byteBits));
+            mask[count] = (byte) (256 - Math.pow(2, BITS_IN_BYTE - byteBits));
         }
         return mask;
     }
@@ -1390,7 +1519,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
         final int prefix;
         if (addressParts.hasNext()) {
             int potentionalPrefix = Integer.parseInt(addressParts.next());
-            prefix = potentionalPrefix < 32 ? potentionalPrefix : 0;
+            prefix = potentionalPrefix < IP_V4_MASK_SIZE ? potentionalPrefix : 0;
         } else {
             prefix = 0;
         }
@@ -1399,8 +1528,8 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
         ipv4AddressBuilder.setIpv4Address(ipv4Address);
         builder.addAugmentation(Ipv4AddressMatchEntry.class, ipv4AddressBuilder.build());
         if (prefix != 0) {
-            int mask = 0xffffffff << (32 - prefix);
-            byte[] maskBytes = new byte[]{(byte) (mask >>> 24), (byte) (mask >>> 16), (byte) (mask >>> 8),
+            int mask = 0xffffffff << (IP_V4_MASK_SIZE - prefix);
+            byte[] maskBytes = new byte[]{(byte) (mask >>> SWITCH_BY_3_BYTES), (byte) (mask >>> SWITCH_BY_2_BYTES), (byte) (mask >>> SWITCH_BY_1_BYTE),
                     (byte) mask};
             addMaskAugmentation(builder, maskBytes);
             hasMask = true;
@@ -1423,10 +1552,10 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
      */
     public static SetField fromOFSetFieldToSALSetFieldAction(
             final Action action, OpenflowVersion ofVersion) {
-        logger.debug("Converting OF SetField action to SAL SetField action");
+        LOG.debug("Converting OF SetField action to SAL SetField action");
         SetFieldBuilder setField = new SetFieldBuilder();
         OxmFieldsAction oxmFields = action.getAugmentation(OxmFieldsAction.class);
-        MatchBuilder match = OfMatchToSALMatchConvertor(oxmFields.getMatchEntries(), null, ofVersion);
+        MatchBuilder match = oFMatchToSALMatchConvertor(oxmFields.getMatchEntries(), null, ofVersion);
         setField.fieldsFrom(match.build());
         return setField.build();
     }
