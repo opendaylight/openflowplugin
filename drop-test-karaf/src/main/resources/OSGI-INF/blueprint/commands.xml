@@ -16,8 +16,14 @@
                 <null/>
             </completers>
         </command>
+        <command name="drop-test/showDropStats">
+            <action class="org.opendaylight.openflowplugin.droptestkaraf.ShowDropStatsCommandProvider"/>
+        </command>
+        <command name="drop-test/clearDropStats">
+            <action class="org.opendaylight.openflowplugin.droptestkaraf.ClearDropStatsCommandProvider"/>
+        </command>
     </command-bundle>
-    
+
     <bean id="onOffCompleter" class="org.opendaylight.openflowplugin.droptestkaraf.DropAllPacketsCompleter"/>
 
 </blueprint>
