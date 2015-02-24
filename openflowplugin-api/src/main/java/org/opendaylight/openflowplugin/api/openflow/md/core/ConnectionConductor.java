@@ -38,61 +38,61 @@ public interface ConnectionConductor {
     }
 
     /** supported version ordered by height (highest version is at the beginning) */
-    public static final List<Short> versionOrder = Lists.newArrayList((short) 0x04, (short) 0x01);
+    List<Short> versionOrder = Lists.newArrayList((short) 0x04, (short) 0x01);
 
     /**
      * initialize wiring around {@link #connectionAdapter}
      */
-    public void init();
+    void init();
 
     /**
      * @return the negotiated version
      */
-    public Short getVersion();
+    Short getVersion();
 
     /**
      * @return the state of conductor
      */
-    public CONDUCTOR_STATE getConductorState();
+    CONDUCTOR_STATE getConductorState();
 
     /**
      * @param conductorState
      */
-    public void setConductorState(CONDUCTOR_STATE conductorState);
+    void setConductorState(CONDUCTOR_STATE conductorState);
 
     /**
      * terminates owned connection
      * @return future result of disconnect action
      */
-    public Future<Boolean> disconnect();
+    Future<Boolean> disconnect();
 
     /**
      * assign corresponding {@link SessionContext} to this conductor (to handle disconnect caused by switch)
      * @param context
      */
-    public void setSessionContext(SessionContext context);
+    void setSessionContext(SessionContext context);
 
     /**
      * assign corresponding {@link org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher} to this conductor
      * to handle disconnect caused by switch. This involves auxiliary conductors only.
      * @param auxiliaryKey
      */
-    public void setConnectionCookie(SwitchConnectionDistinguisher auxiliaryKey);
+    void setConnectionCookie(SwitchConnectionDistinguisher auxiliaryKey);
 
     /**
      * @return the sessionContext
      */
-    public SessionContext getSessionContext();
+    SessionContext getSessionContext();
 
     /**
      * @return the auxiliaryKey (null if this is a primary connection)
      */
-    public SwitchConnectionDistinguisher getAuxiliaryKey();
+    SwitchConnectionDistinguisher getAuxiliaryKey();
 
     /**
      * @return the connectionAdapter
      */
-    public ConnectionAdapter getConnectionAdapter();
+    ConnectionAdapter getConnectionAdapter();
 
     /**
      * assign global queueKeeper
