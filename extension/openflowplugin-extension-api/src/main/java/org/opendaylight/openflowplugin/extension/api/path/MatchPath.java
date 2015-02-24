@@ -19,16 +19,6 @@ public enum MatchPath implements AugmentationPath {
     /**
      * openflowplugin-extension-general.yang
      * <pre>
-     * module: sal-flow
-     * notifications:
-     *    +---n switch-flow-removed                     
-     *    |  +--ro match
-     * </pre>
-     */
-    SWITCHFLOWREMOVED_MATCH(null),
-    /**
-     * openflowplugin-extension-general.yang
-     * <pre>
      * module: packet-processing
      * notifications:
      *    +---n packet-received    
