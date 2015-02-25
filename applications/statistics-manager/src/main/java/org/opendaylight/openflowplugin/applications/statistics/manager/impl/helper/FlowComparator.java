@@ -332,7 +332,7 @@ public final class FlowComparator {
      * Method return integer version of ip address. Converted int will be mask if
      * mask specified
      */
-    private static IntegerIpAddress StrIpToIntIp(final String ipAddresss){
+    static IntegerIpAddress StrIpToIntIp(final String ipAddresss){
 
         final String[] parts = ipAddresss.split("/");
         final String ip = parts[0];
@@ -342,6 +342,12 @@ public final class FlowComparator {
             prefix = 32;
         } else {
             prefix = Integer.parseInt(parts[1]);
+            if (prefix < 0 || prefix > 32) {
+                final StringBuilder stringBuilder = new StringBuilder("Valid values for mask are from range 0 - 32. Value ");
+                stringBuilder.append(prefix);
+                stringBuilder.append(" is invalid.");
+                throw new IllegalStateException(stringBuilder.toString());
+            }
         }
 
         IntegerIpAddress integerIpAddress = null;
@@ -362,7 +368,7 @@ public final class FlowComparator {
         return integerIpAddress;
     }
 
-    private static class IntegerIpAddress{
+    static class IntegerIpAddress{
         int ip;
         int mask;
         public IntegerIpAddress(final int ip, final int mask) {
