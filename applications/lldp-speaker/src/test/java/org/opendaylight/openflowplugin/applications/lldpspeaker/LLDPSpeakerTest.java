@@ -8,12 +8,20 @@
 
 package org.opendaylight.openflowplugin.applications.lldpspeaker;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import org.junit.*;
+
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -45,26 +53,33 @@ public class LLDPSpeakerTest {
         MacAddress mac = new MacAddress("01:23:45:67:89:AB");
         id = TestUtils.createNodeConnectorId("openflow:1", "openflow:1:1");
         fcnc = TestUtils.createFlowCapableNodeConnector(mac, 1L).build();
-        byte[] lldpFrame = LLDPUtil.buildLldpFrame(
-                new NodeId("openflow:1"), new NodeConnectorId("openflow:1:1"), mac, 1L);
+        byte[] lldpFrame = LLDPUtil.buildLldpFrame(new NodeId("openflow:1"),
+                new NodeConnectorId("openflow:1:1"), mac, 1L);
         packet = new TransmitPacketInputBuilder()
                 .setEgress(new NodeConnectorRef(id))
                 .setNode(new NodeRef(id.firstIdentifierOf(Node.class)))
                 .setPayload(lldpFrame).build();
     }
 
-    @Mock PacketProcessingService packetProcessingService;
-    @Mock ScheduledExecutorService scheduledExecutorService;
-    @Mock ScheduledFuture scheduledSpeakerTask;
+    @Mock
+    PacketProcessingService packetProcessingService;
+    @Mock
+    ScheduledExecutorService scheduledExecutorService;
+    @Mock
+    ScheduledFuture scheduledSpeakerTask;
+
+    MacAddress destinationMACAddress = null;
     LLDPSpeaker lldpSpeaker;
 
     @Before
     @SuppressWarnings("unchecked")
     public void setUp() {
-        when(scheduledExecutorService.scheduleAtFixedRate(
-                any(Runnable.class), anyLong(), anyLong(), any(TimeUnit.class)))
-                .thenReturn(scheduledSpeakerTask);
-        lldpSpeaker = new LLDPSpeaker(packetProcessingService, scheduledExecutorService);
+        when(
+                scheduledExecutorService.scheduleAtFixedRate(
+                        any(Runnable.class), anyLong(), anyLong(),
+                        any(TimeUnit.class))).thenReturn(scheduledSpeakerTask);
+        lldpSpeaker = new LLDPSpeaker(packetProcessingService,
+                scheduledExecutorService, destinationMACAddress);
         lldpSpeaker.setOperationalStatus(OperStatus.RUN);
     }
 
@@ -74,10 +89,12 @@ public class LLDPSpeakerTest {
     @Test
     public void testStandBy() {
         lldpSpeaker.setOperationalStatus(OperStatus.STANDBY);
-        // Add node connector - LLDP packet should be transmitted through packetProcessingService
+        // Add node connector - LLDP packet should be transmitted through
+        // packetProcessingService
         lldpSpeaker.nodeConnectorAdded(id, fcnc);
 
-        // Execute one iteration of periodic task - LLDP packet should be transmitted second time
+        // Execute one iteration of periodic task - LLDP packet should be
+        // transmitted second time
         lldpSpeaker.run();
 
         // Check packet transmission
@@ -91,10 +108,12 @@ public class LLDPSpeakerTest {
      */
     @Test
     public void testNodeConnectorAdd() {
-        // Add node connector - LLDP packet should be transmitted through packetProcessingService
+        // Add node connector - LLDP packet should be transmitted through
+        // packetProcessingService
         lldpSpeaker.nodeConnectorAdded(id, fcnc);
 
-        // Execute one iteration of periodic task - LLDP packet should be transmitted second time
+        // Execute one iteration of periodic task - LLDP packet should be
+        // transmitted second time
         lldpSpeaker.run();
 
         // Check packet transmission
@@ -129,7 +148,8 @@ public class LLDPSpeakerTest {
      */
     @Test
     public void testMultipleSameNodeConnectorAddEvents() {
-        // Add node connector - LLDP packet should be transmitted through packetProcessingService
+        // Add node connector - LLDP packet should be transmitted through
+        // packetProcessingService
         for (int i = 0; i < 10; i++) {
             lldpSpeaker.nodeConnectorAdded(id, fcnc);
         }
@@ -141,7 +161,8 @@ public class LLDPSpeakerTest {
 
     /**
      * Test that lldpSpeaker cancels periodic LLDP flood task and stops
-     * @{ScheduledExecutorService}.
+     * 
+     * @{ScheduledExecutorService .
      * @throws Exception
      */
     @Test
@@ -157,12 +178,13 @@ public class LLDPSpeakerTest {
     @Test
     public void testLocalNodeConnectorCreation() {
         // Call nodeConnectorAdded with local port
-        FlowCapableNodeConnector fcnc = TestUtils.createFlowCapableNodeConnector()
-                .setPortNumber(new CommonPort.PortNumber("LOCAL"))
-                .build();
+        FlowCapableNodeConnector fcnc = TestUtils
+                .createFlowCapableNodeConnector()
+                .setPortNumber(new CommonPort.PortNumber("LOCAL")).build();
         lldpSpeaker.nodeConnectorAdded(id, fcnc);
 
         // Verify that nothing happened for local port
-        verify(packetProcessingService, never()).transmitPacket(any(TransmitPacketInput.class));
+        verify(packetProcessingService, never()).transmitPacket(
+                any(TransmitPacketInput.class));
     }
 }
