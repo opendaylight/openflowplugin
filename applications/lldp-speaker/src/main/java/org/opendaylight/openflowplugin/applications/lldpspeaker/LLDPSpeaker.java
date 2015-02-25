@@ -14,6 +14,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
@@ -34,21 +35,25 @@ import org.slf4j.LoggerFactory;
  * Objects of this class send LLDP frames over all flow-capable ports that can
  * be discovered through inventory.
  */
-public class LLDPSpeaker implements AutoCloseable, NodeConnectorEventsObserver, Runnable {
+public class LLDPSpeaker implements AutoCloseable, NodeConnectorEventsObserver,
+        Runnable {
 
     private static OperStatus operationalStatus = OperStatus.RUN;
 
-    private static final Logger LOG = LoggerFactory.getLogger(LLDPSpeaker.class);
+    private static final Logger LOG = LoggerFactory
+            .getLogger(LLDPSpeaker.class);
     private static final long LLDP_FLOOD_PERIOD = 5;
 
     private final PacketProcessingService packetProcessingService;
     private final ScheduledExecutorService scheduledExecutorService;
-    private final Map<InstanceIdentifier<NodeConnector>, TransmitPacketInput> nodeConnectorMap =
-            new ConcurrentHashMap<>();
+    private final Map<InstanceIdentifier<NodeConnector>, TransmitPacketInput> nodeConnectorMap = new ConcurrentHashMap<>();
     private final ScheduledFuture<?> scheduledSpeakerTask;
+    private MacAddress addressDestionation;
 
-    public LLDPSpeaker(PacketProcessingService packetProcessingService) {
-        this(packetProcessingService, Executors.newSingleThreadScheduledExecutor());
+    public LLDPSpeaker(PacketProcessingService packetProcessingService,
+            MacAddress addressDestionation) {
+        this(packetProcessingService, Executors
+                .newSingleThreadScheduledExecutor(), addressDestionation);
     }
 
     public void setOperationalStatus(OperStatus operationalStatus) {
@@ -64,12 +69,17 @@ public class LLDPSpeaker implements AutoCloseable, NodeConnectorEventsObserver, 
     }
 
     public LLDPSpeaker(PacketProcessingService packetProcessingService,
-                       ScheduledExecutorService scheduledExecutorService) {
+            ScheduledExecutorService scheduledExecutorService,
+            MacAddress addressDestionation) {
+        this.addressDestionation = addressDestionation;
         this.scheduledExecutorService = scheduledExecutorService;
-        scheduledSpeakerTask = this.scheduledExecutorService.scheduleAtFixedRate(
-                this, LLDP_FLOOD_PERIOD, LLDP_FLOOD_PERIOD, TimeUnit.SECONDS);
+        scheduledSpeakerTask = this.scheduledExecutorService
+                .scheduleAtFixedRate(this, LLDP_FLOOD_PERIOD,
+                        LLDP_FLOOD_PERIOD, TimeUnit.SECONDS);
         this.packetProcessingService = packetProcessingService;
-        LOG.info("LLDPSpeaker started, it will send LLDP frames each {} seconds", LLDP_FLOOD_PERIOD);
+        LOG.info(
+                "LLDPSpeaker started, it will send LLDP frames each {} seconds",
+                LLDP_FLOOD_PERIOD);
     }
 
     /**
@@ -89,12 +99,17 @@ public class LLDPSpeaker implements AutoCloseable, NodeConnectorEventsObserver, 
     @Override
     public void run() {
         if (OperStatus.RUN.equals(operationalStatus)) {
-            LOG.debug("Sending LLDP frames to {} ports...", nodeConnectorMap.keySet().size());
+            LOG.debug("Sending LLDP frames to {} ports...", nodeConnectorMap
+                    .keySet().size());
 
-            for (InstanceIdentifier<NodeConnector> nodeConnectorInstanceId : nodeConnectorMap.keySet()) {
-                NodeConnectorId nodeConnectorId = InstanceIdentifier.keyOf(nodeConnectorInstanceId).getId();
-                LOG.trace("Sending LLDP through port {}", nodeConnectorId.getValue());
-                packetProcessingService.transmitPacket(nodeConnectorMap.get(nodeConnectorInstanceId));
+            for (InstanceIdentifier<NodeConnector> nodeConnectorInstanceId : nodeConnectorMap
+                    .keySet()) {
+                NodeConnectorId nodeConnectorId = InstanceIdentifier.keyOf(
+                        nodeConnectorInstanceId).getId();
+                LOG.trace("Sending LLDP through port {}",
+                        nodeConnectorId.getValue());
+                packetProcessingService.transmitPacket(nodeConnectorMap
+                        .get(nodeConnectorInstanceId));
             }
         }
     }
@@ -103,20 +118,25 @@ public class LLDPSpeaker implements AutoCloseable, NodeConnectorEventsObserver, 
      * {@inheritDoc}
      */
     @Override
-    public void nodeConnectorAdded(InstanceIdentifier<NodeConnector> nodeConnectorInstanceId,
-                                   FlowCapableNodeConnector flowConnector) {
-        NodeConnectorId nodeConnectorId = InstanceIdentifier.keyOf(nodeConnectorInstanceId).getId();
+    public void nodeConnectorAdded(
+            InstanceIdentifier<NodeConnector> nodeConnectorInstanceId,
+            FlowCapableNodeConnector flowConnector) {
+        NodeConnectorId nodeConnectorId = InstanceIdentifier.keyOf(
+                nodeConnectorInstanceId).getId();
 
-        // nodeConnectorAdded can be called even if we already sending LLDP frames to
+        // nodeConnectorAdded can be called even if we already sending LLDP
+        // frames to
         // port, so first we check if we actually need to perform any action
         if (nodeConnectorMap.containsKey(nodeConnectorInstanceId)) {
-            LOG.trace("Port {} already in LLDPSpeaker.nodeConnectorMap, no need for additional processing",
+            LOG.trace(
+                    "Port {} already in LLDPSpeaker.nodeConnectorMap, no need for additional processing",
                     nodeConnectorId.getValue());
             return;
         }
 
         // Prepare to build LLDP payload
-        InstanceIdentifier<Node> nodeInstanceId = nodeConnectorInstanceId.firstIdentifierOf(Node.class);
+        InstanceIdentifier<Node> nodeInstanceId = nodeConnectorInstanceId
+                .firstIdentifierOf(Node.class);
         NodeId nodeId = InstanceIdentifier.keyOf(nodeInstanceId).getId();
         MacAddress srcMacAddress = flowConnector.getHardwareAddress();
         Long outputPortNo = flowConnector.getPortNumber().getUint32();
@@ -132,12 +152,16 @@ public class LLDPSpeaker implements AutoCloseable, NodeConnectorEventsObserver, 
         TransmitPacketInput packet = new TransmitPacketInputBuilder()
                 .setEgress(new NodeConnectorRef(nodeConnectorInstanceId))
                 .setNode(new NodeRef(nodeInstanceId))
-                .setPayload(LLDPUtil.buildLldpFrame(nodeId, nodeConnectorId, srcMacAddress, outputPortNo))
-                .build();
+                .setPayload(
+                        LLDPUtil.buildLldpFrame(nodeId, nodeConnectorId,
+                                srcMacAddress, outputPortNo,
+                                addressDestionation)).build();
 
-        // Save packet to node connector id -> packet map to transmit it every 5 seconds
+        // Save packet to node connector id -> packet map to transmit it every 5
+        // seconds
         nodeConnectorMap.put(nodeConnectorInstanceId, packet);
-        LOG.trace("Port {} added to LLDPSpeaker.nodeConnectorMap", nodeConnectorId.getValue());
+        LOG.trace("Port {} added to LLDPSpeaker.nodeConnectorMap",
+                nodeConnectorId.getValue());
 
         // Transmit packet for first time immediately
         packetProcessingService.transmitPacket(packet);
@@ -147,9 +171,12 @@ public class LLDPSpeaker implements AutoCloseable, NodeConnectorEventsObserver, 
      * {@inheritDoc}
      */
     @Override
-    public void nodeConnectorRemoved(InstanceIdentifier<NodeConnector> nodeConnectorInstanceId) {
+    public void nodeConnectorRemoved(
+            InstanceIdentifier<NodeConnector> nodeConnectorInstanceId) {
         nodeConnectorMap.remove(nodeConnectorInstanceId);
-        NodeConnectorId nodeConnectorId = InstanceIdentifier.keyOf(nodeConnectorInstanceId).getId();
-        LOG.trace("Port {} removed from LLDPSpeaker.nodeConnectorMap", nodeConnectorId.getValue());
+        NodeConnectorId nodeConnectorId = InstanceIdentifier.keyOf(
+                nodeConnectorInstanceId).getId();
+        LOG.trace("Port {} removed from LLDPSpeaker.nodeConnectorMap",
+                nodeConnectorId.getValue());
     }
 }

@@ -2,9 +2,11 @@ module lldp-speaker {
     yang-version 1;
     namespace "urn:opendaylight:params:xml:ns:yang:openflow:applications:lldp-speaker";
     prefix "lldp-speaker";
+    import ietf-yang-types {prefix yang; revision-date "2010-09-24";}
     import config {prefix config; revision-date 2013-04-05;}
     import opendaylight-md-sal-binding { prefix mdsal; revision-date 2013-10-28;}
     import rpc-context { prefix rpcx; revision-date 2013-06-17; }
+    
 
     description
         "Application that send LLDPDU frames to all Openflow switch ports.";
@@ -49,6 +51,9 @@ module lldp-speaker {
                     }
                 }
             }
+            leaf address-destination {
+                     type yang:mac-address;
+                 }
         }
     }
 
