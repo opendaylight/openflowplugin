@@ -407,30 +407,35 @@ public final class FlowComparator {
      * Method return integer version of ip address. Converted int will be mask if
      * mask specified
      */
-    private static IntegerIpAddress strIpToIntIp(final String ipAddresss){
+    static IntegerIpAddress StrIpToIntIp(final String ipAddresss){
 
         final String[] parts = ipAddresss.split("/");
         final String ip = parts[0];
         int prefix;
 
         if (parts.length < 2) {
-            prefix = DEFAULT_SUBNET;
+            prefix = 32;
         } else {
             prefix = Integer.parseInt(parts[1]);
+            if (prefix < 0 || prefix > 32) {
+                final StringBuilder stringBuilder = new StringBuilder("Valid values for mask are from range 0 - 32. Value ");
+                stringBuilder.append(prefix);
+                stringBuilder.append(" is invalid.");
+                throw new IllegalStateException(stringBuilder.toString());
+            }
         }
 
         IntegerIpAddress integerIpAddress = null;
 
             final Inet4Address addr = ((Inet4Address) InetAddresses.forString(ip));
             final byte[] addrBytes = addr.getAddress();
-            //FIXME: what is meaning of anding with 0xFF? Probably could be removed.
-            final int ipInt = ((addrBytes[POSITION_OCTET_1] & 0xFF) << SHIFT_OCTET_1) |
-                    ((addrBytes[POSITION_OCTET_2] & 0xFF) << SHIFT_OCTET_2) |
-                    ((addrBytes[POSITION_OCTET_3] & 0xFF) << SHIFT_OCTET_3)  |
-                    ((addrBytes[POSITION_OCTET_4] & 0xFF) << SHIFT_OCTET_4);
+            final int ipInt = ((addrBytes[0] & 0xFF) << 24) |
+                    ((addrBytes[1] & 0xFF) << 16) |
+                    ((addrBytes[2] & 0xFF) << 8)  |
+                    ((addrBytes[3] & 0xFF) << 0);
 
             // FIXME: Is this valid?
-            final int mask = 0xffffffff << DEFAULT_SUBNET - prefix;
+            final int mask = 0xffffffff << 32 - prefix;
 
             integerIpAddress = new IntegerIpAddress(ipInt, mask);
 
@@ -438,7 +443,7 @@ public final class FlowComparator {
         return integerIpAddress;
     }
 
-    private static class IntegerIpAddress{
+    static class IntegerIpAddress{
         int ip;
         int mask;
         public IntegerIpAddress(final int ip, final int mask) {
