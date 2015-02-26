@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a96c907_7eda424d",
+        "filename": "features/pom.xml",
+        "patchSetId": 9
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 649
+      },
+      "writtenOn": "2015-02-26T08:49:18Z",
+      "side": 1,
+      "message": "trailing whitespace",
+      "revId": "a9222c0fa59519e212caf529a647fcc1baaacceb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_1edbfe4f",
+        "filename": "features/src/main/resources/features.xml",
+        "patchSetId": 9
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 649
+      },
+      "writtenOn": "2015-02-26T08:49:18Z",
+      "side": 1,
+      "message": "trailing whitespace",
+      "revId": "a9222c0fa59519e212caf529a647fcc1baaacceb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_dee836e4",
+        "filename": "pom.xml",
+        "patchSetId": 9
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 649
+      },
+      "writtenOn": "2015-02-26T08:49:18Z",
+      "side": 1,
+      "message": "use dependency imports for yangtools/config/mdsal artifacts:\n\n\u003cdependency\u003e\n    \u003cgroupId\u003eorg.opendaylight.yangtools\u003c/groupId\u003e\n    \u003cartifactId\u003eyangtools-artifacts\u003c/artifactId\u003e\n    \u003cversion\u003e${yangtools.version}\u003c/version\u003e\n    \u003cscope\u003eimport\u003c/scope\u003e\n    \u003ctype\u003epom\u003c/type\u003e\n\u003c/dependency\u003e",
+      "revId": "a9222c0fa59519e212caf529a647fcc1baaacceb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
