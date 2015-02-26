@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.openflow.md.core;
 
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
+import org.opendaylight.openflowplugin.api.openflow.md.core.HandshakeManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
