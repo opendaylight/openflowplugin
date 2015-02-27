@@ -27,8 +27,6 @@ public class DropTestActivator extends AbstractBindingAwareProvider {
 
     private static DropTestRpcProvider rpcProvider = new DropTestRpcProvider();
 
-    private static DropTestCommandProvider cmdProvider;
-
     private static OutputTestCommandProvider outCmdProvider;
 
 
@@ -37,8 +35,6 @@ public class DropTestActivator extends AbstractBindingAwareProvider {
         provider.setDataService(session.<DataBroker>getSALService(DataBroker.class));
 
         provider.setNotificationService(session.<NotificationProviderService>getSALService(NotificationProviderService.class));
-
-        cmdProvider.onSessionInitiated(session);
 
         rpcProvider.setNotificationService(session.<NotificationProviderService>getSALService(NotificationProviderService.class));
 
@@ -51,7 +47,6 @@ public class DropTestActivator extends AbstractBindingAwareProvider {
     public void startImpl(final BundleContext ctx) {
         super.startImpl(ctx);
 //      LOG.debug("-------------------------------------    DROP ALL PACK TEST INITIATED ------------------------ ")
-        cmdProvider = new DropTestCommandProvider(ctx, provider, rpcProvider);
         outCmdProvider = new OutputTestCommandProvider(ctx);
     }
 
