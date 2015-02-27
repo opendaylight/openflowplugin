@@ -216,8 +216,9 @@ public class ToSalConversionsUtils {
                     }else{
                         type = type + ":";
                     }
-                    Uri fullNodeConnector = new Uri(type+node.getID()+":"+nodeConnector.getValue());
-                        targetAction.add(new Output(fromNodeConnectorRef(fullNodeConnector, node)));
+                    Uri fullNodeConnector = new Uri(type+node.getID()+":"
+                            +NodeMapping.stripToColon(nodeConnector.getValue()));
+                    targetAction.add(new Output(fromNodeConnectorRef(fullNodeConnector, node)));
                 }
             } else if (sourceAction instanceof PopMplsActionCase) {
                 // TODO: define maping
