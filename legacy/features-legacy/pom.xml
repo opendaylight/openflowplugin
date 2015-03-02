@@ -194,7 +194,7 @@
                 <karaf.distro.version>${karaf.distro.empty.version}</karaf.distro.version>
               </systemPropertyVariables>
               <dependenciesToScan>
-               <dependency>org.opendaylight.yangtools:features-test</dependency>
+               <dependency>org.opendaylight.odlparent:features-test</dependency>
               </dependenciesToScan>
             </configuration>
           </plugin>
