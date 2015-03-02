@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a96c907_a79753eb",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/util/ByteUtil.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2015-03-02T17:59:15Z",
+      "side": 1,
+      "message": "can you please remove whitespaces.",
+      "revId": "19df0f1ae0319e34cd7d9163cc41c55648561fd0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
