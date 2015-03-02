@@ -7,14 +7,23 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.util;
 
-import com.google.common.base.Preconditions;
 import java.math.BigInteger;
 import java.util.Arrays;
+
+import com.google.common.base.Preconditions;
+import com.google.common.io.BaseEncoding;
 
 /**
  * @author mirehak
  */
 public abstract class ByteUtil {
+
+    /** default hex string separator */
+    private static final String DEFAULT_HEX_SEPARATOR = ":";
+    /** basic hex string encoding */
+    private static final BaseEncoding PLAIN_HEX_16_ENCODING = BaseEncoding.base16().lowerCase();
+    /** hex string encoding involving {@link #DEFAULT_HEX_SEPARATOR} as searator */
+    private static final BaseEncoding HEX_16_ENCODING = PLAIN_HEX_16_ENCODING.withSeparator(DEFAULT_HEX_SEPARATOR, 2);
 
     /**
      * @param bytes
@@ -22,11 +31,11 @@ public abstract class ByteUtil {
      * @return hexString containing bytes, separated with delimiter
      */
     public static String bytesToHexstring(final byte[] bytes, final String delimiter) {
-        StringBuffer sb = new StringBuffer();
-        for (byte b : bytes) {
-            sb.append(String.format("%02x%s", b, delimiter));
+        BaseEncoding be = HEX_16_ENCODING;
+        if (delimiter != DEFAULT_HEX_SEPARATOR) {
+            be = PLAIN_HEX_16_ENCODING.withSeparator(delimiter, 2);
         }
-        return sb.toString();
+        return be.encode(bytes);
     }
 
     /**

@@ -18,9 +18,9 @@ import org.junit.Test;
  */
 public class ByteUtilTest {
 
-    private static final String hexString = "64,65,66,ff,";
-    private static final String hexString00 = "00,00,00,00,";
-    private static final String hexStringFF = "ff,ff,ff,ff,";
+    private static final String hexString = "64,65,66,ff";
+    private static final String hexString00 = "00,00,00,00";
+    private static final String hexStringFF = "ff,ff,ff,ff";
 
     private static final byte[] testBytes = {100, 101, 102, (byte) 255};
     private static final byte[] testBytes00 = {0, 0, 0, 0};
@@ -41,6 +41,9 @@ public class ByteUtilTest {
     private static final int mediumByteLength = 3;
     private static final int intByteLength = 4;
 
+    /**
+     * test of {@link ByteUtil#bytesToHexstring(byte[], String)}
+     */
     @Test
     public void testBytesToHexstring() {
         assertEquals(hexString, ByteUtil.bytesToHexstring(testBytes, ","));
