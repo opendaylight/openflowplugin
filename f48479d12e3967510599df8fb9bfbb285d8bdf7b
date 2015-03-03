@@ -88,6 +88,24 @@
     },
     {
       "key": {
+        "uuid": "7a96c907_80123d07",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/session/RolePushTask.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2015-03-03T15:37:20Z",
+      "side": 1,
+      "message": "What I tried to solve there was that in one moment all controllers will try to set role. In case there are 3 controllers and one of them succeeds then the other 2 have to ask for current generationId and retry. Then again only one would succeed and the last must retry. Writing current generationId of each node into dataStore/operational is probably much faster but does not eliminate conflicts. In order to minimize collisions we have following:\n\n- order of devices (when propagating a role) is randomized using priorityQueue with semi-random priority\n- a controller always asks for generationId before requesting role\n- in case of conflict (replied generationId is used but consequent RoleRequest fails because some other controller was faster) this node is enqueued again and unlucky controller tries another node from queue. \n\nThis critical scenario happens at the beginning - all controllers are up and running and in one moment connected to network (e.g. mininet) - now all controllers have effectively the equal-role by default and all are trying to change it according to shard state.\n\nLater on when membership of master role changes in shard then only the new master controller needs to announce this role to nodes - old master controller(s) will be automatically demoted to slave role (no need to tell device, just change internal state).\n\nArguments for optimizing role propagation via dataStore:\n- the process will be faster in general\n\nArguments against use of dataStore here:\n- generationId should not be exposed\n- we need to design simple and deterministic fail-over scenario\n- this will complicate the mechanism and might introduce deadlock by involving datastore and md-sal-notification threads for unlimited time\n\n\nNow it would be great to see those two approaches in action and test them in clustered environment. I guess dataStore must be faster. But I do not believe it would be like order of magnitude faster.",
+      "parentUuid": "7a96c907_607a9178",
+      "revId": "f48479d12e3967510599df8fb9bfbb285d8bdf7b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a96c907_fddf2ed4",
         "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/session/SessionContextOFImpl.java",
         "patchSetId": 12
