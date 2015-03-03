@@ -1,5 +1,7 @@
 package org.opendaylight.openflowplugin.openflow.md.util;
 
+import java.util.Iterator;
+
 import com.google.common.collect.ImmutableBiMap;
 
 import org.opendaylight.openflowjava.protocol.api.util.BinContent;
@@ -141,4 +143,5 @@ public class OpenflowPortsUtil {
         }
         return result;
     }
+    
 }

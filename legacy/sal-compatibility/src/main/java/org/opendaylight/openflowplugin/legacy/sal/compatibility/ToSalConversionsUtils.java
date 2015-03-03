@@ -26,6 +26,7 @@ import static org.opendaylight.openflowplugin.legacy.sal.compatibility.ProtocolC
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import org.opendaylight.controller.sal.action.Controller;
@@ -122,6 +123,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Splitter;
 import com.google.common.net.InetAddresses;
 
 public class ToSalConversionsUtils {
@@ -594,16 +596,22 @@ public class ToSalConversionsUtils {
 
     private static InetAddress inetAddressFrom(Ipv4Prefix source) {
         if (source != null) {
-            String[] parts = source.getValue().split("/");
-            return InetAddresses.forString(parts[0]);
+            Iterable<String> parts = Splitter.on('/')
+                    .trimResults()
+                    .omitEmptyStrings()
+                    .split(source.getValue());
+            return InetAddresses.forString(parts.iterator().next());
         }
         return null;
     }
 
     private static InetAddress inetAddressFrom(Ipv6Prefix source) {
         if (source != null) {
-            String[] parts = source.getValue().split("/");
-            return InetAddresses.forString(parts[0]);
+            Iterable<String> parts = Splitter.on('/')
+                    .trimResults()
+                    .omitEmptyStrings()
+                    .split(source.getValue());
+            return InetAddresses.forString(parts.iterator().next());
         }
         return null;
     }
@@ -632,11 +640,19 @@ public class ToSalConversionsUtils {
     }
 
     public static byte[] bytesFrom(MacAddress address) {
-        String[] mac = address.getValue().split(":");
+        Iterable<String> mac = Splitter.on(':')
+                .trimResults()
+                .omitEmptyStrings()
+                .split(address.getValue());
+        
         byte[] macAddress = new byte[6]; // mac.length == 6 bytes
-        for (int i = 0; i < mac.length; i++) {
-            macAddress[i] = Integer.decode("0x" + mac[i]).byteValue();
+        int i = 0;
+        for (Iterator<String> iterator = mac.iterator(); iterator.hasNext();) {
+            String macPart = iterator.next();
+            macAddress[i] = Integer.decode("0x" + macPart).byteValue();
+            i++;
         }
+        
         return macAddress;
     }
 

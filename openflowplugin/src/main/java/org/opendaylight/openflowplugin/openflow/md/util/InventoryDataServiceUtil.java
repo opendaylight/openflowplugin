@@ -8,9 +8,15 @@
 package org.opendaylight.openflowplugin.openflow.md.util;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
+
 import java.math.BigInteger;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.concurrent.ExecutionException;
+
 import org.apache.commons.lang3.StringUtils;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
@@ -131,13 +137,22 @@ public abstract class InventoryDataServiceUtil {
     }
 
     public static Long portNumberfromNodeConnectorId(OpenflowVersion ofVersion, String ncId) {
-        String[] split = ncId.split(":");
-
+        Iterable<String> splitted = Splitter.on(':')
+                                        .trimResults()
+                                        .omitEmptyStrings()
+                                        .split(ncId);
         // It can happen that token length will be just 1 i.e 2 or CONTROLLER
         // If the length is just one then this cannot be the new MD-SAL style node connector Id which
         // is of the form openflow:1:3.
-
-        String portNoString = split[split.length - 1];
+        
+        List<String> splittedNodeConn = Lists.newArrayList(splitted.iterator());
+        ListIterator<String> reversedIter = splittedNodeConn.listIterator(splittedNodeConn.size());
+        
+        String portNoString = null;
+        if(reversedIter.hasPrevious()) {
+            portNoString = reversedIter.previous();
+        }
+        
         Long portNo = OpenflowPortsUtil.getPortFromLogicalName(ofVersion, portNoString);
         return portNo;
     }
