@@ -53,6 +53,24 @@
     },
     {
       "key": {
+        "uuid": "7a96c907_c0d7e549",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/session/OFRoleManager.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2015-03-03T14:53:37Z",
+      "side": 1,
+      "message": "No, this might be configurable later. But 42 is probably the coolest number regarding Douglas Adams.",
+      "parentUuid": "7a96c907_dde2729f",
+      "revId": "f48479d12e3967510599df8fb9bfbb285d8bdf7b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a96c907_607a9178",
         "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/session/RolePushTask.java",
         "patchSetId": 12
@@ -149,6 +167,24 @@
       "writtenOn": "2015-03-03T14:45:33Z",
       "side": 1,
       "message": "i think it is supposed to be createRoleRequestInput? not create*Rule*?",
+      "revId": "f48479d12e3967510599df8fb9bfbb285d8bdf7b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_60c851a8",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/util/RoleUtil.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2015-03-03T14:53:37Z",
+      "side": 1,
+      "message": "sure - typpo",
+      "parentUuid": "7a96c907_1d045a48",
       "revId": "f48479d12e3967510599df8fb9bfbb285d8bdf7b",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
