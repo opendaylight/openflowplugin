@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 import java.math.BigInteger;
 import java.util.Iterator;
 
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.IpConversionUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.ActionUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
@@ -27,8 +28,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.TcpMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.UdpMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowWildcardsV10;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.match.v10.grouping.MatchV10;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.match.v10.grouping.MatchV10Builder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.v10.grouping.MatchV10;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.v10.grouping.MatchV10Builder;
 
 /**
  *
@@ -224,7 +225,7 @@ public class MatchConvertorV10Impl implements MatchConvertor<MatchV10> {
     private static void convertL3Ipv4DstMatch(final MatchV10Builder matchBuilder,
             final Ipv4Match ipv4) {
         if(ipv4.getIpv4Destination()!=null){
-            Iterator<String> addressParts = MatchConvertorImpl.PREFIX_SPLITTER.split(ipv4.getIpv4Destination().getValue()).iterator();
+            Iterator<String> addressParts = IpConversionUtil.PREFIX_SPLITTER.split(ipv4.getIpv4Destination().getValue()).iterator();
             Ipv4Address ipv4Address = new Ipv4Address(addressParts.next());
             Integer prefix = buildPrefix(addressParts);
             matchBuilder.setNwDst(ipv4Address);
@@ -241,7 +242,7 @@ public class MatchConvertorV10Impl implements MatchConvertor<MatchV10> {
     private static void convertL3Ipv4SrcMatch(final MatchV10Builder matchBuilder,
             final Ipv4Match ipv4) {
         if(ipv4.getIpv4Source()!=null){
-            Iterator<String> addressParts = MatchConvertorImpl.PREFIX_SPLITTER.split(ipv4.getIpv4Source().getValue()).iterator();
+            Iterator<String> addressParts = IpConversionUtil.PREFIX_SPLITTER.split(ipv4.getIpv4Source().getValue()).iterator();
             Ipv4Address ipv4Address = new Ipv4Address(addressParts.next());
             int prefix = buildPrefix(addressParts);
 

@@ -11,30 +11,24 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.openflowplugin.api.OFConstants;
-import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
-import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.api.openflow.md.core.ConnectionConductor;
-import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionConverterManagerImpl;
+import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
+import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
+import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionConverterManagerImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SessionManagerOFImpl;
+import org.opendaylight.openflowplugin.openflow.md.util.ByteUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Dscp;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6FlowLabel;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.mod.removed.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ProtocolMatchFields;
@@ -43,92 +37,141 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.IpMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Tunnel;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatch;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.BosMatchEntryBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.DscpMatchEntryBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.EcnMatchEntryBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.EthTypeMatchEntryBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.Icmpv4CodeMatchEntryBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.Icmpv4TypeMatchEntryBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.Icmpv6CodeMatchEntryBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.Icmpv6TypeMatchEntryBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.Ipv4AddressMatchEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.Ipv4AddressMatchEntryBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.Ipv6AddressMatchEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.Ipv6AddressMatchEntryBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.Ipv6FlabelMatchEntryBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.IsidMatchEntryBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.MacAddressMatchEntryBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.MaskMatchEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.MaskMatchEntryBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.MetadataMatchEntryBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.MplsLabelMatchEntryBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.OpCodeMatchEntryBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.PortMatchEntryBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.PortNumberMatchEntryBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.ProtocolNumberMatchEntryBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.PseudoFieldMatchEntryBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.TcMatchEntryBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.VlanPcpMatchEntryBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.VlanVidMatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.EtherType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Ipv6ExthdrFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumber;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.ArpOp;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.ArpSha;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.ArpSpa;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.ArpTha;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.ArpTpa;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.EthDst;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.EthSrc;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.EthType;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Icmpv4Code;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Icmpv4Type;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Icmpv6Code;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Icmpv6Type;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.InPhyPort;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.InPort;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.IpDscp;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.IpEcn;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.IpProto;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Ipv4Dst;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Ipv4Src;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Ipv6Dst;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Ipv6Exthdr;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Ipv6Flabel;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Ipv6NdSll;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Ipv6NdTarget;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Ipv6NdTll;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Ipv6Src;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.MatchField;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Metadata;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.MplsBos;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.MplsLabel;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.MplsTc;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.PbbIsid;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.SctpDst;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.SctpSrc;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TcpDst;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TcpSrc;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TunnelId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TunnelIpv4Dst;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TunnelIpv4Src;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.UdpDst;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.UdpSrc;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.VlanPcp;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.VlanVid;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.match.grouping.MatchBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.grouping.MatchEntries;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.grouping.MatchEntriesBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.ArpOp;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.ArpSha;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.ArpSpa;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.ArpTha;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.ArpTpa;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.EthSrc;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.EthType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Icmpv4Code;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Icmpv4Type;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Icmpv6Code;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Icmpv6Type;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.InPhyPort;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.InPort;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.IpProto;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Ipv4Dst;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Ipv4Src;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Ipv6Dst;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Ipv6Exthdr;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Ipv6Flabel;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Ipv6NdSll;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Ipv6NdTarget;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Ipv6NdTll;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Ipv6Src;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Metadata;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MplsBos;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MplsLabel;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.PbbIsid;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.SctpDst;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.TcpDst;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.TunnelId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.UdpDst;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.UdpSrc;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.VlanPcp;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.ArpOpCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.ArpShaCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.ArpSpaCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.ArpThaCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.ArpTpaCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.EthDstCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.EthSrcCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.EthTypeCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.Icmpv4CodeCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.Icmpv4TypeCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.Icmpv6CodeCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.Icmpv6TypeCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.InPhyPortCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.InPortCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.IpDscpCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.IpEcnCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.IpProtoCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.Ipv4DstCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.Ipv4SrcCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.Ipv6DstCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.Ipv6ExthdrCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.Ipv6FlabelCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.Ipv6NdSllCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.Ipv6NdTargetCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.Ipv6NdTllCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.Ipv6SrcCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.MetadataCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.MplsBosCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.MplsLabelCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.MplsTcCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.PbbIsidCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.SctpDstCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.SctpSrcCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.TcpDstCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.TcpSrcCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.TunnelIdCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.UdpDstCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.UdpSrcCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.VlanPcpCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.VlanVidCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.arp.op._case.ArpOpBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.arp.sha._case.ArpShaBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.arp.spa._case.ArpSpaBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.arp.tha._case.ArpThaBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.arp.tpa._case.ArpTpaBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.eth.dst._case.EthDstBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.eth.src._case.EthSrcBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.eth.type._case.EthTypeBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.icmpv4.code._case.Icmpv4CodeBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.icmpv4.type._case.Icmpv4TypeBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.icmpv6.code._case.Icmpv6CodeBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.icmpv6.type._case.Icmpv6TypeBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.in.phy.port._case.InPhyPortBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.in.port._case.InPortBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.ip.dscp._case.IpDscpBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.ip.ecn._case.IpEcnBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.ip.proto._case.IpProtoBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.ipv4.dst._case.Ipv4DstBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.ipv4.src._case.Ipv4SrcBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.ipv6.dst._case.Ipv6DstBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.ipv6.exthdr._case.Ipv6ExthdrBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.ipv6.flabel._case.Ipv6FlabelBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.ipv6.nd.sll._case.Ipv6NdSllBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.ipv6.nd.target._case.Ipv6NdTargetBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.ipv6.nd.tll._case.Ipv6NdTllBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.ipv6.src._case.Ipv6SrcBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.mpls.bos._case.MplsBosBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.mpls.label._case.MplsLabelBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.mpls.tc._case.MplsTcBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.pbb.isid._case.PbbIsidBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.sctp.dst._case.SctpDstBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.sctp.src._case.SctpSrcBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.tcp.dst._case.TcpDstBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.tcp.src._case.TcpSrcBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.tunnel.id._case.TunnelIdBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.udp.dst._case.UdpDstBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.udp.src._case.UdpSrcBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.vlan.pcp._case.VlanPcpBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.vlan.vid._case.VlanVidBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemovedMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
-import org.opendaylight.yangtools.yang.binding.Augmentation;
 import org.opendaylight.yangtools.yang.binding.DataObject;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
+
 
 @RunWith(MockitoJUnitRunner.class)
 public class FlowRemovedTranslatorTest extends FlowRemovedTranslator {
 
     private static final FlowRemovedTranslator flowRemovedTranslator = new FlowRemovedTranslator();
     private static final BigInteger DATA_PATH_ID = BigInteger.valueOf(42);
+    public static final Ipv6Address IPV_6_ADDRESS = new Ipv6Address("2001:0DB8:AC10:FE01:0000:0000:0000:0000");
+    private static final byte[] IPV_6_ADDRESS_MASK = ByteUtil.unsignedIntToBytes(new Long(64));
+    private static final Ipv4Address IPV_4_ADDRESS = new Ipv4Address("10.0.0.1");
+    private static final byte[] IPV_4_ADDRESS_MASK = ByteUtil.unsignedIntToBytes(new Long(8));
 
     @MockitoAnnotations.Mock
     SwitchConnectionDistinguisher switchConnectionDistinguisher;
@@ -148,134 +191,349 @@ public class FlowRemovedTranslatorTest extends FlowRemovedTranslator {
     private static final MacAddress MAC_ADDRESS = new MacAddress("00:01:02:03:04:05");
 
 
-    private static Map<Class<? extends MatchField>, Object> fieldClassesAndAugmentations = new HashMap<>();
+    private static List<MatchEntry> fieldClassesAndAugmentations = new ArrayList<>();
+
 
     private void setupClassAndAugmentationMap() {
 
-        PortNumberMatchEntryBuilder portNumberMatchEntryBuilder = new PortNumberMatchEntryBuilder();
-        portNumberMatchEntryBuilder.setPortNumber(new PortNumber((long) 42));
-        fieldClassesAndAugmentations.put(InPort.class, portNumberMatchEntryBuilder.build());
-        fieldClassesAndAugmentations.put(InPhyPort.class, portNumberMatchEntryBuilder.build());
 
-        MetadataMatchEntryBuilder metadataMatchEntryBuilder = new MetadataMatchEntryBuilder();
-        metadataMatchEntryBuilder.setMetadata(new byte[0]);
-        fieldClassesAndAugmentations.put(Metadata.class, metadataMatchEntryBuilder.build());
+        MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
+        InPortBuilder portBuilder = new InPortBuilder();
+        portBuilder.setPortNumber(new PortNumber((long) 42));
+        InPortCaseBuilder inPortCaseBuilder = new InPortCaseBuilder();
+        inPortCaseBuilder.setInPort(portBuilder.build());
+        matchEntryBuilder.setMatchEntryValue(inPortCaseBuilder.build());
+        matchEntryBuilder.setOxmMatchField(InPort.class);
+        fieldClassesAndAugmentations.add(matchEntryBuilder.build());
 
-        MaskMatchEntryBuilder maskMatchEntryBuilder = new MaskMatchEntryBuilder();
-        maskMatchEntryBuilder.setMask(new byte[24]);
+        InPhyPortBuilder inPhyPortBuilder = new InPhyPortBuilder();
+        PortNumber portNumber = new PortNumber((long) 42);
+        inPhyPortBuilder.setPortNumber(portNumber);
+        InPhyPortCaseBuilder inPhyPortCaseBuilder = new InPhyPortCaseBuilder();
+        inPhyPortCaseBuilder.setInPhyPort(inPhyPortBuilder.build());
+        matchEntryBuilder.setMatchEntryValue(inPhyPortCaseBuilder.build());
+        matchEntryBuilder.setOxmMatchField(InPhyPort.class);
+        fieldClassesAndAugmentations.add(matchEntryBuilder.build());
 
-        EthTypeMatchEntryBuilder ethTypeMatchEntryBuilder = new EthTypeMatchEntryBuilder();
-        ethTypeMatchEntryBuilder.setEthType(new EtherType(6));
-        fieldClassesAndAugmentations.put(EthType.class, ethTypeMatchEntryBuilder.build());
+        MetadataCaseBuilder metadataCaseBuilder = new MetadataCaseBuilder();
+        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.metadata._case.MetadataBuilder metadataBuilder = new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.metadata._case.MetadataBuilder();
+        metadataBuilder.setMetadata(new byte[0]);
+        metadataBuilder.setMask(new byte[0]);
+        metadataCaseBuilder.setMetadata(metadataBuilder.build());
+        matchEntryBuilder.setMatchEntryValue(metadataCaseBuilder.build());
+        matchEntryBuilder.setOxmMatchField(Metadata.class);
+        matchEntryBuilder.setHasMask(false);
+        fieldClassesAndAugmentations.add(matchEntryBuilder.build());
 
-        VlanVidMatchEntryBuilder vlanVidMatchEntryBuilder = new VlanVidMatchEntryBuilder();
-        vlanVidMatchEntryBuilder.setCfiBit(true);
-        vlanVidMatchEntryBuilder.setVlanVid(42);
-        fieldClassesAndAugmentations.put(VlanVid.class, vlanVidMatchEntryBuilder.build());
 
-        VlanPcpMatchEntryBuilder vlanPcpMatchEntryBuilder = new VlanPcpMatchEntryBuilder();
-        vlanPcpMatchEntryBuilder.setVlanPcp((short) 7);
-        fieldClassesAndAugmentations.put(VlanPcp.class, vlanPcpMatchEntryBuilder.build());
+        EthTypeBuilder ethTypeBuilder = new EthTypeBuilder();
+        ethTypeBuilder.setEthType(new EtherType(6));
+        EthTypeCaseBuilder ethTypeCaseBuilder = new EthTypeCaseBuilder();
+        ethTypeCaseBuilder.setEthType(ethTypeBuilder.build());
+        matchEntryBuilder.setMatchEntryValue(ethTypeCaseBuilder.build());
+        matchEntryBuilder.setOxmMatchField(EthType.class);
+        fieldClassesAndAugmentations.add(matchEntryBuilder.build());
 
-        DscpMatchEntryBuilder dscpMatchEntryBuilder = new DscpMatchEntryBuilder();
-        dscpMatchEntryBuilder.setDscp(new Dscp((short) 10));
-        fieldClassesAndAugmentations.put(IpDscp.class, dscpMatchEntryBuilder.build());
+        VlanVidBuilder vlanVidBuilder = new VlanVidBuilder();
+        vlanVidBuilder.setCfiBit(true);
+        vlanVidBuilder.setVlanVid(42);
+        VlanVidCaseBuilder vlanVidCaseBuilder = new VlanVidCaseBuilder();
+        vlanVidCaseBuilder.setVlanVid(vlanVidBuilder.build());
+        matchEntryBuilder.setMatchEntryValue(vlanVidCaseBuilder.build());
+        matchEntryBuilder.setOxmMatchField(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.VlanVid.class);
+        fieldClassesAndAugmentations.add(matchEntryBuilder.build());
 
-        EcnMatchEntryBuilder ecnMatchEntryBuilder = new EcnMatchEntryBuilder();
-        ecnMatchEntryBuilder.setEcn((short) 10);
-        fieldClassesAndAugmentations.put(IpEcn.class, ecnMatchEntryBuilder.build());
+        VlanPcpBuilder vlanPcpBuilder = new VlanPcpBuilder();
+        vlanPcpBuilder.setVlanPcp((short) 7);
+        VlanPcpCaseBuilder vlanPcpCaseBuilder = new VlanPcpCaseBuilder();
+        vlanPcpCaseBuilder.setVlanPcp(vlanPcpBuilder.build());
+        matchEntryBuilder.setMatchEntryValue(vlanPcpCaseBuilder.build());
+        matchEntryBuilder.setOxmMatchField(VlanPcp.class);
+        fieldClassesAndAugmentations.add(matchEntryBuilder.build());
 
-        ProtocolNumberMatchEntryBuilder protocolNumberMatchEntryBuilder = new ProtocolNumberMatchEntryBuilder();
-        protocolNumberMatchEntryBuilder.setProtocolNumber(OFConstants.OFP_VERSION_1_3);
-        fieldClassesAndAugmentations.put(IpProto.class, protocolNumberMatchEntryBuilder.build());
+        IpDscpBuilder ipDscpBuilder = new IpDscpBuilder();
+        ipDscpBuilder.setDscp(new Dscp((short) 10));
+        IpDscpCaseBuilder ipDscpCaseBuilder = new IpDscpCaseBuilder();
+        ipDscpCaseBuilder.setIpDscp(ipDscpBuilder.build());
+        matchEntryBuilder.setMatchEntryValue(ipDscpCaseBuilder.build());
+        matchEntryBuilder.setOxmMatchField(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.IpDscp.class);
+        fieldClassesAndAugmentations.add(matchEntryBuilder.build());
 
-        PortMatchEntryBuilder portMatchEntryBuilder = new PortMatchEntryBuilder();
+        IpEcnBuilder ipEcnBuilder = new IpEcnBuilder();
+        ipEcnBuilder.setEcn((short) 10);
+        IpEcnCaseBuilder ipEcnCaseBuilder = new IpEcnCaseBuilder();
+        ipEcnCaseBuilder.setIpEcn(ipEcnBuilder.build());
+        matchEntryBuilder.setMatchEntryValue(ipEcnCaseBuilder.build());
+        matchEntryBuilder.setOxmMatchField(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.IpEcn.class);
+        fieldClassesAndAugmentations.add(matchEntryBuilder.build());
+
+        IpProtoBuilder ipProtoBuilder = new IpProtoBuilder();
+        ipProtoBuilder.setProtocolNumber(OFConstants.OFP_VERSION_1_3);
+        IpProtoCaseBuilder ipProtoCaseBuilder = new IpProtoCaseBuilder();
+        ipProtoCaseBuilder.setIpProto(ipProtoBuilder.build());
+        matchEntryBuilder.setMatchEntryValue(ipProtoCaseBuilder.build());
+        matchEntryBuilder.setOxmMatchField(IpProto.class);
+        fieldClassesAndAugmentations.add(matchEntryBuilder.build());
+
+        TcpSrcBuilder tcpSrcBuilder = new TcpSrcBuilder();
         org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber port = new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber(43);
-        portMatchEntryBuilder.setPort(port);
-        fieldClassesAndAugmentations.put(TcpSrc.class, portMatchEntryBuilder.build());
-        fieldClassesAndAugmentations.put(TcpDst.class, portMatchEntryBuilder.build());
-        fieldClassesAndAugmentations.put(UdpSrc.class, portMatchEntryBuilder.build());
-        fieldClassesAndAugmentations.put(UdpDst.class, portMatchEntryBuilder.build());
-        fieldClassesAndAugmentations.put(SctpSrc.class, portMatchEntryBuilder.build());
-        fieldClassesAndAugmentations.put(SctpDst.class, portMatchEntryBuilder.build());
+        tcpSrcBuilder.setPort(port);
+        TcpSrcCaseBuilder tcpSrcCaseBuilder = new TcpSrcCaseBuilder();
+        tcpSrcCaseBuilder.setTcpSrc(tcpSrcBuilder.build());
+        matchEntryBuilder.setMatchEntryValue(tcpSrcCaseBuilder.build());
+        matchEntryBuilder.setOxmMatchField(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.TcpSrc.class);
+        fieldClassesAndAugmentations.add(matchEntryBuilder.build());
 
-        Icmpv4TypeMatchEntryBuilder icmpv4TypeMatchEntryBuilder = new Icmpv4TypeMatchEntryBuilder();
-        icmpv4TypeMatchEntryBuilder.setIcmpv4Type((short) 10);
-        fieldClassesAndAugmentations.put(Icmpv4Type.class, icmpv4TypeMatchEntryBuilder.build());
+        TcpDstBuilder tcpDstBuilder = new TcpDstBuilder();
+        tcpDstBuilder.setPort(port);
+        TcpDstCaseBuilder tcpDstCaseBuilder = new TcpDstCaseBuilder();
+        tcpDstCaseBuilder.setTcpDst(tcpDstBuilder.build());
+        matchEntryBuilder.setMatchEntryValue(tcpDstCaseBuilder.build());
+        matchEntryBuilder.setOxmMatchField(TcpDst.class);
+        fieldClassesAndAugmentations.add(matchEntryBuilder.build());
 
-        Icmpv4CodeMatchEntryBuilder icmpv4CodeMatchEntryBuilder = new Icmpv4CodeMatchEntryBuilder();
-        icmpv4CodeMatchEntryBuilder.setIcmpv4Code((short) 10);
-        fieldClassesAndAugmentations.put(Icmpv4Code.class, icmpv4CodeMatchEntryBuilder.build());
+        UdpSrcBuilder udpSrcBuilder = new UdpSrcBuilder();
+        udpSrcBuilder.setPort(port);
+        UdpSrcCaseBuilder udpSrcCaseBuilder = new UdpSrcCaseBuilder();
+        udpSrcCaseBuilder.setUdpSrc(udpSrcBuilder.build());
+        matchEntryBuilder.setMatchEntryValue(udpSrcCaseBuilder.build());
+        matchEntryBuilder.setOxmMatchField(UdpSrc.class);
+        fieldClassesAndAugmentations.add(matchEntryBuilder.build());
 
-        Icmpv6TypeMatchEntryBuilder icmpv6TypeMatchEntryBuilder = new Icmpv6TypeMatchEntryBuilder();
-        icmpv6TypeMatchEntryBuilder.setIcmpv6Type((short) 10);
-        fieldClassesAndAugmentations.put(Icmpv6Type.class, icmpv6TypeMatchEntryBuilder.build());
+        UdpDstBuilder udpDstBuilder = new UdpDstBuilder();
+        udpDstBuilder.setPort(port);
+        UdpDstCaseBuilder udpDstCaseBuilder = new UdpDstCaseBuilder();
+        udpDstCaseBuilder.setUdpDst(udpDstBuilder.build());
+        matchEntryBuilder.setMatchEntryValue(udpDstCaseBuilder.build());
+        matchEntryBuilder.setOxmMatchField(UdpDst.class);
+        fieldClassesAndAugmentations.add(matchEntryBuilder.build());
 
-        Icmpv6CodeMatchEntryBuilder icmpv6CodeMatchEntryBuilder = new Icmpv6CodeMatchEntryBuilder();
-        icmpv6CodeMatchEntryBuilder.setIcmpv6Code((short) 10);
-        fieldClassesAndAugmentations.put(Icmpv6Code.class, icmpv6CodeMatchEntryBuilder.build());
+        SctpSrcBuilder sctpSrcBuilder = new SctpSrcBuilder();
+        sctpSrcBuilder.setPort(port);
+        SctpSrcCaseBuilder sctpSrcCaseBuilder = new SctpSrcCaseBuilder();
+        sctpSrcCaseBuilder.setSctpSrc(sctpSrcBuilder.build());
+        matchEntryBuilder.setMatchEntryValue(sctpSrcCaseBuilder.build());
+        matchEntryBuilder.setOxmMatchField(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.SctpSrc.class);
+        fieldClassesAndAugmentations.add(matchEntryBuilder.build());
+
+        SctpDstBuilder sctpDstBuilder = new SctpDstBuilder();
+        sctpDstBuilder.setPort(port);
+        SctpDstCaseBuilder sctpDstCaseBuilder = new SctpDstCaseBuilder();
+        sctpDstCaseBuilder.setSctpDst(sctpDstBuilder.build());
+        matchEntryBuilder.setMatchEntryValue(sctpDstCaseBuilder.build());
+        matchEntryBuilder.setOxmMatchField(SctpDst.class);
+        fieldClassesAndAugmentations.add(matchEntryBuilder.build());
+
+        Icmpv4TypeBuilder icmpv4TypeBuilder = new Icmpv4TypeBuilder();
+        icmpv4TypeBuilder.setIcmpv4Type((short) 10);
+        Icmpv4TypeCaseBuilder icmpv4TypeCaseBuilder = new Icmpv4TypeCaseBuilder();
+        icmpv4TypeCaseBuilder.setIcmpv4Type(icmpv4TypeBuilder.build());
+        matchEntryBuilder.setMatchEntryValue(icmpv4TypeCaseBuilder.build());
+        matchEntryBuilder.setOxmMatchField(Icmpv4Type.class);
+        fieldClassesAndAugmentations.add(matchEntryBuilder.build());
+
+        Icmpv4CodeBuilder icmpv4CodeBuilder = new Icmpv4CodeBuilder();
+        icmpv4CodeBuilder.setIcmpv4Code((short) 10);
+        Icmpv4CodeCaseBuilder icmpv4CodeCaseBuilder = new Icmpv4CodeCaseBuilder();
+        icmpv4CodeCaseBuilder.setIcmpv4Code(icmpv4CodeBuilder.build());
+        matchEntryBuilder.setMatchEntryValue(icmpv4CodeCaseBuilder.build());
+        matchEntryBuilder.setOxmMatchField(Icmpv4Code.class);
+        fieldClassesAndAugmentations.add(matchEntryBuilder.build());
+
+        Icmpv6TypeBuilder icmpv6TypeBuilder = new Icmpv6TypeBuilder();
+        icmpv6TypeBuilder.setIcmpv6Type((short) 10);
+        Icmpv6TypeCaseBuilder icmpv6TypeCaseBuilder = new Icmpv6TypeCaseBuilder();
+        icmpv6TypeCaseBuilder.setIcmpv6Type(icmpv6TypeBuilder.build());
+        matchEntryBuilder.setMatchEntryValue(icmpv6TypeCaseBuilder.build());
+        matchEntryBuilder.setOxmMatchField(Icmpv6Type.class);
+        fieldClassesAndAugmentations.add(matchEntryBuilder.build());
+
+        Icmpv6CodeBuilder icmpv6CodeBuilder = new Icmpv6CodeBuilder();
+        icmpv6CodeBuilder.setIcmpv6Code((short) 10);
+        Icmpv6CodeCaseBuilder icmpv6CodeCaseBuilder = new Icmpv6CodeCaseBuilder();
+        icmpv6CodeCaseBuilder.setIcmpv6Code(icmpv6CodeBuilder.build());
+        matchEntryBuilder.setMatchEntryValue(icmpv6CodeCaseBuilder.build());
+        matchEntryBuilder.setOxmMatchField(Icmpv6Code.class);
+        fieldClassesAndAugmentations.add(matchEntryBuilder.build());
+
+        ArpOpBuilder arpOpBuilder = new ArpOpBuilder();
+        arpOpBuilder.setOpCode(42);
+        ArpOpCaseBuilder arpOpCaseBuilder = new ArpOpCaseBuilder();
+        arpOpCaseBuilder.setArpOp(arpOpBuilder.build());
+        matchEntryBuilder.setMatchEntryValue(arpOpCaseBuilder.build());
+        matchEntryBuilder.setOxmMatchField(ArpOp.class);
+        fieldClassesAndAugmentations.add(matchEntryBuilder.build());
+
+        ArpShaBuilder arpShaBuilder = new ArpShaBuilder();
+        arpShaBuilder.setMacAddress(MAC_ADDRESS);
+        ArpShaCaseBuilder arpShaCaseBuilder = new ArpShaCaseBuilder();
+        arpShaCaseBuilder.setArpSha(arpShaBuilder.build());
+        matchEntryBuilder.setMatchEntryValue(arpShaCaseBuilder.build());
+        matchEntryBuilder.setOxmMatchField(ArpSha.class);
+        fieldClassesAndAugmentations.add(matchEntryBuilder.build());
+
+        ArpThaBuilder arpThaBuilder = new ArpThaBuilder();
+        arpThaBuilder.setMacAddress(MAC_ADDRESS);
+        ArpThaCaseBuilder arpThaCaseBuilder = new ArpThaCaseBuilder();
+        arpThaCaseBuilder.setArpTha(arpThaBuilder.build());
+        matchEntryBuilder.setMatchEntryValue(arpThaCaseBuilder.build());
+        matchEntryBuilder.setOxmMatchField(ArpTha.class);
+        fieldClassesAndAugmentations.add(matchEntryBuilder.build());
+
+        EthDstBuilder ethDstBuilder = new EthDstBuilder();
+        ethDstBuilder.setMacAddress(MAC_ADDRESS);
+        EthDstCaseBuilder ethDstCaseBuilder = new EthDstCaseBuilder();
+        ethDstCaseBuilder.setEthDst(ethDstBuilder.build());
+        matchEntryBuilder.setMatchEntryValue(ethDstCaseBuilder.build());
+        matchEntryBuilder.setOxmMatchField(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.EthDst.class);
+        fieldClassesAndAugmentations.add(matchEntryBuilder.build());
+
+        EthSrcBuilder ethSrcBuilder = new EthSrcBuilder();
+        ethSrcBuilder.setMacAddress(MAC_ADDRESS);
+        EthSrcCaseBuilder ethSrcCaseBuilder = new EthSrcCaseBuilder();
+        ethSrcCaseBuilder.setEthSrc(ethSrcBuilder.build());
+        matchEntryBuilder.setMatchEntryValue(ethSrcCaseBuilder.build());
+        matchEntryBuilder.setOxmMatchField(EthSrc.class);
+        fieldClassesAndAugmentations.add(matchEntryBuilder.build());
 
 
-        OpCodeMatchEntryBuilder opCodeMatchEntryBuilder = new OpCodeMatchEntryBuilder();
-        opCodeMatchEntryBuilder.setOpCode(42);
-        fieldClassesAndAugmentations.put(ArpOp.class, opCodeMatchEntryBuilder.build());
+        Ipv6FlabelBuilder ipv6FlabelBuilder = new Ipv6FlabelBuilder();
+        ipv6FlabelBuilder.setIpv6Flabel(new Ipv6FlowLabel((long) 42));
+        Ipv6FlabelCaseBuilder ipv6FlabelCaseBuilder = new Ipv6FlabelCaseBuilder();
+        ipv6FlabelCaseBuilder.setIpv6Flabel(ipv6FlabelBuilder.build());
+        matchEntryBuilder.setMatchEntryValue(ipv6FlabelCaseBuilder.build());
+        matchEntryBuilder.setOxmMatchField(Ipv6Flabel.class);
+        fieldClassesAndAugmentations.add(matchEntryBuilder.build());
+
+        Ipv6NdTargetBuilder ipv6NdTargetBuilder = new Ipv6NdTargetBuilder();
+        ipv6NdTargetBuilder.setIpv6Address(IPV_6_ADDRESS);
+        Ipv6NdTargetCaseBuilder ipv6NdTargetCaseBuilder = new Ipv6NdTargetCaseBuilder();
+        ipv6NdTargetCaseBuilder.setIpv6NdTarget(ipv6NdTargetBuilder.build());
+        matchEntryBuilder.setMatchEntryValue(ipv6NdTargetCaseBuilder.build());
+        matchEntryBuilder.setOxmMatchField(Ipv6NdTarget.class);
+        fieldClassesAndAugmentations.add(matchEntryBuilder.build());
+
+        Ipv6NdSllBuilder ipv6NdSllBuilder = new Ipv6NdSllBuilder();
+        ipv6NdSllBuilder.setMacAddress(MAC_ADDRESS);
+        Ipv6NdSllCaseBuilder ipv6NdSllCaseBuilder = new Ipv6NdSllCaseBuilder();
+        ipv6NdSllCaseBuilder.setIpv6NdSll(ipv6NdSllBuilder.build());
+        matchEntryBuilder.setMatchEntryValue(ipv6NdSllCaseBuilder.build());
+        matchEntryBuilder.setOxmMatchField(Ipv6NdSll.class);
+        fieldClassesAndAugmentations.add(matchEntryBuilder.build());
+
+        Ipv6NdTllBuilder ipv6NdTllBuilder = new Ipv6NdTllBuilder();
+        ipv6NdTllBuilder.setMacAddress(MAC_ADDRESS);
+        Ipv6NdTllCaseBuilder ipv6NdTllCaseBuilder = new Ipv6NdTllCaseBuilder();
+        ipv6NdTllCaseBuilder.setIpv6NdTll(ipv6NdTllBuilder.build());
+        matchEntryBuilder.setMatchEntryValue(ipv6NdTllCaseBuilder.build());
+        matchEntryBuilder.setOxmMatchField(Ipv6NdTll.class);
+        fieldClassesAndAugmentations.add(matchEntryBuilder.build());
+
+        Ipv6ExthdrBuilder ipv6ExthdrBuilder = new Ipv6ExthdrBuilder();
+        Ipv6ExthdrFlags ipv6ExthdrFlags = new Ipv6ExthdrFlags(true, true, true, true, true, true, true, true, true);
+        ipv6ExthdrBuilder.setPseudoField(ipv6ExthdrFlags);
+        ipv6ExthdrBuilder.setMask(IPV_6_ADDRESS_MASK);
+        Ipv6ExthdrCaseBuilder ipv6ExthdrCaseBuilder = new Ipv6ExthdrCaseBuilder();
+        ipv6ExthdrCaseBuilder.setIpv6Exthdr(ipv6ExthdrBuilder.build());
+        matchEntryBuilder.setMatchEntryValue(ipv6ExthdrCaseBuilder.build());
+        matchEntryBuilder.setOxmMatchField(Ipv6Exthdr.class);
+        fieldClassesAndAugmentations.add(matchEntryBuilder.build());
+
+        MplsLabelBuilder mplsLabelBuilder = new MplsLabelBuilder();
+        mplsLabelBuilder.setMplsLabel((long) 42);
+        MplsLabelCaseBuilder mplsLabelCaseBuilder = new MplsLabelCaseBuilder();
+        mplsLabelCaseBuilder.setMplsLabel(mplsLabelBuilder.build());
+        matchEntryBuilder.setMatchEntryValue(mplsLabelCaseBuilder.build());
+        matchEntryBuilder.setOxmMatchField(MplsLabel.class);
+        fieldClassesAndAugmentations.add(matchEntryBuilder.build());
+
+        MplsTcBuilder mplsTcBuilder = new MplsTcBuilder();
+        mplsTcBuilder.setTc((short) 0);
+        MplsTcCaseBuilder mplsTcCaseBuilder = new MplsTcCaseBuilder();
+        mplsTcCaseBuilder.setMplsTc(mplsTcBuilder.build());
+        matchEntryBuilder.setMatchEntryValue(mplsTcCaseBuilder.build());
+        matchEntryBuilder.setOxmMatchField(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MplsTc.class);
+        fieldClassesAndAugmentations.add(matchEntryBuilder.build());
+
+        MplsBosBuilder mplsBosBuilder = new MplsBosBuilder();
+        mplsBosBuilder.setBos(false);
+        MplsBosCaseBuilder mplsBosCaseBuilder = new MplsBosCaseBuilder();
+        mplsBosCaseBuilder.setMplsBos(mplsBosBuilder.build());
+        matchEntryBuilder.setMatchEntryValue(mplsBosCaseBuilder.build());
+        matchEntryBuilder.setOxmMatchField(MplsBos.class);
+        fieldClassesAndAugmentations.add(matchEntryBuilder.build());
+
+        PbbIsidBuilder pbbIsidBuilder = new PbbIsidBuilder();
+        pbbIsidBuilder.setIsid((long) 42);
+        PbbIsidCaseBuilder pbbIsidCaseBuilder = new PbbIsidCaseBuilder();
+        pbbIsidCaseBuilder.setPbbIsid(pbbIsidBuilder.build());
+        matchEntryBuilder.setMatchEntryValue(pbbIsidCaseBuilder.build());
+        matchEntryBuilder.setOxmMatchField(PbbIsid.class);
+        fieldClassesAndAugmentations.add(matchEntryBuilder.build());
+
+        TunnelIdBuilder tunnelIdBuilder = new TunnelIdBuilder();
+        tunnelIdBuilder.setMask(new byte[0]);
+        tunnelIdBuilder.setTunnelId(new byte[42]);
+        TunnelIdCaseBuilder tunnelIdCaseBuilder = new TunnelIdCaseBuilder();
+        tunnelIdCaseBuilder.setTunnelId(tunnelIdBuilder.build());
+        matchEntryBuilder.setMatchEntryValue(tunnelIdCaseBuilder.build());
+        matchEntryBuilder.setOxmMatchField(TunnelId.class);
+        fieldClassesAndAugmentations.add(matchEntryBuilder.build());
+
+        ArpTpaBuilder arpTpaBuilder = new ArpTpaBuilder();
+        arpTpaBuilder.setIpv4Address(IPV_4_ADDRESS);
+        arpTpaBuilder.setMask(new byte[0]);
+        ArpTpaCaseBuilder arpTpaCaseBuilder = new ArpTpaCaseBuilder();
+        arpTpaCaseBuilder.setArpTpa(arpTpaBuilder.build());
+        matchEntryBuilder.setMatchEntryValue(arpTpaCaseBuilder.build());
+        matchEntryBuilder.setOxmMatchField(ArpTpa.class);
+        fieldClassesAndAugmentations.add(matchEntryBuilder.build());
+
+        ArpSpaBuilder arpSpaBuilder = new ArpSpaBuilder();
+        arpSpaBuilder.setMask(new byte[0]);
+        arpSpaBuilder.setIpv4Address(IPV_4_ADDRESS);
+        ArpSpaCaseBuilder arpSpaCaseBuilder = new ArpSpaCaseBuilder();
+        arpSpaCaseBuilder.setArpSpa(arpSpaBuilder.build());
+        matchEntryBuilder.setMatchEntryValue(arpSpaCaseBuilder.build());
+        matchEntryBuilder.setOxmMatchField(ArpSpa.class);
+        fieldClassesAndAugmentations.add(matchEntryBuilder.build());
+
+        Ipv4SrcBuilder ipv4SrcBuilder = new Ipv4SrcBuilder();
+        ipv4SrcBuilder.setIpv4Address(IPV_4_ADDRESS);
+        ipv4SrcBuilder.setMask(IPV_4_ADDRESS_MASK);
+        Ipv4SrcCaseBuilder ipv4SrcCaseBuilder = new Ipv4SrcCaseBuilder();
+        ipv4SrcCaseBuilder.setIpv4Src(ipv4SrcBuilder.build());
+        matchEntryBuilder.setMatchEntryValue(ipv4SrcCaseBuilder.build());
+        matchEntryBuilder.setOxmMatchField(Ipv4Src.class);
+        fieldClassesAndAugmentations.add(matchEntryBuilder.build());
+
+        Ipv4DstBuilder ipv4DstBuilder = new Ipv4DstBuilder();
+        ipv4DstBuilder.setIpv4Address(IPV_4_ADDRESS);
+        ipv4DstBuilder.setMask(IPV_4_ADDRESS_MASK);
+        Ipv4DstCaseBuilder ipv4DstCaseBuilder = new Ipv4DstCaseBuilder();
+        ipv4DstCaseBuilder.setIpv4Dst(ipv4DstBuilder.build());
+        matchEntryBuilder.setMatchEntryValue(ipv4DstCaseBuilder.build());
+        matchEntryBuilder.setOxmMatchField(Ipv4Dst.class);
+        fieldClassesAndAugmentations.add(matchEntryBuilder.build());
 
 
-        MacAddressMatchEntryBuilder macAddressMatchEntryBuilder = new MacAddressMatchEntryBuilder();
-        macAddressMatchEntryBuilder.setMacAddress(MAC_ADDRESS);
-        fieldClassesAndAugmentations.put(ArpSha.class, macAddressMatchEntryBuilder.build());
-        fieldClassesAndAugmentations.put(ArpTha.class, macAddressMatchEntryBuilder.build());
-        fieldClassesAndAugmentations.put(EthDst.class, macAddressMatchEntryBuilder.build());
-        fieldClassesAndAugmentations.put(EthSrc.class, macAddressMatchEntryBuilder.build());
+        Ipv6SrcBuilder ipv6SrcBuilder = new Ipv6SrcBuilder();
+        ipv6SrcBuilder.setIpv6Address(IPV_6_ADDRESS);
+        ipv6SrcBuilder.setMask(IPV_6_ADDRESS_MASK);
+        Ipv6SrcCaseBuilder ipv6SrcCaseBuilder = new Ipv6SrcCaseBuilder();
+        ipv6SrcCaseBuilder.setIpv6Src(ipv6SrcBuilder.build());
+        matchEntryBuilder.setMatchEntryValue(ipv6SrcCaseBuilder.build());
+        matchEntryBuilder.setOxmMatchField(Ipv6Src.class);
+        fieldClassesAndAugmentations.add(matchEntryBuilder.build());
 
-
-        Ipv6FlabelMatchEntryBuilder ipv6FlabelMatchEntryBuilder = new Ipv6FlabelMatchEntryBuilder();
-        ipv6FlabelMatchEntryBuilder.setIpv6Flabel(new Ipv6FlowLabel((long) 42));
-        fieldClassesAndAugmentations.put(Ipv6Flabel.class, ipv6FlabelMatchEntryBuilder.build());
-
-        Ipv6AddressMatchEntryBuilder ipv6AddressMatchEntryBuilder = new Ipv6AddressMatchEntryBuilder();
-        ipv6AddressMatchEntryBuilder.setIpv6Address(new Ipv6Address("2001:0DB8:AC10:FE01:0000:0000:0000:0000"));
-        fieldClassesAndAugmentations.put(Ipv6NdTarget.class, ipv6AddressMatchEntryBuilder.build());
-
-        fieldClassesAndAugmentations.put(Ipv6NdSll.class, macAddressMatchEntryBuilder.build());
-        fieldClassesAndAugmentations.put(Ipv6NdTll.class, macAddressMatchEntryBuilder.build());
-        fieldClassesAndAugmentations.put(Ipv6Exthdr.class, macAddressMatchEntryBuilder.build());
-
-        PseudoFieldMatchEntryBuilder pseudoFieldMatchEntryBuilder = new PseudoFieldMatchEntryBuilder();
-        pseudoFieldMatchEntryBuilder.setPseudoField(new Ipv6ExthdrFlags(true, true, true, true, true, true, true, true, true));
-        fieldClassesAndAugmentations.put(Ipv6Exthdr.class, pseudoFieldMatchEntryBuilder.build());
-
-        MplsLabelMatchEntryBuilder mplsLabelMatchEntryBuilder = new MplsLabelMatchEntryBuilder();
-        mplsLabelMatchEntryBuilder.setMplsLabel((long) 42);
-        fieldClassesAndAugmentations.put(MplsLabel.class, mplsLabelMatchEntryBuilder.build());
-
-        TcMatchEntryBuilder tcMatchEntryBuilder = new TcMatchEntryBuilder();
-        tcMatchEntryBuilder.setTc((short) 0);
-        fieldClassesAndAugmentations.put(MplsTc.class, tcMatchEntryBuilder.build());
-
-        BosMatchEntryBuilder bosMatchEntryBuilder = new BosMatchEntryBuilder();
-        bosMatchEntryBuilder.setBos(false);
-        fieldClassesAndAugmentations.put(MplsBos.class, bosMatchEntryBuilder.build());
-
-        IsidMatchEntryBuilder isidMatchEntryBuilder = new IsidMatchEntryBuilder();
-        isidMatchEntryBuilder.setIsid((long) 42);
-        fieldClassesAndAugmentations.put(PbbIsid.class, isidMatchEntryBuilder.build());
-
-        fieldClassesAndAugmentations.put(TunnelId.class, metadataMatchEntryBuilder.build());
-
-        Ipv4AddressMatchEntryBuilder ipv4AddressMatchEntryBuilder = new Ipv4AddressMatchEntryBuilder();
-        ipv4AddressMatchEntryBuilder.setIpv4Address(new Ipv4Address("10.0.0.1"));
-        fieldClassesAndAugmentations.put(ArpTpa.class, ipv4AddressMatchEntryBuilder.build());
-        fieldClassesAndAugmentations.put(ArpSpa.class, ipv4AddressMatchEntryBuilder.build());
-
-        fieldClassesAndAugmentations.put(Ipv4Src.class, ipv4AddressMatchEntryBuilder.build());
-        fieldClassesAndAugmentations.put(Ipv4Dst.class, ipv4AddressMatchEntryBuilder.build());
-
-
-        fieldClassesAndAugmentations.put(TunnelIpv4Src.class, ipv4AddressMatchEntryBuilder.build());
-        fieldClassesAndAugmentations.put(TunnelIpv4Dst.class, ipv4AddressMatchEntryBuilder.build());
-        fieldClassesAndAugmentations.put(Ipv6Src.class, ipv6AddressMatchEntryBuilder.build());
-        fieldClassesAndAugmentations.put(Ipv6Dst.class, ipv6AddressMatchEntryBuilder.build());
+        Ipv6DstBuilder ipv6DstBuilder = new Ipv6DstBuilder();
+        ipv6DstBuilder.setIpv6Address(IPV_6_ADDRESS);
+        ipv6DstBuilder.setMask(IPV_6_ADDRESS_MASK);
+        Ipv6DstCaseBuilder ipv6DstCaseBuilder = new Ipv6DstCaseBuilder();
+        ipv6DstCaseBuilder.setIpv6Dst(ipv6DstBuilder.build());
+        matchEntryBuilder.setMatchEntryValue(ipv6DstCaseBuilder.build());
+        matchEntryBuilder.setOxmMatchField(Ipv6Dst.class);
+        fieldClassesAndAugmentations.add(matchEntryBuilder.build());
     }
 
 
@@ -300,18 +558,8 @@ public class FlowRemovedTranslatorTest extends FlowRemovedTranslator {
     @Test
     public void testFromMatch() throws Exception {
         setupClassAndAugmentationMap();
-        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.match.grouping.MatchBuilder matchBuilder = new MatchBuilder();
-        List<MatchEntries> matchEntrieses = new ArrayList<>();
-        for (Map.Entry entry : fieldClassesAndAugmentations.entrySet()) {
-            MatchEntriesBuilder matchEntriesBuilder = new MatchEntriesBuilder();
-            matchEntriesBuilder.setOxmMatchField((Class<? extends MatchField>) entry.getKey());
-            if (entry.getValue() != null) {
-                matchEntriesBuilder.addAugmentation((Class<? extends Augmentation<MatchEntries>>) entry.getValue().getClass().getInterfaces()[0], (Augmentation<MatchEntries>) entry.getValue());
-            }
-            matchEntriesBuilder.setHasMask(false);
-            matchEntrieses.add(matchEntriesBuilder.build());
-        }
-        matchBuilder.setMatchEntries(matchEntrieses);
+        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.MatchBuilder matchBuilder = new MatchBuilder();
+        matchBuilder.setMatchEntry(fieldClassesAndAugmentations);
         Match match = flowRemovedTranslator.fromMatch(matchBuilder.build(), DATA_PATH_ID, OpenflowVersion.OF13);
         assertNotNull(match);
         assertEthernetMatch(match.getEthernetMatch());
@@ -370,34 +618,6 @@ public class FlowRemovedTranslatorTest extends FlowRemovedTranslator {
         assertEquals(MAC_ADDRESS, ethernetMatch.getEthernetDestination().getAddress());
         assertEquals(MAC_ADDRESS, ethernetMatch.getEthernetSource().getAddress());
         assertEquals(new Long(6), ethernetMatch.getEthernetType().getType().getValue());
-    }
-
-    @Test
-    public void MatchEntryToIpv4PrefixTest() {
-        Ipv4AddressMatchEntry ipv4AddressMatchEntry = new Ipv4AddressMatchEntryBuilder()
-                .setIpv4Address(new Ipv4Address("10.0.0.0")).build();
-        byte[] maskBytes = new byte[1];
-        maskBytes[0] = (byte) 255;
-        MaskMatchEntry maskMatchEntry = new MaskMatchEntryBuilder().setMask(maskBytes).build();
-        MatchEntries entry = new MatchEntriesBuilder().setOxmMatchField(Ipv4Src.class)
-                .addAugmentation(Ipv4AddressMatchEntry.class, ipv4AddressMatchEntry)
-                .addAugmentation(MaskMatchEntry.class, maskMatchEntry).setHasMask(true).build();
-        Ipv4Prefix ipv4Prefix = toIpv4Prefix(entry);
-        assertEquals("10.0.0.0/8", ipv4Prefix.getValue());
-    }
-
-    @Test
-    public void MatchEntryToIpv6PrefixTest() {
-        Ipv6AddressMatchEntry ipv6AddressMatchEntry = new Ipv6AddressMatchEntryBuilder()
-                .setIpv6Address(new Ipv6Address("1234:5678:9ABC:DEF0:FDCD:A987:6543:0")).build();
-        byte[] maskBytes = new byte[1];
-        maskBytes[0] = (byte) 255;
-        MaskMatchEntry maskMatchEntry = new MaskMatchEntryBuilder().setMask(maskBytes).build();
-        MatchEntries entry = new MatchEntriesBuilder().setOxmMatchField(Ipv6Src.class)
-                .addAugmentation(Ipv6AddressMatchEntry.class, ipv6AddressMatchEntry)
-                .addAugmentation(MaskMatchEntry.class, maskMatchEntry).setHasMask(true).build();
-        Ipv6Prefix ipv6Prefix = toIpv6Prefix(entry);
-        assertEquals("1234:5678:9ABC:DEF0:FDCD:A987:6543:0/8", ipv6Prefix.getValue());
     }
 
 }

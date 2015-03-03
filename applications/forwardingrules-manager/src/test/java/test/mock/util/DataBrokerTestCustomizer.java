@@ -78,7 +78,6 @@ public class DataBrokerTestCustomizer {
         return new ForwardedBindingDataBroker(getDOMDataBroker(), bindingToNormalized, schemaService );
     }
 
-
     private SchemaService getSchemaService() {
         return schemaService;
     }

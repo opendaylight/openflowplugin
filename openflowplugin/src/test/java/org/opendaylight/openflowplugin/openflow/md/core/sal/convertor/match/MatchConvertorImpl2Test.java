@@ -8,9 +8,6 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 
-import java.math.BigInteger;
-import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -51,81 +48,98 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.UdpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.protocol.match.fields.PbbBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanIdBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.BosMatchEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.DscpMatchEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.EcnMatchEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.EthTypeMatchEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.Icmpv4CodeMatchEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.Icmpv4TypeMatchEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.Icmpv6CodeMatchEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.Icmpv6TypeMatchEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.Ipv4AddressMatchEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.Ipv6AddressMatchEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.Ipv6FlabelMatchEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.IsidMatchEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.MacAddressMatchEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.MaskMatchEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.MetadataMatchEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.MplsLabelMatchEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.OpCodeMatchEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.PortMatchEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.PortNumberMatchEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.ProtocolNumberMatchEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.PseudoFieldMatchEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.TcMatchEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.VlanPcpMatchEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.VlanVidMatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Ipv6ExthdrFlags;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.ArpOp;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.ArpSha;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.ArpSpa;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.ArpTha;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.ArpTpa;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.EthDst;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.EthSrc;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.EthType;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Icmpv4Code;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Icmpv4Type;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Icmpv6Code;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Icmpv6Type;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.InPhyPort;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.InPort;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.IpDscp;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.IpEcn;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.IpProto;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Ipv4Dst;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Ipv4Src;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Ipv6Dst;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Ipv6Exthdr;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Ipv6Flabel;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Ipv6NdSll;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Ipv6NdTarget;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Ipv6NdTll;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Ipv6Src;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.MatchField;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Metadata;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.MplsBos;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.MplsLabel;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.MplsTc;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.OpenflowBasicClass;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.PbbIsid;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.SctpDst;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.SctpSrc;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TcpDst;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TcpSrc;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TunnelId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.UdpDst;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.UdpSrc;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.VlanVid;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.grouping.MatchEntries;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.ArpOp;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.ArpSha;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.ArpSpa;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.ArpTha;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.ArpTpa;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.EthDst;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.EthSrc;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.EthType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Icmpv4Code;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Icmpv4Type;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Icmpv6Code;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Icmpv6Type;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.InPhyPort;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.InPort;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.IpDscp;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.IpEcn;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.IpProto;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Ipv4Dst;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Ipv4Src;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Ipv6Dst;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Ipv6Exthdr;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Ipv6Flabel;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Ipv6NdSll;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Ipv6NdTarget;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Ipv6NdTll;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Ipv6Src;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Metadata;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MplsBos;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MplsLabel;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MplsTc;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OpenflowBasicClass;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.PbbIsid;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.SctpDst;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.SctpSrc;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.TcpDst;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.TcpSrc;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.TunnelId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.UdpDst;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.UdpSrc;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.VlanVid;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.ArpOpCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.ArpShaCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.ArpSpaCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.ArpThaCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.ArpTpaCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.EthDstCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.EthSrcCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.EthTypeCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.Icmpv4CodeCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.Icmpv4TypeCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.Icmpv6CodeCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.Icmpv6TypeCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.InPhyPortCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.InPortCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.IpDscpCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.IpEcnCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.IpProtoCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.Ipv4DstCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.Ipv4SrcCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.Ipv6DstCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.Ipv6ExthdrCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.Ipv6FlabelCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.Ipv6NdSllCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.Ipv6NdTargetCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.Ipv6NdTllCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.Ipv6SrcCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.MetadataCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.MplsBosCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.MplsLabelCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.MplsTcCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.PbbIsidCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.SctpDstCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.SctpSrcCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.TcpDstCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.TcpSrcCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.TunnelIdCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.UdpDstCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.UdpSrcCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.VlanPcpCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.VlanVidCase;
+import java.math.BigInteger;
+import java.util.List;
 
 /**
  * @author michal.polkorab
- *
  */
 public class MatchConvertorImpl2Test {
 
-    MatchConvertorImpl convertor = new MatchConvertorImpl();
+    private static final MatchConvertorImpl convertor = new MatchConvertorImpl();
 
     /**
      * Initializes OpenflowPortsUtil
@@ -136,14 +150,14 @@ public class MatchConvertorImpl2Test {
     }
 
     /**
-     * Test {@link MatchConvertorImpl#convert(Match, BigInteger)
+     * Test {@link MatchConvertorImpl#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match, java.math.BigInteger)}
      */
     @Test
     public void testEmptyAndNullInput() {
         MatchBuilder builder = new MatchBuilder();
         Match match = builder.build();
 
-        List<MatchEntries> entries = convertor.convert(null, new BigInteger("42"));
+        List<MatchEntry> entries = convertor.convert(null, new BigInteger("42"));
         Assert.assertEquals("Wrong entries size", 0, entries.size());
 
         entries = convertor.convert(match, new BigInteger("42"));
@@ -151,7 +165,7 @@ public class MatchConvertorImpl2Test {
     }
 
     /**
-     * Test {@link MatchConvertorImpl#convert(Match, BigInteger)
+     * Test {@link MatchConvertorImpl#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match, java.math.BigInteger)}
      */
     @Test
     public void testConversion() {
@@ -213,115 +227,117 @@ public class MatchConvertorImpl2Test {
         builder.setLayer3Match(ipv4MatchBuilder.build());
         Match match = builder.build();
 
-        List<MatchEntries> entries = convertor.convert(match, new BigInteger("42"));
+        List<MatchEntry> entries = convertor.convert(match, new BigInteger("42"));
         Assert.assertEquals("Wrong entries size", 24, entries.size());
-        MatchEntries entry = entries.get(0);
+        MatchEntry entry = entries.get(0);
         checkEntryHeader(entry, InPort.class, false);
-        Assert.assertEquals("Wrong in port", 1, entry.getAugmentation(PortNumberMatchEntry.class)
+        Assert.assertEquals("Wrong in port", 1, ((InPortCase) entry.getMatchEntryValue()).getInPort()
                 .getPortNumber().getValue().intValue());
+
         entry = entries.get(1);
         checkEntryHeader(entry, InPhyPort.class, false);
-        Assert.assertEquals("Wrong in phy port", 2, entry.getAugmentation(PortNumberMatchEntry.class)
-                .getPortNumber().getValue().intValue());
+        Assert.assertEquals("Wrong in phy port", 2, ((InPhyPortCase) entry.getMatchEntryValue()).
+                        getInPhyPort().getPortNumber().getValue().intValue());
+
         entry = entries.get(2);
         checkEntryHeader(entry, Metadata.class, false);
         Assert.assertArrayEquals("Wrong metadata", new byte[]{0, 0, 0, 0, 0, 0, 0, 3},
-                entry.getAugmentation(MetadataMatchEntry.class).getMetadata());
+                ((MetadataCase) entry.getMatchEntryValue()).getMetadata().getMetadata());
         entry = entries.get(3);
         checkEntryHeader(entry, EthDst.class, false);
         Assert.assertEquals("Wrong eth dst", new MacAddress("00:00:00:00:00:06"),
-                entry.getAugmentation(MacAddressMatchEntry.class).getMacAddress());
+                ((EthDstCase) entry.getMatchEntryValue()).getEthDst().getMacAddress());
         entry = entries.get(4);
         checkEntryHeader(entry, EthSrc.class, false);
         Assert.assertEquals("Wrong eth src", new MacAddress("00:00:00:00:00:05"),
-                entry.getAugmentation(MacAddressMatchEntry.class).getMacAddress());
+                ((EthSrcCase) entry.getMatchEntryValue()).getEthSrc().getMacAddress());
         entry = entries.get(5);
         checkEntryHeader(entry, EthType.class, false);
-        Assert.assertEquals("Wrong eth type", 4, entry.getAugmentation(EthTypeMatchEntry.class)
-                .getEthType().getValue().intValue());
+        Assert.assertEquals("Wrong eth type", 4, ((EthTypeCase) entry.getMatchEntryValue())
+                .getEthType().getEthType().getValue().intValue());
         entry = entries.get(6);
         checkEntryHeader(entry, VlanVid.class, false);
-        Assert.assertEquals("Wrong vlan id", 7, entry.getAugmentation(VlanVidMatchEntry.class)
-                .getVlanVid().intValue());
-        Assert.assertEquals("Wrong cfi bit", true, entry.getAugmentation(VlanVidMatchEntry.class)
-                .isCfiBit());
+        Assert.assertEquals("Wrong vlan id", 7, ((VlanVidCase) entry.getMatchEntryValue())
+                .getVlanVid().getVlanVid().intValue());
+        Assert.assertEquals("Wrong cfi bit", true, ((VlanVidCase) entry.getMatchEntryValue())
+                .getVlanVid().isCfiBit());
         entry = entries.get(7);
-        checkEntryHeader(entry, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.VlanPcp.class, false);
-        Assert.assertEquals("Wrong vlan pcp", 7, entry.getAugmentation(VlanPcpMatchEntry.class)
-                .getVlanPcp().intValue());
+        checkEntryHeader(entry, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.VlanPcp.class, false);
+        Assert.assertEquals("Wrong vlan pcp", 7, ((VlanPcpCase) entry.getMatchEntryValue())
+                .getVlanPcp().getVlanPcp().intValue());
         entry = entries.get(8);
         checkEntryHeader(entry, IpDscp.class, false);
-        Assert.assertEquals("Wrong ip dscp", 8, entry.getAugmentation(DscpMatchEntry.class)
-                .getDscp().getValue().intValue());
+        Assert.assertEquals("Wrong ip dscp", 8, ((IpDscpCase) entry.getMatchEntryValue())
+                .getIpDscp().getDscp().getValue().intValue());
         entry = entries.get(9);
         checkEntryHeader(entry, IpEcn.class, false);
-        Assert.assertEquals("Wrong ip ecn", 9, entry.getAugmentation(EcnMatchEntry.class)
-                .getEcn().intValue());
+        Assert.assertEquals("Wrong ip ecn", 9, ((IpEcnCase) entry.getMatchEntryValue())
+                .getIpEcn().getEcn().intValue());
         entry = entries.get(10);
         checkEntryHeader(entry, IpProto.class, false);
-        Assert.assertEquals("Wrong ip proto", 10, entry.getAugmentation(ProtocolNumberMatchEntry.class)
-                .getProtocolNumber().intValue());
+        Assert.assertEquals("Wrong ip proto", 10, ((IpProtoCase) entry.getMatchEntryValue())
+                .getIpProto().getProtocolNumber().intValue());
         entry = entries.get(11);
         checkEntryHeader(entry, TcpSrc.class, false);
-        Assert.assertEquals("Wrong tcp src", 11, entry.getAugmentation(PortMatchEntry.class)
-                .getPort().getValue().intValue());
+        Assert.assertEquals("Wrong tcp src", 11, ((TcpSrcCase) entry.getMatchEntryValue())
+                .getTcpSrc().getPort().getValue().intValue());
         entry = entries.get(12);
         checkEntryHeader(entry, TcpDst.class, false);
-        Assert.assertEquals("Wrong tcp dst", 12, entry.getAugmentation(PortMatchEntry.class)
-                .getPort().getValue().intValue());
+        Assert.assertEquals("Wrong tcp dst", 12, ((TcpDstCase) entry.getMatchEntryValue())
+                .getTcpDst().getPort().getValue().intValue());
         entry = entries.get(13);
         checkEntryHeader(entry, Icmpv4Type.class, false);
-        Assert.assertEquals("Wrong icmpv4 type", 13, entry.getAugmentation(Icmpv4TypeMatchEntry.class)
-                .getIcmpv4Type().intValue());
+        Assert.assertEquals("Wrong icmpv4 type", 13, ((Icmpv4TypeCase) entry.getMatchEntryValue())
+                .getIcmpv4Type().getIcmpv4Type().intValue());
         entry = entries.get(14);
         checkEntryHeader(entry, Icmpv4Code.class, false);
-        Assert.assertEquals("Wrong icmpv4 code", 14, entry.getAugmentation(Icmpv4CodeMatchEntry.class)
-                .getIcmpv4Code().intValue());
+        Assert.assertEquals("Wrong icmpv4 code", 14, ((Icmpv4CodeCase) entry.getMatchEntryValue())
+                .getIcmpv4Code().getIcmpv4Code().intValue());
         entry = entries.get(15);
         checkEntryHeader(entry, Icmpv6Type.class, false);
-        Assert.assertEquals("Wrong icmpv6 type", 15, entry.getAugmentation(Icmpv6TypeMatchEntry.class)
-                .getIcmpv6Type().intValue());
+        Assert.assertEquals("Wrong icmpv6 type", 15, ((Icmpv6TypeCase) entry.getMatchEntryValue())
+                .getIcmpv6Type().getIcmpv6Type().intValue());
         entry = entries.get(16);
         checkEntryHeader(entry, Icmpv6Code.class, false);
-        Assert.assertEquals("Wrong icmpv6 code", 16, entry.getAugmentation(Icmpv6CodeMatchEntry.class)
-                .getIcmpv6Code().intValue());
+        Assert.assertEquals("Wrong icmpv6 code", 16, ((Icmpv6CodeCase) entry.getMatchEntryValue())
+                .getIcmpv6Code().getIcmpv6Code().intValue());
         entry = entries.get(17);
         checkEntryHeader(entry, Ipv4Src.class, false);
-        Assert.assertEquals("Wrong ipv4 src", "10.0.0.1", entry.getAugmentation(Ipv4AddressMatchEntry.class)
-                .getIpv4Address().getValue());
+        Assert.assertEquals("Wrong ipv4 src", "10.0.0.1", ((Ipv4SrcCase) entry.getMatchEntryValue())
+                .getIpv4Src().getIpv4Address().getValue());
         entry = entries.get(18);
         checkEntryHeader(entry, Ipv4Dst.class, false);
-        Assert.assertEquals("Wrong ipv4 dst", "10.0.0.2", entry.getAugmentation(Ipv4AddressMatchEntry.class)
-                .getIpv4Address().getValue());
+        Assert.assertEquals("Wrong ipv4 dst", "10.0.0.2", ((Ipv4DstCase) entry.getMatchEntryValue())
+                .getIpv4Dst().getIpv4Address().getValue());
         entry = entries.get(19);
         checkEntryHeader(entry, MplsLabel.class, false);
-        Assert.assertEquals("Wrong mpls label", 17, entry.getAugmentation(MplsLabelMatchEntry.class)
-                .getMplsLabel().intValue());
+        Assert.assertEquals("Wrong mpls label", 17, ((MplsLabelCase) entry.getMatchEntryValue())
+                .getMplsLabel().getMplsLabel().intValue());
         entry = entries.get(20);
         checkEntryHeader(entry, MplsBos.class, false);
-        Assert.assertEquals("Wrong mpls bos", true, entry.getAugmentation(BosMatchEntry.class).isBos());
+        Assert.assertEquals("Wrong mpls bos", true, ((MplsBosCase) entry.getMatchEntryValue()).getMplsBos().isBos());
         entry = entries.get(21);
         checkEntryHeader(entry, MplsTc.class, false);
-        Assert.assertEquals("Wrong mpls tc", 18, entry.getAugmentation(TcMatchEntry.class)
-                .getTc().intValue());
+        Assert.assertEquals("Wrong mpls tc", 18, ((MplsTcCase) entry.getMatchEntryValue())
+                .getMplsTc().getTc().intValue());
         entry = entries.get(22);
         checkEntryHeader(entry, PbbIsid.class, false);
-        Assert.assertEquals("Wrong pbb isid", 20, entry.getAugmentation(IsidMatchEntry.class)
-                .getIsid().intValue());
+        Assert.assertEquals("Wrong pbb isid", 20, ((PbbIsidCase) entry.getMatchEntryValue())
+                .getPbbIsid().getIsid().intValue());
         entry = entries.get(23);
         checkEntryHeader(entry, TunnelId.class, false);
         Assert.assertArrayEquals("Wrong tunnel id", new byte[]{0, 0, 0, 0, 0, 0, 0, 21},
-                entry.getAugmentation(MetadataMatchEntry.class).getMetadata());
+                ((TunnelIdCase) entry.getMatchEntryValue()).getTunnelId().getTunnelId());
     }
 
-    private static void checkEntryHeader(MatchEntries entry, Class<? extends MatchField> field, boolean hasMask) {
+    private static void checkEntryHeader(MatchEntry entry, Class<? extends MatchField> field, boolean hasMask) {
         Assert.assertEquals("Wrong oxm class", OpenflowBasicClass.class, entry.getOxmClass());
         Assert.assertEquals("Wrong oxm field", field, entry.getOxmMatchField());
         Assert.assertEquals("Wrong hasMask", hasMask, entry.isHasMask());
     }
 
     /**
-     * Test {@link MatchConvertorImpl#convert(Match, BigInteger)
+     * Test {@link MatchConvertorImpl#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match, java.math.BigInteger)}
      */
     @Test
     public void testUdpMatchConversion() {
@@ -332,20 +348,20 @@ public class MatchConvertorImpl2Test {
         builder.setLayer4Match(udpMatchBuilder.build());
         Match match = builder.build();
 
-        List<MatchEntries> entries = convertor.convert(match, new BigInteger("42"));
+        List<MatchEntry> entries = convertor.convert(match, new BigInteger("42"));
         Assert.assertEquals("Wrong entries size", 2, entries.size());
-        MatchEntries entry = entries.get(0);
+        MatchEntry entry = entries.get(0);
         checkEntryHeader(entry, UdpSrc.class, false);
-        Assert.assertEquals("Wrong udp src", 11, entry.getAugmentation(PortMatchEntry.class)
+        Assert.assertEquals("Wrong udp src", 11, ((UdpSrcCase) entry.getMatchEntryValue()).getUdpSrc()
                 .getPort().getValue().intValue());
         entry = entries.get(1);
         checkEntryHeader(entry, UdpDst.class, false);
-        Assert.assertEquals("Wrong udp dst", 12, entry.getAugmentation(PortMatchEntry.class)
-                .getPort().getValue().intValue());
+        Assert.assertEquals("Wrong udp dst", 12, ((UdpDstCase) entry.getMatchEntryValue())
+                .getUdpDst().getPort().getValue().intValue());
     }
 
     /**
-     * Test {@link MatchConvertorImpl#convert(Match, BigInteger)
+     * Test {@link MatchConvertorImpl#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match, java.math.BigInteger)}
      */
     @Test
     public void testSctpMatchConversion() {
@@ -356,20 +372,20 @@ public class MatchConvertorImpl2Test {
         builder.setLayer4Match(sctpMatchBuilder.build());
         Match match = builder.build();
 
-        List<MatchEntries> entries = convertor.convert(match, new BigInteger("42"));
+        List<MatchEntry> entries = convertor.convert(match, new BigInteger("42"));
         Assert.assertEquals("Wrong entries size", 2, entries.size());
-        MatchEntries entry = entries.get(0);
+        MatchEntry entry = entries.get(0);
         checkEntryHeader(entry, SctpSrc.class, false);
-        Assert.assertEquals("Wrong sctp src", 11, entry.getAugmentation(PortMatchEntry.class)
+        Assert.assertEquals("Wrong sctp src", 11, ((SctpSrcCase) entry.getMatchEntryValue()).getSctpSrc()
                 .getPort().getValue().intValue());
         entry = entries.get(1);
         checkEntryHeader(entry, SctpDst.class, false);
-        Assert.assertEquals("Wrong sctp dst", 12, entry.getAugmentation(PortMatchEntry.class)
-                .getPort().getValue().intValue());
+        Assert.assertEquals("Wrong sctp dst", 12, ((SctpDstCase) entry.getMatchEntryValue())
+                .getSctpDst().getPort().getValue().intValue());
     }
 
     /**
-     * Test {@link MatchConvertorImpl#convert(Match, BigInteger)
+     * Test {@link MatchConvertorImpl#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match, java.math.BigInteger)}
      */
     @Test
     public void testArpMatchConversion() {
@@ -387,32 +403,32 @@ public class MatchConvertorImpl2Test {
         builder.setLayer3Match(arpBuilder.build());
         Match match = builder.build();
 
-        List<MatchEntries> entries = convertor.convert(match, new BigInteger("42"));
+        List<MatchEntry> entries = convertor.convert(match, new BigInteger("42"));
         Assert.assertEquals("Wrong entries size", 5, entries.size());
-        MatchEntries entry = entries.get(0);
+        MatchEntry entry = entries.get(0);
         checkEntryHeader(entry, ArpOp.class, false);
-        Assert.assertEquals("Wrong arp op", 5, entry.getAugmentation(OpCodeMatchEntry.class)
-                .getOpCode().intValue());
+        Assert.assertEquals("Wrong arp op", 5, ((ArpOpCase) entry.getMatchEntryValue())
+                .getArpOp().getOpCode().intValue());
         entry = entries.get(1);
         checkEntryHeader(entry, ArpSpa.class, false);
-        Assert.assertEquals("Wrong arp spa", "10.0.0.3", entry.getAugmentation(Ipv4AddressMatchEntry.class)
-                .getIpv4Address().getValue());
+        Assert.assertEquals("Wrong arp spa", "10.0.0.3", ((ArpSpaCase) entry.getMatchEntryValue())
+                .getArpSpa().getIpv4Address().getValue());
         entry = entries.get(2);
         checkEntryHeader(entry, ArpTpa.class, false);
-        Assert.assertEquals("Wrong arp tpa", "10.0.0.4", entry.getAugmentation(Ipv4AddressMatchEntry.class)
-                .getIpv4Address().getValue());
+        Assert.assertEquals("Wrong arp tpa", "10.0.0.4", ((ArpTpaCase) entry.getMatchEntryValue())
+                .getArpTpa().getIpv4Address().getValue());
         entry = entries.get(3);
         checkEntryHeader(entry, ArpSha.class, false);
-        Assert.assertEquals("Wrong arp sha", "00:00:00:00:00:05", entry.getAugmentation(MacAddressMatchEntry.class)
-                .getMacAddress().getValue());
+        Assert.assertEquals("Wrong arp sha", "00:00:00:00:00:05", ((ArpShaCase) entry.getMatchEntryValue())
+                .getArpSha().getMacAddress().getValue());
         entry = entries.get(4);
         checkEntryHeader(entry, ArpTha.class, false);
-        Assert.assertEquals("Wrong arp tha", "00:00:00:00:00:06", entry.getAugmentation(MacAddressMatchEntry.class)
-                .getMacAddress().getValue());
+        Assert.assertEquals("Wrong arp tha", "00:00:00:00:00:06", ((ArpThaCase) entry.getMatchEntryValue())
+                .getArpTha().getMacAddress().getValue());
     }
 
     /**
-     * Test {@link MatchConvertorImpl#convert(Match, BigInteger)
+     * Test {@link MatchConvertorImpl#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match, java.math.BigInteger)}
      */
     @Test
     public void testArpMatchConversionWithMasks() {
@@ -431,37 +447,37 @@ public class MatchConvertorImpl2Test {
         builder.setLayer3Match(arpBuilder.build());
         Match match = builder.build();
 
-        List<MatchEntries> entries = convertor.convert(match, new BigInteger("42"));
+        List<MatchEntry> entries = convertor.convert(match, new BigInteger("42"));
         Assert.assertEquals("Wrong entries size", 4, entries.size());
-        MatchEntries entry = entries.get(0);
+        MatchEntry entry = entries.get(0);
         entry = entries.get(0);
         checkEntryHeader(entry, ArpSpa.class, true);
-        Assert.assertEquals("Wrong arp spa", "10.0.0.3", entry.getAugmentation(Ipv4AddressMatchEntry.class)
-                .getIpv4Address().getValue());
+        Assert.assertEquals("Wrong arp spa", "10.0.0.3", ((ArpSpaCase) entry.getMatchEntryValue())
+                .getArpSpa().getIpv4Address().getValue());
         Assert.assertArrayEquals("Wrong arp spa mask", new byte[]{(byte) 255, 0, 0, 0},
-                entry.getAugmentation(MaskMatchEntry.class).getMask());
+                ((ArpSpaCase) entry.getMatchEntryValue()).getArpSpa().getMask());
         entry = entries.get(1);
         checkEntryHeader(entry, ArpTpa.class, true);
-        Assert.assertEquals("Wrong arp tpa", "10.0.0.4", entry.getAugmentation(Ipv4AddressMatchEntry.class)
+        Assert.assertEquals("Wrong arp tpa", "10.0.0.4", ((ArpTpaCase) entry.getMatchEntryValue()).getArpTpa()
                 .getIpv4Address().getValue());
         Assert.assertArrayEquals("Wrong arp tpa mask", new byte[]{(byte) 255, (byte) 255, (byte) 255, (byte) 254},
-                entry.getAugmentation(MaskMatchEntry.class).getMask());
+                ((ArpTpaCase) entry.getMatchEntryValue()).getArpTpa().getMask());
         entry = entries.get(2);
         checkEntryHeader(entry, ArpSha.class, true);
-        Assert.assertEquals("Wrong arp sha", "00:00:00:00:00:05", entry.getAugmentation(MacAddressMatchEntry.class)
-                .getMacAddress().getValue());
+        Assert.assertEquals("Wrong arp sha", "00:00:00:00:00:05", ((ArpShaCase) entry.getMatchEntryValue())
+                .getArpSha().getMacAddress().getValue());
         Assert.assertArrayEquals("Wrong arp sha mask", new byte[]{0, 0, 0, 0, 0, 8},
-                entry.getAugmentation(MaskMatchEntry.class).getMask());
+                ((ArpShaCase) entry.getMatchEntryValue()).getArpSha().getMask());
         entry = entries.get(3);
         checkEntryHeader(entry, ArpTha.class, true);
-        Assert.assertEquals("Wrong arp tha", "00:00:00:00:00:06", entry.getAugmentation(MacAddressMatchEntry.class)
+        Assert.assertEquals("Wrong arp tha", "00:00:00:00:00:06", ((ArpThaCase) entry.getMatchEntryValue()).getArpTha()
                 .getMacAddress().getValue());
         Assert.assertArrayEquals("Wrong arp tha mask", new byte[]{0, 0, 0, 0, 0, 9},
-                entry.getAugmentation(MaskMatchEntry.class).getMask());
+                ((ArpThaCase) entry.getMatchEntryValue()).getArpTha().getMask());
     }
 
     /**
-     * Test {@link MatchConvertorImpl#convert(Match, BigInteger)
+     * Test {@link MatchConvertorImpl#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match, java.math.BigInteger)}
      */
     @Test
     public void testIpv6MatchConversion() {
@@ -481,40 +497,40 @@ public class MatchConvertorImpl2Test {
         builder.setLayer3Match(ipv6Builder.build());
         Match match = builder.build();
 
-        List<MatchEntries> entries = convertor.convert(match, new BigInteger("42"));
+        List<MatchEntry> entries = convertor.convert(match, new BigInteger("42"));
         Assert.assertEquals("Wrong entries size", 7, entries.size());
-        MatchEntries entry = entries.get(0);
+        MatchEntry entry = entries.get(0);
         checkEntryHeader(entry, Ipv6Src.class, false);
         Assert.assertEquals("Wrong ipv6 src", "0000:0000:0000:0000:0000:0000:0000:0001",
-                entry.getAugmentation(Ipv6AddressMatchEntry.class).getIpv6Address().getValue());
+                ((Ipv6SrcCase) entry.getMatchEntryValue()).getIpv6Src().getIpv6Address().getValue());
         entry = entries.get(1);
         checkEntryHeader(entry, Ipv6Dst.class, false);
         Assert.assertEquals("Wrong ipv6 dst", "0000:0000:0000:0000:0000:0000:0000:0002",
-                entry.getAugmentation(Ipv6AddressMatchEntry.class).getIpv6Address().getValue());
+                ((Ipv6DstCase) entry.getMatchEntryValue()).getIpv6Dst().getIpv6Address().getValue());
         entry = entries.get(2);
         checkEntryHeader(entry, Ipv6Flabel.class, false);
         Assert.assertEquals("Wrong ipv6 flabel", 3,
-                entry.getAugmentation(Ipv6FlabelMatchEntry.class).getIpv6Flabel().getValue().intValue());
+                ((Ipv6FlabelCase) entry.getMatchEntryValue()).getIpv6Flabel().getIpv6Flabel().getValue().intValue());
         entry = entries.get(3);
         checkEntryHeader(entry, Ipv6NdTarget.class, false);
         Assert.assertEquals("Wrong ipv6 nd target", "0000:0000:0000:0000:0000:0000:0000:0004",
-                entry.getAugmentation(Ipv6AddressMatchEntry.class).getIpv6Address().getValue());
+                ((Ipv6NdTargetCase) entry.getMatchEntryValue()).getIpv6NdTarget().getIpv6Address().getValue());
         entry = entries.get(4);
         checkEntryHeader(entry, Ipv6NdSll.class, false);
         Assert.assertEquals("Wrong ipv6 nd sll", "00:00:00:00:00:05",
-                entry.getAugmentation(MacAddressMatchEntry.class).getMacAddress().getValue());
+                ((Ipv6NdSllCase) entry.getMatchEntryValue()).getIpv6NdSll().getMacAddress().getValue());
         entry = entries.get(5);
         checkEntryHeader(entry, Ipv6NdTll.class, false);
         Assert.assertEquals("Wrong ipv6 nd tll", "00:00:00:00:00:06",
-                entry.getAugmentation(MacAddressMatchEntry.class).getMacAddress().getValue());
+                ((Ipv6NdTllCase) entry.getMatchEntryValue()).getIpv6NdTll().getMacAddress().getValue());
         entry = entries.get(6);
         checkEntryHeader(entry, Ipv6Exthdr.class, false);
         Assert.assertEquals("Wrong ipv6 ext hdr", new Ipv6ExthdrFlags(false, true, false, true, false,
-                true, false, true, false), entry.getAugmentation(PseudoFieldMatchEntry.class).getPseudoField());
+                true, false, true, false), ((Ipv6ExthdrCase) entry.getMatchEntryValue()).getIpv6Exthdr().getPseudoField());
     }
 
     /**
-     * Test {@link MatchConvertorImpl#convert(Match, BigInteger)
+     * Test {@link MatchConvertorImpl#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match, java.math.BigInteger)}
      */
     @Test
     public void testIpv6MatchConversionWithMasks() {
@@ -525,25 +541,25 @@ public class MatchConvertorImpl2Test {
         builder.setLayer3Match(ipv6Builder.build());
         Match match = builder.build();
 
-        List<MatchEntries> entries = convertor.convert(match, new BigInteger("42"));
+        List<MatchEntry> entries = convertor.convert(match, new BigInteger("42"));
         Assert.assertEquals("Wrong entries size", 2, entries.size());
-        MatchEntries entry = entries.get(0);
+        MatchEntry entry = entries.get(0);
         checkEntryHeader(entry, Ipv6Src.class, true);
         Assert.assertEquals("Wrong ipv6 src", "0000:0000:0000:0000:0000:0000:0000:0001",
-                entry.getAugmentation(Ipv6AddressMatchEntry.class).getIpv6Address().getValue());
+                ((Ipv6SrcCase) entry.getMatchEntryValue()).getIpv6Src().getIpv6Address().getValue());
         Assert.assertArrayEquals("Wrong ipv6 src mask", new byte[]{(byte) 255, (byte) 255, (byte) 255, 0, 0, 0, 0,
-                0, 0, 0, 0, 0, 0, 0, 0, 0}, entry.getAugmentation(MaskMatchEntry.class).getMask());
+                0, 0, 0, 0, 0, 0, 0, 0, 0}, ((Ipv6SrcCase) entry.getMatchEntryValue()).getIpv6Src().getMask());
         entry = entries.get(1);
         checkEntryHeader(entry, Ipv6Dst.class, true);
         Assert.assertEquals("Wrong ipv6 dst", "0000:0000:0000:0000:0000:0000:0000:0002",
-                entry.getAugmentation(Ipv6AddressMatchEntry.class).getIpv6Address().getValue());
+                ((Ipv6DstCase) entry.getMatchEntryValue()).getIpv6Dst().getIpv6Address().getValue());
         Assert.assertArrayEquals("Wrong ipv6 src mask", new byte[]{(byte) 255, (byte) 255, (byte) 255, (byte) 255,
-                (byte) 255, (byte) 255, (byte) 255, (byte) 255, 0, 0, 0, 0, 0, 0, 0, 0},
-                entry.getAugmentation(MaskMatchEntry.class).getMask());
+                        (byte) 255, (byte) 255, (byte) 255, (byte) 255, 0, 0, 0, 0, 0, 0, 0, 0},
+                ((Ipv6DstCase) entry.getMatchEntryValue()).getIpv6Dst().getMask());
     }
 
     /**
-     * Test {@link MatchConvertorImpl#convert(Match, BigInteger)
+     * Test {@link MatchConvertorImpl#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match, java.math.BigInteger)}
      */
     @Test
     public void testIpv6ExtHeaderConversion() {
@@ -556,18 +572,18 @@ public class MatchConvertorImpl2Test {
         builder.setLayer3Match(ipv6Builder.build());
         Match match = builder.build();
 
-        List<MatchEntries> entries = convertor.convert(match, new BigInteger("42"));
+        List<MatchEntry> entries = convertor.convert(match, new BigInteger("42"));
         Assert.assertEquals("Wrong entries size", 1, entries.size());
-        MatchEntries entry = entries.get(0);
+        MatchEntry entry = entries.get(0);
         checkEntryHeader(entry, Ipv6Exthdr.class, true);
         Assert.assertEquals("Wrong ipv6 ext hdr", new Ipv6ExthdrFlags(true, false, true, false, true, false,
-                true, false, true), entry.getAugmentation(PseudoFieldMatchEntry.class).getPseudoField());
-        Assert.assertArrayEquals("Wrong ipv6 ext hdr mask", new byte[]{1, 2}, entry.getAugmentation(MaskMatchEntry.class)
-                .getMask());
+                true, false, true), ((Ipv6ExthdrCase) entry.getMatchEntryValue()).getIpv6Exthdr().getPseudoField());
+        Assert.assertArrayEquals("Wrong ipv6 ext hdr mask", new byte[]{1, 2},
+                ((Ipv6ExthdrCase) entry.getMatchEntryValue()).getIpv6Exthdr().getMask());
     }
 
     /**
-     * Test {@link MatchConvertorImpl#convert(Match, BigInteger)
+     * Test {@link MatchConvertorImpl#convert(org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match, java.math.BigInteger)}
      */
     @Test
     public void testConversionWithMasks() {
@@ -608,57 +624,57 @@ public class MatchConvertorImpl2Test {
         builder.setLayer3Match(ipv4MatchBuilder.build());
         Match match = builder.build();
 
-        List<MatchEntries> entries = convertor.convert(match, new BigInteger("42"));
+        List<MatchEntry> entries = convertor.convert(match, new BigInteger("42"));
         Assert.assertEquals("Wrong entries size", 8, entries.size());
-        MatchEntries entry = entries.get(0);
+        MatchEntry entry = entries.get(0);
         checkEntryHeader(entry, Metadata.class, true);
         Assert.assertArrayEquals("Wrong metadata", new byte[]{0, 0, 0, 0, 0, 0, 0, 3},
-                entry.getAugmentation(MetadataMatchEntry.class).getMetadata());
+                ((MetadataCase) entry.getMatchEntryValue()).getMetadata().getMetadata());
         Assert.assertArrayEquals("Wrong metadata mask", new byte[]{0, 0, 0, 0, 0, 0, 0, 15},
-                entry.getAugmentation(MaskMatchEntry.class).getMask());
+                ((MetadataCase) entry.getMatchEntryValue()).getMetadata().getMask());
         entry = entries.get(1);
         checkEntryHeader(entry, EthDst.class, true);
         Assert.assertEquals("Wrong eth dst", new MacAddress("00:00:00:00:00:06"),
-                entry.getAugmentation(MacAddressMatchEntry.class).getMacAddress());
+                ((EthDstCase) entry.getMatchEntryValue()).getEthDst().getMacAddress());
         Assert.assertArrayEquals("Wrong eth dst mask", new byte[]{0, 0, 0, 0, 0, 9},
-                entry.getAugmentation(MaskMatchEntry.class).getMask());
+                ((EthDstCase) entry.getMatchEntryValue()).getEthDst().getMask());
         entry = entries.get(2);
         checkEntryHeader(entry, EthSrc.class, true);
         Assert.assertEquals("Wrong eth src", new MacAddress("00:00:00:00:00:05"),
-                entry.getAugmentation(MacAddressMatchEntry.class).getMacAddress());
+                ((EthSrcCase) entry.getMatchEntryValue()).getEthSrc().getMacAddress());
         Assert.assertArrayEquals("Wrong eth src mask", new byte[]{0, 0, 0, 0, 0, 8},
-                entry.getAugmentation(MaskMatchEntry.class).getMask());
+                ((EthSrcCase) entry.getMatchEntryValue()).getEthSrc().getMask());
         entry = entries.get(3);
         checkEntryHeader(entry, VlanVid.class, true);
-        Assert.assertEquals("Wrong vlan id", 0, entry.getAugmentation(VlanVidMatchEntry.class)
+        Assert.assertEquals("Wrong vlan id", 0, ((VlanVidCase) entry.getMatchEntryValue()).getVlanVid()
                 .getVlanVid().intValue());
-        Assert.assertEquals("Wrong cfi bit", true, entry.getAugmentation(VlanVidMatchEntry.class)
+        Assert.assertEquals("Wrong cfi bit", true, ((VlanVidCase) entry.getMatchEntryValue()).getVlanVid()
                 .isCfiBit());
         Assert.assertArrayEquals("Wrong vlanId mask", new byte[]{16, 0},
-                entry.getAugmentation(MaskMatchEntry.class).getMask());
+                ((VlanVidCase) entry.getMatchEntryValue()).getVlanVid().getMask());
         entry = entries.get(4);
         checkEntryHeader(entry, Ipv4Src.class, true);
-        Assert.assertEquals("Wrong ipv4 src", "10.0.0.1", entry.getAugmentation(Ipv4AddressMatchEntry.class)
-                .getIpv4Address().getValue());
+        Assert.assertEquals("Wrong ipv4 src", "10.0.0.1", ((Ipv4SrcCase) entry.getMatchEntryValue())
+                .getIpv4Src().getIpv4Address().getValue());
         Assert.assertArrayEquals("Wrong ipv4 src mask", new byte[]{(byte) 255, (byte) 255, (byte) 255, 0},
-                entry.getAugmentation(MaskMatchEntry.class).getMask());
+                ((Ipv4SrcCase) entry.getMatchEntryValue()).getIpv4Src().getMask());
         entry = entries.get(5);
         checkEntryHeader(entry, Ipv4Dst.class, true);
-        Assert.assertEquals("Wrong ipv4 dst", "10.0.0.2", entry.getAugmentation(Ipv4AddressMatchEntry.class)
-                .getIpv4Address().getValue());
+        Assert.assertEquals("Wrong ipv4 dst", "10.0.0.2", ((Ipv4DstCase) entry.getMatchEntryValue())
+                .getIpv4Dst().getIpv4Address().getValue());
         Assert.assertArrayEquals("Wrong ipv4 dst mask", new byte[]{(byte) 255, 0, 0, 0},
-                entry.getAugmentation(MaskMatchEntry.class).getMask());
+                ((Ipv4DstCase) entry.getMatchEntryValue()).getIpv4Dst().getMask());
         entry = entries.get(6);
         checkEntryHeader(entry, PbbIsid.class, true);
-        Assert.assertEquals("Wrong pbb isid", 20, entry.getAugmentation(IsidMatchEntry.class)
-                .getIsid().intValue());
+        Assert.assertEquals("Wrong pbb isid", 20, ((PbbIsidCase) entry.getMatchEntryValue())
+                .getPbbIsid().getIsid().intValue());
         Assert.assertArrayEquals("Wrong pbb isid mask", new byte[]{0, 0, 8},
-                entry.getAugmentation(MaskMatchEntry.class).getMask());
+                ((PbbIsidCase) entry.getMatchEntryValue()).getPbbIsid().getMask());
         entry = entries.get(7);
         checkEntryHeader(entry, TunnelId.class, true);
         Assert.assertArrayEquals("Wrong tunnel id", new byte[]{0, 0, 0, 0, 0, 0, 0, 21},
-                entry.getAugmentation(MetadataMatchEntry.class).getMetadata());
+                ((TunnelIdCase) entry.getMatchEntryValue()).getTunnelId().getTunnelId());
         Assert.assertArrayEquals("Wrong tunnel id mask", new byte[]{0, 0, 0, 0, 0, 0, 0, 14},
-                entry.getAugmentation(MaskMatchEntry.class).getMask());
+                ((TunnelIdCase) entry.getMatchEntryValue()).getTunnelId().getMask());
     }
 }
