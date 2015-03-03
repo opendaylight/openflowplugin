@@ -8,10 +8,6 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
-import java.util.HashMap;
-
-import java.util.Map;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.TableFeaturePropType;
 import com.google.common.collect.Ordering;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.OrderComparator;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlInCase;
@@ -37,71 +33,69 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.WriteActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.WriteMetadataCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.ActionRelatedTableFeatureProperty;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.ActionRelatedTableFeaturePropertyBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.InstructionRelatedTableFeatureProperty;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.InstructionRelatedTableFeaturePropertyBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.NextTableRelatedTableFeatureProperty;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.NextTableRelatedTableFeaturePropertyBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.OxmRelatedTableFeatureProperty;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.OxmRelatedTableFeaturePropertyBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.table.features.properties.container.table.feature.properties.NextTableIds;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.table.features.properties.container.table.feature.properties.NextTableIdsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.ActionRelatedTableFeatureProperty;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.ActionRelatedTableFeaturePropertyBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.InstructionRelatedTableFeatureProperty;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.InstructionRelatedTableFeaturePropertyBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.NextTableRelatedTableFeatureProperty;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.NextTableRelatedTableFeaturePropertyBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.OxmRelatedTableFeatureProperty;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.OxmRelatedTableFeaturePropertyBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.table.features.properties.container.table.feature.properties.NextTableIds;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.table.features.properties.container.table.feature.properties.NextTableIdsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping.InstructionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.TableConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.TableFeaturesPropType;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.ArpOp;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.ArpSha;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.ArpSpa;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.ArpTha;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.ArpTpa;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.EthDst;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.EthSrc;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.EthType;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Icmpv4Code;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Icmpv4Type;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Icmpv6Code;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Icmpv6Type;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.InPhyPort;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.InPort;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.IpDscp;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.IpEcn;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.IpProto;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Ipv4Dst;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Ipv4Src;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Ipv6Dst;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Ipv6Exthdr;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Ipv6Flabel;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Ipv6NdSll;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Ipv6NdTarget;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Ipv6NdTll;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Ipv6Src;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Metadata;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.MplsBos;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.MplsLabel;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.MplsTc;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.OpenflowBasicClass;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.PbbIsid;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.SctpDst;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.SctpSrc;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TcpDst;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TcpFlag;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TcpSrc;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TunnelId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TunnelIpv4Dst;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.TunnelIpv4Src;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.UdpDst;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.UdpSrc;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.VlanPcp;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.VlanVid;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.grouping.MatchEntries;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.grouping.MatchEntriesBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.ArpOp;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.ArpSha;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.ArpSpa;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.ArpTha;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.ArpTpa;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.EthDst;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.EthSrc;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.EthType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Icmpv4Code;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Icmpv4Type;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Icmpv6Code;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Icmpv6Type;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.InPhyPort;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.InPort;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.IpDscp;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.IpEcn;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.IpProto;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Ipv4Dst;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Ipv4Src;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Ipv6Dst;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Ipv6Exthdr;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Ipv6Flabel;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Ipv6NdSll;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Ipv6NdTarget;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Ipv6NdTll;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Ipv6Src;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Metadata;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MplsBos;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MplsLabel;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MplsTc;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OpenflowBasicClass;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.PbbIsid;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.SctpDst;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.SctpSrc;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.TcpDst;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.TcpSrc;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.TunnelId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.UdpDst;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.UdpSrc;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.VlanPcp;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.VlanVid;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.table.features._case.multipart.request.table.features.TableFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.table.features._case.multipart.request.table.features.TableFeaturesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.table.features.properties.grouping.TableFeatureProperties;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.table.features.properties.grouping.TableFeaturePropertiesBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.TableFeaturePropType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.ApplyActions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.ApplyActionsMiss;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.ApplySetfield;
@@ -123,7 +117,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Utility class for converting a MD-SAL Table features into the OF library table
@@ -146,7 +142,7 @@ public class TableFeaturesConvertor {
             ofTableFeatures.setName(salTableFeatures.getName());
             ofTableFeatures.setMetadataMatch(salTableFeatures.getMetadataMatch());
             ofTableFeatures.setMetadataWrite(salTableFeatures.getMetadataWrite());
-            ofTableFeatures.setMaxEntries(salTableFeatures.getMaxEntries()); 
+            ofTableFeatures.setMaxEntries(salTableFeatures.getMaxEntries());
             if (salTableFeatures.getConfig() != null) {
                 ofTableFeatures.setConfig(new TableConfig(salTableFeatures.getConfig().isDEPRECATEDMASK()));
             }
@@ -159,51 +155,51 @@ public class TableFeaturesConvertor {
     private static List<TableFeatureProperties> toTableProperties(
             org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.TableProperties tableProperties) {
         if (tableProperties == null) {
-            return Collections.<TableFeatureProperties> emptyList();
+            return Collections.<TableFeatureProperties>emptyList();
         }
         List<TableFeatureProperties> ofTablePropertiesList = new ArrayList<>();
 
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeatureProperties>
-            sortedTableProperties =
+                sortedTableProperties =
                 Ordering.from(OrderComparator.<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeatureProperties>build())
-                    .sortedCopy(tableProperties.getTableFeatureProperties());
+                        .sortedCopy(tableProperties.getTableFeatureProperties());
 
         for (org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeatureProperties
-            property : sortedTableProperties) {
-        	TableFeaturePropertiesBuilder propBuilder = new TableFeaturePropertiesBuilder();
-        	
+                property : sortedTableProperties) {
+            TableFeaturePropertiesBuilder propBuilder = new TableFeaturePropertiesBuilder();
+
             org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.TableFeaturePropType propType = property
                     .getTableFeaturePropType();
-            
+
             setTableFeatureProperty(propType, propBuilder);
             if (propType instanceof Instructions) {
-                setTableFeatureProperty((Instructions)propType, propBuilder);
+                setTableFeatureProperty((Instructions) propType, propBuilder);
             } else if (propType instanceof InstructionsMiss) {
-                setTableFeatureProperty((InstructionsMiss)propType, propBuilder);
+                setTableFeatureProperty((InstructionsMiss) propType, propBuilder);
             } else if (propType instanceof NextTable) {
-                setTableFeatureProperty((NextTable)propType, propBuilder);
+                setTableFeatureProperty((NextTable) propType, propBuilder);
             } else if (propType instanceof NextTableMiss) {
-                setTableFeatureProperty((NextTableMiss)propType, propBuilder);
+                setTableFeatureProperty((NextTableMiss) propType, propBuilder);
             } else if (propType instanceof WriteActions) {
-                setTableFeatureProperty((WriteActions)propType, propBuilder);
+                setTableFeatureProperty((WriteActions) propType, propBuilder);
             } else if (propType instanceof WriteActionsMiss) {
-                setTableFeatureProperty((WriteActionsMiss)propType, propBuilder);
+                setTableFeatureProperty((WriteActionsMiss) propType, propBuilder);
             } else if (propType instanceof ApplyActions) {
-                setTableFeatureProperty((ApplyActions)propType, propBuilder);
+                setTableFeatureProperty((ApplyActions) propType, propBuilder);
             } else if (propType instanceof ApplyActionsMiss) {
-                setTableFeatureProperty((ApplyActionsMiss)propType, propBuilder);
+                setTableFeatureProperty((ApplyActionsMiss) propType, propBuilder);
             } else if (propType instanceof Match) {
-                setTableFeatureProperty((Match)propType, propBuilder);
+                setTableFeatureProperty((Match) propType, propBuilder);
             } else if (propType instanceof Wildcards) {
-                setTableFeatureProperty((Wildcards)propType, propBuilder);
+                setTableFeatureProperty((Wildcards) propType, propBuilder);
             } else if (propType instanceof WriteSetfield) {
-                setTableFeatureProperty((WriteSetfield)propType, propBuilder);
+                setTableFeatureProperty((WriteSetfield) propType, propBuilder);
             } else if (propType instanceof WriteSetfieldMiss) {
-                setTableFeatureProperty((WriteSetfieldMiss)propType, propBuilder);
+                setTableFeatureProperty((WriteSetfieldMiss) propType, propBuilder);
             } else if (propType instanceof ApplySetfield) {
-                setTableFeatureProperty((ApplySetfield)propType, propBuilder);
+                setTableFeatureProperty((ApplySetfield) propType, propBuilder);
             } else if (propType instanceof ApplySetfieldMiss) {
-                setTableFeatureProperty((ApplySetfieldMiss)propType, propBuilder);
+                setTableFeatureProperty((ApplySetfieldMiss) propType, propBuilder);
             }
             // Experimenter and Experimeneter miss Table features are unhandled
             ofTablePropertiesList.add(propBuilder.build());
@@ -291,7 +287,7 @@ public class TableFeaturesConvertor {
         MatchSetfield matchSetField = ((Match) propType).getMatchSetfield();
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatch> setFieldMatch = null;
 
-        if( null != matchSetField) {
+        if (null != matchSetField) {
             setFieldMatch = matchSetField.getSetFieldMatch();
         }
 
@@ -371,12 +367,12 @@ public class TableFeaturesConvertor {
     }
 
     private static void setInstructionTableFeatureProperty(TableFeaturePropertiesBuilder builder,
-            TableFeaturesPropType type, List<Instruction> instructionList) {
+                                                           TableFeaturesPropType type, List<Instruction> instructionList) {
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping.Instruction> instructionTypeList = new ArrayList<>();
-        
+
         for (Instruction currInstruction : instructionList) {
-        	InstructionBuilder instructionType = new InstructionBuilder();
-        	
+            InstructionBuilder instructionType = new InstructionBuilder();
+
             org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction instruction = currInstruction
                     .getInstruction();
             if (instruction instanceof GoToTableCase) {
@@ -408,11 +404,11 @@ public class TableFeaturesConvertor {
     }
 
     private static void setNextTableFeatureProperty(TableFeaturePropertiesBuilder builder, TableFeaturesPropType type,
-            List<Short> tableIds) {
+                                                    List<Short> tableIds) {
         List<NextTableIds> nextTableIdsList = new ArrayList<>();
-        
+
         for (Short tableId : tableIds) {
-        	NextTableIdsBuilder nextTableId = new NextTableIdsBuilder();
+            NextTableIdsBuilder nextTableId = new NextTableIdsBuilder();
             nextTableId.setTableId(tableId);
             nextTableIdsList.add(nextTableId.build());
         }
@@ -423,9 +419,9 @@ public class TableFeaturesConvertor {
     }
 
     private static void setActionTableFeatureProperty(TableFeaturePropertiesBuilder builder,
-            TableFeaturesPropType type,
-            List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> salActions) {
-        
+                                                      TableFeaturesPropType type,
+                                                      List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> salActions) {
+
         List<Action> actionList = new ArrayList<>();
 
         for (org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action currAction : salActions) {
@@ -490,7 +486,8 @@ public class TableFeaturesConvertor {
         builder.addAugmentation(ActionRelatedTableFeatureProperty.class, propBuilder.build());
     }
 
-    private static Map<Class<?>, Class<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.MatchField>> SAL_TO_OF_TABLE_FEATURES = new HashMap<>();
+    private static Map<Class<?>, Class<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField>> SAL_TO_OF_TABLE_FEATURES = new HashMap<>();
+
     static {
         SAL_TO_OF_TABLE_FEATURES.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.ArpOp.class, ArpOp.class);
         SAL_TO_OF_TABLE_FEATURES.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.ArpSha.class, ArpSha.class);
@@ -532,44 +529,36 @@ public class TableFeaturesConvertor {
         SAL_TO_OF_TABLE_FEATURES.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.UdpDst.class, UdpSrc.class);
         SAL_TO_OF_TABLE_FEATURES.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.VlanPcp.class, VlanPcp.class);
         SAL_TO_OF_TABLE_FEATURES.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.VlanVid.class, VlanVid.class);
-        SAL_TO_OF_TABLE_FEATURES.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TunnelIpv4Dst.class, TunnelIpv4Dst.class);
-        SAL_TO_OF_TABLE_FEATURES.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TunnelIpv4Src.class, TunnelIpv4Src.class);
+        SAL_TO_OF_TABLE_FEATURES.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TunnelIpv4Dst.class, Ipv4Dst.class);
+        SAL_TO_OF_TABLE_FEATURES.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TunnelIpv4Src.class, Ipv4Src.class);
     }
 
     private static void setSetFieldTableFeatureProperty(
             TableFeaturePropertiesBuilder builder,
             TableFeaturesPropType type,
             List<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatch> setFields) {
-        List<MatchEntries> matchEntriesList = new ArrayList<>();
-        
+        List<MatchEntry> matchEntriesList = new ArrayList<>();
+
         for (org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatch currMatch : setFields) {
             Class<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.MatchField> currMatchType = currMatch
                     .getMatchType();
-            MatchEntriesBuilder matchEntryBuilder = new MatchEntriesBuilder();
+            MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
 
-            if (currMatchType
-                    .equals(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TcpFlag.class)) {
-
-                //FIXME: move to extensible support
-                // TODO: Move to seperate bundle as soon as extension are supported
-                setMatchEntry(matchEntryBuilder, TcpFlag.class, currMatch.isHasMask());
-            } else {
-                Class<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.MatchField> ofTableFeatureClass
-                = SAL_TO_OF_TABLE_FEATURES.get(currMatchType);
-                setMatchEntry(matchEntryBuilder, ofTableFeatureClass, currMatch.isHasMask());
-            }
+            Class<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField> ofTableFeatureClass
+                    = SAL_TO_OF_TABLE_FEATURES.get(currMatchType);
+            setMatchEntry(matchEntryBuilder, ofTableFeatureClass, currMatch.isHasMask());
 
             matchEntriesList.add(matchEntryBuilder.build());
         }
         OxmRelatedTableFeaturePropertyBuilder propBuilder = new OxmRelatedTableFeaturePropertyBuilder();
-        propBuilder.setMatchEntries(matchEntriesList);
+        propBuilder.setMatchEntry(matchEntriesList);
         builder.setType(type);
         builder.addAugmentation(OxmRelatedTableFeatureProperty.class, propBuilder.build());
     }
 
-    private static void setMatchEntry(MatchEntriesBuilder builder,
-            Class<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.MatchField> field,
-            Boolean hasMask) {
+    private static void setMatchEntry(MatchEntryBuilder builder,
+                                      Class<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField> field,
+                                      Boolean hasMask) {
         builder.setOxmClass(OpenflowBasicClass.class);
         builder.setOxmMatchField(field);
         builder.setHasMask(hasMask);
