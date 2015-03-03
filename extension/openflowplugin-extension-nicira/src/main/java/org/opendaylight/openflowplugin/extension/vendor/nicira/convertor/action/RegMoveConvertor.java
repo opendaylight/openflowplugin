@@ -1,12 +1,13 @@
 /**
  * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
- * 
+ *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 package org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.action;
 
+import com.google.common.base.Preconditions;
 import org.opendaylight.openflowjava.nx.NiciraMatchCodecs;
 import org.opendaylight.openflowjava.nx.codec.match.NxmHeader;
 import org.opendaylight.openflowplugin.extension.api.ConvertorActionFromOFJava;
@@ -38,10 +39,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxRegCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxTunIdCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxTunIdCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxTunIpv4DstCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxTunIpv4DstCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxTunIpv4SrcCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxTunIpv4SrcCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstOfArpOpCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstOfArpOpCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstOfArpSpaCase;
@@ -71,10 +68,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.src.choice.grouping.src.choice.SrcNxRegCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.src.choice.grouping.src.choice.SrcNxTunIdCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.src.choice.grouping.src.choice.SrcNxTunIdCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.src.choice.grouping.src.choice.SrcNxTunIpv4DstCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.src.choice.grouping.src.choice.SrcNxTunIpv4DstCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.src.choice.grouping.src.choice.SrcNxTunIpv4SrcCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.src.choice.grouping.src.choice.SrcNxTunIpv4SrcCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.src.choice.grouping.src.choice.SrcOfArpOpCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.src.choice.grouping.src.choice.SrcOfArpOpCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.src.choice.grouping.src.choice.SrcOfArpSpaCase;
@@ -88,15 +81,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.src.choice.grouping.src.choice.SrcOfEthTypeCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.src.choice.grouping.src.choice.SrcOfEthTypeCaseBuilder;
 
-import com.google.common.base.Preconditions;
-
 /**
  * @author msunal
- *
  */
-public class RegMoveConvertor implements 
-ConvertorActionToOFJava<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, Action>,
-ConvertorActionFromOFJava<Action, ActionPath> {
+public class RegMoveConvertor implements
+        ConvertorActionToOFJava<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, Action>,
+        ConvertorActionFromOFJava<Action, ActionPath> {
 
     @Override
     public org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action convert(Action input, ActionPath path) {
@@ -138,12 +128,6 @@ ConvertorActionFromOFJava<Action, ActionPath> {
         if (dstValue == NiciraMatchCodecs.ARP_TPA_CODEC.getHeaderWithoutHasMask().toLong()) {
             return new DstOfArpTpaCaseBuilder().setOfArpTpa(true).build();
         }
-        if (dstValue == NiciraMatchCodecs.TUN_IPV4_DST_CODEC.getHeaderWithoutHasMask().toLong()) {
-            return new DstNxTunIpv4DstCaseBuilder().setNxTunIpv4Dst(true).build();
-        }
-        if (dstValue == NiciraMatchCodecs.TUN_IPV4_SRC_CODEC.getHeaderWithoutHasMask().toLong()) {
-            return new DstNxTunIpv4SrcCaseBuilder().setNxTunIpv4Src(true).build();
-        }
         if (dstValue == NiciraMatchCodecs.ETH_DST_CODEC.getHeaderWithoutHasMask().toLong()) {
             return new DstOfEthDstCaseBuilder().setOfEthDst(true).build();
         }
@@ -175,12 +159,6 @@ ConvertorActionFromOFJava<Action, ActionPath> {
         }
         if (srcValue == NiciraMatchCodecs.ARP_TPA_CODEC.getHeaderWithoutHasMask().toLong()) {
             return new SrcOfArpTpaCaseBuilder().setOfArpTpa(true).build();
-        }
-        if (srcValue == NiciraMatchCodecs.TUN_IPV4_DST_CODEC.getHeaderWithoutHasMask().toLong()) {
-            return new SrcNxTunIpv4DstCaseBuilder().setNxTunIpv4Dst(true).build();
-        }
-        if (srcValue == NiciraMatchCodecs.TUN_IPV4_SRC_CODEC.getHeaderWithoutHasMask().toLong()) {
-            return new SrcNxTunIpv4SrcCaseBuilder().setNxTunIpv4Src(true).build();
         }
         if (srcValue == NiciraMatchCodecs.ETH_DST_CODEC.getHeaderWithoutHasMask().toLong()) {
             return new SrcOfEthDstCaseBuilder().setOfEthDst(true).build();
@@ -225,16 +203,16 @@ ConvertorActionFromOFJava<Action, ActionPath> {
     private static org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action resolveAction(
             NxRegMove value, ActionPath path) {
         switch (path) {
-        case NODES_NODE_TABLE_FLOW_INSTRUCTIONS_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION_EXTENSIONLIST_EXTENSION:
-            return new NxActionRegMoveNodesNodeTableFlowWriteActionsCaseBuilder().setNxRegMove(value).build();
-        case FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION:
-            return new NxActionRegMoveNotifFlowsStatisticsUpdateWriteActionsCaseBuilder().setNxRegMove(value).build();
-        case FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION:
-            return new NxActionRegMoveNotifFlowsStatisticsUpdateApplyActionsCaseBuilder().setNxRegMove(value).build();
-        case GROUPDESCSTATSUPDATED_GROUPDESCSTATS_BUCKETS_BUCKET_ACTION:
-            return new NxActionRegMoveNotifGroupDescStatsUpdatedCaseBuilder().setNxRegMove(value).build();
-        default:
-            throw new CodecPreconditionException(path);
+            case NODES_NODE_TABLE_FLOW_INSTRUCTIONS_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION_EXTENSIONLIST_EXTENSION:
+                return new NxActionRegMoveNodesNodeTableFlowWriteActionsCaseBuilder().setNxRegMove(value).build();
+            case FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION:
+                return new NxActionRegMoveNotifFlowsStatisticsUpdateWriteActionsCaseBuilder().setNxRegMove(value).build();
+            case FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION:
+                return new NxActionRegMoveNotifFlowsStatisticsUpdateApplyActionsCaseBuilder().setNxRegMove(value).build();
+            case GROUPDESCSTATSUPDATED_GROUPDESCSTATS_BUCKETS_BUCKET_ACTION:
+                return new NxActionRegMoveNotifGroupDescStatsUpdatedCaseBuilder().setNxRegMove(value).build();
+            default:
+                throw new CodecPreconditionException(path);
         }
     }
 
@@ -242,7 +220,7 @@ ConvertorActionFromOFJava<Action, ActionPath> {
     public Action convert(org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action nxActionArg) {
         Preconditions.checkArgument(nxActionArg instanceof NxActionRegMoveGrouping);
         NxActionRegMoveGrouping nxAction = (NxActionRegMoveGrouping) nxActionArg;
-        
+
         Dst dst = nxAction.getNxRegMove().getDst();
         Src src = nxAction.getNxRegMove().getSrc();
         ActionRegMoveBuilder actionRegMoveBuilder = new ActionRegMoveBuilder();
@@ -278,12 +256,6 @@ ConvertorActionFromOFJava<Action, ActionPath> {
         if (dstChoice instanceof DstOfArpTpaCase) {
             return NiciraMatchCodecs.ARP_TPA_CODEC.getHeaderWithoutHasMask().toLong();
         }
-        if (dstChoice instanceof DstNxTunIpv4DstCase) {
-            return NiciraMatchCodecs.TUN_IPV4_DST_CODEC.getHeaderWithoutHasMask().toLong();
-        }
-        if (dstChoice instanceof DstNxTunIpv4SrcCase) {
-            return NiciraMatchCodecs.TUN_IPV4_SRC_CODEC.getHeaderWithoutHasMask().toLong();
-        }
         if (dstChoice instanceof DstOfEthDstCase) {
             return NiciraMatchCodecs.ETH_DST_CODEC.getHeaderWithoutHasMask().toLong();
         }
@@ -314,12 +286,6 @@ ConvertorActionFromOFJava<Action, ActionPath> {
         }
         if (srcChoice instanceof SrcOfArpTpaCase) {
             return NiciraMatchCodecs.ARP_TPA_CODEC.getHeaderWithoutHasMask().toLong();
-        }
-        if (srcChoice instanceof SrcNxTunIpv4DstCase) {
-            return NiciraMatchCodecs.TUN_IPV4_DST_CODEC.getHeaderWithoutHasMask().toLong();
-        }
-        if (srcChoice instanceof SrcNxTunIpv4SrcCase) {
-            return NiciraMatchCodecs.TUN_IPV4_SRC_CODEC.getHeaderWithoutHasMask().toLong();
         }
         if (srcChoice instanceof SrcOfEthDstCase) {
             return NiciraMatchCodecs.ETH_DST_CODEC.getHeaderWithoutHasMask().toLong();

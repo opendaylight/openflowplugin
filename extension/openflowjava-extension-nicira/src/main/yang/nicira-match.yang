@@ -185,22 +185,52 @@ module nicira-match {
         }
     }
 
-    augment "/ofoxm:oxm-container/ofoxm:match-entries" {
-        ext:augment-identifier "ofj-aug_nx_match";
-        uses ofj-nxm-nx-match-reg-grouping;
-        uses ofj-nxm-nx-match-tun-id-grouping;
-        uses ofj-nxm-nx-match-arp-sha-grouping;
-        uses ofj-nxm-nx-match-arp-tha-grouping;
-        uses ofj-nxm-of-match-arp-op-grouping;
-        uses ofj-nxm-of-match-arp-spa-grouping;
-        uses ofj-nxm-of-match-arp-tpa-grouping;
-        uses ofj-nxm-nx-match-tun-ipv4-dst-grouping;
-        uses ofj-nxm-nx-match-tun-ipv4-src-grouping;
-        uses ofj-nxm-of-match-eth-src-grouping;
-        uses ofj-nxm-of-match-eth-dst-grouping;
-        uses ofj-nxm-of-match-eth-type-grouping;
-        uses ofj-nxm-nx-match-nsp-grouping;
-        uses ofj-nxm-nx-match-nsi-grouping;
+    augment "/ofoxm:oxm-container/ofoxm:match-entry-value" {
+        ext:augment-identifier "ofj-aug-nx-match";
+        case reg-case-value {
+            uses ofj-nxm-nx-match-reg-grouping;
+        }
+        case tun-id-case-value {
+            uses ofj-nxm-nx-match-tun-id-grouping;
+        }
+        case arp-sha-case-value {
+            uses ofj-nxm-nx-match-arp-sha-grouping;
+        }
+        case arp-tha-case-value {
+            uses ofj-nxm-nx-match-arp-tha-grouping;
+        }
+        case arp-op-case-value {
+            uses ofj-nxm-of-match-arp-op-grouping;
+        }
+        case arp-spa-case-value {
+            uses ofj-nxm-of-match-arp-spa-grouping;
+        }
+        case arp-tpa-case-value {
+            uses ofj-nxm-of-match-arp-tpa-grouping;
+        }
+        case tun-ipv4-dst-case-value {
+            uses ofj-nxm-nx-match-tun-ipv4-dst-grouping;
+        }
+        case tun-ipv4-src-case-value {
+            uses ofj-nxm-nx-match-tun-ipv4-src-grouping;
+        }
+        case eth-src-case-value {
+            uses ofj-nxm-of-match-eth-src-grouping;
+        }
+        case eth-dst-case-value {
+            uses ofj-nxm-of-match-eth-dst-grouping;
+        }
+
+        case eth-type-case-value {
+            uses ofj-nxm-of-match-eth-type-grouping;
+        }
+        case nsp-case-value {
+            uses ofj-nxm-nx-match-nsp-grouping;
+        }
+        case nsi-case-value {
+            uses ofj-nxm-nx-match-nsi-grouping;
+        }
+
     }
 
 }

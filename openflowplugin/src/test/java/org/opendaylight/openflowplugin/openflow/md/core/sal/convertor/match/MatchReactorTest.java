@@ -17,7 +17,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.M
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.EtherType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetTypeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatchBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.OxmFieldsActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.OxmFieldsActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.aggregate._case.MultipartRequestAggregateBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.flow._case.MultipartRequestFlowBuilder;
@@ -72,7 +72,7 @@ public class MatchReactorTest {
         OxmFieldsActionBuilder target = new OxmFieldsActionBuilder();
         MatchReactor.getInstance().convert(matchBuilder.build(), 
                 OFConstants.OFP_VERSION_1_3, target,BigInteger.valueOf(1));
-        Assert.assertNotNull(target.getMatchEntries());
+        Assert.assertNotNull(target.getMatchEntry());
     }
     
     /**
@@ -122,7 +122,7 @@ public class MatchReactorTest {
         MatchReactor.getInstance().convert(null, 
                 OFConstants.OFP_VERSION_1_3, target,BigInteger.valueOf(1));
         Assert.assertNotNull(target.getMatch());
-        Assert.assertEquals(0, target.getMatch().getMatchEntries().size());
+        Assert.assertEquals(0, target.getMatch().getMatchEntry().size());
     }
 
     /**
