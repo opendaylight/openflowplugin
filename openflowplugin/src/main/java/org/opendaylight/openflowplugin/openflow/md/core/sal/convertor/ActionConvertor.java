@@ -9,14 +9,17 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
-import com.google.common.collect.Ordering;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.extension.api.ConverterExtensionKey;
 import org.opendaylight.openflowplugin.extension.api.ConvertorActionToOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorToOFJava;
 import org.opendaylight.openflowplugin.extension.api.TypeVersionKey;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
-import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.ActionExtensionHelper;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.ActionSetNwDstReactor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.ActionSetNwSrcReactor;
@@ -27,7 +30,6 @@ import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.ActionUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
-import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Dscp;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlInCase;
@@ -99,7 +101,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.tp.src.action._case.SetTpSrcAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.vlan.id.action._case.SetVlanIdAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.vlan.pcp.action._case.SetVlanPcpAction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.CommonPort;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortNumberUni;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.DlAddressAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.DlAddressActionBuilder;
@@ -170,9 +172,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ge
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.grouping.Extension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
+
+import com.google.common.collect.Ordering;
 
 /**
  * @author usha@ericsson Action List:This class takes data from SAL layer and
@@ -992,7 +993,7 @@ public final class ActionConvertor {
         OutputActionBuilder outputAction = new OutputActionBuilder();
         PortAction port = action.getAugmentation(PortAction.class);
         if (port != null) {
-            CommonPort.PortNumber protocolAgnosticPort = OpenflowPortsUtil.getProtocolAgnosticPort(
+            PortNumberUni protocolAgnosticPort = OpenflowPortsUtil.getProtocolAgnosticPort(
                     ofVersion, port.getPort().getValue());
             String portNumberAsString = OpenflowPortsUtil.portNumberToString(protocolAgnosticPort);
             outputAction.setOutputNodeConnector(new Uri(portNumberAsString));

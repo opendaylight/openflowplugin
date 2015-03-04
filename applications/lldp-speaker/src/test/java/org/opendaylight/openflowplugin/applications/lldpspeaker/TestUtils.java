@@ -10,8 +10,8 @@ package org.opendaylight.openflowplugin.applications.lldpspeaker;
 
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnectorBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.CommonPort;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortConfig;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortNumberUni;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.flow.capable.port.StateBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -49,7 +49,7 @@ public class TestUtils {
                                                                           MacAddress mac, long port) {
         return new FlowCapableNodeConnectorBuilder()
                 .setHardwareAddress(mac)
-                .setPortNumber(new CommonPort.PortNumber(port))
+                .setPortNumber(new PortNumberUni(port))
                 .setState(new StateBuilder().setLinkDown(linkDown).build())
                 .setConfiguration(new PortConfig(false, false, false, adminDown));
     }

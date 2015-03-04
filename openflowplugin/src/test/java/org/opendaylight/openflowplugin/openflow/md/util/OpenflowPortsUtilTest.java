@@ -1,15 +1,16 @@
 package org.opendaylight.openflowplugin.openflow.md.util;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.CommonPort;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortNumberUni;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.OutputPortValues;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author: Kamal Rameshan (kramesha@cisco.com)
@@ -180,16 +181,16 @@ public class OpenflowPortsUtilTest {
      */
     @Test
     public void testPortNumberToString() {
-        CommonPort.PortNumber portNumber;
+        PortNumberUni portNumber;
         
-        portNumber = new CommonPort.PortNumber(42L);
+        portNumber = new PortNumberUni(42L);
         Assert.assertEquals("42", OpenflowPortsUtil.portNumberToString(portNumber));
         
-        portNumber = new CommonPort.PortNumber(OutputPortValues.FLOOD.toString());
+        portNumber = new PortNumberUni(OutputPortValues.FLOOD.toString());
         Assert.assertEquals("FLOOD", OpenflowPortsUtil.portNumberToString(portNumber));
         
         try {
-            portNumber = new CommonPort.PortNumber((String) null);
+            portNumber = new PortNumberUni((String) null);
             Assert.fail("NPE was expected - due to value type");
         } catch (Exception e) {
             // expected

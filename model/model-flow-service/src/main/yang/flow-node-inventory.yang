@@ -11,8 +11,10 @@ module flow-node-inventory {
     import opendaylight-group-types {prefix group;revision-date "2013-10-18";}
     import opendaylight-meter-types {prefix meter;revision-date "2013-09-18";}
     
+    description "Flow Capable Node extensions to the Inventory model";
+
     revision "2013-08-19" {
-        description "Flow Capable Node extensions to the Inventory model";
+        description "added descriptions";
     }
     
     identity feature-capability {
@@ -69,13 +71,14 @@ module flow-node-inventory {
     }
     
     grouping feature {
+        description "Features supported by openflow device.";
         leaf support-state {
             type inv:support-type;
         }
     }
 
     grouping queue {
-         leaf queue-id {
+        leaf queue-id {
             type uint32;
             description "id for the specific queue";
             mandatory true; 
@@ -91,10 +94,12 @@ module flow-node-inventory {
     }
 
     typedef flow-id {
+        description "MD-SAL identifier of openflow flow. ";
         type inet:uri;
     }
 
     grouping tables {
+        description "Openflow table structure. Here flows are contained.";
         list table {
             key "id"; 
     
@@ -117,6 +122,7 @@ module flow-node-inventory {
     }
     
     grouping meters {
+        description "Openflow meter list.";
         list meter {
             key "meter-id";
             uses meter:meter;
@@ -124,6 +130,7 @@ module flow-node-inventory {
     }
 
     grouping ip-address-grouping {
+        description "Additional ip address info referring to device interface which connects to controller";
         leaf ip-address {
             description "IP address of a flow capable node.";
             type inet:ip-address;
@@ -131,6 +138,7 @@ module flow-node-inventory {
     }
 
     grouping flow-node {
+        description "Openflow node structure = device";
         leaf manufacturer {
             type string;
         }
@@ -205,33 +213,38 @@ module flow-node-inventory {
     }
 
     grouping flow-node-connector {
-
+        description "Wrapper of openflow port. TODO::simplify/rename";
         uses port:flow-capable-port;
     }
 
     augment "/inv:nodes/inv:node" {
         ext:augment-identifier "flow-capable-node";
+        description "Top attach point of openflow node into node inventory tree.";
         uses flow-node;
     }
 
     augment "/inv:nodes/inv:node/inv:node-connector" {
         ext:augment-identifier "flow-capable-node-connector";
+        description "Openflow port into inventory tree.";
         uses flow-node-connector;
     }
 
     augment "/inv:node-updated" {
         ext:augment-identifier "flow-capable-node-updated";
+        description "Openflow node into node notification.";
         uses flow-node;
     }
 
     augment "/inv:node-updated/inv:node-connector" {
         //ext:identical-augment "flow-capable-node-connector";
         ext:augment-identifier "flow-capable-node-connector-update-fields";
+        description "Openflow port into node notification.";
         uses flow-node-connector;
     }
     
     augment "/inv:node-connector-updated" {
         ext:augment-identifier "flow-capable-node-connector-updated";
+        description "Openflow port into node-connector notification.";
         uses flow-node-connector;
     }
 

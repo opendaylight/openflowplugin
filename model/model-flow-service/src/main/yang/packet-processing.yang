@@ -11,16 +11,19 @@ module packet-processing {
     import opendaylight-action-types {prefix action-type;revision-date "2013-11-12";}
     import opendaylight-flow-types {prefix flow-type;revision-date "2013-10-26";}
 
+    description "Packet processing - sending and receiving.";
     
     revision "2013-07-09" {
-        description "";
+        description "Initial.";
     }
 
     typedef connection-cookie {
+        description "Openflow connection identifier. Outgoing packets should use the same connection they came in.";
         type uint32;
     }
 
     grouping raw-packet {
+        description "Basic packet structure.";
     	leaf ingress {
     		type inv:node-connector-ref;
     	}
@@ -30,6 +33,7 @@ module packet-processing {
     }
 
     grouping ethernet-packet {
+        description "Ethernet packet headers structure.";
     	leaf source {
     		type yang:mac-address;
     	}
@@ -40,7 +44,7 @@ module packet-processing {
     }
 
     identity packet-in-reason {
-    	description "Base identity for all the available packet in reason"; 
+    	description "Base identity for all the available packet in reasons."; 
     }
     
     identity no-match {
@@ -59,8 +63,9 @@ module packet-processing {
     }
 
     notification packet-received {
+        description "Delivery of incoming packet wrapped in openflow structure.";
     	leaf connection-cookie {
-                type connection-cookie;
+            type connection-cookie;
         }
         
         leaf flow-cookie {
@@ -85,6 +90,7 @@ module packet-processing {
     }
 
     rpc transmit-packet {
+        description "Sending packet out through openflow device.";
     	input {
             uses inv:node-context-ref;
 
