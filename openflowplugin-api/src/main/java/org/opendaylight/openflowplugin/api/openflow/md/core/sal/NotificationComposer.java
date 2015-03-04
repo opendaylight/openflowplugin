@@ -7,7 +7,7 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.md.core.sal;
 
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev131103.TransactionId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.TransactionId;
 import org.opendaylight.yangtools.yang.binding.Notification;
 
 /**

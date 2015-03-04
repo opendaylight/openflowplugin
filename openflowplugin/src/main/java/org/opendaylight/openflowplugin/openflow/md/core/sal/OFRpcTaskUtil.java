@@ -20,7 +20,8 @@ import org.opendaylight.openflowplugin.api.openflow.md.core.sal.NotificationComp
 import org.opendaylight.openflowplugin.api.statistics.MessageSpy;
 import org.opendaylight.openflowplugin.openflow.md.util.RpcInputOutputTuple;
 import org.opendaylight.openflowplugin.openflow.md.util.TaskUtil;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev131103.TransactionAware;
+
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.TransactionAware;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierOutput;
 import org.opendaylight.yangtools.yang.binding.DataContainer;

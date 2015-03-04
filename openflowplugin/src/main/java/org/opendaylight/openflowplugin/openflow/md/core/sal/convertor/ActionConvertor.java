@@ -9,6 +9,10 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.google.common.collect.Ordering;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.openflowplugin.api.OFConstants;
@@ -179,9 +183,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ge
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.grouping.Extension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
+
+import com.google.common.collect.Ordering;
 
 /**
  * @author usha@ericsson Action List:This class takes data from SAL layer and
@@ -1181,15 +1184,15 @@ public final class ActionConvertor {
         return new PushPbbActionCaseBuilder().setPushPbbAction(pushPbbAction.build()).build();
     }
 
-    //TODO make a model in YANG for protocols 
+    //TODO make a model in YANG for protocols
     /*private enum IPProtocols {
-        ICMP(1), 
-        TCP(6), 
-        UDP(17), 
+        ICMP(1),
+        TCP(6),
+        UDP(17),
         ICMPV6(58);
 
         private int protocol;
-        
+
         private static Map<Integer, IPProtocols> valueMap;
         static {
             valueMap = new HashMap<>();
@@ -1197,7 +1200,7 @@ public final class ActionConvertor {
                 valueMap.put(protocols.protocol, protocols);
             }
         }
-        
+
         private IPProtocols(int value) {
             this.protocol = value;
         }
@@ -1205,11 +1208,11 @@ public final class ActionConvertor {
         private byte getValue() {
             return (byte) this.protocol;
         }
-        
+
         private Short getShortValue() {
             return new Short((short) protocol);
         }
-        
+
         private IPProtocols fromProtocolNum(Short protocolNum) {
             return valueMap.get(protocolNum);
         }

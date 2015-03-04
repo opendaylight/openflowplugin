@@ -60,6 +60,7 @@ module opendaylight-port-types {
     }
     
     typedef port-number-uni {
+        description "Union port number: 4B number / string (reserved port name)";
         type union {
             type uint32;
             type string;
