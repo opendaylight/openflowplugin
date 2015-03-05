@@ -20,9 +20,9 @@ public final class IpConverter {
         long result = 0;
         String[] atoms = ipAddress.split("\\.");
         for (int i = 3; i >= 0; i--) {
-            result |= (Long.parseLong(atoms[3 - i]) << (i * 8));
+            result |= (Short.parseShort(atoms[3 - i]) << (i * 8));
         }
-        return result & 0xFFFFFFFF;
+        return result & 0xFFFFFFFFL;
     }
 
     public static Ipv4Address longToIpv4Address(long ip) {

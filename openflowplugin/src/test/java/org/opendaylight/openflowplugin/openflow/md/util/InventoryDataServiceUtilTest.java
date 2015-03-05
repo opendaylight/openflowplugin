@@ -241,6 +241,13 @@ public class InventoryDataServiceUtilTest {
             Assert.assertEquals(expectedPaddedHexes[i], datapathIdHex);
         }
     }
+    
+    @Test
+    public void testPortNumberfromNodeConnectorId() {
+        NodeConnectorId nodeConnectorId = new NodeConnectorId("openflow:1:2255");
+        Long connector = InventoryDataServiceUtil.portNumberfromNodeConnectorId(OpenflowVersion.OF13, nodeConnectorId);
+        Assert.assertTrue(connector.equals(2255L));
+    }
 
 
 }
