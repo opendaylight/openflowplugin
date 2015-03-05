@@ -354,11 +354,12 @@ public class StatListenCommitFlow extends StatAbstractListenCommit<Flow, Openday
             while(it.hasNext()) {
                 final Flow cfgFlow = it.next();
                 final FlowKey cfgKey = cfgFlow.getKey();
-                if(flowIdByHash.inverse().containsKey(cfgKey)) {
-                    it.remove();
-                } else if(FlowComparator.flowEquals(flowStat, cfgFlow)) {
-                    it.remove();
-                    return cfgKey;
+                final FlowId cfgFlowId = cfgKey.getId();
+
+                if(! flowIdByHash.inverse().containsKey(cfgFlowId)) {
+                    if(FlowComparator.flowEquals(flowStat, cfgFlow)) {
+                        return cfgKey;
+                    }
                 }
             }
             return null;
