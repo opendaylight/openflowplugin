@@ -330,8 +330,8 @@ public class StatListenCommitFlow extends StatAbstractListenCommit<Flow, Openday
                         try {
                             flowIdByHash.put(flowHashId.getKey(), flowHashId.getFlowId());
                         } catch (final Exception e) {
-                            LOG.warn("flow hashing hit a duplicate for {} -> {}. Exception {}",
-                                    flowHashId.getKey(), flowHashId.getFlowId(), e);
+                            LOG.warn("flow hashing hit a duplicate for {} -> {}. Exception was raised: {}",
+                                    flowHashId.getKey(), flowHashId.getFlowId(), e.getMessage());
                         }
                     }
                 }
