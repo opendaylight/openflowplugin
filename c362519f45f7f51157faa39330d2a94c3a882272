@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_f1cdd087",
+        "filename": "applications/statistics-manager/src/main/java/org/opendaylight/openflowplugin/applications/statistics/manager/impl/StatListenCommitFlow.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 333,
+      "author": {
+        "id": 1450
+      },
+      "writtenOn": "2015-03-05T19:07:47Z",
+      "side": 1,
+      "message": "add exception to log?\n\nsee: Ref link on logging:\nhttps://wiki.opendaylight.org/view/Logging_Best_Practices",
+      "range": {
+        "startLine": 333,
+        "startChar": 113,
+        "endLine": 333,
+        "endChar": 114
+      },
+      "revId": "c362519f45f7f51157faa39330d2a94c3a882272",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
