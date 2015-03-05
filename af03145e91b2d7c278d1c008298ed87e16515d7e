@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_665ee4eb",
+        "filename": "applications/statistics-manager/src/main/java/org/opendaylight/openflowplugin/applications/statistics/manager/impl/StatListenCommitFlow.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 332,
+      "author": {
+        "id": 1450
+      },
+      "writtenOn": "2015-03-05T11:46:52Z",
+      "side": 1,
+      "message": "we should add another log that dumps the exception? Right now, there seems to be an assumption that the only exception that can happen is the duplicate key.",
+      "range": {
+        "startLine": 332,
+        "startChar": 39,
+        "endLine": 332,
+        "endChar": 48
+      },
+      "revId": "af03145e91b2d7c278d1c008298ed87e16515d7e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_c651f8d9",
+        "filename": "applications/statistics-manager/src/main/java/org/opendaylight/openflowplugin/applications/statistics/manager/impl/StatListenCommitFlow.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 333,
+      "author": {
+        "id": 1450
+      },
+      "writtenOn": "2015-03-05T11:46:52Z",
+      "side": 1,
+      "message": "How serious is it that the flowIdByHash.put() call caused an exception? Should the catch be a little more specific, so the exception expected is caught here?\nAssuming this is an okay exception to ocour, I think this log severity needs to be turned into a debug / trace.",
+      "range": {
+        "startLine": 333,
+        "startChar": 32,
+        "endLine": 333,
+        "endChar": 36
+      },
+      "revId": "af03145e91b2d7c278d1c008298ed87e16515d7e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
