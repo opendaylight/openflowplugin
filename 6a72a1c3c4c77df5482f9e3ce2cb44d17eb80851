@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_e6a2f499",
+        "filename": "legacy/sal-compatibility/src/test/java/org/opendaylight/openflowplugin/legacy/sal/compatibility/test/NodeMappingTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 219,
+      "author": {
+        "id": 1450
+      },
+      "writtenOn": "2015-03-05T13:11:12Z",
+      "side": 1,
+      "message": "rename to testStripToColon",
+      "range": {
+        "startLine": 219,
+        "startChar": 16,
+        "endLine": 219,
+        "endChar": 28
+      },
+      "revId": "6a72a1c3c4c77df5482f9e3ce2cb44d17eb80851",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
