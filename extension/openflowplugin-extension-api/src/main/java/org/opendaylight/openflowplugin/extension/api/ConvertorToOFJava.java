@@ -13,13 +13,13 @@ import org.opendaylight.yangtools.yang.binding.DataContainer;
 /**
  * convert message from MD-SAL model into OFJava-API model
  * 
- * @param <TO> output message model - OFJava-API
+ * @param <T> output message model - OFJava-API
  */
-public interface ConvertorToOFJava<TO extends DataContainer> {
+public interface ConvertorToOFJava<T extends DataContainer> {
 
     /**
      * @param extension where is vendor's augmentation
      * @return message converted to OFJava-API
      */
-    TO convert(Extension extension);
+    T convert(Extension extension);
 }

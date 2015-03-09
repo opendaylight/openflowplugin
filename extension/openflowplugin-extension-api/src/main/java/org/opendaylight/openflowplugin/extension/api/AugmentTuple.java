@@ -12,18 +12,18 @@ import org.opendaylight.yangtools.yang.binding.Augmentation;
 
 /**
  * Wrapper over augmentation and it's type in order to ease handing over and hooking of an augmentation 
- * @param <EXT_POINT> augmentable type where wrapped augmentation belongs
+ * @param <E> augmentable type where wrapped augmentation belongs
  */
-public class AugmentTuple<EXT_POINT extends Augmentable<EXT_POINT>> {
+public class AugmentTuple<E extends Augmentable<E>> {
 
-    private final Augmentation<EXT_POINT> augmentationObject;
-    private final Class<? extends Augmentation<EXT_POINT>> augmentationClass;
+    private final Augmentation<E> augmentationObject;
+    private final Class<? extends Augmentation<E>> augmentationClass;
 
     /**
      * @param augmentationClass
      * @param augmentationObject
      */
-    public AugmentTuple(Class<? extends Augmentation<EXT_POINT>> augmentationClass, Augmentation<EXT_POINT> augmentationObject) {
+    public AugmentTuple(Class<? extends Augmentation<E>> augmentationClass, Augmentation<E> augmentationObject) {
         this.augmentationClass = augmentationClass;
         this.augmentationObject = augmentationObject;
     }
@@ -31,14 +31,14 @@ public class AugmentTuple<EXT_POINT extends Augmentable<EXT_POINT>> {
     /**
      * @return instance of wrapped augmentation
      */
-    public Augmentation<EXT_POINT> getAugmentationObject() {
+    public Augmentation<E> getAugmentationObject() {
         return augmentationObject;
     }
 
     /**
      * @return type of wrapped augmentation
      */
-    public Class<? extends Augmentation<EXT_POINT>> getAugmentationClass() {
+    public Class<? extends Augmentation<E>> getAugmentationClass() {
         return augmentationClass;
     }
 }

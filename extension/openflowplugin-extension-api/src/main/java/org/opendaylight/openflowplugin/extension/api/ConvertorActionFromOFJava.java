@@ -14,15 +14,15 @@ import org.opendaylight.yangtools.yang.binding.DataContainer;
 /**
  * convert message from OFJava-API model into MD-SAL model
  * 
- * @param <FROM> input message model - OFJava-API
- * @param <PATH> represents possible paths in yang schema for augmentations
+ * @param <F> input message model - OFJava-API
+ * @param <P> represents possible paths in yang schema for augmentations
  */
-public interface ConvertorActionFromOFJava<FROM extends DataContainer, PATH extends AugmentationPath> {
+public interface ConvertorActionFromOFJava<F extends DataContainer, P extends AugmentationPath> {
 
     /**
      * @param input
      * @param path in yang schema where a converted value has to be augmented
      * @return message converted to MD-SAL and its type
      */
-    Action convert(FROM input, PATH path);
+    Action convert(F input, P path);
 }

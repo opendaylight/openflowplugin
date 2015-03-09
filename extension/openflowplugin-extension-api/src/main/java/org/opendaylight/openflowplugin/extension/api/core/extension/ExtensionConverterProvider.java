@@ -28,20 +28,20 @@ public interface ExtensionConverterProvider {
      * @param key
      * @return found converter
      */
-    <FROM extends DataContainer, PATH extends AugmentationPath> ConvertorFromOFJava<FROM, PATH> getConverter(MessageTypeKey<?> key);
+    <F extends DataContainer, P extends AugmentationPath> ConvertorFromOFJava<F, P> getConverter(MessageTypeKey<?> key);
     
     /**
      * lookup converter
      * @param key
      * @return found converter
      */
-    <TO extends DataContainer> ConvertorToOFJava<TO> getConverter(ConverterExtensionKey<?> key);
+    <T extends DataContainer> ConvertorToOFJava<T> getConverter(ConverterExtensionKey<?> key);
 
     /**
      * @param key
      * @return found converter
      */
-    <FROM extends Action, TO extends DataContainer> ConvertorActionToOFJava<FROM, TO> getConverter(TypeVersionKey<FROM> key);
+    <F extends Action, T extends DataContainer> ConvertorActionToOFJava<F, T> getConverter(TypeVersionKey<F> key);
     
     /**
      * lookup converter<br/>
@@ -49,5 +49,5 @@ public interface ExtensionConverterProvider {
      * @param key
      * @return found converter
      */
-    <FROM extends DataContainer, PATH extends AugmentationPath> ConvertorActionFromOFJava<FROM, PATH> getActionConverter(MessageTypeKey<?> key);
+    <F extends DataContainer, P extends AugmentationPath> ConvertorActionFromOFJava<F, P> getActionConverter(MessageTypeKey<?> key);
 }

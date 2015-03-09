@@ -12,18 +12,18 @@ package org.opendaylight.openflowplugin.extension.api;
  * lookup and register key for extension converters, basic case expects this to
  * correlate with input model type
  * 
- * @param <TYPE> type of key
+ * @param <T> type of key
  */
-public class TypeVersionKey<TYPE> {
+public class TypeVersionKey<T> {
 
-    private Class<? extends TYPE> type;
+    private Class<? extends T> type;
     private short ofVersion;
 
     /**
      * @param type
      * @param ofVersion 
      */
-    public TypeVersionKey(Class<? extends TYPE> type, short ofVersion) {
+    public TypeVersionKey(Class<? extends T> type, short ofVersion) {
         this.type = type;
         this.ofVersion = ofVersion;
     }
@@ -31,7 +31,7 @@ public class TypeVersionKey<TYPE> {
     /**
      * @return key type
      */
-    public Class<? extends TYPE> getType() {
+    public Class<? extends T> getType() {
         return type;
     }
 
@@ -46,15 +46,19 @@ public class TypeVersionKey<TYPE> {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         TypeVersionKey<?> other = (TypeVersionKey<?>) obj;
-        if (ofVersion != other.ofVersion)
+        if (ofVersion != other.ofVersion) {
             return false;
+        }
         if (type == null) {
             if (other.type != null)
                 return false;

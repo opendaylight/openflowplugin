@@ -13,17 +13,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ge
  * lookup and register key for extension converters, basic case expects this to
  * correlate with input model type
  * 
- * @param <TYPE> type of key
+ * @param <T> type of key
  */
-public class ConverterExtensionKey<TYPE extends ExtensionKey> extends TypeVersionKey<TYPE> {
-
-    private Class<TYPE> type;
-    private short ofVersion;
+public class ConverterExtensionKey<T extends ExtensionKey> extends TypeVersionKey<T> {
 
     /**
      * @param type
      */
-    public ConverterExtensionKey(Class<TYPE> type, short ofVersion) {
+    public ConverterExtensionKey(Class<T> type, short ofVersion) {
         super(type, ofVersion);
     }
 }

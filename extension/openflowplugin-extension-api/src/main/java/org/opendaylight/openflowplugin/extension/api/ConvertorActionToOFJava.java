@@ -12,14 +12,14 @@ import org.opendaylight.yangtools.yang.binding.DataContainer;
 
 /**
  * convert message from MD-SAL model into OFJava-API model
- * @param <FROM> input message model - MD-SAL model 
- * @param <TO> output message model - OFJava-API
+ * @param <F> input message model - MD-SAL model 
+ * @param <T> output message model - OFJava-API
  */
-public interface ConvertorActionToOFJava<FROM extends Action, TO extends DataContainer> {
+public interface ConvertorActionToOFJava<F extends Action, T extends DataContainer> {
 
     /**
      * @param actionCase where is vendor's augmentation
      * @return message converted to OFJava-API
      */
-    TO convert(FROM actionCase);
+    T convert(F actionCase);
 }
