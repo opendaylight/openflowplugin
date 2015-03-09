@@ -28,7 +28,7 @@ public abstract class OFPaxOptionsAssistant {
     public static final String DEBUG_PORT = "6000";
     /** base controller package */
     public static final String CONTROLLER = "org.opendaylight.controller";
-    /** base controller.md package */
+    /** base controller md-sal package */
     public static final String CONTROLLER_MD = "org.opendaylight.controller.md";
     /** OFLibrary package */
     public static final String OFLIBRARY = "org.opendaylight.openflowjava";
@@ -81,10 +81,12 @@ public abstract class OFPaxOptionsAssistant {
      */
     public static Option ofPluginBundles() {
         return new DefaultCompositeOption(
+                baseSalBundles(),
                 mdSalApiBundles(),
                 mdSalImplBundles(),
                 mdSalBaseModelBundles(),
                 ofLibraryBundles(),
+                mavenBundle(CONTROLLER_MODEL, "model-inventory").versionAsInProject(),
                 mavenBundle(OFPLUGIN_MODEL, "model-flow-statistics").versionAsInProject(),
                 mavenBundle(OFPLUGIN_MODEL, "model-flow-base").versionAsInProject(),
                 mavenBundle(OFPLUGIN_MODEL, "model-flow-service").versionAsInProject(),
@@ -107,6 +109,18 @@ public abstract class OFPaxOptionsAssistant {
                 mavenBundle("org.slf4j", "log4j-over-slf4j").versionAsInProject(),
                 mavenBundle("ch.qos.logback", "logback-core").versionAsInProject(),
                 mavenBundle("ch.qos.logback", "logback-classic").versionAsInProject());
+    }
+
+    /**
+     * @return sal + dependencymanager
+     */
+    public static Option baseSalBundles() {
+        return new DefaultCompositeOption(
+//                mavenBundle("org.apache.felix", "org.apache.felix.dependencymanager").versionAsInProject(),
+//                mavenBundle(CONTROLLER, "sal").versionAsInProject(),
+                mavenBundle(CONTROLLER, "liblldp").versionAsInProject(),
+                mavenBundle(OFPLUGIN_APPS, "topology-lldp-discovery").versionAsInProject(),
+                mavenBundle(YANGTOOLS + ".thirdparty", "antlr4-runtime-osgi-nohead").versionAsInProject());
     }
 
     /**
