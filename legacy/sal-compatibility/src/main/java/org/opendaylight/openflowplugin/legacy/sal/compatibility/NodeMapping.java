@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.legacy.sal.compatibility;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
+
 import org.opendaylight.controller.sal.common.util.Arguments;
 import org.opendaylight.controller.sal.core.AdvertisedBandwidth;
 import org.opendaylight.controller.sal.core.Bandwidth;
@@ -205,7 +206,7 @@ public final class NodeMapping {
             return org.opendaylight.controller.sal.core.NodeConnector.SPECIALNODECONNECTORID;
         }
 
-        String nodeConnectorIdStripped = ALL_CHARS_TO_COLON.matcher(nodeConnectorId.getValue()).replaceFirst("");
+        String nodeConnectorIdStripped = stripToColon(nodeConnectorId.getValue());
 
         if (NUMBERS_ONLY.matcher(nodeConnectorIdStripped).matches()) {
             Short nodeConnectorIdVal = null;
@@ -217,6 +218,10 @@ public final class NodeMapping {
             }
         }
         return nodeConnectorIdStripped;
+    }
+
+    public static String stripToColon(final String elementId) {
+        return ALL_CHARS_TO_COLON.matcher(elementId).replaceFirst("");
     }
 
     public static NodeId toAdNodeId(final NodeConnectorId nodeConnectorId) {

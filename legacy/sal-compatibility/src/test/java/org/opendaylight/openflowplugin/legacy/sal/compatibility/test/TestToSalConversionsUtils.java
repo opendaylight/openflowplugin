@@ -207,7 +207,7 @@ public class TestToSalConversionsUtils {
         List<Action> odActions = new ArrayList<>();
 
         OutputActionBuilder outputActionBuilder = new OutputActionBuilder();
-        outputActionBuilder.setOutputNodeConnector(new Uri("CONTROLLER"));
+        outputActionBuilder.setOutputNodeConnector(new Uri("openflow:42:CONTROLLER"));
         OutputActionCaseBuilder outputActionCaseBuilder = new OutputActionCaseBuilder();
         outputActionCaseBuilder.setOutputAction(outputActionBuilder.build());
         odActions.add(new ActionBuilder().setAction(outputActionCaseBuilder.build()).build());
@@ -600,7 +600,7 @@ public class TestToSalConversionsUtils {
 
     private void prepareActionOutput(OutputActionCaseBuilder wrapper) {
         OutputActionBuilder outputActionBuilder = new OutputActionBuilder();
-        outputActionBuilder.setOutputNodeConnector(new Uri("1"));
+        outputActionBuilder.setOutputNodeConnector(new Uri("openflow:1:1"));
         wrapper.setOutputAction(outputActionBuilder.build());
     }
 

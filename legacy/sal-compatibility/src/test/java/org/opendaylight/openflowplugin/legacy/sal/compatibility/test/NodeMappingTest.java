@@ -208,7 +208,20 @@ public class NodeMappingTest {
         NodeKey nodeKey = NodeMapping.toNodeKey(aDNode);
         Assert.assertEquals("openflow:42", nodeKey.getId().getValue());
     }
-
+    
+    /**
+     * Test method for
+     * {@link org.opendaylight.openflowplugin.legacy.sal.compatibility.NodeMapping#stripToColon(NodeConnectorId)}
+     * .
+     * @throws ConstructionException
+     */
+    @Test
+    public void testStripToColon() {
+        Assert.assertEquals("1", NodeMapping.stripToColon("openflow:42:1"));
+        Assert.assertEquals("1", NodeMapping.stripToColon("openflow:1"));
+        Assert.assertEquals("1", NodeMapping.stripToColon("1"));
+    }
+ 
     /**
      * @param nodeId
      * @param portId
