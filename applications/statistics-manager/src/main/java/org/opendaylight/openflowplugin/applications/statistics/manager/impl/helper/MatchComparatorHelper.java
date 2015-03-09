@@ -8,9 +8,14 @@
 package org.opendaylight.openflowplugin.applications.statistics.manager.impl.helper;
 
 import com.google.common.net.InetAddresses;
+
 import java.net.Inet4Address;
+import java.util.List;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
+
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.MacAddressFilter;
@@ -178,14 +183,19 @@ public class MatchComparatorHelper {
      */
     static IntegerIpAddress strIpToIntIp(final String ipAddresss) {
 
-        final String[] parts = ipAddresss.split("/");
-        final String ip = parts[0];
+        Iterable<String> splitted = Splitter.on('/')
+                .trimResults()
+                .omitEmptyStrings()
+                .split(ipAddresss);
+        List<String> parts = Lists.newArrayList(splitted.iterator());
+        final String ip = parts.get(0);
+        
         int prefix;
 
-        if (parts.length < 2) {
+        if (parts.size() < 2) {
             prefix = DEFAULT_SUBNET;
         } else {
-            prefix = Integer.parseInt(parts[1]);
+            prefix = Integer.parseInt(parts.get(1));
             if (prefix < 0 || prefix > IPV4_MASK_LENGTH) {
                 final StringBuilder stringBuilder = new StringBuilder(
                         "Valid values for mask are from range 0 - 32. Value ");
