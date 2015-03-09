@@ -106,6 +106,7 @@
 
     <feature name='odl-openflowplugin-app-lldp-speaker' description="OpenDaylight :: Openflow Plugin :: app lldp-speaker" version='${project.version}'>
         <feature version="${project.version}">odl-openflowplugin-southbound</feature>
+        <bundle>mvn:org.opendaylight.openflowplugin.applications/topology-lldp-discovery/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.openflowplugin.applications/lldp-speaker/${project.version}</bundle>
         <configfile finalname="etc/opendaylight/karaf/71-lldp-speaker.xml">mvn:org.opendaylight.openflowplugin.applications/lldp-speaker/${project.version}/xml/config</configfile>
     </feature>
