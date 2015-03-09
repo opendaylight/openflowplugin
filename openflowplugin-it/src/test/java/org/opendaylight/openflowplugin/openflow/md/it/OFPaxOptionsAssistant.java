@@ -27,11 +27,11 @@ public abstract class OFPaxOptionsAssistant {
     public static final String DEBUG_PORT = "6000";
     /** base controller package */
     public static final String CONTROLLER = "org.opendaylight.controller";
-    /** base controller.md package */
+    /** base controller md-sal package */
     public static final String CONTROLLER_MD = "org.opendaylight.controller.md";
     /** OFLibrary package */
     public static final String OFLIBRARY = "org.opendaylight.openflowjava";
-    /** OFPlugin package */
+    /** OFLibrary package */
     public static final String OFPLUGIN = "org.opendaylight.openflowplugin";
     /** OFPlugin applications package */
     public static final String OFPLUGIN_APPS = "org.opendaylight.openflowplugin.applications";
@@ -112,6 +112,8 @@ public abstract class OFPaxOptionsAssistant {
         return new DefaultCompositeOption(
 //                mavenBundle("org.apache.felix", "org.apache.felix.dependencymanager").versionAsInProject(),
 //                mavenBundle(CONTROLLER, "sal").versionAsInProject(),
+                mavenBundle(CONTROLLER, "liblldp").versionAsInProject(),
+                mavenBundle(CONTROLLER_MD, "topology-lldp-discovery").versionAsInProject(),
                 mavenBundle(YANGTOOLS + ".thirdparty", "antlr4-runtime-osgi-nohead").versionAsInProject());
 
     }

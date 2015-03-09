@@ -18,6 +18,8 @@
         <jmxGeneratorPath>${project.build.directory}/generated-sources/config</jmxGeneratorPath>
         <sal-binding-api.version>1.2.0-SNAPSHOT</sal-binding-api.version>
     </properties>
+    
+
 
     <build>
         <plugins>
@@ -158,6 +160,12 @@
         <dependency>
             <groupId>org.opendaylight.openflowjava</groupId>
             <artifactId>util</artifactId>
+        </dependency>
+
+        <dependency>
+          <groupId>org.opendaylight.controller.md</groupId>
+          <artifactId>topology-lldp-discovery</artifactId>
+          <version>${mdsal.version}</version>
         </dependency>
 
     </dependencies>
