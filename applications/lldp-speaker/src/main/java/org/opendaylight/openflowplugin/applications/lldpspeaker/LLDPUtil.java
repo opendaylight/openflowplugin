@@ -8,6 +8,11 @@
 
 package org.opendaylight.openflowplugin.applications.lldpspeaker;
 
+import static org.opendaylight.controller.liblldp.LLDPTLV.CUSTOM_TLV_SUB_TYPE_CUSTOM_SEC;
+import static org.opendaylight.openflowplugin.applications.topology.lldp.utils.LLDPDiscoveryUtils.getValueForLLDPPacketIntegrityEnsuring;
+
+import java.security.NoSuchAlgorithmException;
+
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
@@ -34,11 +39,8 @@ public final class LLDPUtil {
     static byte[] buildLldpFrame(NodeId nodeId,
             NodeConnectorId nodeConnectorId, MacAddress src, Long outPortNo,
             MacAddress destinationAddress) {
-        // Create LLDP TTL TLV
-        byte[] ttl = new byte[] { (byte) 0x13, (byte) 0x37 };
-        LLDPTLV ttlTlv = new LLDPTLV();
-        ttlTlv.setType(LLDPTLV.TLVType.TTL.getValue())
-                .setLength((short) ttl.length).setValue(ttl);
+        // Create discovery pkt
+        LLDP discoveryPkt = new LLDP();
 
         // Create LLDP ChassisID TLV
         BigInteger dataPathId = dataPathIdFromNodeId(nodeId);
@@ -48,13 +50,7 @@ public final class LLDPUtil {
         chassisIdTlv.setType(LLDPTLV.TLVType.ChassisID.getValue());
         chassisIdTlv.setType(LLDPTLV.TLVType.ChassisID.getValue())
                 .setLength((short) cidValue.length).setValue(cidValue);
-
-        // Create LLDP SystemName TLV
-        byte[] snValue = LLDPTLV.createSystemNameTLVValue(nodeId.getValue());
-        LLDPTLV systemNameTlv = new LLDPTLV();
-        systemNameTlv.setType(LLDPTLV.TLVType.SystemName.getValue());
-        systemNameTlv.setType(LLDPTLV.TLVType.SystemName.getValue())
-                .setLength((short) snValue.length).setValue(snValue);
+        discoveryPkt.setChassisId(chassisIdTlv);
 
         // Create LLDP PortID TL
         String hexString = Long.toHexString(outPortNo);
@@ -63,6 +59,22 @@ public final class LLDPUtil {
         portIdTlv.setType(LLDPTLV.TLVType.PortID.getValue())
                 .setLength((short) pidValue.length).setValue(pidValue);
         portIdTlv.setType(LLDPTLV.TLVType.PortID.getValue());
+        discoveryPkt.setPortId(portIdTlv);
+
+        // Create LLDP TTL TLV
+        byte[] ttl = new byte[] { (byte) 0x13, (byte) 0x37 };
+        LLDPTLV ttlTlv = new LLDPTLV();
+        ttlTlv.setType(LLDPTLV.TLVType.TTL.getValue())
+                .setLength((short) ttl.length).setValue(ttl);
+        discoveryPkt.setTtl(ttlTlv);
+
+        // Create LLDP SystemName TLV
+        byte[] snValue = LLDPTLV.createSystemNameTLVValue(nodeId.getValue());
+        LLDPTLV systemNameTlv = new LLDPTLV();
+        systemNameTlv.setType(LLDPTLV.TLVType.SystemName.getValue());
+        systemNameTlv.setType(LLDPTLV.TLVType.SystemName.getValue())
+                .setLength((short) snValue.length).setValue(snValue);
+        discoveryPkt.setSystemNameId(systemNameTlv);
 
         // Create LLDP Custom TLV
         byte[] customValue = LLDPTLV.createCustomTLVValue(nodeConnectorId
@@ -70,15 +82,23 @@ public final class LLDPUtil {
         LLDPTLV customTlv = new LLDPTLV();
         customTlv.setType(LLDPTLV.TLVType.Custom.getValue())
                 .setLength((short) customValue.length).setValue(customValue);
+        discoveryPkt.addCustomTLV(customTlv);
 
-        // Create LLDP Custom Option list
-        List<LLDPTLV> customList = Collections.singletonList(customTlv);
+        //Create LLDP CustomSec TLV
+        byte[] pureValue = new byte[1];
+        try {
+            pureValue = getValueForLLDPPacketIntegrityEnsuring(nodeConnectorId);
+            byte[] customSecValue = LLDPTLV.createCustomTLVValue(CUSTOM_TLV_SUB_TYPE_CUSTOM_SEC, pureValue);
+            LLDPTLV customSecTlv = new LLDPTLV();
+            customSecTlv.setType(LLDPTLV.TLVType.Custom.getValue())
+            .setLength((short)customSecValue.length)
+            .setValue(customSecValue);
+            discoveryPkt.addCustomTLV(customSecTlv);
+        } catch (NoSuchAlgorithmException e1) {
+            LOG.info("LLDP extra authenticator creation failed: {}", e1.getMessage());
+            LOG.debug("Reason why LLDP extra authenticator creation failed: ", e1);
+        }
 
-        // Create discovery pkt
-        LLDP discoveryPkt = new LLDP();
-        discoveryPkt.setChassisId(chassisIdTlv).setPortId(portIdTlv)
-                .setTtl(ttlTlv).setSystemNameId(systemNameTlv)
-                .setOptionalTLVList(customList);
 
         // Create ethernet pkt
         byte[] sourceMac = HexEncode.bytesFromHexString(src.getValue());
