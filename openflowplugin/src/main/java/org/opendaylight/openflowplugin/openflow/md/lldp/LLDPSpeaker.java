@@ -7,8 +7,13 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.lldp;
 
+import static org.opendaylight.controller.liblldp.LLDPTLV.CUSTOM_TLV_SUB_TYPE_CUSTOM_SEC;
+import static org.opendaylight.md.controller.topology.lldp.utils.LLDPDiscoveryUtils.getValueForLLDPPacketIntegrityEnsuring;
+
+import java.security.NoSuchAlgorithmException;
+
+import java.util.ArrayList;
 import java.math.BigInteger;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
@@ -143,19 +148,36 @@ public class LLDPSpeaker {
         portIdTlv.setType(LLDPTLV.TLVType.PortID.getValue()).setLength((short) pidValue.length).setValue(pidValue);
         portIdTlv.setType(LLDPTLV.TLVType.PortID.getValue());
 
+        // Create LLDP Custom Option list
+        List<LLDPTLV> customOptions = new ArrayList<>();
+
         // Create LLDP Custom TLV
         byte[] customValue = LLDPTLV.createCustomTLVValue(nodeConnectorId.getValue());
         LLDPTLV customTlv = new LLDPTLV();
         customTlv.setType(LLDPTLV.TLVType.Custom.getValue()).setLength((short) customValue.length)
                 .setValue(customValue);
 
-        // Create LLDP Custom Option list
-        List<LLDPTLV> customList = Collections.singletonList(customTlv);
+        customOptions.add(customTlv);
+
+        //Create LLDP CustomSec TLV
+        //TODO what if MD5 hasher isn't present
+        byte[] pureValue = new byte[1];
+        try {
+            pureValue = getValueForLLDPPacketIntegrityEnsuring(nodeConnectorId);
+        } catch (NoSuchAlgorithmException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
+        byte[] customSecValue = LLDPTLV.createCustomTLVValue(CUSTOM_TLV_SUB_TYPE_CUSTOM_SEC, pureValue);
+        LLDPTLV customSecTlv = new LLDPTLV();
+        customSecTlv.setType(LLDPTLV.TLVType.CustomSec.getValue()).setLength((short)customSecValue.length)
+                .setValue(customSecValue);
+        customOptions.add(customSecTlv);
 
         // Create discovery pkt
         LLDP discoveryPkt = new LLDP();
         discoveryPkt.setChassisId(chassisIdTlv).setPortId(portIdTlv).setTtl(ttlTlv).setSystemNameId(systemNameTlv)
-                .setOptionalTLVList(customList);
+                .setCustomTLVList(customOptions);
 
         // Create ethernet pkt
         byte[] sourceMac = HexEncode.bytesFromHexString(src.getValue());
