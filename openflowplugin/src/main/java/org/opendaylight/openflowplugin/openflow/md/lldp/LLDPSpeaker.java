@@ -7,8 +7,9 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.lldp;
 
+import java.util.ArrayList;
+
 import java.math.BigInteger;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
@@ -143,19 +144,28 @@ public class LLDPSpeaker {
         portIdTlv.setType(LLDPTLV.TLVType.PortID.getValue()).setLength((short) pidValue.length).setValue(pidValue);
         portIdTlv.setType(LLDPTLV.TLVType.PortID.getValue());
 
+        // Create LLDP Custom Option list
+        List<LLDPTLV> customOptions = new ArrayList<>();
+
         // Create LLDP Custom TLV
         byte[] customValue = LLDPTLV.createCustomTLVValue(nodeConnectorId.getValue());
         LLDPTLV customTlv = new LLDPTLV();
         customTlv.setType(LLDPTLV.TLVType.Custom.getValue()).setLength((short) customValue.length)
                 .setValue(customValue);
 
-        // Create LLDP Custom Option list
-        List<LLDPTLV> customList = Collections.singletonList(customTlv);
+        customOptions.add(customTlv);
+
+        //Create LLDP CustomSec TLV
+        byte[] customSecValue = LLDPTLV.createCustomSecTLVValue(nodeConnectorId.getValue());
+        LLDPTLV customSecTlv = new LLDPTLV();
+        customSecTlv.setType(LLDPTLV.TLVType.CustomSec.getValue()).setLength((short)customSecValue.length)
+                .setValue(customSecValue);
+        customOptions.add(customSecTlv);
 
         // Create discovery pkt
         LLDP discoveryPkt = new LLDP();
         discoveryPkt.setChassisId(chassisIdTlv).setPortId(portIdTlv).setTtl(ttlTlv).setSystemNameId(systemNameTlv)
-                .setOptionalTLVList(customList);
+                .setOptionalTLVList(customOptions);
 
         // Create ethernet pkt
         byte[] sourceMac = HexEncode.bytesFromHexString(src.getValue());
