@@ -7,7 +7,7 @@
  */
 package org.opendaylight.openflowjava.nx.api;
 
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.ExperimenterActionSubType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.ExperimenterActionSubType;
 
 /**
  * @author msunal

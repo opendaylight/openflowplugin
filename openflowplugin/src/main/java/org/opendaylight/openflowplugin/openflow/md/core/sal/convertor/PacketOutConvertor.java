@@ -13,7 +13,10 @@ import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.OutputActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.output.action._case.OutputActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOutInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOutInputBuilder;
@@ -37,7 +40,7 @@ public final class PacketOutConvertor {
 
     /**
      * @param version
-     * @param Yang    Data source
+     * @param inputPacket
      * @return PacketOutInput required by OF Library
      */
     public static PacketOutInput toPacketOutInput(TransmitPacketInput inputPacket, short version, Long xid,
@@ -75,7 +78,23 @@ public final class PacketOutConvertor {
         }
 
         // TODO VD P! wait for way to move Actions (e.g. augmentation)
+        ActionBuilder aBuild = new ActionBuilder();
 
+        OutputActionCaseBuilder outputActionCaseBuilder =
+                new OutputActionCaseBuilder();
+
+        OutputActionBuilder outputActionBuilder =
+                new OutputActionBuilder();
+
+        outputActionBuilder.setPort(outPort);
+        outputActionBuilder.setMaxLength(OFConstants.OFPCML_NO_BUFFER);
+
+        outputActionCaseBuilder.setOutputAction(outputActionBuilder.build());
+
+        aBuild.setActionChoice(outputActionCaseBuilder.build());
+
+        actions.add(aBuild.build());
+        builder.setAction(actions);
         builder.setData(inputPacket.getPayload());
         builder.setVersion(version);
         builder.setXid(xid);

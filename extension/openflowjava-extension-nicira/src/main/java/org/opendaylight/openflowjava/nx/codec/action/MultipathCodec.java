@@ -11,23 +11,18 @@
 package org.opendaylight.openflowjava.nx.codec.action;
 
 import io.netty.buffer.ByteBuf;
-
 import org.opendaylight.openflowjava.nx.api.NiciraActionDeserializerKey;
 import org.opendaylight.openflowjava.nx.api.NiciraActionSerializerKey;
+import org.opendaylight.openflowjava.nx.api.NiciraConstants;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.ExperimenterIdAction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.ExperimenterIdAction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder;
-import org.opendaylight.openflowjava.nx.codec.action.AbstractActionCodec;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.NxmNxMultipath;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.OfjNxMpAlgorithm;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.OfjNxHashFields;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.OfjAugNxAction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.OfjAugNxActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.multipath.grouping.ActionMultipath;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.multipath.grouping.ActionMultipathBuilder;
-
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.OfjNxMpAlgorithm;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionMultipath;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionMultipathBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.multipath.grouping.NxActionMultipathBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,43 +41,43 @@ public class MultipathCodec extends AbstractActionCodec {
 
     @Override
     public void serialize(Action input, ByteBuf outBuffer) {
-        ActionMultipath action = input.getAugmentation(OfjAugNxAction.class).getActionMultipath();
+        ActionMultipath action = ((ActionMultipath) input.getActionChoice()); //getAugmentation(OfjAugNxAction.class).getActionMultipath();
         serializeHeader(LENGTH, NXAST_MULTIPATH_SUBTYPE, outBuffer);
 
-        outBuffer.writeShort(action.getFields().getIntValue());
-        outBuffer.writeShort(action.getBasis().shortValue());
+        outBuffer.writeShort(action.getNxActionMultipath().getFields().getIntValue());
+        outBuffer.writeShort(action.getNxActionMultipath().getBasis().shortValue());
         outBuffer.writeZero(2);
 
-        outBuffer.writeShort(action.getAlgorithm().getIntValue());
-        outBuffer.writeShort(action.getMaxLink().shortValue());
-        outBuffer.writeInt(action.getArg().intValue());
+        outBuffer.writeShort(action.getNxActionMultipath().getAlgorithm().getIntValue());
+        outBuffer.writeShort(action.getNxActionMultipath().getMaxLink().shortValue());
+        outBuffer.writeInt(action.getNxActionMultipath().getArg().intValue());
         outBuffer.writeZero(2);
 
-        outBuffer.writeShort(action.getOfsNbits().shortValue());
-        outBuffer.writeInt(action.getDst().intValue());
+        outBuffer.writeShort(action.getNxActionMultipath().getOfsNbits().shortValue());
+        outBuffer.writeInt(action.getNxActionMultipath().getDst().intValue());
     }
 
     @Override
     public Action deserialize(ByteBuf message) {
         ActionBuilder actionBuilder = deserializeHeader(message);
-        ActionMultipathBuilder builder = new ActionMultipathBuilder();
-        builder.setFields(OfjNxHashFields.forValue(message.readUnsignedShort()));
-        builder.setBasis(message.readUnsignedShort());
+        ActionMultipathBuilder actionMultipathBuilder = new ActionMultipathBuilder();
+
+        NxActionMultipathBuilder nxActionMultipathBuilder = new NxActionMultipathBuilder();
+        nxActionMultipathBuilder.setFields(OfjNxHashFields.forValue(message.readUnsignedShort()));
+        nxActionMultipathBuilder.setBasis(message.readUnsignedShort());
         message.skipBytes(2); //two bytes
 
-        builder.setAlgorithm(OfjNxMpAlgorithm.forValue(message.readUnsignedShort()));
-        builder.setMaxLink(message.readUnsignedShort());
-        builder.setArg(message.readUnsignedInt());
+        nxActionMultipathBuilder.setAlgorithm(OfjNxMpAlgorithm.forValue(message.readUnsignedShort()));
+        nxActionMultipathBuilder.setMaxLink(message.readUnsignedShort());
+        nxActionMultipathBuilder.setArg(message.readUnsignedInt());
         message.skipBytes(2); //two bytes
 
-        builder.setOfsNbits(message.readUnsignedShort());
-        builder.setDst(message.readUnsignedInt());
+        nxActionMultipathBuilder.setOfsNbits(message.readUnsignedShort());
+        nxActionMultipathBuilder.setDst(message.readUnsignedInt());
+        nxActionMultipathBuilder.setExperimenterId(getExperimenterId());
+        actionMultipathBuilder.setNxActionMultipath(nxActionMultipathBuilder.build());
+        actionBuilder.setActionChoice(actionMultipathBuilder.build());
 
-        OfjAugNxActionBuilder augNxActionBuilder = new OfjAugNxActionBuilder();
-        augNxActionBuilder.setActionMultipath(builder.build());
-        actionBuilder.addAugmentation(ExperimenterIdAction.class,
-                                      createExperimenterIdAction(NxmNxMultipath.class));
-        actionBuilder.addAugmentation(OfjAugNxAction.class, augNxActionBuilder.build());
         return actionBuilder.build();
     }
 }

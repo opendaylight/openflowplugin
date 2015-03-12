@@ -331,7 +331,7 @@ public class NiciraExtensionProvider implements AutoCloseable {
      */
     private void registerAction13(
             Class<? extends Action> actionCaseType,
-            ConvertorActionToOFJava<Action, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action> actionConvertor) {
+            ConvertorActionToOFJava<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action> actionConvertor) {
         TypeVersionKey<? extends Action> key = new TypeVersionKey<>(actionCaseType, EncodeConstants.OF13_VERSION_ID);
         registrations.add(extensionConverterRegistrator.registerActionConvertor(key, actionConvertor));
     }

@@ -4,7 +4,7 @@ module nicira-action {
     namespace "urn:opendaylight:openflowjava:nx:action";
     prefix "nicira-action";
 
-    import openflow-action {prefix ofaction;}
+    import openflow-action {prefix ofaction; revision-date "2015-02-03";}
     import openflow-types {prefix oft;}
     import yang-ext {prefix ext; revision-date "2013-07-09";}
 
@@ -38,7 +38,7 @@ module nicira-action {
     }
 
     grouping ofj-nx-action-reg-load-grouping {
-        container action-reg-load {
+        container nx-action-reg-load {
             leaf ofs_nbits {
                 type uint16;
             }
@@ -48,29 +48,35 @@ module nicira-action {
             leaf value {
                 type uint64;
             }
+            leaf experimenter-id {
+                type oft:experimenter-id;
+            }
         }
     }
     grouping ofj-nx-action-reg-move-grouping {
-        container action-reg-move {
-            leaf n_bits {
-                type uint16;
-            }
-            leaf src_ofs {
-                type uint16;
-            }
-            leaf dst_ofs {
-                type uint16;
-            }
-            leaf src {
-                type uint32;
-            }
-            leaf dst {
-                type uint32;
-            }
+        container nx-action-reg-move {
+                leaf n_bits {
+                    type uint16;
+                }
+                leaf src_ofs {
+                    type uint16;
+                }
+                leaf dst_ofs {
+                    type uint16;
+                }
+                leaf src {
+                    type uint32;
+                }
+                leaf dst {
+                    type uint32;
+                }
+                leaf experimenter-id {
+                    type oft:experimenter-id;
+                }
         }
     }
     grouping ofj-nx-action-output-reg-grouping {
-        container action-output-reg {
+        container nx-action-output-reg {
             leaf n_bits {
                 type uint16;
             }
@@ -80,11 +86,14 @@ module nicira-action {
             leaf max_len {
                 type uint16;
             }
+            leaf experimenter-id {
+                type oft:experimenter-id;
+            }
         }
     }
 
     grouping ofj-nx-action-resubmit-grouping {
-        container action-resubmit {
+        container nx-action-resubmit {
             leaf in-port {
                 type uint16;
                 default 0xfff8; // OFPP_INPORT
@@ -94,6 +103,9 @@ module nicira-action {
                     range "0 .. 255";
                 }
                 default 255; // Current Table
+            }
+            leaf experimenter-id {
+                type oft:experimenter-id;
             }
         }
     }
@@ -129,7 +141,7 @@ module nicira-action {
     }
 
     grouping ofj-nx-action-multipath-grouping {
-        container action-multipath {
+        container nx-action-multipath {
             leaf fields {
                 type ofj-nx-hash-fields;
             }
@@ -152,33 +164,56 @@ module nicira-action {
             leaf dst {
                 type uint32;
             }
+            leaf experimenter-id {
+                type oft:experimenter-id;
+            }
         }
     }
 
     grouping ofj-nx-action-set-nsp-grouping {
-        container action-set-nsp {
+        container nx-action-set-nsp {
             leaf nsp {
                 type uint32;
+            }
+            leaf experimenter-id {
+                type oft:experimenter-id;
             }
         }
     }
 
     grouping ofj-nx-action-set-nsi-grouping {
-        container action-set-nsi {
+        container nx-action-set-nsi {
             leaf nsi {
                 type uint8;
+            }
+            leaf experimenter-id {
+                type oft:experimenter-id;
             }
         }
     }
 
-    augment "/ofaction:actions-container/ofaction:action" {
+    augment "/ofaction:action-container/ofaction:action-choice" {
         ext:augment-identifier "ofj-aug-nx-action";
-        uses ofj-nx-action-reg-load-grouping;
-        uses ofj-nx-action-reg-move-grouping;
-        uses ofj-nx-action-output-reg-grouping;
-        uses ofj-nx-action-resubmit-grouping;
-        uses ofj-nx-action-multipath-grouping;
-        uses ofj-nx-action-set-nsp-grouping;
-        uses ofj-nx-action-set-nsi-grouping;
+        case action-reg-load {
+            uses ofj-nx-action-reg-load-grouping;
+        }
+        case action-reg-move {
+            uses ofj-nx-action-reg-move-grouping;
+        }
+        case action-output-reg {
+            uses ofj-nx-action-output-reg-grouping;
+        }
+        case action-resubmit {
+            uses ofj-nx-action-resubmit-grouping;
+        }
+        case action-multipath {
+            uses ofj-nx-action-multipath-grouping;
+        }
+        case action-set-nsp {
+            uses ofj-nx-action-set-nsp-grouping;
+        }
+        case action-set-nsi {
+            uses ofj-nx-action-set-nsi-grouping;
+        }
     }
 }

@@ -17,13 +17,11 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Res
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Address;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetNwSrcActionCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.IpAddressAction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.IpAddressActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.OxmFieldsAction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.OxmFieldsActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.SetField;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.SetNwSrc;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetFieldCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetNwSrcCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.set.field._case.SetFieldActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.set.nw.src._case.SetNwSrcActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Ipv4Src;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Ipv6Src;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OpenflowBasicClass;
@@ -63,10 +61,11 @@ public class ActionSetNwSrcReactorMappingFactory {
                 new ResultInjector<Ipv4Address, ActionBuilder>() {
                     @Override
                     public void inject(final Ipv4Address result, final ActionBuilder target) {
-                        IpAddressActionBuilder ipvaddress = new IpAddressActionBuilder();
-                        ipvaddress.setIpAddress(result);
-                        target.setType(SetNwSrc.class);
-                        target.addAugmentation(IpAddressAction.class, ipvaddress.build());
+                        SetNwSrcCaseBuilder nwSrcCaseBuilder = new SetNwSrcCaseBuilder();
+                        SetNwSrcActionBuilder nwSrcBuilder = new SetNwSrcActionBuilder();
+                        nwSrcBuilder.setIpAddress(new Ipv4Address(result));
+                        nwSrcCaseBuilder.setSetNwSrcAction(nwSrcBuilder.build());
+                        target.setActionChoice(nwSrcCaseBuilder.build());
                     }
                 });
 
@@ -76,12 +75,13 @@ public class ActionSetNwSrcReactorMappingFactory {
                 new ResultInjector<Ipv4Address, ActionBuilder>() {
                     @Override
                     public void inject(final Ipv4Address result, final ActionBuilder target) {
-                        OxmFieldsActionBuilder oxmFieldsActionBuilder = new OxmFieldsActionBuilder();
-                        target.setType(SetField.class);
-                        List<MatchEntry> matchEntriesList = new ArrayList<>();
+                        SetFieldCaseBuilder setFieldCaseBuilder = new SetFieldCaseBuilder();
+                        SetFieldActionBuilder setFieldBuilder = new SetFieldActionBuilder();
+                        List<MatchEntry> entries = new ArrayList<>();
                         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
                         matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
                         matchEntryBuilder.setOxmMatchField(Ipv4Src.class);
+
                         Ipv4SrcCaseBuilder ipv4SrcCaseBuilder = new Ipv4SrcCaseBuilder();
                         Ipv4SrcBuilder ipv4SrcBuilder = new Ipv4SrcBuilder();
                         ipv4SrcBuilder.setIpv4Address(result);
@@ -90,11 +90,13 @@ public class ActionSetNwSrcReactorMappingFactory {
                             ipv4SrcBuilder.setMask(IpConversionUtil.convertIpv6PrefixToByteArray(prefix));
                         }
                         ipv4SrcCaseBuilder.setIpv4Src(ipv4SrcBuilder.build());
+
                         matchEntryBuilder.setHasMask(false);
                         matchEntryBuilder.setMatchEntryValue(ipv4SrcCaseBuilder.build());
-                        matchEntriesList.add(matchEntryBuilder.build());
-                        oxmFieldsActionBuilder.setMatchEntry(matchEntriesList);
-                        target.addAugmentation(OxmFieldsAction.class, oxmFieldsActionBuilder.build());
+                        entries.add(matchEntryBuilder.build());
+                        setFieldBuilder.setMatchEntry(entries);
+                        setFieldCaseBuilder.setSetFieldAction(setFieldBuilder.build());
+                        target.setActionChoice(setFieldCaseBuilder.build());
                     }
                 });
 
@@ -104,13 +106,10 @@ public class ActionSetNwSrcReactorMappingFactory {
                 new ResultInjector<Ipv6Address, ActionBuilder>() {
                     @Override
                     public void inject(final Ipv6Address result, final ActionBuilder target) {
-                        OxmFieldsActionBuilder oxmFieldsActionBuilder = new OxmFieldsActionBuilder();
-                        target.setType(SetField.class);
                         List<MatchEntry> matchEntriesList = new ArrayList<>();
                         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
                         matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
                         matchEntryBuilder.setOxmMatchField(Ipv6Src.class);
-
 
                         Ipv6SrcCaseBuilder ipv6SrcCaseBuilder = new Ipv6SrcCaseBuilder();
                         Ipv6SrcBuilder ipv6SrcBuilder = new Ipv6SrcBuilder();
@@ -124,8 +123,13 @@ public class ActionSetNwSrcReactorMappingFactory {
                         matchEntryBuilder.setHasMask(false);
                         matchEntryBuilder.setMatchEntryValue(ipv6SrcCaseBuilder.build());
                         matchEntriesList.add(matchEntryBuilder.build());
-                        oxmFieldsActionBuilder.setMatchEntry(matchEntriesList);
-                        target.addAugmentation(OxmFieldsAction.class, oxmFieldsActionBuilder.build());
+
+                        SetFieldCaseBuilder setFieldCaseBuilder = new SetFieldCaseBuilder();
+                        SetFieldActionBuilder setFieldActionBuilder = new SetFieldActionBuilder();
+                        setFieldActionBuilder.setMatchEntry(matchEntriesList);
+                        setFieldCaseBuilder.setSetFieldAction(setFieldActionBuilder.build());
+                        target.setActionChoice(setFieldCaseBuilder.build());
+
                     }
                 });
     }
