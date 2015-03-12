@@ -8,7 +8,6 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.session;
 
-import com.google.common.base.Preconditions;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -19,14 +18,13 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.opendaylight.openflowplugin.api.openflow.md.core.session.IMessageDispatchService;
+import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
+import org.opendaylight.openflowplugin.api.openflow.md.core.session.SwitchSessionKeyOF;
 import org.opendaylight.openflowplugin.api.openflow.md.ModelDrivenSwitch;
 import org.opendaylight.openflowplugin.api.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.api.openflow.md.core.NotificationEnqueuer;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
-import org.opendaylight.openflowplugin.api.openflow.md.core.session.IMessageDispatchService;
-import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
-import org.opendaylight.openflowplugin.api.openflow.md.core.session.SwitchSessionKeyOF;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ControllerRole;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
 import org.opendaylight.yangtools.concepts.CompositeObjectRegistration;
@@ -48,8 +46,7 @@ public class SessionContextOFImpl implements SessionContext {
     private final Map<Long, Boolean> portBandwidth;
     private CompositeObjectRegistration<ModelDrivenSwitch> providerRegistration;
     private int seed;
-    private ControllerRole roleOnDevice = ControllerRole.OFPCRROLEEQUAL;
-
+    
 
     /**
      * default ctor
@@ -84,7 +81,7 @@ public class SessionContextOFImpl implements SessionContext {
     public Set<Entry<SwitchConnectionDistinguisher, ConnectionConductor>> getAuxiliaryConductors() {
         return Collections.unmodifiableSet(auxiliaryConductors.entrySet());
     }
-
+    
     @Override
     public GetFeaturesOutput getFeatures() {
         return features;
@@ -128,7 +125,7 @@ public class SessionContextOFImpl implements SessionContext {
     public void setSessionKey(SwitchSessionKeyOF sessionKey) {
         this.sessionKey = sessionKey;
     }
-
+    
     /**
      * @param seed the seed to set
      */
@@ -155,7 +152,7 @@ public class SessionContextOFImpl implements SessionContext {
     public Map<Long, PortGrouping> getPhysicalPorts() {
         return this.physicalPorts;
     }
-
+    
     @Override
     public Map<Long, Boolean> getPortsBandwidth() {
         return this.portBandwidth;
@@ -210,23 +207,23 @@ public class SessionContextOFImpl implements SessionContext {
         }
         return result;
     }
-
+    
     @Override
     public void setProviderRegistration(
             CompositeObjectRegistration<ModelDrivenSwitch> providerRegistration) {
                 this.providerRegistration = providerRegistration;
     }
-
+    
     @Override
     public CompositeObjectRegistration<ModelDrivenSwitch> getProviderRegistration() {
         return providerRegistration;
     }
-
+    
     @Override
     public int getSeed() {
         return seed;
     }
-
+    
     /**
      * @param notificationEnqueuer the notificationEnqueuer to set
      */
@@ -234,26 +231,9 @@ public class SessionContextOFImpl implements SessionContext {
             NotificationEnqueuer notificationEnqueuer) {
         this.notificationEnqueuer = notificationEnqueuer;
     }
-
+    
     @Override
     public NotificationEnqueuer getNotificationEnqueuer() {
         return notificationEnqueuer;
-    }
-
-    /**
-     * @return the roleOnDevice
-     */
-    @Override
-    public ControllerRole getRoleOnDevice() {
-        return roleOnDevice;
-    }
-
-    /**
-     * @param roleOnDevice the roleOnDevice to set
-     */
-    @Override
-    public void setRoleOnDevice(ControllerRole roleOnDevice) {
-        Preconditions.checkNotNull("Proposed controller role can not be empty.", roleOnDevice);
-        this.roleOnDevice = roleOnDevice;
     }
 }

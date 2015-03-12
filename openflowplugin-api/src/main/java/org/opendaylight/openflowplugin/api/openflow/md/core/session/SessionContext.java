@@ -18,7 +18,6 @@ import org.opendaylight.openflowplugin.api.openflow.md.core.NotificationEnqueuer
 import org.opendaylight.openflowplugin.api.openflow.md.ModelDrivenSwitch;
 import org.opendaylight.openflowplugin.api.openflow.md.core.NotificationQueueWrapper;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ControllerRole;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
 import org.opendaylight.yangtools.concepts.CompositeObjectRegistration;
@@ -87,7 +86,7 @@ public interface SessionContext {
      * @return The Map of OFPhysicalPort
      */
     Map<Long, PortGrouping> getPhysicalPorts();
-
+    
     /**
      * Returns a map containing all bandwidths for all OFPorts of this switch.
      * @return The Map of bandwidths for all OFPorts
@@ -99,7 +98,7 @@ public interface SessionContext {
      * @return The Set of port ID
      */
     Set<Long> getPorts();
-
+    
     /**
      * Returns OFPhysicalPort of the specified portNumber of this switch.
      * @param portNumber The port ID
@@ -157,24 +156,14 @@ public interface SessionContext {
      * @return provider composite registration
      */
     CompositeObjectRegistration<ModelDrivenSwitch> getProviderRegistration();
-
+    
     /**
      * @return seed value for random operations
      */
     int getSeed();
-
+    
     /**
      * @return (wrapped) notification enqueue service - {@link NotificationQueueWrapper}
      */
     NotificationEnqueuer getNotificationEnqueuer();
-
-    /**
-     * @param roleOnDevice
-     */
-    void setRoleOnDevice(ControllerRole roleOnDevice);
-
-    /**
-     * @return actual role
-     */
-    ControllerRole getRoleOnDevice();
 }

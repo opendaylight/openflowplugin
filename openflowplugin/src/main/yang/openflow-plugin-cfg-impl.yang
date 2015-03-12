@@ -39,21 +39,6 @@ module openflow-provider-impl {
         config:java-name-prefix MsgSpyService;
     }
 
-    // role of OFPlugin instance
-    typedef ofp-role {
-        type enumeration {
-            enum NOCHANGE {
-                description "no change to role";
-            }
-            enum BECOMEMASTER {
-                description "promote current role to MASTER";
-            }
-            enum BECOMESLAVE {
-                description "demote current role to SLAVE";
-            }
-        }
-    }
-
     augment "/config:modules/config:module/config:configuration" {
         case openflow-provider-impl {
             when "/config:modules/config:module/config:type = 'openflow-provider-impl'";
@@ -73,10 +58,6 @@ module openflow-provider-impl {
                         config:required-identity openflow-switch-connection-provider:openflow-switch-connection-provider;
                     }
                 }
-            }
-            leaf role {
-                type ofp-role;
-                default "NOCHANGE";
             }
         }
 

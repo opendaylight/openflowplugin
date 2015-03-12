@@ -11,14 +11,16 @@ import com.google.common.base.Function;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
-
+import com.google.common.util.concurrent.SettableFuture;
+import org.opendaylight.controller.sal.common.util.RpcErrors;
+import org.opendaylight.controller.sal.common.util.Rpcs;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.ConnectionException;
+import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.IMessageDispatchService;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
-import org.opendaylight.openflowplugin.openflow.md.util.RpcResultUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev131103.TransactionId;
@@ -29,12 +31,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.Upd
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.*;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.UpdatePortOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.UpdatePortOutputBuilder;
+import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
-import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Future;
 
 /**
@@ -45,6 +49,9 @@ import java.util.concurrent.Future;
 public class MessageDispatchServiceImpl implements IMessageDispatchService {
 
     private static final Logger LOG = LoggerFactory.getLogger(MessageDispatchServiceImpl.class);
+    private static final String CONNECTION_ERROR_MESSAGE = "Session for the cookie is invalid. Reason: "
+            + "the switch has been recently disconnected OR inventory provides outdated information.";
+
     private SessionContext session;
 
     /**
@@ -91,8 +98,27 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
         try {
             return getConnectionAdapter(cookie).barrier(input);
         } catch (ConnectionException e) {
-            return RpcResultUtil.getRpcErrorFuture(e);
+            return getRpcErrorFuture(e);
         }
+    }
+
+    private <T> SettableFuture<RpcResult<T>> getRpcErrorFuture(ConnectionException e) {
+        List<RpcError> rpcErrorList = getConnectionErrorAsRpcErrors(e);
+        SettableFuture<RpcResult<T>> futureWithError = SettableFuture.create();
+        futureWithError.set(Rpcs.<T>getRpcResult(false, rpcErrorList));
+        return futureWithError;
+    }
+
+    private List<RpcError> getConnectionErrorAsRpcErrors(ConnectionException e) {
+        List<RpcError> rpcErrorList = new ArrayList<>();
+        rpcErrorList.add(RpcErrors.getRpcError(OFConstants.APPLICATION_TAG,
+                OFConstants.ERROR_TAG_TIMEOUT,
+                CONNECTION_ERROR_MESSAGE,
+                RpcError.ErrorSeverity.WARNING,
+                e.getMessage(),
+                RpcError.ErrorType.TRANSPORT,
+                e.getCause()));
+        return rpcErrorList;
     }
 
     @Override
@@ -100,7 +126,7 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
         try {
             return getConnectionAdapter(cookie).experimenter(input);
         } catch (ConnectionException e) {
-            return RpcResultUtil.getRpcErrorFuture(e);
+            return getRpcErrorFuture(e);
         }
     }
 
@@ -111,7 +137,7 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
         try {
             response = getConnectionAdapter(cookie).flowMod(input);
         } catch (ConnectionException e) {
-            return RpcResultUtil.getRpcErrorFuture(e);
+            return getRpcErrorFuture(e);
         }
 
         // appending xid
@@ -126,10 +152,8 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
                         flowModOutput.setTransactionId(new TransactionId(bigIntXid));
 
                         UpdateFlowOutput result = flowModOutput.build();
-                        RpcResult<UpdateFlowOutput> rpcResult = RpcResultBuilder
-                                .<UpdateFlowOutput>status(inputArg.isSuccessful())
-                                .withResult(result).withRpcErrors(inputArg.getErrors())
-                                .build();
+                        RpcResult<UpdateFlowOutput> rpcResult = Rpcs.getRpcResult(
+                                inputArg.isSuccessful(), result, inputArg.getErrors());
                         return rpcResult;
                     }
                 });
@@ -142,7 +166,7 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
         try {
             return getConnectionAdapter(cookie).getAsync(input);
         } catch (ConnectionException e) {
-            return RpcResultUtil.getRpcErrorFuture(e);
+            return getRpcErrorFuture(e);
         }
     }
 
@@ -151,7 +175,7 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
         try {
             return getConnectionAdapter(cookie).getConfig(input);
         } catch (ConnectionException e) {
-            return RpcResultUtil.getRpcErrorFuture(e);
+            return getRpcErrorFuture(e);
         }
     }
 
@@ -160,7 +184,7 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
         try {
             return getConnectionAdapter(cookie).getFeatures(input);
         } catch (ConnectionException e) {
-            return RpcResultUtil.getRpcErrorFuture(e);
+            return getRpcErrorFuture(e);
         }
     }
 
@@ -170,7 +194,7 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
         try {
             return getConnectionAdapter(cookie).getQueueConfig(input);
         } catch (ConnectionException e) {
-            return RpcResultUtil.getRpcErrorFuture(e);
+            return getRpcErrorFuture(e);
         }
     }
 
@@ -181,7 +205,7 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
         try {
             response = getConnectionAdapter(cookie).groupMod(input);
         } catch (ConnectionException e) {
-            return RpcResultUtil.getRpcErrorFuture(e);
+            return getRpcErrorFuture(e);
         }
 
         // appending xid
@@ -196,9 +220,8 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
                         groupModOutput.setTransactionId(new TransactionId(bigIntXid));
 
                         UpdateGroupOutput result = groupModOutput.build();
-                        RpcResult<UpdateGroupOutput> rpcResult = RpcResultBuilder
-                                .<UpdateGroupOutput>status(inputArg.isSuccessful()).withResult(result)
-                                .withRpcErrors(inputArg.getErrors()).build();
+                        RpcResult<UpdateGroupOutput> rpcResult = Rpcs.getRpcResult(
+                                inputArg.isSuccessful(), result, inputArg.getErrors());
                         return rpcResult;
                     }
                 });
@@ -213,7 +236,7 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
         try {
             response = getConnectionAdapter(cookie).meterMod(input);
         } catch (ConnectionException e) {
-            return RpcResultUtil.getRpcErrorFuture(e);
+            return getRpcErrorFuture(e);
         }
 
         // appending xid
@@ -228,9 +251,8 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
                         meterModOutput.setTransactionId(new TransactionId(bigIntXid));
 
                         UpdateMeterOutput result = meterModOutput.build();
-                        RpcResult<UpdateMeterOutput> rpcResult = RpcResultBuilder
-                                .<UpdateMeterOutput>status(inputArg.isSuccessful()).withResult(result)
-                                .withRpcErrors(inputArg.getErrors()).build();
+                        RpcResult<UpdateMeterOutput> rpcResult = Rpcs.getRpcResult(
+                                inputArg.isSuccessful(), result, inputArg.getErrors());
                         return rpcResult;
                     }
                 });
@@ -243,7 +265,7 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
         try {
             return getConnectionAdapter(cookie).multipartRequest(input);
         } catch (ConnectionException e) {
-            return RpcResultUtil.getRpcErrorFuture(e);
+            return getRpcErrorFuture(e);
         }
     }
 
@@ -252,7 +274,7 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
         try {
             return getConnectionAdapter(cookie).packetOut(input);
         } catch (ConnectionException e) {
-            return RpcResultUtil.getRpcErrorFuture(e);
+            return getRpcErrorFuture(e);
         }
     }
 
@@ -263,7 +285,7 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
         try {
             response = getConnectionAdapter(cookie).portMod(input);
         } catch (ConnectionException e) {
-            return RpcResultUtil.getRpcErrorFuture(e);
+            return getRpcErrorFuture(e);
         }
 
         // appending xid
@@ -278,9 +300,8 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
                         portModOutput.setTransactionId(new TransactionId(bigIntXid));
 
                         UpdatePortOutput result = portModOutput.build();
-                        RpcResult<UpdatePortOutput> rpcResult = RpcResultBuilder
-                                .<UpdatePortOutput>status(inputArg.isSuccessful()).withResult(result)
-                                .withRpcErrors(inputArg.getErrors()).build();
+                        RpcResult<UpdatePortOutput> rpcResult = Rpcs.getRpcResult(
+                                inputArg.isSuccessful(), result, inputArg.getErrors());
                         return rpcResult;
                     }
                 });
@@ -293,7 +314,7 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
         try {
             return getConnectionAdapter(cookie).roleRequest(input);
         } catch (ConnectionException e) {
-            return RpcResultUtil.getRpcErrorFuture(e);
+            return getRpcErrorFuture(e);
         }
     }
 
@@ -302,7 +323,7 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
         try {
             return getConnectionAdapter(cookie).setAsync(input);
         } catch (ConnectionException e) {
-            return RpcResultUtil.getRpcErrorFuture(e);
+            return getRpcErrorFuture(e);
         }
     }
 
@@ -311,7 +332,7 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
         try {
             return getConnectionAdapter(cookie).setConfig(input);
         } catch (ConnectionException e) {
-            return RpcResultUtil.getRpcErrorFuture(e);
+            return getRpcErrorFuture(e);
         }
     }
 
@@ -320,7 +341,7 @@ public class MessageDispatchServiceImpl implements IMessageDispatchService {
         try {
             return getConnectionAdapter(cookie).tableMod(input);
         } catch (ConnectionException e) {
-            return RpcResultUtil.getRpcErrorFuture(e);
+            return getRpcErrorFuture(e);
         }
     }
 }

@@ -46,9 +46,6 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
  */
 public interface IMessageDispatchService {
 
-    public static final String CONNECTION_ERROR_MESSAGE = "Session for the cookie is invalid. Reason: "
-    + "the switch has been recently disconnected OR inventory provides outdated information.";
-
     /**
      * send barrier message to switch
      *
