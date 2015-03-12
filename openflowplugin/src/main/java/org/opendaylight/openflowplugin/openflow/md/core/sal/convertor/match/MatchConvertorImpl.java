@@ -10,7 +10,12 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 
 import static org.opendaylight.openflowjava.util.ByteBufUtils.macAddressToString;
 
-import com.google.common.base.Optional;
+import java.math.BigInteger;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
@@ -82,8 +87,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.protocol.match.fields.PbbBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanIdBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.OxmFieldsAction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetFieldCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.set.field._case.SetFieldAction;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.EtherType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Ipv6ExthdrFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumber;
@@ -258,11 +264,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Tunne
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TunnelIpv4Src;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.math.BigInteger;
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+
+import com.google.common.base.Optional;
 
 /**
  * Utility class for converting a MD-SAL Flow into the OF flow mod
@@ -1782,6 +1785,23 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
     }
 
 
+//    /**
+//     * Method converts OF SetField action to SAL SetFiled action.
+//     *
+//     * @param action
+//     * @param ofVersion current ofp version
+//     * @return
+//     */
+//    public static SetField fromOFSetFieldToSALSetFieldAction(
+//            final Action action, OpenflowVersion ofVersion) {
+//        logger.debug("Converting OF SetField action to SAL SetField action");
+//        SetFieldBuilder setField = new SetFieldBuilder();
+//        OxmFieldsAction oxmFields = action.getAugmentation(OxmFieldsAction.class);
+//        MatchBuilder match = OfMatchToSALMatchConvertor(oxmFields.getMatchEntry(), null, ofVersion);
+//        setField.fieldsFrom(match.build());
+//        return setField.build();
+//    }
+    
     /**
      * Method converts OF SetField action to SAL SetFiled action.
      *
@@ -1792,10 +1812,14 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
     public static SetField fromOFSetFieldToSALSetFieldAction(
             final Action action, OpenflowVersion ofVersion) {
         logger.debug("Converting OF SetField action to SAL SetField action");
+        SetFieldCase setFieldCase = (SetFieldCase) action.getActionChoice();
+        SetFieldAction setFieldAction = setFieldCase.getSetFieldAction();
+        
         SetFieldBuilder setField = new SetFieldBuilder();
-        OxmFieldsAction oxmFields = action.getAugmentation(OxmFieldsAction.class);
-        MatchBuilder match = OfMatchToSALMatchConvertor(oxmFields.getMatchEntry(), null, ofVersion);
+        MatchBuilder match = OfMatchToSALMatchConvertor(setFieldAction.getMatchEntry(), null, ofVersion);
         setField.fieldsFrom(match.build());
         return setField.build();
     }
+    
+    
 }
