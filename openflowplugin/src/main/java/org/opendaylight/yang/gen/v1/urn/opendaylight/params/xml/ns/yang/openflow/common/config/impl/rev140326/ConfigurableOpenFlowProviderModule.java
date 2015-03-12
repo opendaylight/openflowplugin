@@ -58,6 +58,10 @@ public final class ConfigurableOpenFlowProviderModule extends org.opendaylight.y
     @Override
     public boolean canReuseInstance(
             AbstractConfigurableOpenFlowProviderModule oldModule) {
+        //  If we don't have an oldModule, we can't reuse it
+        if(oldModule == null) {
+            return false;
+        }
         // we can reuse if only the role field changed
         boolean noChangeExceptRole = true;
         noChangeExceptRole &= getBindingAwareBrokerDependency().equals(oldModule.getBindingAwareBrokerDependency());
