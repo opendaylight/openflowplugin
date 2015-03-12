@@ -12,8 +12,8 @@ import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.extension.api.ConvertorActionFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.ExperimenterIdAction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.action.container.action.choice.ExperimenterIdCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,12 +37,12 @@ public final class ActionExtensionHelper {
      */
     public static org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action
     processAlienAction(Action action, OpenflowVersion ofVersion, ActionPath actionPath) {
-
+        ExperimenterIdCase actionCase = (ExperimenterIdCase) action.getActionChoice();
         /** TODO: EXTENSION PROPOSAL (action, OFJava to MD-SAL) */
         ExperimenterActionSerializerKey key = new ExperimenterActionSerializerKey(
                 ofVersion.getVersion(),
-                action.getAugmentation(ExperimenterIdAction.class).getExperimenter().getValue(),
-                action.getAugmentation(ExperimenterIdAction.class).getSubType());
+                actionCase.getExperimenter().getExperimenter().getValue(),
+                actionCase.getExperimenter().getSubType());
 
         org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action alienAction = null;
         ConvertorActionFromOFJava<Action, ActionPath> convertor = OFSessionUtil.getExtensionConvertorProvider().getActionConverter(key);
