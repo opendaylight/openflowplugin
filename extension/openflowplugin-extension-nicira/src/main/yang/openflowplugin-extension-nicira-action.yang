@@ -14,7 +14,7 @@ module openflowplugin-extension-nicira-action {
     import opendaylight-group-statistics {prefix odl-group-stats;revision-date "2013-11-11";}
     import nicira-match {prefix nicira-match;revision-date "2014-04-21";}
     import openflowplugin-extension-general {prefix ext-gen;revision-date "2014-07-14";}
-    import openflow-action {prefix ofaction;revision-date "2013-07-31";}
+    import openflow-action {prefix ofaction;revision-date "2015-02-03";}
     import nicira-action {prefix nicira-action;revision-date "2014-04-21";}
 
     description 
