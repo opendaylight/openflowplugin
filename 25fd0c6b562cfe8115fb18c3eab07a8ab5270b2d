@@ -22,6 +22,30 @@
       "revId": "25fd0c6b562cfe8115fb18c3eab07a8ab5270b2d",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_943b07eb",
+        "filename": "openflowplugin/src/test/java/org/opendaylight/openflowplugin/openflow/md/core/sal/ModelDrivenSwitchImplTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2015-03-13T14:18:43Z",
+      "side": 1,
+      "message": "Automatic \"organize imports\" invoked.",
+      "parentUuid": "5a93c517_74ad1b31",
+      "range": {
+        "startLine": 33,
+        "startChar": 11,
+        "endLine": 33,
+        "endChar": 23
+      },
+      "revId": "25fd0c6b562cfe8115fb18c3eab07a8ab5270b2d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
