@@ -27,7 +27,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.CommonPort;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortNumberUni;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -180,7 +180,7 @@ public class LLDPSpeakerTest {
         // Call nodeConnectorAdded with local port
         FlowCapableNodeConnector fcnc = TestUtils
                 .createFlowCapableNodeConnector()
-                .setPortNumber(new CommonPort.PortNumber("LOCAL")).build();
+                .setPortNumber(new PortNumberUni("LOCAL")).build();
         lldpSpeaker.nodeConnectorAdded(id, fcnc);
 
         // Verify that nothing happened for local port

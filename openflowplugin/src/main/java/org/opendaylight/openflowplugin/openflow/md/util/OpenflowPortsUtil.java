@@ -1,13 +1,13 @@
 package org.opendaylight.openflowplugin.openflow.md.util;
 
-import com.google.common.collect.ImmutableBiMap;
-
 import org.opendaylight.openflowjava.protocol.api.util.BinContent;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.CommonPort;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortNumberUni;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.OutputPortValues;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumberValues;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumberValuesV10;
+
+import com.google.common.collect.ImmutableBiMap;
 
 /**
  * Class which integrates the port constants defined and used by MDSAL and the ports defined in openflow java
@@ -85,13 +85,13 @@ public class OpenflowPortsUtil {
         return port;
     }
 
-    public static CommonPort.PortNumber getProtocolAgnosticPort(OpenflowVersion ofVersion, Long portNumber) {
+    public static PortNumberUni getProtocolAgnosticPort(OpenflowVersion ofVersion, Long portNumber) {
         String reservedPortLogicalName = getPortLogicalName(ofVersion, portNumber);
-        return (reservedPortLogicalName == null ? new CommonPort.PortNumber(portNumber) :
-                new CommonPort.PortNumber(reservedPortLogicalName));
+        return (reservedPortLogicalName == null ? new PortNumberUni(portNumber) :
+                new PortNumberUni(reservedPortLogicalName));
     }
 
-    public static Long getProtocolPortNumber(OpenflowVersion ofVersion, CommonPort.PortNumber port) {
+    public static Long getProtocolPortNumber(OpenflowVersion ofVersion, PortNumberUni port) {
         String portLogicalName = port.getString();
 
         if (portLogicalName != null) {
@@ -132,7 +132,7 @@ public class OpenflowPortsUtil {
      * @param portNumber
      * @return string containing number or logical name
      */
-    public static String portNumberToString(CommonPort.PortNumber portNumber) {
+    public static String portNumberToString(PortNumberUni portNumber) {
         String result = null;
         if (portNumber.getUint32() != null) {
             result = String.valueOf(portNumber.getUint32());

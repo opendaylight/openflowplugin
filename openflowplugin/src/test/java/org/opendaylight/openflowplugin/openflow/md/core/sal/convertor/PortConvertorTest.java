@@ -14,7 +14,7 @@ import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnectorBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.CommonPort.PortNumber;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortNumberUni;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.flow.capable.port.State;
@@ -56,7 +56,7 @@ public class PortConvertorTest {
         PortBuilder portBld = new PortBuilder();
         portBld.setAdvertisedFeatures(features);
         portBld.setConfiguration(config);
-        portBld.setPortNumber(new PortNumber(42L));
+        portBld.setPortNumber(new PortNumberUni(42L));
         portBld.setHardwareAddress(new MacAddress(DEFAULT_MAC_ADDRESS));
         
         PortModInput portOut = PortConvertor.toPortModInput(portBld.build(), EncodeConstants.OF13_VERSION_ID);
@@ -101,7 +101,7 @@ public class PortConvertorTest {
         flowCapableNodeConnectorBuilder.setMaximumSpeed(null);
         flowCapableNodeConnectorBuilder.setName("foo");
         flowCapableNodeConnectorBuilder.setPeerFeatures(features);
-        flowCapableNodeConnectorBuilder.setPortNumber(new PortNumber(42L));
+        flowCapableNodeConnectorBuilder.setPortNumber(new PortNumberUni(42L));
         flowCapableNodeConnectorBuilder.setState(state);
         flowCapableNodeConnectorBuilder.setSupported(features);
         

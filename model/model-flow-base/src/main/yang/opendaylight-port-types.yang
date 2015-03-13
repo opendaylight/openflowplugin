@@ -59,13 +59,17 @@ module opendaylight-port-types {
         }
     }
     
+    typedef port-number-uni {
+        type union {
+            type uint32;
+            type string;
+        }
+    }
+    
     grouping common-port {
 
         leaf port-number {
-            type union {
-                type uint32;
-                type string;
-            }
+            type port-number-uni;
         }
         
         leaf hardware-address {
