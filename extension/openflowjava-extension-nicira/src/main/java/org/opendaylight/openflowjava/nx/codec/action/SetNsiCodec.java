@@ -11,19 +11,15 @@
 package org.opendaylight.openflowjava.nx.codec.action;
 
 import io.netty.buffer.ByteBuf;
-
 import org.opendaylight.openflowjava.nx.api.NiciraActionDeserializerKey;
 import org.opendaylight.openflowjava.nx.api.NiciraActionSerializerKey;
-import org.opendaylight.openflowjava.nx.codec.action.AbstractActionCodec;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.ExperimenterIdAction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.NxmNxSetNsi;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.OfjAugNxAction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.OfjAugNxActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.set.nsi.grouping.ActionSetNsi;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.set.nsi.grouping.ActionSetNsiBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionSetNsi;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionSetNsiBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.set.nsi.grouping.NxActionSetNsiBuilder;
 
 /**
  * Codec for the NX_SetNsi and NX_SetNsi_TABLE
@@ -39,9 +35,9 @@ public class SetNsiCodec extends AbstractActionCodec {
 
     @Override
     public void serialize(Action input, ByteBuf outBuffer) {
-        ActionSetNsi action = input.getAugmentation(OfjAugNxAction.class).getActionSetNsi();
+        ActionSetNsi action = ((ActionSetNsi) input.getActionChoice());
         serializeHeader(LENGTH, NXAST_SET_NSI_SUBTYPE, outBuffer);
-        outBuffer.writeByte(action.getNsi().byteValue());
+        outBuffer.writeByte(action.getNxActionSetNsi().getNsi().byteValue());
         outBuffer.writeZero(padding);
     }
 
@@ -49,14 +45,13 @@ public class SetNsiCodec extends AbstractActionCodec {
     public Action deserialize(ByteBuf message) {
         ActionBuilder actionBuilder = deserializeHeader(message);
         ActionSetNsiBuilder builder = new ActionSetNsiBuilder();
-        builder.setNsi(message.readUnsignedByte());
+        NxActionSetNsiBuilder nxActionSetNsiBuilder = new NxActionSetNsiBuilder();
+        nxActionSetNsiBuilder.setNsi(message.readUnsignedByte());
+        nxActionSetNsiBuilder.setExperimenterId(getExperimenterId());
         message.skipBytes(padding);
 
-        OfjAugNxActionBuilder augNxActionBuilder = new OfjAugNxActionBuilder();
-        augNxActionBuilder.setActionSetNsi(builder.build());
-        actionBuilder.addAugmentation(ExperimenterIdAction.class,
-                                      createExperimenterIdAction(NxmNxSetNsi.class));
-        actionBuilder.addAugmentation(OfjAugNxAction.class, augNxActionBuilder.build());
+        builder.setNxActionSetNsi(nxActionSetNsiBuilder.build());
+        actionBuilder.setActionChoice(builder.build());
         return actionBuilder.build();
     }
 

@@ -25,8 +25,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.MeterIdInstructionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.TableIdInstruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.TableIdInstructionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.ApplyActions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.ClearActions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.GotoTable;
@@ -52,7 +52,6 @@ public class OFToMDSalFlowConvertorTest {
         ActionBuilder actionBuilder = new ActionBuilder();
         List<Action> actions = new ArrayList<>();
         for (int j = 0; j < PRESET_COUNT; j++) {
-            actionBuilder.setType(MockActionBase.class);
             actions.add(actionBuilder.build());
         }
         Instructions instructions = OFToMDSalFlowConvertor.wrapOF10ActionsToInstruction(actions, OpenflowVersion.OF13);
@@ -72,7 +71,6 @@ public class OFToMDSalFlowConvertorTest {
             ActionBuilder actionBuilder = new ActionBuilder();
             List<Action> actions = new ArrayList<>();
             for (int j = 0; j < PRESET_COUNT; j++) {
-                actionBuilder.setType(MockActionBase.class);
                 actions.add(actionBuilder.build());
             }
             actionsInstructionBuilder.setAction(actions);
@@ -118,7 +116,6 @@ public class OFToMDSalFlowConvertorTest {
             ActionBuilder actionBuilder = new ActionBuilder();
             List<Action> actions = new ArrayList<>();
             for (int j = 0; j < PRESET_COUNT; j++) {
-                actionBuilder.setType(MockActionBase.class);
                 actions.add(actionBuilder.build());
             }
             actionsInstructionBuilder.setAction(actions);

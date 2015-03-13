@@ -38,6 +38,7 @@ module nicira-action {
     }
 
     grouping ofj-nx-action-reg-load-grouping {
+        container nx-action-reg-load {
             leaf ofs_nbits {
                 type uint16;
             }
@@ -47,25 +48,35 @@ module nicira-action {
             leaf value {
                 type uint64;
             }
+            leaf experimenter-id {
+                type oft:experimenter-id;
+            }
+        }
     }
     grouping ofj-nx-action-reg-move-grouping {
-            leaf n_bits {
-                type uint16;
-            }
-            leaf src_ofs {
-                type uint16;
-            }
-            leaf dst_ofs {
-                type uint16;
-            }
-            leaf src {
-                type uint32;
-            }
-            leaf dst {
-                type uint32;
-            }
+        container nx-action-reg-move {
+                leaf n_bits {
+                    type uint16;
+                }
+                leaf src_ofs {
+                    type uint16;
+                }
+                leaf dst_ofs {
+                    type uint16;
+                }
+                leaf src {
+                    type uint32;
+                }
+                leaf dst {
+                    type uint32;
+                }
+                leaf experimenter-id {
+                    type oft:experimenter-id;
+                }
+        }
     }
     grouping ofj-nx-action-output-reg-grouping {
+        container nx-action-output-reg {
             leaf n_bits {
                 type uint16;
             }
@@ -75,9 +86,14 @@ module nicira-action {
             leaf max_len {
                 type uint16;
             }
+            leaf experimenter-id {
+                type oft:experimenter-id;
+            }
+        }
     }
 
     grouping ofj-nx-action-resubmit-grouping {
+        container nx-action-resubmit {
             leaf in-port {
                 type uint16;
                 default 0xfff8; // OFPP_INPORT
@@ -88,6 +104,10 @@ module nicira-action {
                 }
                 default 255; // Current Table
             }
+            leaf experimenter-id {
+                type oft:experimenter-id;
+            }
+        }
     }
 
     typedef ofj-nx-hash-fields {
@@ -121,6 +141,7 @@ module nicira-action {
     }
 
     grouping ofj-nx-action-multipath-grouping {
+        container nx-action-multipath {
             leaf fields {
                 type ofj-nx-hash-fields;
             }
@@ -143,18 +164,32 @@ module nicira-action {
             leaf dst {
                 type uint32;
             }
+            leaf experimenter-id {
+                type oft:experimenter-id;
+            }
+        }
     }
 
     grouping ofj-nx-action-set-nsp-grouping {
+        container nx-action-set-nsp {
             leaf nsp {
                 type uint32;
             }
+            leaf experimenter-id {
+                type oft:experimenter-id;
+            }
+        }
     }
 
     grouping ofj-nx-action-set-nsi-grouping {
+        container nx-action-set-nsi {
             leaf nsi {
                 type uint8;
             }
+            leaf experimenter-id {
+                type oft:experimenter-id;
+            }
+        }
     }
 
     augment "/ofaction:action-container/ofaction:action-choice" {

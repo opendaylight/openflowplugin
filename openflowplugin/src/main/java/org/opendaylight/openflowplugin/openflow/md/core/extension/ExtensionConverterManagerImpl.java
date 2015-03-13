@@ -192,19 +192,19 @@ public class ExtensionConverterManagerImpl implements ExtensionConverterManager 
     }
 
     @Override
-    public ObjectRegistration<ConvertorActionToOFJava<Action, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action>>
+    public ObjectRegistration<ConvertorActionToOFJava<Action, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action>>
     registerActionConvertor(
             TypeVersionKey<? extends Action> key,
-            ConvertorActionToOFJava<Action, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action> convertor) {
+            ConvertorActionToOFJava<Action, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action> convertor) {
         registryActionToOFJAva.put(key, convertor);
         return hireJanitor(key, convertor);
     }
 
     @Override
-    public ObjectRegistration<ConvertorActionFromOFJava<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action, ActionPath>>
+    public ObjectRegistration<ConvertorActionFromOFJava<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action, ActionPath>>
     registerActionConvertor(
             ExperimenterActionSerializerKey key,
-            ConvertorActionFromOFJava<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action, ActionPath> convertor) {
+            ConvertorActionFromOFJava<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action, ActionPath> convertor) {
         registryActionFromOFJAva.put(key, convertor);
         return hireJanitor(key, convertor);
     }

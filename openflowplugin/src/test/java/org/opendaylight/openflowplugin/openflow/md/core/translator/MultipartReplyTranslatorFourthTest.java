@@ -28,10 +28,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupTypes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.Bucket;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.desc.stats.reply.GroupDescStats;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.DecMplsTtl;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.PopPbb;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.DecMplsTtlCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.PopPbbCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetNwDstCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartRequestFlags;
@@ -245,13 +246,18 @@ public class MultipartReplyTranslatorFourthTest {
         bucketBuilder.setWeight(28);
         bucketBuilder.setWatchPort(new PortNumber(56L));
         bucketBuilder.setWatchGroup(112L);
+        
         List<Action> actions = new ArrayList<>();
         ActionBuilder actionBuilder = new ActionBuilder();
-        actionBuilder.setType(DecMplsTtl.class);
+        DecMplsTtlCaseBuilder decMplsTtlCaseBuilder = new DecMplsTtlCaseBuilder();
+        actionBuilder.setActionChoice(decMplsTtlCaseBuilder.build());
         actions.add(actionBuilder.build());
+        
         actionBuilder = new ActionBuilder();
-        actionBuilder.setType(PopPbb.class);
+        PopPbbCaseBuilder popPbbCaseBuilder = new PopPbbCaseBuilder();
+        actionBuilder.setActionChoice(popPbbCaseBuilder.build());
         actions.add(actionBuilder.build());
+        
         bucketBuilder.setAction(actions);
         buckets.add(bucketBuilder.build());
         bucketBuilder = new BucketsListBuilder();

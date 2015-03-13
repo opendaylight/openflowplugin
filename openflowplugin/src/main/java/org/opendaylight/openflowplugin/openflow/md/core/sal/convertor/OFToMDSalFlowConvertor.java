@@ -165,7 +165,7 @@ public class OFToMDSalFlowConvertor {
      */
 
     public static Instructions wrapOF10ActionsToInstruction(
-            List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action> actionsList, OpenflowVersion ofVersion) {
+            List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action> actionsList, OpenflowVersion ofVersion) {
         InstructionsBuilder instructionsBuilder = new InstructionsBuilder();
 
         List<Instruction> salInstructionList = new ArrayList<Instruction>();

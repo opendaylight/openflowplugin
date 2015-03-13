@@ -1,18 +1,15 @@
 package org.opendaylight.openflowjava.nx.codec.action;
 
 import io.netty.buffer.ByteBuf;
-
 import org.opendaylight.openflowjava.nx.api.NiciraActionDeserializerKey;
 import org.opendaylight.openflowjava.nx.api.NiciraActionSerializerKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.ExperimenterIdAction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.NxmNxRegMove;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.OfjAugNxAction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.OfjAugNxActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.reg.move.grouping.ActionRegMove;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.reg.move.grouping.ActionRegMoveBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionRegMove;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionRegMoveBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.reg.move.grouping.NxActionRegMoveBuilder;
 
 public class RegMoveCodec extends AbstractActionCodec {
 
@@ -25,28 +22,28 @@ public class RegMoveCodec extends AbstractActionCodec {
 
     @Override
     public void serialize(Action input, ByteBuf outBuffer) {
-        ActionRegMove actionRegMove = input.getAugmentation(OfjAugNxAction.class).getActionRegMove();
+        ActionRegMove actionRegMove = ((ActionRegMove) input.getActionChoice());
         serializeHeader(LENGTH, SUBTYPE, outBuffer);
-        outBuffer.writeShort(actionRegMove.getNBits());
-        outBuffer.writeShort(actionRegMove.getSrcOfs());
-        outBuffer.writeShort(actionRegMove.getDstOfs());
-        outBuffer.writeInt(actionRegMove.getSrc().intValue());
-        outBuffer.writeInt(actionRegMove.getDst().intValue());
+        outBuffer.writeShort(actionRegMove.getNxActionRegMove().getNBits());
+        outBuffer.writeShort(actionRegMove.getNxActionRegMove().getSrcOfs());
+        outBuffer.writeShort(actionRegMove.getNxActionRegMove().getDstOfs());
+        outBuffer.writeInt(actionRegMove.getNxActionRegMove().getSrc().intValue());
+        outBuffer.writeInt(actionRegMove.getNxActionRegMove().getDst().intValue());
     }
 
     @Override
     public Action deserialize(ByteBuf message) {
         ActionBuilder actionBuilder = deserializeHeader(message);
         ActionRegMoveBuilder actionRegMoveBuilder = new ActionRegMoveBuilder();
-        actionRegMoveBuilder.setNBits(message.readUnsignedShort());
-        actionRegMoveBuilder.setSrcOfs(message.readUnsignedShort());
-        actionRegMoveBuilder.setDstOfs(message.readUnsignedShort());
-        actionRegMoveBuilder.setSrc(message.readUnsignedInt());
-        actionRegMoveBuilder.setDst(message.readUnsignedInt());
-        OfjAugNxActionBuilder augNxActionBuilder = new OfjAugNxActionBuilder();
-        augNxActionBuilder.setActionRegMove(actionRegMoveBuilder.build());
-        actionBuilder.addAugmentation(ExperimenterIdAction.class, createExperimenterIdAction(NxmNxRegMove.class));
-        actionBuilder.addAugmentation(OfjAugNxAction.class, augNxActionBuilder.build());
+        NxActionRegMoveBuilder nxActionRegMoveBuilder = new NxActionRegMoveBuilder();
+        nxActionRegMoveBuilder.setNBits(message.readUnsignedShort());
+        nxActionRegMoveBuilder.setSrcOfs(message.readUnsignedShort());
+        nxActionRegMoveBuilder.setDstOfs(message.readUnsignedShort());
+        nxActionRegMoveBuilder.setSrc(message.readUnsignedInt());
+        nxActionRegMoveBuilder.setDst(message.readUnsignedInt());
+        nxActionRegMoveBuilder.setExperimenterId(getExperimenterId());
+        actionRegMoveBuilder.setNxActionRegMove(nxActionRegMoveBuilder.build());
+        actionBuilder.setActionChoice(actionRegMoveBuilder.build());
         return actionBuilder.build();
     }
 
