@@ -14,12 +14,12 @@ import org.opendaylight.openflowplugin.extension.api.ConvertorActionFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorActionToOFJava;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.CodecPreconditionException;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.NxmNxRegMove;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.OfjAugNxAction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.OfjAugNxActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.reg.move.grouping.ActionRegMove;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.reg.move.grouping.ActionRegMoveBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionRegMove;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionRegMoveBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.reg.move.grouping.NxActionRegMove;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.reg.move.grouping.NxActionRegMoveBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxReg;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxReg0;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxReg1;
@@ -90,7 +90,7 @@ public class RegMoveConvertor implements
 
     @Override
     public org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action convert(Action input, ActionPath path) {
-        ActionRegMove actionRegMove = input.getAugmentation(OfjAugNxAction.class).getActionRegMove();
+        NxActionRegMove actionRegMove = ((ActionRegMove) input.getActionChoice()).getNxActionRegMove();
         DstBuilder dstBuilder = new DstBuilder();
         dstBuilder.setDstChoice(resolveDst(actionRegMove.getDst()));
         dstBuilder.setStart(actionRegMove.getDstOfs());
@@ -224,14 +224,16 @@ public class RegMoveConvertor implements
         Dst dst = nxAction.getNxRegMove().getDst();
         Src src = nxAction.getNxRegMove().getSrc();
         ActionRegMoveBuilder actionRegMoveBuilder = new ActionRegMoveBuilder();
-        actionRegMoveBuilder.setDst(resolveDst(dst.getDstChoice()));
-        actionRegMoveBuilder.setDstOfs(dst.getStart());
-        actionRegMoveBuilder.setSrc(resolveSrc(src.getSrcChoice()));
-        actionRegMoveBuilder.setSrcOfs(src.getStart());
-        actionRegMoveBuilder.setNBits(dst.getEnd() - dst.getStart() + 1);
-        OfjAugNxActionBuilder augNxActionBuilder = new OfjAugNxActionBuilder();
-        augNxActionBuilder.setActionRegMove(actionRegMoveBuilder.build());
-        return ActionUtil.createNiciraAction(augNxActionBuilder.build(), NxmNxRegMove.class);
+        NxActionRegMoveBuilder nxActionRegMove = new NxActionRegMoveBuilder();
+
+        nxActionRegMove.setDst(resolveDst(dst.getDstChoice()));
+        nxActionRegMove.setDstOfs(dst.getStart());
+        nxActionRegMove.setSrc(resolveSrc(src.getSrcChoice()));
+        nxActionRegMove.setSrcOfs(src.getStart());
+        nxActionRegMove.setNBits(dst.getEnd() - dst.getStart() + 1);
+        nxActionRegMove.setExperimenterId(ActionUtil.EXPERIMENTER_ID);
+        actionRegMoveBuilder.setNxActionRegMove(nxActionRegMove.build());
+        return ActionUtil.createAction(actionRegMoveBuilder.build());
     }
 
     public static long resolveDst(DstChoice dstChoice) {

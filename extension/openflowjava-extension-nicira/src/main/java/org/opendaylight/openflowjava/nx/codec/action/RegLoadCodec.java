@@ -1,20 +1,16 @@
 package org.opendaylight.openflowjava.nx.codec.action;
 
 import io.netty.buffer.ByteBuf;
-
-import java.math.BigInteger;
-
 import org.opendaylight.openflowjava.nx.api.NiciraActionDeserializerKey;
 import org.opendaylight.openflowjava.nx.api.NiciraActionSerializerKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.ExperimenterIdAction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.NxmNxRegLoad;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.OfjAugNxAction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.OfjAugNxActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.reg.load.grouping.ActionRegLoad;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.reg.load.grouping.ActionRegLoadBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionRegLoad;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionRegLoadBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.reg.load.grouping.NxActionRegLoadBuilder;
+import java.math.BigInteger;
 
 public class RegLoadCodec extends AbstractActionCodec {
 
@@ -27,24 +23,24 @@ public class RegLoadCodec extends AbstractActionCodec {
 
     @Override
     public void serialize(Action input, ByteBuf outBuffer) {
-        ActionRegLoad actionRegLoad = input.getAugmentation(OfjAugNxAction.class).getActionRegLoad();
+        ActionRegLoad actionRegLoad = ((ActionRegLoad) input.getActionChoice());
         serializeHeader(LENGTH, SUBTYPE, outBuffer);
-        outBuffer.writeShort(actionRegLoad.getOfsNbits());
-        outBuffer.writeInt(actionRegLoad.getDst().intValue());
-        outBuffer.writeLong(actionRegLoad.getValue().longValue());
+        outBuffer.writeShort(actionRegLoad.getNxActionRegLoad().getOfsNbits());
+        outBuffer.writeInt(actionRegLoad.getNxActionRegLoad().getDst().intValue());
+        outBuffer.writeLong(actionRegLoad.getNxActionRegLoad().getValue().longValue());
     }
 
     @Override
     public Action deserialize(ByteBuf message) {
         ActionBuilder actionBuilder = deserializeHeader(message);
+        NxActionRegLoadBuilder nxActionRegLoadBuilder = new NxActionRegLoadBuilder();
         ActionRegLoadBuilder actionRegLoadBuilder = new ActionRegLoadBuilder();
-        actionRegLoadBuilder.setOfsNbits(message.readUnsignedShort());
-        actionRegLoadBuilder.setDst(message.readUnsignedInt());
-        actionRegLoadBuilder.setValue(BigInteger.valueOf(message.readLong()));
-        OfjAugNxActionBuilder augNxActionBuilder = new OfjAugNxActionBuilder();
-        augNxActionBuilder.setActionRegLoad(actionRegLoadBuilder.build());
-        actionBuilder.addAugmentation(ExperimenterIdAction.class, createExperimenterIdAction(NxmNxRegLoad.class));
-        actionBuilder.addAugmentation(OfjAugNxAction.class, augNxActionBuilder.build());
+        nxActionRegLoadBuilder.setOfsNbits(message.readUnsignedShort());
+        nxActionRegLoadBuilder.setDst(message.readUnsignedInt());
+        nxActionRegLoadBuilder.setValue(BigInteger.valueOf(message.readLong()));
+        nxActionRegLoadBuilder.setExperimenterId(getExperimenterId());
+        actionRegLoadBuilder.setNxActionRegLoad(nxActionRegLoadBuilder.build());
+        actionBuilder.setActionChoice(actionRegLoadBuilder.build());
         return actionBuilder.build();
     }
 

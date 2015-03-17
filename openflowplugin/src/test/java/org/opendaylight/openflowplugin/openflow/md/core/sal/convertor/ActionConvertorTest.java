@@ -9,10 +9,6 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -97,6 +93,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.Ipv4SrcCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.Ipv6DstCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.Ipv6SrcCase;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * test for {@link ActionConvertor}
@@ -129,7 +128,7 @@ public class ActionConvertorTest {
         setExperimenterData();
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action> OFActionsList = ActionConvertor.getActions(actions, (short) 0X4, BigInteger.ONE, null);
 
-        OutputActions(OFActionsList);
+        outputActions(OFActionsList);
 
     }
 
@@ -207,14 +206,13 @@ public class ActionConvertorTest {
 
     // TODO - check if this method is needed (private and never used locally) - see line 94
 
-    private void OutputActions(List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action> oFActionsList) {
+    private void outputActions(List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action> oFActionsList) {
 
         for (int item = 0; item < oFActionsList.size(); item++) {
 
             org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action action = oFActionsList
                     .get(item);
 
-//            if (action.getType().equals(Output.class)) {
             if (action.getActionChoice() instanceof OutputActionCase) {
                 OutputActionCase outputActionCase = (OutputActionCase) action.getActionChoice();
                 Assert.assertEquals((Integer) 10, (outputActionCase.getOutputAction().getMaxLength()));
@@ -223,25 +221,23 @@ public class ActionConvertorTest {
 
 
             }
-//            if (action.getType().equals(CopyTtlIn.class)) {
             if (action.getActionChoice() instanceof CopyTtlInCase) {
                 CopyTtlInCase copyTtlInCase = (CopyTtlInCase) action.getActionChoice();
-                Assert.assertEquals(action.getActionChoice().getClass().getName(), CopyTtlInCase.class.getName());
+                Assert.assertEquals(action.getActionChoice().getImplementedInterface().getName(), CopyTtlInCase.class.getName());
 
             }
             if (action.getActionChoice() instanceof CopyTtlOutCase) {
-                Assert.assertEquals(action.getActionChoice().getClass().getName(), CopyTtlOutCase.class.getName());
-
+                Assert.assertEquals(action.getActionChoice().getImplementedInterface().getName(), CopyTtlOutCase.class.getName());
             }
 
-            if (action.getActionChoice() instanceof 
+            if (action.getActionChoice() instanceof
                     // TODO:getMplsTtl is missing.
                     SetMplsTtlCase) {
-                Assert.assertEquals(action.getActionChoice().getClass().getName(), SetMplsTtlCase.class.getName());
+                Assert.assertEquals(action.getActionChoice().getImplementedInterface().getName(), SetMplsTtlCase.class.getName());
 
             }
             if (action.getActionChoice() instanceof DecMplsTtlCase) {
-                Assert.assertEquals(action.getActionChoice().getClass().getName(),
+                Assert.assertEquals(action.getActionChoice().getImplementedInterface().getName(),
                         DecMplsTtlCase.class.getName());
             }
 
@@ -263,7 +259,7 @@ public class ActionConvertorTest {
 
                     // TODO:SetQueue,I dont have getQueueId
                     SetQueueCase) {
-                Assert.assertEquals(action.getActionChoice().getClass().getName(), SetQueueCase.class.getName());
+                Assert.assertEquals(action.getActionChoice().getImplementedInterface().getName(), SetQueueCase.class.getName());
             }
 
             if (action.getActionChoice() instanceof GroupCase) {
@@ -272,18 +268,18 @@ public class ActionConvertorTest {
             }
 
             if (action.getActionChoice() instanceof PushVlanCase) {
-                Assert.assertEquals(action.getActionChoice().getClass().getName(), PushVlanCase.class.getName());
+                Assert.assertEquals(action.getActionChoice().getImplementedInterface().getName(), PushVlanCase.class.getName());
             }
-            
+
             if (action.getActionChoice() instanceof PopVlanCase) {
-                Assert.assertEquals(action.getActionChoice().getClass().getName(), PopVlanCase.class.getName());
+                Assert.assertEquals(action.getActionChoice().getImplementedInterface().getName(), PopVlanCase.class.getName());
             }
 
             if (action.getActionChoice() instanceof SetNwTtlCase) {
-                Assert.assertEquals(action.getActionChoice().getClass().getName(), SetNwTtlCase.class.getName());
+                Assert.assertEquals(action.getActionChoice().getImplementedInterface().getName(), SetNwTtlCase.class.getName());
             }
             if (action.getActionChoice() instanceof DecNwTtlCase) {
-                Assert.assertEquals(action.getActionChoice().getClass().getName(), DecNwTtlCase.class.getName());
+                Assert.assertEquals(action.getActionChoice().getImplementedInterface().getName(), DecNwTtlCase.class.getName());
             }
             if (action.getActionChoice() instanceof PushPbbCase) {
                 PushPbbCase pushPbbCase = (PushPbbCase) action.getActionChoice();
@@ -293,7 +289,7 @@ public class ActionConvertorTest {
             }
 
             if (action.getActionChoice() instanceof PopMplsCase) {
-                Assert.assertEquals(action.getActionChoice().getClass().getName(), PopMplsCase.class.getName());
+                Assert.assertEquals(action.getActionChoice().getImplementedInterface().getName(), PopMplsCase.class.getName());
             }
             if (action.getActionChoice() instanceof SetFieldCase) {
                 SetFieldCase setFieldCase = (SetFieldCase) action.getActionChoice();
@@ -412,7 +408,7 @@ public class ActionConvertorTest {
         org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder actionBuilder
                 = new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder();
         PushMplsCaseBuilder pushMplsCaseBuilder = new PushMplsCaseBuilder();
-        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.push.mpls._case.PushMplsActionBuilder pushMplsBuilder = 
+        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.push.mpls._case.PushMplsActionBuilder pushMplsBuilder =
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.push.mpls._case.PushMplsActionBuilder();
         pushMplsBuilder.setEthertype(new EtherType(new Integer(34888)));
         pushMplsCaseBuilder.setPushMplsAction(pushMplsBuilder.build());
@@ -434,31 +430,31 @@ public class ActionConvertorTest {
     }
 
     /**
-     * testing {@link ActionConvertor#salToOFSetNwDst(org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder, short)}
+     * testing {@link ActionConvertor#salToOFSetNwDst(org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder, short)}
      * with OF-1.0, IPv4
      */
     @Test
     public void testSalToOFSetNwDst10v4() {
         short version = 1;
-        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder actionBuilder = 
+        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder actionBuilder =
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder();
         Address address;
         address = new Ipv4Builder().setIpv4Address(new Ipv4Prefix("10.0.0.1/32")).build();
         SetNwDstActionCase action = provisionNwDstActionBuilder(address);
         ActionConvertor.salToOFSetNwDst(action, actionBuilder, version);
-        Assert.assertEquals(SetNwDstCase.class.getName(), actionBuilder.getActionChoice().getClass().getName());
+        Assert.assertEquals(SetNwDstCase.class.getName(), actionBuilder.getActionChoice().getImplementedInterface().getName());
         SetNwDstCase setNwDstCase = (SetNwDstCase) actionBuilder.getActionChoice();
         Assert.assertEquals("10.0.0.1", setNwDstCase.getSetNwDstAction().getIpAddress().getValue());
     }
 
     /**
-     * testing {@link ActionConvertor#salToOFSetNwDst(org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder, short)}
+     * testing {@link ActionConvertor#salToOFSetNwDst(org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder, short)}
      * with OF-1.0, IPv6
      */
     @Test
     public void testSalToOFSetNwDst10v6() {
         short version = 1;
-        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder actionBuilder = 
+        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder actionBuilder =
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder();
         Address address;
         address = new Ipv6Builder().setIpv6Address(new Ipv6Prefix("2001:0db8:85a3:0042:1000:8a2e:0370:7334")).build();
@@ -469,75 +465,75 @@ public class ActionConvertorTest {
 
 
     /**
-     * testing {@link ActionConvertor#salToOFSetNwDst(org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder, short)}
+     * testing {@link ActionConvertor#salToOFSetNwDst(org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder, short)}
      * with OF-1.3, IPv4
      */
     @Test
     public void testSalToOFSetNwDst13v4() {
         short version = 4;
-        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder actionBuilder = 
+        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder actionBuilder =
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder();
         Address address;
         address = new Ipv4Builder().setIpv4Address(new Ipv4Prefix("10.0.0.1/32")).build();
         SetNwDstActionCase action = provisionNwDstActionBuilder(address);
         ActionConvertor.salToOFSetNwDst(action, actionBuilder, version);
-        Assert.assertEquals(SetFieldCase.class.getName(), actionBuilder.getActionChoice().getClass().getName());
+        Assert.assertEquals(SetFieldCase.class.getName(), actionBuilder.getActionChoice().getImplementedInterface().getName());
         SetFieldCase setFieldCase = (SetFieldCase) actionBuilder.getActionChoice();
         MatchEntry matchEntry = setFieldCase.getSetFieldAction().getMatchEntry().get(0);
-        Assert.assertEquals(Ipv4Dst.class, matchEntry.getOxmMatchField());
+        Assert.assertEquals(Ipv4Dst.class.getName(), matchEntry.getOxmMatchField().getName());
         Ipv4DstCase ipv4DstCase = ((Ipv4DstCase) matchEntry.getMatchEntryValue());
         Assert.assertEquals("10.0.0.1", ipv4DstCase.getIpv4Dst().getIpv4Address().getValue());
     }
 
 
     /**
-     * testing {@link ActionConvertor#salToOFSetNwDst(org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder, short)}
+     * testing {@link ActionConvertor#salToOFSetNwDst(org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder, short)}
      * with OF-1.3, IPv6
      */
     @Test
     public void testSalToOFSetNwDst13v6() {
         short version = 4;
-        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder actionBuilder = 
+        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder actionBuilder =
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder();
         Address address;
         address = new Ipv6Builder().setIpv6Address(new Ipv6Prefix("2001:0db8:85a3:0042:1000:8a2e:0370:7334")).build();
         SetNwDstActionCase action = provisionNwDstActionBuilder(address);
         ActionConvertor.salToOFSetNwDst(action, actionBuilder, version);
-        Assert.assertEquals(SetFieldCase.class.getName(), actionBuilder.getActionChoice().getClass().getName());
+        Assert.assertEquals(SetFieldCase.class.getName(), actionBuilder.getActionChoice().getImplementedInterface().getName());
         SetFieldCase setFieldCase = (SetFieldCase) actionBuilder.getActionChoice();
         MatchEntry matchEntry = setFieldCase.getSetFieldAction().getMatchEntry().get(0);
-        Assert.assertEquals(Ipv6Dst.class, matchEntry.getOxmMatchField());
+        Assert.assertEquals(Ipv6Dst.class.getName(), matchEntry.getOxmMatchField().getName());
         Ipv6DstCase ipv6DstCase = ((Ipv6DstCase) matchEntry.getMatchEntryValue());
         Assert.assertEquals("2001:0db8:85a3:0042:1000:8a2e:0370:7334", ipv6DstCase.getIpv6Dst().getIpv6Address().getValue());
     }
 
 
     /**
-     * testing {@link ActionConvertor#salToOFSetNwSrc(org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder, short)}
+     * testing {@link ActionConvertor#salToOFSetNwSrc(org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder, short)}
      * with OF-1.0, IPv4
      */
     @Test
     public void testSalToOFSetNwSrc10v4() {
         short version = 1;
-        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder actionBuilder = 
+        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder actionBuilder =
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder();
         Address address;
         address = new Ipv4Builder().setIpv4Address(new Ipv4Prefix("10.0.0.1/32")).build();
         SetNwSrcActionCase action = provisionNwSrcActionBuilder(address);
         ActionConvertor.salToOFSetNwSrc(action, actionBuilder, version);
-        Assert.assertEquals(SetNwSrcCase.class, actionBuilder.getActionChoice());
+        Assert.assertEquals(SetNwSrcCase.class.getName(), actionBuilder.getActionChoice().getImplementedInterface().getName());
         SetNwSrcCase setNwSrcCase = (SetNwSrcCase) actionBuilder.getActionChoice();
         Assert.assertEquals("10.0.0.1", setNwSrcCase.getSetNwSrcAction().getIpAddress().getValue());
     }
 
     /**
-     * testing {@link ActionConvertor#salToOFSetNwSrc(org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder, short)}
+     * testing {@link ActionConvertor#salToOFSetNwSrc(org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder, short)}
      * with OF-1.0, IPv6
      */
     @Test
     public void testSalToOFSetNwSrc10v6() {
         short version = 1;
-        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder actionBuilder = 
+        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder actionBuilder =
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder();
         Address address;
         address = new Ipv6Builder().setIpv6Address(new Ipv6Prefix("2001:0db8:85a3:0042:1000:8a2e:0370:7334")).build();
@@ -547,19 +543,19 @@ public class ActionConvertorTest {
     }
 
     /**
-     * testing {@link ActionConvertor#salToOFSetNwSrc(org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder, short)}
+     * testing {@link ActionConvertor#salToOFSetNwSrc(org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder, short)}
      * with OF-1.3, IPv4
      */
     @Test
     public void testSalToOFSetNwSrc13v4() {
         short version = 4;
-        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder actionBuilder = 
+        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder actionBuilder =
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder();
         Address address;
         address = new Ipv4Builder().setIpv4Address(new Ipv4Prefix("10.0.0.1/32")).build();
         SetNwSrcActionCase action = provisionNwSrcActionBuilder(address);
         ActionConvertor.salToOFSetNwSrc(action, actionBuilder, version);
-        Assert.assertEquals(SetFieldCase.class, actionBuilder.getActionChoice());
+        Assert.assertEquals(SetFieldCase.class.getName(), actionBuilder.getActionChoice().getImplementedInterface().getName());
         SetFieldCase setFieldCase = (SetFieldCase) actionBuilder.getActionChoice();
         MatchEntry matchEntry = setFieldCase.getSetFieldAction().getMatchEntry().get(0);
         Assert.assertEquals(Ipv4Src.class, matchEntry.getOxmMatchField());
@@ -568,36 +564,36 @@ public class ActionConvertorTest {
     }
 
     /**
-     * testing {@link ActionConvertor#salToOFSetNwSrc(org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder, short)}
+     * testing {@link ActionConvertor#salToOFSetNwSrc(org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder, short)}
      * with OF-1.3, IPv6
      */
     @Test
     public void testSalToOFSetNwSrc13v6() {
         short version = 4;
-        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder actionBuilder = 
+        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder actionBuilder =
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder();
         Address address;
         address = new Ipv6Builder().setIpv6Address(new Ipv6Prefix("2001:0db8:85a3:0042:1000:8a2e:0370:7334")).build();
         SetNwSrcActionCase action = provisionNwSrcActionBuilder(address);
         ActionConvertor.salToOFSetNwSrc(action, actionBuilder, version);
-        Assert.assertEquals(SetFieldCase.class, actionBuilder.getActionChoice());
+        Assert.assertEquals(SetFieldCase.class.getName(), actionBuilder.getActionChoice().getImplementedInterface().getName());
         SetFieldCase setFieldCase = (SetFieldCase) actionBuilder.getActionChoice();
         MatchEntry matchEntry = setFieldCase.getSetFieldAction().getMatchEntry().get(0);
         Ipv6SrcCase ipv6SrcCase = ((Ipv6SrcCase) matchEntry.getMatchEntryValue());
-        Assert.assertEquals(Ipv6Src.class, matchEntry.getOxmMatchField());
+        Assert.assertEquals(Ipv6Src.class.getName(), matchEntry.getOxmMatchField().getName());
         Assert.assertEquals("2001:0db8:85a3:0042:1000:8a2e:0370:7334", ipv6SrcCase.getIpv6Src().getIpv6Address().getValue());
     }
 
     /**
-     * testing {@link ActionConvertor#ofToSALPopMplsAction(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action)}
+     * testing {@link ActionConvertor#ofToSALPopMplsAction(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action)}
      * with OF-1.3, IPv6
      */
     @Test
     public void testOFtoSALPopMplsAction() {
-        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder actionBuilder = 
+        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder actionBuilder =
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder();
         PopMplsCaseBuilder popMplsCaseBuilder = new PopMplsCaseBuilder();
-        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.pop.mpls._case.PopMplsActionBuilder popMplsBuilder = 
+        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.pop.mpls._case.PopMplsActionBuilder popMplsBuilder =
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.pop.mpls._case.PopMplsActionBuilder();
         popMplsBuilder.setEthertype(new EtherType(new EtherType(34888)));
         popMplsCaseBuilder.setPopMplsAction(popMplsBuilder.build());

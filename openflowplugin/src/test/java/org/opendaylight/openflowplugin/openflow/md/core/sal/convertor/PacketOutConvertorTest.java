@@ -8,10 +8,6 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,27 +29,26 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.No
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.MaxLengthAction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.MaxLengthActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.PortAction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.PortActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOutInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.ConnectionCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInputBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Jakub Toth jatoth@cisco.com on 9/23/14.
  */
 
-public class PacketOutConvertorTest{
+public class PacketOutConvertorTest {
 
     @Before
-    public void init(){
+    public void init() {
         OpenflowPortsUtil.init();
     }
 
@@ -61,7 +56,7 @@ public class PacketOutConvertorTest{
      * Test for {@link PacketOutConvertor} with null parameters
      */
     @Test
-    public void toPacketOutInputAllParmNullTest(){
+    public void toPacketOutInputAllParmNullTest() {
 
         TransmitPacketInputBuilder transmitPacketInputBuilder = new TransmitPacketInputBuilder();
 
@@ -91,10 +86,10 @@ public class PacketOutConvertorTest{
                 transmitPacketInput, version, null, null);
 
         //FIXME : this has to be fixed along with actions changed in openflowjava
-/*
+
         Assert.assertEquals(this.buildActionForNullTransmitPacketInputAction(nodeConnKey,
-                        version), message.getAction());
-*/
+                version), message.getAction());
+
         Assert.assertEquals(OFConstants.OFP_NO_BUFFER, message.getBufferId());
         Assert.assertEquals(new PortNumber(0xfffffffdL), message.getInPort());
         Assert.assertEquals(version, message.getVersion());
@@ -106,7 +101,7 @@ public class PacketOutConvertorTest{
      * Test for PacketOutConvertor
      */
     @Test
-    public void toPacketOutInputAllParmTest(){
+    public void toPacketOutInputAllParmTest() {
         TransmitPacketInputBuilder transmitPacketInputBuilder = new TransmitPacketInputBuilder();
 
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> actionList = new ArrayList<>();
@@ -159,7 +154,7 @@ public class PacketOutConvertorTest{
 
         short version = (short) 0x04;
         byte[] datapathIdByte = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-        for(int i = 0; i < datapathIdByte.length; i++){
+        for (int i = 0; i < datapathIdByte.length; i++) {
             datapathIdByte[i] = 1;
         }
         BigInteger datapathId = new BigInteger(1, datapathIdByte);
@@ -177,48 +172,49 @@ public class PacketOutConvertorTest{
         Assert.assertEquals((Object) version,
                 Short.valueOf(message.getVersion()));
         Assert.assertEquals(xid, message.getXid());
-        //FIXME : this has to be fixed along with actions changed in openflowjava
-/*
         Assert.assertEquals(
                 ActionConvertor.getActions(actionList, version, datapathId, null),
                 message.getAction());
-*/
         Assert.assertArrayEquals(transmitPacketInput.getPayload(), message.getData());
     }
 
     /**
      * create action
-     * 
+     *
      * @param nConKey
      * @param version
      * @return
      */
     private List<Action> buildActionForNullTransmitPacketInputAction(
-            final NodeConnectorKey nConKey, final short version){
+            final NodeConnectorKey nConKey, final short version) {
 
         PortNumber outPort = getPortNumber(nConKey, version);
         List<Action> actions = new ArrayList<>();
         ActionBuilder aBuild = new ActionBuilder();
-        aBuild.setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.Output.class);
-        PortActionBuilder paBuild = new PortActionBuilder();
-        paBuild.setPort(outPort);
-        aBuild.addAugmentation(PortAction.class, paBuild.build());
-        MaxLengthActionBuilder mlBuild = new MaxLengthActionBuilder();
-        mlBuild.setMaxLength(0xffff);
-        aBuild.addAugmentation(MaxLengthAction.class, mlBuild.build());
+
+        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.OutputActionCaseBuilder outputActionCaseBuilder =
+                new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.OutputActionCaseBuilder();
+
+        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.output.action._case.OutputActionBuilder outputActionBuilder =
+                new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.output.action._case.OutputActionBuilder();
+
+        outputActionBuilder.setPort(outPort);
+        outputActionBuilder.setMaxLength(0xffff);
+        outputActionCaseBuilder.setOutputAction(outputActionBuilder.build());
+        aBuild.setActionChoice(outputActionCaseBuilder.build());
         actions.add(aBuild.build());
         return actions;
     }
 
     /**
      * create PortNumber
-     * 
+     *
      * @param nConKey
      * @param ofVersion
      * @return
      */
     private static PortNumber getPortNumber(final NodeConnectorKey nConKey,
-            final Short ofVersion){
+                                            final Short ofVersion) {
         String[] split = nConKey.getId().getValue().split(":");
         Long port = OpenflowPortsUtil.getPortFromLogicalName(
                 OpenflowVersion.get(ofVersion), split[split.length - 1]);
@@ -227,19 +223,19 @@ public class PacketOutConvertorTest{
 
     /**
      * create NodeConnectorRef
-     * 
+     *
      * @param nodeId
      * @param nConKey
      * @return
      */
     private static NodeConnectorRef createNodeConnRef(final String nodeId,
-            final NodeConnectorKey nConKey){
+                                                      final NodeConnectorKey nConKey) {
 
         InstanceIdentifier<NodeConnector> path = InstanceIdentifier
-                .<Nodes> builder(Nodes.class)
-                .<Node, NodeKey> child(Node.class,
+                .<Nodes>builder(Nodes.class)
+                .<Node, NodeKey>child(Node.class,
                         new NodeKey(new NodeId(nodeId)))
-                .<NodeConnector, NodeConnectorKey> child(NodeConnector.class,
+                .<NodeConnector, NodeConnectorKey>child(NodeConnector.class,
                         nConKey).build();
 
         return new NodeConnectorRef(path);
@@ -247,13 +243,13 @@ public class PacketOutConvertorTest{
 
     /**
      * create NodeConnectorKey
-     * 
+     *
      * @param nodeId
      * @param port
      * @return
      */
     private NodeConnectorKey createNodeConnKey(final String nodeId,
-            final String port){
+                                               final String port) {
         StringBuilder sBuild = new StringBuilder(nodeId).append(':').append(
                 port);
 
@@ -262,15 +258,15 @@ public class PacketOutConvertorTest{
 
     /**
      * create NodeRef
-     * 
+     *
      * @param nodeId
      * @return
      */
-    private static NodeRef createNodeRef(final String nodeId){
+    private static NodeRef createNodeRef(final String nodeId) {
         NodeKey key = new NodeKey(new NodeId(nodeId));
         InstanceIdentifier<Node> path = InstanceIdentifier
-                .<Nodes> builder(Nodes.class)
-                .<Node, NodeKey> child(Node.class, key).build();
+                .<Nodes>builder(Nodes.class)
+                .<Node, NodeKey>child(Node.class, key).build();
         return new NodeRef(path);
     }
 }

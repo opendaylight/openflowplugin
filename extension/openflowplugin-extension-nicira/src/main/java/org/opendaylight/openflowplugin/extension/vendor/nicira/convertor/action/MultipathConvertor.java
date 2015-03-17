@@ -9,16 +9,17 @@
  */
 package org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.action;
 
+import com.google.common.base.Preconditions;
 import org.opendaylight.openflowplugin.extension.api.ConvertorActionFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorActionToOFJava;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.CodecPreconditionException;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.NxmNxMultipath;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.OfjAugNxAction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.OfjAugNxActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.multipath.grouping.ActionMultipath;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.multipath.grouping.ActionMultipathBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionMultipath;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionMultipathBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.multipath.grouping.NxActionMultipath;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.multipath.grouping.NxActionMultipathBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.NxActionMultipathGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.flows.statistics.update.flow.and.statistics.map.list.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionMultipathNotifFlowsStatisticsUpdateApplyActionsCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.flows.statistics.update.flow.and.statistics.map.list.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionMultipathNotifFlowsStatisticsUpdateWriteActionsCaseBuilder;
@@ -28,17 +29,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.multipath.grouping.NxMultipathBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.multipath.grouping.nx.multipath.Dst;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.multipath.grouping.nx.multipath.DstBuilder;
-import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.action.RegMoveConvertor;
-
-import com.google.common.base.Preconditions;
 
 public class MultipathConvertor implements
-ConvertorActionToOFJava<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, Action>,
-ConvertorActionFromOFJava<Action, ActionPath> {
+        ConvertorActionToOFJava<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action, Action>,
+        ConvertorActionFromOFJava<Action, ActionPath> {
 
     @Override
     public org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action convert(Action input, ActionPath path) {
-        ActionMultipath action = input.getAugmentation(OfjAugNxAction.class).getActionMultipath();
+        NxActionMultipath action = ((ActionMultipath) input.getActionChoice()).getNxActionMultipath();
         DstBuilder dstBuilder = new DstBuilder();
         dstBuilder.setDstChoice(RegMoveConvertor.resolveDst(action.getDst()));
         dstBuilder.setStart(resolveStart(action.getOfsNbits()));
@@ -70,16 +68,16 @@ ConvertorActionFromOFJava<Action, ActionPath> {
 
     private static org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action resolveAction(NxMultipath value, ActionPath path) {
         switch (path) {
-        case NODES_NODE_TABLE_FLOW_INSTRUCTIONS_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION_EXTENSIONLIST_EXTENSION:
-            return new NxActionMultipathNodesNodeTableFlowWriteActionsCaseBuilder().setNxMultipath(value).build();
-        case FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION:
-            return new NxActionMultipathNotifFlowsStatisticsUpdateWriteActionsCaseBuilder().setNxMultipath(value).build();
-        case FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION:
-            return new NxActionMultipathNotifFlowsStatisticsUpdateApplyActionsCaseBuilder().setNxMultipath(value).build();
-        case GROUPDESCSTATSUPDATED_GROUPDESCSTATS_BUCKETS_BUCKET_ACTION:
-            return new NxActionMultipathNotifGroupDescStatsUpdatedCaseBuilder().setNxMultipath(value).build();
-        default:
-            throw new CodecPreconditionException(path);
+            case NODES_NODE_TABLE_FLOW_INSTRUCTIONS_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION_EXTENSIONLIST_EXTENSION:
+                return new NxActionMultipathNodesNodeTableFlowWriteActionsCaseBuilder().setNxMultipath(value).build();
+            case FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION:
+                return new NxActionMultipathNotifFlowsStatisticsUpdateWriteActionsCaseBuilder().setNxMultipath(value).build();
+            case FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION:
+                return new NxActionMultipathNotifFlowsStatisticsUpdateApplyActionsCaseBuilder().setNxMultipath(value).build();
+            case GROUPDESCSTATSUPDATED_GROUPDESCSTATS_BUCKETS_BUCKET_ACTION:
+                return new NxActionMultipathNotifGroupDescStatsUpdatedCaseBuilder().setNxMultipath(value).build();
+            default:
+                throw new CodecPreconditionException(path);
         }
     }
 
@@ -87,20 +85,20 @@ ConvertorActionFromOFJava<Action, ActionPath> {
     public Action convert(org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action nxActionArg) {
         Preconditions.checkArgument(nxActionArg instanceof NxActionMultipathGrouping);
         NxActionMultipathGrouping nxAction = (NxActionMultipathGrouping) nxActionArg;
-        ActionMultipathBuilder builder = new ActionMultipathBuilder();
 
-        builder.setFields(nxAction.getNxMultipath().getFields());
-        builder.setBasis(nxAction.getNxMultipath().getBasis());
-        builder.setAlgorithm(nxAction.getNxMultipath().getAlgorithm());
-        builder.setMaxLink(nxAction.getNxMultipath().getMaxLink());
-        builder.setArg(nxAction.getNxMultipath().getArg());
+        NxActionMultipathBuilder nxActionMultipathBuilder = new NxActionMultipathBuilder();
+        nxActionMultipathBuilder.setFields(nxAction.getNxMultipath().getFields());
+        nxActionMultipathBuilder.setBasis(nxAction.getNxMultipath().getBasis());
+        nxActionMultipathBuilder.setAlgorithm(nxAction.getNxMultipath().getAlgorithm());
+        nxActionMultipathBuilder.setMaxLink(nxAction.getNxMultipath().getMaxLink());
+        nxActionMultipathBuilder.setArg(nxAction.getNxMultipath().getArg());
         Dst dst = nxAction.getNxMultipath().getDst();
-        builder.setOfsNbits((dst.getStart() << 6) | (dst.getEnd() - dst.getStart()));
-        builder.setDst(RegMoveConvertor.resolveDst(dst.getDstChoice()));
-
-        OfjAugNxActionBuilder augNxActionBuilder = new OfjAugNxActionBuilder();
-        augNxActionBuilder.setActionMultipath(builder.build());
-        return ActionUtil.createNiciraAction(augNxActionBuilder.build(), NxmNxMultipath.class);
+        nxActionMultipathBuilder.setOfsNbits((dst.getStart() << 6) | (dst.getEnd() - dst.getStart()));
+        nxActionMultipathBuilder.setDst(RegMoveConvertor.resolveDst(dst.getDstChoice()));
+        nxActionMultipathBuilder.setExperimenterId(ActionUtil.EXPERIMENTER_ID);
+        ActionMultipathBuilder actionMultipathBuilder = new ActionMultipathBuilder();
+        actionMultipathBuilder.setNxActionMultipath(nxActionMultipathBuilder.build());
+        return ActionUtil.createAction(actionMultipathBuilder.build());
     }
 
 }

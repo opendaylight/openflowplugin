@@ -8,12 +8,9 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Test;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.ActionRelatedTableFeatureProperty;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.ActionRelatedTableFeaturePropertyBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.InstructionRelatedTableFeatureProperty;
@@ -24,20 +21,34 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.OxmRelatedTableFeaturePropertyBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.table.features.properties.container.table.feature.properties.NextTableIds;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.table.features.properties.container.table.feature.properties.NextTableIdsBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.CopyTtlIn;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.CopyTtlOut;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.DecMplsTtl;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.Group;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.Output;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.PopPbb;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.PopVlan;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.PushPbb;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.PushVlan;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.SetField;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.SetMplsTtl;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.SetNwTtl;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.CopyTtlInCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.CopyTtlInCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.CopyTtlOutCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.CopyTtlOutCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.DecMplsTtlCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.DecMplsTtlCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.GroupCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.GroupCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.PopVlanCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.PopVlanCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.PushPbbCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.PushPbbCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.PushVlanCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.PushVlanCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetFieldCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetFieldCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetMplsTtlCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetMplsTtlCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetNwSrcCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetNwSrcCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.group._case.GroupActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.push.pbb._case.PushPbbActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.push.vlan._case.PushVlanActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.set.field._case.SetFieldActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.set.mpls.ttl._case.SetMplsTtlActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.set.nw.src._case.SetNwSrcActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.ApplyActions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.ClearActions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.GotoTable;
@@ -46,6 +57,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.WriteMetadata;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping.InstructionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.EtherType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.TableConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.TableFeaturesPropType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.EthDst;
@@ -79,10 +91,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.WriteSetfield;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.WriteSetfieldMiss;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author michal.polkorab
- *
  */
 public class TableFeaturesReplyConvertorTest {
 
@@ -112,8 +126,8 @@ public class TableFeaturesReplyConvertorTest {
     public void testWithMPTableFeature() {
         MultipartReplyTableFeaturesBuilder builder = new MultipartReplyTableFeaturesBuilder();
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart
-        .reply.multipart.reply.body.multipart.reply.table.features._case.multipart.reply.table.features
-        .TableFeatures> features = new ArrayList<>();
+                .reply.multipart.reply.body.multipart.reply.table.features._case.multipart.reply.table.features
+                .TableFeatures> features = new ArrayList<>();
         TableFeaturesBuilder featuresBuilder = new TableFeaturesBuilder();
         featuresBuilder.setTableId((short) 5);
         featuresBuilder.setName("Aloha");
@@ -144,8 +158,8 @@ public class TableFeaturesReplyConvertorTest {
     public void testWithMPTableFeatureWithProperties() {
         MultipartReplyTableFeaturesBuilder builder = new MultipartReplyTableFeaturesBuilder();
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart
-        .reply.multipart.reply.body.multipart.reply.table.features._case.multipart.reply.table.features
-        .TableFeatures> features = new ArrayList<>();
+                .reply.multipart.reply.body.multipart.reply.table.features._case.multipart.reply.table.features
+                .TableFeatures> features = new ArrayList<>();
         TableFeaturesBuilder featuresBuilder = new TableFeaturesBuilder();
         featuresBuilder.setTableId((short) 5);
         featuresBuilder.setName("Aloha");
@@ -221,6 +235,8 @@ public class TableFeaturesReplyConvertorTest {
         featuresBuilder.setMetadataWrite(metaWrite2);
         featuresBuilder.setConfig(new TableConfig(false));
         featuresBuilder.setMaxEntries(24L);
+
+
         properties = new ArrayList<>();
         propBuilder = new TableFeaturePropertiesBuilder();
         propBuilder.setType(TableFeaturesPropType.OFPTFPTMATCH);
@@ -238,7 +254,8 @@ public class TableFeaturesReplyConvertorTest {
         entries.add(entriesBuilder.build());
         oxmBuilder.setMatchEntry(entries);
         propBuilder.addAugmentation(OxmRelatedTableFeatureProperty.class, oxmBuilder.build());
-        properties.add(propBuilder.build());
+        properties.add(propBuilder.build()); //[0]
+
         propBuilder = new TableFeaturePropertiesBuilder();
         propBuilder.setType(TableFeaturesPropType.OFPTFPTAPPLYSETFIELD);
         oxmBuilder = new OxmRelatedTableFeaturePropertyBuilder();
@@ -255,7 +272,8 @@ public class TableFeaturesReplyConvertorTest {
         entries.add(entriesBuilder.build());
         oxmBuilder.setMatchEntry(entries);
         propBuilder.addAugmentation(OxmRelatedTableFeatureProperty.class, oxmBuilder.build());
-        properties.add(propBuilder.build());
+        properties.add(propBuilder.build());//[1]
+
         propBuilder = new TableFeaturePropertiesBuilder();
         propBuilder.setType(TableFeaturesPropType.OFPTFPTWRITESETFIELD);
         oxmBuilder = new OxmRelatedTableFeaturePropertyBuilder();
@@ -272,7 +290,8 @@ public class TableFeaturesReplyConvertorTest {
         entries.add(entriesBuilder.build());
         oxmBuilder.setMatchEntry(entries);
         propBuilder.addAugmentation(OxmRelatedTableFeatureProperty.class, oxmBuilder.build());
-        properties.add(propBuilder.build());
+        properties.add(propBuilder.build());//[2]
+
         propBuilder = new TableFeaturePropertiesBuilder();
         propBuilder.setType(TableFeaturesPropType.OFPTFPTWRITESETFIELDMISS);
         oxmBuilder = new OxmRelatedTableFeaturePropertyBuilder();
@@ -289,7 +308,8 @@ public class TableFeaturesReplyConvertorTest {
         entries.add(entriesBuilder.build());
         oxmBuilder.setMatchEntry(entries);
         propBuilder.addAugmentation(OxmRelatedTableFeatureProperty.class, oxmBuilder.build());
-        properties.add(propBuilder.build());
+        properties.add(propBuilder.build());//[3]
+
         propBuilder = new TableFeaturePropertiesBuilder();
         propBuilder.setType(TableFeaturesPropType.OFPTFPTAPPLYSETFIELDMISS);
         oxmBuilder = new OxmRelatedTableFeaturePropertyBuilder();
@@ -299,93 +319,124 @@ public class TableFeaturesReplyConvertorTest {
         entriesBuilder.setOxmMatchField(UdpSrc.class);
         entriesBuilder.setHasMask(false);
         entries.add(entriesBuilder.build());
+
         entriesBuilder = new MatchEntryBuilder();
         entriesBuilder.setOxmClass(OpenflowBasicClass.class);
         entriesBuilder.setOxmMatchField(UdpDst.class);
         entriesBuilder.setHasMask(false);
         entries.add(entriesBuilder.build());
+
         oxmBuilder.setMatchEntry(entries);
         propBuilder.addAugmentation(OxmRelatedTableFeatureProperty.class, oxmBuilder.build());
-        properties.add(propBuilder.build());
+        properties.add(propBuilder.build());//[4]
+
         propBuilder = new TableFeaturePropertiesBuilder();
         propBuilder.setType(TableFeaturesPropType.OFPTFPTWILDCARDS);
         oxmBuilder = new OxmRelatedTableFeaturePropertyBuilder();
         entries = new ArrayList<>();
+
         entriesBuilder = new MatchEntryBuilder();
         entriesBuilder.setOxmClass(OpenflowBasicClass.class);
         entriesBuilder.setOxmMatchField(EthSrc.class);
         entriesBuilder.setHasMask(false);
         entries.add(entriesBuilder.build());
+
         entriesBuilder = new MatchEntryBuilder();
         entriesBuilder.setOxmClass(OpenflowBasicClass.class);
         entriesBuilder.setOxmMatchField(EthDst.class);
         entriesBuilder.setHasMask(false);
         entries.add(entriesBuilder.build());
+
         oxmBuilder.setMatchEntry(entries);
         propBuilder.addAugmentation(OxmRelatedTableFeatureProperty.class, oxmBuilder.build());
-        properties.add(propBuilder.build());
+        properties.add(propBuilder.build());//[5]
+
+        /* -------------------------------------------------- */
+
         propBuilder = new TableFeaturePropertiesBuilder();
         propBuilder.setType(TableFeaturesPropType.OFPTFPTAPPLYACTIONS);
         ActionRelatedTableFeaturePropertyBuilder actBuilder = new ActionRelatedTableFeaturePropertyBuilder();
         List<Action> actions = new ArrayList<>();
+
         ActionBuilder actionBuilder = new ActionBuilder();
-        actionBuilder.setType(Output.class);
+        actionBuilder.setActionChoice(createSetNwSrcAction());
         actions.add(actionBuilder.build());
+
         actionBuilder = new ActionBuilder();
-        actionBuilder.setType(PopPbb.class);
+        actionBuilder.setActionChoice(createSetNwSrcAction());
         actions.add(actionBuilder.build());
+
         actionBuilder = new ActionBuilder();
-        actionBuilder.setType(SetNwTtl.class);
+        actionBuilder.setActionChoice(createSetNwSrcAction());
         actions.add(actionBuilder.build());
         actBuilder.setAction(actions);
         propBuilder.addAugmentation(ActionRelatedTableFeatureProperty.class, actBuilder.build());
-        properties.add(propBuilder.build());
+        properties.add(propBuilder.build());//[6]
+
+        /* -------------------------------------------------- */
+
         propBuilder = new TableFeaturePropertiesBuilder();
         propBuilder.setType(TableFeaturesPropType.OFPTFPTAPPLYACTIONSMISS);
         actBuilder = new ActionRelatedTableFeaturePropertyBuilder();
+
         actions = new ArrayList<>();
         actionBuilder = new ActionBuilder();
-        actionBuilder.setType(Group.class);
+        actionBuilder.setActionChoice(createGroupAction());
         actions.add(actionBuilder.build());
+
         actionBuilder = new ActionBuilder();
-        actionBuilder.setType(CopyTtlIn.class);
+        actionBuilder.setActionChoice(createCopyTtlInCase());
         actions.add(actionBuilder.build());
+
         actionBuilder = new ActionBuilder();
-        actionBuilder.setType(CopyTtlOut.class);
+        actionBuilder.setActionChoice(createCopyTtlOutCase());
         actions.add(actionBuilder.build());
         actBuilder.setAction(actions);
         propBuilder.addAugmentation(ActionRelatedTableFeatureProperty.class, actBuilder.build());
-        properties.add(propBuilder.build());
+        properties.add(propBuilder.build());//[7]
+
+        /* -------------------------------------------------- */
         propBuilder = new TableFeaturePropertiesBuilder();
         propBuilder.setType(TableFeaturesPropType.OFPTFPTWRITEACTIONS);
         actBuilder = new ActionRelatedTableFeaturePropertyBuilder();
+
         actions = new ArrayList<>();
         actionBuilder = new ActionBuilder();
-        actionBuilder.setType(SetMplsTtl.class);
+        actionBuilder.setActionChoice(createSetMplsTtlCase());
         actions.add(actionBuilder.build());
+
         actionBuilder = new ActionBuilder();
-        actionBuilder.setType(DecMplsTtl.class);
+        actionBuilder.setActionChoice(createDecMplsTtlCase());
         actions.add(actionBuilder.build());
+
         actionBuilder = new ActionBuilder();
-        actionBuilder.setType(PushVlan.class);
+        actionBuilder.setActionChoice(pushVlanCase());
         actions.add(actionBuilder.build());
         actBuilder.setAction(actions);
+
         propBuilder.addAugmentation(ActionRelatedTableFeatureProperty.class, actBuilder.build());
         properties.add(propBuilder.build());
+
+        /* -------------------------------------------------- */
+
         propBuilder = new TableFeaturePropertiesBuilder();
         propBuilder.setType(TableFeaturesPropType.OFPTFPTWRITEACTIONSMISS);
         actBuilder = new ActionRelatedTableFeaturePropertyBuilder();
+
         actions = new ArrayList<>();
         actionBuilder = new ActionBuilder();
-        actionBuilder.setType(PopVlan.class);
+        actionBuilder.setActionChoice(createPopVlanCase());
         actions.add(actionBuilder.build());
+
         actionBuilder = new ActionBuilder();
-        actionBuilder.setType(PushPbb.class);
+        actionBuilder.setActionChoice(createPushPbbCase());
         actions.add(actionBuilder.build());
+
         actionBuilder = new ActionBuilder();
-        actionBuilder.setType(SetField.class);
+        actionBuilder.setActionChoice(createEmptySetFieldCase());
         actions.add(actionBuilder.build());
         actBuilder.setAction(actions);
+
         propBuilder.addAugmentation(ActionRelatedTableFeatureProperty.class, actBuilder.build());
         properties.add(propBuilder.build());
         featuresBuilder.setTableFeatureProperties(properties);
@@ -404,7 +455,7 @@ public class TableFeaturesReplyConvertorTest {
         Assert.assertEquals("Wrong max-entries", 42, feature.getMaxEntries().intValue());
         Assert.assertEquals("Wrong properties", 4, feature.getTableProperties().getTableFeatureProperties().size());
         org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties
-        .TableFeatureProperties property = feature.getTableProperties().getTableFeatureProperties().get(0);
+                .TableFeatureProperties property = feature.getTableProperties().getTableFeatureProperties().get(0);
         Assert.assertEquals("Wrong property type", "org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.NextTable",
                 property.getTableFeaturePropType().getImplementedInterface().getName());
         NextTable propType = (NextTable) property.getTableFeaturePropType();
@@ -424,7 +475,7 @@ public class TableFeaturesReplyConvertorTest {
                 property.getTableFeaturePropType().getImplementedInterface().getName());
         Instructions propType3 = (Instructions) property.getTableFeaturePropType();
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list
-        .Instruction> instructionIds = propType3.getInstructions().getInstruction();
+                .Instruction> instructionIds = propType3.getInstructions().getInstruction();
         Assert.assertEquals("Wrong instruction-ids size", 2, instructionIds.size());
         Assert.assertEquals("Wrong instruction-id", "org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.WriteActionsCase",
                 instructionIds.get(0).getInstruction().getImplementedInterface().getName());
@@ -446,6 +497,7 @@ public class TableFeaturesReplyConvertorTest {
                 instructionIds.get(3).getInstruction().getImplementedInterface().getName());
         Assert.assertEquals("Wrong instruction-id", "org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.GoToTableCase",
                 instructionIds.get(4).getInstruction().getImplementedInterface().getName());
+
         feature = list.get(1);
         Assert.assertEquals("Wrong table-id", 6, feature.getTableId().intValue());
         Assert.assertEquals("Wrong name", "Mahalo", feature.getName());
@@ -514,24 +566,26 @@ public class TableFeaturesReplyConvertorTest {
                 fieldMatch.get(0).getMatchType().getName());
         Assert.assertEquals("Wrong match-entry-id", "org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.EthDst",
                 fieldMatch.get(1).getMatchType().getName());
+
         property = feature.getTableProperties().getTableFeatureProperties().get(6);
         Assert.assertEquals("Wrong property type", "org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.ApplyActions",
                 property.getTableFeaturePropType().getImplementedInterface().getName());
         org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type
-        .ApplyActions propType11 = (org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.ApplyActions) property.getTableFeaturePropType();
+                .ApplyActions propType11 = (org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.ApplyActions) property.getTableFeaturePropType();
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> actionsList = propType11.getApplyActions().getAction();
         Assert.assertEquals("Wrong actions-ids size", 3, actionsList.size());
-        Assert.assertEquals("Wrong actions-id", "org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCase",
+        Assert.assertEquals("Wrong actions-id", "org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetNwSrcActionCase",
                 actionsList.get(0).getAction().getImplementedInterface().getName());
-        Assert.assertEquals("Wrong actions-id", "org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PopPbbActionCase",
+        Assert.assertEquals("Wrong actions-id", "org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetNwSrcActionCase",
                 actionsList.get(1).getAction().getImplementedInterface().getName());
-        Assert.assertEquals("Wrong actions-id", "org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetNwTtlActionCase",
+        Assert.assertEquals("Wrong actions-id", "org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetNwSrcActionCase",
                 actionsList.get(2).getAction().getImplementedInterface().getName());
+
         property = feature.getTableProperties().getTableFeatureProperties().get(7);
         Assert.assertEquals("Wrong property type", "org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.ApplyActionsMiss",
                 property.getTableFeaturePropType().getImplementedInterface().getName());
         org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type
-        .ApplyActionsMiss propType12 = (org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type
+                .ApplyActionsMiss propType12 = (org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type
                 .ApplyActionsMiss) property.getTableFeaturePropType();
         actionsList = propType12.getApplyActionsMiss().getAction();
         Assert.assertEquals("Wrong actions-ids size", 3, actionsList.size());
@@ -544,8 +598,9 @@ public class TableFeaturesReplyConvertorTest {
         property = feature.getTableProperties().getTableFeatureProperties().get(8);
         Assert.assertEquals("Wrong property type", "org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.WriteActions",
                 property.getTableFeaturePropType().getImplementedInterface().getName());
+
         org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type
-        .WriteActions propType13 = (org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type
+                .WriteActions propType13 = (org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type
                 .WriteActions) property.getTableFeaturePropType();
         actionsList = propType13.getWriteActions().getAction();
         Assert.assertEquals("Wrong actions-ids size", 3, actionsList.size());
@@ -558,8 +613,9 @@ public class TableFeaturesReplyConvertorTest {
         property = feature.getTableProperties().getTableFeatureProperties().get(9);
         Assert.assertEquals("Wrong property type", "org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.WriteActionsMiss",
                 property.getTableFeaturePropType().getImplementedInterface().getName());
+
         org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type
-        .WriteActionsMiss propType14 = (org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type
+                .WriteActionsMiss propType14 = (org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type
                 .WriteActionsMiss) property.getTableFeaturePropType();
         actionsList = propType14.getWriteActionsMiss().getAction();
         Assert.assertEquals("Wrong actions-ids size", 3, actionsList.size());
@@ -570,4 +626,79 @@ public class TableFeaturesReplyConvertorTest {
         Assert.assertEquals("Wrong actions-id", "org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetFieldCase",
                 actionsList.get(2).getAction().getImplementedInterface().getName());
     }
+
+    private final SetNwSrcCase createSetNwSrcAction() {
+        final SetNwSrcCaseBuilder setNwSrcCaseBuilder;
+        final SetNwSrcActionBuilder setNwSrcActionBuilder;
+        setNwSrcCaseBuilder = new SetNwSrcCaseBuilder();
+        setNwSrcActionBuilder = new SetNwSrcActionBuilder();
+        setNwSrcActionBuilder.setIpAddress(new Ipv4Address("1.2.3.4"));
+        setNwSrcCaseBuilder.setSetNwSrcAction(setNwSrcActionBuilder.build());
+        return setNwSrcCaseBuilder.build();
+    }
+
+    private final GroupCase createGroupAction() {
+        final GroupCaseBuilder groupCaseBuilder = new GroupCaseBuilder();
+        final GroupActionBuilder groupActionBuilder = new GroupActionBuilder();
+        groupActionBuilder.setGroupId(42L);
+        groupCaseBuilder.setGroupAction(groupActionBuilder.build());
+        return groupCaseBuilder.build();
+    }
+
+    private final CopyTtlInCase createCopyTtlInCase() {
+        CopyTtlInCaseBuilder copyTtlInCaseBuilder = new CopyTtlInCaseBuilder();
+        return copyTtlInCaseBuilder.build();
+    }
+
+    private final CopyTtlOutCase createCopyTtlOutCase() {
+        CopyTtlOutCaseBuilder copyTtlInCaseBuilder = new CopyTtlOutCaseBuilder();
+        return copyTtlInCaseBuilder.build();
+    }
+
+    private final SetMplsTtlCase createSetMplsTtlCase() {
+        SetMplsTtlCaseBuilder setMplsTtlCaseBuilder = new SetMplsTtlCaseBuilder();
+        SetMplsTtlActionBuilder setMplsTtlActionBuilder = new SetMplsTtlActionBuilder();
+        setMplsTtlActionBuilder.setMplsTtl((short) 42);
+        setMplsTtlCaseBuilder.setSetMplsTtlAction(setMplsTtlActionBuilder.build());
+        return setMplsTtlCaseBuilder.build();
+    }
+
+    private final DecMplsTtlCase createDecMplsTtlCase() {
+        DecMplsTtlCaseBuilder decMplsTtlCaseBuilder = new DecMplsTtlCaseBuilder();
+        return decMplsTtlCaseBuilder.build();
+    }
+
+    private final PushVlanCase pushVlanCase() {
+        PushVlanCaseBuilder pushVlanCaseBuilder = new PushVlanCaseBuilder();
+        PushVlanActionBuilder pushVlanActionBuilder = new PushVlanActionBuilder();
+        pushVlanActionBuilder.setEthertype(new EtherType(1));
+        pushVlanCaseBuilder.setPushVlanAction(pushVlanActionBuilder.build());
+        return pushVlanCaseBuilder.build();
+    }
+
+    private final PopVlanCase createPopVlanCase() {
+        PopVlanCaseBuilder popVlanCaseBuilder = new PopVlanCaseBuilder();
+        return popVlanCaseBuilder.build();
+    }
+
+    private final PushPbbCase createPushPbbCase() {
+        PushPbbCaseBuilder pushPbbCaseBuilder = new PushPbbCaseBuilder();
+        PushPbbActionBuilder pushPbbActionBuilder = new PushPbbActionBuilder();
+        pushPbbActionBuilder.setEthertype(new EtherType(1));
+        pushPbbCaseBuilder.setPushPbbAction(pushPbbActionBuilder.build());
+        return pushPbbCaseBuilder.build();
+    }
+
+    private final SetFieldCase createEmptySetFieldCase() {
+        SetFieldCaseBuilder setFieldCaseBuilder = new SetFieldCaseBuilder();
+        SetFieldActionBuilder setFieldActionBuilder = new SetFieldActionBuilder();
+        List<MatchEntry> matchEntries = new ArrayList();
+        MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
+
+        matchEntries.add(matchEntryBuilder.build());
+        setFieldActionBuilder.setMatchEntry(matchEntries);
+        setFieldCaseBuilder.setSetFieldAction(setFieldActionBuilder .build());
+        return setFieldCaseBuilder.build();
+    }
+
 }
