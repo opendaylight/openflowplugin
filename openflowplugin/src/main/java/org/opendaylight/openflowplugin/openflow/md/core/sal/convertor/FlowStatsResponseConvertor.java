@@ -85,7 +85,7 @@ public class FlowStatsResponseConvertor {
             
             AugmentTuple<Match> matchExtensionWrap = 
                     MatchExtensionHelper.processAllExtensions(
-                            flowStats.getMatch().getMatchEntries(), ofVersion, MatchPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH);
+                            flowStats.getMatch().getMatchEntry(), ofVersion, MatchPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH);
             if (matchExtensionWrap != null) {
                 matchBuilder.addAugmentation(matchExtensionWrap.getAugmentationClass(), matchExtensionWrap.getAugmentationObject());
             }

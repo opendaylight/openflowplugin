@@ -7,11 +7,9 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Ipv6ExthdrFlags;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
-
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.MaskMatchEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Ipv6ExthdrFlags;
 
 /**
  * match related tools
@@ -21,13 +19,13 @@ public abstract class MatchConvertorUtil {
     private static final String PREFIX_SEPARATOR = "/";
 
     /**
-     * @param maskMatchEntry
+     * @param maskEntry
      * @return subnetwork suffix in form of "/"+&lt;mask value {0..32}&gt;
      */
-    public static String getIpv4Mask(MaskMatchEntry maskMatchEntry) {
-        int receivedMask = ByteBuffer.wrap(maskMatchEntry.getMask()).getInt();
+    public static String getIpv4Mask(byte[] maskEntry) {
+        int receivedMask = ByteBuffer.wrap(maskEntry).getInt();
         int shiftCount = 0;
-        
+
         if (receivedMask == 0) {
             shiftCount = 32;
         } else {
@@ -35,7 +33,7 @@ public abstract class MatchConvertorUtil {
                 receivedMask = receivedMask >> 1;
                 shiftCount++;
                 if (shiftCount >= 32) {
-                    throw new IllegalArgumentException("given mask is invalid: "+Arrays.toString(maskMatchEntry.getMask()));
+                    throw new IllegalArgumentException("given mask is invalid: " + Arrays.toString(maskEntry));
                 }
             }
         }
