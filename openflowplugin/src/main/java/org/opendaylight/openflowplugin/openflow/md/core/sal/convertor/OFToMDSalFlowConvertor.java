@@ -7,9 +7,6 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
@@ -18,10 +15,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Instructions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.InstructionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ClearActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ClearActionsCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.GoToTableCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.MeterCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.WriteActionsCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.WriteMetadataCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.WriteMetadataCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.apply.actions._case.ApplyActionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.clear.actions._case.ClearActionsBuilder;
@@ -33,12 +32,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.ActionsInstruction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.MetadataInstruction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.MeterIdInstruction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.TableIdInstruction;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.ApplyActionsCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.GotoTableCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.MeterCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.WriteActionsCase;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 
-public class OFToMDSalFlowConvertor {
+public final class OFToMDSalFlowConvertor {
 
     private OFToMDSalFlowConvertor() {
         // hiding implicite constructor
@@ -61,63 +63,65 @@ public class OFToMDSalFlowConvertor {
         int instructionTreeNodekey = 0;
         org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction salInstruction;
         for (org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping.Instruction switchInst : instructions) {
-            if (switchInst.getType().equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.ApplyActions.class)) {
+            if (switchInst.getInstructionChoice() instanceof ApplyActionsCase) {
 
-                ActionsInstruction actionsInstruction = (ActionsInstruction) switchInst.getAugmentation(ActionsInstruction.class);
+                ApplyActionsCase actionsInstruction = ((ApplyActionsCase) switchInst.getInstructionChoice());
                 ApplyActionsCaseBuilder applyActionsCaseBuilder = new ApplyActionsCaseBuilder();
                 ApplyActionsBuilder applyActionsBuilder = new ApplyActionsBuilder();
 
 
-                applyActionsBuilder.setAction(wrapActionList(ActionConvertor.toMDSalActions(actionsInstruction.getAction(), ofVersion, ActionPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION)));
+                applyActionsBuilder.setAction(wrapActionList(ActionConvertor.toMDSalActions(actionsInstruction.getApplyActions().getAction(), ofVersion, ActionPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION)));
 
                 applyActionsCaseBuilder.setApplyActions(applyActionsBuilder.build());
                 salInstruction = applyActionsCaseBuilder.build();
-            } else if (switchInst.getType().equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.ClearActions.class)) {
+            } else if (switchInst.getInstructionChoice() instanceof ClearActionsCase) {
 
+                ClearActionsCase clearActionsCase = ((ClearActionsCase) switchInst.getInstructionChoice());
                 ClearActionsCaseBuilder clearActionsCaseBuilder = new ClearActionsCaseBuilder();
                 ClearActionsBuilder clearActionsBuilder = new ClearActionsBuilder();
+                clearActionsBuilder.setAction(clearActionsCase.getClearActions().getAction());
                 clearActionsCaseBuilder.setClearActions(clearActionsBuilder.build());
 
                 salInstruction = clearActionsCaseBuilder.build();
-            } else if (switchInst.getType().equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.GotoTable.class)) {
+            } else if (switchInst.getInstructionChoice() instanceof GotoTableCase) {
 
-                TableIdInstruction tableIdInstruction = (TableIdInstruction) switchInst.getAugmentation(TableIdInstruction.class);
+                GotoTableCase gotoTableCase = ((GotoTableCase) switchInst.getInstructionChoice());
 
                 GoToTableCaseBuilder goToTableCaseBuilder = new GoToTableCaseBuilder();
                 GoToTableBuilder goToTableBuilder = new GoToTableBuilder();
-                goToTableBuilder.setTableId(tableIdInstruction.getTableId());
+                goToTableBuilder.setTableId(gotoTableCase.getGotoTable().getTableId());
                 goToTableCaseBuilder.setGoToTable(goToTableBuilder.build());
 
                 salInstruction = goToTableCaseBuilder.build();
-            } else if (switchInst.getType().equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.Meter.class)) {
+            } else if (switchInst.getInstructionChoice() instanceof MeterCase) {
 
-                MeterIdInstruction meterIdInstruction = (MeterIdInstruction) switchInst.getAugmentation(MeterIdInstruction.class);
+                MeterCase meterIdInstruction = ((MeterCase) switchInst.getInstructionChoice());
 
 
                 MeterCaseBuilder meterCaseBuilder = new MeterCaseBuilder();
                 MeterBuilder meterBuilder = new MeterBuilder();
-                meterBuilder.setMeterId(new MeterId(meterIdInstruction.getMeterId()));
+                meterBuilder.setMeterId(new MeterId(meterIdInstruction.getMeter().getMeterId()));
                 meterCaseBuilder.setMeter(meterBuilder.build());
 
                 salInstruction = meterCaseBuilder.build();
-            } else if (switchInst.getType().equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.WriteActions.class)) {
+            } else if (switchInst.getInstructionChoice() instanceof WriteActionsCase) {
 
-                ActionsInstruction actionsInstruction = (ActionsInstruction) switchInst.getAugmentation(ActionsInstruction.class);
+                WriteActionsCase writeActionsCase = ((WriteActionsCase) switchInst.getInstructionChoice());
 
                 WriteActionsCaseBuilder writeActionsCaseBuilder = new WriteActionsCaseBuilder();
                 WriteActionsBuilder writeActionsBuilder = new WriteActionsBuilder();
-                writeActionsBuilder.setAction(wrapActionList(ActionConvertor.toMDSalActions(actionsInstruction.getAction(), ofVersion, ActionPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION)));
+                writeActionsBuilder.setAction(wrapActionList(ActionConvertor.toMDSalActions(writeActionsCase.getWriteActions().getAction(), ofVersion, ActionPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION)));
                 writeActionsCaseBuilder.setWriteActions(writeActionsBuilder.build());
 
                 salInstruction = writeActionsCaseBuilder.build();
-            } else if (switchInst.getType().equals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.WriteMetadata.class)) {
+            } else if (switchInst.getInstructionChoice() instanceof WriteMetadataCase) {
 
-                MetadataInstruction metadataInstruction = (MetadataInstruction) switchInst.getAugmentation(MetadataInstruction.class);
+                WriteMetadataCase writeMetadataCase = ((WriteMetadataCase) switchInst.getInstructionChoice());
 
                 WriteMetadataCaseBuilder writeMetadataCaseBuilder = new WriteMetadataCaseBuilder();
                 WriteMetadataBuilder writeMetadataBuilder = new WriteMetadataBuilder();
-                writeMetadataBuilder.setMetadata(new BigInteger(1, metadataInstruction.getMetadata()));
-                writeMetadataBuilder.setMetadataMask(new BigInteger(1, metadataInstruction.getMetadataMask()));
+                writeMetadataBuilder.setMetadata(writeMetadataCase.getWriteMetadata().getMetadata());
+                writeMetadataBuilder.setMetadataMask(writeMetadataCase.getWriteMetadata().getMetadataMask());
                 writeMetadataCaseBuilder.setWriteMetadata(writeMetadataBuilder.build());
 
                 salInstruction = writeMetadataCaseBuilder.build();
