@@ -32,7 +32,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.BucketsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.Bucket;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.BucketBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.GroupIdAction;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.GroupIdAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupModCommand;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupType;
@@ -41,7 +41,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 public class GroupConvertorTest {
 
     /**
-     * test of {@link GroupConvertor#toGroupModInput(org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group, short)}
+     * test of {@link GroupConvertor#toGroupModInput(org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group, short, java.math.BigInteger)}
      */
     @Test
     public void testGroupModConvertorwithallParameters() {
@@ -161,7 +161,7 @@ public class GroupConvertorTest {
     }
 
     /**
-     * test of {@link GroupConvertor#toGroupModInput(org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group, short)}
+     * test of {@link GroupConvertor#toGroupModInput(org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group, short, java.math.BigInteger)}
      */
     @Test
     public void testGroupModConvertorNoBucket() {
@@ -178,7 +178,7 @@ public class GroupConvertorTest {
     }
 
     /**
-     * test of {@link GroupConvertor#toGroupModInput(org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group, short)}
+     * test of {@link GroupConvertor#toGroupModInput(org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group, short, java.math.BigInteger)}
      */
     @Test
     public void testGroupModConvertorBucketwithNOWieghtValuesForGroupTypeFastFailure() {
@@ -296,7 +296,7 @@ public class GroupConvertorTest {
     }
 
     /**
-     * test of {@link GroupConvertor#toGroupModInput(org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group, short)}
+     * test of {@link GroupConvertor#toGroupModInput(org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group, short, java.math.BigInteger)} )}
      */
     @Test
     public void testGroupModConvertorBucketwithNOWieghtValuesForGroupTypeAll() {

@@ -1,22 +1,21 @@
 package org.opendaylight.openflowjava.nx.codec.match;
 
 import io.netty.buffer.ByteBuf;
-
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntryDeserializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntrySerializerKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.MatchField;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Nxm0Class;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.OxmClassBase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.grouping.MatchEntries;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.grouping.MatchEntriesBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Nxm0Class;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.EthDstCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.EthDstCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.eth.dst._case.EthDstBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmOfEthDst;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.OfjAugNxMatch;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.OfjAugNxMatchBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.of.match.eth.dst.grouping.EthDstValuesBuilder;
 
 public class EthDstCodec extends AbstractMatchCodec {
 
@@ -28,22 +27,23 @@ public class EthDstCodec extends AbstractMatchCodec {
             EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_0_CLASS, NXM_FIELD_CODE);
 
     @Override
-    public void serialize(MatchEntries input, ByteBuf outBuffer) {
+    public void serialize(MatchEntry input, ByteBuf outBuffer) {
         serializeHeader(input, outBuffer);
-        String value = input.getAugmentation(OfjAugNxMatch.class).getEthDstValues().getMacAddress().getValue();
-        outBuffer.writeBytes(ByteBufUtils.macAddressToBytes(value));
+        EthDstCase ethDstCase = ((EthDstCase) input.getMatchEntryValue());
+        outBuffer.writeBytes(ByteBufUtils.macAddressToBytes(ethDstCase.getEthDst().getMacAddress().getValue()));
     }
 
     @Override
-    public MatchEntries deserialize(ByteBuf message) {
-        MatchEntriesBuilder matchEntriesBuilder = deserializeHeader(message);
-        OfjAugNxMatchBuilder augNxMatchBuilder = new OfjAugNxMatchBuilder();
+    public MatchEntry deserialize(ByteBuf message) {
+        MatchEntryBuilder matchEntryBuilder = deserializeHeader(message);
         byte[] address = new byte[VALUE_LENGTH];
         message.readBytes(address);
-        augNxMatchBuilder.setEthDstValues(new EthDstValuesBuilder().setMacAddress(
-                new MacAddress(ByteBufUtils.macAddressToString(address))).build());
-        matchEntriesBuilder.addAugmentation(OfjAugNxMatch.class, augNxMatchBuilder.build());
-        return matchEntriesBuilder.build();
+        EthDstCaseBuilder ethDstCaseBuilder = new EthDstCaseBuilder();
+        EthDstBuilder ethDstBuilder = new EthDstBuilder();
+        ethDstBuilder.setMacAddress(new MacAddress(ByteBufUtils.macAddressToString(address)));
+        ethDstCaseBuilder.setEthDst(ethDstBuilder.build());
+        matchEntryBuilder.setMatchEntryValue(ethDstCaseBuilder.build());
+        return matchEntryBuilder.build();
     }
 
     @Override

@@ -7,8 +7,6 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action;
 
-import java.math.BigInteger;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,26 +21,27 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.addr
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.address.address.Ipv4Builder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.address.address.Ipv6;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.address.address.Ipv6Builder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.IpAddressAction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.Ipv4AddressMatchEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.Ipv6AddressMatchEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.OxmFieldsAction;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.IpAddressAction;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.OxmFieldsAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.grouping.MatchEntries;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.Ipv4SrcCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.Ipv6SrcCase;
+import java.math.BigInteger;
 
 /**
- * match conversion and injection test 
+ * match conversion and injection test
  */
 public class ActionSetNwSrcReactorTest {
 
     private Address[] addresses;
-    
+
     /**
      * prepare input match
      */
     @Before
     public void setUp() {
-        addresses = new Address[] {
+        addresses = new Address[]{
                 new Ipv4Builder().setIpv4Address(new Ipv4Prefix("10.0.10.1/32")).build(),
                 new Ipv4Builder().setIpv4Address(new Ipv4Prefix("10.0.10.1/16")).build(),
                 new Ipv6Builder().setIpv6Address(new Ipv6Prefix("1234:5678:9abc:def1:2345:6789:abcd:ef12")).build(),
@@ -53,19 +52,22 @@ public class ActionSetNwSrcReactorTest {
     /**
      * convert for OF-1.3, inject into {@link ActionBuilder}
      */
+
     @Test
     public void testMatchConvertorV13_flow() {
         ActionBuilder target = new ActionBuilder();
         for (Address address : addresses) {
             SetNwSrcActionCase action = prepareSetNwSrcActionCase(address);
-            ActionSetNwSrcReactor.getInstance().convert(action, 
+            ActionSetNwSrcReactor.getInstance().convert(action,
                     OFConstants.OFP_VERSION_1_3, target, BigInteger.ONE);
-            MatchEntries mEntry = target.getAugmentation(OxmFieldsAction.class).getMatchEntries().get(0);
+            MatchEntry mEntry = target.getAugmentation(OxmFieldsAction.class).getMatchEntry().get(0);
             Assert.assertNotNull(mEntry);
             if (address instanceof Ipv4) {
-                Assert.assertNotNull(mEntry.getAugmentation(Ipv4AddressMatchEntry.class));
+                Ipv4SrcCase ipv4SrcCase = ((Ipv4SrcCase) mEntry.getMatchEntryValue());
+                Assert.assertNotNull(ipv4SrcCase.getIpv4Src());
             } else if (address instanceof Ipv6) {
-                Assert.assertNotNull(mEntry.getAugmentation(Ipv6AddressMatchEntry.class));
+                Ipv6SrcCase ipv6SrcCase = ((Ipv6SrcCase) mEntry.getMatchEntryValue());
+                Assert.assertNotNull(ipv6SrcCase.getIpv6Src().getIpv6Address());
             } else {
                 Assert.fail("not tested yet: " + address.getClass().getName());
             }
@@ -80,7 +82,7 @@ public class ActionSetNwSrcReactorTest {
         return new SetNwSrcActionCaseBuilder().setSetNwSrcAction(
                 new SetNwSrcActionBuilder().setAddress(address).build()).build();
     }
-    
+
     /**
      * convert for OF-1.0, inject into {@link ActionBuilder}
      */
@@ -89,16 +91,16 @@ public class ActionSetNwSrcReactorTest {
         ActionBuilder target = new ActionBuilder();
         for (Address address : addresses) {
             SetNwSrcActionCase action = prepareSetNwSrcActionCase(address);
-            
+
             if (address instanceof Ipv4) {
-                ActionSetNwSrcReactor.getInstance().convert(action, 
+                ActionSetNwSrcReactor.getInstance().convert(action,
                         OFConstants.OFP_VERSION_1_0, target, BigInteger.ONE);
                 Assert.assertNotNull(target.getAugmentation(IpAddressAction.class).getIpAddress());
             } else {
                 try {
-                    ActionSetNwSrcReactor.getInstance().convert(action, 
+                    ActionSetNwSrcReactor.getInstance().convert(action,
                             OFConstants.OFP_VERSION_1_0, target, BigInteger.ONE);
-                    Assert.fail("address of this type must not pass the reactor: "+address.getClass().getName());
+                    Assert.fail("address of this type must not pass the reactor: " + address.getClass().getName());
                 } catch (Exception e) {
                     //expected
                     Assert.assertEquals(IllegalArgumentException.class, e.getClass());

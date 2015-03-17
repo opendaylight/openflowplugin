@@ -30,9 +30,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowModFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartRequestFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.OxmMatchType;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.match.grouping.MatchBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.grouping.MatchEntries;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmMatchType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessage;
@@ -161,7 +161,7 @@ public class MultipartReplyTranslatorFirstTest {
         statsBuilder.setByteCount(new BigInteger("9"));
         MatchBuilder matchBuilder = new MatchBuilder();
         matchBuilder.setType(OxmMatchType.class);
-        matchBuilder.setMatchEntries(new ArrayList<MatchEntries>());
+        matchBuilder.setMatchEntry(new ArrayList<MatchEntry>());
         statsBuilder.setMatch(matchBuilder.build());
         statsBuilder.setInstruction(new ArrayList<Instruction>());
         flowStats.add(statsBuilder.build());
@@ -179,7 +179,7 @@ public class MultipartReplyTranslatorFirstTest {
         statsBuilder.setByteCount(new BigInteger("90"));
         matchBuilder = new MatchBuilder();
         matchBuilder.setType(OxmMatchType.class);
-        matchBuilder.setMatchEntries(new ArrayList<MatchEntries>());
+        matchBuilder.setMatchEntry(new ArrayList<MatchEntry>());
         statsBuilder.setMatch(matchBuilder.build());
         statsBuilder.setInstruction(new ArrayList<Instruction>());
         flowStats.add(statsBuilder.build());

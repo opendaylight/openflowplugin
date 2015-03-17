@@ -26,8 +26,6 @@ import org.opendaylight.openflowjava.nx.codec.match.Reg5Codec;
 import org.opendaylight.openflowjava.nx.codec.match.Reg6Codec;
 import org.opendaylight.openflowjava.nx.codec.match.Reg7Codec;
 import org.opendaylight.openflowjava.nx.codec.match.TunIdCodec;
-import org.opendaylight.openflowjava.nx.codec.match.TunIpv4DstCodec;
-import org.opendaylight.openflowjava.nx.codec.match.TunIpv4SrcCodec;
 import org.opendaylight.openflowjava.nx.codec.match.NspCodec;
 import org.opendaylight.openflowjava.nx.codec.match.NsiCodec;
 
@@ -94,10 +92,6 @@ public class NiciraExtensionsRegistrator implements AutoCloseable {
         registrator.registerMatchEntryDeserializer(EthDstCodec.DESERIALIZER_KEY, NiciraMatchCodecs.ETH_DST_CODEC);
         registrator.registerMatchEntrySerializer(EthSrcCodec.SERIALIZER_KEY, NiciraMatchCodecs.ETH_SRC_CODEC);
         registrator.registerMatchEntryDeserializer(EthSrcCodec.DESERIALIZER_KEY, NiciraMatchCodecs.ETH_SRC_CODEC);
-        registrator.registerMatchEntrySerializer(TunIpv4DstCodec.SERIALIZER_KEY, NiciraMatchCodecs.TUN_IPV4_DST_CODEC);
-        registrator.registerMatchEntryDeserializer(TunIpv4DstCodec.DESERIALIZER_KEY, NiciraMatchCodecs.TUN_IPV4_DST_CODEC);
-        registrator.registerMatchEntrySerializer(TunIpv4SrcCodec.SERIALIZER_KEY, NiciraMatchCodecs.TUN_IPV4_SRC_CODEC);
-        registrator.registerMatchEntryDeserializer(TunIpv4SrcCodec.DESERIALIZER_KEY, NiciraMatchCodecs.TUN_IPV4_SRC_CODEC);
         registrator.registerMatchEntrySerializer(EthTypeCodec.SERIALIZER_KEY, NiciraMatchCodecs.ETH_TYPE_CODEC);
         registrator.registerMatchEntryDeserializer(EthTypeCodec.DESERIALIZER_KEY, NiciraMatchCodecs.ETH_TYPE_CODEC);
         registrator.registerMatchEntrySerializer(NspCodec.SERIALIZER_KEY, NiciraMatchCodecs.NSP_CODEC);
@@ -155,10 +149,6 @@ public class NiciraExtensionsRegistrator implements AutoCloseable {
         registrator.unregisterMatchEntryDeserializer(EthDstCodec.DESERIALIZER_KEY);
         registrator.unregisterMatchEntrySerializer(EthSrcCodec.SERIALIZER_KEY);
         registrator.unregisterMatchEntryDeserializer(EthSrcCodec.DESERIALIZER_KEY);
-        registrator.unregisterMatchEntrySerializer(TunIpv4DstCodec.SERIALIZER_KEY);
-        registrator.unregisterMatchEntryDeserializer(TunIpv4DstCodec.DESERIALIZER_KEY);
-        registrator.unregisterMatchEntrySerializer(TunIpv4SrcCodec.SERIALIZER_KEY);
-        registrator.unregisterMatchEntryDeserializer(TunIpv4SrcCodec.DESERIALIZER_KEY);
         registrator.unregisterMatchEntrySerializer(EthTypeCodec.SERIALIZER_KEY);
         registrator.unregisterMatchEntryDeserializer(EthTypeCodec.DESERIALIZER_KEY);
         registrator.unregisterMatchEntrySerializer(NspCodec.SERIALIZER_KEY);

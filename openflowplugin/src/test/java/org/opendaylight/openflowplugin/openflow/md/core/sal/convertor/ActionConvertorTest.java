@@ -64,14 +64,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.addr
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.OutputPortValues;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.EthertypeAction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.EthertypeActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.GroupIdAction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.IpAddressAction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.Ipv4AddressMatchEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.Ipv6AddressMatchEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.MaxLengthAction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.OxmFieldsAction;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.EthertypeAction;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.EthertypeActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.GroupIdAction;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.IpAddressAction;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.MaxLengthAction;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.OxmFieldsAction;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.PortAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.CopyTtlIn;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.CopyTtlOut;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.DecNwTtl;
@@ -88,12 +87,18 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.SetNwTtl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.SetQueue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.EtherType;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Ipv4Dst;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Ipv4Src;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Ipv6Dst;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Ipv6Src;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.grouping.MatchEntries;
-
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.InPort;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Ipv4Dst;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Ipv4Src;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Ipv6Dst;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Ipv6Src;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OpenflowBasicClass;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.InPortCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.Ipv4DstCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.Ipv4SrcCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.Ipv6DstCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.Ipv6SrcCase;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
@@ -128,9 +133,9 @@ public class ActionConvertorTest {
         setFieldData();
         setExperimenterData();
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731
-        .actions.grouping.Action> OFActionsList = ActionConvertor.getActions(actions, (short) 0X4, BigInteger.ONE, null);
+                .actions.grouping.Action> OFActionsList = ActionConvertor.getActions(actions, (short) 0X4, BigInteger.ONE, null);
 
-       // OutputActions(OFActionsList);
+        OutputActions(OFActionsList);
 
     }
 
@@ -207,6 +212,7 @@ public class ActionConvertorTest {
     }
 
     // TODO - check if this method is needed (private and never used locally) - see line 94
+
     private void OutputActions(List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common
             .action.rev130731.actions.grouping.Action> oFActionsList) {
 
@@ -218,7 +224,7 @@ public class ActionConvertorTest {
             if (action.getType().equals(Output.class)) {
                 Assert.assertEquals((Integer) 10, (action.getAugmentation(MaxLengthAction.class)).getMaxLength());
                 long port = 4294967293L;
-           //     Assert.assertEquals(port, (long) (action.getAugmentation(PortAction.class)).getPort().getValue());
+                Assert.assertEquals(port, (long) (action.getAugmentation(PortAction.class)).getPort().getValue());
 
 
             }
@@ -234,7 +240,7 @@ public class ActionConvertorTest {
             }
 
             if (action.getType().equals(
-            // TODO:getMplsTtl is missing.
+                    // TODO:getMplsTtl is missing.
                     SetMplsTtl.class)) {
                 Assert.assertEquals(action.getType(), SetMplsTtl.class);
 
@@ -249,7 +255,7 @@ public class ActionConvertorTest {
             if (action.getType().equals(PushMpls.class)) {
 
                 EthertypeAction etherTypeAction = action
-                        .getAugmentation(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.EthertypeAction.class);
+                        .getAugmentation(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.EthertypeAction.class);
 
                 if (etherTypeAction != null) {
 
@@ -266,14 +272,14 @@ public class ActionConvertorTest {
 
             if (action.getType().equals(
 
-            // TODO:SetQueue,I dont have getQueueId
+                    // TODO:SetQueue,I dont have getQueueId
                     SetQueue.class)) {
                 Assert.assertEquals(action.getType(), SetQueue.class);
             }
 
             if (action.getType().equals(
 
-            GroupIdAction.class)) {
+                    GroupIdAction.class)) {
 
                 Assert.assertEquals(98, (long) (action.getAugmentation(GroupIdAction.class)).getGroupId());
 
@@ -285,10 +291,10 @@ public class ActionConvertorTest {
 
                 Assert.assertEquals(action.getType(), PushVlan.class);
 
-                    }
+            }
             if (action.getType().equals(
 
-            PopVlan.class)) {
+                    PopVlan.class)) {
 
                 Assert.assertEquals(action.getType(), PopVlan.class);
 
@@ -296,14 +302,14 @@ public class ActionConvertorTest {
 
             if (action.getType().equals(
 
-            SetNwTtl.class)) {
+                    SetNwTtl.class)) {
 
                 Assert.assertEquals(action.getType(), SetNwTtl.class);
 
             }
             if (action.getType().equals(
 
-            DecNwTtl.class)) {
+                    DecNwTtl.class)) {
 
                 Assert.assertEquals(action.getType(), DecNwTtl.class);
 
@@ -311,7 +317,7 @@ public class ActionConvertorTest {
             if (action.getType().equals(PushPbb.class)) {
 
                 EthertypeAction etherTypeAction = action
-                        .getAugmentation(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.EthertypeAction.class);
+                        .getAugmentation(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.EthertypeAction.class);
 
                 if (etherTypeAction != null) {
 
@@ -323,22 +329,23 @@ public class ActionConvertorTest {
                 Assert.assertEquals(action.getType(), PopMpls.class);
 
             }
-            /* TODO - fix this test case
             if (action.getType().equals(SetField.class)) {
 
                 OxmFieldsAction sf = action.getAugmentation(OxmFieldsAction.class);
+                Assert.assertNotNull(sf);
 
-                Assert.assertEquals(OpenflowBasicClass.class, sf.getMatchEntries().get(0).getOxmClass());
+/*
+                Assert.assertEquals(OpenflowBasicClass.class, sf.getMatchEntry().get(0).getOxmClass());
 
-                if (sf.getMatchEntries().get(0).getOxmMatchField().equals(InPort.class)) {
-                    Assert.assertEquals(2125, sf.getMatchEntries().get(0).getAugmentation(PortNumberMatchEntry.class)
-                            .getPortNumber().getValue().intValue());
+                if (sf.getMatchEntry().get(0).getOxmMatchField().equals(InPort.class)) {
+                    InPortCase inPortCase = ((InPortCase) sf.getMatchEntry().get(0).getMatchEntryValue());
+                    Assert.assertEquals(2125, inPortCase.getInPort().getPortNumber().getValue().intValue());
 
-
-                    }
+                }
+*/
 
             }
-            */
+
 
         }
 
@@ -438,7 +445,7 @@ public class ActionConvertorTest {
     @Test
     public void testOFtoSALPushMplsAction() {
         org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder actionBuilder
-        = new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder();
+                = new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder();
 
         actionBuilder.setType(PushVlan.class);
         EthertypeActionBuilder ethertypeActionBuilder = new EthertypeActionBuilder();
@@ -506,9 +513,10 @@ public class ActionConvertorTest {
         SetNwDstActionCase action = provisionNwDstActionBuilder(address);
         ActionConvertor.salToOFSetNwDst(action, actionBuilder, version);
         Assert.assertEquals(SetField.class, actionBuilder.getType());
-        MatchEntries matchEntry = actionBuilder.getAugmentation(OxmFieldsAction.class).getMatchEntries().get(0);
+        MatchEntry matchEntry = actionBuilder.getAugmentation(OxmFieldsAction.class).getMatchEntry().get(0);
         Assert.assertEquals(Ipv4Dst.class, matchEntry.getOxmMatchField());
-        Assert.assertEquals("10.0.0.1", matchEntry.getAugmentation(Ipv4AddressMatchEntry.class).getIpv4Address().getValue());
+        Ipv4DstCase ipv4DstCase = ((Ipv4DstCase) matchEntry.getMatchEntryValue());
+        Assert.assertEquals("10.0.0.1", ipv4DstCase.getIpv4Dst().getIpv4Address().getValue());
     }
 
 
@@ -525,11 +533,11 @@ public class ActionConvertorTest {
         SetNwDstActionCase action = provisionNwDstActionBuilder(address);
         ActionConvertor.salToOFSetNwDst(action, actionBuilder, version);
         Assert.assertEquals(SetField.class, actionBuilder.getType());
-        MatchEntries matchEntry = actionBuilder.getAugmentation(OxmFieldsAction.class).getMatchEntries().get(0);
+        MatchEntry matchEntry = actionBuilder.getAugmentation(OxmFieldsAction.class).getMatchEntry().get(0);
         Assert.assertEquals(Ipv6Dst.class, matchEntry.getOxmMatchField());
-        Assert.assertEquals("2001:0db8:85a3:0042:1000:8a2e:0370:7334", matchEntry.getAugmentation(Ipv6AddressMatchEntry.class).getIpv6Address().getValue());
+        Ipv6DstCase ipv6DstCase = ((Ipv6DstCase) matchEntry.getMatchEntryValue());
+        Assert.assertEquals("2001:0db8:85a3:0042:1000:8a2e:0370:7334", ipv6DstCase.getIpv6Dst().getIpv6Address().getValue());
     }
-
 
 
     /**
@@ -576,9 +584,10 @@ public class ActionConvertorTest {
         SetNwSrcActionCase action = provisionNwSrcActionBuilder(address);
         ActionConvertor.salToOFSetNwSrc(action, actionBuilder, version);
         Assert.assertEquals(SetField.class, actionBuilder.getType());
-        MatchEntries matchEntry = actionBuilder.getAugmentation(OxmFieldsAction.class).getMatchEntries().get(0);
+        MatchEntry matchEntry = actionBuilder.getAugmentation(OxmFieldsAction.class).getMatchEntry().get(0);
         Assert.assertEquals(Ipv4Src.class, matchEntry.getOxmMatchField());
-        Assert.assertEquals("10.0.0.1", matchEntry.getAugmentation(Ipv4AddressMatchEntry.class).getIpv4Address().getValue());
+        Ipv4SrcCase ipv4SrcCase = ((Ipv4SrcCase) matchEntry.getMatchEntryValue());
+        Assert.assertEquals("10.0.0.1", ipv4SrcCase.getIpv4Src().getIpv4Address().getValue());
     }
 
     /**
@@ -594,9 +603,10 @@ public class ActionConvertorTest {
         SetNwSrcActionCase action = provisionNwSrcActionBuilder(address);
         ActionConvertor.salToOFSetNwSrc(action, actionBuilder, version);
         Assert.assertEquals(SetField.class, actionBuilder.getType());
-        MatchEntries matchEntry = actionBuilder.getAugmentation(OxmFieldsAction.class).getMatchEntries().get(0);
+        MatchEntry matchEntry = actionBuilder.getAugmentation(OxmFieldsAction.class).getMatchEntry().get(0);
+        Ipv6SrcCase ipv6SrcCase = ((Ipv6SrcCase) matchEntry.getMatchEntryValue());
         Assert.assertEquals(Ipv6Src.class, matchEntry.getOxmMatchField());
-        Assert.assertEquals("2001:0db8:85a3:0042:1000:8a2e:0370:7334", matchEntry.getAugmentation(Ipv6AddressMatchEntry.class).getIpv6Address().getValue());
+        Assert.assertEquals("2001:0db8:85a3:0042:1000:8a2e:0370:7334", ipv6SrcCase.getIpv6Src().getIpv6Address().getValue());
     }
 
     /**
@@ -606,7 +616,7 @@ public class ActionConvertorTest {
     @Test
     public void testOFtoSALPopMplsAction() {
         org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder actionBuilder
-        = new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder();
+                = new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder();
 
         actionBuilder.setType(PopMpls.class);
         EthertypeActionBuilder ethertypeActionBuilder = new EthertypeActionBuilder();
@@ -620,16 +630,16 @@ public class ActionConvertorTest {
     private static SetNwDstActionCase provisionNwDstActionBuilder(Address address) {
         SetNwDstAction nwDstAction = new SetNwDstActionBuilder().setAddress(address).build();
         SetNwDstActionCase action = new SetNwDstActionCaseBuilder()
-            .setSetNwDstAction(nwDstAction)
-            .build();
+                .setSetNwDstAction(nwDstAction)
+                .build();
         return action;
     }
 
     private static SetNwSrcActionCase provisionNwSrcActionBuilder(Address address) {
         SetNwSrcAction nwSrcAction = new SetNwSrcActionBuilder().setAddress(address).build();
         SetNwSrcActionCase action = new SetNwSrcActionCaseBuilder()
-            .setSetNwSrcAction(nwSrcAction)
-            .build();
+                .setSetNwSrcAction(nwSrcAction)
+                .build();
         return action;
     }
 
