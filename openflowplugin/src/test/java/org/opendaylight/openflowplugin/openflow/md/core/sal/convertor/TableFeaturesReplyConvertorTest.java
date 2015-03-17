@@ -8,6 +8,10 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
@@ -49,12 +53,17 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.set.nw.src._case.SetNwSrcActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.ApplyActions;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.ClearActions;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.GotoTable;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.Meter;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.WriteActions;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.WriteMetadata;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.ApplyActionsCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.ClearActionsCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.GotoTableCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.MeterCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.WriteActionsCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.WriteMetadataCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice._goto.table._case.GotoTableBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.apply.actions._case.ApplyActionsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.meter._case.MeterBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.write.actions._case.WriteActionsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.write.metadata._case.WriteMetadataBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping.InstructionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.EtherType;
@@ -91,9 +100,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.WriteSetfield;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.WriteSetfieldMiss;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author michal.polkorab
@@ -160,6 +166,7 @@ public class TableFeaturesReplyConvertorTest {
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart
                 .reply.multipart.reply.body.multipart.reply.table.features._case.multipart.reply.table.features
                 .TableFeatures> features = new ArrayList<>();
+
         TableFeaturesBuilder featuresBuilder = new TableFeaturesBuilder();
         featuresBuilder.setTableId((short) 5);
         featuresBuilder.setName("Aloha");
@@ -169,8 +176,10 @@ public class TableFeaturesReplyConvertorTest {
         featuresBuilder.setMetadataWrite(metaWrite);
         featuresBuilder.setConfig(new TableConfig(false));
         featuresBuilder.setMaxEntries(42L);
+
         List<TableFeatureProperties> properties = new ArrayList<>();
         TableFeaturePropertiesBuilder propBuilder = new TableFeaturePropertiesBuilder();
+
         propBuilder.setType(TableFeaturesPropType.OFPTFPTNEXTTABLES);
         NextTableRelatedTableFeaturePropertyBuilder nextPropBuilder =
                 new NextTableRelatedTableFeaturePropertyBuilder();
@@ -181,6 +190,7 @@ public class TableFeaturesReplyConvertorTest {
         propBuilder.addAugmentation(NextTableRelatedTableFeatureProperty.class, nextPropBuilder.build());
         properties.add(propBuilder.build());
         propBuilder = new TableFeaturePropertiesBuilder();
+
         propBuilder.setType(TableFeaturesPropType.OFPTFPTNEXTTABLESMISS);
         nextPropBuilder = new NextTableRelatedTableFeaturePropertyBuilder();
         nextIds = new ArrayList<>();
@@ -189,38 +199,79 @@ public class TableFeaturesReplyConvertorTest {
         propBuilder.addAugmentation(NextTableRelatedTableFeatureProperty.class, nextPropBuilder.build());
         properties.add(propBuilder.build());
         propBuilder = new TableFeaturePropertiesBuilder();
+
         propBuilder.setType(TableFeaturesPropType.OFPTFPTINSTRUCTIONS);
         InstructionRelatedTableFeaturePropertyBuilder insPropBuilder =
                 new InstructionRelatedTableFeaturePropertyBuilder();
+
+         /* -------------------------------------------------- */
+
+        List<Action> actions = new ArrayList<>();
         List<Instruction> insIds = new ArrayList<>();
         InstructionBuilder insBuilder = new InstructionBuilder();
-        insBuilder.setType(WriteActions.class);
+        WriteActionsCaseBuilder writeActionsCaseBuilder = new WriteActionsCaseBuilder();
+        WriteActionsBuilder writeActionsBuilder = new WriteActionsBuilder();
+        ActionBuilder actionBuilder = new ActionBuilder();
+        actionBuilder.setActionChoice(createSetNwSrcAction());
+        actions.add(actionBuilder.build());
+        writeActionsBuilder.setAction(actions);
+        writeActionsCaseBuilder.setWriteActions(writeActionsBuilder.build());
+        insBuilder.setInstructionChoice(writeActionsCaseBuilder.build());
         insIds.add(insBuilder.build());
+        
+         /* -------------------------------------------------- */
+
         insBuilder = new InstructionBuilder();
-        insBuilder.setType(GotoTable.class);
+        GotoTableCaseBuilder gotoCaseBuilder = new GotoTableCaseBuilder();
+        GotoTableBuilder gotoTableBuilder = new GotoTableBuilder();
+        gotoCaseBuilder.setGotoTable(gotoTableBuilder.build());
+        insBuilder.setInstructionChoice(gotoCaseBuilder.build());
         insIds.add(insBuilder.build());
         insPropBuilder.setInstruction(insIds);
         propBuilder.addAugmentation(InstructionRelatedTableFeatureProperty.class, insPropBuilder.build());
         properties.add(propBuilder.build());
+
+         /* -------------------------------------------------- */
+
         propBuilder = new TableFeaturePropertiesBuilder();
         propBuilder.setType(TableFeaturesPropType.OFPTFPTINSTRUCTIONSMISS);
         insPropBuilder = new InstructionRelatedTableFeaturePropertyBuilder();
         insIds = new ArrayList<>();
         insBuilder = new InstructionBuilder();
-        insBuilder.setType(WriteMetadata.class);
+        WriteMetadataCaseBuilder writeMetadataCaseBuilder = new WriteMetadataCaseBuilder();
+        WriteMetadataBuilder writeMetadataBuilder = new WriteMetadataBuilder();
+        writeMetadataCaseBuilder.setWriteMetadata(writeMetadataBuilder.build());
+        insBuilder.setInstructionChoice(writeMetadataCaseBuilder.build());
         insIds.add(insBuilder.build());
+
         insBuilder = new InstructionBuilder();
-        insBuilder.setType(ApplyActions.class);
+        ApplyActionsCaseBuilder applyActionsCaseBuilder = new ApplyActionsCaseBuilder();
+        ApplyActionsBuilder applyActionsBuilder = new ApplyActionsBuilder();
+        applyActionsCaseBuilder.setApplyActions(applyActionsBuilder.build());
+        insBuilder.setInstructionChoice(applyActionsCaseBuilder.build());
         insIds.add(insBuilder.build());
+
         insBuilder = new InstructionBuilder();
-        insBuilder.setType(Meter.class);
+        MeterCaseBuilder meterCaseBuilder = new MeterCaseBuilder();
+        MeterBuilder meterBuilder = new MeterBuilder();
+        meterCaseBuilder.setMeter(meterBuilder.build());
+        insBuilder.setInstructionChoice(meterCaseBuilder.build());
         insIds.add(insBuilder.build());
+
+
         insBuilder = new InstructionBuilder();
-        insBuilder.setType(ClearActions.class);
+        ClearActionsCaseBuilder clearActionsCaseBuilder = new ClearActionsCaseBuilder();
+        insBuilder.setInstructionChoice(clearActionsCaseBuilder.build());
         insIds.add(insBuilder.build());
+
+
         insBuilder = new InstructionBuilder();
-        insBuilder.setType(GotoTable.class);
+        GotoTableCaseBuilder gotoCaseBuilder2 = new GotoTableCaseBuilder();
+        GotoTableBuilder gotoTableBuilder2 = new GotoTableBuilder();
+        gotoCaseBuilder2.setGotoTable(gotoTableBuilder2.build());
+        insBuilder.setInstructionChoice(gotoCaseBuilder2.build());
         insIds.add(insBuilder.build());
+
         insPropBuilder.setInstruction(insIds);
         propBuilder.addAugmentation(InstructionRelatedTableFeatureProperty.class, insPropBuilder.build());
         properties.add(propBuilder.build());
@@ -236,6 +287,7 @@ public class TableFeaturesReplyConvertorTest {
         featuresBuilder.setConfig(new TableConfig(false));
         featuresBuilder.setMaxEntries(24L);
 
+        /* -------------------------------------------------- */
 
         properties = new ArrayList<>();
         propBuilder = new TableFeaturePropertiesBuilder();
@@ -256,6 +308,8 @@ public class TableFeaturesReplyConvertorTest {
         propBuilder.addAugmentation(OxmRelatedTableFeatureProperty.class, oxmBuilder.build());
         properties.add(propBuilder.build()); //[0]
 
+        /* -------------------------------------------------- */
+
         propBuilder = new TableFeaturePropertiesBuilder();
         propBuilder.setType(TableFeaturesPropType.OFPTFPTAPPLYSETFIELD);
         oxmBuilder = new OxmRelatedTableFeaturePropertyBuilder();
@@ -273,6 +327,8 @@ public class TableFeaturesReplyConvertorTest {
         oxmBuilder.setMatchEntry(entries);
         propBuilder.addAugmentation(OxmRelatedTableFeatureProperty.class, oxmBuilder.build());
         properties.add(propBuilder.build());//[1]
+
+        /* -------------------------------------------------- */
 
         propBuilder = new TableFeaturePropertiesBuilder();
         propBuilder.setType(TableFeaturesPropType.OFPTFPTWRITESETFIELD);
@@ -292,6 +348,8 @@ public class TableFeaturesReplyConvertorTest {
         propBuilder.addAugmentation(OxmRelatedTableFeatureProperty.class, oxmBuilder.build());
         properties.add(propBuilder.build());//[2]
 
+        /* -------------------------------------------------- */
+
         propBuilder = new TableFeaturePropertiesBuilder();
         propBuilder.setType(TableFeaturesPropType.OFPTFPTWRITESETFIELDMISS);
         oxmBuilder = new OxmRelatedTableFeaturePropertyBuilder();
@@ -309,6 +367,8 @@ public class TableFeaturesReplyConvertorTest {
         oxmBuilder.setMatchEntry(entries);
         propBuilder.addAugmentation(OxmRelatedTableFeatureProperty.class, oxmBuilder.build());
         properties.add(propBuilder.build());//[3]
+
+        /* -------------------------------------------------- */
 
         propBuilder = new TableFeaturePropertiesBuilder();
         propBuilder.setType(TableFeaturesPropType.OFPTFPTAPPLYSETFIELDMISS);
@@ -329,6 +389,8 @@ public class TableFeaturesReplyConvertorTest {
         oxmBuilder.setMatchEntry(entries);
         propBuilder.addAugmentation(OxmRelatedTableFeatureProperty.class, oxmBuilder.build());
         properties.add(propBuilder.build());//[4]
+
+        /* -------------------------------------------------- */
 
         propBuilder = new TableFeaturePropertiesBuilder();
         propBuilder.setType(TableFeaturesPropType.OFPTFPTWILDCARDS);
@@ -356,9 +418,9 @@ public class TableFeaturesReplyConvertorTest {
         propBuilder = new TableFeaturePropertiesBuilder();
         propBuilder.setType(TableFeaturesPropType.OFPTFPTAPPLYACTIONS);
         ActionRelatedTableFeaturePropertyBuilder actBuilder = new ActionRelatedTableFeaturePropertyBuilder();
-        List<Action> actions = new ArrayList<>();
+        actions = new ArrayList<>();
 
-        ActionBuilder actionBuilder = new ActionBuilder();
+        actionBuilder = new ActionBuilder();
         actionBuilder.setActionChoice(createSetNwSrcAction());
         actions.add(actionBuilder.build());
 
@@ -470,6 +532,7 @@ public class TableFeaturesReplyConvertorTest {
         ids = propType2.getTablesMiss().getTableIds();
         Assert.assertEquals("Wrong next table-id size", 1, ids.size());
         Assert.assertEquals("Wrong next-registry-id", 3, ids.get(0).intValue());
+
         property = feature.getTableProperties().getTableFeatureProperties().get(2);
         Assert.assertEquals("Wrong property type", "org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.Instructions",
                 property.getTableFeaturePropType().getImplementedInterface().getName());
@@ -697,7 +760,7 @@ public class TableFeaturesReplyConvertorTest {
 
         matchEntries.add(matchEntryBuilder.build());
         setFieldActionBuilder.setMatchEntry(matchEntries);
-        setFieldCaseBuilder.setSetFieldAction(setFieldActionBuilder .build());
+        setFieldCaseBuilder.setSetFieldAction(setFieldActionBuilder.build());
         return setFieldCaseBuilder.build();
     }
 

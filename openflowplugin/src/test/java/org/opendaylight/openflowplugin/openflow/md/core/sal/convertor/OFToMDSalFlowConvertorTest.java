@@ -11,28 +11,26 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Instructions;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.ActionsInstruction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.ActionsInstructionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.MetadataInstruction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.MetadataInstructionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.MeterIdInstruction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.MeterIdInstructionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.TableIdInstruction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.TableIdInstructionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.ApplyActions;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.ClearActions;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.GotoTable;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.Meter;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.WriteActions;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.WriteMetadata;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.ApplyActionsCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.ClearActionsCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.GotoTableCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.MeterCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.WriteActionsCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.WriteMetadataCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice._goto.table._case.GotoTableBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.apply.actions._case.ApplyActionsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.meter._case.MeterBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.write.actions._case.WriteActionsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.write.metadata._case.WriteMetadataBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping.InstructionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ActionBase;
@@ -66,15 +64,16 @@ public class OFToMDSalFlowConvertorTest {
         List<Instruction> instructionsList = new ArrayList<>();
         InstructionBuilder instructionBuilder = new InstructionBuilder();
         for (int i = 0; i < PRESET_COUNT; i++) {
-            instructionBuilder.setType(ApplyActions.class);
-            ActionsInstructionBuilder actionsInstructionBuilder = new ActionsInstructionBuilder();
+            ApplyActionsCaseBuilder applyActionsCaseBuilder = new ApplyActionsCaseBuilder();
+            ApplyActionsBuilder applyActionsBuilder = new ApplyActionsBuilder();
             ActionBuilder actionBuilder = new ActionBuilder();
             List<Action> actions = new ArrayList<>();
             for (int j = 0; j < PRESET_COUNT; j++) {
                 actions.add(actionBuilder.build());
             }
-            actionsInstructionBuilder.setAction(actions);
-            instructionBuilder.addAugmentation(ActionsInstruction.class, actionsInstructionBuilder.build());
+            applyActionsBuilder.setAction(actions);
+            applyActionsCaseBuilder.setApplyActions(applyActionsBuilder.build());
+            instructionBuilder.setInstructionChoice(applyActionsCaseBuilder.build());
             instructionsList.add(instructionBuilder.build());
         }
 
@@ -84,10 +83,11 @@ public class OFToMDSalFlowConvertorTest {
 
         instructionsList = new ArrayList<>();
         for (int i = 0; i < PRESET_COUNT; i++) {
-            instructionBuilder.setType(GotoTable.class);
-            TableIdInstructionBuilder tableIdInstructionBuilder = new TableIdInstructionBuilder();
-            tableIdInstructionBuilder.setTableId((short) i);
-            instructionBuilder.addAugmentation(TableIdInstruction.class, tableIdInstructionBuilder.build());
+            GotoTableCaseBuilder gotoTableCaseBuilder = new GotoTableCaseBuilder();
+            GotoTableBuilder gotoTableBuilder = new GotoTableBuilder();
+            gotoTableBuilder.setTableId((short) i);
+            gotoTableCaseBuilder.setGotoTable(gotoTableBuilder.build());
+            instructionBuilder.setInstructionChoice(gotoTableCaseBuilder.build());
             instructionsList.add(instructionBuilder.build());
         }
 
@@ -97,10 +97,11 @@ public class OFToMDSalFlowConvertorTest {
 
         instructionsList = new ArrayList<>();
         for (int i = 0; i < PRESET_COUNT; i++) {
-            instructionBuilder.setType(Meter.class);
-            MeterIdInstructionBuilder meterIdInstructionBuilder = new MeterIdInstructionBuilder();
-            meterIdInstructionBuilder.setMeterId(Long.valueOf(i));
-            instructionBuilder.addAugmentation(MeterIdInstruction.class, meterIdInstructionBuilder.build());
+            MeterCaseBuilder meterCaseBuilder = new MeterCaseBuilder();
+            MeterBuilder meterBuilder = new MeterBuilder();
+            meterBuilder.setMeterId(Long.valueOf(i));
+            meterCaseBuilder.setMeter(meterBuilder.build());
+            instructionBuilder.setInstructionChoice(meterCaseBuilder.build());
             instructionsList.add(instructionBuilder.build());
         }
 
@@ -111,15 +112,16 @@ public class OFToMDSalFlowConvertorTest {
 
         instructionsList = new ArrayList<>();
         for (int i = 0; i < PRESET_COUNT; i++) {
-            instructionBuilder.setType(WriteActions.class);
-            ActionsInstructionBuilder actionsInstructionBuilder = new ActionsInstructionBuilder();
+            WriteActionsCaseBuilder writeActionsCaseBuilder = new WriteActionsCaseBuilder();
+            WriteActionsBuilder writeActionsBuilder = new WriteActionsBuilder();
             ActionBuilder actionBuilder = new ActionBuilder();
             List<Action> actions = new ArrayList<>();
             for (int j = 0; j < PRESET_COUNT; j++) {
                 actions.add(actionBuilder.build());
             }
-            actionsInstructionBuilder.setAction(actions);
-            instructionBuilder.addAugmentation(ActionsInstruction.class, actionsInstructionBuilder.build());
+            writeActionsBuilder.setAction(actions);
+            writeActionsCaseBuilder.setWriteActions(writeActionsBuilder.build());
+            instructionBuilder.setInstructionChoice(writeActionsCaseBuilder.build());
             instructionsList.add(instructionBuilder.build());
         }
 
@@ -129,21 +131,25 @@ public class OFToMDSalFlowConvertorTest {
 
         instructionsList = new ArrayList<>();
         for (int i = 0; i < PRESET_COUNT; i++) {
-            instructionBuilder.setType(ClearActions.class);
+            ClearActionsCaseBuilder clearActionsCaseBuilder = new ClearActionsCaseBuilder();
+            instructionBuilder.setInstructionChoice(clearActionsCaseBuilder.build());
             instructionsList.add(instructionBuilder.build());
         }
 
         instructions = OFToMDSalFlowConvertor.toSALInstruction(instructionsList, OpenflowVersion.OF13);
         assertNotNull(instructions);
-        assertEquals(PRESET_COUNT, instructions.getInstruction().size());
+        int instructionSize = instructions.getInstruction().size();
+        assertEquals(PRESET_COUNT, instructionSize);
 
         instructionsList = new ArrayList<>();
         for (int i = 0; i < PRESET_COUNT; i++) {
-            instructionBuilder.setType(WriteMetadata.class);
-            MetadataInstructionBuilder metadataInstructionBuilder = new MetadataInstructionBuilder();
-            metadataInstructionBuilder.setMetadata(new byte[i]);
-            metadataInstructionBuilder.setMetadataMask(new byte[i]);
-            instructionBuilder.addAugmentation(MetadataInstruction.class, metadataInstructionBuilder.build());
+            WriteMetadataCaseBuilder metadataCaseBuilder = new WriteMetadataCaseBuilder();
+            WriteMetadataBuilder metadataBuilder = new WriteMetadataBuilder();
+            
+            metadataBuilder.setMetadata(BigInteger.TEN.setBit(i).toByteArray());
+            metadataBuilder.setMetadataMask(BigInteger.ONE.setBit(i).toByteArray());
+            metadataCaseBuilder.setWriteMetadata(metadataBuilder.build());
+            instructionBuilder.setInstructionChoice(metadataCaseBuilder.build());
             instructionsList.add(instructionBuilder.build());
         }
 
