@@ -12,15 +12,12 @@ import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.nx.api.NiciraActionDeserializerKey;
 import org.opendaylight.openflowjava.nx.api.NiciraActionSerializerKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.ExperimenterIdAction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.oxm.container.match.entry.value.ExperimenterIdCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.NxmNxOutputReg;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.OfjAugNxAction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.OfjAugNxActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.output.reg.grouping.ActionOutputReg;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.output.reg.grouping.ActionOutputRegBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionOutputReg;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionOutputRegBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.output.reg.grouping.NxActionOutputRegBuilder;
 
 /**
  * Codec for the Nicira OutputRegAction
@@ -38,11 +35,11 @@ public class OutputRegCodec extends AbstractActionCodec {
 
     @Override
     public void serialize(Action input, ByteBuf outBuffer) {
-        ActionOutputReg action = input.getAugmentation(OfjAugNxAction.class).getActionOutputReg();
+        ActionOutputReg action = ((ActionOutputReg) input.getActionChoice());
         serializeHeader(LENGTH, SUBTYPE, outBuffer);
-        outBuffer.writeShort(action.getNBits().shortValue());
-        outBuffer.writeInt(action.getSrc().intValue());
-        outBuffer.writeShort(action.getMaxLen().shortValue());
+        outBuffer.writeShort(action.getNxActionOutputReg().getNBits().shortValue());
+        outBuffer.writeInt(action.getNxActionOutputReg().getSrc().intValue());
+        outBuffer.writeShort(action.getNxActionOutputReg().getMaxLen().shortValue());
         outBuffer.writeZero(6);
     }
 
@@ -50,16 +47,14 @@ public class OutputRegCodec extends AbstractActionCodec {
     public Action deserialize(ByteBuf message) {
         ActionBuilder actionBuilder = deserializeHeader(message);
         ActionOutputRegBuilder builder = new ActionOutputRegBuilder();
-        builder.setNBits(message.readUnsignedShort());
-        builder.setSrc(message.readUnsignedInt());
-        builder.setMaxLen(message.readUnsignedShort());
+        NxActionOutputRegBuilder nxActionOutputRegBuilder = new NxActionOutputRegBuilder();
+        nxActionOutputRegBuilder.setNBits(message.readUnsignedShort());
+        nxActionOutputRegBuilder.setSrc(message.readUnsignedInt());
+        nxActionOutputRegBuilder.setMaxLen(message.readUnsignedShort());
+        nxActionOutputRegBuilder.setExperimenterId(getExperimenterId());
         message.skipBytes(PADDING_IN_OUTPUT_REG_ACTION);
-        OfjAugNxActionBuilder augNxActionBuilder = new OfjAugNxActionBuilder();
-        augNxActionBuilder.setActionOutputReg(builder.build());
-        ExperimenterIdCaseBuilder experimenterIdCaseBuilder = new ExperimenterIdCaseBuilder();
-        actionBuilder.addAugmentation(ExperimenterIdAction.class,
-                createExperimenterIdAction(NxmNxOutputReg.class));
-        actionBuilder.addAugmentation(OfjAugNxAction.class, augNxActionBuilder.build());
+        builder.setNxActionOutputReg(nxActionOutputRegBuilder.build());
+        actionBuilder.setActionChoice(builder.build());
         return actionBuilder.build();
     }
 

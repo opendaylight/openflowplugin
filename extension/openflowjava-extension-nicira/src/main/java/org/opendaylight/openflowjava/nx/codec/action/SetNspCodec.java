@@ -14,14 +14,12 @@ import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.nx.api.NiciraActionDeserializerKey;
 import org.opendaylight.openflowjava.nx.api.NiciraActionSerializerKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.ExperimenterIdAction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.NxmNxSetNsp;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.OfjAugNxAction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.OfjAugNxActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.set.nsp.grouping.ActionSetNsp;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.set.nsp.grouping.ActionSetNspBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionSetNsp;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionSetNspBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.set.nsp.grouping.NxActionSetNspBuilder;
 
 /**
  * Codec for the NX_SetNsp and NX_SetNsp_TABLE
@@ -37,24 +35,22 @@ public class SetNspCodec extends AbstractActionCodec {
 
     @Override
     public void serialize(Action input, ByteBuf outBuffer) {
-        ActionSetNsp action = input.getAugmentation(OfjAugNxAction.class).getActionSetNsp();
+        ActionSetNsp action = ((ActionSetNsp) input.getActionChoice());
         serializeHeader(LENGTH, NXAST_SET_NSP_SUBTYPE, outBuffer);
         outBuffer.writeZero(padding);
-        outBuffer.writeInt(action.getNsp().intValue());
+        outBuffer.writeInt(action.getNxActionSetNsp().getNsp().intValue());
     }
 
     @Override
     public Action deserialize(ByteBuf message) {
         ActionBuilder actionBuilder = deserializeHeader(message);
         ActionSetNspBuilder builder = new ActionSetNspBuilder();
+        NxActionSetNspBuilder nxActionSetNspBuilder = new NxActionSetNspBuilder();
         message.skipBytes(padding);
-        builder.setNsp(message.readUnsignedInt());
-
-        OfjAugNxActionBuilder augNxActionBuilder = new OfjAugNxActionBuilder();
-        augNxActionBuilder.setActionSetNsp(builder.build());
-        actionBuilder.addAugmentation(ExperimenterIdAction.class,
-                createExperimenterIdAction(NxmNxSetNsp.class));
-        actionBuilder.addAugmentation(OfjAugNxAction.class, augNxActionBuilder.build());
+        nxActionSetNspBuilder.setNsp(message.readUnsignedInt());
+        nxActionSetNspBuilder.setExperimenterId(getExperimenterId());
+        builder.setNxActionSetNsp(nxActionSetNspBuilder.build());
+        actionBuilder.setActionChoice(builder.build());
         return actionBuilder.build();
     }
 

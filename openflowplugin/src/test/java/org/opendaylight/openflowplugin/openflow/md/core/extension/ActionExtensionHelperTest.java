@@ -26,9 +26,9 @@ import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
 import org.opendaylight.openflowplugin.extension.api.path.AugmentationPath;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.ExperimenterIdAction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.ExperimenterIdActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.action.container.action.choice.ExperimenterIdCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.action.container.action.choice.experimenter.id._case.ExperimenterBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ExperimenterId;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 
@@ -42,7 +42,7 @@ public class ActionExtensionHelperTest {
     private ExtensionConverterProvider extensionConverterProvider;
 
     @Before
-    public void setup(){
+    public void setup() {
         OFSessionUtil.getSessionManager().setExtensionConverterProvider(extensionConverterProvider);
         when(extensionConverterProvider.getActionConverter(any(MessageTypeKey.class))).thenReturn(new ConvertorActionFromOFJava<DataContainer, AugmentationPath>() {
             @Override
@@ -51,30 +51,25 @@ public class ActionExtensionHelperTest {
             }
         });
     }
+
     @Test
     /**
      * Trivial test for {@link ActionExtensionHelper#processAlienAction(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action, org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion, org.opendaylight.openflowplugin.extension.api.path.ActionPath)}
      */
     public void testProcessAlienAction() {
         ActionBuilder actionBuilder = new ActionBuilder();
-        ExperimenterIdActionBuilder experimenterIdActionBuilder = new ExperimenterIdActionBuilder();
-        ExperimenterId experimenterId = new ExperimenterId(new Long(42));
-        experimenterIdActionBuilder.setExperimenter(experimenterId);
 
-        experimenterIdActionBuilder.setSubType(MockExperimenterActionSubtype.class);
 
-        actionBuilder.addAugmentation(ExperimenterIdAction.class, experimenterIdActionBuilder.build());
+        ExperimenterIdCaseBuilder experimenterIdCaseBuilder = new ExperimenterIdCaseBuilder();
+        ExperimenterBuilder experimenterBuilder = new ExperimenterBuilder();
+        experimenterBuilder.setExperimenter(new ExperimenterId(42L));
+        experimenterIdCaseBuilder.setExperimenter(experimenterBuilder.build());
+        actionBuilder.setActionChoice(experimenterIdCaseBuilder.build());
         Action action = ActionExtensionHelper.processAlienAction(actionBuilder.build(), OpenflowVersion.OF13, ActionPath.FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_APPLYACTIONSCASE_APPLYACTIONS_ACTION_ACTION);
         assertNotNull(action);
         assertEquals(MockAction.class, action.getImplementedInterface());
     }
 
-
-
-
-    private class MockExperimenterActionSubtype extends org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.ExperimenterActionSubType {
-
-    }
 
     private class MockAction implements Action {
 
