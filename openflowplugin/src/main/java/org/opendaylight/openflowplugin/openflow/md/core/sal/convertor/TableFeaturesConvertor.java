@@ -61,6 +61,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetQueueCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.ApplyActionsCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.ClearActionsCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.GotoTableCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.MeterCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.WriteActionsCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.WriteMetadataCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping.InstructionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.TableConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.TableFeaturesPropType;
@@ -392,23 +398,23 @@ public class TableFeaturesConvertor {
             org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction instruction = currInstruction
                     .getInstruction();
             if (instruction instanceof GoToTableCase) {
-                instructionType
-                        .setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.GotoTable.class);
+                GotoTableCaseBuilder goToTableCaseBuilder = new GotoTableCaseBuilder();
+                instructionType.setInstructionChoice(goToTableCaseBuilder.build());
             } else if (instruction instanceof WriteMetadataCase) {
-                instructionType
-                        .setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.WriteMetadata.class);
+                WriteMetadataCaseBuilder writeMetadataCaseBuilder = new WriteMetadataCaseBuilder();
+                instructionType.setInstructionChoice(writeMetadataCaseBuilder.build());
             } else if (instruction instanceof WriteActionsCase) {
-                instructionType
-                        .setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.WriteActions.class);
+                WriteActionsCaseBuilder writeActionsCaseBuilder = new WriteActionsCaseBuilder();
+                instructionType.setInstructionChoice(writeActionsCaseBuilder.build());
             } else if (instruction instanceof ApplyActionsCase) {
-                instructionType
-                        .setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.ApplyActions.class);
+                ApplyActionsCaseBuilder applyActionsCaseBuilder = new ApplyActionsCaseBuilder();
+                instructionType.setInstructionChoice(applyActionsCaseBuilder.build());
             } else if (instruction instanceof ClearActionsCase) {
-                instructionType
-                        .setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.ClearActions.class);
+                ClearActionsCaseBuilder clearActionsCaseBuilder = new ClearActionsCaseBuilder();
+                instructionType.setInstructionChoice(clearActionsCaseBuilder.build());
             } else if (instruction instanceof MeterCase) {
-                instructionType
-                        .setType(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.Meter.class);
+                MeterCaseBuilder meterCaseBuilder = new MeterCaseBuilder();
+                instructionType.setInstructionChoice(meterCaseBuilder.build());
             }
             // TODO: Experimeneter instructions are unhandled
             instructionTypeList.add(instructionType.build());
