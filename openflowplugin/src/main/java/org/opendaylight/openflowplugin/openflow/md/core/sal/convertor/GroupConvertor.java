@@ -18,7 +18,7 @@ import java.util.List;
 import org.opendaylight.openflowjava.protocol.api.util.BinContent;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.group.update.UpdatedGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.Buckets;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupModCommand;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupType;
@@ -34,7 +34,6 @@ import org.slf4j.LoggerFactory;
  * Library for the OFPT_GROUP_MOD Message. Input:SAL Layer Group command data.
  * Output:GroupModInput Message.
  *
- * @param <AddGroupInput>
  *
  */
 public final class GroupConvertor {
