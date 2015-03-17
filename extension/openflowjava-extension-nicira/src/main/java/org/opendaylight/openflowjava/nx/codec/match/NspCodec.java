@@ -9,22 +9,21 @@
  */
 
 package org.opendaylight.openflowjava.nx.codec.match;
-import io.netty.buffer.ByteBuf;
 
-import org.opendaylight.openflowjava.nx.codec.match.AbstractMatchCodec;
+import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntryDeserializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntrySerializerKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.MatchField;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.Nxm1Class;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.OxmClassBase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.grouping.MatchEntries;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.grouping.MatchEntriesBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Nxm1Class;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxNsp;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.OfjAugNxMatch;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.OfjAugNxMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.nx.match.nsp.grouping.NspValuesBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.NspCaseValue;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.NspCaseValueBuilder;
 
 public class NspCodec extends AbstractMatchCodec {
 
@@ -36,19 +35,20 @@ public class NspCodec extends AbstractMatchCodec {
             EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_1_CLASS, NXM_FIELD_CODE);
 
     @Override
-    public void serialize(MatchEntries input, ByteBuf outBuffer) {
+    public void serialize(MatchEntry input, ByteBuf outBuffer) {
         serializeHeader(input, outBuffer);
-        Long nsp = input.getAugmentation(OfjAugNxMatch.class).getNspValues().getNsp();
-        outBuffer.writeInt(nsp.intValue());
+        NspCaseValue nspCaseValue = ((NspCaseValue) input.getMatchEntryValue());
+        outBuffer.writeInt(nspCaseValue.getNspValues().getNsp().intValue());
     }
 
     @Override
-    public MatchEntries deserialize(ByteBuf message) {
-        MatchEntriesBuilder matchEntriesBuilder = deserializeHeader(message);
-        OfjAugNxMatchBuilder augNxMatchBuilder = new OfjAugNxMatchBuilder();
-        augNxMatchBuilder.setNspValues(new NspValuesBuilder().setNsp(message.readUnsignedInt()).build());
-        matchEntriesBuilder.addAugmentation(OfjAugNxMatch.class, augNxMatchBuilder.build());
-        return matchEntriesBuilder.build();
+    public MatchEntry deserialize(ByteBuf message) {
+        MatchEntryBuilder matchEntryBuilder = deserializeHeader(message);
+        NspCaseValueBuilder nspCaseValueBuilder = new NspCaseValueBuilder();
+        nspCaseValueBuilder.setNspValues(new NspValuesBuilder().setNsp(message.readUnsignedInt()).build());
+        matchEntryBuilder.setMatchEntryValue(nspCaseValueBuilder.build());
+
+        return matchEntryBuilder.build();
     }
 
     @Override

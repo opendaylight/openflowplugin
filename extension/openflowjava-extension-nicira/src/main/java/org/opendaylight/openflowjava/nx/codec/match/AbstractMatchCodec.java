@@ -1,26 +1,25 @@
 package org.opendaylight.openflowjava.nx.codec.match;
 
 import io.netty.buffer.ByteBuf;
-
 import org.opendaylight.openflowjava.nx.api.NiciraConstants;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.ExperimenterIdMatchEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.ExperimenterIdMatchEntryBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.oxm.container.match.entry.value.ExperimenterIdCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.oxm.container.match.entry.value.experimenter.id._case.ExperimenterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ExperimenterId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.MatchField;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.OxmClassBase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.grouping.MatchEntries;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.grouping.MatchEntriesBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
 
-public abstract class AbstractMatchCodec implements OFSerializer<MatchEntries>, OFDeserializer<MatchEntries> {
+public abstract class AbstractMatchCodec implements OFSerializer<MatchEntry>, OFDeserializer<MatchEntry> {
 
     private NxmHeader headerWithMask;
     private NxmHeader headerWithoutMask;
-    
-    protected MatchEntriesBuilder deserializeHeader(ByteBuf message) {
-        MatchEntriesBuilder builder = new MatchEntriesBuilder();
+
+    protected MatchEntryBuilder deserializeHeader(ByteBuf message) {
+        MatchEntryBuilder builder = new MatchEntryBuilder();
         builder.setOxmClass(getOxmClass());
         // skip oxm_class - provided
         message.skipBytes(EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
@@ -29,13 +28,16 @@ public abstract class AbstractMatchCodec implements OFSerializer<MatchEntries>, 
         builder.setHasMask(hasMask);
         // skip match entry length - not needed
         message.skipBytes(EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
-        ExperimenterIdMatchEntryBuilder experimenterIdMatchEntryBuilder = new ExperimenterIdMatchEntryBuilder();
-        experimenterIdMatchEntryBuilder.setExperimenter(new ExperimenterId(NiciraConstants.NX_VENDOR_ID));
-        builder.addAugmentation(ExperimenterIdMatchEntry.class, experimenterIdMatchEntryBuilder.build());
+        ExperimenterIdCaseBuilder experimenterIdCaseBuilder = new ExperimenterIdCaseBuilder();
+        ExperimenterBuilder experimenterBuilder = new ExperimenterBuilder();
+        experimenterBuilder.setExperimenter(new ExperimenterId(NiciraConstants.NX_VENDOR_ID));
+        experimenterIdCaseBuilder.setExperimenter(experimenterBuilder.build());
+
+        builder.setMatchEntryValue(experimenterIdCaseBuilder.build());
         return builder;
     }
 
-    protected void serializeHeader(MatchEntries input, ByteBuf outBuffer) {
+    protected void serializeHeader(MatchEntry input, ByteBuf outBuffer) {
         outBuffer.writeInt(serializeHeaderToLong(input.isHasMask()).intValue());
     }
 

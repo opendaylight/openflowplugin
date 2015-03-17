@@ -7,8 +7,6 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action;
 
-import java.math.BigInteger;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,26 +21,27 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.addr
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.address.address.Ipv4Builder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.address.address.Ipv6;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.address.address.Ipv6Builder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.IpAddressAction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.Ipv4AddressMatchEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.Ipv6AddressMatchEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev131002.OxmFieldsAction;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.IpAddressAction;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.OxmFieldsAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.ActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.grouping.MatchEntries;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.Ipv4DstCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.Ipv6DstCase;
+import java.math.BigInteger;
 
 /**
- * match conversion and injection test 
+ * match conversion and injection test
  */
 public class ActionSetNwDstReactorTest {
 
     private Address[] addresses;
-    
+
     /**
      * prepare input match
      */
     @Before
     public void setUp() {
-        addresses = new Address[] {
+        addresses = new Address[]{
                 new Ipv4Builder().setIpv4Address(new Ipv4Prefix("10.0.10.1/32")).build(),
                 new Ipv4Builder().setIpv4Address(new Ipv4Prefix("10.0.10.1/16")).build(),
                 new Ipv6Builder().setIpv6Address(new Ipv6Prefix("1234:5678:9abc:def1:2345:6789:abcd:ef12")).build(),
@@ -58,14 +57,16 @@ public class ActionSetNwDstReactorTest {
         ActionBuilder target = new ActionBuilder();
         for (Address address : addresses) {
             SetNwDstActionCase action = prepareSetNwDstActionCase(address);
-            ActionSetNwDstReactor.getInstance().convert(action, 
+            ActionSetNwDstReactor.getInstance().convert(action,
                     OFConstants.OFP_VERSION_1_3, target, BigInteger.ONE);
-            MatchEntries mEntry = target.getAugmentation(OxmFieldsAction.class).getMatchEntries().get(0);
+            MatchEntry mEntry = target.getAugmentation(OxmFieldsAction.class).getMatchEntry().get(0);
             Assert.assertNotNull(mEntry);
             if (address instanceof Ipv4) {
-                Assert.assertNotNull(mEntry.getAugmentation(Ipv4AddressMatchEntry.class));
+                Ipv4DstCase ipv4DstCase = ((Ipv4DstCase) mEntry.getMatchEntryValue());
+                Assert.assertNotNull(ipv4DstCase.getIpv4Dst());
             } else if (address instanceof Ipv6) {
-                Assert.assertNotNull(mEntry.getAugmentation(Ipv6AddressMatchEntry.class));
+                Ipv6DstCase ipv6DstCase = ((Ipv6DstCase) mEntry.getMatchEntryValue());
+                Assert.assertNotNull(ipv6DstCase.getIpv6Dst());
             } else {
                 Assert.fail("not tested yet: " + address.getClass().getName());
             }
@@ -80,7 +81,7 @@ public class ActionSetNwDstReactorTest {
         return new SetNwDstActionCaseBuilder().setSetNwDstAction(
                 new SetNwDstActionBuilder().setAddress(address).build()).build();
     }
-    
+
     /**
      * convert for OF-1.0, inject into {@link ActionBuilder}
      */
@@ -89,16 +90,16 @@ public class ActionSetNwDstReactorTest {
         ActionBuilder target = new ActionBuilder();
         for (Address address : addresses) {
             SetNwDstActionCase action = prepareSetNwDstActionCase(address);
-            
+
             if (address instanceof Ipv4) {
-                ActionSetNwDstReactor.getInstance().convert(action, 
+                ActionSetNwDstReactor.getInstance().convert(action,
                         OFConstants.OFP_VERSION_1_0, target, BigInteger.ONE);
                 Assert.assertNotNull(target.getAugmentation(IpAddressAction.class).getIpAddress());
             } else {
                 try {
-                    ActionSetNwDstReactor.getInstance().convert(action, 
+                    ActionSetNwDstReactor.getInstance().convert(action,
                             OFConstants.OFP_VERSION_1_0, target, BigInteger.ONE);
-                    Assert.fail("address of this type must not pass the reactor: "+address.getClass().getName());
+                    Assert.fail("address of this type must not pass the reactor: " + address.getClass().getName());
                 } catch (Exception e) {
                     //expected
                     Assert.assertEquals(IllegalArgumentException.class, e.getClass());
