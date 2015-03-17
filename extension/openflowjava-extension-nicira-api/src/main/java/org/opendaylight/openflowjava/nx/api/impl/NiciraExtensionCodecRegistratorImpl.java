@@ -28,9 +28,9 @@ import org.opendaylight.openflowjava.protocol.api.keys.MatchEntrySerializerKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev130731.actions.grouping.Action;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.MatchField;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.OxmClassBase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev130731.oxm.fields.grouping.MatchEntries;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 
 /**
  * @author msunal
@@ -145,7 +145,7 @@ public class NiciraExtensionCodecRegistratorImpl implements NiciraExtensionCodec
      * org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer)
      */
     @Override
-    public void registerMatchEntryDeserializer(MatchEntryDeserializerKey key, OFDeserializer<MatchEntries> deserializer) {
+    public void registerMatchEntryDeserializer(MatchEntryDeserializerKey key, OFDeserializer<MatchEntry> deserializer) {
         for (SwitchConnectionProvider provider : providers) {
             provider.registerMatchEntryDeserializer(key, deserializer);
         }
@@ -175,7 +175,7 @@ public class NiciraExtensionCodecRegistratorImpl implements NiciraExtensionCodec
      */
     @Override
     public void registerMatchEntrySerializer(MatchEntrySerializerKey<? extends OxmClassBase, ? extends MatchField> key,
-            OFSerializer<MatchEntries> serializer) {
+            OFSerializer<MatchEntry> serializer) {
         for (SwitchConnectionProvider provider : providers) {
             provider.registerMatchEntrySerializer(key, serializer);
         }
