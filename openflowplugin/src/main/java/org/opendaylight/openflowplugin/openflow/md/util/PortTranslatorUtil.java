@@ -7,11 +7,7 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.util;
 
-import java.math.BigInteger;
-
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnectorBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnectorUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnectorUpdatedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.flow.capable.port.State;
@@ -20,35 +16,36 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeCon
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRemovedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorUpdatedBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortConfig;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortConfigV10;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortFeatures;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortFeaturesV10;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortState;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortStateV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.shared.port.rev141119.PortConfig;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.shared.port.rev141119.PortConfigV10;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.shared.port.rev141119.PortFeatures;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.shared.port.rev141119.PortFeaturesV10;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.shared.port.rev141119.PortState;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.shared.port.rev141119.PortStateV10;
+import java.math.BigInteger;
 
 public abstract class PortTranslatorUtil {
     public static org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures translatePortFeatures(PortFeatures apf) {
         org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures napf = null;
         if (apf != null) {
             napf = new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures(
-                    apf.isAutoneg(), //_autoeng
-                    apf.isCopper(), //_copper
-                    apf.isFiber(), //_fiber
-                    apf.is_40gbFd(), //_fortyGbFd
-                    apf.is_100gbFd(), //_hundredGbFd
-                    apf.is_100mbFd(), //_hundredMbFd
-                    apf.is_100mbHd(), //_hundredMbHd
-                    apf.is_1gbFd(), //_oneGbFd
-                    apf.is_1gbHd(), //_oneGbHd
-                    apf.is_1tbFd(), //_oneTbFd
-                    apf.isOther(), //_other
-                    apf.isPause(), //_pause
-                    apf.isPauseAsym(), //_pauseAsym
-                    apf.is_10gbFd(), //_tenGbFd
-                    apf.is_10mbFd(), //_tenMbFd
-                    apf.is_10mbHd()//_tenMbHd
+                    apf.getPortFeaturesV13().isAutoneg(), //_autoeng
+                    apf.getPortFeaturesV13().isCopper(), //_copper
+                    apf.getPortFeaturesV13().isFiber(), //_fiber
+                    apf.getPortFeaturesV13().is_40gbFd(), //_fortyGbFd
+                    apf.getPortFeaturesV13().is_100gbFd(), //_hundredGbFd
+                    apf.getPortFeaturesV13().is_100mbFd(), //_hundredMbFd
+                    apf.getPortFeaturesV13().is_100mbHd(), //_hundredMbHd
+                    apf.getPortFeaturesV13().is_1gbFd(), //_oneGbFd
+                    apf.getPortFeaturesV13().is_1gbHd(), //_oneGbHd
+                    apf.getPortFeaturesV13().is_1tbFd(), //_oneTbFd
+                    apf.getPortFeaturesV13().isOther(), //_other
+                    apf.getPortFeaturesV13().isPause(), //_pause
+                    apf.getPortFeaturesV13().isPauseAsym(), //_pauseAsym
+                    apf.getPortFeaturesV13().is_10gbFd(), //_tenGbFd
+                    apf.getPortFeaturesV13().is_10mbFd(), //_tenMbFd
+                    apf.getPortFeaturesV13().is_10mbHd()//_tenMbHd
             );
 
         }
@@ -76,7 +73,7 @@ public abstract class PortTranslatorUtil {
                     apf.is_10gbFd(), //_tenGbFd
                     apf.is_10mbFd(), //_tenMbFd
                     apf.is_10mbHd()//_tenMbHd
-                    );
+            );
         }
         return napf;
     }
@@ -84,9 +81,9 @@ public abstract class PortTranslatorUtil {
     public static State translatePortState(PortState state) {
         StateBuilder nstate = new StateBuilder();
         if (state != null) {
-            nstate.setBlocked(state.isBlocked());
-            nstate.setLinkDown(state.isLinkDown());
-            nstate.setLive(state.isLive());
+            nstate.setBlocked(state.getPortStateV13().isBlocked());
+            nstate.setLinkDown(state.getPortStateV13().isLinkDown());
+            nstate.setLive(state.getPortStateV13().isLive());
         }
         return nstate.build();
     }
@@ -104,8 +101,8 @@ public abstract class PortTranslatorUtil {
     public static org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortConfig translatePortConfig(PortConfig pc) {
         org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortConfig npc = null;
         if (pc != null) {
-            npc = new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortConfig(pc.isNoFwd(),
-                    pc.isNoPacketIn(), pc.isNoRecv(), pc.isPortDown());
+            npc = new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortConfig(pc.getPortConfigV13().isNoFwd(),
+                    pc.getPortConfigV13().isNoPacketIn(), pc.getPortConfigV13().isNoRecv(), pc.getPortConfigV13().isPortDown());
         }
         return npc;
     }
@@ -134,12 +131,12 @@ public abstract class PortTranslatorUtil {
             fcncub.setSupported(PortTranslatorUtil.translatePortFeatures(port.getSupportedFeatures()));
 
         } else if (ofVersion == OpenflowVersion.OF10) {
-            fcncub.setAdvertisedFeatures(PortTranslatorUtil.translatePortFeatures(port.getAdvertisedFeaturesV10()));
-            fcncub.setConfiguration(PortTranslatorUtil.translatePortConfig(port.getConfigV10()));
-            fcncub.setCurrentFeature(PortTranslatorUtil.translatePortFeatures(port.getCurrentFeaturesV10()));
-            fcncub.setPeerFeatures(PortTranslatorUtil.translatePortFeatures(port.getPeerFeaturesV10()));
-            fcncub.setState(PortTranslatorUtil.translatePortState(port.getStateV10()));
-            fcncub.setSupported(PortTranslatorUtil.translatePortFeatures(port.getSupportedFeaturesV10()));
+            fcncub.setAdvertisedFeatures(PortTranslatorUtil.translatePortFeatures(port.getAdvertisedFeatures().getPortFeaturesV10()));
+            fcncub.setConfiguration(PortTranslatorUtil.translatePortConfig(port.getConfig().getPortConfigV10()));
+            fcncub.setCurrentFeature(PortTranslatorUtil.translatePortFeatures(port.getCurrentFeatures().getPortFeaturesV10()));
+            fcncub.setPeerFeatures(PortTranslatorUtil.translatePortFeatures(port.getPeerFeatures().getPortFeaturesV10()));
+            fcncub.setState(PortTranslatorUtil.translatePortState(port.getState().getPortStateV10()));
+            fcncub.setSupported(PortTranslatorUtil.translatePortFeatures(port.getSupportedFeatures().getPortFeaturesV10()));
         }
         fcncub.setCurrentSpeed(port.getCurrSpeed());
         fcncub.setHardwareAddress(port.getHwAddr());
