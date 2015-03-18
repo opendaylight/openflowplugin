@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "5a93c517_56f2569b",
+        "filename": "applications/statistics-manager/src/main/java/org/opendaylight/openflowplugin/applications/statistics/manager/impl/StatListenCommitFlow.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 337,
+      "author": {
+        "id": 1450
+      },
+      "writtenOn": "2015-03-18T14:50:46Z",
+      "side": 1,
+      "message": "I think that since the exception is the last argument in the log, we should simply not use {} and pass it as is.\nSee desc on:  https://wiki.opendaylight.org/view/Logging_Best_Practices\n\nSo, I\u0027d rewrite this as:\nLOG.debug(\"flow hashing hit a duplicate for {} -\u003e {}. Exception was raised: \", flowHashId.getKey(), flowHashId.getFlowId(), e);",
+      "revId": "fe743ec4388fe41bf797cb9f71b6c9212fd44320",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5a93c517_b6795a31",
         "filename": "applications/statistics-manager/src/main/java/org/opendaylight/openflowplugin/applications/statistics/manager/impl/StatListenCommitFlow.java",
         "patchSetId": 2
