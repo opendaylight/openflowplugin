@@ -1,0 +1,89 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_56c4963f",
+        "filename": "applications/statistics-manager/src/main/java/org/opendaylight/openflowplugin/applications/statistics/manager/impl/helper/MatchComparatorFactory.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1450
+      },
+      "writtenOn": "2015-03-18T14:41:31Z",
+      "side": 1,
+      "message": "how about:\nif (storedMatch \u003d\u003d null) return statsMatch \u003d\u003d null;",
+      "revId": "9ef2458952f15bc6a6f4f0fe8e92f63a9c4b82be",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_76c1922d",
+        "filename": "applications/statistics-manager/src/main/java/org/opendaylight/openflowplugin/applications/statistics/manager/impl/helper/MatchComparatorFactory.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1450
+      },
+      "writtenOn": "2015-03-18T14:41:31Z",
+      "side": 1,
+      "message": "same...",
+      "revId": "9ef2458952f15bc6a6f4f0fe8e92f63a9c4b82be",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_16de0e12",
+        "filename": "applications/statistics-manager/src/main/java/org/opendaylight/openflowplugin/applications/statistics/manager/impl/helper/MatchComparatorFactory.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1450
+      },
+      "writtenOn": "2015-03-18T14:41:31Z",
+      "side": 1,
+      "message": "same...",
+      "revId": "9ef2458952f15bc6a6f4f0fe8e92f63a9c4b82be",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_36e30adb",
+        "filename": "applications/statistics-manager/src/main/java/org/opendaylight/openflowplugin/applications/statistics/manager/impl/helper/MatchComparatorFactory.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 240,
+      "author": {
+        "id": 1450
+      },
+      "writtenOn": "2015-03-18T14:41:31Z",
+      "side": 1,
+      "message": "... same.",
+      "revId": "9ef2458952f15bc6a6f4f0fe8e92f63a9c4b82be",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_96d1befd",
+        "filename": "applications/statistics-manager/src/test/java/org/opendaylight/openflowplugin/applications/statistics/manager/impl/helper/FlowComparatorFactoryTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1450
+      },
+      "writtenOn": "2015-03-18T14:41:31Z",
+      "side": 1,
+      "message": "add\n\nassertEquals(false,simpleComparator.areObjectsEqual(nullFlow,nullFlow));",
+      "revId": "9ef2458952f15bc6a6f4f0fe8e92f63a9c4b82be",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
