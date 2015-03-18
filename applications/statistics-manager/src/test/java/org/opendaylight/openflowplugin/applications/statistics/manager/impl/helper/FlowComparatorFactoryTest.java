@@ -70,6 +70,7 @@ public final class FlowComparatorFactoryTest {
         compareViaComparator(simpleComparator);
         assertEquals(false, simpleComparator.areObjectsEqual(nullFlow, storedFlow));
         assertEquals(true, simpleComparator.areObjectsEqual(statsFlow, copyStatsFlow));
+        assertEquals(false,simpleComparator.areObjectsEqual(statsFlow,nullFlow));
     }
 
     private void compareViaComparator(SimpleComparator<Flow> simpleComparator) {

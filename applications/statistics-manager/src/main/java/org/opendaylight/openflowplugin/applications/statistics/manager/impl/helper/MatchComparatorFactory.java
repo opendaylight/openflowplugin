@@ -37,6 +37,7 @@ public final class MatchComparatorFactory {
              */
             @Override
             public boolean areObjectsEqual(Match statsMatch, Match storedMatch) {
+            	if (storedMatch == null) return false;
                 if (storedMatch.getVlanMatch() == null) {
                     if (statsMatch.getVlanMatch() != null) {
                         return false;
@@ -56,6 +57,7 @@ public final class MatchComparatorFactory {
              */
             @Override
             public boolean areObjectsEqual(Match statsMatch, Match storedMatch) {
+            	if (storedMatch == null) return false;
                 if (storedMatch.getTunnel() == null) {
                     if (statsMatch.getTunnel() != null) {
                         return false;
@@ -75,6 +77,7 @@ public final class MatchComparatorFactory {
              */
             @Override
             public boolean areObjectsEqual(Match statsMatch, Match storedMatch) {
+            	if (storedMatch == null) return false;
                 if (storedMatch.getProtocolMatchFields() == null) {
                     if (statsMatch.getProtocolMatchFields() != null) {
                         return false;
@@ -94,6 +97,7 @@ public final class MatchComparatorFactory {
              */
             @Override
             public boolean areObjectsEqual(Match statsMatch, Match storedMatch) {
+            	if (storedMatch == null) return false;
                 if (storedMatch.getMetadata() == null) {
                     if (statsMatch.getMetadata() != null) {
                         return false;
@@ -113,6 +117,7 @@ public final class MatchComparatorFactory {
              */
             @Override
             public boolean areObjectsEqual(Match statsMatch, Match storedMatch) {
+            	if (storedMatch == null) return false;
                 if (storedMatch.getLayer4Match() == null) {
                     if (statsMatch.getLayer4Match() != null) {
                         return false;
@@ -132,6 +137,7 @@ public final class MatchComparatorFactory {
              */
             @Override
             public boolean areObjectsEqual(Match statsMatch, Match storedMatch) {
+            	if (storedMatch == null) return false;
                 if (storedMatch.getLayer3Match() == null) {
                     if (statsMatch.getLayer3Match() != null) {
                         return false;
@@ -151,6 +157,7 @@ public final class MatchComparatorFactory {
              */
             @Override
             public boolean areObjectsEqual(Match statsMatch, Match storedMatch) {
+            	if (storedMatch == null) return false;
                 if (storedMatch.getIpMatch() == null) {
                     if (statsMatch.getIpMatch() != null) {
                         return false;
@@ -170,6 +177,7 @@ public final class MatchComparatorFactory {
              */
             @Override
             public boolean areObjectsEqual(Match statsMatch, Match storedMatch) {
+            	if (storedMatch == null) return false;
                 if (storedMatch.getInPort() == null) {
                     if (statsMatch.getInPort() != null) {
                         return false;
@@ -189,6 +197,7 @@ public final class MatchComparatorFactory {
              */
             @Override
             public boolean areObjectsEqual(Match statsMatch, Match storedMatch) {
+            	if (storedMatch == null) return false;
                 if (storedMatch.getInPhyPort() == null) {
                     if (statsMatch.getInPhyPort() != null) {
                         return false;
@@ -208,6 +217,7 @@ public final class MatchComparatorFactory {
              */
             @Override
             public boolean areObjectsEqual(Match statsMatch, Match storedMatch) {
+            	if (storedMatch == null) return false;
                 if (storedMatch.getEthernetMatch() == null) {
                     if (statsMatch.getEthernetMatch() != null) {
                         return false;
@@ -227,6 +237,7 @@ public final class MatchComparatorFactory {
              */
             @Override
             public boolean areObjectsEqual(Match statsMatch, Match storedMatch) {
+            	if (storedMatch == null) return false;
                 if (storedMatch.getIcmpv4Match() == null) {
                     if (statsMatch.getIcmpv4Match() != null) {
                         return false;
