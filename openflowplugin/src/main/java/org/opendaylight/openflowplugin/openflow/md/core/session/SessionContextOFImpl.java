@@ -183,7 +183,8 @@ public class SessionContextOFImpl implements SessionContext {
 
     @Override
     public boolean isPortEnabled(PortGrouping port) {
-        if (port == null) {
+        //TODO: need rework in OFJava models 
+        /*if (port == null) {
             return false;
         }
         if (port.getConfig().isPortDown()) {
@@ -194,7 +195,7 @@ public class SessionContextOFImpl implements SessionContext {
         }
         if (port.getState().isBlocked()) {
             return false;
-        }
+        }*/
         return true;
     }
 

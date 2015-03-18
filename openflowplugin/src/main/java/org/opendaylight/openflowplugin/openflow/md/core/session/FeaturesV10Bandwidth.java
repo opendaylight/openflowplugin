@@ -31,10 +31,10 @@ public class FeaturesV10Bandwidth implements IGetBandwith {
     
     @Override
     public boolean getBandwidth(PortGrouping port) {
-        return (port.getCurrentFeaturesV10().is_100mbFd() | port.getCurrentFeaturesV10().is_100mbHd() | port.getCurrentFeaturesV10().is_10gbFd() | 
-                port.getCurrentFeaturesV10().is_10mbFd() | port.getCurrentFeaturesV10().is_10mbHd() | port.getCurrentFeaturesV10().is_1gbFd() | 
-                port.getCurrentFeaturesV10().is_1gbHd() | port.getCurrentFeaturesV10().isAutoneg() | port.getCurrentFeaturesV10().isCopper() | 
-                port.getCurrentFeaturesV10().isFiber() | port.getCurrentFeaturesV10().isPause() | port.getCurrentFeaturesV10().isPauseAsym());        
+        return (port.getCurrentFeatures().getPortFeaturesV10().is_100mbFd() | port.getCurrentFeatures().getPortFeaturesV10().is_100mbHd() | port.getCurrentFeatures().getPortFeaturesV10().is_10gbFd() | 
+                port.getCurrentFeatures().getPortFeaturesV10().is_10mbFd() | port.getCurrentFeatures().getPortFeaturesV10().is_10mbHd() | port.getCurrentFeatures().getPortFeaturesV10().is_1gbFd() | 
+                port.getCurrentFeatures().getPortFeaturesV10().is_1gbHd() | port.getCurrentFeatures().getPortFeaturesV10().isAutoneg() | port.getCurrentFeatures().getPortFeaturesV10().isCopper() | 
+                port.getCurrentFeatures().getPortFeaturesV10().isFiber() | port.getCurrentFeatures().getPortFeaturesV10().isPause() | port.getCurrentFeatures().getPortFeaturesV10().isPauseAsym());        
     }
     
     
