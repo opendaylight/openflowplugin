@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_f05fea70",
+        "filename": "applications/statistics-manager/src/main/java/org/opendaylight/openflowplugin/applications/statistics/manager/impl/StatListenCommitFlow.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 338,
+      "author": {
+        "id": 62
+      },
+      "writtenOn": "2015-03-18T06:46:31Z",
+      "side": 1,
+      "message": "Keith - unless I am missing something I would still expect a lot of log getting printed even when debug is not enabled. We are only not printing flowHashId.getFlowId() in the non-debug case. Your paste bin (http://pastebin.com/dKebwfFf ) shows very verbose output for both flowHashId.getKey() as well as flowHashId.getFlowId().",
+      "range": {
+        "startLine": 338,
+        "startChar": 26,
+        "endLine": 338,
+        "endChar": 29
+      },
+      "revId": "6afe1b529a0880ae12d0367150df3e56d3edf4f7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
