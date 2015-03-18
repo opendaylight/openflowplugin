@@ -2,6 +2,52 @@
   "comments": [
     {
       "key": {
+        "uuid": "5a93c517_f6ecc2c9",
+        "filename": "applications/statistics-manager/src/main/java/org/opendaylight/openflowplugin/applications/statistics/manager/impl/StatListenCommitFlow.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2015-03-18T14:51:13Z",
+      "side": 1,
+      "message": "primitive int should be just fine here",
+      "range": {
+        "startLine": 92,
+        "startChar": 25,
+        "endLine": 92,
+        "endChar": 32
+      },
+      "revId": "fe743ec4388fe41bf797cb9f71b6c9212fd44320",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_162cce01",
+        "filename": "applications/statistics-manager/src/main/java/org/opendaylight/openflowplugin/applications/statistics/manager/impl/StatListenCommitFlow.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 336,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2015-03-18T14:51:13Z",
+      "side": 1,
+      "message": "please, add one more parameter - the exception - so we will get stacktrace too",
+      "range": {
+        "startLine": 336,
+        "startChar": 30,
+        "endLine": 336,
+        "endChar": 35
+      },
+      "revId": "fe743ec4388fe41bf797cb9f71b6c9212fd44320",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5a93c517_56f2569b",
         "filename": "applications/statistics-manager/src/main/java/org/opendaylight/openflowplugin/applications/statistics/manager/impl/StatListenCommitFlow.java",
         "patchSetId": 2
@@ -30,6 +76,30 @@
       "writtenOn": "2015-03-18T14:13:49Z",
       "side": 1,
       "message": "why is this a warning? Can\u0027t it normally happen? I\u0027d hope this is a debug log level as well...",
+      "range": {
+        "startLine": 341,
+        "startChar": 30,
+        "endLine": 341,
+        "endChar": 34
+      },
+      "revId": "fe743ec4388fe41bf797cb9f71b6c9212fd44320",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_b6f5da84",
+        "filename": "applications/statistics-manager/src/main/java/org/opendaylight/openflowplugin/applications/statistics/manager/impl/StatListenCommitFlow.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 341,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2015-03-18T14:51:13Z",
+      "side": 1,
+      "message": "this is bug/illegal state, because it means that 2 different flows (from device point of view) produced the same hash which was supposed to be different \u003d the hash mechanism is too weak here",
+      "parentUuid": "5a93c517_b6795a31",
       "range": {
         "startLine": 341,
         "startChar": 30,
