@@ -40,10 +40,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.ActionsInstruction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.MetadataInstruction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.MeterIdInstruction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.TableIdInstruction;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.ApplyActionsCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.GotoTableCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.MeterCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.WriteActionsCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.WriteMetadataCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowModCommand;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowModFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInput;
@@ -184,33 +185,35 @@ public class FlowConvertorTest {
         org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions
         .grouping.Instruction instruction = flowMod.getInstruction().get(0);
         Assert.assertEquals("Wrong type", "org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common"
-                + ".instruction.rev130731.GotoTable", instruction.getType().getName());
-        Assert.assertEquals("Wrong table id", 1, instruction.getAugmentation(TableIdInstruction.class)
-                .getTableId().intValue());
+                + ".instruction.rev130731.instruction.grouping.instruction.choice.GotoTableCase", instruction.getInstructionChoice().getImplementedInterface().getName());
+        GotoTableCase gotoTableCase = (GotoTableCase) instruction.getInstructionChoice();
+        Assert.assertEquals("Wrong table id", 1, gotoTableCase.getGotoTable().getTableId().intValue());
         instruction = flowMod.getInstruction().get(1);
         Assert.assertEquals("Wrong type", "org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common"
-                + ".instruction.rev130731.WriteMetadata", instruction.getType().getName());
+                + ".instruction.rev130731.instruction.grouping.instruction.choice.WriteMetadataCase", instruction.getInstructionChoice().getImplementedInterface().getName());
+        WriteMetadataCase writeMetadataCase = (WriteMetadataCase) instruction.getInstructionChoice();
         Assert.assertArrayEquals("Wrong metadata", new byte[]{0, 0, 0, 0, 0, 0, 0, 2},
-                instruction.getAugmentation(MetadataInstruction.class).getMetadata());
+                writeMetadataCase.getWriteMetadata().getMetadata());
         Assert.assertArrayEquals("Wrong metadata mask", new byte[]{0, 0, 0, 0, 0, 0, 0, 3},
-                instruction.getAugmentation(MetadataInstruction.class).getMetadataMask());
+                writeMetadataCase.getWriteMetadata().getMetadataMask());
+        
         instruction = flowMod.getInstruction().get(2);
         Assert.assertEquals("Wrong type", "org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common"
-                + ".instruction.rev130731.WriteActions", instruction.getType().getName());
-        Assert.assertEquals("Wrong actions size", 0, instruction.getAugmentation(ActionsInstruction.class)
-                .getAction().size());
+                + ".instruction.rev130731.instruction.grouping.instruction.choice.WriteActionsCase", instruction.getInstructionChoice().getImplementedInterface().getName());
+        WriteActionsCase writeActionsCase = (WriteActionsCase) instruction.getInstructionChoice();
+        Assert.assertEquals("Wrong actions size", 0, writeActionsCase.getWriteActions().getAction().size());
         instruction = flowMod.getInstruction().get(3);
         Assert.assertEquals("Wrong type", "org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common"
-                + ".instruction.rev130731.ApplyActions", instruction.getType().getName());
-        Assert.assertEquals("Wrong actions size", 0, instruction.getAugmentation(ActionsInstruction.class)
-                .getAction().size());
+                + ".instruction.rev130731.instruction.grouping.instruction.choice.ApplyActionsCase", instruction.getInstructionChoice().getImplementedInterface().getName());
+        ApplyActionsCase applyActionsCase =  (ApplyActionsCase) instruction.getInstructionChoice();
+        Assert.assertEquals("Wrong actions size", 0, applyActionsCase.getApplyActions().getAction().size());
         instruction = flowMod.getInstruction().get(4);
         Assert.assertEquals("Wrong type", "org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common"
-                + ".instruction.rev130731.ClearActions", instruction.getType().getName());
+                + ".instruction.rev130731.instruction.grouping.instruction.choice.ClearActionsCase", instruction.getInstructionChoice().getImplementedInterface().getName());
         instruction = flowMod.getInstruction().get(5);
         Assert.assertEquals("Wrong type", "org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common"
-                + ".instruction.rev130731.Meter", instruction.getType().getName());
-        Assert.assertEquals("Wrong meter id", 5, instruction.getAugmentation(MeterIdInstruction.class)
-                .getMeterId().intValue());
+                + ".instruction.rev130731.instruction.grouping.instruction.choice.MeterCase", instruction.getInstructionChoice().getImplementedInterface().getName());
+        MeterCase meterCase = (MeterCase) instruction.getInstructionChoice();
+        Assert.assertEquals("Wrong meter id", 5, meterCase.getMeter().getMeterId().intValue());
     }
 }
