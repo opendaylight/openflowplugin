@@ -89,6 +89,7 @@ public class StatListenCommitFlow extends StatAbstractListenCommit<Flow, Openday
     private static final String ALIEN_SYSTEM_FLOW_ID = "#UF$TABLE*";
 
     private static final Integer REMOVE_AFTER_MISSING_COLLECTION = 1;
+    private static final Integer TRUNCATED_LOG_MESSAGE_LENGTH = 30;
 
     private final AtomicInteger unaccountedFlowsCounter = new AtomicInteger(0);
 
@@ -330,8 +331,18 @@ public class StatListenCommitFlow extends StatAbstractListenCommit<Flow, Openday
                         try {
                             flowIdByHash.put(flowHashId.getKey(), flowHashId.getFlowId());
                         } catch (final Exception e) {
-                            LOG.warn("flow hashing hit a duplicate for {} -> {}. Exception was raised: {}",
-                                    flowHashId.getKey(), flowHashId.getFlowId(), e.getMessage());
+                        	//flowHashId.getKey() too verbose for standard log.
+                        	if(LOG.isDebugEnabled()) {
+                                final FlowId currData = flowIdByHash.get(flowHashId.getKey());
+                        		LOG.debug("flow hashing hit a duplicate for {} -> {}. Curr value: {} Equals:{}. Exception was raised:",
+                                    flowHashId.getKey(), flowHashId.getFlowId(), currData, flowHashId.getFlowId().equals(currData), e);
+                        	}
+                        	else
+                        	{
+                        		LOG.warn("flow hashing hit a duplicate {}. Exception was raised: {}. Enable DEBUG for more detail.",
+                        			flowHashId.getFlowId().toString().substring(0, Math.min(TRUNCATED_LOG_MESSAGE_LENGTH,flowHashId.getFlowId().toString().length())), 
+                        			e.getMessage().substring(0,Math.min(TRUNCATED_LOG_MESSAGE_LENGTH,e.getMessage().length())));
+                        	}
                         }
                     }
                 }
