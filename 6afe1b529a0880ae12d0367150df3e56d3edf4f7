@@ -22,6 +22,30 @@
       "revId": "6afe1b529a0880ae12d0367150df3e56d3edf4f7",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_fbaa6bd3",
+        "filename": "applications/statistics-manager/src/main/java/org/opendaylight/openflowplugin/applications/statistics/manager/impl/StatListenCommitFlow.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 338,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2015-03-18T09:16:41Z",
+      "side": 1,
+      "message": "Right - the key object is the chatty one.",
+      "parentUuid": "5a93c517_f05fea70",
+      "range": {
+        "startLine": 338,
+        "startChar": 26,
+        "endLine": 338,
+        "endChar": 29
+      },
+      "revId": "6afe1b529a0880ae12d0367150df3e56d3edf4f7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
