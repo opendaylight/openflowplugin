@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_0088ff6f",
+        "filename": "legacy/sal-compatibility/src/test/java/org/opendaylight/openflowplugin/legacy/sal/compatibility/test/ToSalConversionsUtilsTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2015-03-19T07:57:19Z",
+      "side": 1,
+      "message": "please use: new byte[] { 0x48, ...};",
+      "range": {
+        "startLine": 36,
+        "startChar": 28,
+        "endLine": 36,
+        "endChar": 68
+      },
+      "revId": "b6d9044cfc8c967e51940411db13daa7471fa477",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
