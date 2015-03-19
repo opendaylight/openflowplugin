@@ -1,6 +1,9 @@
 package test.mock.util;
 
+import java.util.Collections;
+import java.util.concurrent.ExecutionException;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
+import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeBuilder;
@@ -11,10 +14,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
-import java.util.Collections;
-import java.util.concurrent.ExecutionException;
-
-public abstract class FRMTest extends AbstractDataBrokerTest{
+public abstract class FRMTest extends AbstractDataBrokerTest {
 
     public void addFlowCapableNode(NodeKey nodeKey) throws ExecutionException, InterruptedException {
         Nodes nodes = new NodesBuilder().setNode(Collections.<Node>emptyList()).build();
