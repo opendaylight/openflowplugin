@@ -129,15 +129,19 @@ public abstract class InventoryDataServiceUtil {
     public static Long portNumberfromNodeConnectorId(OpenflowVersion ofVersion, NodeConnectorId ncId) {
         return portNumberfromNodeConnectorId(ofVersion, ncId.getValue());
     }
-
-    public static Long portNumberfromNodeConnectorId(OpenflowVersion ofVersion, String ncId) {
-        String[] split = ncId.split(":");
+    
+    public static String portNoStringfromNodeConnectorID(String ncID) {
+    	String[] split = ncID.split(":");
 
         // It can happen that token length will be just 1 i.e 2 or CONTROLLER
         // If the length is just one then this cannot be the new MD-SAL style node connector Id which
         // is of the form openflow:1:3.
+    	
+    	return split[split.length - 1];
+    }
 
-        String portNoString = split[split.length - 1];
+    public static Long portNumberfromNodeConnectorId(OpenflowVersion ofVersion, String ncId) {
+        String portNoString = portNoStringfromNodeConnectorID(ncId);
         Long portNo = OpenflowPortsUtil.getPortFromLogicalName(ofVersion, portNoString);
         return portNo;
     }
