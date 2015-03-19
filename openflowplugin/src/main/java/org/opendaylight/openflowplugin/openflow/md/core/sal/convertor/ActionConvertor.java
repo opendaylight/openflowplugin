@@ -916,7 +916,7 @@ public final class ActionConvertor {
         if (OpenflowPortsUtil.checkPortValidity(ofVersion, portNumber)) {
             outputBuilder.setPort(new PortNumber(portNumber));
         } else {
-            LOG.error("Invalid Port specified " + portNumber + " for Output Action for OF version:" + ofVersion);
+            LOG.error("Invalid Port specified {} for Output Action for OF version: {}", portNumber, ofVersion);
         }
         caseBuilder.setOutputAction(outputBuilder.build());
         actionBuilder.setActionChoice(caseBuilder.build());
