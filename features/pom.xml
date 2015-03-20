@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opendaylight.openflowplugin</groupId>
     <artifactId>openflowplugin-parent</artifactId>
-    <version>0.0.6-Helium-SR3</version>
+    <version>0.0.7-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
   <artifactId>features-openflowplugin</artifactId>
@@ -13,8 +13,8 @@
 
   <properties>
     <features.file>features.xml</features.file>
-    <karaf.empty.distro.version>1.4.5-Helium-SR3</karaf.empty.distro.version>
-    <yangtools.version>0.6.5-Helium-SR3</yangtools.version>
+    <karaf.empty.distro.version>1.4.6-SNAPSHOT</karaf.empty.distro.version>
+    <yangtools.version>0.6.6-SNAPSHOT</yangtools.version>
   </properties>
 
   <dependencies>
@@ -47,6 +47,7 @@
       <classifier>features</classifier>
       <type>xml</type>
     </dependency>
+    <!-- TEMPORARILY DISABLE TO BREAK CYCLIC DEPENDENCY
     <dependency>
       <groupId>org.opendaylight.dlux</groupId>
       <artifactId>features-dlux</artifactId>
@@ -54,6 +55,7 @@
       <classifier>features</classifier>
       <type>xml</type>
     </dependency>
+    -->
 
     <!-- bundle dependencies -->
     <dependency>
@@ -113,7 +115,7 @@
       <artifactId>liblldp</artifactId>
       <version>${sal.api.version}</version>
     </dependency>
-    
+
     <!-- test the features.xml -->
     <dependency>
       <groupId>org.opendaylight.yangtools</groupId>

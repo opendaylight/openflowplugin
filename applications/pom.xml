@@ -5,12 +5,12 @@
   <parent>
     <groupId>org.opendaylight.openflowplugin</groupId>
     <artifactId>openflowplugin-parent</artifactId>
-    <version>0.0.6-Helium-SR3</version>
+    <version>0.0.7-SNAPSHOT</version>
   </parent>
 
   <groupId>org.opendaylight.openflowplugin</groupId>
   <artifactId>applications</artifactId>
-  <version>0.0.6-Helium-SR3</version>
+  <version>0.0.7-SNAPSHOT</version>
   <name>applications</name>
   <url>http://maven.apache.org</url>
   <packaging>pom</packaging>
