@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opendaylight.openflowplugin</groupId>
         <artifactId>openflowplugin-parent</artifactId>
-        <version>0.0.6-SNAPSHOT</version>
+        <version>0.0.6-Helium-SR3</version>
         <relativePath>../</relativePath>
     </parent>
     <artifactId>drop-test-karaf</artifactId>
