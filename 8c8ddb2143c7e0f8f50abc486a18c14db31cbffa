@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_b4570d02",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/connection/ConnectionContext.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 552
+      },
+      "writtenOn": "2015-03-20T08:58:35Z",
+      "side": 1,
+      "message": "whic -\u003e which",
+      "range": {
+        "startLine": 45,
+        "startChar": 43,
+        "endLine": 45,
+        "endChar": 47
+      },
+      "revId": "8c8ddb2143c7e0f8f50abc486a18c14db31cbffa",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_54b6c93e",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/device/Xid.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 552
+      },
+      "writtenOn": "2015-03-20T08:58:35Z",
+      "side": 1,
+      "message": "what is X?",
+      "range": {
+        "startLine": 16,
+        "startChar": 1,
+        "endLine": 16,
+        "endChar": 3
+      },
+      "revId": "8c8ddb2143c7e0f8f50abc486a18c14db31cbffa",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
