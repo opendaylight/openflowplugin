@@ -567,7 +567,7 @@ public class ToSalConversionsUtils {
             target.setField(DL_DST, bytesFrom(targetHwAddress.getAddress()));
         }
 
-        target.setField(DL_TYPE, new Short(ETHERNET_ARP));
+        target.setField(DL_TYPE, ETHERNET_ARP);
 
     }
 
