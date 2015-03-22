@@ -409,9 +409,9 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         if (null == flow.isBarrier()) {
             flow.setBarrier(Boolean.FALSE);
         }
-        // flow.setBufferId(new Long(12));
-        BigInteger value = new BigInteger("10", 10);
-        BigInteger outputPort = new BigInteger("4294967295", 10);
+        // flow.setBufferId(12L);
+        BigInteger value = BigInteger.valueOf(10);
+        BigInteger outputPort = BigInteger.valueOf(4294967295L);
         flow.setCookie(new FlowCookie(value));
         flow.setCookieMask(new FlowCookie(value));
         flow.setHardTimeout(0);
@@ -422,7 +422,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         flow.setFlags(new FlowModFlags(false, false, false, false, true));
         flow.setId(new FlowId("12"));
         flow.setTableId(getTableId(tableId));
-        flow.setOutGroup(new Long("4294967295"));
+        flow.setOutGroup(4294967295L);
         // set outport to OFPP_NONE (65535) to disable remove restriction for
         // flow
         flow.setOutPort(outputPort);
@@ -768,7 +768,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
     private static InstructionsBuilder createMeterInstructions() {
 
         MeterBuilder aab = new MeterBuilder();
-        aab.setMeterId(new MeterId(new Long(1)));
+        aab.setMeterId(new MeterId(1L));
 
         InstructionBuilder ib = new InstructionBuilder();
         ib.setInstruction(new MeterCaseBuilder().setMeter(aab.build()).build());
@@ -852,7 +852,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         ActionBuilder ab = new ActionBuilder();
 
         OutputActionBuilder output = new OutputActionBuilder();
-        output.setMaxLength(new Integer(0xffff));
+        output.setMaxLength(0xffff);
         Uri value = new Uri(OutputPortValues.CONTROLLER.toString());
         output.setOutputNodeConnector(value);
         ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
@@ -883,7 +883,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         ActionBuilder ab = new ActionBuilder();
 
         PushMplsActionBuilder push = new PushMplsActionBuilder();
-        push.setEthernetType(new Integer(0x8847));
+        push.setEthernetType(0x8847);
         ab.setAction(new PushMplsActionCaseBuilder().setPushMplsAction(push.build()).build());
         actionList.add(ab.build());
         // Create an Apply Action
@@ -908,7 +908,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         ActionBuilder ab = new ActionBuilder();
 
         PushPbbActionBuilder pbb = new PushPbbActionBuilder();
-        pbb.setEthernetType(new Integer(0x88E7));
+        pbb.setEthernetType(0x88E7);
         ab.setAction(new PushPbbActionCaseBuilder().setPushPbbAction(pbb.build()).build());
         actionList.add(ab.build());
         // Create an Apply Action

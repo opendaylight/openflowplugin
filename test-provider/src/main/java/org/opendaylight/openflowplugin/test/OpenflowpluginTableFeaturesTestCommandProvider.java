@@ -139,13 +139,13 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
 
 
             TableFeaturesBuilder tableFeature1 = new TableFeaturesBuilder();
-            tableFeature1.setTableId(new Short((short) 0));
+            tableFeature1.setTableId((short) 0);
             tableFeature1.setName("Table 0");
 
 
-            tableFeature1.setMetadataMatch((new BigInteger("10", 10)));
-            tableFeature1.setMetadataWrite((new BigInteger("10", 10)));
-            tableFeature1.setMaxEntries(new Long(10000));
+            tableFeature1.setMetadataMatch(BigInteger.valueOf(10));
+            tableFeature1.setMetadataWrite(BigInteger.valueOf(10));
+            tableFeature1.setMaxEntries(10000L);
 
             tableFeature1.setConfig(new TableConfig(false));
 

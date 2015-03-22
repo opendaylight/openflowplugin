@@ -198,8 +198,7 @@ public final class FromSalConversionsUtils {
         MatchField transportPort = sourceMatch.getField(matchType);
         if (transportPort != null && transportPort.getValue() != null
                 && transportPort.getValue().getClass().equals(Short.class)) {
-            return new Integer(NetUtils.getUnsignedShort((short) transportPort
-                    .getValue()));
+            return NetUtils.getUnsignedShort((short) transportPort.getValue());
         }
         return null;
     }
@@ -265,8 +264,7 @@ public final class FromSalConversionsUtils {
 
         final MatchField dataLinkType = sourceMatch.getField(MatchType.DL_TYPE);
         if (dataLinkType != null && dataLinkType.getValue() != null) {
-            EtherType etherType = new EtherType(new Long(
-                    NetUtils.getUnsignedShort((Short) dataLinkType.getValue())));
+            EtherType etherType = new EtherType((long) NetUtils.getUnsignedShort((Short) dataLinkType.getValue()));
             EthernetTypeBuilder ethType = new EthernetTypeBuilder()
                     .setType(etherType);
             targetEthMatchBuild.setEthernetType(ethType.build());
