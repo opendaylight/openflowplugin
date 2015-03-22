@@ -1164,7 +1164,7 @@ public final class ActionConvertor {
         }
         
         private Short getShortValue() {
-            return new Short((short) protocol);
+            return (short) protocol;
         }
         
         private IPProtocols fromProtocolNum(Short protocolNum) {

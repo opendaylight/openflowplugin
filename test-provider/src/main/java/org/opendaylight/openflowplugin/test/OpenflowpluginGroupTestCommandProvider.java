@@ -281,7 +281,7 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
 
     private List<Action> createPushVlanAction() {
         PushVlanActionBuilder vlan = new PushVlanActionBuilder();
-        vlan.setEthernetType(new Integer(0x8100));
+        vlan.setEthernetType(0x8100);
         ActionBuilder action = new ActionBuilder();
         action.setAction(new PushVlanActionCaseBuilder().setPushVlanAction(vlan.build()).build());
         List<Action> actions = new ArrayList<Action>();
@@ -291,7 +291,7 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
 
     private List<Action> createPushMplsAction() {
         PushMplsActionBuilder push = new PushMplsActionBuilder();
-        push.setEthernetType(new Integer(0x8847));
+        push.setEthernetType(0x8847);
         ActionBuilder action = new ActionBuilder();
         action.setAction(new PushMplsActionCaseBuilder().setPushMplsAction(push.build()).build());
         List<Action> actions = new ArrayList<Action>();
@@ -320,7 +320,7 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
 
     private List<Action> createPushPbbAction() {
         PushPbbActionBuilder pbb = new PushPbbActionBuilder();
-        pbb.setEthernetType(new Integer(0x88E7));
+        pbb.setEthernetType(0x88E7);
         ActionBuilder action = new ActionBuilder();
         action.setAction(new PushPbbActionCaseBuilder().setPushPbbAction(pbb.build()).build());
         List<Action> actions = new ArrayList<Action>();
@@ -550,7 +550,7 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
         PushMplsActionBuilder push = new PushMplsActionBuilder();
-        push.setEthernetType(new Integer(0x8849));
+        push.setEthernetType(0x8849);
         ab.setAction(new PushMplsActionCaseBuilder().setPushMplsAction(push.build()).build());
         actionList.add(ab.build());
         return actionList;
@@ -562,7 +562,7 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
         PushPbbActionBuilder pbb = new PushPbbActionBuilder();
-        pbb.setEthernetType(new Integer(0x88E8));
+        pbb.setEthernetType(0x88E8);
         ab.setAction(new PushPbbActionCaseBuilder().setPushPbbAction(pbb.build()).build());
         actionList.add(ab.build());
         return actionList;
@@ -575,7 +575,7 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         List<Action> actionList = new ArrayList<Action>();
         ActionBuilder ab = new ActionBuilder();
         PushVlanActionBuilder vlan = new PushVlanActionBuilder();
-        vlan.setEthernetType(new Integer(0x8101));
+        vlan.setEthernetType(0x8101);
         ab.setAction(new PushVlanActionCaseBuilder().setPushVlanAction(vlan.build()).build());
         actionList.add(ab.build());
         return actionList;
