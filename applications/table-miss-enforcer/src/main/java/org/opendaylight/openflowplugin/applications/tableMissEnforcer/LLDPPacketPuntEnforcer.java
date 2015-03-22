@@ -79,8 +79,8 @@ public class LLDPPacketPuntEnforcer implements DataChangeListener {
         FlowKey key = new FlowKey(new FlowId(DEFAULT_FLOW_ID));
         flowBuilder.setBarrier(Boolean.FALSE);
         flowBuilder.setBufferId(OFConstants.OFP_NO_BUFFER);
-        BigInteger value = new BigInteger("10", 10);
-        // BigInteger outputPort = new BigInteger("65535", 10);
+        BigInteger value = BigInteger.valueOf(10L);
+        // BigInteger outputPort = BigInteger.valueOf(65535L);
         flowBuilder.setCookie(new FlowCookie(value));
         flowBuilder.setCookieMask(new FlowCookie(value));
         flowBuilder.setHardTimeout(0);
