@@ -213,13 +213,13 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
     private NodeBuilder createTestNode(String nodeId) {
         String localNodeId;
-        
+
         if (nodeId == null) {
             localNodeId = OpenflowpluginTestActivator.NODE_ID;
         } else {
             localNodeId = nodeId;
         }
-        
+
         NodeBuilder builder = new NodeBuilder();
         builder.setId(new NodeId(localNodeId));
         builder.setKey(new NodeKey(builder.getId()));
@@ -232,7 +232,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
     private FlowBuilder createTestFlow(NodeBuilder nodeBuilder, String flowTypeArg, String tableId) {
         final long TEST_ID = 123;
-        
+
         FlowBuilder flow = new FlowBuilder();
         long id = TEST_ID;
 
@@ -661,26 +661,26 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
                 break;
             case "f83":
                 // Test TCP_Flag Match
-                id += 83; 
+                id += 83;
                 flow.setMatch(createTcpFlagMatch().build());
                 flow.setInstructions(createDropInstructions().build());
                 break;
             case "f84":
                 id += 84;
                 // match vlan=10,dl_vlan_pcp=3
-                flow.setMatch(createVlanMatch().build()); 
+                flow.setMatch(createVlanMatch().build());
                 // vlan_pcp=4
-                flow.setInstructions(createAppyActionInstruction88().build()); 
+                flow.setInstructions(createAppyActionInstruction88().build());
                 break;
             case "f85":
                 // Test Tunnel IPv4 Src (e.g. set_field:172.16.100.200->tun_src)
-                id += 85; 
+                id += 85;
                 flow.setMatch(createMatch3().build());
                 flow.setInstructions(createTunnelIpv4SrcInstructions().build());
                 break;
             case "f86":
                 // Test Tunnel IPv4 Dst (e.g. set_field:172.16.100.100->tun_dst)
-                id += 86; 
+                id += 86;
                 flow.setMatch(createMatch1().build());
                 flow.setInstructions(createTunnelIpv4DstInstructions().build());
                 break;
@@ -715,7 +715,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         FlowBuilder flow = new FlowBuilder();
         String flowType = flowTypeArg;
         int flowId = id;
-        
+
         if (flowType == null) {
             flowType = "f1";
         }
@@ -774,7 +774,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         try {
             table = Short.parseShort(tableId);
         } catch (Exception ex) {
-            LOG.info("Parsing String tableId {} failed. Continuing with default tableId {}.", 
+            LOG.info("Parsing String tableId {} failed. Continuing with default tableId {}.",
                     tableId, table);
         }
         return table;
@@ -818,7 +818,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
     private static InstructionsBuilder createMeterInstructions() {
 
         MeterBuilder aab = new MeterBuilder();
-        aab.setMeterId(new MeterId(new Long(1)));
+        aab.setMeterId(new MeterId(1L));
 
         InstructionBuilder ib = new InstructionBuilder();
         ib.setInstruction(new MeterCaseBuilder().setMeter(aab.build()).build());
@@ -2774,13 +2774,13 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         match.setEthernetMatch(eth.build());
 
         // ipv4 version
-        IpMatchBuilder ipmatch = new IpMatchBuilder(); 
+        IpMatchBuilder ipmatch = new IpMatchBuilder();
         ipmatch.setIpProtocol((short) 256);
         match.setIpMatch(ipmatch.build());
-        
+
         // icmpv6
         Icmpv6MatchBuilder icmpv6match = new Icmpv6MatchBuilder();
-        
+
         // match
         icmpv6match.setIcmpv6Type((short) 135);
         icmpv6match.setIcmpv6Code((short) 1);
@@ -2848,7 +2848,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
     private static MatchBuilder createVlanMatch() {
         MatchBuilder match = new MatchBuilder();
         // vlan match
-        VlanMatchBuilder vlanBuilder = new VlanMatchBuilder(); 
+        VlanMatchBuilder vlanBuilder = new VlanMatchBuilder();
         VlanIdBuilder vlanIdBuilder = new VlanIdBuilder();
         VlanId vlanId = new VlanId(10);
         VlanPcp vpcp = new VlanPcp((short) 3);
@@ -2875,11 +2875,11 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         ethmatch.setEthernetType(ethtype.setType(type).build());
 
         // ipv4 match
-        Ipv4Prefix dstip = new Ipv4Prefix("200.71.9.52/10"); 
+        Ipv4Prefix dstip = new Ipv4Prefix("200.71.9.52/10");
         Ipv4Prefix srcip = new Ipv4Prefix("100.1.1.1/8");
 
         // arp match
-        ArpMatchBuilder arpmatch = new ArpMatchBuilder(); 
+        ArpMatchBuilder arpmatch = new ArpMatchBuilder();
         ArpSourceHardwareAddressBuilder arpsrc = new ArpSourceHardwareAddressBuilder();
         arpsrc.setAddress(macsrc);
         arpsrc.setMask(new MacAddress("ff:ff:ff:00:00:00"));
@@ -2913,7 +2913,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         Ipv4MatchBuilder ipv4Match = new Ipv4MatchBuilder();
         // ipv4 match
-        Ipv4Prefix dstip = new Ipv4Prefix("200.71.9.52/10"); 
+        Ipv4Prefix dstip = new Ipv4Prefix("200.71.9.52/10");
         Ipv4Prefix srcip = new Ipv4Prefix("100.1.1.1/8");
         Ipv4MatchBuilder ipv4match = new Ipv4MatchBuilder();
         ipv4match.setIpv4Destination(dstip);
