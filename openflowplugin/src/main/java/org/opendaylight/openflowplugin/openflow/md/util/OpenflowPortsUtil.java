@@ -29,15 +29,15 @@ public class OpenflowPortsUtil {
 
         // v1.0 ports
         ImmutableBiMap<String, Long> OFv10 = new ImmutableBiMap.Builder<String, Long>()
-                .put(OutputPortValues.MAX.toString(), new Long(PortNumberValuesV10.MAX.getIntValue())) //0xff00
-                .put(OutputPortValues.INPORT.toString(), new Long(PortNumberValuesV10.INPORT.getIntValue())) //0xfff8
-                .put(OutputPortValues.TABLE.toString(), new Long(PortNumberValuesV10.TABLE.getIntValue())) //0xfff9
-                .put(OutputPortValues.NORMAL.toString(), new Long(PortNumberValuesV10.NORMAL.getIntValue())) //0xfffa
-                .put(OutputPortValues.FLOOD.toString(), new Long(PortNumberValuesV10.FLOOD.getIntValue())) //0xfffb
-                .put(OutputPortValues.ALL.toString(), new Long(PortNumberValuesV10.ALL.getIntValue())) //0xfffc
-                .put(OutputPortValues.CONTROLLER.toString(), new Long(PortNumberValuesV10.CONTROLLER.getIntValue())) //0xfffd
-                .put(OutputPortValues.LOCAL.toString(), new Long(PortNumberValuesV10.LOCAL.getIntValue())) //0xfffe
-                .put(OutputPortValues.NONE.toString(), new Long(PortNumberValuesV10.NONE.getIntValue())) //0xfffe
+                .put(OutputPortValues.MAX.toString(), Long.valueOf(PortNumberValuesV10.MAX.getIntValue())) //0xff00
+                .put(OutputPortValues.INPORT.toString(), Long.valueOf(PortNumberValuesV10.INPORT.getIntValue())) //0xfff8
+                .put(OutputPortValues.TABLE.toString(), Long.valueOf(PortNumberValuesV10.TABLE.getIntValue())) //0xfff9
+                .put(OutputPortValues.NORMAL.toString(), Long.valueOf(PortNumberValuesV10.NORMAL.getIntValue())) //0xfffa
+                .put(OutputPortValues.FLOOD.toString(), Long.valueOf(PortNumberValuesV10.FLOOD.getIntValue())) //0xfffb
+                .put(OutputPortValues.ALL.toString(), Long.valueOf(PortNumberValuesV10.ALL.getIntValue())) //0xfffc
+                .put(OutputPortValues.CONTROLLER.toString(), Long.valueOf(PortNumberValuesV10.CONTROLLER.getIntValue())) //0xfffd
+                .put(OutputPortValues.LOCAL.toString(), Long.valueOf(PortNumberValuesV10.LOCAL.getIntValue())) //0xfffe
+                .put(OutputPortValues.NONE.toString(), Long.valueOf(PortNumberValuesV10.NONE.getIntValue())) //0xfffe
                 .build();
 
         // openflow 1.3 reserved ports.
