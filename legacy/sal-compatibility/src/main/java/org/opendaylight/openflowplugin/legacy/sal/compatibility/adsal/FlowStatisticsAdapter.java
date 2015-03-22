@@ -99,7 +99,7 @@ public class FlowStatisticsAdapter implements OpendaylightFlowStatisticsService,
             List<FlowOnNode> flowsOnNode = readDelegate.readAllFlows(adNode);
             List<FlowAndStatisticsMapList> flowsStatistics = toOdFlowsStatistics(flowsOnNode);
             GetAllFlowStatisticsFromFlowTableOutputBuilder builder = new GetAllFlowStatisticsFromFlowTableOutputBuilder();
-            builder.setTransactionId(new TransactionId(new BigInteger("0")));
+            builder.setTransactionId(new TransactionId(BigInteger.ZERO));
             rpcResultType = builder.setFlowAndStatisticsMapList(flowsStatistics).build();
 
             rpcResultBool = true;
@@ -126,7 +126,7 @@ public class FlowStatisticsAdapter implements OpendaylightFlowStatisticsService,
             List<FlowOnNode> flowsOnNode = readDelegate.readAllFlows(adNode);
             List<FlowAndStatisticsMapList> flowsStatistics = toOdFlowsStatistics(flowsOnNode);
             GetAllFlowsStatisticsFromAllFlowTablesOutputBuilder builder = new GetAllFlowsStatisticsFromAllFlowTablesOutputBuilder();
-            builder.setTransactionId(new TransactionId(new BigInteger("0")));
+            builder.setTransactionId(new TransactionId(BigInteger.ZERO));
             rpcResultType = builder.setFlowAndStatisticsMapList(flowsStatistics).build();
 
             rpcResultBool = true;

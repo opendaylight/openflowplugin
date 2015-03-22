@@ -692,7 +692,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         if (null == flow.isBarrier()) {
             flow.setBarrier(Boolean.FALSE);
         }
-        BigInteger value = new BigInteger("10", 10);
+        BigInteger value = BigInteger.valueOf(10);
         flow.setCookie(new FlowCookie(value));
         flow.setCookieMask(new FlowCookie(value));
         flow.setHardTimeout(0);
@@ -736,7 +736,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         if (null == flow.isBarrier()) {
             flow.setBarrier(Boolean.FALSE);
         }
-        BigInteger value = new BigInteger("10", 10);
+        BigInteger value = BigInteger.valueOf(10);
         flow.setCookie(new FlowCookie(value));
         flow.setCookieMask(new FlowCookie(value));
         flow.setHardTimeout(0);
@@ -835,8 +835,8 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
     private static InstructionsBuilder createMetadataInstructions() {
 
         WriteMetadataBuilder aab = new WriteMetadataBuilder();
-        aab.setMetadata(new BigInteger("10", 10));
-        aab.setMetadataMask(new BigInteger("12", 10));
+        aab.setMetadata(BigInteger.valueOf(10));
+        aab.setMetadataMask(BigInteger.valueOf(10));
 
         InstructionBuilder ib = new InstructionBuilder();
         ib.setInstruction(new WriteMetadataCaseBuilder().setWriteMetadata(aab.build()).build());
@@ -3341,25 +3341,25 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         int threadCount = 0;
         if (numberOfSwtichesStr != null && !numberOfSwtichesStr.trim().equals("")) {
-            numberOfSwtiches = new Integer(numberOfSwtichesStr).intValue();
+            numberOfSwtiches = Integer.parseInt(numberOfSwtichesStr);
         } else {
             numberOfSwtiches = 2;
         }
 
         if (numberOfFlowsStr != null && !numberOfFlowsStr.trim().equals("")) {
-            numberOfFlows = new Integer(numberOfFlowsStr).intValue();
+            numberOfFlows = Integer.parseInt(numberOfFlowsStr);
         } else {
             numberOfFlows = 2;
         }
 
         if (warmupIterationsStr != null && !warmupIterationsStr.trim().equals("")) {
-            warmupIterations = new Integer(warmupIterationsStr).intValue();
+            warmupIterations = Integer.parseInt(warmupIterationsStr);
         } else {
             warmupIterations = 2;
         }
 
         if (threadCountStr != null && !threadCountStr.trim().equals("")) {
-            threadCount = new Integer(threadCountStr).intValue();
+            threadCount = Integer.parseInt(threadCountStr);
         } else {
             threadCount = 2;
         }
