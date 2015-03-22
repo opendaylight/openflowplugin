@@ -818,7 +818,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
     private static InstructionsBuilder createMeterInstructions() {
 
         MeterBuilder aab = new MeterBuilder();
-        aab.setMeterId(new MeterId(new Long(1)));
+        aab.setMeterId(new MeterId(1L);
 
         InstructionBuilder ib = new InstructionBuilder();
         ib.setInstruction(new MeterCaseBuilder().setMeter(aab.build()).build());
