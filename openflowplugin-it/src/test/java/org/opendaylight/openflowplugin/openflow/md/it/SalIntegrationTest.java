@@ -62,6 +62,7 @@ public class SalIntegrationTest {
     BundleContext ctx;
 
     @Inject
+    @Filter(timeout=20*1000)
     BindingAwareBroker broker;
     
     @Inject 
