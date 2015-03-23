@@ -42,4 +42,6 @@ public interface RpcContext extends AutoCloseable {
      */
     void setRequestContextQuota(int maxRequestsPerDevice);
 
+    boolean isRequestContextCapacityEmpty();
+
 }

@@ -31,20 +31,13 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 /**
  * interface concatenating all md-sal services provided by OF-switch
  */
-public interface ModelDrivenSwitch extends
+public interface ModelDrivenSwitch
+        extends
         SalGroupService,
         SalFlowService,
-        SalMeterService,
-        SalTableService,
-        SalPortService,
-        PacketProcessingService,
-        NodeConfigService,
-        OpendaylightGroupStatisticsService,
-        OpendaylightMeterStatisticsService,
-        OpendaylightFlowStatisticsService,
-        OpendaylightPortStatisticsService,
-        OpendaylightFlowTableStatisticsService,
-        OpendaylightQueueStatisticsService,
+        SalMeterService, SalTableService, SalPortService, PacketProcessingService, NodeConfigService,
+        OpendaylightGroupStatisticsService, OpendaylightMeterStatisticsService, OpendaylightFlowStatisticsService,
+        OpendaylightPortStatisticsService, OpendaylightFlowTableStatisticsService, OpendaylightQueueStatisticsService,
         Identifiable<InstanceIdentifier<Node>> {
 
     /**
