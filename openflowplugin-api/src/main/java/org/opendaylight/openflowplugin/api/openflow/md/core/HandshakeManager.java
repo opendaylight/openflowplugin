@@ -7,14 +7,11 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.md.core;
 
-import org.opendaylight.openflowplugin.api.openflow.md.core.ErrorHandler;
-import org.opendaylight.openflowplugin.api.openflow.md.core.HandshakeListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloMessage;
 
 /**
  * @author mirehak
- *
  */
 public interface HandshakeManager {
 
@@ -22,7 +19,7 @@ public interface HandshakeManager {
      * @return negotiated version
      */
     Short getVersion();
-    
+
     /**
      * @return obtained connection features
      */
