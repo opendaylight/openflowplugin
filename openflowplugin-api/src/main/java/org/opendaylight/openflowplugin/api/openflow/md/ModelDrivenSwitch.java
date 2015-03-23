@@ -9,7 +9,6 @@ package org.opendaylight.openflowplugin.api.openflow.md;
 
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.OpendaylightFlowStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.OpendaylightFlowTableStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.SalGroupService;
@@ -31,20 +30,13 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 /**
  * interface concatenating all md-sal services provided by OF-switch
  */
-public interface ModelDrivenSwitch extends
+public interface ModelDrivenSwitch
+        extends
         SalGroupService,
-        SalFlowService,
-        SalMeterService,
-        SalTableService,
-        SalPortService,
-        PacketProcessingService,
-        NodeConfigService,
-        OpendaylightGroupStatisticsService,
-        OpendaylightMeterStatisticsService,
-        OpendaylightFlowStatisticsService,
-        OpendaylightPortStatisticsService,
-        OpendaylightFlowTableStatisticsService,
-        OpendaylightQueueStatisticsService,
+        // SalFlowService,
+        SalMeterService, SalTableService, SalPortService, PacketProcessingService, NodeConfigService,
+        OpendaylightGroupStatisticsService, OpendaylightMeterStatisticsService, OpendaylightFlowStatisticsService,
+        OpendaylightPortStatisticsService, OpendaylightFlowTableStatisticsService, OpendaylightQueueStatisticsService,
         Identifiable<InstanceIdentifier<Node>> {
 
     /**
@@ -60,7 +52,7 @@ public interface ModelDrivenSwitch extends
 
     /**
      * returnes the session context associated with this model-driven switch
-     *
+     * 
      * @return session context object
      */
     SessionContext getSessionContext();
