@@ -8,6 +8,8 @@
 package org.opendaylight.openflowplugin.api.openflow.rpc;
 
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.exception.RequestQuotaExceededException;
+import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.RpcService;
 
 /**
@@ -22,5 +24,22 @@ public interface RpcContext extends AutoCloseable {
     <S extends RpcService> void registerRpcServiceImplementation(Class<S> serviceClass, S serviceInstance);
 
     void setDeviceContext(DeviceContext deviceContext);
+
+    /**
+     * Method adds request to request queue which has limited quota. After number of requests exceeds quota limit
+     * {@link org.opendaylight.openflowplugin.api.openflow.device.exception.RequestQuotaExceededException} is thrown.
+     * 
+     * @param data
+     * @throws RequestQuotaExceededException
+     */
+    void addNewRequest(DataObject data) throws RequestQuotaExceededException;
+
+    /**
+     * Method for setting request quota value. When the Request Context quota is exceeded, incoming RPCs fail
+     * immediately, with a well-defined error.
+     * 
+     * @param maxRequestsPerDevice
+     */
+    void setRequestContextQuota(int maxRequestsPerDevice);
 
 }
