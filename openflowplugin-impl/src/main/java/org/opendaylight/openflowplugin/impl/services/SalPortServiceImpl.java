@@ -8,8 +8,6 @@
 package org.opendaylight.openflowplugin.impl.services;
 
 import java.util.concurrent.Future;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.OFRpcTask;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.OFRpcTaskFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.SalPortService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.UpdatePortInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.UpdatePortOutput;
@@ -21,11 +19,12 @@ public class SalPortServiceImpl extends CommonService implements SalPortService 
 
     @Override
     public Future<RpcResult<UpdatePortOutput>> updatePort(final UpdatePortInput input) {
-        LOG.debug("Calling the updatePort RPC method on MessageDispatchService");
-
-        final OFRpcTask<UpdatePortInput, RpcResult<UpdatePortOutput>> task = OFRpcTaskFactory.createUpdatePortTask(
-                rpcTaskContext, input, null);
-        return task.submit();
+        // LOG.debug("Calling the updatePort RPC method on MessageDispatchService");
+        //
+        // final OFRpcTask<UpdatePortInput, RpcResult<UpdatePortOutput>> task = OFRpcTaskFactory.createUpdatePortTask(
+        // rpcTaskContext, input, null);
+        // return task.submit();
+        return null;
     }
 
 }

@@ -7,13 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
 import java.util.concurrent.Future;
-import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.OFRpcFutureResultTransformFactory;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.OFRpcTask;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.OFRpcTaskFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupInput;
@@ -34,41 +28,45 @@ public class SalGroupServiceImpl extends CommonService implements SalGroupServic
 
     @Override
     public Future<RpcResult<AddGroupOutput>> addGroup(final AddGroupInput input) {
-        LOG.debug("Calling the GroupMod RPC method on MessageDispatchService");
-
-        // use primary connection
-        final SwitchConnectionDistinguisher cookie = null;
-
-        final OFRpcTask<AddGroupInput, RpcResult<UpdateGroupOutput>> task = OFRpcTaskFactory.createAddGroupTask(
-                rpcTaskContext, input, cookie);
-        final ListenableFuture<RpcResult<UpdateGroupOutput>> result = task.submit();
-
-        return Futures.transform(result, OFRpcFutureResultTransformFactory.createForAddGroupOutput());
+        // LOG.debug("Calling the GroupMod RPC method on MessageDispatchService");
+        //
+        // // use primary connection
+        // final SwitchConnectionDistinguisher cookie = null;
+        //
+        // final OFRpcTask<AddGroupInput, RpcResult<UpdateGroupOutput>> task = OFRpcTaskFactory.createAddGroupTask(
+        // rpcTaskContext, input, cookie);
+        // final ListenableFuture<RpcResult<UpdateGroupOutput>> result = task.submit();
+        //
+        // return Futures.transform(result, OFRpcFutureResultTransformFactory.createForAddGroupOutput());
+        return null;
     }
 
     @Override
     public Future<RpcResult<UpdateGroupOutput>> updateGroup(final UpdateGroupInput input) {
-        LOG.debug("Calling the update Group Mod RPC method on MessageDispatchService");
-
-        // use primary connection
-        final SwitchConnectionDistinguisher cookie = null;
-
-        final OFRpcTask<UpdateGroupInput, RpcResult<UpdateGroupOutput>> task = OFRpcTaskFactory.createUpdateGroupTask(
-                rpcTaskContext, input, cookie);
-        final ListenableFuture<RpcResult<UpdateGroupOutput>> result = task.submit();
-
-        return result;
+        // LOG.debug("Calling the update Group Mod RPC method on MessageDispatchService");
+        //
+        // // use primary connection
+        // final SwitchConnectionDistinguisher cookie = null;
+        //
+        // final OFRpcTask<UpdateGroupInput, RpcResult<UpdateGroupOutput>> task =
+        // OFRpcTaskFactory.createUpdateGroupTask(
+        // rpcTaskContext, input, cookie);
+        // final ListenableFuture<RpcResult<UpdateGroupOutput>> result = task.submit();
+        //
+        return null;// return result;
     }
 
     @Override
     public Future<RpcResult<RemoveGroupOutput>> removeGroup(final RemoveGroupInput input) {
-        LOG.debug("Calling the Remove Group RPC method on MessageDispatchService");
-
-        final SwitchConnectionDistinguisher cookie = null;
-        final OFRpcTask<RemoveGroupInput, RpcResult<UpdateGroupOutput>> task = OFRpcTaskFactory.createRemoveGroupTask(
-                rpcTaskContext, input, cookie);
-        final ListenableFuture<RpcResult<UpdateGroupOutput>> result = task.submit();
-
-        return Futures.transform(result, OFRpcFutureResultTransformFactory.createForRemoveGroupOutput());
+        // LOG.debug("Calling the Remove Group RPC method on MessageDispatchService");
+        //
+        // final SwitchConnectionDistinguisher cookie = null;
+        // final OFRpcTask<RemoveGroupInput, RpcResult<UpdateGroupOutput>> task =
+        // OFRpcTaskFactory.createRemoveGroupTask(
+        // rpcTaskContext, input, cookie);
+        // final ListenableFuture<RpcResult<UpdateGroupOutput>> result = task.submit();
+        //
+        // return Futures.transform(result, OFRpcFutureResultTransformFactory.createForRemoveGroupOutput());
+        return null;
     }
 }
