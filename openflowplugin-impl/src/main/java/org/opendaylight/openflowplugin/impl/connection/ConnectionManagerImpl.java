@@ -75,7 +75,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
     }
 
     /**
-     * @param connectionAdapter
+     * @param connectionIdentifier
      * @param handshakeThreadLimit
      * @return
      */
