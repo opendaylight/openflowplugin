@@ -44,8 +44,7 @@ public class MdSalRegistratorUtils {
     }
 
     public static void registerServices(final RpcContext rpcContext) {
-        rpcContext.registerRpcServiceImplementation(SalFlowService.class, new SalFlowServiceImpl());
-        rpcContext.registerRpcServiceImplementation(SalFlowService.class, new SalFlowServiceImpl());
+        rpcContext.registerRpcServiceImplementation(SalFlowService.class, new SalFlowServiceImpl(rpcContext));
         rpcContext.registerRpcServiceImplementation(SalMeterService.class, new SalMeterServiceImpl());
         rpcContext.registerRpcServiceImplementation(SalGroupService.class, new SalGroupServiceImpl());
         rpcContext.registerRpcServiceImplementation(SalTableService.class, new SalTableServiceImpl());
@@ -64,5 +63,4 @@ public class MdSalRegistratorUtils {
         rpcContext.registerRpcServiceImplementation(OpendaylightQueueStatisticsService.class,
                 new OpendaylightQueueStatisticsServiceImpl());
     }
-
 }

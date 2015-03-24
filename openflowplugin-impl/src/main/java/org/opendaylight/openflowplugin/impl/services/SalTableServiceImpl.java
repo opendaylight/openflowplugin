@@ -8,8 +8,6 @@
 package org.opendaylight.openflowplugin.impl.services;
 
 import java.util.concurrent.Future;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.OFRpcTask;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.OFRpcTaskFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.SalTableService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableOutput;
@@ -26,11 +24,13 @@ public class SalTableServiceImpl extends CommonService implements SalTableServic
 
     @Override
     public Future<RpcResult<UpdateTableOutput>> updateTable(final UpdateTableInput input) {
-        LOG.debug("Calling the updateTable RPC method on MessageDispatchService");
-
-        final OFRpcTask<UpdateTableInput, RpcResult<UpdateTableOutput>> task = OFRpcTaskFactory.createUpdateTableTask(
-                rpcTaskContext, input, null);
-        return task.submit();
+        // LOG.debug("Calling the updateTable RPC method on MessageDispatchService");
+        //
+        // final OFRpcTask<UpdateTableInput, RpcResult<UpdateTableOutput>> task =
+        // OFRpcTaskFactory.createUpdateTableTask(
+        // rpcTaskContext, input, null);
+        // return task.submit();
+        return null;
     }
 
 }
