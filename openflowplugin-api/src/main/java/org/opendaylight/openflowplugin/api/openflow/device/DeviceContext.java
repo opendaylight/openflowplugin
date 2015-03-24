@@ -12,6 +12,8 @@ import org.opendaylight.controller.md.sal.common.api.data.TransactionChain;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MessageHandler;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableFeatures;
+import java.math.BigInteger;
+import java.util.Collection;
 
 /**
  * The central entity of OFP is the Device Context, which encapsulate the logical state of a switch
@@ -74,6 +76,20 @@ public interface DeviceContext extends MessageHandler {
      * @return
      */
     TableFeatures getCapabilities();
+
+    /**
+     * Method provides current devices connection context.
+     *
+     * @return
+     */
+    ConnectionContext getPrimaryConnectionContext();
+
+    /**
+     * Method provides current devices auxiliary connection contexts.
+     *
+     * @return
+     */
+    ConnectionContext getAuxiliaryConnectiobContexts(BigInteger cookie);
 
 }
 
