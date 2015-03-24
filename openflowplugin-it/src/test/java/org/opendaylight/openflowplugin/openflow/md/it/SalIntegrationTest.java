@@ -40,6 +40,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Openday
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
+import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
+import org.ops4j.pax.exam.spi.reactors.PerClass;
 import org.ops4j.pax.exam.util.Filter;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
@@ -49,6 +51,7 @@ import org.slf4j.LoggerFactory;
  * Exercise inventory listener ({@link OpendaylightInventoryListener#onNodeUpdated(NodeUpdated)})
  */
 @RunWith(PaxExam.class)
+@ExamReactorStrategy(PerClass.class)
 public class SalIntegrationTest {
 
     static final Logger LOG = LoggerFactory.getLogger(SalIntegrationTest.class);
@@ -57,16 +60,14 @@ public class SalIntegrationTest {
     private ThreadPoolLoggingExecutor scenarioPool;
     private SimpleClient switchSim;
     private Runnable finalCheck;
-    
-    @Inject
+
+    @Inject @Filter(timeout=60*000)
     BundleContext ctx;
 
-    @Inject
-    @Filter(timeout=20*1000)
+    @Inject @Filter(timeout=60*1000)
     BindingAwareBroker broker;
-    
-    @Inject 
-    @Filter(timeout=20*1000)
+
+    @Inject @Filter(timeout=60*1000)
     OpenflowPluginProvider openflowPluginProvider;
 
     /**
@@ -75,7 +76,7 @@ public class SalIntegrationTest {
     static long getFailSafeTimeout() {
         return 30000;
     }
-    
+
     /**
      * test setup
      * @throws InterruptedException
@@ -93,7 +94,7 @@ public class SalIntegrationTest {
     public void tearDown() {
         SimulatorAssistant.waitForSwitchSimulatorOn(switchSim);
         SimulatorAssistant.tearDownSwitchSimulatorAfterScenario(switchSim, scenarioPool, getFailSafeTimeout());
-        
+
         if (finalCheck != null) {
             LOG.info("starting final check");
             finalCheck.run();
@@ -118,7 +119,7 @@ public class SalIntegrationTest {
         };
         ConsumerContext consumerReg = broker.registerConsumer(openflowConsumer, ctx);
         assertNotNull(consumerReg);
-        
+
         LOG.debug("handshake integration test");
         LOG.debug("openflowPluginProvider: " + openflowPluginProvider);
 
@@ -145,9 +146,9 @@ public class SalIntegrationTest {
         return options(systemProperty("osgi.console").value("2401"),
                 OFPaxOptionsAssistant.osgiConsoleBundles(),
                 OFPaxOptionsAssistant.loggingBudles(),
-                
+
                 TestHelper.junitAndMockitoBundles(),
-                TestHelper.mdSalCoreBundles(), 
+                TestHelper.mdSalCoreBundles(),
                 TestHelper.configMinumumBundles(),
                 TestHelper.baseModelBundles(),
                 OFPaxOptionsAssistant.ofLibraryBundles(),

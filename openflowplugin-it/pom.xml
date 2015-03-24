@@ -9,10 +9,6 @@
 
     <artifactId>openflowplugin-it</artifactId>
 
-    <properties>
-        <exam.version>3.0.0</exam.version>
-    </properties>
-
     <build>
         <plugins>
             <plugin>
@@ -138,19 +134,16 @@
         <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
             <artifactId>pax-exam-junit4</artifactId>
-            <version>${exam.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
             <artifactId>pax-exam-link-mvn</artifactId>
-            <version>${exam.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
             <artifactId>pax-exam</artifactId>
-            <version>${exam.version}</version>
         </dependency>
         <dependency>
             <groupId>equinoxSDK381</groupId>
@@ -217,7 +210,7 @@
           <artifactId>config-persister-file-xml-adapter</artifactId>
           <scope>test</scope>
         </dependency>
-        
+
         <dependency>
           <groupId>org.openexi</groupId>
           <artifactId>nagasena</artifactId>
@@ -267,7 +260,7 @@
             <scope>test</scope>
             <version>${project.version}</version>
         </dependency>
-        
+
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>

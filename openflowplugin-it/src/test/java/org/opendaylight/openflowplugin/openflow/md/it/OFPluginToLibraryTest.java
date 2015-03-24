@@ -49,10 +49,10 @@ public class OFPluginToLibraryTest {
 
     private final ArrayBlockingQueue<Runnable> SCENARIO_POOL_QUEUE = new ArrayBlockingQueue<>(1);
 
-    @Inject @Filter(timeout=20000)
+    @Inject @Filter(timeout=60000)
     OpenflowPluginProvider openflowPluginProvider;
 
-    @Inject
+    @Inject @Filter(timeout=60000)
     BundleContext ctx;
 
     private SimpleClient switchSim;

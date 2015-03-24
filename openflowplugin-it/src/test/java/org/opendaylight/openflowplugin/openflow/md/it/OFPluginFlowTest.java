@@ -104,18 +104,18 @@ public class OFPluginFlowTest {
 
     private static final ArrayBlockingQueue<Runnable> SCENARIO_POOL_QUEUE = new ArrayBlockingQueue<>(1);
 
-    @Inject @Filter(timeout=20000)
+    @Inject @Filter(timeout=60000)
     OpenflowPluginProvider openflowPluginProvider;
 
-    @Inject
+    @Inject @Filter(timeout=60000)
     BundleContext ctx;
-    
-    @Inject @Filter(timeout=20000)
+
+    @Inject @Filter(timeout=60000)
     static DataBroker dataBroker;
- 
-    @Inject @Filter(timeout=20000)
+
+    @Inject @Filter(timeout=60000)
     NotificationProviderService notificationService;
-    
+
     private SimpleClient switchSim;
     private ThreadPoolLoggingExecutor scenarioPool;
 
@@ -182,7 +182,7 @@ public class OFPluginFlowTest {
             }
         }
     }
-    
+
     /**
      * test basic integration with OFLib running the handshake
      * @throws Exception
@@ -191,10 +191,10 @@ public class OFPluginFlowTest {
     public void testFlowMod() throws Exception {
         LOG.debug("testFlowMod integration test");
         TriggerTestListener brmListener = new TriggerTestListener();
-        
+
         dataBroker.registerDataChangeListener(LogicalDatastoreType.OPERATIONAL,
                 getWildcardPath(), brmListener, DataChangeScope.BASE);
-        
+
         switchSim = createSimpleClient();
         switchSim.setSecuredClient(false);
         Deque<ClientEvent> handshakeScenario = ScenarioFactory.createHandshakeScenarioVBM(
@@ -256,13 +256,13 @@ public class OFPluginFlowTest {
 
                 OFPaxOptionsAssistant.ofPluginBundles());
     }
-    
+
     static FlowBuilder createTestFlow() {
         short tableId = 0;
         FlowBuilder flow = new FlowBuilder();
         flow.setMatch(createMatch1().build());
         flow.setInstructions(createDecNwTtlInstructions().build());
-        
+
         FlowId flowId = new FlowId("127");
         FlowKey key = new FlowKey(flowId);
         if (null == flow.isBarrier()) {
@@ -282,10 +282,10 @@ public class OFPluginFlowTest {
 
         flow.setKey(key);
         flow.setFlowName("Foo" + "X" + "f1");
-        
+
         return flow;
     }
-    
+
     private static MatchBuilder createMatch1() {
         MatchBuilder match = new MatchBuilder();
         Ipv4MatchBuilder ipv4Match = new Ipv4MatchBuilder();
@@ -301,7 +301,7 @@ public class OFPluginFlowTest {
         match.setEthernetMatch(eth.build());
         return match;
     }
-    
+
     private static InstructionsBuilder createDecNwTtlInstructions() {
         DecNwTtlBuilder ta = new DecNwTtlBuilder();
         DecNwTtl decNwTtl = ta.build();
@@ -330,8 +330,8 @@ public class OFPluginFlowTest {
         isb.setInstruction(instructions);
         return isb;
     }
-    
-    static void writeFlow(FlowBuilder flow, InstanceIdentifier<FlowCapableNode> flowNodeIdent) { 
+
+    static void writeFlow(FlowBuilder flow, InstanceIdentifier<FlowCapableNode> flowNodeIdent) {
         ReadWriteTransaction modification = dataBroker.newReadWriteTransaction();
         final InstanceIdentifier<Flow> path1 = flowNodeIdent.child(Table.class, new TableKey(flow.getTableId()))
                 .child(Flow.class, flow.getKey());
@@ -349,14 +349,14 @@ public class OFPluginFlowTest {
             }
         });
     }
-    
+
     //TODO move to separate test util class
     private final static Flow readFlow(InstanceIdentifier<Flow> flow) {
         Flow searchedFlow = null;
         ReadTransaction rt = dataBroker.newReadOnlyTransaction();
         CheckedFuture<Optional<Flow>, ReadFailedException> flowFuture =
             rt.read(LogicalDatastoreType.CONFIGURATION, flow);
-        
+
         try {
           Optional<Flow> maybeFlow = flowFuture.checkedGet(500, TimeUnit.SECONDS);
           if(maybeFlow.isPresent()) {
@@ -367,7 +367,7 @@ public class OFPluginFlowTest {
         } catch (ReadFailedException e) {
           LOG.error("Something wrong happened in DataStore. Getting FLOW for userId {} failed.", e);
         }
-        
+
         return searchedFlow;
     }
 }
