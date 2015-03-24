@@ -21,12 +21,6 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 // TODO: implement this
 public class NodeConfigServiceImpl extends CommonService implements NodeConfigService {
 
-    /**
-     * @param rpcContext
-     */
-    public NodeConfigServiceImpl(final RpcContext rpcContext) {
-        super(rpcContext);
-    }
 
     /*
          * (non-Javadoc)

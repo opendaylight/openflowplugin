@@ -25,12 +25,6 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 // TODO: implement this
 public class OpendaylightQueueStatisticsServiceImpl extends CommonService implements OpendaylightQueueStatisticsService {
 
-    /**
-     * @param rpcContext
-     */
-    public OpendaylightQueueStatisticsServiceImpl(final RpcContext rpcContext) {
-        super(rpcContext);
-    }
 
     /*
          * (non-Javadoc)
