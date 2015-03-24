@@ -21,7 +21,7 @@ public class RequestContextImpl<T extends DataObject> implements RequestContext 
     private final RpcContext rpcContext;
     private SettableFuture<RpcResult<T>> rpcResultFuture;
 
-    public RequestContextImpl(final RpcContext rpcContext) {
+    public RequestContextImpl(RpcContext rpcContext) {
         this.rpcContext = rpcContext;
     }
 
