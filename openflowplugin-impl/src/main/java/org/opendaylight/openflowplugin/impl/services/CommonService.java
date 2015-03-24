@@ -73,7 +73,6 @@ public class CommonService {
 
     protected DeviceContext deviceContext;
 
-
     public CommonService() {
 
     }
@@ -93,7 +92,8 @@ public class CommonService {
     }
 
     /**
-     * @param task of rpc
+     * of rpc
+     *
      * @param originalResult
      * @param notificationProviderService
      * @param notificationComposer        lazy notification composer
@@ -178,7 +178,7 @@ public class CommonService {
     }
 
     /**
-     * Recursive helper method for {@link OFRpcTaskFactory#createAddFlowTask()} and
+     * Recursive helper method for {@link OFRpcTaskFactory#chainFlowMods(java.util.List, int, org.opendaylight.openflowplugin.openflow.md.core.sal.OFRpcTaskContext, org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher)}
      * {@link OFRpcTaskFactory#createUpdateFlowTask()} to chain results of multiple flowmods. The next flowmod gets
      * executed if the earlier one is successful. All the flowmods should have the same xid, in-order to cross-reference
      * the notification
@@ -214,7 +214,6 @@ public class CommonService {
     }
 
     protected Future<RpcResult<UpdateFlowOutput>> createResultForFlowMod(final FlowModInputBuilder flowModInput) {
-        rpcContext.getDeviceContext();
         flowModInput.setXid(deviceContext.getNextXid().getValue());
         return messageService.flowMod(flowModInput.build(), cookie);
     }
