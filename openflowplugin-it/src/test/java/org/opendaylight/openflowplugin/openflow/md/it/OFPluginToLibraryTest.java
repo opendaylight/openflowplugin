@@ -229,12 +229,6 @@ public class OFPluginToLibraryTest {
 
                 OFPaxOptionsAssistant.osgiConsoleBundles(),
                 OFPaxOptionsAssistant.loggingBudles(),
-
-                TestHelper.junitAndMockitoBundles(),
-                TestHelper.mdSalCoreBundles(),
-                TestHelper.configMinumumBundles(),
-                TestHelper.baseModelBundles(),
-
                 OFPaxOptionsAssistant.ofPluginBundles());
     }
 

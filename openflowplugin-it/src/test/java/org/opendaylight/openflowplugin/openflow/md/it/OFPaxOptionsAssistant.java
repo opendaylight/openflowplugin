@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.openflow.md.it;
 
 
+import org.opendaylight.controller.test.sal.binding.it.TestHelper;
 import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.options.DefaultCompositeOption;
@@ -16,8 +17,8 @@ import org.ops4j.pax.exam.options.DefaultCompositeOption;
 import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 
 /**
+ * The main wiring is assembled in {@link #ofPluginBundles()}
  * @author mirehak
- *
  */
 public abstract class OFPaxOptionsAssistant {
 
@@ -75,13 +76,15 @@ public abstract class OFPaxOptionsAssistant {
     }
 
     /**
+     * Here we construct whole wiring
      * @return OFLibrary + OFPlugin bundles
      */
     public static Option ofPluginBundles() {
         return new DefaultCompositeOption(
-                baseSalBundles(),
+                mdSalApiBundles(),
+                mdSalImplBundles(),
+                mdSalBaseModelBundles(),
                 ofLibraryBundles(),
-                mavenBundle(CONTROLLER_MODEL, "model-inventory").versionAsInProject(),
                 mavenBundle(OFPLUGIN_MODEL, "model-flow-statistics").versionAsInProject(),
                 mavenBundle(OFPLUGIN_MODEL, "model-flow-base").versionAsInProject(),
                 mavenBundle(OFPLUGIN_MODEL, "model-flow-service").versionAsInProject(),
@@ -108,12 +111,26 @@ public abstract class OFPaxOptionsAssistant {
     /**
      * @return sal + dependencymanager
      */
-    public static Option baseSalBundles() {
+    public static Option mdSalApiBundles() {
         return new DefaultCompositeOption(
-//                mavenBundle("org.apache.felix", "org.apache.felix.dependencymanager").versionAsInProject(),
-//                mavenBundle(CONTROLLER, "sal").versionAsInProject(),
+                TestHelper.junitAndMockitoBundles(),
+                TestHelper.mdSalCoreBundles(),
+                TestHelper.configMinumumBundles(),
                 mavenBundle(YANGTOOLS + ".thirdparty", "antlr4-runtime-osgi-nohead").versionAsInProject());
 
+    }
+
+    private static Option mdSalImplBundles() {
+        return new DefaultCompositeOption(
+                TestHelper.bindingAwareSalBundles()
+        );
+    }
+
+    private static Option mdSalBaseModelBundles() {
+        return new DefaultCompositeOption(
+                TestHelper.baseModelBundles(),
+                mavenBundle(CONTROLLER_MODEL, "model-inventory").versionAsInProject()
+        );
     }
 
 }
