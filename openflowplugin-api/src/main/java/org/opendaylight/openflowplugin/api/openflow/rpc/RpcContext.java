@@ -7,11 +7,11 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.rpc;
 
-import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.RpcService;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import java.util.concurrent.Future;
 
 /**
  * This context is registered with MD-SAL as a routed RPC provider for the inventory node backed by this switch and
@@ -32,16 +32,14 @@ public interface RpcContext extends AutoCloseable {
      *
      * @param data
      */
-    Future<RpcResult<? extends DataObject>> addNewRequest(DataObject data);
+    <T extends DataObject> Future<RpcResult<T>> addNewRequest(DataObject data);
 
     /**
      * Method for setting request quota value. When the Request Context quota is exceeded, incoming RPCs fail
      * immediately, with a well-defined error.
-     * 
+     *
      * @param maxRequestsPerDevice
      */
     void setRequestContextQuota(int maxRequestsPerDevice);
-
-    boolean isRequestContextCapacityEmpty();
 
 }
