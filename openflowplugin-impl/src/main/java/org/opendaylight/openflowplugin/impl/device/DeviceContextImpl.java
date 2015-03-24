@@ -15,6 +15,8 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableFeatures;
 import org.opendaylight.yangtools.yang.binding.ChildOf;
 import org.opendaylight.yangtools.yang.binding.DataObject;
+import java.math.BigInteger;
+import java.util.Collection;
 
 /**
  * 
@@ -62,5 +64,16 @@ public class DeviceContextImpl implements DeviceContext {
         // TODO Auto-generated method stub
         return null;
     }
+
+    @Override
+    public ConnectionContext getPrimaryConnectionContext() {
+        return null;
+    }
+
+    @Override
+    public ConnectionContext getAuxiliaryConnectiobContexts(final BigInteger cookie) {
+        return null;
+    }
+
 
 }
