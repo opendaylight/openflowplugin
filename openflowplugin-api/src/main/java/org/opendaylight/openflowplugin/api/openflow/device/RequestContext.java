@@ -8,9 +8,9 @@
 package org.opendaylight.openflowplugin.api.openflow.device;
 
 
+import com.google.common.util.concurrent.SettableFuture;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.common.RpcResult;
-import java.util.concurrent.Future;
 
 /**
  * Request context handles all requests on device. Number of requests is limited by request quota. When this quota is
@@ -18,10 +18,9 @@ import java.util.concurrent.Future;
  * <p/>
  * Created by Martin Bobak <mbobak@cisco.com> on 25.2.2015.
  */
-public interface RequestContext {
+public interface RequestContext extends AutoCloseable {
 
-    <T extends DataObject> Future<RpcResult<T>> createRequestFuture(DataObject dataObject);
+    <T extends DataObject> SettableFuture<RpcResult<T>> createRequestFuture();
 
-    void requestSucceeded();
-    void requestFailed(String exception);
+    void close();
 }

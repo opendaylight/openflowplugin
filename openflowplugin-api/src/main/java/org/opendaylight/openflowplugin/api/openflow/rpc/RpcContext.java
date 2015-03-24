@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.rpc;
 
+import com.google.common.util.concurrent.SettableFuture;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.RpcService;
@@ -24,13 +26,13 @@ public interface RpcContext extends AutoCloseable {
 
     <S extends RpcService> void registerRpcServiceImplementation(Class<S> serviceClass, S serviceInstance);
 
-    /*
+    /**
      *  Method adds request to request queue which has limited quota. After number of requests exceeds quota limit
-     *  {@link org.opendaylight.openflowplugin.api.openflow.device.exception.RequestQuotaExceededException} is thrown.
+     *  future will be done immediately and will contain information about exceeded request quota.
      *
      * @param data
      */
-    <T extends DataObject> Future<RpcResult<T>> addNewRequest(DataObject data);
+    <T extends DataObject> SettableFuture<RpcResult<T>> storeOrFail(RequestContext data);
 
     /**
      * Method for setting request quota value. When the Request Context quota is exceeded, incoming RPCs fail
@@ -41,4 +43,17 @@ public interface RpcContext extends AutoCloseable {
     void setRequestContextQuota(int maxRequestsPerDevice);
 
     void forgetRequestContext(RequestContext requestContext);
+
+    /**
+     * Method provides device context.
+     * @return
+     */
+    DeviceContext getDeviceContext();
+
+    /**
+     * Method returns new request context for current request.
+     * @return
+     */
+    <T extends DataObject> RequestContext createRequestContext();
+
 }
