@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
- * 
+ *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
@@ -11,10 +11,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Future;
+import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.IMessageDispatchService;
@@ -36,13 +33,17 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Future;
 
 public class SalFlowServiceImpl extends CommonService implements SalFlowService {
 
     private static final Logger LOG = org.slf4j.LoggerFactory.getLogger(SalFlowServiceImpl.class);
 
     public SalFlowServiceImpl(final RpcContext rpcContext, final short version, final BigInteger datapathId,
-            final IMessageDispatchService service, final Xid xid, final SwitchConnectionDistinguisher cookie) {
+                              final IMessageDispatchService service, final Xid xid, final SwitchConnectionDistinguisher cookie) {
         // TODO set cookie
         super(rpcContext, version, datapathId, service, xid, cookie);
     }
@@ -64,17 +65,25 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
         // use primary connection
         final SwitchConnectionDistinguisher cookie = null;
 
-        ListenableFuture<RpcResult<UpdateFlowOutput>> result = SettableFuture.create();
+        RequestContext requestContext = rpcContext.createRequestContext();
+        ListenableFuture<RpcResult<UpdateFlowOutput>> result = rpcContext.storeOrFail(requestContext);
 
-        // Convert the AddFlowInput to FlowModInput
-        final List<FlowModInputBuilder> ofFlowModInputs = FlowConvertor.toFlowModInputs(input, version, datapathId);
-        LOG.debug("Number of flows to push to switch: {}", ofFlowModInputs.size());
-        result = chainFlowMods(ofFlowModInputs, 0, xid, cookie);
-        result = chainFutureBarrier(result);
-        hookFutureNotification(result, notificationProviderService, createFlowAddedNotification(input));
+        if (!result.isDone()) {
 
-        return Futures.transform(result, OFRpcFutureResultTransformFactory.createForAddFlowOutput());
+            // Convert the AddFlowInput to FlowModInput
+            final List<FlowModInputBuilder> ofFlowModInputs = FlowConvertor.toFlowModInputs(input, version, datapathId);
+            LOG.debug("Number of flows to push to switch: {}", ofFlowModInputs.size());
+            result = chainFlowMods(ofFlowModInputs, 0, xid, cookie);
+            result = chainFutureBarrier(result);
+            hookFutureNotification(result, notificationProviderService, createFlowAddedNotification(input));
+
+            return Futures.transform(result, OFRpcFutureResultTransformFactory.createForAddFlowOutput());
+        } else {
+            requestContext.close();
+            return Futures.transform(result, OFRpcFutureResultTransformFactory.createForAddFlowOutput());
+        }
     }
+
 
     /*
      * (non-Javadoc)
@@ -85,22 +94,30 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
      */
     @Override
     public Future<RpcResult<RemoveFlowOutput>> removeFlow(final RemoveFlowInput input) {
-        ListenableFuture<RpcResult<UpdateFlowOutput>> result = SettableFuture.create();
 
-        // Convert the AddFlowInput to FlowModInput
-        final FlowModInputBuilder ofFlowModInput = FlowConvertor.toFlowModInput(input, version, datapathId);
-        final Long xId = rpcContext.getDeviceContext().getNextXid().getValue();
-        ofFlowModInput.setXid(xId);
+        RequestContext requestContext = rpcContext.createRequestContext();
+        ListenableFuture<RpcResult<UpdateFlowOutput>> result = rpcContext.storeOrFail(requestContext);
+        
+        if (!result.isDone()) {
 
-        final Future<RpcResult<UpdateFlowOutput>> resultFromOFLib = messageService.flowMod(ofFlowModInput.build(),
-                cookie);
-        result = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
+            // Convert the AddFlowInput to FlowModInput
+            final FlowModInputBuilder ofFlowModInput = FlowConvertor.toFlowModInput(input, version, datapathId);
+            final Xid xId = deviceContext.getNextXid();
+            ofFlowModInput.setXid(xId.getValue());
 
-        result = chainFutureBarrier(result);
-        hookFutureNotification(result, notificationProviderService, createFlowRemovedNotification(input));
+            final Future<RpcResult<UpdateFlowOutput>> resultFromOFLib = messageService.flowMod(ofFlowModInput.build(),
+                    cookie);
+            result = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
 
-        return Futures.transform(result, OFRpcFutureResultTransformFactory.createForRemoveFlowOutput());
+            result = chainFutureBarrier(result);
+            hookFutureNotification(result, notificationProviderService, createFlowRemovedNotification(input));
 
+            return Futures.transform(result, OFRpcFutureResultTransformFactory.createForRemoveFlowOutput());
+
+        } else {
+            requestContext.close();
+            return Futures.transform(result, OFRpcFutureResultTransformFactory.createForRemoveFlowOutput());
+        }
     }
 
     /*
