@@ -15,6 +15,7 @@ import static org.mockito.Mockito.verify;
 import org.junit.Test;
 import org.mockito.Matchers;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
+import org.opendaylight.openflowplugin.impl.rpc.RpcManagerImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yangtools.yang.binding.RpcService;
 
