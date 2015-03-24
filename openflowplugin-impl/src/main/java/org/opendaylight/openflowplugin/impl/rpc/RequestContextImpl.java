@@ -9,6 +9,7 @@ package org.opendaylight.openflowplugin.impl.rpc;
 
 import com.google.common.util.concurrent.SettableFuture;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
+import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import java.util.concurrent.Future;
@@ -16,19 +17,19 @@ import java.util.concurrent.Future;
 /**
  * @author joe
  */
-public class RequestContextImpl implements RequestContext {
+public class RequestContextImpl<T extends DataObject> implements RequestContext {
 
-    private final Future<RpcResult<? extends DataObject>> result;
-    private SettableFuture requestFuture;
+    private final RpcContext rpcContext;
+    private SettableFuture<RpcResult<T>> rpcResultFuture;
 
-    public RequestContextImpl(final Future<RpcResult<? extends DataObject>> result) {
-        this.result = result;
+    public RequestContextImpl(RpcContext rpcContext) {
+        this.rpcContext = rpcContext;
     }
 
     @Override
-    public <T extends DataObject> Future<RpcResult<T>> createRequestFuture(final DataObject dataObject) {
-        requestFuture = SettableFuture.create();
-        return requestFuture;
+    public Future<RpcResult<T>> createRequestFuture(final DataObject dataObject) {
+        rpcResultFuture = SettableFuture.create();
+        return rpcResultFuture;
     }
 
     @Override
