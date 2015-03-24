@@ -8,18 +8,16 @@
 
 package org.opendaylight.openflowplugin.api.openflow.device;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 /**
- * Created by Martin Bobak <mbobak@cisco.com> on 26.2.2015.
+ * Created by Martin Bobak <mbobak@cisco.com> on 24.3.2015.
  */
-public class Xid {
+public class XidGenerator {
 
-    private long value;
+    private static AtomicLong xid;
 
-    public Xid(final long value) {
-        this.value = value;
-    }
-
-    public long getValue() {
-        return value;
+    Xid generate() {
+        return new Xid(xid.incrementAndGet());
     }
 }
