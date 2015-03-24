@@ -23,13 +23,6 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 // TODO: implement this
 public class OpendaylightPortStatisticsServiceImpl extends CommonService implements OpendaylightPortStatisticsService {
 
-    /**
-     * @param rpcContext
-     */
-    public OpendaylightPortStatisticsServiceImpl(final RpcContext rpcContext) {
-        super(rpcContext);
-    }
-
     /*
          * (non-Javadoc)
          *
