@@ -7,8 +7,6 @@
  */
 package org.opendaylight.openflowplugin.impl.device;
 
-import static org.junit.Assert.fail;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -23,7 +21,7 @@ import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestDescCase;
-//import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestGroupDescCase;
+
 
 /**
  * test of {@link DeviceManagerImpl} - lightweight version, using basic ways (TDD)

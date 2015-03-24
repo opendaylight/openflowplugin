@@ -7,7 +7,6 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
-import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupInput;
