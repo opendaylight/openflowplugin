@@ -8,6 +8,10 @@
 package org.opendaylight.openflowplugin.api.openflow.device;
 
 
+import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.opendaylight.yangtools.yang.common.RpcResult;
+import java.util.concurrent.Future;
+
 /**
  * Request context handles all requests on device. Number of requests is limited by request quota. When this quota is
  * exceeded all rpc's will end up with exception.
@@ -16,6 +20,7 @@ package org.opendaylight.openflowplugin.api.openflow.device;
  */
 public interface RequestContext {
 
+    <T extends DataObject> Future<RpcResult<T>> createRequestFuture(DataObject dataObject);
 
 
 }
