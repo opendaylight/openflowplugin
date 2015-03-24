@@ -30,7 +30,7 @@ public interface RpcContext extends AutoCloseable {
      *  Method adds request to request queue which has limited quota. After number of requests exceeds quota limit
      *  {@link org.opendaylight.openflowplugin.api.openflow.device.exception.RequestQuotaExceededException} is thrown.
      *
-     * @param data
+     * @param result
      */
     Future<RpcResult<? extends DataObject>> addNewRequest(DataObject data);
 
@@ -41,5 +41,7 @@ public interface RpcContext extends AutoCloseable {
      * @param maxRequestsPerDevice
      */
     void setRequestContextQuota(int maxRequestsPerDevice);
+
+    boolean isRequestContextCapacityEmpty();
 
 }
