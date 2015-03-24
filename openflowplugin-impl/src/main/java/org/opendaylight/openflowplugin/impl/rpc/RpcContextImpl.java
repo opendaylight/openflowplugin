@@ -7,9 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.rpc;
 
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.SettableFuture;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -23,7 +21,6 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.Future;
 
 public class RpcContextImpl implements RpcContext {
 
@@ -53,37 +50,16 @@ public class RpcContextImpl implements RpcContext {
     }
 
     @Override
-    public <T extends DataObject> Future<RpcResult<T>> addNewRequest(final DataObject data) {
-        final Future<RpcResult<T>> rpcResultFuture;
-        final RequestContext requestContext = new RequestContextImpl(this);
+    public <T extends DataObject> SettableFuture<RpcResult<T>> storeOrFail(RequestContext requestContext) {
+        final SettableFuture<RpcResult<T>> rpcResultFuture = requestContext.createRequestFuture();
 
         if (synchronizedRequestsList.size() < maxRequestsPerDevice) {
             synchronizedRequestsList.add(requestContext);
-            rpcResultFuture = requestContext.createRequestFuture(data);
-
-            ListenableFuture<RpcResult<Void>> resultFutureFromDevice = sendRequestToDevice(data);
-            Futures.addCallback(resultFutureFromDevice, new FutureCallback<Object>() {
-                @Override
-                public void onSuccess(final Object o) {
-                    requestContext.requestSucceeded();
-                }
-
-                @Override
-                public void onFailure(final Throwable throwable) {
-                    requestContext.requestFailed(throwable.getCause().getMessage());
-                }
-            });
         } else {
-            rpcResultFuture = Futures.immediateFuture(RpcResultBuilder.<T>failed().withError(RpcError.ErrorType.APPLICATION, "", "Request queue full.").build());
+            RpcResult rpcResult = RpcResultBuilder.failed().withError(RpcError.ErrorType.APPLICATION, "", "Device's request queue is full.").build();
+            rpcResultFuture.set(rpcResult);
         }
-
-
         return rpcResultFuture;
-    }
-
-    private ListenableFuture<RpcResult<Void>> sendRequestToDevice(final DataObject data) {
-        //TODO : send data to device
-        return null;
     }
 
 
@@ -110,6 +86,16 @@ public class RpcContextImpl implements RpcContext {
     @Override
     public void forgetRequestContext(final RequestContext requestContext) {
         requestContexts.remove(requestContext);
+    }
+
+    @Override
+    public DeviceContext getDeviceContext() {
+        return deviceContext;
+    }
+
+    @Override
+    public <T extends DataObject> RequestContext createRequestContext() {
+        return new RequestContextImpl<T>(this);
     }
 
     public boolean isRequestContextCapacityEmpty() {
