@@ -1,18 +1,19 @@
 /**
  * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
- * 
+ *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 package org.opendaylight.openflowplugin.impl.device;
 
-import java.util.concurrent.ExecutionException;
-
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
+import org.opendaylight.openflowplugin.api.openflow.device.XidGenerator;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceContextReadyHandler;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartRequestFlags;
@@ -22,27 +23,25 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
+import java.util.concurrent.ExecutionException;
 
 /**
- * 
+ *
  */
 public class DeviceManagerImpl implements DeviceManager {
-    
+
     private static final Logger LOG = LoggerFactory.getLogger(DeviceManagerImpl.class);
-    
+
     private Xid xid;
 
     @Override
     public void deviceConnected(ConnectionContext connectionContext) {
-        xid = new Xid(0L);
+        xid = XidGenerator.generate();
         DeviceContextImpl deviceContextImpl = new DeviceContextImpl();
 
         try {
-            FlowCapableNode description = queryDescription(connectionContext, xid.getNextValue()).get();
-            
+            FlowCapableNode description = queryDescription(connectionContext, xid.getValue()).get();
+
         } catch (InterruptedException | ExecutionException e) {
             // TODO Auto-generated catch block
             LOG.info("Failed to retrieve node static info: {}", e.getMessage());
@@ -50,8 +49,8 @@ public class DeviceManagerImpl implements DeviceManager {
     }
 
     /**
-     * @param connectionContext 
-     * @param nextXid 
+     * @param connectionContext
+     * @param nextXid
      */
     private static ListenableFuture<FlowCapableNode> queryDescription(ConnectionContext connectionContext, long nextXid) {
         MultipartRequestInputBuilder builder = new MultipartRequestInputBuilder();
@@ -62,10 +61,10 @@ public class DeviceManagerImpl implements DeviceManager {
                 .build());
         builder.setXid(nextXid);
         connectionContext.getConnectionAdapter().multipartRequest(builder.build());
-        
+
         //TODO: involve general wait-for-answer mechanism and return future with complete value
         //TODO: translate message
-        return Futures.immediateFuture(null); 
+        return Futures.immediateFuture(null);
     }
 
     @Override
