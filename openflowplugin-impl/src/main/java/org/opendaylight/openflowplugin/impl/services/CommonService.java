@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
- * 
+ *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
@@ -14,12 +14,9 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Future;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.sal.NotificationComposer;
@@ -51,6 +48,10 @@ import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Future;
 
 public class CommonService {
     // protected OFRpcTaskContext rpcTaskContext;
@@ -66,9 +67,12 @@ public class CommonService {
     protected NotificationProviderService notificationProviderService;
 
     protected final static Future<RpcResult<Void>> errorRpcResult = Futures.immediateFuture(RpcResultBuilder
-            .<Void> failed().withError(ErrorType.APPLICATION, "", "Request quota exceeded.").build());
+            .<Void>failed().withError(ErrorType.APPLICATION, "", "Request quota exceeded.").build());
 
     private static final Logger LOG = org.slf4j.LoggerFactory.getLogger(CommonService.class);
+
+    protected DeviceContext deviceContext;
+
 
     public CommonService() {
 
@@ -76,25 +80,23 @@ public class CommonService {
 
     /**
      * @param xid
-     * 
      */
     public CommonService(final RpcContext rpcContext, final short version, final BigInteger datapathId,
-            final IMessageDispatchService service, final Xid xid, final SwitchConnectionDistinguisher cookie) {
+                         final IMessageDispatchService service, final Xid xid, final SwitchConnectionDistinguisher cookie) {
         this.rpcContext = rpcContext;
         this.version = version;
         this.datapathId = datapathId;
         this.messageService = service;
         this.xid = xid;
         this.cookie = cookie;
+        this.deviceContext = rpcContext.getDeviceContext();
     }
 
     /**
-     * @param task
-     *            of rpc
+     * @param task of rpc
      * @param originalResult
      * @param notificationProviderService
-     * @param notificationComposer
-     *            lazy notification composer
+     * @param notificationComposer        lazy notification composer
      */
     protected <R extends RpcResult<? extends TransactionAware>, N extends Notification, I extends DataContainer> void hookFutureNotification(
             final ListenableFuture<R> originalResult, final NotificationProviderService notificationProviderService,
@@ -212,17 +214,16 @@ public class CommonService {
     }
 
     protected Future<RpcResult<UpdateFlowOutput>> createResultForFlowMod(final FlowModInputBuilder flowModInput) {
-        flowModInput.setXid(xid.getNextValue());
+        rpcContext.getDeviceContext();
+        flowModInput.setXid(deviceContext.getNextXid().getValue());
         return messageService.flowMod(flowModInput.build(), cookie);
     }
 
     /**
-     * @param task
-     *            of rpcl
+     * @param task                        of rpcl
      * @param originalResult
      * @param notificationProviderService
-     * @param notificationComposer
-     *            lazy notification composer
+     * @param notificationComposer        lazy notification composer
      * @return chained result with barrier
      */
     protected <T extends TransactionAware, I extends DataContainer> ListenableFuture<RpcResult<T>> chainFutureBarrier(
@@ -265,9 +266,9 @@ public class CommonService {
             public RpcResult<T> apply(final RpcResult<BarrierOutput> barrierResult) {
                 RpcResultBuilder<T> rpcBuilder = null;
                 if (barrierResult.isSuccessful()) {
-                    rpcBuilder = RpcResultBuilder.<T> success();
+                    rpcBuilder = RpcResultBuilder.<T>success();
                 } else {
-                    rpcBuilder = RpcResultBuilder.<T> failed();
+                    rpcBuilder = RpcResultBuilder.<T>failed();
                     final RpcError rpcError = RpcResultBuilder
                             .newWarning(
                                     ErrorType.RPC,
@@ -298,7 +299,7 @@ public class CommonService {
      * @return barrier response
      */
     protected RpcInputOutputTuple<BarrierInput, ListenableFuture<RpcResult<BarrierOutput>>> sendBarrier() {
-        final BarrierInput barrierInput = MessageFactory.createBarrier(version, xid.getNextValue());
+        final BarrierInput barrierInput = MessageFactory.createBarrier(version, deviceContext.getNextXid().getValue());
         final Future<RpcResult<BarrierOutput>> barrierResult = messageService.barrier(barrierInput, cookie);
         final ListenableFuture<RpcResult<BarrierOutput>> output = JdkFutureAdapters.listenInPoolThread(barrierResult);
 

@@ -89,7 +89,7 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
 
         // Convert the AddFlowInput to FlowModInput
         final FlowModInputBuilder ofFlowModInput = FlowConvertor.toFlowModInput(input, version, datapathId);
-        final Long xId = xid.getNextValue();
+        final Long xId = rpcContext.getDeviceContext().getNextXid().getValue();
         ofFlowModInput.setXid(xId);
 
         final Future<RpcResult<UpdateFlowOutput>> resultFromOFLib = messageService.flowMod(ofFlowModInput.build(),
