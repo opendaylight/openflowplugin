@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.impl.rpc;
 
 import com.google.common.util.concurrent.SettableFuture;
-import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -26,38 +25,14 @@ public class RequestContextImpl<T extends DataObject> implements RequestContext 
         this.rpcContext = rpcContext;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.opendaylight.openflowplugin.api.openflow.device.RequestContext#createRequestFuture(org.opendaylight.yangtools
-     * .yang.binding.DataObject)
-     */
     @Override
-    public Future<RpcResult<T>> createRequestFuture(final DataObject dataObject) {
+    public SettableFuture<RpcResult<T>> createRequestFuture() {
         rpcResultFuture = SettableFuture.create();
         return rpcResultFuture;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.opendaylight.openflowplugin.api.openflow.device.RequestContext#requestSucceeded()
-     */
     @Override
-    public void requestSucceeded() {
-        // TODO Auto-generated method stub
-
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.opendaylight.openflowplugin.api.openflow.device.RequestContext#requestFailed(java.lang.String)
-     */
-    @Override
-    public void requestFailed(final String exception) {
-        // TODO Auto-generated method stub
-
+    public void close() {
+        rpcContext.forgetRequestContext(this);
     }
 }
