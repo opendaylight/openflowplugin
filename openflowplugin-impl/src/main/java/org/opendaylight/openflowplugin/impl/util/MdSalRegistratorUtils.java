@@ -5,9 +5,21 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.openflowplugin.api.openflow.device;
+package org.opendaylight.openflowplugin.impl.util;
 
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
+import org.opendaylight.openflowplugin.impl.services.NodeConfigServiceImpl;
+import org.opendaylight.openflowplugin.impl.services.OpendaylightFlowStatisticsServiceImpl;
+import org.opendaylight.openflowplugin.impl.services.OpendaylightFlowTableStatisticsServiceImpl;
+import org.opendaylight.openflowplugin.impl.services.OpendaylightGroupStatisticsServiceImpl;
+import org.opendaylight.openflowplugin.impl.services.OpendaylightMeterStatisticsServiceImpl;
+import org.opendaylight.openflowplugin.impl.services.OpendaylightPortStatisticsServiceImpl;
+import org.opendaylight.openflowplugin.impl.services.OpendaylightQueueStatisticsServiceImpl;
+import org.opendaylight.openflowplugin.impl.services.PacketProcessingServiceImpl;
+import org.opendaylight.openflowplugin.impl.services.SalFlowServiceImpl;
+import org.opendaylight.openflowplugin.impl.services.SalGroupServiceImpl;
+import org.opendaylight.openflowplugin.impl.services.SalMeterServiceImpl;
+import org.opendaylight.openflowplugin.impl.services.SalTableServiceImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.OpendaylightFlowStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.OpendaylightFlowTableStatisticsService;
