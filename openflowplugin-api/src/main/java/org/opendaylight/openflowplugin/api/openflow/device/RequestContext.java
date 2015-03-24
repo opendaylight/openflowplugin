@@ -22,5 +22,6 @@ public interface RequestContext {
 
     <T extends DataObject> Future<RpcResult<T>> createRequestFuture(DataObject dataObject);
 
-
+    void requestSucceeded();
+    void requestFailed(String exception);
 }
