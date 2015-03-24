@@ -13,7 +13,10 @@ import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MessageHandler;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableFeatures;
 import java.math.BigInteger;
+import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.opendaylight.yangtools.yang.common.RpcResult;
 import java.util.Collection;
+import java.util.concurrent.Future;
 
 /**
  * The central entity of OFP is the Device Context, which encapsulate the logical state of a switch
@@ -90,6 +93,10 @@ public interface DeviceContext extends MessageHandler {
      * @return
      */
     ConnectionContext getAuxiliaryConnectiobContexts(BigInteger cookie);
+
+    Xid getNextXid();
+
+    <T extends DataObject> Future<RpcResult<T>> sendRequest(DataObject dataObject);
 
 }
 
