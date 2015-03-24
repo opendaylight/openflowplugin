@@ -7,7 +7,7 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.rpc;
 
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.RpcService;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -23,8 +23,6 @@ import java.util.concurrent.Future;
 public interface RpcContext extends AutoCloseable {
 
     <S extends RpcService> void registerRpcServiceImplementation(Class<S> serviceClass, S serviceInstance);
-
-    void setDeviceContext(DeviceContext deviceContext);
 
     /*
      *  Method adds request to request queue which has limited quota. After number of requests exceeds quota limit
@@ -42,4 +40,5 @@ public interface RpcContext extends AutoCloseable {
      */
     void setRequestContextQuota(int maxRequestsPerDevice);
 
+    void forgetRequestContext(RequestContext requestContext);
 }

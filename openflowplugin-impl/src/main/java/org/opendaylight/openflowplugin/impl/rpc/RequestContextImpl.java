@@ -30,4 +30,14 @@ public class RequestContextImpl implements RequestContext {
         requestFuture = SettableFuture.create();
         return requestFuture;
     }
+
+    @Override
+    public void requestSucceeded() {
+        
+    }
+
+    @Override
+    public void requestFailed(final String exception) {
+
+    }
 }

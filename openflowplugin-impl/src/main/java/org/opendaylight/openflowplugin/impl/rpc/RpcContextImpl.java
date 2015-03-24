@@ -45,18 +45,6 @@ public class RpcContextImpl implements RpcContext {
         rpcRegistrations.add(providerContext.addRoutedRpcImplementation(serviceClass, serviceInstance));
     }
 
-    /**
-     * 
-     * 
-     * @see org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext#setDeviceContext(DeviceContext)
-     *      api.openflow.device.DeviceContext)
-     */
-    @Override
-    public void setDeviceContext(final DeviceContext deviceContext) {
-        this.deviceContext = deviceContext;
-
-    }
-
     @Override
     public Future<RpcResult<? extends DataObject>> addNewRequest(final DataObject data) {
         return null;
@@ -80,6 +68,11 @@ public class RpcContextImpl implements RpcContext {
     @Override
     public void setRequestContextQuota(final int maxRequestsPerDevice) {
         this.maxRequestsPerDevice = maxRequestsPerDevice;
+    }
+
+    @Override
+    public void forgetRequestContext(final RequestContext requestContext) {
+
     }
 
     public boolean isRequestContextCapacityEmpty() {

@@ -17,23 +17,12 @@ public class RpcManagerImpl implements RpcManager {
 
     private DeviceContext deviceContext;
 
-    // /**
-    // * Collection of all rpc contexts which are available in rpc manager
-    // */
-    // final List<RpcContext> rpcContexts = new ArrayList<>();
 
     private final ProviderContext providerContext;
 
     public RpcManagerImpl(final ProviderContext providerContext) {
         this.providerContext = providerContext;
     }
-
-    // /**
-    // * @return number of rpc contexts
-    // */
-    // public int getNumberOfRpcContexts() {
-    // return rpcContexts.size();
-    // }
 
     /**
      * (non-Javadoc)
@@ -43,7 +32,6 @@ public class RpcManagerImpl implements RpcManager {
     @Override
     public void deviceConnected(final DeviceContext deviceContext) {
         final RpcContext rpcContext = new RpcContextImpl(providerContext);
-        rpcContext.setDeviceContext(deviceContext);
         MdSalRegistratorUtils.registerServices(rpcContext);
     }
 }
