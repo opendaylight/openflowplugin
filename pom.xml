@@ -629,6 +629,7 @@
     <modules>
       <module>openflowplugin-api</module>
       <module>openflowplugin</module>
+      <module>openflowplugin-impl</module>
       <module>extension</module>
       <module>distribution/karaf</module>
       <module>openflowplugin-controller-config</module>
