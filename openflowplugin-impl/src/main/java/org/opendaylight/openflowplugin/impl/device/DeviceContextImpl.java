@@ -12,11 +12,14 @@ import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
+import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableFeatures;
 import org.opendaylight.yangtools.yang.binding.ChildOf;
 import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.opendaylight.yangtools.yang.common.RpcResult;
 import java.math.BigInteger;
 import java.util.Collection;
+import java.util.concurrent.Future;
 
 /**
  * 
@@ -72,6 +75,16 @@ public class DeviceContextImpl implements DeviceContext {
 
     @Override
     public ConnectionContext getAuxiliaryConnectiobContexts(final BigInteger cookie) {
+        return null;
+    }
+
+    @Override
+    public Xid getNextXid() {
+        return null;
+    }
+
+    @Override
+    public <T extends DataObject> Future<RpcResult<T>> sendRequest(final DataObject dataObject) {
         return null;
     }
 
