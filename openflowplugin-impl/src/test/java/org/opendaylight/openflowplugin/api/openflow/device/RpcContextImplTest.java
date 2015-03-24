@@ -1,25 +1,78 @@
 /**
  * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
- * 
+ *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 package org.opendaylight.openflowplugin.api.openflow.device;
 
-import static org.mockito.Mockito.mock;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
+import org.junit.Before;
 import org.junit.Test;
-import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
+import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
+import org.opendaylight.openflowplugin.impl.rpc.RpcContextImpl;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutput;
+import org.opendaylight.yangtools.yang.common.RpcError;
+import org.opendaylight.yangtools.yang.common.RpcResult;
+import java.util.Iterator;
+import java.util.concurrent.Future;
 
 /**
  * @author joe
- * 
  */
+@RunWith(MockitoJUnitRunner.class)
 public class RpcContextImplTest {
+
+    @Mock
+    private BindingAwareBroker.ProviderContext mockedRpcProviderRegistry;
+
+    @Mock
+    private DeviceContext deviceContext;
+
+    private RpcContext rpcContext;
+
+    private static final String QUEUE_IS_FULL = "Device's request queue is full.";
+
+    @Before
+    public void setup() {
+        rpcContext = new RpcContextImpl(mockedRpcProviderRegistry, deviceContext);
+    }
 
     @Test
     public void invokeRpcTest() {
-        final RpcProviderRegistry mockedRpcProviderRegistry = mock(RpcProviderRegistry.class);
+
     }
+
+    @Test
+    public void testStoreOrFail() throws Exception {
+        RequestContext requestContext = rpcContext.createRequestContext();
+        rpcContext.setRequestContextQuota(100);
+        Future<RpcResult<UpdateFlowOutput>> resultFuture = rpcContext.storeOrFail(requestContext);
+        assertNotNull(resultFuture);
+        assertFalse(resultFuture.isDone());
+    }
+
+    @Test
+    public void testStoreOrFailThatFails() throws Exception {
+        RequestContext requestContext = rpcContext.createRequestContext();
+        rpcContext.setRequestContextQuota(0);
+        Future<RpcResult<UpdateFlowOutput>> resultFuture = rpcContext.storeOrFail(requestContext);
+        assertNotNull(resultFuture);
+        assertTrue(resultFuture.isDone());
+        RpcResult<UpdateFlowOutput> updateFlowOutputRpcResult = resultFuture.get();
+        assertNotNull(updateFlowOutputRpcResult);
+        assertEquals(1, updateFlowOutputRpcResult.getErrors().size());
+        Iterator<RpcError> iterator = updateFlowOutputRpcResult.getErrors().iterator();
+        assertEquals(QUEUE_IS_FULL, iterator.next().getMessage());
+    }
+
 }
