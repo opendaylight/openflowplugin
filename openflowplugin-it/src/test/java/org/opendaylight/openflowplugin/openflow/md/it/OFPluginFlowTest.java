@@ -248,12 +248,6 @@ public class OFPluginFlowTest {
 
                 OFPaxOptionsAssistant.osgiConsoleBundles(),
                 OFPaxOptionsAssistant.loggingBudles(),
-
-                TestHelper.junitAndMockitoBundles(),
-                TestHelper.mdSalCoreBundles(),
-                TestHelper.configMinumumBundles(),
-                TestHelper.baseModelBundles(),
-
                 OFPaxOptionsAssistant.ofPluginBundles());
     }
 

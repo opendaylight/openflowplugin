@@ -143,17 +143,14 @@ public class SalIntegrationTest {
      */
     @Configuration
     public Option[] config() {
-        return options(systemProperty("osgi.console").value("2401"),
+        return options(
+                systemProperty("osgi.console").value("2401"),
+                systemProperty("osgi.bundles.defaultStartLevel").value("4"),
+                systemProperty("pax.exam.osgi.unresolved.fail").value("true"),
+
                 OFPaxOptionsAssistant.osgiConsoleBundles(),
                 OFPaxOptionsAssistant.loggingBudles(),
-
-                TestHelper.junitAndMockitoBundles(),
-                TestHelper.mdSalCoreBundles(),
-                TestHelper.configMinumumBundles(),
-                TestHelper.baseModelBundles(),
-                OFPaxOptionsAssistant.ofLibraryBundles(),
-                OFPaxOptionsAssistant.ofPluginBundles()
-                );
+                OFPaxOptionsAssistant.ofPluginBundles());
     }
 
     private static class TestInventoryListener implements OpendaylightInventoryListener {
