@@ -8,12 +8,19 @@
 package org.opendaylight.openflowplugin.impl.services;
 
 import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
+import org.opendaylight.openflowplugin.api.openflow.md.core.sal.NotificationComposer;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.IMessageDispatchService;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.OFRpcFutureResultTransformFactory;
@@ -22,6 +29,12 @@ import org.opendaylight.openflowplugin.openflow.md.util.FlowCreatorUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowAdded;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowAddedBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowRemoved;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowRemovedBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowUpdated;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowUpdatedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowOutput;
@@ -30,20 +43,20 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.Upda
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.OriginalFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.UpdatedFlow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev131103.TransactionId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
+import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Future;
 
 public class SalFlowServiceImpl extends CommonService implements SalFlowService {
 
     private static final Logger LOG = org.slf4j.LoggerFactory.getLogger(SalFlowServiceImpl.class);
 
     public SalFlowServiceImpl(final RpcContext rpcContext, final short version, final BigInteger datapathId,
-                              final IMessageDispatchService service, final Xid xid, final SwitchConnectionDistinguisher cookie) {
+            final IMessageDispatchService service, final Xid xid, final SwitchConnectionDistinguisher cookie) {
         // TODO set cookie
         super(rpcContext, version, datapathId, service, xid, cookie);
     }
@@ -65,7 +78,7 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
         // use primary connection
         final SwitchConnectionDistinguisher cookie = null;
 
-        RequestContext requestContext = rpcContext.createRequestContext();
+        final RequestContext requestContext = rpcContext.createRequestContext();
         ListenableFuture<RpcResult<UpdateFlowOutput>> result = rpcContext.storeOrFail(requestContext);
 
         if (!result.isDone()) {
@@ -76,14 +89,11 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
             result = chainFlowMods(ofFlowModInputs, 0, xid, cookie);
             result = chainFutureBarrier(result);
             hookFutureNotification(result, notificationProviderService, createFlowAddedNotification(input));
-
-            return Futures.transform(result, OFRpcFutureResultTransformFactory.createForAddFlowOutput());
         } else {
             requestContext.close();
-            return Futures.transform(result, OFRpcFutureResultTransformFactory.createForAddFlowOutput());
         }
+        return Futures.transform(result, OFRpcFutureResultTransformFactory.createForAddFlowOutput());
     }
-
 
     /*
      * (non-Javadoc)
@@ -94,30 +104,33 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
      */
     @Override
     public Future<RpcResult<RemoveFlowOutput>> removeFlow(final RemoveFlowInput input) {
+        final RequestContext requestContext = rpcContext.createRequestContext();
+        final SettableFuture<RpcResult<RemoveFlowOutput>> result = rpcContext.storeOrFail(requestContext);
 
-        RequestContext requestContext = rpcContext.createRequestContext();
-        ListenableFuture<RpcResult<UpdateFlowOutput>> result = rpcContext.storeOrFail(requestContext);
-        
-        if (!result.isDone()) {
-
-            // Convert the AddFlowInput to FlowModInput
-            final FlowModInputBuilder ofFlowModInput = FlowConvertor.toFlowModInput(input, version, datapathId);
-            final Xid xId = deviceContext.getNextXid();
-            ofFlowModInput.setXid(xId.getValue());
-
-            final Future<RpcResult<UpdateFlowOutput>> resultFromOFLib = messageService.flowMod(ofFlowModInput.build(),
-                    cookie);
-            result = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
-
-            result = chainFutureBarrier(result);
-            hookFutureNotification(result, notificationProviderService, createFlowRemovedNotification(input));
-
-            return Futures.transform(result, OFRpcFutureResultTransformFactory.createForRemoveFlowOutput());
-
-        } else {
+        try {
+            if (!result.isDone()) {
+                // Convert the AddFlowInput to FlowModInput
+                final FlowModInputBuilder ofFlowModInput = FlowConvertor.toFlowModInput(input, version, datapathId);
+                ofFlowModInput.setXid(deviceContext.getNextXid().getValue());
+                final Future<RpcResult<Void>> resultFromOFLib = provideConnectionAdapter().flowMod(
+                        ofFlowModInput.build());
+                final RpcResult<Void> rpcResult = resultFromOFLib.get(getWaitTime(), TimeUnit.MILLISECONDS);
+                if (!rpcResult.isSuccessful()) {
+                    result.set(RpcResultBuilder.<RemoveFlowOutput> failed().withRpcErrors(rpcResult.getErrors())
+                            .build());
+                }
+            }
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            result.set(RpcResultBuilder.<RemoveFlowOutput> failed()
+                    .withError(RpcError.ErrorType.APPLICATION, "", "Flow modification on device wasn't successfull.")
+                    .build());
+        } catch (final Exception e) {
+            result.set(RpcResultBuilder.<RemoveFlowOutput> failed()
+                    .withError(RpcError.ErrorType.APPLICATION, "", "Flow translation to OF JAVA failed.").build());
+        } finally {
             requestContext.close();
-            return Futures.transform(result, OFRpcFutureResultTransformFactory.createForRemoveFlowOutput());
         }
+        return result;
     }
 
     /*
@@ -162,4 +175,43 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
         return result;
     }
 
+    /**
+     * @param input
+     * @return
+     */
+    protected NotificationComposer<FlowAdded> createFlowAddedNotification(final AddFlowInput input) {
+        return new NotificationComposer<FlowAdded>() {
+            @Override
+            public FlowAdded compose(final TransactionId tXid) {
+                final FlowAddedBuilder newFlow = new FlowAddedBuilder((Flow) input);
+                newFlow.setTransactionId(tXid);
+                newFlow.setFlowRef(input.getFlowRef());
+                return newFlow.build();
+            }
+        };
+    }
+
+    protected NotificationComposer<FlowUpdated> createFlowUpdatedNotification(final UpdateFlowInput input) {
+        return new NotificationComposer<FlowUpdated>() {
+            @Override
+            public FlowUpdated compose(final TransactionId tXid) {
+                final FlowUpdatedBuilder updFlow = new FlowUpdatedBuilder(input.getUpdatedFlow());
+                updFlow.setTransactionId(tXid);
+                updFlow.setFlowRef(input.getFlowRef());
+                return updFlow.build();
+            }
+        };
+    }
+
+    protected static NotificationComposer<FlowRemoved> createFlowRemovedNotification(final RemoveFlowInput input) {
+        return new NotificationComposer<FlowRemoved>() {
+            @Override
+            public FlowRemoved compose(final TransactionId tXid) {
+                final FlowRemovedBuilder removedFlow = new FlowRemovedBuilder((Flow) input);
+                removedFlow.setTransactionId(tXid);
+                removedFlow.setFlowRef(input.getFlowRef());
+                return removedFlow.build();
+            }
+        };
+    }
 }

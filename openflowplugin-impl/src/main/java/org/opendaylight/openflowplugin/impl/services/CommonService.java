@@ -14,7 +14,12 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Future;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
@@ -25,19 +30,8 @@ import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.openflow.md.core.MessageFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.OFRpcTaskFactory;
 import org.opendaylight.openflowplugin.openflow.md.util.RpcInputOutputTuple;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowAdded;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowAddedBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowRemoved;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowRemovedBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowUpdated;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowUpdatedBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev131103.TransactionAware;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev131103.TransactionId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
@@ -48,12 +42,10 @@ import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Future;
 
 public class CommonService {
+    private static final long WAIT_TIME = 2000;
+
     // protected OFRpcTaskContext rpcTaskContext;
     protected short version;
     protected BigInteger datapathId;
@@ -67,7 +59,7 @@ public class CommonService {
     protected NotificationProviderService notificationProviderService;
 
     protected final static Future<RpcResult<Void>> errorRpcResult = Futures.immediateFuture(RpcResultBuilder
-            .<Void>failed().withError(ErrorType.APPLICATION, "", "Request quota exceeded.").build());
+            .<Void> failed().withError(ErrorType.APPLICATION, "", "Request quota exceeded.").build());
 
     private static final Logger LOG = org.slf4j.LoggerFactory.getLogger(CommonService.class);
 
@@ -77,11 +69,19 @@ public class CommonService {
 
     }
 
+    protected long getWaitTime() {
+        return WAIT_TIME;
+    }
+
+    protected ConnectionAdapter provideConnectionAdapter() {
+        return deviceContext.getPrimaryConnectionContext().getConnectionAdapter();
+    }
+
     /**
      * @param xid
      */
     public CommonService(final RpcContext rpcContext, final short version, final BigInteger datapathId,
-                         final IMessageDispatchService service, final Xid xid, final SwitchConnectionDistinguisher cookie) {
+            final IMessageDispatchService service, final Xid xid, final SwitchConnectionDistinguisher cookie) {
         this.rpcContext = rpcContext;
         this.version = version;
         this.datapathId = datapathId;
@@ -93,10 +93,11 @@ public class CommonService {
 
     /**
      * of rpc
-     *
+     * 
      * @param originalResult
      * @param notificationProviderService
-     * @param notificationComposer        lazy notification composer
+     * @param notificationComposer
+     *            lazy notification composer
      */
     protected <R extends RpcResult<? extends TransactionAware>, N extends Notification, I extends DataContainer> void hookFutureNotification(
             final ListenableFuture<R> originalResult, final NotificationProviderService notificationProviderService,
@@ -138,47 +139,8 @@ public class CommonService {
     }
 
     /**
-     * @param input
-     * @return
-     */
-    protected NotificationComposer<FlowAdded> createFlowAddedNotification(final AddFlowInput input) {
-        return new NotificationComposer<FlowAdded>() {
-            @Override
-            public FlowAdded compose(final TransactionId tXid) {
-                final FlowAddedBuilder newFlow = new FlowAddedBuilder((Flow) input);
-                newFlow.setTransactionId(tXid);
-                newFlow.setFlowRef(input.getFlowRef());
-                return newFlow.build();
-            }
-        };
-    }
-
-    protected NotificationComposer<FlowUpdated> createFlowUpdatedNotification(final UpdateFlowInput input) {
-        return new NotificationComposer<FlowUpdated>() {
-            @Override
-            public FlowUpdated compose(final TransactionId tXid) {
-                final FlowUpdatedBuilder updFlow = new FlowUpdatedBuilder(input.getUpdatedFlow());
-                updFlow.setTransactionId(tXid);
-                updFlow.setFlowRef(input.getFlowRef());
-                return updFlow.build();
-            }
-        };
-    }
-
-    protected static NotificationComposer<FlowRemoved> createFlowRemovedNotification(final RemoveFlowInput input) {
-        return new NotificationComposer<FlowRemoved>() {
-            @Override
-            public FlowRemoved compose(final TransactionId tXid) {
-                final FlowRemovedBuilder removedFlow = new FlowRemovedBuilder((Flow) input);
-                removedFlow.setTransactionId(tXid);
-                removedFlow.setFlowRef(input.getFlowRef());
-                return removedFlow.build();
-            }
-        };
-    }
-
-    /**
-     * Recursive helper method for {@link OFRpcTaskFactory#chainFlowMods(java.util.List, int, org.opendaylight.openflowplugin.openflow.md.core.sal.OFRpcTaskContext, org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher)}
+     * Recursive helper method for
+     * {@link OFRpcTaskFactory#chainFlowMods(java.util.List, int, org.opendaylight.openflowplugin.openflow.md.core.sal.OFRpcTaskContext, org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher)}
      * {@link OFRpcTaskFactory#createUpdateFlowTask()} to chain results of multiple flowmods. The next flowmod gets
      * executed if the earlier one is successful. All the flowmods should have the same xid, in-order to cross-reference
      * the notification
@@ -219,10 +181,12 @@ public class CommonService {
     }
 
     /**
-     * @param task                        of rpcl
+     * @param task
+     *            of rpcl
      * @param originalResult
      * @param notificationProviderService
-     * @param notificationComposer        lazy notification composer
+     * @param notificationComposer
+     *            lazy notification composer
      * @return chained result with barrier
      */
     protected <T extends TransactionAware, I extends DataContainer> ListenableFuture<RpcResult<T>> chainFutureBarrier(
@@ -265,9 +229,9 @@ public class CommonService {
             public RpcResult<T> apply(final RpcResult<BarrierOutput> barrierResult) {
                 RpcResultBuilder<T> rpcBuilder = null;
                 if (barrierResult.isSuccessful()) {
-                    rpcBuilder = RpcResultBuilder.<T>success();
+                    rpcBuilder = RpcResultBuilder.<T> success();
                 } else {
-                    rpcBuilder = RpcResultBuilder.<T>failed();
+                    rpcBuilder = RpcResultBuilder.<T> failed();
                     final RpcError rpcError = RpcResultBuilder
                             .newWarning(
                                     ErrorType.RPC,
