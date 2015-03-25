@@ -26,13 +26,15 @@ public class RequestContextImpl<T extends DataObject> implements RequestContext 
     }
 
     @Override
-    public SettableFuture<RpcResult<T>> createRequestFuture() {
-        rpcResultFuture = SettableFuture.create();
-        return rpcResultFuture;
+    public void close() {
+        rpcContext.forgetRequestContext(this);
     }
 
     @Override
-    public void close() {
-        rpcContext.forgetRequestContext(this);
+    public SettableFuture<RpcResult<T>> getFuture() {
+        if (null == rpcResultFuture) {
+            rpcResultFuture = SettableFuture.create();
+        }
+        return rpcResultFuture;
     }
 }

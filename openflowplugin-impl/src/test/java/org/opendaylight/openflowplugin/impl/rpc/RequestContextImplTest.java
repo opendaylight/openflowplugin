@@ -36,7 +36,7 @@ public class RequestContextImplTest {
 
     @Test
     public void testCreateRequestFuture() throws Exception {
-        SettableFuture future = requestContext.createRequestFuture();
+        SettableFuture future = requestContext.getFuture();
         assertNotNull(future);
     }
 
