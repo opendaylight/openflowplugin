@@ -43,6 +43,7 @@ public abstract class AbstractActionCodec implements OFSerializer<Action>, OFDes
         // subtype
         message.skipBytes(EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
         ActionBuilder actionBuilder = new ActionBuilder();
+        actionBuilder.setExperimenterId(getExperimenterId());
         return actionBuilder;
     }
 

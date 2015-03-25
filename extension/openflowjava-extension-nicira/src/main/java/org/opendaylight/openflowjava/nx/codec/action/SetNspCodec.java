@@ -48,7 +48,6 @@ public class SetNspCodec extends AbstractActionCodec {
         NxActionSetNspBuilder nxActionSetNspBuilder = new NxActionSetNspBuilder();
         message.skipBytes(padding);
         nxActionSetNspBuilder.setNsp(message.readUnsignedInt());
-        nxActionSetNspBuilder.setExperimenterId(getExperimenterId());
         builder.setNxActionSetNsp(nxActionSetNspBuilder.build());
         actionBuilder.setActionChoice(builder.build());
         return actionBuilder.build();

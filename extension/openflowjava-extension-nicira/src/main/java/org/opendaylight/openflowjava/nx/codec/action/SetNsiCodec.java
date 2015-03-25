@@ -47,7 +47,6 @@ public class SetNsiCodec extends AbstractActionCodec {
         ActionSetNsiBuilder builder = new ActionSetNsiBuilder();
         NxActionSetNsiBuilder nxActionSetNsiBuilder = new NxActionSetNsiBuilder();
         nxActionSetNsiBuilder.setNsi(message.readUnsignedByte());
-        nxActionSetNsiBuilder.setExperimenterId(getExperimenterId());
         message.skipBytes(padding);
 
         builder.setNxActionSetNsi(nxActionSetNsiBuilder.build());

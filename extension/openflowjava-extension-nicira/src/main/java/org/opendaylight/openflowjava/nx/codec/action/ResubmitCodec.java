@@ -72,8 +72,6 @@ public class ResubmitCodec extends AbstractActionCodec {
         NxActionResubmitBuilder nxActionResubmitBuilder = new NxActionResubmitBuilder();
         nxActionResubmitBuilder.setInPort(message.readUnsignedShort());
         nxActionResubmitBuilder.setTable(message.readUnsignedByte());
-        ExperimenterId experimenterId = new ExperimenterId(NiciraConstants.NX_VENDOR_ID);
-                nxActionResubmitBuilder.setExperimenterId(experimenterId);
         builder.setNxActionResubmit(nxActionResubmitBuilder.build());
         message.skipBytes(padding);
 

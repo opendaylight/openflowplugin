@@ -51,7 +51,6 @@ public class OutputRegCodec extends AbstractActionCodec {
         nxActionOutputRegBuilder.setNBits(message.readUnsignedShort());
         nxActionOutputRegBuilder.setSrc(message.readUnsignedInt());
         nxActionOutputRegBuilder.setMaxLen(message.readUnsignedShort());
-        nxActionOutputRegBuilder.setExperimenterId(getExperimenterId());
         message.skipBytes(PADDING_IN_OUTPUT_REG_ACTION);
         builder.setNxActionOutputReg(nxActionOutputRegBuilder.build());
         actionBuilder.setActionChoice(builder.build());

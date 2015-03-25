@@ -74,7 +74,6 @@ public class MultipathCodec extends AbstractActionCodec {
 
         nxActionMultipathBuilder.setOfsNbits(message.readUnsignedShort());
         nxActionMultipathBuilder.setDst(message.readUnsignedInt());
-        nxActionMultipathBuilder.setExperimenterId(getExperimenterId());
         actionMultipathBuilder.setNxActionMultipath(nxActionMultipathBuilder.build());
         actionBuilder.setActionChoice(actionMultipathBuilder.build());
 

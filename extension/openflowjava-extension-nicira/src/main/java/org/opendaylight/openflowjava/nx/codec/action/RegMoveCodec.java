@@ -41,7 +41,6 @@ public class RegMoveCodec extends AbstractActionCodec {
         nxActionRegMoveBuilder.setDstOfs(message.readUnsignedShort());
         nxActionRegMoveBuilder.setSrc(message.readUnsignedInt());
         nxActionRegMoveBuilder.setDst(message.readUnsignedInt());
-        nxActionRegMoveBuilder.setExperimenterId(getExperimenterId());
         actionRegMoveBuilder.setNxActionRegMove(nxActionRegMoveBuilder.build());
         actionBuilder.setActionChoice(actionRegMoveBuilder.build());
         return actionBuilder.build();

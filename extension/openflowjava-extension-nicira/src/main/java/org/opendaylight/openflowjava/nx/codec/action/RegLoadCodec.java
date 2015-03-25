@@ -38,7 +38,6 @@ public class RegLoadCodec extends AbstractActionCodec {
         nxActionRegLoadBuilder.setOfsNbits(message.readUnsignedShort());
         nxActionRegLoadBuilder.setDst(message.readUnsignedInt());
         nxActionRegLoadBuilder.setValue(BigInteger.valueOf(message.readLong()));
-        nxActionRegLoadBuilder.setExperimenterId(getExperimenterId());
         actionRegLoadBuilder.setNxActionRegLoad(nxActionRegLoadBuilder.build());
         actionBuilder.setActionChoice(actionRegLoadBuilder.build());
         return actionBuilder.build();
