@@ -51,7 +51,7 @@ public class RpcContextImpl implements RpcContext {
 
     @Override
     public <T extends DataObject> SettableFuture<RpcResult<T>> storeOrFail(RequestContext requestContext) {
-        final SettableFuture<RpcResult<T>> rpcResultFuture = requestContext.createRequestFuture();
+        final SettableFuture<RpcResult<T>> rpcResultFuture = requestContext.getFuture();
 
         if (synchronizedRequestsList.size() < maxRequestsPerDevice) {
             synchronizedRequestsList.add(requestContext);
