@@ -19,6 +19,7 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFGeneralDeserializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFGeneralSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
+import org.opendaylight.openflowjava.protocol.api.keys.ActionSerializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.ExperimenterActionDeserializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.ExperimenterActionSerializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.ExperimenterDeserializerKey;
@@ -59,7 +60,7 @@ public class NiciraExtensionCodecRegistratorImpl implements NiciraExtensionCodec
         }
     }
 
-    private void registerActionSerializer(ExperimenterActionSerializerKey key, OFGeneralSerializer serializer) {
+    private void registerActionSerializer(ActionSerializerKey key, OFGeneralSerializer serializer) {
         for (SwitchConnectionProvider provider : providers) {
             provider.registerActionSerializer(key, serializer);
         }
@@ -71,7 +72,7 @@ public class NiciraExtensionCodecRegistratorImpl implements NiciraExtensionCodec
         }
     }
 
-    private void unregisterSerializer(ExperimenterSerializerKey key) {
+    private void unregisterSerializer(ActionSerializerKey key) {
         for (SwitchConnectionProvider provider : providers) {
             provider.unregisterSerializer(key);
         }
