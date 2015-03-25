@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_e29f0502",
+        "filename": "test-provider/src/main/java/org/opendaylight/openflowplugin/test/OpenflowpluginTableFeaturesTestCommandProvider.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 146,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2015-03-25T21:32:16Z",
+      "side": 1,
+      "message": "Is there any speed difference between .valueOf(10) and .TEN?",
+      "range": {
+        "startLine": 146,
+        "startChar": 54,
+        "endLine": 146,
+        "endChar": 65
+      },
+      "revId": "67d8afcae61e8f19fbe627b69b50a68aecb08c1f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
