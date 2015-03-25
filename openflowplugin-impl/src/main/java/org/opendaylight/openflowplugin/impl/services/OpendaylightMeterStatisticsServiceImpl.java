@@ -27,12 +27,6 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 // TODO: implement this
 public class OpendaylightMeterStatisticsServiceImpl extends CommonService implements OpendaylightMeterStatisticsService {
 
-    /**
-     * @param rpcContext
-     */
-    public OpendaylightMeterStatisticsServiceImpl(final RpcContext rpcContext) {
-        super(rpcContext);
-    }
 
     /*
          * (non-Javadoc)

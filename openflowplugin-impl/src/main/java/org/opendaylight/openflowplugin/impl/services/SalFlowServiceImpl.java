@@ -7,7 +7,11 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
+import java.math.BigInteger;
 import java.util.concurrent.Future;
+import org.opendaylight.openflowplugin.api.openflow.device.Xid;
+import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
+import org.opendaylight.openflowplugin.api.openflow.md.core.session.IMessageDispatchService;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
@@ -23,11 +27,14 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
 
     private static final Logger LOG = org.slf4j.LoggerFactory.getLogger(SalFlowServiceImpl.class);
 
-    /**
-     * 
-     */
+    public SalFlowServiceImpl(final RpcContext rpcContext, final short version, final BigInteger datapathId,
+            final IMessageDispatchService service, final Xid xid, final SwitchConnectionDistinguisher cookie) {
+        // TODO set cookie
+        super(rpcContext, version, datapathId, service, xid, cookie);
+    }
+
     public SalFlowServiceImpl(final RpcContext rpcContext) {
-        super(rpcContext);
+        this.rpcContext = rpcContext;
     }
 
     /*
@@ -51,7 +58,6 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
      */
     @Override
     public Future<RpcResult<RemoveFlowOutput>> removeFlow(final RemoveFlowInput input) {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -64,7 +70,6 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
      */
     @Override
     public Future<RpcResult<UpdateFlowOutput>> updateFlow(final UpdateFlowInput input) {
-        // TODO Auto-generated method stub
         return null;
     }
 
