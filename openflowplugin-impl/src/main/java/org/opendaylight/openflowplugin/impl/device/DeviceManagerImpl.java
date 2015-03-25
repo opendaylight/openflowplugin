@@ -34,6 +34,7 @@ public class DeviceManagerImpl implements DeviceManager {
 
     private XidGenerator xidGenerator = new XidGenerator();
 
+
     @Override
     public void deviceConnected(ConnectionContext connectionContext) {
         Xid xid = xidGenerator.generate();

@@ -20,12 +20,6 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 // TODO: implement this
 public class PacketProcessingServiceImpl extends CommonService implements PacketProcessingService {
 
-    /**
-     * @param rpcContext
-     */
-    public PacketProcessingServiceImpl(final RpcContext rpcContext) {
-        super(rpcContext);
-    }
 
     /*
          * (non-Javadoc)
