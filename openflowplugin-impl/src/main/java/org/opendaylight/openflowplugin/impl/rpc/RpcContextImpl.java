@@ -86,10 +86,6 @@ public class RpcContextImpl implements RpcContext {
         return null;
     }
 
-    @Override
-    public Future<RpcResult<? extends DataObject>> addNewRequest(final DataObject data) {
-        return null;
-    }
 
     /**
      * Unregisters all services.
