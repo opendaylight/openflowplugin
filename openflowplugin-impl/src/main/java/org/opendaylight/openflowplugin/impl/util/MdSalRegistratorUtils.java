@@ -45,24 +45,22 @@ public class MdSalRegistratorUtils {
 
     public static void registerServices(final RpcContext rpcContext) {
         rpcContext.registerRpcServiceImplementation(SalFlowService.class, new SalFlowServiceImpl(rpcContext));
-        rpcContext.registerRpcServiceImplementation(SalFlowService.class, new SalFlowServiceImpl(rpcContext));
-        rpcContext.registerRpcServiceImplementation(SalMeterService.class, new SalMeterServiceImpl(rpcContext));
-        rpcContext.registerRpcServiceImplementation(SalGroupService.class, new SalGroupServiceImpl(rpcContext));
-        rpcContext.registerRpcServiceImplementation(SalTableService.class, new SalTableServiceImpl(rpcContext));
-        rpcContext.registerRpcServiceImplementation(PacketProcessingService.class, new PacketProcessingServiceImpl(rpcContext));
+        rpcContext.registerRpcServiceImplementation(SalMeterService.class, new SalMeterServiceImpl());
+        rpcContext.registerRpcServiceImplementation(SalGroupService.class, new SalGroupServiceImpl());
+        rpcContext.registerRpcServiceImplementation(SalTableService.class, new SalTableServiceImpl());
+        rpcContext.registerRpcServiceImplementation(PacketProcessingService.class, new PacketProcessingServiceImpl());
         rpcContext.registerRpcServiceImplementation(OpendaylightFlowStatisticsService.class,
-                new OpendaylightFlowStatisticsServiceImpl(rpcContext));
+                new OpendaylightFlowStatisticsServiceImpl());
         rpcContext.registerRpcServiceImplementation(OpendaylightGroupStatisticsService.class,
-                new OpendaylightGroupStatisticsServiceImpl(rpcContext));
+                new OpendaylightGroupStatisticsServiceImpl());
         rpcContext.registerRpcServiceImplementation(OpendaylightMeterStatisticsService.class,
-                new OpendaylightMeterStatisticsServiceImpl(rpcContext));
+                new OpendaylightMeterStatisticsServiceImpl());
         rpcContext.registerRpcServiceImplementation(OpendaylightPortStatisticsService.class,
-                new OpendaylightPortStatisticsServiceImpl(rpcContext));
-        rpcContext.registerRpcServiceImplementation(NodeConfigService.class, new NodeConfigServiceImpl(rpcContext));
+                new OpendaylightPortStatisticsServiceImpl());
+        rpcContext.registerRpcServiceImplementation(NodeConfigService.class, new NodeConfigServiceImpl());
         rpcContext.registerRpcServiceImplementation(OpendaylightFlowTableStatisticsService.class,
-                new OpendaylightFlowTableStatisticsServiceImpl(rpcContext));
+                new OpendaylightFlowTableStatisticsServiceImpl());
         rpcContext.registerRpcServiceImplementation(OpendaylightQueueStatisticsService.class,
-                new OpendaylightQueueStatisticsServiceImpl(rpcContext));
+                new OpendaylightQueueStatisticsServiceImpl());
     }
-
 }
