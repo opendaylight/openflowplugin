@@ -7,14 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
 import java.util.concurrent.Future;
-import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
-import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.OFRpcFutureResultTransformFactory;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.OFRpcTask;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.OFRpcTaskFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterInput;
@@ -29,51 +22,50 @@ public class SalMeterServiceImpl extends CommonService implements SalMeterServic
 
     private static final Logger LOG = org.slf4j.LoggerFactory.getLogger(SalMeterServiceImpl.class);
 
-    /**
-     * @param rpcContext
-     */
-    public SalMeterServiceImpl(final RpcContext rpcContext) {
-        super(rpcContext);
-    }
 
     @Override
     public Future<RpcResult<AddMeterOutput>> addMeter(final AddMeterInput input) {
-        LOG.debug("Calling the MeterMod RPC method on MessageDispatchService");
-
-        // use primary connection
-        final SwitchConnectionDistinguisher cookie = null;
-
-        final OFRpcTask<AddMeterInput, RpcResult<UpdateMeterOutput>> task = OFRpcTaskFactory.createAddMeterTask(
-                rpcTaskContext, input, cookie);
-        final ListenableFuture<RpcResult<UpdateMeterOutput>> result = task.submit();
-
-        return Futures.transform(result, OFRpcFutureResultTransformFactory.createForAddMeterOutput());
+        // LOG.debug("Calling the MeterMod RPC method on MessageDispatchService");
+        //
+        // // use primary connection
+        // final SwitchConnectionDistinguisher cookie = null;
+        //
+        // final OFRpcTask<AddMeterInput, RpcResult<UpdateMeterOutput>> task = OFRpcTaskFactory.createAddMeterTask(
+        // rpcTaskContext, input, cookie);
+        // final ListenableFuture<RpcResult<UpdateMeterOutput>> result = task.submit();
+        //
+        // return Futures.transform(result, OFRpcFutureResultTransformFactory.createForAddMeterOutput());
+        return null;
     }
 
     @Override
     public Future<RpcResult<UpdateMeterOutput>> updateMeter(final UpdateMeterInput input) {
-        LOG.debug("Calling the MeterMod RPC method on MessageDispatchService");
-
-        // use primary connection
-        final SwitchConnectionDistinguisher cookie = null;
-
-        final OFRpcTask<UpdateMeterInput, RpcResult<UpdateMeterOutput>> task = OFRpcTaskFactory.createUpdateMeterTask(
-                rpcTaskContext, input, cookie);
-        final ListenableFuture<RpcResult<UpdateMeterOutput>> result = task.submit();
-
-        return result;
+        // LOG.debug("Calling the MeterMod RPC method on MessageDispatchService");
+        //
+        // // use primary connection
+        // final SwitchConnectionDistinguisher cookie = null;
+        //
+        // final OFRpcTask<UpdateMeterInput, RpcResult<UpdateMeterOutput>> task =
+        // OFRpcTaskFactory.createUpdateMeterTask(
+        // rpcTaskContext, input, cookie);
+        // final ListenableFuture<RpcResult<UpdateMeterOutput>> result = task.submit();
+        //
+        // return result;
+        return null;
     }
 
     @Override
     public Future<RpcResult<RemoveMeterOutput>> removeMeter(final RemoveMeterInput input) {
-        LOG.debug("Calling the Remove MeterMod RPC method on MessageDispatchService");
-
-        final SwitchConnectionDistinguisher cookie = null;
-        final OFRpcTask<RemoveMeterInput, RpcResult<UpdateMeterOutput>> task = OFRpcTaskFactory.createRemoveMeterTask(
-                rpcTaskContext, input, cookie);
-        final ListenableFuture<RpcResult<UpdateMeterOutput>> result = task.submit();
-
-        return Futures.transform(result, OFRpcFutureResultTransformFactory.createForRemoveMeterOutput());
+        // LOG.debug("Calling the Remove MeterMod RPC method on MessageDispatchService");
+        //
+        // final SwitchConnectionDistinguisher cookie = null;
+        // final OFRpcTask<RemoveMeterInput, RpcResult<UpdateMeterOutput>> task =
+        // OFRpcTaskFactory.createRemoveMeterTask(
+        // rpcTaskContext, input, cookie);
+        // final ListenableFuture<RpcResult<UpdateMeterOutput>> result = task.submit();
+        //
+        // return Futures.transform(result, OFRpcFutureResultTransformFactory.createForRemoveMeterOutput());
+        return null;
     }
 
 }
