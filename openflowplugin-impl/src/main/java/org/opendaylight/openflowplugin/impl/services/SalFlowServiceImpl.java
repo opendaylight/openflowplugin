@@ -7,117 +7,138 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
+import java.math.BigInteger;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
-import org.opendaylight.openflowplugin.api.openflow.device.Xid;
-import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
-import org.opendaylight.openflowplugin.api.openflow.md.core.session.IMessageDispatchService;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.OFRpcFutureResultTransformFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.FlowConvertor;
-import org.opendaylight.openflowplugin.openflow.md.util.FlowCreatorUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.NodeFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.OriginalFlow;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.UpdatedFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
+import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Future;
 
 public class SalFlowServiceImpl extends CommonService implements SalFlowService {
 
     private static final Logger LOG = org.slf4j.LoggerFactory.getLogger(SalFlowServiceImpl.class);
 
-    public SalFlowServiceImpl(final RpcContext rpcContext, final short version, final BigInteger datapathId,
-                              final IMessageDispatchService service, final Xid xid, final SwitchConnectionDistinguisher cookie) {
-        // TODO set cookie
-        super(rpcContext, version, datapathId, service, xid, cookie);
+    private interface Function {
+        Future<RpcResult<Void>> apply(List<FlowModInputBuilder> flowModInputBuilders, BigInteger cookie);
     }
 
     public SalFlowServiceImpl(final RpcContext rpcContext) {
-        this.rpcContext = rpcContext;
+        super(rpcContext);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService#addFlow(org.opendaylight.
-     * yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput)
-     */
     @Override
     public Future<RpcResult<AddFlowOutput>> addFlow(final AddFlowInput input) {
-        LOG.debug("Calling the FlowMod RPC method on MessageDispatchService");
-        // use primary connection
-        final SwitchConnectionDistinguisher cookie = null;
-
-        RequestContext requestContext = rpcContext.createRequestContext();
-        ListenableFuture<RpcResult<UpdateFlowOutput>> result = rpcContext.storeOrFail(requestContext);
-
-        if (!result.isDone()) {
-
-            // Convert the AddFlowInput to FlowModInput
-            final List<FlowModInputBuilder> ofFlowModInputs = FlowConvertor.toFlowModInputs(input, version, datapathId);
-            LOG.debug("Number of flows to push to switch: {}", ofFlowModInputs.size());
-            result = chainFlowMods(ofFlowModInputs, 0, xid, cookie);
-            result = chainFutureBarrier(result);
-            hookFutureNotification(result, notificationProviderService, createFlowAddedNotification(input));
-
-            return Futures.transform(result, OFRpcFutureResultTransformFactory.createForAddFlowOutput());
-        } else {
-            requestContext.close();
-            return Futures.transform(result, OFRpcFutureResultTransformFactory.createForAddFlowOutput());
-        }
+        return processFlow(input, new Function() {
+            @Override
+            public ListenableFuture<RpcResult<Void>> apply(final List<FlowModInputBuilder> flowModInputBuilders,
+                    final BigInteger cookie) {
+                return chainFlowMods(flowModInputBuilders, 0, input.getCookie().getValue());
+            }
+        });
     }
 
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService#removeFlow(org.opendaylight
-     * .yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInput)
-     */
     @Override
     public Future<RpcResult<RemoveFlowOutput>> removeFlow(final RemoveFlowInput input) {
+        return processFlow(input, new Function() {
+            @Override
+            public Future<RpcResult<Void>> apply(final List<FlowModInputBuilder> flowModInputBuilders,
+                    final BigInteger cookie) {
+                return provideConnectionAdapter(input.getCookie().getValue()).flowMod(
+                        flowModInputBuilders.get(0).build());
+            }
+        });
+    }
 
-        RequestContext requestContext = rpcContext.createRequestContext();
-        ListenableFuture<RpcResult<UpdateFlowOutput>> result = rpcContext.storeOrFail(requestContext);
-        
+    // @Override
+    // public Future<RpcResult<UpdateFlowOutput>> updateFlow(final UpdateFlowInput input) {
+    // return processFlow(input, new Function() {
+    // @Override
+    // public Future<RpcResult<Void>> apply(final List<FlowModInputBuilder> flowModInputBuilders,
+    // final BigInteger cookie) {
+    // final UpdateFlowInput in = input;
+    // final UpdatedFlow updated = in.getUpdatedFlow();
+    // final OriginalFlow original = in.getOriginalFlow();
+    //
+    // final List<FlowModInputBuilder> allFlowMods = new ArrayList<>();
+    // List<FlowModInputBuilder> ofFlowModInputs;
+    //
+    // if (!FlowCreatorUtil.canModifyFlow(original, updated, version)) {
+    // // We would need to remove original and add updated.
+    //
+    // // remove flow
+    // final RemoveFlowInputBuilder removeflow = new RemoveFlowInputBuilder(original);
+    // final List<FlowModInputBuilder> ofFlowRemoveInput = FlowConvertor.toFlowModInputs(
+    // removeflow.build(), version, datapathId);
+    // // remove flow should be the first
+    // allFlowMods.addAll(ofFlowRemoveInput);
+    // final AddFlowInputBuilder addFlowInputBuilder = new AddFlowInputBuilder(updated);
+    // ofFlowModInputs = FlowConvertor.toFlowModInputs(addFlowInputBuilder.build(), version, datapathId);
+    // } else {
+    // ofFlowModInputs = FlowConvertor.toFlowModInputs(updated, version, datapathId);
+    // }
+    //
+    // allFlowMods.addAll(ofFlowModInputs);
+    // LOG.debug("Number of flows to push to switch: {}", allFlowMods.size());
+    // return chainFlowMods(allFlowMods, 0, cookie);
+    // }
+    // });
+    // }
+
+    private <T extends DataObject> Future<RpcResult<T>> processFlow(final NodeFlow input, final Function function) {
+        LOG.debug("Calling the FlowMod RPC method on MessageDispatchService");
+        // use primary connection
+
+        final RequestContext requestContext = rpcContext.createRequestContext();
+        final SettableFuture<RpcResult<T>> result = rpcContext.storeOrFail(requestContext);
+
         if (!result.isDone()) {
-
-            // Convert the AddFlowInput to FlowModInput
-            final FlowModInputBuilder ofFlowModInput = FlowConvertor.toFlowModInput(input, version, datapathId);
-            final Xid xId = deviceContext.getNextXid();
-            ofFlowModInput.setXid(xId.getValue());
-
-            final Future<RpcResult<UpdateFlowOutput>> resultFromOFLib = messageService.flowMod(ofFlowModInput.build(),
-                    cookie);
-            result = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
-
-            result = chainFutureBarrier(result);
-            hookFutureNotification(result, notificationProviderService, createFlowRemovedNotification(input));
-
-            return Futures.transform(result, OFRpcFutureResultTransformFactory.createForRemoveFlowOutput());
+            try {
+                // Convert the AddFlowInput to FlowModInput
+                final List<FlowModInputBuilder> ofFlowModInputs = FlowConvertor.toFlowModInputs(input, version,
+                        datapathId);
+                LOG.debug("Number of flows to push to switch: {}", ofFlowModInputs.size());
+                final Future<RpcResult<Void>> resultFromOFLib = function.apply(ofFlowModInputs, input.getCookie()
+                        .getValue());
+                final RpcResult<Void> rpcResult = resultFromOFLib.get(getWaitTime(), TimeUnit.MILLISECONDS);
+                if (!rpcResult.isSuccessful()) {
+                    result.set(RpcResultBuilder.<T> failed().withRpcErrors(rpcResult.getErrors()).build());
+                    requestContext.close();
+                }
+            } catch (InterruptedException | ExecutionException | TimeoutException e) {
+                result.set(RpcResultBuilder
+                        .<T> failed()
+                        .withError(RpcError.ErrorType.APPLICATION, "",
+                                "Flow modification on device wasn't successfull.").build());
+                requestContext.close();
+            } catch (final Exception e) {
+                result.set(RpcResultBuilder.<T> failed()
+                        .withError(RpcError.ErrorType.APPLICATION, "", "Flow translation to OF JAVA failed.").build());
+                requestContext.close();
+            }
 
         } else {
             requestContext.close();
-            return Futures.transform(result, OFRpcFutureResultTransformFactory.createForRemoveFlowOutput());
         }
+        return result;
     }
 
     /*
@@ -129,37 +150,8 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
      */
     @Override
     public Future<RpcResult<UpdateFlowOutput>> updateFlow(final UpdateFlowInput input) {
-        ListenableFuture<RpcResult<UpdateFlowOutput>> result = null;
-
-        final UpdateFlowInput in = input;
-        final UpdatedFlow updated = in.getUpdatedFlow();
-        final OriginalFlow original = in.getOriginalFlow();
-
-        final List<FlowModInputBuilder> allFlowMods = new ArrayList<>();
-        List<FlowModInputBuilder> ofFlowModInputs;
-
-        if (!FlowCreatorUtil.canModifyFlow(original, updated, version)) {
-            // We would need to remove original and add updated.
-
-            // remove flow
-            final RemoveFlowInputBuilder removeflow = new RemoveFlowInputBuilder(original);
-            final List<FlowModInputBuilder> ofFlowRemoveInput = FlowConvertor.toFlowModInputs(removeflow.build(),
-                    version, datapathId);
-            // remove flow should be the first
-            allFlowMods.addAll(ofFlowRemoveInput);
-            final AddFlowInputBuilder addFlowInputBuilder = new AddFlowInputBuilder(updated);
-            ofFlowModInputs = FlowConvertor.toFlowModInputs(addFlowInputBuilder.build(), version, datapathId);
-        } else {
-            ofFlowModInputs = FlowConvertor.toFlowModInputs(updated, version, datapathId);
-        }
-
-        allFlowMods.addAll(ofFlowModInputs);
-        LOG.debug("Number of flows to push to switch: {}", allFlowMods.size());
-        result = chainFlowMods(allFlowMods, 0, xid, cookie);
-
-        result = chainFutureBarrier(result);
-        hookFutureNotification(result, notificationProviderService, createFlowUpdatedNotification(in));
-        return result;
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }
