@@ -15,9 +15,9 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class XidGenerator {
 
-    private static AtomicLong xid = new AtomicLong(0);
+    private AtomicLong xid = new AtomicLong(0);
 
-    public static Xid generate() {
+    public Xid generate() {
         return new Xid(xid.incrementAndGet());
     }
 }
