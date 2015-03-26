@@ -32,11 +32,11 @@ public class DeviceManagerImpl implements DeviceManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceManagerImpl.class);
 
-    private Xid xid;
+    private XidGenerator xidGenerator = new XidGenerator();
 
     @Override
     public void deviceConnected(ConnectionContext connectionContext) {
-        xid = XidGenerator.generate();
+        Xid xid = xidGenerator.generate();
         DeviceContextImpl deviceContextImpl = new DeviceContextImpl();
 
         try {
