@@ -934,65 +934,67 @@ public final class ActionConvertor {
             final List<Action> actionList, final OpenflowVersion ofVersion, final ActionPath actionPath) {
 
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action> bucketActions = new ArrayList<>();
-        for (Action action : actionList) {
-            if (action.getActionChoice() instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.OutputActionCase) {
-                bucketActions.add(ofToSALOutputAction(ofVersion, action));
-            } else if (action.getActionChoice() instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.GroupCase) {
-                bucketActions.add(ofToSALGroupAction(action));
-            } else if (action.getActionChoice() instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.CopyTtlOutCase) {
-                CopyTtlOutBuilder copyTtlOutaction = new CopyTtlOutBuilder();
-                bucketActions.add(new org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlOutCaseBuilder().setCopyTtlOut(copyTtlOutaction.build()).build());
-            } else if (action.getActionChoice() instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.CopyTtlInCase) {
-                CopyTtlInBuilder copyTtlInaction = new CopyTtlInBuilder();
-                bucketActions.add(new org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlInCaseBuilder().setCopyTtlIn(copyTtlInaction.build()).build());
+        if(actionList != null){
+            for (Action action : actionList) {
+                if (action.getActionChoice() instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.OutputActionCase) {
+                    bucketActions.add(ofToSALOutputAction(ofVersion, action));
+                } else if (action.getActionChoice() instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.GroupCase) {
+                    bucketActions.add(ofToSALGroupAction(action));
+                } else if (action.getActionChoice() instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.CopyTtlOutCase) {
+                    CopyTtlOutBuilder copyTtlOutaction = new CopyTtlOutBuilder();
+                    bucketActions.add(new org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlOutCaseBuilder().setCopyTtlOut(copyTtlOutaction.build()).build());
+                } else if (action.getActionChoice() instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.CopyTtlInCase) {
+                    CopyTtlInBuilder copyTtlInaction = new CopyTtlInBuilder();
+                    bucketActions.add(new org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlInCaseBuilder().setCopyTtlIn(copyTtlInaction.build()).build());
 
-            } else if (action.getActionChoice() instanceof SetMplsTtlCase) {
-                bucketActions.add(ofToSALSetMplsTtl(action));
-            } else if (action.getActionChoice() instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.DecMplsTtlCase) {
-                DecMplsTtlBuilder decMplsTtl = new DecMplsTtlBuilder();
-                bucketActions.add(new org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DecMplsTtlCaseBuilder().setDecMplsTtl(decMplsTtl.build()).build());
-            } else if (action.getActionChoice() instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.PushVlanCase) {
-                bucketActions.add(ofToSALPushVlanAction(action));
-            } else if ((action.getActionChoice() instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.PopVlanCase)
-                    || (action.getActionChoice() instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.StripVlanCase)) {
-                // OF1.0 nodes will emit StripVlan and OF1.3+ will emit StripVlan/PopVlan, convert both to PopVlan for SAL
-                PopVlanActionBuilder popVlan = new PopVlanActionBuilder();
-                bucketActions.add(new PopVlanActionCaseBuilder().setPopVlanAction(popVlan.build()).build());
-            } else if (action.getActionChoice() instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.PushMplsCase) {
-                bucketActions.add(ofToSALPushMplsAction(action));
-            } else if (action.getActionChoice() instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.PopMplsCase) {
-                bucketActions.add(ofToSALPopMplsAction(action));
-            } else if (action.getActionChoice() instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetQueueCase) {
-                bucketActions.add(ofToSALSetQueue(action));
-            } else if (action.getActionChoice() instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetNwTtlCase) {
-                bucketActions.add(ofToSALSetNwTtl(action));
-            } else if (action.getActionChoice() instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.DecNwTtlCase) {
-                DecNwTtlBuilder decNwTtl = new DecNwTtlBuilder();
-                bucketActions.add(new org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DecNwTtlCaseBuilder()
-                        .setDecNwTtl(decNwTtl.build()).build());
-            } else if (action.getActionChoice() instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetFieldCase) {
-                bucketActions.add(new org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetFieldCaseBuilder()
-                        .setSetField(MatchConvertorImpl.fromOFSetFieldToSALSetFieldAction(action, ofVersion)).build());
-            } else if (action.getActionChoice() instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.PushPbbCase) {
-                bucketActions.add(ofToSALPushPbbAction(action));
-            } else if (action.getActionChoice() instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.PopPbbCase) {
-                PopPbbActionBuilder popPbb = new PopPbbActionBuilder();
-                bucketActions.add(new PopPbbActionCaseBuilder().setPopPbbAction(popPbb.build()).build());
+                } else if (action.getActionChoice() instanceof SetMplsTtlCase) {
+                    bucketActions.add(ofToSALSetMplsTtl(action));
+                } else if (action.getActionChoice() instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.DecMplsTtlCase) {
+                    DecMplsTtlBuilder decMplsTtl = new DecMplsTtlBuilder();
+                    bucketActions.add(new org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DecMplsTtlCaseBuilder().setDecMplsTtl(decMplsTtl.build()).build());
+                } else if (action.getActionChoice() instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.PushVlanCase) {
+                    bucketActions.add(ofToSALPushVlanAction(action));
+                } else if ((action.getActionChoice() instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.PopVlanCase)
+                        || (action.getActionChoice() instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.StripVlanCase)) {
+                    // OF1.0 nodes will emit StripVlan and OF1.3+ will emit StripVlan/PopVlan, convert both to PopVlan for SAL
+                    PopVlanActionBuilder popVlan = new PopVlanActionBuilder();
+                    bucketActions.add(new PopVlanActionCaseBuilder().setPopVlanAction(popVlan.build()).build());
+                } else if (action.getActionChoice() instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.PushMplsCase) {
+                    bucketActions.add(ofToSALPushMplsAction(action));
+                } else if (action.getActionChoice() instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.PopMplsCase) {
+                    bucketActions.add(ofToSALPopMplsAction(action));
+                } else if (action.getActionChoice() instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetQueueCase) {
+                    bucketActions.add(ofToSALSetQueue(action));
+                } else if (action.getActionChoice() instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetNwTtlCase) {
+                    bucketActions.add(ofToSALSetNwTtl(action));
+                } else if (action.getActionChoice() instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.DecNwTtlCase) {
+                    DecNwTtlBuilder decNwTtl = new DecNwTtlBuilder();
+                    bucketActions.add(new org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DecNwTtlCaseBuilder()
+                            .setDecNwTtl(decNwTtl.build()).build());
+                } else if (action.getActionChoice() instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetFieldCase) {
+                    bucketActions.add(new org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetFieldCaseBuilder()
+                            .setSetField(MatchConvertorImpl.fromOFSetFieldToSALSetFieldAction(action, ofVersion)).build());
+                } else if (action.getActionChoice() instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.PushPbbCase) {
+                    bucketActions.add(ofToSALPushPbbAction(action));
+                } else if (action.getActionChoice() instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.PopPbbCase) {
+                    PopPbbActionBuilder popPbb = new PopPbbActionBuilder();
+                    bucketActions.add(new PopPbbActionCaseBuilder().setPopPbbAction(popPbb.build()).build());
 
-            } else if (action.getActionChoice() instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetNwDstCase) {
-                org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.nw.dst.action._case.SetNwDstActionBuilder setNwDstActionBuilder = new org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.nw.dst.action._case.SetNwDstActionBuilder();
-                bucketActions.add(new SetNwDstActionCaseBuilder().setSetNwDstAction(setNwDstActionBuilder.build()).build());
+                } else if (action.getActionChoice() instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetNwDstCase) {
+                    org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.nw.dst.action._case.SetNwDstActionBuilder setNwDstActionBuilder = new org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.nw.dst.action._case.SetNwDstActionBuilder();
+                    bucketActions.add(new SetNwDstActionCaseBuilder().setSetNwDstAction(setNwDstActionBuilder.build()).build());
 
-            } else {
-                /**
-                 * TODO: EXTENSION PROPOSAL (action, OFJava to MD-SAL)
-                 * - we might also need a way on how to identify exact type of augmentation to be
-                 *   used as match can be bound to multiple models
-                 */
-                org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action processedAction =
-                        ActionExtensionHelper.processAlienAction(action, ofVersion, actionPath);
-                if (processedAction != null) {
-                    bucketActions.add(processedAction);
+                } else {
+                    /**
+                     * TODO: EXTENSION PROPOSAL (action, OFJava to MD-SAL)
+                     * - we might also need a way on how to identify exact type of augmentation to be
+                     *   used as match can be bound to multiple models
+                     */
+                    org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action processedAction =
+                            ActionExtensionHelper.processAlienAction(action, ofVersion, actionPath);
+                    if (processedAction != null) {
+                        bucketActions.add(processedAction);
+                    }
                 }
             }
         }
