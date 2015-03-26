@@ -7,7 +7,12 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
+import java.math.BigInteger;
 import java.util.concurrent.Future;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.PortConvertor;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.port.mod.port.Port;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortModInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortModInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.SalPortService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.UpdatePortInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.UpdatePortOutput;
@@ -19,12 +24,17 @@ public class SalPortServiceImpl extends CommonService implements SalPortService 
 
     @Override
     public Future<RpcResult<UpdatePortOutput>> updatePort(final UpdatePortInput input) {
-        // LOG.debug("Calling the updatePort RPC method on MessageDispatchService");
-        //
-        // final OFRpcTask<UpdatePortInput, RpcResult<UpdatePortOutput>> task = OFRpcTaskFactory.createUpdatePortTask(
-        // rpcTaskContext, input, null);
-        // return task.submit();
-        return null;
+        return ServiceCallProcessingUtil.<UpdatePortOutput> handleServiceCall(rpcContext, PRIMARY_CONNECTION,
+                provideWaitTime(), new Function<Void>() {
+                    @Override
+                    public Future<RpcResult<Void>> apply(final BigInteger IDConnection) {
+                        final Port inputPort = input.getUpdatedPort().getPort().getPort().get(0);
+                        final PortModInput ofPortModInput = PortConvertor.toPortModInput(inputPort, version);
+                        final PortModInputBuilder mdInput = new PortModInputBuilder(ofPortModInput);
+                        mdInput.setXid(deviceContext.getNextXid().getValue());
+                        return provideConnectionAdapter(IDConnection).portMod(mdInput.build());
+                    }
+                });
     }
 
 }

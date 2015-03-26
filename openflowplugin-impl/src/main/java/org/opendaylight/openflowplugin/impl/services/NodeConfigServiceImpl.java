@@ -41,7 +41,7 @@ public class NodeConfigServiceImpl extends CommonService implements NodeConfigSe
             builder.setVersion(version);
             ListenableFuture<RpcResult<Void>> futureResultFromOfLib = JdkFutureAdapters.listenInPoolThread(deviceContext.getPrimaryConnectionContext().getConnectionAdapter().setConfig(builder.build()));
             RpcResultConvertor<SetConfigOutput> rpcResultConvertor = new RpcResultConvertor<>(requestContext);
-            rpcResultConvertor.processResultFromOfJava(futureResultFromOfLib, getWaitTime());
+            rpcResultConvertor.processResultFromOfJava(futureResultFromOfLib, provideWaitTime());
         } else {
             requestContext.close();
         }

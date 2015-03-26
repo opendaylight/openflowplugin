@@ -7,30 +7,28 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
+import java.math.BigInteger;
 import java.util.concurrent.Future;
-import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.PacketOutConvertor;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOutInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.ConnectionCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInput;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
-/**
- * @author joe
- * 
- */
-// TODO: implement this
 public class PacketProcessingServiceImpl extends CommonService implements PacketProcessingService {
 
-
-    /*
-         * (non-Javadoc)
-         *
-         * @see
-         * org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService#transmitPacket
-         * (org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInput)
-         */
     @Override
     public Future<RpcResult<Void>> transmitPacket(final TransmitPacketInput input) {
-        // TODO Auto-generated method stub
-        return null;
+        final PacketOutInput message = PacketOutConvertor.toPacketOutInput(input, version, deviceContext.getNextXid()
+                .getValue(), datapathId);
+
+        BigInteger connectionID = PRIMARY_CONNECTION;
+        final ConnectionCookie connectionCookie = input.getConnectionCookie();
+        if (connectionCookie != null && connectionCookie.getValue() != null) {
+            connectionID = BigInteger.valueOf(connectionCookie.getValue());
+        }
+
+        return provideConnectionAdapter(connectionID).packetOut(message);
     }
 }

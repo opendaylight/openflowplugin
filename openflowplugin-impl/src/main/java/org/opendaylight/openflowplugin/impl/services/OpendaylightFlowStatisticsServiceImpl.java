@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.impl.services;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
+import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
@@ -36,14 +37,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.util.concurrent.Future;
 
 /**
  * @author joe
  */
 // TODO: implement this
 public class OpendaylightFlowStatisticsServiceImpl extends CommonService implements OpendaylightFlowStatisticsService {
-
 
     private static final Logger LOG = LoggerFactory.getLogger(OpendaylightFlowStatisticsServiceImpl.class);
 
@@ -52,13 +51,14 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
             final GetAggregateFlowStatisticsFromFlowTableForAllFlowsInput input) {
 
         final RequestContext requestContext = rpcContext.createRequestContext();
-        final SettableFuture<RpcResult<GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput>> result = rpcContext.storeOrFail(requestContext);
+        final SettableFuture<RpcResult<GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput>> result = rpcContext
+                .storeOrFail(requestContext);
         if (!result.isDone()) {
             final Xid xid = deviceContext.getNextXid();
 
             // Create multipart request body for fetch all the group stats
-            MultipartRequestAggregateCaseBuilder multipartRequestAggregateCaseBuilder = new MultipartRequestAggregateCaseBuilder();
-            MultipartRequestAggregateBuilder mprAggregateRequestBuilder = new MultipartRequestAggregateBuilder();
+            final MultipartRequestAggregateCaseBuilder multipartRequestAggregateCaseBuilder = new MultipartRequestAggregateCaseBuilder();
+            final MultipartRequestAggregateBuilder mprAggregateRequestBuilder = new MultipartRequestAggregateBuilder();
             mprAggregateRequestBuilder.setTableId(input.getTableId().getValue());
             mprAggregateRequestBuilder.setOutPort(OFConstants.OFPP_ANY);
             mprAggregateRequestBuilder.setOutGroup(OFConstants.OFPG_ANY);
@@ -69,14 +69,16 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
 
             // Set request body to main multipart request
             multipartRequestAggregateCaseBuilder.setMultipartRequestAggregate(mprAggregateRequestBuilder.build());
-            MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(MultipartType.OFPMPAGGREGATE, xid.getValue(), version);
+            final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
+                    MultipartType.OFPMPAGGREGATE, xid.getValue(), version);
 
             mprInput.setMultipartRequestBody(multipartRequestAggregateCaseBuilder.build());
 
-            Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext()
+            final Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext()
                     .getConnectionAdapter().multipartRequest(mprInput.build());
 
-            ListenableFuture<RpcResult<Void>> futureResultFromOfLib = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
+            final ListenableFuture<RpcResult<Void>> futureResultFromOfLib = JdkFutureAdapters
+                    .listenInPoolThread(resultFromOFLib);
 
             convertRpcResultToRequestFuture(requestContext, futureResultFromOfLib);
 
@@ -86,15 +88,15 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
     }
 
     @Override
-    public Future<RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>> getAggregateFlowStatisticsFromFlowTableForGivenMatch
-            (
-                    final GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput input) {
+    public Future<RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>> getAggregateFlowStatisticsFromFlowTableForGivenMatch(
+            final GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput input) {
         final RequestContext requestContext = rpcContext.createRequestContext();
-        final SettableFuture<RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>> result = rpcContext.storeOrFail(requestContext);
+        final SettableFuture<RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>> result = rpcContext
+                .storeOrFail(requestContext);
         if (!result.isDone()) {
             final Xid xid = deviceContext.getNextXid();
-            MultipartRequestAggregateCaseBuilder multipartRequestAggregateCaseBuilder = new MultipartRequestAggregateCaseBuilder();
-            MultipartRequestAggregateBuilder mprAggregateRequestBuilder = new MultipartRequestAggregateBuilder();
+            final MultipartRequestAggregateCaseBuilder multipartRequestAggregateCaseBuilder = new MultipartRequestAggregateCaseBuilder();
+            final MultipartRequestAggregateBuilder mprAggregateRequestBuilder = new MultipartRequestAggregateBuilder();
             mprAggregateRequestBuilder.setTableId(input.getTableId());
             mprAggregateRequestBuilder.setOutPort(input.getOutPort().longValue());
             // TODO: repeating code
@@ -116,11 +118,14 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
             // Set request body to main multipart request
             multipartRequestAggregateCaseBuilder.setMultipartRequestAggregate(mprAggregateRequestBuilder.build());
 
-            MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(MultipartType.OFPMPAGGREGATE, xid.getValue(), version);
+            final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
+                    MultipartType.OFPMPAGGREGATE, xid.getValue(), version);
 
             mprInput.setMultipartRequestBody(multipartRequestAggregateCaseBuilder.build());
-            Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext().getConnectionAdapter().multipartRequest(mprInput.build());
-            ListenableFuture<RpcResult<Void>> futureResultFromOfLib = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
+            final Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext()
+                    .getConnectionAdapter().multipartRequest(mprInput.build());
+            final ListenableFuture<RpcResult<Void>> futureResultFromOfLib = JdkFutureAdapters
+                    .listenInPoolThread(resultFromOFLib);
 
             convertRpcResultToRequestFuture(requestContext, futureResultFromOfLib);
 
@@ -133,12 +138,13 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
             final GetAllFlowStatisticsFromFlowTableInput input) {
 
         final RequestContext requestContext = rpcContext.createRequestContext();
-        final SettableFuture<RpcResult<GetAllFlowStatisticsFromFlowTableOutput>> result = rpcContext.storeOrFail(requestContext);
+        final SettableFuture<RpcResult<GetAllFlowStatisticsFromFlowTableOutput>> result = rpcContext
+                .storeOrFail(requestContext);
         if (!result.isDone()) {
 
             final Xid xid = deviceContext.getNextXid();
 
-            MultipartRequestFlowBuilder mprFlowRequestBuilder = new MultipartRequestFlowBuilder();
+            final MultipartRequestFlowBuilder mprFlowRequestBuilder = new MultipartRequestFlowBuilder();
             mprFlowRequestBuilder.setTableId(input.getTableId().getValue());
             mprFlowRequestBuilder.setOutPort(OFConstants.OFPP_ANY);
             mprFlowRequestBuilder.setOutGroup(OFConstants.OFPG_ANY);
@@ -146,14 +152,17 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
             mprFlowRequestBuilder.setCookieMask(OFConstants.DEFAULT_COOKIE_MASK);
             FlowCreatorUtil.setWildcardedFlowMatch(version, mprFlowRequestBuilder);
 
-            MultipartRequestFlowCaseBuilder multipartRequestFlowCaseBuilder = new MultipartRequestFlowCaseBuilder();
+            final MultipartRequestFlowCaseBuilder multipartRequestFlowCaseBuilder = new MultipartRequestFlowCaseBuilder();
             multipartRequestFlowCaseBuilder.setMultipartRequestFlow(mprFlowRequestBuilder.build());
 
-            MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(MultipartType.OFPMPFLOW, xid.getValue(), version);
+            final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
+                    MultipartType.OFPMPFLOW, xid.getValue(), version);
 
             mprInput.setMultipartRequestBody(multipartRequestFlowCaseBuilder.build());
-            Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext().getConnectionAdapter().multipartRequest(mprInput.build());
-            ListenableFuture<RpcResult<Void>> futureResultFromOfLib = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
+            final Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext()
+                    .getConnectionAdapter().multipartRequest(mprInput.build());
+            final ListenableFuture<RpcResult<Void>> futureResultFromOfLib = JdkFutureAdapters
+                    .listenInPoolThread(resultFromOFLib);
 
             convertRpcResultToRequestFuture(requestContext, futureResultFromOfLib);
 
@@ -166,15 +175,14 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
             final GetAllFlowsStatisticsFromAllFlowTablesInput input) {
 
         final RequestContext requestContext = rpcContext.createRequestContext();
-        final SettableFuture<RpcResult<GetAllFlowsStatisticsFromAllFlowTablesOutput>> result = rpcContext.storeOrFail(requestContext);
+        final SettableFuture<RpcResult<GetAllFlowsStatisticsFromAllFlowTablesOutput>> result = rpcContext
+                .storeOrFail(requestContext);
         if (!result.isDone()) {
 
             final Xid xid = deviceContext.getNextXid();
 
-            MultipartRequestFlowCaseBuilder multipartRequestFlowCaseBuilder =
-                    new MultipartRequestFlowCaseBuilder();
-            MultipartRequestFlowBuilder mprFlowRequestBuilder =
-                    new MultipartRequestFlowBuilder();
+            final MultipartRequestFlowCaseBuilder multipartRequestFlowCaseBuilder = new MultipartRequestFlowCaseBuilder();
+            final MultipartRequestFlowBuilder mprFlowRequestBuilder = new MultipartRequestFlowBuilder();
             mprFlowRequestBuilder.setTableId(OFConstants.OFPTT_ALL);
             mprFlowRequestBuilder.setOutPort(OFConstants.OFPP_ANY);
             mprFlowRequestBuilder.setOutGroup(OFConstants.OFPG_ANY);
@@ -182,12 +190,15 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
             mprFlowRequestBuilder.setCookieMask(OFConstants.DEFAULT_COOKIE_MASK);
             FlowCreatorUtil.setWildcardedFlowMatch(version, mprFlowRequestBuilder);
 
-            MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(MultipartType.OFPMPFLOW, xid.getValue(), version);
+            final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
+                    MultipartType.OFPMPFLOW, xid.getValue(), version);
 
             multipartRequestFlowCaseBuilder.setMultipartRequestFlow(mprFlowRequestBuilder.build());
             mprInput.setMultipartRequestBody(multipartRequestFlowCaseBuilder.build());
-            Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext().getConnectionAdapter().multipartRequest(mprInput.build());
-            ListenableFuture<RpcResult<Void>> futureResultFromOfLib = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
+            final Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext()
+                    .getConnectionAdapter().multipartRequest(mprInput.build());
+            final ListenableFuture<RpcResult<Void>> futureResultFromOfLib = JdkFutureAdapters
+                    .listenInPoolThread(resultFromOFLib);
 
             convertRpcResultToRequestFuture(requestContext, futureResultFromOfLib);
         }
@@ -198,12 +209,13 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
     public Future<RpcResult<GetFlowStatisticsFromFlowTableOutput>> getFlowStatisticsFromFlowTable(
             final GetFlowStatisticsFromFlowTableInput input) {
         final RequestContext requestContext = rpcContext.createRequestContext();
-        final SettableFuture<RpcResult<GetFlowStatisticsFromFlowTableOutput>> result = rpcContext.storeOrFail(requestContext);
+        final SettableFuture<RpcResult<GetFlowStatisticsFromFlowTableOutput>> result = rpcContext
+                .storeOrFail(requestContext);
         if (!result.isDone()) {
             final Xid xid = deviceContext.getNextXid();
 
-            MultipartRequestFlowCaseBuilder multipartRequestFlowCaseBuilder = new MultipartRequestFlowCaseBuilder();
-            MultipartRequestFlowBuilder mprFlowRequestBuilder = new MultipartRequestFlowBuilder();
+            final MultipartRequestFlowCaseBuilder multipartRequestFlowCaseBuilder = new MultipartRequestFlowCaseBuilder();
+            final MultipartRequestFlowBuilder mprFlowRequestBuilder = new MultipartRequestFlowBuilder();
             mprFlowRequestBuilder.setTableId(input.getTableId());
 
             if (input.getOutPort() != null) {
@@ -236,10 +248,13 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
 
             // Set request body to main multipart request
             multipartRequestFlowCaseBuilder.setMultipartRequestFlow(mprFlowRequestBuilder.build());
-            MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(MultipartType.OFPMPFLOW, xid.getValue(), version);
+            final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
+                    MultipartType.OFPMPFLOW, xid.getValue(), version);
             mprInput.setMultipartRequestBody(multipartRequestFlowCaseBuilder.build());
-            Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext().getConnectionAdapter().multipartRequest(mprInput.build());
-            ListenableFuture<RpcResult<Void>> futureResultFromOfLib = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
+            final Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext()
+                    .getConnectionAdapter().multipartRequest(mprInput.build());
+            final ListenableFuture<RpcResult<Void>> futureResultFromOfLib = JdkFutureAdapters
+                    .listenInPoolThread(resultFromOFLib);
 
             convertRpcResultToRequestFuture(requestContext, futureResultFromOfLib);
 
@@ -247,10 +262,10 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
         return result;
     }
 
-    private void convertRpcResultToRequestFuture(final RequestContext requestContext, final ListenableFuture<RpcResult<Void>> futureResultFromOfLib) {
-        RpcResultConvertor<SetConfigOutput> rpcResultConvertor = new RpcResultConvertor<>(requestContext);
-        rpcResultConvertor.processResultFromOfJava(futureResultFromOfLib, getWaitTime());
+    private void convertRpcResultToRequestFuture(final RequestContext requestContext,
+            final ListenableFuture<RpcResult<Void>> futureResultFromOfLib) {
+        final RpcResultConvertor<SetConfigOutput> rpcResultConvertor = new RpcResultConvertor<>(requestContext);
+        rpcResultConvertor.processResultFromOfJava(futureResultFromOfLib, provideWaitTime());
     }
-
 
 }
