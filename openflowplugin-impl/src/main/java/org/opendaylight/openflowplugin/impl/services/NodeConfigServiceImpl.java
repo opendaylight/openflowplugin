@@ -1,22 +1,30 @@
 /**
  * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
- * 
+ *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 package org.opendaylight.openflowplugin.impl.services;
 
-import java.util.concurrent.Future;
-import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.JdkFutureAdapters;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.SettableFuture;
+import org.opendaylight.openflowplugin.api.openflow.device.Xid;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev131103.TransactionId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.NodeConfigService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.SetConfigInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.SetConfigOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.SetConfigOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.SwitchConfigFlag;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetConfigInputBuilder;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import java.math.BigInteger;
+import java.util.concurrent.Future;
 
 /**
  * @author joe
- * 
  */
 // TODO: implement this
 public class NodeConfigServiceImpl extends CommonService implements NodeConfigService {
@@ -31,8 +39,25 @@ public class NodeConfigServiceImpl extends CommonService implements NodeConfigSe
          */
     @Override
     public Future<RpcResult<SetConfigOutput>> setConfig(final SetConfigInput input) {
-        // TODO Auto-generated method stub
-        return null;
+        final SettableFuture<RpcResult<SetConfigOutput>> result = SettableFuture.create();
+        SetConfigInputBuilder builder = new SetConfigInputBuilder();
+        SwitchConfigFlag flag = SwitchConfigFlag.valueOf(input.getFlag());
+        final Xid xid = deviceContext.getNextXid();
+        builder.setXid(xid.getValue());
+        builder.setFlags(flag);
+        builder.setMissSendLen(input.getMissSearchLength());
+        builder.setVersion(version);
+        ListenableFuture<RpcResult<Void>> resultFromOfLib = JdkFutureAdapters.listenInPoolThread(deviceContext.getPrimaryConnectionContext().getConnectionAdapter().setConfig(builder.build()));
+        Futures.addCallback(resultFromOfLib, new ResultCallback<SetConfigOutput>(result) {
+            @Override
+            public SetConfigOutput createResult() {
+                SetConfigOutputBuilder setConfigOutputBuilder = new SetConfigOutputBuilder();
+                setConfigOutputBuilder.setTransactionId(new TransactionId(BigInteger.valueOf(xid.getValue())));
+                return setConfigOutputBuilder.build();
+            }
+        });
+        return result;
+
     }
 
 }
