@@ -36,6 +36,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.Upda
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.OriginalFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.UpdatedFlow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.SetConfigOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.common.RpcError;
@@ -125,24 +126,10 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
         final SettableFuture<RpcResult<T>> result = rpcContext.storeOrFail(requestContext);
 
         if (!result.isDone()) {
-            try {
                 final Future<RpcResult<Void>> resultFromOFLib = function.apply(connectionID);
-                final RpcResult<Void> rpcResult = resultFromOFLib.get(getWaitTime(), TimeUnit.MILLISECONDS);
-                if (!rpcResult.isSuccessful()) {
-                    result.set(RpcResultBuilder.<T> failed().withRpcErrors(rpcResult.getErrors()).build());
-                    requestContext.close();
-                }
-            } catch (InterruptedException | ExecutionException | TimeoutException e) {
-                result.set(RpcResultBuilder
-                        .<T> failed()
-                        .withError(RpcError.ErrorType.APPLICATION, "",
-                                "Flow modification on device wasn't successfull.").build());
-                requestContext.close();
-            } catch (final Exception e) {
-                result.set(RpcResultBuilder.<T> failed()
-                        .withError(RpcError.ErrorType.APPLICATION, "", "Flow translation to OF JAVA failed.").build());
-                requestContext.close();
-            }
+
+                RpcResultConvertor<T> rpcResultConvertor = new RpcResultConvertor<>(requestContext);
+                rpcResultConvertor.processResultFromOfJava(resultFromOFLib, getWaitTime());
 
         } else {
             requestContext.close();
