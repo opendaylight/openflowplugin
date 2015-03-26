@@ -57,6 +57,5 @@ public class ConnectionContextImpl implements ConnectionContext {
     @Override
     public void setFeatures(FeaturesReply featuresReply) {
         this.featuresReply = featuresReply;
-        
     }
 }
