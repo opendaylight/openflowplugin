@@ -47,7 +47,7 @@ public class CommonService {
         this.primaryConnectionAdapter = deviceContext.getPrimaryConnectionContext().getConnectionAdapter();
     }
 
-    protected long getWaitTime() {
+    protected long provideWaitTime() {
         return WAIT_TIME;
     }
 
