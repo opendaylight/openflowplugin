@@ -27,7 +27,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.G
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetFlowStatisticsFromFlowTableOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.OpendaylightFlowStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.SetConfigOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartRequestFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestAggregateCaseBuilder;
@@ -70,8 +69,8 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
 
             // Set request body to main multipart request
             multipartRequestAggregateCaseBuilder.setMultipartRequestAggregate(mprAggregateRequestBuilder.build());
-            MultipartRequestInputBuilder mprInput =
-                    createMultipartHeader(MultipartType.OFPMPAGGREGATE, xid.getValue());
+            MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(MultipartType.OFPMPAGGREGATE, xid.getValue(), version);
+
             mprInput.setMultipartRequestBody(multipartRequestAggregateCaseBuilder.build());
 
             Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext()
@@ -116,7 +115,9 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
 
             // Set request body to main multipart request
             multipartRequestAggregateCaseBuilder.setMultipartRequestAggregate(mprAggregateRequestBuilder.build());
-            MultipartRequestInputBuilder mprInput = createMultipartHeader(MultipartType.OFPMPAGGREGATE, xid.getValue());
+
+            MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(MultipartType.OFPMPAGGREGATE, xid.getValue(), version);
+
             mprInput.setMultipartRequestBody(multipartRequestAggregateCaseBuilder.build());
             Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext().getConnectionAdapter().multipartRequest(mprInput.build());
             ListenableFuture<RpcResult<Void>> futureResultFromOfLib = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
@@ -148,8 +149,8 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
             MultipartRequestFlowCaseBuilder multipartRequestFlowCaseBuilder = new MultipartRequestFlowCaseBuilder();
             multipartRequestFlowCaseBuilder.setMultipartRequestFlow(mprFlowRequestBuilder.build());
 
-            MultipartRequestInputBuilder mprInput =
-                    createMultipartHeader(MultipartType.OFPMPFLOW, xid.getValue());
+            MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(MultipartType.OFPMPFLOW, xid.getValue(), version);
+
             mprInput.setMultipartRequestBody(multipartRequestFlowCaseBuilder.build());
             Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext().getConnectionAdapter().multipartRequest(mprInput.build());
             ListenableFuture<RpcResult<Void>> futureResultFromOfLib = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
@@ -181,8 +182,8 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
             mprFlowRequestBuilder.setCookieMask(OFConstants.DEFAULT_COOKIE_MASK);
             FlowCreatorUtil.setWildcardedFlowMatch(version, mprFlowRequestBuilder);
 
-            MultipartRequestInputBuilder mprInput =
-                    createMultipartHeader(MultipartType.OFPMPFLOW, xid.getValue());
+            MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(MultipartType.OFPMPFLOW, xid.getValue(), version);
+
             multipartRequestFlowCaseBuilder.setMultipartRequestFlow(mprFlowRequestBuilder.build());
             mprInput.setMultipartRequestBody(multipartRequestFlowCaseBuilder.build());
             Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext().getConnectionAdapter().multipartRequest(mprInput.build());
@@ -235,8 +236,7 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
 
             // Set request body to main multipart request
             multipartRequestFlowCaseBuilder.setMultipartRequestFlow(mprFlowRequestBuilder.build());
-            MultipartRequestInputBuilder mprInput =
-                    createMultipartHeader(MultipartType.OFPMPFLOW, xid.getValue());
+            MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(MultipartType.OFPMPFLOW, xid.getValue(), version);
             mprInput.setMultipartRequestBody(multipartRequestFlowCaseBuilder.build());
             Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext().getConnectionAdapter().multipartRequest(mprInput.build());
             ListenableFuture<RpcResult<Void>> futureResultFromOfLib = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
@@ -250,16 +250,6 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
     private void convertRpcResultToRequestFuture(final RequestContext requestContext, final ListenableFuture<RpcResult<Void>> futureResultFromOfLib) {
         RpcResultConvertor<SetConfigOutput> rpcResultConvertor = new RpcResultConvertor<>(requestContext);
         rpcResultConvertor.processResultFromOfJava(futureResultFromOfLib, getWaitTime());
-    }
-
-    private MultipartRequestInputBuilder createMultipartHeader(MultipartType multipart,
-                                                               Long xid) {
-        MultipartRequestInputBuilder mprInput = new MultipartRequestInputBuilder();
-        mprInput.setType(multipart);
-        mprInput.setVersion(version);
-        mprInput.setXid(xid);
-        mprInput.setFlags(new MultipartRequestFlags(false));
-        return mprInput;
     }
 
 
