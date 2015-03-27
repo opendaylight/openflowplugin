@@ -22,6 +22,7 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import com.google.common.util.concurrent.SettableFuture;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
 
@@ -104,26 +105,32 @@ public interface DeviceContext extends MessageHandler {
     Xid getNextXid();
 
     <T extends DataObject> Future<RpcResult<T>> sendRequest(Xid xid);
-    
+
     /**
      * Method provides requests map
      * @return
      */
-    public Map<Xid, RequestFutureContext> getRequests();
-    
+    public Map<Long, RequestFutureContext> getRequests();
+
     /**
      * Method writes request context into request context map
      * @param xid
      * @param requestFutureContext
      */
     public void hookRequestCtx(Xid xid, RequestFutureContext requestFutureContext);
-    
+
     /**
      * Method that set future to context in Map
-     * @param xid
      * @param ofHeader
      */
-    public void processReply(Xid xid, OfHeader ofHeader);
+    public void processReply(OfHeader ofHeader);
+
+    /**
+     * Method that set future to context in Map
+     * @param xid,
+     * @param ofHeaderList
+     */
+    public void processReply(Xid xid, List<OfHeader> ofHeaderList);
 
 }
 

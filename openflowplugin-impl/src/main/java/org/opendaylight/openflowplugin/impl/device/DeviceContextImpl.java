@@ -9,6 +9,7 @@ package org.opendaylight.openflowplugin.impl.device;
 
 import java.math.BigInteger;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
 
@@ -34,8 +35,8 @@ import com.google.common.util.concurrent.SettableFuture;
  *
  */
 public class DeviceContextImpl implements DeviceContext {
-    private Map<Xid, RequestFutureContext> requests =
-            new HashMap<Xid, RequestFutureContext>();
+    private Map<Long, RequestFutureContext> requests =
+            new HashMap<Long, RequestFutureContext>();
 
     private final Map<SwitchConnectionDistinguisher, ConnectionContext> auxiliaryConnectionContexts = new HashMap<>();
 
@@ -103,22 +104,26 @@ public class DeviceContextImpl implements DeviceContext {
     }
 
     @Override
-    public Map<Xid, RequestFutureContext> getRequests() {
-        // TODO Auto-generated method stub
+    public Map<Long, RequestFutureContext> getRequests() {
         return requests;
     }
 
     @Override
     public void hookRequestCtx(Xid xid, RequestFutureContext requestFutureContext) {
         // TODO Auto-generated method stub
-        requests.put(xid, requestFutureContext);
+        requests.put(xid.getValue(), requestFutureContext);
     }
 
     @Override
-    public void processReply(Xid xid, OfHeader ofHeader) {
-        // TODO Auto-generated method stub
-        SettableFuture replyFuture = getRequests().get(xid).getFuture();
+    public void processReply(OfHeader ofHeader) {
+        SettableFuture replyFuture = getRequests().get(ofHeader.getXid()).getFuture();
         replyFuture.set(ofHeader);
+    }
+
+    @Override
+    public void processReply(Xid xid, List<OfHeader> ofHeaderList) {
+        SettableFuture replyFuture = getRequests().get(xid.getValue()).getFuture();
+        replyFuture.set(ofHeaderList);
     }
 
 }
