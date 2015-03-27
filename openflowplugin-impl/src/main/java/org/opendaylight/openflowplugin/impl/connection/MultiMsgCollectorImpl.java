@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.openflowplugin.impl.device;
+package org.opendaylight.openflowplugin.impl.connection;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
@@ -20,7 +20,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import org.opendaylight.openflowplugin.api.openflow.device.MultiMsgCollector;
+import org.opendaylight.openflowplugin.api.openflow.connection.MultiMsgCollector;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,17 +57,21 @@ class MultiMsgCollectorImpl implements MultiMsgCollector {
         return new RemovalListener<Long, MultiCollectorObject>() {
             @Override
             public void onRemoval(final RemovalNotification<Long, MultiCollectorObject> notification) {
-                notification.getValue().invalidateFutureByTimeout();
+                if ( ! notification.getValue().future.isDone()) {
+                    LOG.warn("Removing data with XID {} from cache", notification.getKey());
+                    notification.getValue().invalidateFutureByTimeout();
+                }
             }
         };
     }
 
     private CacheBuilder<Long, MultiCollectorObject> initCacheBuilder(final int timeout) {
         return CacheBuilder.newBuilder()
-                .expireAfterWrite(timeout, TimeUnit.SECONDS)
+                .expireAfterAccess(timeout, TimeUnit.SECONDS)
                 .removalListener(getRemovalListener())
                 .initialCapacity(200)
-                .maximumSize(500);
+                .maximumSize(500)
+                .concurrencyLevel(1);
     }
 
     @Override
@@ -79,6 +84,7 @@ class MultiMsgCollectorImpl implements MultiMsgCollector {
     @Override
     public void addMultipartMsg(final MultipartReply reply) {
         Preconditions.checkNotNull(reply);
+        LOG.trace("Try to add Multipart reply msg with XID {}", reply.getXid());
         final Long xid = reply.getXid();
         final MultiCollectorObject cachedRef = cache.getIfPresent(xid);
         if (cachedRef == null) {
@@ -96,6 +102,7 @@ class MultiMsgCollectorImpl implements MultiMsgCollector {
     private class MultiCollectorObject {
         private final SettableFuture<Collection<MultipartReply>> future;
         private final Collection<MultipartReply> replyCollection;
+        private MultipartType msgType;
 
         MultiCollectorObject (final SettableFuture<Collection<MultipartReply>> future) {
             this.future = future;
@@ -103,6 +110,8 @@ class MultiMsgCollectorImpl implements MultiMsgCollector {
         }
 
         void add(final MultipartReply reply) {
+            /* Rise possible exception if it possible */
+            msgTypeValidation(reply.getType());
             replyCollection.add(reply);
         }
 
@@ -113,6 +122,22 @@ class MultiMsgCollectorImpl implements MultiMsgCollector {
         void invalidateFutureByTimeout() {
             final String msg = "MultiMsgCollector can not wait for last multipart any more";
             future.setException(new TimeoutException(msg));
+        }
+
+        void invalidateFutureByInputType(final MultipartType type) {
+            final String msg = "MultiMsgCollector get incorrect multipart msg with type " + type
+                    + " but expected type is " + msgType;
+            future.setException(new IllegalArgumentException(msg));
+        }
+
+        private void msgTypeValidation(final MultipartType type) {
+            if (msgType == null) {
+                msgType = type;
+                return;
+            }
+            if ( ! msgType.equals(type)) {
+                invalidateFutureByInputType(type);
+            }
         }
     }
 }

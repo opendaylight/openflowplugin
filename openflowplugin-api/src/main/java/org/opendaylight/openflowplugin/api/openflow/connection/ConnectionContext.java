@@ -18,7 +18,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * <p/>
  * Created by Martin Bobak <mbobak@cisco.com> on 25.2.2015.
  */
-public interface ConnectionContext {
+public interface ConnectionContext extends MultiMsgCollector {
 
     /**
      * distinguished connection states
@@ -68,12 +68,12 @@ public interface ConnectionContext {
      * @param connectionState
      */
     void setConnectionState(CONNECTION_STATE connectionState);
-    
+
     /**
      * @param featuresReply as received from device during handshake
      */
     void setFeatures(FeaturesReply featuresReply);
-    
+
     /**
      * @return featureReply as received from device during handshake
      */

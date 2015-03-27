@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.openflowplugin.api.openflow.device;
+package org.opendaylight.openflowplugin.api.openflow.connection;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.Collection;
@@ -40,7 +40,7 @@ public interface MultiMsgCollector {
      * @param xid
      * @return
      */
-    ListenableFuture<Collection<MultipartReply>> registerMultipartMsg(@Nonnull long xid);
+    ListenableFuture<Collection<MultipartReply>> registerMultipartMsg(long xid);
 
     /**
      * Method adds a reply multipart message to the collection and if the message has marker
