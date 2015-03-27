@@ -8,6 +8,7 @@
 package org.opendaylight.openflowjava.nx.api;
 
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.ExperimenterActionSubType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.ActionChoice;
 
 /**
  * @author msunal
@@ -16,13 +17,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
 public class NiciraActionSerializerKey {
     
     private final short version;
-    private final Class<? extends ExperimenterActionSubType> subtype;
+    private final Class<? extends ActionChoice> subtype;
 
     /**
      * @param version protocol wire version
      * @param subtype nx_action_subtype
      */
-    public NiciraActionSerializerKey(short version, Class<? extends ExperimenterActionSubType> subtype) {
+    public NiciraActionSerializerKey(short version, Class<? extends ActionChoice> subtype) {
         this.version = version;
         this.subtype = subtype;
     }
@@ -31,7 +32,7 @@ public class NiciraActionSerializerKey {
         return version;
     }
 
-    public Class<? extends ExperimenterActionSubType> getSubtype() {
+    public Class<? extends ActionChoice> getSubtype() {
         return subtype;
     }
 

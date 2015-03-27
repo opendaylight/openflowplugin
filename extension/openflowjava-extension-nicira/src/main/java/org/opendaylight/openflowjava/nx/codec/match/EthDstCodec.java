@@ -1,6 +1,7 @@
 package org.opendaylight.openflowjava.nx.codec.match;
 
 import io.netty.buffer.ByteBuf;
+
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntryDeserializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntrySerializerKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -12,10 +13,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Nxm0
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.EthDstCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.EthDstCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.eth.dst._case.EthDstBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmOfEthDst;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.of.match.eth.dst.grouping.EthDstValuesBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.EthDstCaseValue;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.EthDstCaseValueBuilder;
 
 public class EthDstCodec extends AbstractMatchCodec {
 
@@ -29,8 +30,8 @@ public class EthDstCodec extends AbstractMatchCodec {
     @Override
     public void serialize(MatchEntry input, ByteBuf outBuffer) {
         serializeHeader(input, outBuffer);
-        EthDstCase ethDstCase = ((EthDstCase) input.getMatchEntryValue());
-        outBuffer.writeBytes(ByteBufUtils.macAddressToBytes(ethDstCase.getEthDst().getMacAddress().getValue()));
+        EthDstCaseValue ethDstCase = ((EthDstCaseValue) input.getMatchEntryValue());
+        outBuffer.writeBytes(ByteBufUtils.macAddressToBytes(ethDstCase.getEthDstValues().getMacAddress().getValue()));
     }
 
     @Override
@@ -38,11 +39,10 @@ public class EthDstCodec extends AbstractMatchCodec {
         MatchEntryBuilder matchEntryBuilder = deserializeHeader(message);
         byte[] address = new byte[VALUE_LENGTH];
         message.readBytes(address);
-        EthDstCaseBuilder ethDstCaseBuilder = new EthDstCaseBuilder();
-        EthDstBuilder ethDstBuilder = new EthDstBuilder();
-        ethDstBuilder.setMacAddress(new MacAddress(ByteBufUtils.macAddressToString(address)));
-        ethDstCaseBuilder.setEthDst(ethDstBuilder.build());
-        matchEntryBuilder.setMatchEntryValue(ethDstCaseBuilder.build());
+        EthDstCaseValueBuilder caseBuilder = new EthDstCaseValueBuilder();
+        caseBuilder.setEthDstValues(new EthDstValuesBuilder().setMacAddress(
+                new MacAddress(ByteBufUtils.macAddressToString(address))).build());
+        matchEntryBuilder.setMatchEntryValue(caseBuilder.build());
         return matchEntryBuilder.build();
     }
 

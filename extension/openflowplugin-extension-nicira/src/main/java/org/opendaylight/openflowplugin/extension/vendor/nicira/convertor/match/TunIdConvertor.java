@@ -18,6 +18,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.TunnelIdCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.TunnelIdCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.tunnel.id._case.TunnelIdBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.nx.match.tun.id.grouping.TunIdValuesBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.TunIdCaseValue;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.TunIdCaseValueBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.ExtensionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.grouping.Extension;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifPacketIn;
@@ -40,7 +43,7 @@ public class TunIdConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorF
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.opendaylight.openflowplugin.extension.api.ConvertorFromOFJava#convert
      * (org.opendaylight.yangtools.yang.binding.DataContainer,
@@ -48,8 +51,8 @@ public class TunIdConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorF
      */
     @Override
     public ExtensionAugment<? extends Augmentation<Extension>> convert(MatchEntry input, MatchPath path) {
-        TunnelIdCase tunnelIdCase = ((TunnelIdCase) input.getMatchEntryValue());
-        return resolveAugmentation(new NxmNxTunIdBuilder().setValue(new BigInteger(tunnelIdCase.getTunnelId().getTunnelId())).build(), path,
+        TunIdCaseValue tunnelIdCase = ((TunIdCaseValue) input.getMatchEntryValue());
+        return resolveAugmentation(new NxmNxTunIdBuilder().setValue(tunnelIdCase.getTunIdValues().getValue()).build(), path,
                 NxmNxTunIdKey.class);
     }
 
@@ -72,7 +75,7 @@ public class TunIdConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorF
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.opendaylight.openflowplugin.extension.api.ConvertorToOFJava#convert
      * (org
@@ -87,11 +90,11 @@ public class TunIdConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorF
         }
         BigInteger value = matchGrouping.get().getNxmNxTunId().getValue();
 
-        TunnelIdCaseBuilder tunnelIdCaseBuilder = new TunnelIdCaseBuilder();
+        TunIdCaseValueBuilder tunnelIdCaseBuilder = new TunIdCaseValueBuilder();
 
-        TunnelIdBuilder tunnelIdBuilder = new TunnelIdBuilder();
-        tunnelIdBuilder.setTunnelId(value.toByteArray());
-        tunnelIdCaseBuilder.setTunnelId(tunnelIdBuilder.build());
+        TunIdValuesBuilder tunnelIdBuilder = new TunIdValuesBuilder();
+        tunnelIdBuilder.setValue(value);
+        tunnelIdCaseBuilder.setTunIdValues(tunnelIdBuilder.build());
 
         return MatchUtil.createDefaultMatchEntryBuilder(org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxTunId.class,
                 Nxm1Class.class,
