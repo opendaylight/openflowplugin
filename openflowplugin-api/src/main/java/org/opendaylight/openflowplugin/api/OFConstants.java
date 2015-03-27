@@ -18,11 +18,11 @@ public final class OFConstants {
         throw new UnsupportedOperationException("OF plugin Constants holder class");
     }
 
-    /** reserved port: process with normal L2/L3 switching  */
+    /** enum ofp_port_no, reserved port: process with normal L2/L3 switching  */
     public static final short OFPP_NORMAL = ((short)0xfffa);
-    /** reserved port: all physical ports except input port  */
+    /** enum ofp_port_no, reserved port: all physical ports except input port  */
     public static final short OFPP_ALL  = ((short)0xfffc);
-    /** reserved port: local openflow port  */
+    /** enum ofp_port_no, reserved port: local openflow port  */
     public static final short OFPP_LOCAL = ((short)0xfffe);
 
 
@@ -33,14 +33,24 @@ public final class OFConstants {
 
     public final static String OF_URI_PREFIX = "openflow:";
 
+    /** enum ofp_table: Table numbering, wildcard table used for table config, flow stats and flow deletes. */
     public static final Short OFPTT_ALL = 0xff;
-    public static final Long ANY = Long.parseLong("ffffffff", 16);
+    public static final Long ANY = 0xffffffffL;
+    /** Wildcard port used only for flow mod (delete) and flow stats requests. Selects
+     *  all flows regardless of output port (including flows with no output port).*/
     public static final Long OFPP_ANY = ANY;
+    /** enum ofp_group: For OFPFC_DELETE* commands, require matching entries to include this as an
+     *  output group. A value of OFPG_ANY indicates no restriction. */
     public static final Long OFPG_ANY = ANY;
-    public static final Long OFPQ_ANY = ANY;
+    /** Refers to all queues conﬁgured at the speciﬁed port. */
+    public static final Long OFPQ_ALL = ANY;
     public static final BigInteger DEFAULT_COOKIE = BigInteger.ZERO;
     public static final BigInteger DEFAULT_COOKIE_MASK = BigInteger.ZERO;
+    /** indicates that no buffering should be applied and the whole packet is to be
+     *  sent to the controller. */
     public static final Long OFP_NO_BUFFER = 0xffffffffL;
+    /** enum ofp_controller_max_len: indicates that no buffering should be applied and the whole packet is to be
+     *  sent to the controller. */
     public static final Integer OFPCML_NO_BUFFER = 0xffff;
 
 
