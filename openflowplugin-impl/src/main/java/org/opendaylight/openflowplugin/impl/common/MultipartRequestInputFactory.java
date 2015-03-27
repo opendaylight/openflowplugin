@@ -191,7 +191,7 @@ public final class MultipartRequestInputFactory {
                 MultipartRequestQueueCaseBuilder multipartRequestQueueCaseBuilder = new MultipartRequestQueueCaseBuilder();
                 MultipartRequestQueueBuilder multipartRequestQueueBuilder = new MultipartRequestQueueBuilder();
                 multipartRequestQueueBuilder.setPortNo(OFConstants.OFPP_ANY);
-                multipartRequestQueueBuilder.setQueueId(OFConstants.OFPQ_ANY);
+                multipartRequestQueueBuilder.setQueueId(OFConstants.OFPQ_ALL);
                 multipartRequestQueueCaseBuilder.setMultipartRequestQueue(multipartRequestQueueBuilder.build());
                 return multipartRequestQueueCaseBuilder.build();
             case OFPMPGROUP:
