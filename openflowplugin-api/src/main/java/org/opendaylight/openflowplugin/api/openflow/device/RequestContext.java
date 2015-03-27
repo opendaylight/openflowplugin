@@ -18,8 +18,29 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
  */
 public interface RequestContext<T extends DataObject> extends RequestFutureContext<T>, AutoCloseable {
 
-    @Override
-    void close();
+    /**
+     * Returns xid generated for this request.
+     * @return
+     */
+    Xid getXid();
 
+    /**
+     * Sets xid generated for this request.
+     * @return
+     */
+    void setXid(Xid xid);
+
+    /**
+     * Returns request timeout value.
+     * @return
+     */
+    long getWaitTimeout();
+
+
+    /**
+     * Sets request timeout value.
+     * @return
+     */
+    void setWaitTimeout(long waitTimeout);
 
 }
