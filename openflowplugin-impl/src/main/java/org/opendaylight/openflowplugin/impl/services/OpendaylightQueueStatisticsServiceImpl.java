@@ -49,8 +49,8 @@ public class OpendaylightQueueStatisticsServiceImpl extends CommonService implem
             MultipartRequestQueueBuilder mprQueueBuilder = new MultipartRequestQueueBuilder();
             // Select all ports
             mprQueueBuilder.setPortNo(OFConstants.OFPP_ANY);
-            // Select all the ports
-            mprQueueBuilder.setQueueId(OFConstants.OFPQ_ANY);
+            // Select all the queues
+            mprQueueBuilder.setQueueId(OFConstants.OFPQ_ALL);
             caseBuilder.setMultipartRequestQueue(mprQueueBuilder.build());
 
             // Set request body to main multipart request
@@ -78,7 +78,7 @@ public class OpendaylightQueueStatisticsServiceImpl extends CommonService implem
             MultipartRequestQueueCaseBuilder caseBuilder = new MultipartRequestQueueCaseBuilder();
             MultipartRequestQueueBuilder mprQueueBuilder = new MultipartRequestQueueBuilder();
             // Select all queues
-            mprQueueBuilder.setQueueId(OFConstants.OFPQ_ANY);
+            mprQueueBuilder.setQueueId(OFConstants.OFPQ_ALL);
             // Select specific port
             mprQueueBuilder.setPortNo(InventoryDataServiceUtil.portNumberfromNodeConnectorId(
                     OpenflowVersion.get(version),
