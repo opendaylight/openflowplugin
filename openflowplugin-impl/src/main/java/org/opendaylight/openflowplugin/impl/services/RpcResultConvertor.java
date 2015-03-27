@@ -8,51 +8,53 @@
 
 package org.opendaylight.openflowplugin.impl.services;
 
-import org.slf4j.Logger;
-
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 /**
  * Created by Martin Bobak <mbobak@cisco.com> on 26.3.2015.
  */
 public class RpcResultConvertor<T extends DataObject> {
-    private static final Logger LOG = org.slf4j.LoggerFactory.getLogger(RpcResultConvertor.class);
 
-    private final RequestContext requestContext;
+    private final RequestContext<T> requestContext;
+    private final DeviceContext deviceContext;
 
-    public RpcResultConvertor(RequestContext requestContext) {
+    public RpcResultConvertor(final RequestContext<T> requestContext, final DeviceContext deviceContext) {
         this.requestContext = requestContext;
+        this.deviceContext = deviceContext;
     }
 
-    public void processResultFromOfJava(final Future<RpcResult<Void>> futureResultFromOfLib,
-                                        final long waitTime) {
+    public <F> void processResultFromOfJava(final Future<RpcResult<F>> futureResultFromOfLib) {
         try {
-            final RpcResult<Void> rpcResult = futureResultFromOfLib.get(waitTime, TimeUnit.MILLISECONDS);
+            final RpcResult<F> rpcResult = futureResultFromOfLib.get(requestContext.getWaitTimeout(), TimeUnit.MILLISECONDS);
             if (!rpcResult.isSuccessful()) {
-                requestContext.getFuture().set(RpcResultBuilder.<T>failed().withRpcErrors(rpcResult.getErrors()).build());
+                requestContext.getFuture().set(
+                        RpcResultBuilder.<T> failed().withRpcErrors(rpcResult.getErrors()).build());
                 RequestContextUtil.closeRequstContext(requestContext);
+            } else {
+                deviceContext.hookRequestCtx(requestContext.getXid(), requestContext);
             }
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            requestContext.getFuture().set(RpcResultBuilder
-                    .<T>failed()
-                    .withError(RpcError.ErrorType.APPLICATION, "",
-                            "Flow modification on device wasn't successfull.").build());
+            requestContext.getFuture().set(
+                    RpcResultBuilder
+                            .<T> failed()
+                            .withError(RpcError.ErrorType.APPLICATION, "",
+                                    "Flow modification on device wasn't successfull.").build());
             RequestContextUtil.closeRequstContext(requestContext);
         } catch (final Exception e) {
-            requestContext.getFuture().set(RpcResultBuilder.<T>failed()
-                    .withError(RpcError.ErrorType.APPLICATION, "", "Flow translation to OF JAVA failed.").build());
+            requestContext.getFuture().set(
+                    RpcResultBuilder.<T> failed()
+                            .withError(RpcError.ErrorType.APPLICATION, "", "Flow translation to OF JAVA failed.")
+                            .build());
             RequestContextUtil.closeRequstContext(requestContext);
         }
     }
-
-
-
 }

@@ -16,7 +16,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.GetFlowTablesStatisticsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.GetFlowTablesStatisticsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.OpendaylightFlowTableStatisticsService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.SetConfigOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestTableCaseBuilder;
@@ -32,7 +31,7 @@ public class OpendaylightFlowTableStatisticsServiceImpl extends CommonService im
     @Override
     public Future<RpcResult<GetFlowTablesStatisticsOutput>> getFlowTablesStatistics(
             final GetFlowTablesStatisticsInput input) {
-        final RequestContext requestContext = rpcContext.createRequestContext();
+        final RequestContext<GetFlowTablesStatisticsOutput> requestContext = rpcContext.createRequestContext();
         final SettableFuture<RpcResult<GetFlowTablesStatisticsOutput>> result = rpcContext.storeOrFail(requestContext);
 
         if (!result.isDone()) {
@@ -56,8 +55,8 @@ public class OpendaylightFlowTableStatisticsServiceImpl extends CommonService im
             final ListenableFuture<RpcResult<Void>> futureResultFromOfLib = JdkFutureAdapters
                     .listenInPoolThread(resultFromOFLib);
 
-            final RpcResultConvertor<SetConfigOutput> rpcResultConvertor = new RpcResultConvertor<>(requestContext);
-            rpcResultConvertor.processResultFromOfJava(futureResultFromOfLib, provideWaitTime());
+            RpcResultConvertor<GetFlowTablesStatisticsOutput> rpcResultConvertor = new RpcResultConvertor<>(requestContext, deviceContext);
+            rpcResultConvertor.processResultFromOfJava(futureResultFromOfLib);
 
         } else {
             RequestContextUtil.closeRequstContext(requestContext);

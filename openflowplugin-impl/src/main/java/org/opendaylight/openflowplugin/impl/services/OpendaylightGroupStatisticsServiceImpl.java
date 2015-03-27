@@ -23,7 +23,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetGroupStatisticsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetGroupStatisticsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.OpendaylightGroupStatisticsService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.SetConfigOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInputBuilder;
@@ -41,7 +40,7 @@ public class OpendaylightGroupStatisticsServiceImpl extends CommonService implem
     @Override
     public Future<RpcResult<GetAllGroupStatisticsOutput>> getAllGroupStatistics(final GetAllGroupStatisticsInput input) {
 
-        final RequestContext requestContext = rpcContext.createRequestContext();
+        final RequestContext<GetAllGroupStatisticsOutput> requestContext = rpcContext.createRequestContext();
         final SettableFuture<RpcResult<GetAllGroupStatisticsOutput>> result = rpcContext.storeOrFail(requestContext);
 
         if (!result.isDone()) {
@@ -71,8 +70,8 @@ public class OpendaylightGroupStatisticsServiceImpl extends CommonService implem
             final ListenableFuture<RpcResult<Void>> futureResultFromOfLib = JdkFutureAdapters
                     .listenInPoolThread(resultFromOFLib);
 
-            final RpcResultConvertor<SetConfigOutput> rpcResultConvertor = new RpcResultConvertor<>(requestContext);
-            rpcResultConvertor.processResultFromOfJava(futureResultFromOfLib, provideWaitTime());
+            final RpcResultConvertor<GetAllGroupStatisticsOutput> rpcResultConvertor = new RpcResultConvertor<>(requestContext, deviceContext);
+            rpcResultConvertor.processResultFromOfJava(futureResultFromOfLib);
 
         } else {
             RequestContextUtil.closeRequstContext(requestContext);
@@ -83,7 +82,7 @@ public class OpendaylightGroupStatisticsServiceImpl extends CommonService implem
     @Override
     public Future<RpcResult<GetGroupDescriptionOutput>> getGroupDescription(final GetGroupDescriptionInput input) {
 
-        final RequestContext requestContext = rpcContext.createRequestContext();
+        final RequestContext<GetGroupDescriptionOutput> requestContext = rpcContext.createRequestContext();
         final SettableFuture<RpcResult<GetGroupDescriptionOutput>> result = rpcContext.storeOrFail(requestContext);
 
         if (!result.isDone()) {
@@ -98,8 +97,8 @@ public class OpendaylightGroupStatisticsServiceImpl extends CommonService implem
             final ListenableFuture<RpcResult<Void>> futureResultFromOfLib = JdkFutureAdapters
                     .listenInPoolThread(resultFromOFLib);
 
-            final RpcResultConvertor<SetConfigOutput> rpcResultConvertor = new RpcResultConvertor<>(requestContext);
-            rpcResultConvertor.processResultFromOfJava(futureResultFromOfLib, provideWaitTime());
+            final RpcResultConvertor<GetGroupDescriptionOutput> rpcResultConvertor = new RpcResultConvertor<>(requestContext, deviceContext);
+            rpcResultConvertor.processResultFromOfJava(futureResultFromOfLib);
         } else {
             RequestContextUtil.closeRequstContext(requestContext);
         }
@@ -109,7 +108,7 @@ public class OpendaylightGroupStatisticsServiceImpl extends CommonService implem
     @Override
     public Future<RpcResult<GetGroupFeaturesOutput>> getGroupFeatures(final GetGroupFeaturesInput input) {
 
-        final RequestContext requestContext = rpcContext.createRequestContext();
+        final RequestContext<GetGroupFeaturesOutput> requestContext = rpcContext.createRequestContext();
         final SettableFuture<RpcResult<GetGroupFeaturesOutput>> result = rpcContext.storeOrFail(requestContext);
 
         if (!result.isDone()) {
@@ -125,8 +124,8 @@ public class OpendaylightGroupStatisticsServiceImpl extends CommonService implem
             final ListenableFuture<RpcResult<Void>> futureResultFromOfLib = JdkFutureAdapters
                     .listenInPoolThread(resultFromOFLib);
 
-            final RpcResultConvertor<SetConfigOutput> rpcResultConvertor = new RpcResultConvertor<>(requestContext);
-            rpcResultConvertor.processResultFromOfJava(futureResultFromOfLib, provideWaitTime());
+            final RpcResultConvertor<GetGroupFeaturesOutput> rpcResultConvertor = new RpcResultConvertor<>(requestContext, deviceContext);
+            rpcResultConvertor.processResultFromOfJava(futureResultFromOfLib);
         } else {
             RequestContextUtil.closeRequstContext(requestContext);
         }
@@ -136,7 +135,7 @@ public class OpendaylightGroupStatisticsServiceImpl extends CommonService implem
     @Override
     public Future<RpcResult<GetGroupStatisticsOutput>> getGroupStatistics(final GetGroupStatisticsInput input) {
 
-        final RequestContext requestContext = rpcContext.createRequestContext();
+        final RequestContext<GetGroupStatisticsOutput> requestContext = rpcContext.createRequestContext();
         final SettableFuture<RpcResult<GetGroupStatisticsOutput>> result = rpcContext.storeOrFail(requestContext);
 
         if (!result.isDone()) {
@@ -157,8 +156,8 @@ public class OpendaylightGroupStatisticsServiceImpl extends CommonService implem
             final ListenableFuture<RpcResult<Void>> futureResultFromOfLib = JdkFutureAdapters
                     .listenInPoolThread(resultFromOFLib);
 
-            final RpcResultConvertor<SetConfigOutput> rpcResultConvertor = new RpcResultConvertor<>(requestContext);
-            rpcResultConvertor.processResultFromOfJava(futureResultFromOfLib, provideWaitTime());
+            final RpcResultConvertor<GetGroupStatisticsOutput> rpcResultConvertor = new RpcResultConvertor<>(requestContext, deviceContext);
+            rpcResultConvertor.processResultFromOfJava(futureResultFromOfLib);
         } else {
             RequestContextUtil.closeRequstContext(requestContext);
         }

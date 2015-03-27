@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
+import org.opendaylight.yangtools.yang.binding.DataObject;
+
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
@@ -27,7 +29,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.G
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetFlowStatisticsFromFlowTableInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetFlowStatisticsFromFlowTableOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.OpendaylightFlowStatisticsService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.SetConfigOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestAggregateCaseBuilder;
@@ -49,7 +50,7 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
     public Future<RpcResult<GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput>> getAggregateFlowStatisticsFromFlowTableForAllFlows(
             final GetAggregateFlowStatisticsFromFlowTableForAllFlowsInput input) {
 
-        final RequestContext requestContext = rpcContext.createRequestContext();
+        final RequestContext<GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput> requestContext = rpcContext.createRequestContext();
         final SettableFuture<RpcResult<GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput>> result = rpcContext
                 .storeOrFail(requestContext);
         if (!result.isDone()) {
@@ -89,7 +90,7 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
     @Override
     public Future<RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>> getAggregateFlowStatisticsFromFlowTableForGivenMatch(
             final GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput input) {
-        final RequestContext requestContext = rpcContext.createRequestContext();
+        final RequestContext<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput> requestContext = rpcContext.createRequestContext();
         final SettableFuture<RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>> result = rpcContext
                 .storeOrFail(requestContext);
         if (!result.isDone()) {
@@ -136,7 +137,7 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
     public Future<RpcResult<GetAllFlowStatisticsFromFlowTableOutput>> getAllFlowStatisticsFromFlowTable(
             final GetAllFlowStatisticsFromFlowTableInput input) {
 
-        final RequestContext requestContext = rpcContext.createRequestContext();
+        final RequestContext<GetAllFlowStatisticsFromFlowTableOutput> requestContext = rpcContext.createRequestContext();
         final SettableFuture<RpcResult<GetAllFlowStatisticsFromFlowTableOutput>> result = rpcContext
                 .storeOrFail(requestContext);
         if (!result.isDone()) {
@@ -173,7 +174,7 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
     public Future<RpcResult<GetAllFlowsStatisticsFromAllFlowTablesOutput>> getAllFlowsStatisticsFromAllFlowTables(
             final GetAllFlowsStatisticsFromAllFlowTablesInput input) {
 
-        final RequestContext requestContext = rpcContext.createRequestContext();
+        final RequestContext<GetAllFlowsStatisticsFromAllFlowTablesOutput> requestContext = rpcContext.createRequestContext();
         final SettableFuture<RpcResult<GetAllFlowsStatisticsFromAllFlowTablesOutput>> result = rpcContext
                 .storeOrFail(requestContext);
         if (!result.isDone()) {
@@ -207,7 +208,7 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
     @Override
     public Future<RpcResult<GetFlowStatisticsFromFlowTableOutput>> getFlowStatisticsFromFlowTable(
             final GetFlowStatisticsFromFlowTableInput input) {
-        final RequestContext requestContext = rpcContext.createRequestContext();
+        final RequestContext<GetFlowStatisticsFromFlowTableOutput> requestContext = rpcContext.createRequestContext();
         final SettableFuture<RpcResult<GetFlowStatisticsFromFlowTableOutput>> result = rpcContext
                 .storeOrFail(requestContext);
         if (!result.isDone()) {
@@ -263,10 +264,10 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
         return result;
     }
 
-    private void convertRpcResultToRequestFuture(final RequestContext requestContext,
+    private <T extends DataObject> void convertRpcResultToRequestFuture(final RequestContext<T> requestContext,
             final ListenableFuture<RpcResult<Void>> futureResultFromOfLib) {
-        final RpcResultConvertor<SetConfigOutput> rpcResultConvertor = new RpcResultConvertor<>(requestContext);
-        rpcResultConvertor.processResultFromOfJava(futureResultFromOfLib, provideWaitTime());
+        final RpcResultConvertor<T> rpcResultConvertor = new RpcResultConvertor<>(requestContext, deviceContext);
+        rpcResultConvertor.processResultFromOfJava(futureResultFromOfLib);
     }
 
 }
