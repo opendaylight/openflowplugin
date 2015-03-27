@@ -89,5 +89,10 @@ public class DeviceManagerImplTest {
     @Test
     public void testAddRequestContextReadyHandler() {
     }
+    
+    @Test
+    public void testHookRequest() {
+        
+    }
 
 }

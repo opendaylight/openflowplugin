@@ -11,11 +11,18 @@ package org.opendaylight.openflowplugin.api.openflow.device;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChain;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MessageHandler;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableFeatures;
+
 import java.math.BigInteger;
+
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+
+import com.google.common.util.concurrent.SettableFuture;
+
 import java.util.Collection;
+import java.util.Map;
 import java.util.concurrent.Future;
 
 /**
@@ -96,7 +103,27 @@ public interface DeviceContext extends MessageHandler {
 
     Xid getNextXid();
 
-    <T extends DataObject> Future<RpcResult<T>> sendRequest(DataObject dataObject);
+    <T extends DataObject> Future<RpcResult<T>> sendRequest(Xid xid);
+    
+    /**
+     * Method provides requests map
+     * @return
+     */
+    public Map<Xid, RequestFutureContext> getRequests();
+    
+    /**
+     * Method writes request context into request context map
+     * @param xid
+     * @param requestFutureContext
+     */
+    public void hookRequestCtx(Xid xid, RequestFutureContext requestFutureContext);
+    
+    /**
+     * Method that set future to context in Map
+     * @param xid
+     * @param ofHeader
+     */
+    public void processReply(Xid xid, OfHeader ofHeader);
 
 }
 

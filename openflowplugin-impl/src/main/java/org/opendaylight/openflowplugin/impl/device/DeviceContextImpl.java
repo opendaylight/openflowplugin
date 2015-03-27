@@ -7,30 +7,39 @@
  */
 package org.opendaylight.openflowplugin.impl.device;
 
-import org.opendaylight.controller.md.sal.common.api.data.TransactionChain;
-import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
-import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
-import org.opendaylight.openflowplugin.api.openflow.device.Xid;
-import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
-import org.opendaylight.openflowplugin.openflow.md.core.session.SwitchConnectionCookieOFImpl;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableFeatures;
-import org.opendaylight.yangtools.yang.binding.ChildOf;
-import org.opendaylight.yangtools.yang.binding.DataObject;
-import org.opendaylight.yangtools.yang.common.RpcResult;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Future;
 
+import org.opendaylight.controller.md.sal.common.api.data.TransactionChain;
+import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
+import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
+import org.opendaylight.openflowplugin.api.openflow.device.RequestFutureContext;
+import org.opendaylight.openflowplugin.api.openflow.device.Xid;
+import org.opendaylight.openflowplugin.api.openflow.device.XidGenerator;
+import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
+import org.opendaylight.openflowplugin.openflow.md.core.session.SwitchConnectionCookieOFImpl;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableFeatures;
+import org.opendaylight.yangtools.yang.binding.ChildOf;
+import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.opendaylight.yangtools.yang.common.RpcResult;
+
+import com.google.common.util.concurrent.SettableFuture;
+
 /**
  *
  */
 public class DeviceContextImpl implements DeviceContext {
+    private Map<Xid, RequestFutureContext> requests =
+            new HashMap<Xid, RequestFutureContext>();
 
     private final Map<SwitchConnectionDistinguisher, ConnectionContext> auxiliaryConnectionContexts = new HashMap<>();
 
+    private XidGenerator xidGenerator = new XidGenerator();
     @Override
     public <M extends ChildOf<DataObject>> void onMessage(M message, RequestContext requestContext) {
         // TODO Auto-generated method stub
@@ -85,13 +94,31 @@ public class DeviceContextImpl implements DeviceContext {
 
     @Override
     public Xid getNextXid() {
+        return xidGenerator.generate();
+    }
+
+    @Override
+    public <T extends DataObject> Future<RpcResult<T>> sendRequest(Xid xid) {
         return null;
     }
 
     @Override
-    public <T extends DataObject> Future<RpcResult<T>> sendRequest(final DataObject dataObject) {
-        return null;
+    public Map<Xid, RequestFutureContext> getRequests() {
+        // TODO Auto-generated method stub
+        return requests;
     }
 
+    @Override
+    public void hookRequestCtx(Xid xid, RequestFutureContext requestFutureContext) {
+        // TODO Auto-generated method stub
+        requests.put(xid, requestFutureContext);
+    }
+
+    @Override
+    public void processReply(Xid xid, OfHeader ofHeader) {
+        // TODO Auto-generated method stub
+        SettableFuture replyFuture = getRequests().get(xid).getFuture();
+        replyFuture.set(ofHeader);
+    }
 
 }
