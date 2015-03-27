@@ -61,7 +61,6 @@ public class SetNspConvertor implements
         ActionSetNspBuilder builder = new ActionSetNspBuilder();
         NxActionSetNspBuilder nxActionSetNspBuilder = new NxActionSetNspBuilder();
         nxActionSetNspBuilder.setNsp(nxAction.getNxSetNsp().getNsp());
-        nxActionSetNspBuilder.setExperimenterId(ActionUtil.EXPERIMENTER_ID);
         builder.setNxActionSetNsp(nxActionSetNspBuilder.build());
         return ActionUtil.createAction(builder.build());
     }

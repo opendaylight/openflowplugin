@@ -93,7 +93,6 @@ public class RegLoadConvertor implements
         nxActionRegLoadBuilder.setDst(RegMoveConvertor.resolveDst(dst.getDstChoice()));
         nxActionRegLoadBuilder.setOfsNbits((dst.getStart() << 6) | (dst.getEnd() - dst.getStart()));
         nxActionRegLoadBuilder.setValue(nxAction.getNxRegLoad().getValue());
-        nxActionRegLoadBuilder.setExperimenterId(ActionUtil.EXPERIMENTER_ID);
         actionRegLoadBuilder.setNxActionRegLoad(nxActionRegLoadBuilder.build());
         return ActionUtil.createAction(actionRegLoadBuilder.build());
     }

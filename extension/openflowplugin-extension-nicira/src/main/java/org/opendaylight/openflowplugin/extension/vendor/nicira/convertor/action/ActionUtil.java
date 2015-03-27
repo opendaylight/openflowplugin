@@ -23,6 +23,7 @@ public class ActionUtil {
     public static final Action createAction(ActionChoice actionChoice){
         ActionBuilder actionBuilder = new ActionBuilder();
         actionBuilder.setActionChoice(actionChoice);
+        actionBuilder.setExperimenterId(EXPERIMENTER_ID);
         return actionBuilder.build();
     }
 }

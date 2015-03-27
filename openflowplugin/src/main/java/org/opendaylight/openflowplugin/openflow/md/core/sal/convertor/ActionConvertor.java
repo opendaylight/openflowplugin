@@ -583,10 +583,7 @@ public final class ActionConvertor {
             EthSrcCaseBuilder ethSrcCaseBuilder = new EthSrcCaseBuilder();
             EthSrcBuilder ethSrcBuilder = new EthSrcBuilder();
             ethSrcBuilder.setMacAddress(setdlsrcaction.getAddress());
-            if (null != setdlsrcaction.getAddress()) {
-                ethSrcBuilder.setMask(ByteBufUtils.macAddressToBytes(setdlsrcaction.getAddress().getValue()));
-                matchBuilder.setHasMask(true);
-            }
+            matchBuilder.setHasMask(false);
             ethSrcCaseBuilder.setEthSrc(ethSrcBuilder.build());
             matchBuilder.setMatchEntryValue(ethSrcCaseBuilder.build());
             entries.add(matchBuilder.build());
@@ -627,12 +624,7 @@ public final class ActionConvertor {
             EthDstCaseBuilder ethDstCaseBuilder = new EthDstCaseBuilder();
             EthDstBuilder ethDstBuilder = new EthDstBuilder();
             ethDstBuilder.setMacAddress(setdldstaction.getAddress());
-            boolean hasMask = false;
-            if (null != setdldstaction.getAddress()) {
-                ethDstBuilder.setMask(ByteBufUtils.macAddressToBytes(setdldstaction.getAddress().getValue()));
-                hasMask = true;
-            }
-            matchBuilder.setHasMask(hasMask);
+            matchBuilder.setHasMask(false);
             ethDstCaseBuilder.setEthDst(ethDstBuilder.build());
             matchBuilder.setMatchEntryValue(ethDstCaseBuilder.build());
             entries.add(matchBuilder.build());
