@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
+import com.google.common.base.Function;
+
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.GroupConvertor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
@@ -28,8 +30,8 @@ public class SalGroupServiceImpl extends CommonService implements SalGroupServic
 
     @Override
     public Future<RpcResult<AddGroupOutput>> addGroup(final AddGroupInput input) {
-        return ServiceCallProcessingUtil.<AddGroupOutput>handleServiceCall(rpcContext, PRIMARY_CONNECTION,
-                provideWaitTime(), new Function<Void>() {
+        return ServiceCallProcessingUtil.<AddGroupOutput, Void> handleServiceCall(rpcContext, PRIMARY_CONNECTION,
+                deviceContext, new Function<BigInteger,Future<RpcResult<Void>>>() {
 
                     @Override
                     public Future<RpcResult<Void>> apply(final BigInteger IDConnection) {
@@ -40,8 +42,8 @@ public class SalGroupServiceImpl extends CommonService implements SalGroupServic
 
     @Override
     public Future<RpcResult<UpdateGroupOutput>> updateGroup(final UpdateGroupInput input) {
-        return ServiceCallProcessingUtil.<UpdateGroupOutput>handleServiceCall(rpcContext, PRIMARY_CONNECTION,
-                provideWaitTime(), new Function<Void>() {
+        return ServiceCallProcessingUtil.<UpdateGroupOutput, Void> handleServiceCall(rpcContext, PRIMARY_CONNECTION,
+                deviceContext, new Function<BigInteger,Future<RpcResult<Void>>>() {
 
                     @Override
                     public Future<RpcResult<Void>> apply(final BigInteger IDConnection) {
@@ -52,8 +54,8 @@ public class SalGroupServiceImpl extends CommonService implements SalGroupServic
 
     @Override
     public Future<RpcResult<RemoveGroupOutput>> removeGroup(final RemoveGroupInput input) {
-        return ServiceCallProcessingUtil.<RemoveGroupOutput>handleServiceCall(rpcContext, PRIMARY_CONNECTION,
-                provideWaitTime(), new Function<Void>() {
+        return ServiceCallProcessingUtil.<RemoveGroupOutput, Void> handleServiceCall(rpcContext, PRIMARY_CONNECTION,
+                deviceContext, new Function<BigInteger,Future<RpcResult<Void>>>() {
 
                     @Override
                     public Future<RpcResult<Void>> apply(final BigInteger IDConnection) {

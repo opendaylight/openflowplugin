@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
+import com.google.common.base.Function;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.MeterConvertor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterOutput;
@@ -28,8 +29,8 @@ public class SalMeterServiceImpl extends CommonService implements SalMeterServic
 
     @Override
     public Future<RpcResult<AddMeterOutput>> addMeter(final AddMeterInput input) {
-        return ServiceCallProcessingUtil.<AddMeterOutput>handleServiceCall(rpcContext, PRIMARY_CONNECTION,
-                provideWaitTime(), new Function<Void>() {
+        return ServiceCallProcessingUtil.<AddMeterOutput, Void>handleServiceCall(rpcContext, PRIMARY_CONNECTION,
+                deviceContext, new Function<BigInteger,Future<RpcResult<Void>>>() {
                     @Override
                     public Future<RpcResult<Void>> apply(final BigInteger IDConnection) {
                         return convertAndSend(input, IDConnection);
@@ -39,8 +40,8 @@ public class SalMeterServiceImpl extends CommonService implements SalMeterServic
 
     @Override
     public Future<RpcResult<UpdateMeterOutput>> updateMeter(final UpdateMeterInput input) {
-        return ServiceCallProcessingUtil.<UpdateMeterOutput>handleServiceCall(rpcContext, PRIMARY_CONNECTION,
-                provideWaitTime(), new Function<Void>() {
+        return ServiceCallProcessingUtil.<UpdateMeterOutput, Void>handleServiceCall(rpcContext, PRIMARY_CONNECTION,
+                deviceContext, new Function<BigInteger,Future<RpcResult<Void>>>() {
                     @Override
                     public Future<RpcResult<Void>> apply(final BigInteger IDConnection) {
                         return convertAndSend(input.getUpdatedMeter(), IDConnection);
@@ -50,8 +51,8 @@ public class SalMeterServiceImpl extends CommonService implements SalMeterServic
 
     @Override
     public Future<RpcResult<RemoveMeterOutput>> removeMeter(final RemoveMeterInput input) {
-        return ServiceCallProcessingUtil.<RemoveMeterOutput>handleServiceCall(rpcContext, PRIMARY_CONNECTION,
-                provideWaitTime(), new Function<Void>() {
+        return ServiceCallProcessingUtil.<RemoveMeterOutput, Void>handleServiceCall(rpcContext, PRIMARY_CONNECTION,
+                deviceContext, new Function<BigInteger,Future<RpcResult<Void>>>() {
                     @Override
                     public Future<RpcResult<Void>> apply(final BigInteger IDConnection) {
                         return convertAndSend(input, IDConnection);

@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
+import com.google.common.base.Function;
+
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
@@ -42,7 +44,7 @@ public class SalTableServiceImpl extends CommonService implements SalTableServic
 
     @Override
     public Future<RpcResult<UpdateTableOutput>> updateTable(final UpdateTableInput input) {
-        class FunctionImpl implements Function<UpdateTableOutput> {
+        class FunctionImpl implements Function<BigInteger,Future<RpcResult<UpdateTableOutput>>> {
 
             @Override
             public Future<RpcResult<UpdateTableOutput>> apply(final BigInteger IDConnection) {
@@ -81,8 +83,8 @@ public class SalTableServiceImpl extends CommonService implements SalTableServic
             }
         }
 
-        return ServiceCallProcessingUtil.<UpdateTableOutput>handleServiceCall(rpcContext, PRIMARY_CONNECTION,
-                provideWaitTime(), new FunctionImpl());
+        return ServiceCallProcessingUtil.<UpdateTableOutput, UpdateTableOutput>handleServiceCall(rpcContext, PRIMARY_CONNECTION,
+                deviceContext, new FunctionImpl());
     }
 
     private MultipartRequestInputBuilder createMultipartHeader(final MultipartType multipart, final Long xid) {

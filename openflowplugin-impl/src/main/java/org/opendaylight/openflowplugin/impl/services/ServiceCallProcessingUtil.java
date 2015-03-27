@@ -7,6 +7,9 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+
+import com.google.common.base.Function;
 import com.google.common.util.concurrent.SettableFuture;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
@@ -18,24 +21,25 @@ import java.util.concurrent.Future;
 
 /**
  * @author joe
+ *
  */
 public class ServiceCallProcessingUtil {
 
     private static final Logger LOG = org.slf4j.LoggerFactory.getLogger(ServiceCallProcessingUtil.class);
 
-    static <T extends DataObject> Future<RpcResult<T>> handleServiceCall(final RpcContext rpcContext,
-                                                                         final BigInteger connectionID, final long waitTime, final Function function) {
+    static <T extends DataObject, F>  Future<RpcResult<T>> handleServiceCall(final RpcContext rpcContext,
+final BigInteger connectionID, final DeviceContext deviceContext, final Function<BigInteger,Future<RpcResult<F>>> function) {
         LOG.debug("Calling the FlowMod RPC method on MessageDispatchService");
         // use primary connection
 
-        final RequestContext requestContext = rpcContext.createRequestContext();
+        final RequestContext<T> requestContext = rpcContext.createRequestContext();
         final SettableFuture<RpcResult<T>> result = rpcContext.storeOrFail(requestContext);
 
         if (!result.isDone()) {
-            final Future<RpcResult<Void>> resultFromOFLib = function.apply(connectionID);
+            final Future<RpcResult<F>> resultFromOFLib = function.apply(connectionID);
 
-            final RpcResultConvertor<T> rpcResultConvertor = new RpcResultConvertor<>(requestContext);
-            rpcResultConvertor.processResultFromOfJava(resultFromOFLib, waitTime);
+            final RpcResultConvertor<T> rpcResultConvertor = new RpcResultConvertor<>(requestContext, deviceContext);
+            rpcResultConvertor.processResultFromOfJava(resultFromOFLib);
 
         } else {
             RequestContextUtil.closeRequstContext(requestContext);

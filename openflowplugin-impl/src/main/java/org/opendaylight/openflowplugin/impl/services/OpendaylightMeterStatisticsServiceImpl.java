@@ -22,7 +22,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.GetMeterStatisticsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.GetMeterStatisticsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.OpendaylightMeterStatisticsService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.SetConfigOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInputBuilder;
@@ -44,7 +43,7 @@ public class OpendaylightMeterStatisticsServiceImpl extends CommonService implem
     public Future<RpcResult<GetAllMeterConfigStatisticsOutput>> getAllMeterConfigStatistics(
             final GetAllMeterConfigStatisticsInput input) {
 
-        final RequestContext requestContext = rpcContext.createRequestContext();
+        final RequestContext<GetAllMeterConfigStatisticsOutput> requestContext = rpcContext.createRequestContext();
         final SettableFuture<RpcResult<GetAllMeterConfigStatisticsOutput>> result = rpcContext.storeOrFail(requestContext);
 
         if (!result.isDone()) {
@@ -68,8 +67,8 @@ public class OpendaylightMeterStatisticsServiceImpl extends CommonService implem
             ListenableFuture<RpcResult<Void>> futureResultFromOfLib = JdkFutureAdapters
                     .listenInPoolThread(resultFromOFLib);
 
-            final RpcResultConvertor<SetConfigOutput> rpcResultConvertor = new RpcResultConvertor<>(requestContext);
-            rpcResultConvertor.processResultFromOfJava(futureResultFromOfLib, provideWaitTime());
+            final RpcResultConvertor<GetAllMeterConfigStatisticsOutput> rpcResultConvertor = new RpcResultConvertor<>(requestContext, deviceContext);
+            rpcResultConvertor.processResultFromOfJava(futureResultFromOfLib);
 
         } else {
             RequestContextUtil.closeRequstContext(requestContext);
@@ -79,7 +78,7 @@ public class OpendaylightMeterStatisticsServiceImpl extends CommonService implem
 
     @Override
     public Future<RpcResult<GetAllMeterStatisticsOutput>> getAllMeterStatistics(final GetAllMeterStatisticsInput input) {
-        final RequestContext requestContext = rpcContext.createRequestContext();
+        final RequestContext<GetAllMeterStatisticsOutput> requestContext = rpcContext.createRequestContext();
         final SettableFuture<RpcResult<GetAllMeterStatisticsOutput>> result = rpcContext.storeOrFail(requestContext);
 
         if (!result.isDone()) {
@@ -103,8 +102,8 @@ public class OpendaylightMeterStatisticsServiceImpl extends CommonService implem
 
             ListenableFuture<RpcResult<Void>> futureResultFromOfLib = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
 
-            final RpcResultConvertor<SetConfigOutput> rpcResultConvertor = new RpcResultConvertor<>(requestContext);
-            rpcResultConvertor.processResultFromOfJava(futureResultFromOfLib, provideWaitTime());
+            final RpcResultConvertor<GetAllMeterStatisticsOutput> rpcResultConvertor = new RpcResultConvertor<>(requestContext, deviceContext);
+            rpcResultConvertor.processResultFromOfJava(futureResultFromOfLib);
         } else {
             RequestContextUtil.closeRequstContext(requestContext);
         }
@@ -129,8 +128,8 @@ public class OpendaylightMeterStatisticsServiceImpl extends CommonService implem
             Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext().getConnectionAdapter().multipartRequest(mprInput.build());
             ListenableFuture<RpcResult<Void>> futureResultFromOfLib = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
 
-            final RpcResultConvertor<SetConfigOutput> rpcResultConvertor = new RpcResultConvertor<>(requestContext);
-            rpcResultConvertor.processResultFromOfJava(futureResultFromOfLib, provideWaitTime());
+            final RpcResultConvertor<GetMeterFeaturesOutput> rpcResultConvertor = new RpcResultConvertor<>(requestContext, deviceContext);
+            rpcResultConvertor.processResultFromOfJava(futureResultFromOfLib);
         } else {
             RequestContextUtil.closeRequstContext(requestContext);
         }
@@ -159,8 +158,8 @@ public class OpendaylightMeterStatisticsServiceImpl extends CommonService implem
             Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext().getConnectionAdapter().multipartRequest(mprInput.build());
             ListenableFuture<RpcResult<Void>> futureResultFromOfLib = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
 
-            final RpcResultConvertor<SetConfigOutput> rpcResultConvertor = new RpcResultConvertor<>(requestContext);
-            rpcResultConvertor.processResultFromOfJava(futureResultFromOfLib, provideWaitTime());
+            final RpcResultConvertor<GetMeterStatisticsOutput> rpcResultConvertor = new RpcResultConvertor<>(requestContext, deviceContext);
+            rpcResultConvertor.processResultFromOfJava(futureResultFromOfLib);
 
         } else {
             RequestContextUtil.closeRequstContext(requestContext);
