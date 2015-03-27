@@ -41,7 +41,6 @@ import org.slf4j.LoggerFactory;
 /**
  * @author joe
  */
-// TODO: implement this
 public class OpendaylightFlowStatisticsServiceImpl extends CommonService implements OpendaylightFlowStatisticsService {
 
     private static final Logger LOG = LoggerFactory.getLogger(OpendaylightFlowStatisticsServiceImpl.class);

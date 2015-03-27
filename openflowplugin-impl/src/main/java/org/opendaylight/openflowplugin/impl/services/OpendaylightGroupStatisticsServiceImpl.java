@@ -36,7 +36,6 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 /**
  * @author joe
  */
-// TODO: implement this
 public class OpendaylightGroupStatisticsServiceImpl extends CommonService implements OpendaylightGroupStatisticsService {
 
     @Override

@@ -1,14 +1,12 @@
 /**
  * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
- * 
+ *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 package org.opendaylight.openflowplugin.impl.services;
 
-import java.math.BigInteger;
-import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.MeterConvertor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterOutput;
@@ -21,6 +19,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MeterModInputBuilder;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
+import java.math.BigInteger;
+import java.util.concurrent.Future;
 
 public class SalMeterServiceImpl extends CommonService implements SalMeterService {
 
@@ -28,7 +28,7 @@ public class SalMeterServiceImpl extends CommonService implements SalMeterServic
 
     @Override
     public Future<RpcResult<AddMeterOutput>> addMeter(final AddMeterInput input) {
-        return ServiceCallProcessingUtil.<AddMeterOutput> handleServiceCall(rpcContext, PRIMARY_CONNECTION,
+        return ServiceCallProcessingUtil.<AddMeterOutput>handleServiceCall(rpcContext, PRIMARY_CONNECTION,
                 provideWaitTime(), new Function<Void>() {
                     @Override
                     public Future<RpcResult<Void>> apply(final BigInteger IDConnection) {
@@ -39,7 +39,7 @@ public class SalMeterServiceImpl extends CommonService implements SalMeterServic
 
     @Override
     public Future<RpcResult<UpdateMeterOutput>> updateMeter(final UpdateMeterInput input) {
-        return ServiceCallProcessingUtil.<UpdateMeterOutput> handleServiceCall(rpcContext, PRIMARY_CONNECTION,
+        return ServiceCallProcessingUtil.<UpdateMeterOutput>handleServiceCall(rpcContext, PRIMARY_CONNECTION,
                 provideWaitTime(), new Function<Void>() {
                     @Override
                     public Future<RpcResult<Void>> apply(final BigInteger IDConnection) {
@@ -50,7 +50,7 @@ public class SalMeterServiceImpl extends CommonService implements SalMeterServic
 
     @Override
     public Future<RpcResult<RemoveMeterOutput>> removeMeter(final RemoveMeterInput input) {
-        return ServiceCallProcessingUtil.<RemoveMeterOutput> handleServiceCall(rpcContext, PRIMARY_CONNECTION,
+        return ServiceCallProcessingUtil.<RemoveMeterOutput>handleServiceCall(rpcContext, PRIMARY_CONNECTION,
                 provideWaitTime(), new Function<Void>() {
                     @Override
                     public Future<RpcResult<Void>> apply(final BigInteger IDConnection) {

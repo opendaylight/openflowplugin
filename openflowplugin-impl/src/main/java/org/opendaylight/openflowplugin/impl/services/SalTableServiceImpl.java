@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
- * 
+ *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
@@ -12,9 +12,6 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
-import java.math.BigInteger;
-import java.util.List;
-import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.TableFeaturesConvertor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.TransactionId;
@@ -32,10 +29,12 @@ import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
+import java.math.BigInteger;
+import java.util.List;
+import java.util.concurrent.Future;
 
 /**
  * @author joe
- * 
  */
 public class SalTableServiceImpl extends CommonService implements SalTableService {
 
@@ -82,7 +81,7 @@ public class SalTableServiceImpl extends CommonService implements SalTableServic
             }
         }
 
-        return ServiceCallProcessingUtil.<UpdateTableOutput> handleServiceCall(rpcContext, PRIMARY_CONNECTION,
+        return ServiceCallProcessingUtil.<UpdateTableOutput>handleServiceCall(rpcContext, PRIMARY_CONNECTION,
                 provideWaitTime(), new FunctionImpl());
     }
 
@@ -116,7 +115,7 @@ public class SalTableServiceImpl extends CommonService implements SalTableServic
         @Override
         public void onFailure(final Throwable t) {
             result.set(RpcResultBuilder
-                    .<T> failed()
+                    .<T>failed()
                     .withWarning(ErrorType.RPC, OFConstants.ERROR_TAG_TIMEOUT, "something wrong happened",
                             OFConstants.APPLICATION_TAG, "", t).build());
         }

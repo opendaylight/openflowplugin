@@ -7,8 +7,6 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
-import java.math.BigInteger;
-import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.GroupConvertor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
@@ -21,6 +19,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GroupModInputBuilder;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
+import java.math.BigInteger;
+import java.util.concurrent.Future;
 
 public class SalGroupServiceImpl extends CommonService implements SalGroupService {
 
@@ -28,7 +28,7 @@ public class SalGroupServiceImpl extends CommonService implements SalGroupServic
 
     @Override
     public Future<RpcResult<AddGroupOutput>> addGroup(final AddGroupInput input) {
-        return ServiceCallProcessingUtil.<AddGroupOutput> handleServiceCall(rpcContext, PRIMARY_CONNECTION,
+        return ServiceCallProcessingUtil.<AddGroupOutput>handleServiceCall(rpcContext, PRIMARY_CONNECTION,
                 provideWaitTime(), new Function<Void>() {
 
                     @Override
@@ -40,7 +40,7 @@ public class SalGroupServiceImpl extends CommonService implements SalGroupServic
 
     @Override
     public Future<RpcResult<UpdateGroupOutput>> updateGroup(final UpdateGroupInput input) {
-        return ServiceCallProcessingUtil.<UpdateGroupOutput> handleServiceCall(rpcContext, PRIMARY_CONNECTION,
+        return ServiceCallProcessingUtil.<UpdateGroupOutput>handleServiceCall(rpcContext, PRIMARY_CONNECTION,
                 provideWaitTime(), new Function<Void>() {
 
                     @Override
@@ -52,7 +52,7 @@ public class SalGroupServiceImpl extends CommonService implements SalGroupServic
 
     @Override
     public Future<RpcResult<RemoveGroupOutput>> removeGroup(final RemoveGroupInput input) {
-        return ServiceCallProcessingUtil.<RemoveGroupOutput> handleServiceCall(rpcContext, PRIMARY_CONNECTION,
+        return ServiceCallProcessingUtil.<RemoveGroupOutput>handleServiceCall(rpcContext, PRIMARY_CONNECTION,
                 provideWaitTime(), new Function<Void>() {
 
                     @Override

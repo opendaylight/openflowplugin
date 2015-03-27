@@ -26,7 +26,6 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 /**
  * @author joe
  */
-// TODO: implement this
 public class OpendaylightFlowTableStatisticsServiceImpl extends CommonService implements
         OpendaylightFlowTableStatisticsService {
 

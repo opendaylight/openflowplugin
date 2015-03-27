@@ -1,14 +1,18 @@
 /**
  * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
- * 
+ *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 package org.opendaylight.openflowplugin.impl.services;
 
-import java.util.concurrent.Future;
-import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
+import com.google.common.util.concurrent.JdkFutureAdapters;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.SettableFuture;
+import org.opendaylight.openflowjava.protocol.api.util.BinContent;
+import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
+import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.GetAllMeterConfigStatisticsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.GetAllMeterConfigStatisticsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.GetAllMeterStatisticsInput;
@@ -18,66 +22,142 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.GetMeterStatisticsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.GetMeterStatisticsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.OpendaylightMeterStatisticsService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.SetConfigOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestMeterCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestMeterConfigCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestMeterFeaturesCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.meter._case.MultipartRequestMeterBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.meter.config._case.MultipartRequestMeterConfigBuilder;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import java.util.concurrent.Future;
 
 /**
  * @author joe
- * 
  */
-// TODO: implement this
 public class OpendaylightMeterStatisticsServiceImpl extends CommonService implements OpendaylightMeterStatisticsService {
 
 
-    /*
-         * (non-Javadoc)
-         *
-         * @see org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.OpendaylightMeterStatisticsService#
-         * getAllMeterConfigStatistics
-         * (org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.GetAllMeterConfigStatisticsInput)
-         */
     @Override
     public Future<RpcResult<GetAllMeterConfigStatisticsOutput>> getAllMeterConfigStatistics(
             final GetAllMeterConfigStatisticsInput input) {
-        // TODO Auto-generated method stub
-        return null;
+
+        final RequestContext requestContext = rpcContext.createRequestContext();
+        final SettableFuture<RpcResult<GetAllMeterConfigStatisticsOutput>> result = rpcContext.storeOrFail(requestContext);
+
+        if (!result.isDone()) {
+
+            final Xid xid = deviceContext.getNextXid();
+
+            MultipartRequestMeterConfigCaseBuilder caseBuilder =
+                    new MultipartRequestMeterConfigCaseBuilder();
+            MultipartRequestMeterConfigBuilder mprMeterConfigBuild =
+                    new MultipartRequestMeterConfigBuilder();
+            mprMeterConfigBuild.setMeterId(new MeterId(BinContent.intToUnsignedLong(
+                    org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common
+                            .types.rev130731.Meter.OFPMALL.getIntValue())));
+            caseBuilder.setMultipartRequestMeterConfig(mprMeterConfigBuild.build());
+
+            MultipartRequestInputBuilder mprInput = RequestInputUtils
+                    .createMultipartHeader(MultipartType.OFPMPMETERCONFIG, xid.getValue(), version);
+            mprInput.setMultipartRequestBody(caseBuilder.build());
+            Future<RpcResult<Void>> resultFromOFLib = deviceContext
+                    .getPrimaryConnectionContext().getConnectionAdapter().multipartRequest(mprInput.build());
+            ListenableFuture<RpcResult<Void>> futureResultFromOfLib = JdkFutureAdapters
+                    .listenInPoolThread(resultFromOFLib);
+
+            final RpcResultConvertor<SetConfigOutput> rpcResultConvertor = new RpcResultConvertor<>(requestContext);
+            rpcResultConvertor.processResultFromOfJava(futureResultFromOfLib, provideWaitTime());
+
+        }
+        return result;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.OpendaylightMeterStatisticsService#
-     * getAllMeterStatistics
-     * (org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.GetAllMeterStatisticsInput)
-     */
     @Override
     public Future<RpcResult<GetAllMeterStatisticsOutput>> getAllMeterStatistics(final GetAllMeterStatisticsInput input) {
-        // TODO Auto-generated method stub
-        return null;
+        final RequestContext requestContext = rpcContext.createRequestContext();
+        final SettableFuture<RpcResult<GetAllMeterStatisticsOutput>> result = rpcContext.storeOrFail(requestContext);
+
+        if (!result.isDone()) {
+
+            final Xid xid = deviceContext.getNextXid();
+
+            MultipartRequestMeterCaseBuilder caseBuilder =
+                    new MultipartRequestMeterCaseBuilder();
+            MultipartRequestMeterBuilder mprMeterBuild =
+                    new MultipartRequestMeterBuilder();
+            mprMeterBuild.setMeterId(new MeterId(BinContent.intToUnsignedLong(
+                    org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common
+                            .types.rev130731.Meter.OFPMALL.getIntValue())));
+            caseBuilder.setMultipartRequestMeter(mprMeterBuild.build());
+
+            MultipartRequestInputBuilder mprInput = RequestInputUtils
+                    .createMultipartHeader(MultipartType.OFPMPMETER, xid.getValue(), version);
+            mprInput.setMultipartRequestBody(caseBuilder.build());
+            Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext()
+                    .getConnectionAdapter().multipartRequest(mprInput.build());
+
+            ListenableFuture<RpcResult<Void>> futureResultFromOfLib = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
+
+            final RpcResultConvertor<SetConfigOutput> rpcResultConvertor = new RpcResultConvertor<>(requestContext);
+            rpcResultConvertor.processResultFromOfJava(futureResultFromOfLib, provideWaitTime());
+        }
+        return result;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.OpendaylightMeterStatisticsService#
-     * getMeterFeatures(org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.GetMeterFeaturesInput)
-     */
     @Override
     public Future<RpcResult<GetMeterFeaturesOutput>> getMeterFeatures(final GetMeterFeaturesInput input) {
-        // TODO Auto-generated method stub
-        return null;
+        final RequestContext requestContext = rpcContext.createRequestContext();
+        final SettableFuture<RpcResult<GetMeterFeaturesOutput>> result = rpcContext.storeOrFail(requestContext);
+
+        if (!result.isDone()) {
+
+            final Xid xid = deviceContext.getNextXid();
+
+            MultipartRequestMeterFeaturesCaseBuilder mprMeterFeaturesBuild =
+                    new MultipartRequestMeterFeaturesCaseBuilder();
+
+            MultipartRequestInputBuilder mprInput =
+                    RequestInputUtils.createMultipartHeader(MultipartType.OFPMPMETERFEATURES, xid.getValue(), version);
+            mprInput.setMultipartRequestBody(mprMeterFeaturesBuild.build());
+            Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext().getConnectionAdapter().multipartRequest(mprInput.build());
+            ListenableFuture<RpcResult<Void>> futureResultFromOfLib = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
+
+            final RpcResultConvertor<SetConfigOutput> rpcResultConvertor = new RpcResultConvertor<>(requestContext);
+            rpcResultConvertor.processResultFromOfJava(futureResultFromOfLib, provideWaitTime());
+        }
+        return result;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.OpendaylightMeterStatisticsService#
-     * getMeterStatistics
-     * (org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.GetMeterStatisticsInput)
-     */
     @Override
     public Future<RpcResult<GetMeterStatisticsOutput>> getMeterStatistics(final GetMeterStatisticsInput input) {
-        // TODO Auto-generated method stub
-        return null;
+        final RequestContext requestContext = rpcContext.createRequestContext();
+        final SettableFuture<RpcResult<GetMeterStatisticsOutput>> result = rpcContext.storeOrFail(requestContext);
+
+        if (!result.isDone()) {
+
+            final Xid xid = deviceContext.getNextXid();
+
+            MultipartRequestMeterCaseBuilder caseBuilder =
+                    new MultipartRequestMeterCaseBuilder();
+            MultipartRequestMeterBuilder mprMeterBuild =
+                    new MultipartRequestMeterBuilder();
+            mprMeterBuild.setMeterId(new MeterId(input.getMeterId().getValue()));
+            caseBuilder.setMultipartRequestMeter(mprMeterBuild.build());
+
+            MultipartRequestInputBuilder mprInput =
+                    RequestInputUtils.createMultipartHeader(MultipartType.OFPMPMETER, xid.getValue(), version);
+            mprInput.setMultipartRequestBody(caseBuilder.build());
+            Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext().getConnectionAdapter().multipartRequest(mprInput.build());
+            ListenableFuture<RpcResult<Void>> futureResultFromOfLib = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
+
+            final RpcResultConvertor<SetConfigOutput> rpcResultConvertor = new RpcResultConvertor<>(requestContext);
+            rpcResultConvertor.processResultFromOfJava(futureResultFromOfLib, provideWaitTime());
+
+        }
+        return result;
     }
 
 }
