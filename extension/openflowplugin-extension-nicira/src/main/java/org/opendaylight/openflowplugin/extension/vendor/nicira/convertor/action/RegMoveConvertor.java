@@ -231,7 +231,6 @@ public class RegMoveConvertor implements
         nxActionRegMove.setSrc(resolveSrc(src.getSrcChoice()));
         nxActionRegMove.setSrcOfs(src.getStart());
         nxActionRegMove.setNBits(dst.getEnd() - dst.getStart() + 1);
-        nxActionRegMove.setExperimenterId(ActionUtil.EXPERIMENTER_ID);
         actionRegMoveBuilder.setNxActionRegMove(nxActionRegMove.build());
         return ActionUtil.createAction(actionRegMoveBuilder.build());
     }

@@ -1,6 +1,7 @@
 package org.opendaylight.openflowjava.nx.codec.match;
 
 import io.netty.buffer.ByteBuf;
+
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntryDeserializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntrySerializerKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -12,10 +13,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Nxm1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.ArpThaCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.ArpThaCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.arp.tha._case.ArpThaBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxArpTha;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.nx.match.arp.tha.grouping.ArpThaValuesBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.ArpThaCaseValue;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.ArpThaCaseValueBuilder;
 
 public class ArpThaCodec extends AbstractMatchCodec {
 
@@ -29,8 +30,8 @@ public class ArpThaCodec extends AbstractMatchCodec {
     @Override
     public void serialize(MatchEntry input, ByteBuf outBuffer) {
         serializeHeader(input, outBuffer);
-        ArpThaCase arpThaCase = ((ArpThaCase) input.getMatchEntryValue());
-        outBuffer.writeBytes(ByteBufUtils.macAddressToBytes(arpThaCase.getArpTha().getMacAddress().getValue()));
+        ArpThaCaseValue arpThaCase = ((ArpThaCaseValue) input.getMatchEntryValue());
+        outBuffer.writeBytes(ByteBufUtils.macAddressToBytes(arpThaCase.getArpThaValues().getMacAddress().getValue()));
     }
 
     @Override
@@ -38,11 +39,10 @@ public class ArpThaCodec extends AbstractMatchCodec {
         MatchEntryBuilder matchEntryBuilder = deserializeHeader(message);
         byte[] address = new byte[VALUE_LENGTH];
         message.readBytes(address);
-        ArpThaCaseBuilder arpThaCaseBuilder = new ArpThaCaseBuilder();
-        ArpThaBuilder arpThaBuilder = new ArpThaBuilder();
-        arpThaBuilder.setMacAddress(new MacAddress(ByteBufUtils.bytesToHexString(address)));
-        arpThaCaseBuilder.setArpTha(arpThaBuilder.build());
-        matchEntryBuilder.setMatchEntryValue(arpThaCaseBuilder.build());
+        ArpThaCaseValueBuilder caseBuilder = new ArpThaCaseValueBuilder();
+        caseBuilder.setArpThaValues(new ArpThaValuesBuilder().setMacAddress(
+                new MacAddress(ByteBufUtils.macAddressToString(address))).build());
+        matchEntryBuilder.setMatchEntryValue(caseBuilder.build());
         return matchEntryBuilder.build();
     }
 

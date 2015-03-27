@@ -1,6 +1,7 @@
 package org.opendaylight.openflowjava.nx.codec.match;
 
 import io.netty.buffer.ByteBuf;
+
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntryDeserializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntrySerializerKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -12,10 +13,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Nxm0
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.EthSrcCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.EthSrcCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.eth.src._case.EthSrcBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmOfEthSrc;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.of.match.eth.src.grouping.EthSrcValuesBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.EthSrcCaseValue;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.EthSrcCaseValueBuilder;
 
 public class EthSrcCodec extends AbstractMatchCodec {
 
@@ -29,8 +30,8 @@ public class EthSrcCodec extends AbstractMatchCodec {
     @Override
     public void serialize(MatchEntry input, ByteBuf outBuffer) {
         serializeHeader(input, outBuffer);
-        EthSrcCase ethSrcCase = ((EthSrcCase) input.getMatchEntryValue());
-        outBuffer.writeBytes(ByteBufUtils.macAddressToBytes(ethSrcCase.getEthSrc().getMacAddress().getValue()));
+        EthSrcCaseValue ethSrcCase = ((EthSrcCaseValue) input.getMatchEntryValue());
+        outBuffer.writeBytes(ByteBufUtils.macAddressToBytes(ethSrcCase.getEthSrcValues().getMacAddress().getValue()));
     }
 
     @Override
@@ -38,11 +39,10 @@ public class EthSrcCodec extends AbstractMatchCodec {
         MatchEntryBuilder matchEntryBuilder = deserializeHeader(message);
         byte[] address = new byte[VALUE_LENGTH];
         message.readBytes(address);
-        EthSrcCaseBuilder ethSrcCaseBuilder = new EthSrcCaseBuilder();
-        EthSrcBuilder ethSrcBuilder = new EthSrcBuilder();
-        ethSrcBuilder.setMacAddress(new MacAddress(ByteBufUtils.macAddressToString(address)));
-        ethSrcCaseBuilder.setEthSrc(ethSrcBuilder.build());
-        matchEntryBuilder.setMatchEntryValue(ethSrcCaseBuilder.build());
+        EthSrcCaseValueBuilder caseBuilder = new EthSrcCaseValueBuilder();
+        caseBuilder.setEthSrcValues(new EthSrcValuesBuilder().setMacAddress(
+                new MacAddress(ByteBufUtils.macAddressToString(address))).build());
+        matchEntryBuilder.setMatchEntryValue(caseBuilder.build());
         matchEntryBuilder.setHasMask(false);
         return matchEntryBuilder.build();
     }

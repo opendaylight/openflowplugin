@@ -142,7 +142,7 @@ public class RegConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorFro
         RegValuesBuilder regValuesBuilder = new RegValuesBuilder().setValue(nxmNxReg.getValue());
         RegCaseValueBuilder regCaseValueBuilder = new RegCaseValueBuilder();
         regCaseValueBuilder.setRegValues(regValuesBuilder.build());
-        return MatchUtil.createDefaultMatchEntryBuilder(org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxReg.class,
+        return MatchUtil.createDefaultMatchEntryBuilder(nxmNxReg.getReg(),
                 Nxm1Class.class,
                 regCaseValueBuilder.build()).build();
     }

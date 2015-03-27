@@ -131,7 +131,7 @@ public class ActionConvertorV13Test {
     public void testToMDSalActions2() {
         OpenflowPortsUtil.init();
         List<Action> actions = new ArrayList<>();
-        
+
         ActionBuilder actionBuilder = new ActionBuilder();
         OutputActionCaseBuilder caseBuilder = new OutputActionCaseBuilder();
         OutputActionBuilder outputBuilder = new OutputActionBuilder();
@@ -168,11 +168,11 @@ public class ActionConvertorV13Test {
         pushVlanCaseBuilder.setPushVlanAction(pushVlanBuilder.build());
         actionBuilder.setActionChoice(pushVlanCaseBuilder.build());
         actions.add(actionBuilder.build());
-        
+
         actionBuilder = new ActionBuilder();
         actionBuilder.setActionChoice(new PopVlanCaseBuilder().build());
         actions.add(actionBuilder.build());
-        
+
         actionBuilder = new ActionBuilder();
         PushMplsCaseBuilder pushMplsCaseBuilder = new PushMplsCaseBuilder();
         PushMplsActionBuilder pushMplsBuilder = new PushMplsActionBuilder();
@@ -478,7 +478,7 @@ public class ActionConvertorV13Test {
         checkEntryHeader(entry, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.VlanPcp.class, false);
         Assert.assertEquals("Wrong vlan pcp", 7, ((VlanPcpCase) entry.getMatchEntryValue()).getVlanPcp().getVlanPcp()
                 .intValue());
-        
+
         action = actions.get(1);
         Assert.assertEquals("Wrong action type", "org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common"
                 + ".action.rev150203.action.grouping.action.choice.SetFieldCase", action.getActionChoice().getImplementedInterface().getName());
@@ -489,27 +489,27 @@ public class ActionConvertorV13Test {
         Assert.assertEquals("Wrong vlan vid", 0, ((VlanVidCase) entry.getMatchEntryValue()).getVlanVid().getVlanVid()
                 .intValue());
         Assert.assertEquals("Wrong cfi bit", true, ((VlanVidCase) entry.getMatchEntryValue()).getVlanVid().isCfiBit());
-        
+
         action = actions.get(2);
         Assert.assertEquals("Wrong action type", "org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common"
                 + ".action.rev150203.action.grouping.action.choice.SetFieldCase", action.getActionChoice().getImplementedInterface().getName());
         setFieldCase =
                 (org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetFieldCase) action.getActionChoice();
         entry = setFieldCase.getSetFieldAction().getMatchEntry().get(0);
-        checkEntryHeader(entry, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.EthDst.class, true);
+        checkEntryHeader(entry, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.EthDst.class, false);
         Assert.assertEquals("Wrong dl dst", "00:00:00:00:00:06", ((EthDstCase) entry.getMatchEntryValue()).getEthDst()
                 .getMacAddress().getValue());
-        
+
         action = actions.get(3);
         setFieldCase =
                 (org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetFieldCase) action.getActionChoice();
         Assert.assertEquals("Wrong action type", "org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common"
                 + ".action.rev150203.action.grouping.action.choice.SetFieldCase", action.getActionChoice().getImplementedInterface().getName());
         entry = setFieldCase.getSetFieldAction().getMatchEntry().get(0);
-        checkEntryHeader(entry, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.EthSrc.class, true);
+        checkEntryHeader(entry, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.EthSrc.class, false);
         Assert.assertEquals("Wrong dl src", "00:00:00:00:00:05", ((EthSrcCase) entry.getMatchEntryValue()).getEthSrc()
                 .getMacAddress().getValue());
-        
+
         action = actions.get(4);
         setFieldCase =
                 (org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetFieldCase) action.getActionChoice();
@@ -519,7 +519,7 @@ public class ActionConvertorV13Test {
         checkEntryHeader(entry, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Ipv4Src.class, false);
         Assert.assertEquals("Wrong ipv4 src", "10.0.0.1", ((Ipv4SrcCase) entry.getMatchEntryValue()).getIpv4Src()
                 .getIpv4Address().getValue());
-        
+
         action = actions.get(5);
         setFieldCase =
                 (org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetFieldCase) action.getActionChoice();
@@ -529,7 +529,7 @@ public class ActionConvertorV13Test {
         checkEntryHeader(entry, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Ipv4Dst.class, false);
         Assert.assertEquals("Wrong ipv4 dst", "10.0.0.2", ((Ipv4DstCase) entry.getMatchEntryValue()).getIpv4Dst()
                 .getIpv4Address().getValue());
-        
+
         action = actions.get(6);
         setFieldCase =
                 (org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetFieldCase) action.getActionChoice();
@@ -539,7 +539,7 @@ public class ActionConvertorV13Test {
         checkEntryHeader(entry, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.TcpSrc.class, false);
         Assert.assertEquals("Wrong tcp src", 54, ((TcpSrcCase) entry.getMatchEntryValue()).getTcpSrc()
                 .getPort().getValue().intValue());
-        
+
         action = actions.get(7);
         setFieldCase =
                 (org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetFieldCase) action.getActionChoice();
@@ -549,7 +549,7 @@ public class ActionConvertorV13Test {
         checkEntryHeader(entry, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.TcpDst.class, false);
         Assert.assertEquals("Wrong tcp dst", 45, ((TcpDstCase) entry.getMatchEntryValue()).getTcpDst()
                 .getPort().getValue().intValue());
-        
+
         action = actions.get(8);
         setFieldCase =
                 (org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetFieldCase) action.getActionChoice();
@@ -559,7 +559,7 @@ public class ActionConvertorV13Test {
         checkEntryHeader(entry, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.IpDscp.class, false);
         Assert.assertEquals("Wrong ip dscp", 4, ((IpDscpCase) entry.getMatchEntryValue()).getIpDscp()
                 .getDscp().getValue().intValue());
-        
+
         action = actions.get(9);
         setFieldCase =
                 (org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetFieldCase) action.getActionChoice();
@@ -571,7 +571,7 @@ public class ActionConvertorV13Test {
                 .getVlanVid().intValue());
         Assert.assertEquals("Wrong cfi bit", true, ((VlanVidCase) entry.getMatchEntryValue()).getVlanVid()
                 .isCfiBit());
-        
+
         action = actions.get(10);
         setFieldCase =
                 (org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetFieldCase) action.getActionChoice();
@@ -581,7 +581,7 @@ public class ActionConvertorV13Test {
         checkEntryHeader(entry, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Ipv6Src.class, false);
         Assert.assertEquals("Wrong ipv4 src", "0000:0000:0000:0000:0000:0000:0000:0005",
                 ((Ipv6SrcCase) entry.getMatchEntryValue()).getIpv6Src().getIpv6Address().getValue());
-        
+
         action = actions.get(11);
         setFieldCase =
                 (org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetFieldCase) action.getActionChoice();

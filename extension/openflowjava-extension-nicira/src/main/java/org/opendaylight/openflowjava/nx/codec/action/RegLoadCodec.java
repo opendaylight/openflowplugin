@@ -17,7 +17,7 @@ public class RegLoadCodec extends AbstractActionCodec {
     public static final int LENGTH = 24;
     public static final byte SUBTYPE = 7; // NXAST_REG_LOAD
     public static final NiciraActionSerializerKey SERIALIZER_KEY = new NiciraActionSerializerKey(
-            EncodeConstants.OF13_VERSION_ID, NxmNxRegLoad.class);
+            EncodeConstants.OF13_VERSION_ID, ActionRegLoad.class);
     public static final NiciraActionDeserializerKey DESERIALIZER_KEY = new NiciraActionDeserializerKey(
             EncodeConstants.OF13_VERSION_ID, SUBTYPE);
 
@@ -38,7 +38,6 @@ public class RegLoadCodec extends AbstractActionCodec {
         nxActionRegLoadBuilder.setOfsNbits(message.readUnsignedShort());
         nxActionRegLoadBuilder.setDst(message.readUnsignedInt());
         nxActionRegLoadBuilder.setValue(BigInteger.valueOf(message.readLong()));
-        nxActionRegLoadBuilder.setExperimenterId(getExperimenterId());
         actionRegLoadBuilder.setNxActionRegLoad(nxActionRegLoadBuilder.build());
         actionBuilder.setActionChoice(actionRegLoadBuilder.build());
         return actionBuilder.build();
