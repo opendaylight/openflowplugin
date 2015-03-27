@@ -16,8 +16,9 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
  * <p/>
  * Created by Martin Bobak <mbobak@cisco.com> on 25.2.2015.
  */
-public interface RequestContext<T extends DataObject> extends RequestFutureContext, AutoCloseable {
+public interface RequestContext<T extends DataObject> extends RequestFutureContext<T>, AutoCloseable {
 
+    @Override
     void close();
 
 

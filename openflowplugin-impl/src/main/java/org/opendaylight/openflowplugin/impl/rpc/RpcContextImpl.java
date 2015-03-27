@@ -8,6 +8,9 @@
 package org.opendaylight.openflowplugin.impl.rpc;
 
 import com.google.common.util.concurrent.SettableFuture;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -18,19 +21,17 @@ import org.opendaylight.yangtools.yang.binding.RpcService;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 public class RpcContextImpl implements RpcContext {
 
     final ProviderContext providerContext;
 
     // TODO: add private Sal salBroker
-    private final List<RequestContext> requestContexts = new ArrayList<>();
-    private DeviceContext deviceContext;
+    private final List<RequestContext<? extends DataObject>> requestContexts = new ArrayList<>();
+    private final DeviceContext deviceContext;
     private final List<RoutedRpcRegistration> rpcRegistrations = new ArrayList<>();
-    private final List<RequestContext> synchronizedRequestsList = Collections.synchronizedList(new ArrayList<RequestContext>());
+    private final List<RequestContext<? extends DataObject>> synchronizedRequestsList = Collections
+            .<RequestContext<? extends DataObject>>synchronizedList(new ArrayList<RequestContext<? extends DataObject>>());
 
     private int maxRequestsPerDevice;
 
@@ -41,27 +42,27 @@ public class RpcContextImpl implements RpcContext {
 
     /**
      * @see org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext#registerRpcServiceImplementation(java.lang.Class,
-     * org.opendaylight.yangtools.yang.binding.RpcService)
+     *      org.opendaylight.yangtools.yang.binding.RpcService)
      */
     @Override
     public <S extends RpcService> void registerRpcServiceImplementation(final Class<S> serviceClass,
-                                                                        final S serviceInstance) {
+            final S serviceInstance) {
         rpcRegistrations.add(providerContext.addRoutedRpcImplementation(serviceClass, serviceInstance));
     }
 
     @Override
-    public <T extends DataObject> SettableFuture<RpcResult<T>> storeOrFail(RequestContext requestContext) {
+    public <T extends DataObject> SettableFuture<RpcResult<T>> storeOrFail(final RequestContext<T> requestContext) {
         final SettableFuture<RpcResult<T>> rpcResultFuture = requestContext.getFuture();
 
         if (synchronizedRequestsList.size() < maxRequestsPerDevice) {
             synchronizedRequestsList.add(requestContext);
         } else {
-            RpcResult rpcResult = RpcResultBuilder.failed().withError(RpcError.ErrorType.APPLICATION, "", "Device's request queue is full.").build();
+            final RpcResult<T> rpcResult = RpcResultBuilder.<T>failed()
+                    .withError(RpcError.ErrorType.APPLICATION, "", "Device's request queue is full.").build();
             rpcResultFuture.set(rpcResult);
         }
         return rpcResultFuture;
     }
-
 
     /**
      * Unregisters all services.
@@ -84,7 +85,7 @@ public class RpcContextImpl implements RpcContext {
     }
 
     @Override
-    public void forgetRequestContext(final RequestContext requestContext) {
+    public <T extends DataObject> void forgetRequestContext(final RequestContext<T> requestContext) {
         requestContexts.remove(requestContext);
     }
 
@@ -94,7 +95,7 @@ public class RpcContextImpl implements RpcContext {
     }
 
     @Override
-    public <T extends DataObject> RequestContext createRequestContext() {
+    public <T extends DataObject> RequestContext<T> createRequestContext() {
         return new RequestContextImpl<T>(this);
     }
 

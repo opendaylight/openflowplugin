@@ -16,7 +16,7 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 /**
  * @author joe
  */
-public class RequestContextImpl<T extends DataObject> implements RequestContext {
+public class RequestContextImpl<T extends DataObject> implements RequestContext<T> {
 
     private final RpcContext rpcContext;
     private SettableFuture<RpcResult<T>> rpcResultFuture;

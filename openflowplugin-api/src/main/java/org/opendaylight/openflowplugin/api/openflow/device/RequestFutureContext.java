@@ -23,6 +23,6 @@ public interface RequestFutureContext<T extends DataObject> {
      * @param <T>
      * @return
      */
-    <T> SettableFuture<RpcResult<T>> getFuture();
+    SettableFuture<RpcResult<T>> getFuture();
 
 }

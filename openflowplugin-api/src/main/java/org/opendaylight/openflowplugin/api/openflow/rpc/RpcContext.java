@@ -13,7 +13,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.RpcService;
 import org.opendaylight.yangtools.yang.common.RpcResult;
-import java.util.concurrent.Future;
 
 /**
  * This context is registered with MD-SAL as a routed RPC provider for the inventory node backed by this switch and
@@ -27,33 +26,35 @@ public interface RpcContext extends AutoCloseable {
     <S extends RpcService> void registerRpcServiceImplementation(Class<S> serviceClass, S serviceInstance);
 
     /**
-     *  Method adds request to request queue which has limited quota. After number of requests exceeds quota limit
-     *  future will be done immediately and will contain information about exceeded request quota.
-     *
+     * Method adds request to request queue which has limited quota. After number of requests exceeds quota limit future
+     * will be done immediately and will contain information about exceeded request quota.
+     * 
      * @param data
      */
-    <T extends DataObject> SettableFuture<RpcResult<T>> storeOrFail(RequestContext data);
+    <T extends DataObject> SettableFuture<RpcResult<T>> storeOrFail(RequestContext<T> data);
 
     /**
      * Method for setting request quota value. When the Request Context quota is exceeded, incoming RPCs fail
      * immediately, with a well-defined error.
-     *
+     * 
      * @param maxRequestsPerDevice
      */
     void setRequestContextQuota(int maxRequestsPerDevice);
 
-    void forgetRequestContext(RequestContext requestContext);
+    <T extends DataObject> void forgetRequestContext(RequestContext<T> requestContext);
 
     /**
      * Method provides device context.
+     * 
      * @return
      */
     DeviceContext getDeviceContext();
 
     /**
      * Method returns new request context for current request.
+     * 
      * @return
      */
-    <T extends DataObject> RequestContext createRequestContext();
+    <T extends DataObject> RequestContext<T> createRequestContext();
 
 }
