@@ -1,0 +1,29 @@
+module openflow-plugin-types {
+	yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:openflowplugin:api:types";
+    prefix "openflow-plugin-types";
+
+    description
+        "Openflow plugin specific types.";
+
+    revision "2015-03-27" {
+        description
+            "Initial revision";
+    }
+
+    typedef ofp-role {
+        description "role of OFPlugin instance";
+        type enumeration {
+            enum NOCHANGE {
+                description "no change to role";
+            }
+            enum BECOMEMASTER {
+                description "promote current role to MASTER";
+            }
+            enum BECOMESLAVE {
+                description "demote current role to SLAVE";
+            }
+        }
+    }
+
+}
