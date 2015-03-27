@@ -14,11 +14,19 @@ import java.util.concurrent.Future;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
+import org.opendaylight.openflowplugin.api.openflow.device.exception.DeviceDataException;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MessageHandler;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableFeatures;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+
+import com.google.common.util.concurrent.SettableFuture;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Future;
 
 /**
  * The central entity of OFP is the Device Context, which encapsulate the logical state of a switch
@@ -100,24 +108,11 @@ public interface DeviceContext extends MessageHandler {
     Xid getNextXid();
 
     /**
-     * Method provides requests map
-     * @return
-     */
-    public Map<Xid, RequestFutureContext> getRequests();
-
-    /**
      * Method writes request context into request context map
      * @param xid
      * @param requestFutureContext
      */
-    public void hookRequestCtx(Xid xid, RequestFutureContext requestFutureContext);
-
-    /**
-     * Method that set future to context in Map
-     * @param xid
-     * @param ofHeader
-     */
-    public void processReply(Xid xid, OfHeader ofHeader);
+    public void hookRequestCtx(Xid xid, RequestContext requestFutureContext);
 
 }
 
