@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.impl.statistics.services;
 import com.google.common.base.Function;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
+import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
@@ -31,7 +32,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.GetQueueStatisticsFromGivenPortOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.OpendaylightQueueStatisticsService;
 import org.opendaylight.yangtools.yang.common.RpcResult;
-import java.util.concurrent.Future;
 
 /**
  * @author joe
@@ -57,7 +57,7 @@ public class OpendaylightQueueStatisticsServiceImpl extends CommonService implem
                         // Select all ports
                         mprQueueBuilder.setPortNo(OFConstants.OFPP_ANY);
                         // Select all the ports
-                        mprQueueBuilder.setQueueId(OFConstants.OFPQ_ANY);
+                        mprQueueBuilder.setQueueId(OFConstants.OFPQ_ALL);
                         caseBuilder.setMultipartRequestQueue(mprQueueBuilder.build());
 
                         // Set request body to main multipart request
@@ -86,7 +86,7 @@ public class OpendaylightQueueStatisticsServiceImpl extends CommonService implem
                         MultipartRequestQueueCaseBuilder caseBuilder = new MultipartRequestQueueCaseBuilder();
                         MultipartRequestQueueBuilder mprQueueBuilder = new MultipartRequestQueueBuilder();
                         // Select all queues
-                        mprQueueBuilder.setQueueId(OFConstants.OFPQ_ANY);
+                        mprQueueBuilder.setQueueId(OFConstants.OFPQ_ALL);
                         // Select specific port
                         mprQueueBuilder.setPortNo(InventoryDataServiceUtil.portNumberfromNodeConnectorId(
                                 OpenflowVersion.get(version), input.getNodeConnectorId()));
