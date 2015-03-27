@@ -68,7 +68,6 @@ public class ResubmitConvertor implements
         NxActionResubmitBuilder nxActionResubmitBuilder = new NxActionResubmitBuilder();
         nxActionResubmitBuilder.setInPort(nxAction.getNxResubmit().getInPort());
         nxActionResubmitBuilder.setTable(nxAction.getNxResubmit().getTable());
-        nxActionResubmitBuilder.setExperimenterId(ActionUtil.EXPERIMENTER_ID);
         builder.setNxActionResubmit(nxActionResubmitBuilder.build());
         return ActionUtil.createAction(builder.build());
     }

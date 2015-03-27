@@ -35,7 +35,7 @@ public class MultipathCodec extends AbstractActionCodec {
     public static final int LENGTH = 32;
     public static final byte NXAST_MULTIPATH_SUBTYPE = 10;
     public static final NiciraActionSerializerKey SERIALIZER_KEY =
-            new NiciraActionSerializerKey(EncodeConstants.OF13_VERSION_ID, NxmNxMultipath.class);
+            new NiciraActionSerializerKey(EncodeConstants.OF13_VERSION_ID, ActionMultipath.class);
     public static final NiciraActionDeserializerKey DESERIALIZER_KEY =
             new NiciraActionDeserializerKey(EncodeConstants.OF13_VERSION_ID, NXAST_MULTIPATH_SUBTYPE);
 
@@ -74,7 +74,6 @@ public class MultipathCodec extends AbstractActionCodec {
 
         nxActionMultipathBuilder.setOfsNbits(message.readUnsignedShort());
         nxActionMultipathBuilder.setDst(message.readUnsignedInt());
-        nxActionMultipathBuilder.setExperimenterId(getExperimenterId());
         actionMultipathBuilder.setNxActionMultipath(nxActionMultipathBuilder.build());
         actionBuilder.setActionChoice(actionMultipathBuilder.build());
 

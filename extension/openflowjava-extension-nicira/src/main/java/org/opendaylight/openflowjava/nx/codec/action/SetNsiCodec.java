@@ -28,7 +28,7 @@ public class SetNsiCodec extends AbstractActionCodec {
     public static final int LENGTH = 16;
     public static final byte NXAST_SET_NSI_SUBTYPE = 33;
     public static final NiciraActionSerializerKey SERIALIZER_KEY =
-            new NiciraActionSerializerKey(EncodeConstants.OF13_VERSION_ID, NxmNxSetNsi.class);
+            new NiciraActionSerializerKey(EncodeConstants.OF13_VERSION_ID, ActionSetNsi.class);
     public static final NiciraActionDeserializerKey DESERIALIZER_KEY =
             new NiciraActionDeserializerKey(EncodeConstants.OF13_VERSION_ID, NXAST_SET_NSI_SUBTYPE);
     private static final int padding = 5; // nx_action_SetNsi : uint8_t pad[3];
@@ -47,7 +47,6 @@ public class SetNsiCodec extends AbstractActionCodec {
         ActionSetNsiBuilder builder = new ActionSetNsiBuilder();
         NxActionSetNsiBuilder nxActionSetNsiBuilder = new NxActionSetNsiBuilder();
         nxActionSetNsiBuilder.setNsi(message.readUnsignedByte());
-        nxActionSetNsiBuilder.setExperimenterId(getExperimenterId());
         message.skipBytes(padding);
 
         builder.setNxActionSetNsi(nxActionSetNsiBuilder.build());

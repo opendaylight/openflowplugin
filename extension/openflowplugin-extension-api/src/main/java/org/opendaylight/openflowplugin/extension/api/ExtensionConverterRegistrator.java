@@ -7,7 +7,7 @@
  */
 package org.opendaylight.openflowplugin.extension.api;
 
-import org.opendaylight.openflowjava.protocol.api.keys.ExperimenterActionSerializerKey;
+import org.opendaylight.openflowjava.protocol.api.keys.ActionSerializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntrySerializerKey;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
 import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
@@ -47,5 +47,5 @@ public interface ExtensionConverterRegistrator {
      * @return closable registration
      */
     ObjectRegistration<ConvertorActionFromOFJava<Action, ActionPath>> registerActionConvertor(
-            ExperimenterActionSerializerKey key, ConvertorActionFromOFJava<Action, ActionPath> convertor);
+            ActionSerializerKey<?> key, ConvertorActionFromOFJava<Action, ActionPath> convertor);
 }
