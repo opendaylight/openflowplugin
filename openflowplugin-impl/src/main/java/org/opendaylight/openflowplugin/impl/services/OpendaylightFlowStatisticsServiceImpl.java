@@ -257,6 +257,8 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
 
             convertRpcResultToRequestFuture(requestContext, futureResultFromOfLib);
 
+        } else {
+            RequestContextUtil.closeRequstContext(requestContext);
         }
         return result;
     }

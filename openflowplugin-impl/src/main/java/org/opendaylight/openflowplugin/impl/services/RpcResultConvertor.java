@@ -8,6 +8,8 @@
 
 package org.opendaylight.openflowplugin.impl.services;
 
+import org.slf4j.Logger;
+
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.common.RpcError;
@@ -22,6 +24,7 @@ import java.util.concurrent.TimeoutException;
  * Created by Martin Bobak <mbobak@cisco.com> on 26.3.2015.
  */
 public class RpcResultConvertor<T extends DataObject> {
+    private static final Logger LOG = org.slf4j.LoggerFactory.getLogger(RpcResultConvertor.class);
 
     private final RequestContext requestContext;
 
@@ -35,19 +38,21 @@ public class RpcResultConvertor<T extends DataObject> {
             final RpcResult<Void> rpcResult = futureResultFromOfLib.get(waitTime, TimeUnit.MILLISECONDS);
             if (!rpcResult.isSuccessful()) {
                 requestContext.getFuture().set(RpcResultBuilder.<T>failed().withRpcErrors(rpcResult.getErrors()).build());
-                requestContext.close();
+                RequestContextUtil.closeRequstContext(requestContext);
             }
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             requestContext.getFuture().set(RpcResultBuilder
                     .<T>failed()
                     .withError(RpcError.ErrorType.APPLICATION, "",
                             "Flow modification on device wasn't successfull.").build());
-            requestContext.close();
+            RequestContextUtil.closeRequstContext(requestContext);
         } catch (final Exception e) {
             requestContext.getFuture().set(RpcResultBuilder.<T>failed()
                     .withError(RpcError.ErrorType.APPLICATION, "", "Flow translation to OF JAVA failed.").build());
-            requestContext.close();
+            RequestContextUtil.closeRequstContext(requestContext);
         }
     }
+
+
 
 }

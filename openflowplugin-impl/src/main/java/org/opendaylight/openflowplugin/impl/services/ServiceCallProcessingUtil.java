@@ -38,7 +38,7 @@ public class ServiceCallProcessingUtil {
             rpcResultConvertor.processResultFromOfJava(resultFromOFLib, waitTime);
 
         } else {
-            requestContext.close();
+            RequestContextUtil.closeRequstContext(requestContext);
         }
         return result;
     }
