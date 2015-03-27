@@ -15,7 +15,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.SetConfigOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestPortStatsCaseBuilder;
@@ -36,7 +35,7 @@ public class OpendaylightPortStatisticsServiceImpl extends CommonService impleme
     @Override
     public Future<RpcResult<GetAllNodeConnectorsStatisticsOutput>> getAllNodeConnectorsStatistics(
             final GetAllNodeConnectorsStatisticsInput input) {
-        final RequestContext requestContext = rpcContext.createRequestContext();
+        final RequestContext<GetAllNodeConnectorsStatisticsOutput> requestContext = rpcContext.createRequestContext();
         final SettableFuture<RpcResult<GetAllNodeConnectorsStatisticsOutput>> result = rpcContext.storeOrFail(requestContext);
 
         if (!result.isDone()) {
@@ -58,8 +57,8 @@ public class OpendaylightPortStatisticsServiceImpl extends CommonService impleme
                     .getPrimaryConnectionContext().getConnectionAdapter().multipartRequest(mprInput.build());
             ListenableFuture<RpcResult<Void>> futureResultFromOfLib = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
 
-            final RpcResultConvertor<SetConfigOutput> rpcResultConvertor = new RpcResultConvertor<>(requestContext);
-            rpcResultConvertor.processResultFromOfJava(futureResultFromOfLib, provideWaitTime());
+            final RpcResultConvertor<GetAllNodeConnectorsStatisticsOutput> rpcResultConvertor = new RpcResultConvertor<>(requestContext, deviceContext);
+            rpcResultConvertor.<Void>processResultFromOfJava(futureResultFromOfLib);
 
         } else {
             RequestContextUtil.closeRequstContext(requestContext);
@@ -70,7 +69,7 @@ public class OpendaylightPortStatisticsServiceImpl extends CommonService impleme
     @Override
     public Future<RpcResult<GetNodeConnectorStatisticsOutput>> getNodeConnectorStatistics(
             final GetNodeConnectorStatisticsInput input) {
-        final RequestContext requestContext = rpcContext.createRequestContext();
+        final RequestContext<GetNodeConnectorStatisticsOutput> requestContext = rpcContext.createRequestContext();
         final SettableFuture<RpcResult<GetNodeConnectorStatisticsOutput>> result = rpcContext.storeOrFail(requestContext);
 
         if (!result.isDone()) {
@@ -94,8 +93,8 @@ public class OpendaylightPortStatisticsServiceImpl extends CommonService impleme
                     .getConnectionAdapter().multipartRequest(mprInput.build());
             ListenableFuture<RpcResult<Void>> futureResultFromOfLib = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
 
-            final RpcResultConvertor<SetConfigOutput> rpcResultConvertor = new RpcResultConvertor<>(requestContext);
-            rpcResultConvertor.processResultFromOfJava(futureResultFromOfLib, provideWaitTime());
+            final RpcResultConvertor<GetNodeConnectorStatisticsOutput> rpcResultConvertor = new RpcResultConvertor<>(requestContext, deviceContext);
+            rpcResultConvertor.processResultFromOfJava(futureResultFromOfLib);
         } else {
             RequestContextUtil.closeRequstContext(requestContext);
         }

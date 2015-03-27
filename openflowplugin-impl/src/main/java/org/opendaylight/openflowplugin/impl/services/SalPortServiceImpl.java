@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
+import com.google.common.base.Function;
+
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.PortConvertor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.port.mod.port.Port;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortModInput;
@@ -24,8 +26,8 @@ public class SalPortServiceImpl extends CommonService implements SalPortService 
 
     @Override
     public Future<RpcResult<UpdatePortOutput>> updatePort(final UpdatePortInput input) {
-        return ServiceCallProcessingUtil.<UpdatePortOutput>handleServiceCall(rpcContext, PRIMARY_CONNECTION,
-                provideWaitTime(), new Function<Void>() {
+        return ServiceCallProcessingUtil.<UpdatePortOutput, Void>handleServiceCall(rpcContext, PRIMARY_CONNECTION,
+                deviceContext, new Function<BigInteger,Future<RpcResult<Void>>>() {
                     @Override
                     public Future<RpcResult<Void>> apply(final BigInteger IDConnection) {
                         final Port inputPort = input.getUpdatedPort().getPort().getPort().get(0);

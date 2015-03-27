@@ -82,7 +82,7 @@ public class SalTableServiceImpl extends CommonService implements SalTableServic
         }
 
         return ServiceCallProcessingUtil.<UpdateTableOutput>handleServiceCall(rpcContext, PRIMARY_CONNECTION,
-                provideWaitTime(), new FunctionImpl());
+                deviceContext, new FunctionImpl());
     }
 
     private MultipartRequestInputBuilder createMultipartHeader(final MultipartType multipart, final Long xid) {
