@@ -12,6 +12,7 @@ import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.nx.api.NiciraActionDeserializerKey;
 import org.opendaylight.openflowjava.nx.api.NiciraActionSerializerKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.output.action._case.OutputAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.NxmNxOutputReg;
@@ -29,7 +30,7 @@ public class OutputRegCodec extends AbstractActionCodec {
     public static final byte SUBTYPE = 15; // NXAST_OUTPUT_REG
     public static final byte PADDING_IN_OUTPUT_REG_ACTION = 6;
     public static final NiciraActionSerializerKey SERIALIZER_KEY =
-            new NiciraActionSerializerKey(EncodeConstants.OF13_VERSION_ID, NxmNxOutputReg.class);
+            new NiciraActionSerializerKey(EncodeConstants.OF13_VERSION_ID, ActionOutputReg.class);
     public static final NiciraActionDeserializerKey DESERIALIZER_KEY =
             new NiciraActionDeserializerKey(EncodeConstants.OF13_VERSION_ID, SUBTYPE);
 
@@ -51,7 +52,6 @@ public class OutputRegCodec extends AbstractActionCodec {
         nxActionOutputRegBuilder.setNBits(message.readUnsignedShort());
         nxActionOutputRegBuilder.setSrc(message.readUnsignedInt());
         nxActionOutputRegBuilder.setMaxLen(message.readUnsignedShort());
-        nxActionOutputRegBuilder.setExperimenterId(getExperimenterId());
         message.skipBytes(PADDING_IN_OUTPUT_REG_ACTION);
         builder.setNxActionOutputReg(nxActionOutputRegBuilder.build());
         actionBuilder.setActionChoice(builder.build());

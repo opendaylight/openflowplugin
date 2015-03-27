@@ -62,7 +62,6 @@ public class SetNsiConvertor implements
         NxActionSetNsiBuilder nxActionSetNsi = new NxActionSetNsiBuilder();
 
         nxActionSetNsi.setNsi(nxAction.getNxSetNsi().getNsi());
-        nxActionSetNsi.setExperimenterId(ActionUtil.EXPERIMENTER_ID);
         builder.setNxActionSetNsi(nxActionSetNsi.build());
 
         return ActionUtil.createAction(builder.build());
