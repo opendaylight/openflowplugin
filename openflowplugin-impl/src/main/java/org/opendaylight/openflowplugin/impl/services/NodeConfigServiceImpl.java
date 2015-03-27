@@ -42,7 +42,7 @@ public class NodeConfigServiceImpl extends CommonService implements NodeConfigSe
             RpcResultConvertor<SetConfigOutput> rpcResultConvertor = new RpcResultConvertor<>(requestContext);
             rpcResultConvertor.processResultFromOfJava(futureResultFromOfLib, provideWaitTime());
         } else {
-            requestContext.close();
+            RequestContextUtil.closeRequstContext(requestContext);
         }
         return result;
     }

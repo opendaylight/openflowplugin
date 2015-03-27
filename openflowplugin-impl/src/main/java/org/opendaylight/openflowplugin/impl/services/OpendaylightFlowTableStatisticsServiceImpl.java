@@ -59,6 +59,8 @@ public class OpendaylightFlowTableStatisticsServiceImpl extends CommonService im
             final RpcResultConvertor<SetConfigOutput> rpcResultConvertor = new RpcResultConvertor<>(requestContext);
             rpcResultConvertor.processResultFromOfJava(futureResultFromOfLib, provideWaitTime());
 
+        } else {
+            RequestContextUtil.closeRequstContext(requestContext);
         }
         return result;
     }

@@ -61,6 +61,8 @@ public class OpendaylightQueueStatisticsServiceImpl extends CommonService implem
 
             final RpcResultConvertor<SetConfigOutput> rpcResultConvertor = new RpcResultConvertor<>(requestContext);
             rpcResultConvertor.processResultFromOfJava(futureResultFromOfLib, provideWaitTime());
+        } else {
+            RequestContextUtil.closeRequstContext(requestContext);
         }
         return result;
     }
@@ -93,6 +95,8 @@ public class OpendaylightQueueStatisticsServiceImpl extends CommonService implem
 
             final RpcResultConvertor<SetConfigOutput> rpcResultConvertor = new RpcResultConvertor<>(requestContext);
             rpcResultConvertor.processResultFromOfJava(futureResultFromOfLib, provideWaitTime());
+        } else {
+            RequestContextUtil.closeRequstContext(requestContext);
         }
         return result;
     }
@@ -126,6 +130,8 @@ public class OpendaylightQueueStatisticsServiceImpl extends CommonService implem
 
             final RpcResultConvertor<SetConfigOutput> rpcResultConvertor = new RpcResultConvertor<>(requestContext);
             rpcResultConvertor.processResultFromOfJava(futureResultFromOfLib, provideWaitTime());
+        } else {
+            RequestContextUtil.closeRequstContext(requestContext);
         }
         return result;
     }
