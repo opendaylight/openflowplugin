@@ -95,7 +95,6 @@ public class MultipathConvertor implements
         Dst dst = nxAction.getNxMultipath().getDst();
         nxActionMultipathBuilder.setOfsNbits((dst.getStart() << 6) | (dst.getEnd() - dst.getStart()));
         nxActionMultipathBuilder.setDst(RegMoveConvertor.resolveDst(dst.getDstChoice()));
-        nxActionMultipathBuilder.setExperimenterId(ActionUtil.EXPERIMENTER_ID);
         ActionMultipathBuilder actionMultipathBuilder = new ActionMultipathBuilder();
         actionMultipathBuilder.setNxActionMultipath(nxActionMultipathBuilder.build());
         return ActionUtil.createAction(actionMultipathBuilder.build());

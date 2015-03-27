@@ -76,7 +76,6 @@ public class OutputRegConvertor implements
         nxActionOutputRegBuilder.setSrc(RegMoveConvertor.resolveSrc(src.getSrcChoice()));
         nxActionOutputRegBuilder.setNBits(src.getOfsNbits());
         nxActionOutputRegBuilder.setMaxLen(nxAction.getNxOutputReg().getMaxLen());
-        nxActionOutputRegBuilder.setExperimenterId(ActionUtil.EXPERIMENTER_ID);
         builder.setNxActionOutputReg(nxActionOutputRegBuilder.build());
         return ActionUtil.createAction(builder.build());
     }

@@ -31,7 +31,7 @@ public class ResubmitCodec extends AbstractActionCodec {
     public static final byte NXAST_RESUBMIT_SUBTYPE = 1;
     public static final byte NXAST_RESUBMIT_TABLE_SUBTYPE = 14;
     public static final NiciraActionSerializerKey SERIALIZER_KEY =
-            new NiciraActionSerializerKey(EncodeConstants.OF13_VERSION_ID, NxmNxResubmit.class);
+            new NiciraActionSerializerKey(EncodeConstants.OF13_VERSION_ID, ActionResubmit.class);
     public static final NiciraActionDeserializerKey DESERIALIZER_KEY =
             new NiciraActionDeserializerKey(EncodeConstants.OF13_VERSION_ID, NXAST_RESUBMIT_SUBTYPE);
     public static final NiciraActionDeserializerKey TABLE_DESERIALIZER_KEY =
@@ -72,8 +72,6 @@ public class ResubmitCodec extends AbstractActionCodec {
         NxActionResubmitBuilder nxActionResubmitBuilder = new NxActionResubmitBuilder();
         nxActionResubmitBuilder.setInPort(message.readUnsignedShort());
         nxActionResubmitBuilder.setTable(message.readUnsignedByte());
-        ExperimenterId experimenterId = new ExperimenterId(NiciraConstants.NX_VENDOR_ID);
-                nxActionResubmitBuilder.setExperimenterId(experimenterId);
         builder.setNxActionResubmit(nxActionResubmitBuilder.build());
         message.skipBytes(padding);
 

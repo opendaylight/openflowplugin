@@ -16,7 +16,6 @@ import org.opendaylight.openflowjava.nx.api.NiciraActionSerializerKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.NxmNxSetNsp;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionSetNsp;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionSetNspBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.set.nsp.grouping.NxActionSetNspBuilder;
@@ -28,7 +27,7 @@ public class SetNspCodec extends AbstractActionCodec {
     public static final int LENGTH = 16;
     public static final byte NXAST_SET_NSP_SUBTYPE = 32;
     public static final NiciraActionSerializerKey SERIALIZER_KEY =
-            new NiciraActionSerializerKey(EncodeConstants.OF13_VERSION_ID, NxmNxSetNsp.class);
+            new NiciraActionSerializerKey(EncodeConstants.OF13_VERSION_ID, ActionSetNsp.class);
     public static final NiciraActionDeserializerKey DESERIALIZER_KEY =
             new NiciraActionDeserializerKey(EncodeConstants.OF13_VERSION_ID, NXAST_SET_NSP_SUBTYPE);
     private static final int padding = 2; // nx_action_SetNsp : uint8_t pad[3];
@@ -48,7 +47,6 @@ public class SetNspCodec extends AbstractActionCodec {
         NxActionSetNspBuilder nxActionSetNspBuilder = new NxActionSetNspBuilder();
         message.skipBytes(padding);
         nxActionSetNspBuilder.setNsp(message.readUnsignedInt());
-        nxActionSetNspBuilder.setExperimenterId(getExperimenterId());
         builder.setNxActionSetNsp(nxActionSetNspBuilder.build());
         actionBuilder.setActionChoice(builder.build());
         return actionBuilder.build();
