@@ -16,9 +16,8 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
  * This interface is responsible for instantiating DeviceContext and
  * registering transaction chain for each DeviceContext. Each device
  * has its own device context managed by this manager.
- * <p/>
- * <p/>
- * Created by Martin Bobak <mbobak@cisco.com> on 25.2.2015.
+ * <p>
+ * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 25.2.2015.
  */
 public interface DeviceManager extends DeviceConnectedHandler {
 

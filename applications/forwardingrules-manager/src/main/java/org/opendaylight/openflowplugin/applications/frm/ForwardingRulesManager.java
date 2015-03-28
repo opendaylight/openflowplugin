@@ -39,8 +39,8 @@ public interface ForwardingRulesManager extends AutoCloseable {
      * Method returns information :
      * "is Node with send InstanceIdentifier connected"?
      *
-     * @param InstanceIdentifier<FlowCapableNode> ident - the key of the node
-     * @return boolean - is device connected
+     * @param ident - the key of the node
+     * @return boolean - true if device is connected
      */
     public boolean isNodeActive(InstanceIdentifier<FlowCapableNode> ident);
 
@@ -49,7 +49,7 @@ public interface ForwardingRulesManager extends AutoCloseable {
      * ActiveNodeHolder prevent unnecessary Operational/DS read for identify
      * pre-configure and serious Configure/DS transactions.
      *
-     * @param InstanceIdentifier<FlowCapableNode> ident - the key of the node
+     * @param ident - the key of the node
      */
     public void registrateNewNode(InstanceIdentifier<FlowCapableNode> ident);
 
@@ -58,7 +58,7 @@ public interface ForwardingRulesManager extends AutoCloseable {
      * Holder. And all next flows or groups or meters will stay in Config/DS
      * only.
      *
-     * @param InstanceIdentifier<FlowCapableNode> ident - the key of the node
+     * @param ident - the key of the node
      */
     public void unregistrateNode(InstanceIdentifier<FlowCapableNode> ident);
 
@@ -100,19 +100,19 @@ public interface ForwardingRulesManager extends AutoCloseable {
 
     /**
      * Content definition method and prevent code duplicity in Reconcil
-     * @return ForwardingRulesCommiter<Flow>
+     * @return ForwardingRulesCommiter&lt;Flow&gt;
      */
     public ForwardingRulesCommiter<Flow> getFlowCommiter();
 
     /**
      * Content definition method and prevent code duplicity in Reconcil
-     * @return ForwardingRulesCommiter<Group>
+     * @return ForwardingRulesCommiter&lt;Group&gt;
      */
     public ForwardingRulesCommiter<Group> getGroupCommiter();
 
     /**
      * Content definition method and prevent code duplicity
-     * @return ForwardingRulesCommiter<Meter>
+     * @return ForwardingRulesCommiter&lt;Meter&gt;
      */
     public ForwardingRulesCommiter<Meter> getMeterCommiter();
 

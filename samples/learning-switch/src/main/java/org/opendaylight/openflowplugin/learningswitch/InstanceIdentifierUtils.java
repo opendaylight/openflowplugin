@@ -61,12 +61,12 @@ public class InstanceIdentifierUtils {
      * Creates a path for particular flow, by appending flow-specific information
      * to table path.
      * 
-     * @param flowId
-     * @param tablePathArg 
+     * @param tablePath
+     * @param flowKey
      * @return path to flow
      */
-    public static InstanceIdentifier<Flow> createFlowPath(InstanceIdentifier<Table> table,FlowKey flowKey) {
-        return InstanceIdentifier.builder(table)
+    public static InstanceIdentifier<Flow> createFlowPath(InstanceIdentifier<Table> tablePath, FlowKey flowKey) {
+        return InstanceIdentifier.builder(tablePath)
                 .child(Flow.class, flowKey)
                 .build();
     }

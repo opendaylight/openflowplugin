@@ -372,7 +372,7 @@ public class ToSalConversionsUtils {
     }
 
     /**
-     * @param openflow nodeConnector uri
+     * @param uri openflow nodeConnector URI
      * @param node
      * @return assembled nodeConnector
      */

@@ -58,7 +58,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 * StatisticsManagerImpl
 * It represent a central point for whole module. Implementation
 * {@link StatisticsManager} registers all Operation/DS {@link StatNotifyCommiter} and
-* Config/DS {@StatListeningCommiter}, as well as {@link StatPermCollector}
+* Config/DS {@link StatListeningCommiter}, as well as {@link StatPermCollector}
 * for statistic collecting and {@link StatRpcMsgManager} as Device RPCs provider.
 * In next, StatisticsManager provides all DS contact Transaction services.
 *

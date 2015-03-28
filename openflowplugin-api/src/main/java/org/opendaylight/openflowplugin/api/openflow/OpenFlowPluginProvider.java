@@ -14,7 +14,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 import java.util.Collection;
 
 /**
- * Created by Martin Bobak <mbobak@cisco.com> on 27.3.2015.
+ * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 27.3.2015.
  */
 public interface OpenFlowPluginProvider extends AutoCloseable {
 

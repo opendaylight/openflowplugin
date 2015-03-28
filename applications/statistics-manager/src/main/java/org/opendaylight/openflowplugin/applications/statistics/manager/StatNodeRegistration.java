@@ -34,9 +34,9 @@ public interface StatNodeRegistration extends OpendaylightInventoryListener, Aut
      * as a prevention to use a validation check to the Operational/DS for identify
      * connected {@link org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode}.
      *
-     * @param InstanceIdentifier<SwitchFeatures> keyIdent
-     * @param FlowCapableNode data
-     * @param InstanceIdentifier<Node> nodeIdent
+     * @param keyIdent
+     * @param data
+     * @param nodeIdent
      */
     void connectFlowCapableNode(InstanceIdentifier<SwitchFeatures> keyIdent,
             SwitchFeatures data, InstanceIdentifier<Node> nodeIdent);
@@ -44,7 +44,7 @@ public interface StatNodeRegistration extends OpendaylightInventoryListener, Aut
     /**
      * Method cut {@link Node} registration for {@link StatPermCollector}
      *
-     * @param InstanceIdentifier<Node> keyIdent
+     * @param keyIdent
      */
     void disconnectFlowCapableNode(InstanceIdentifier<Node> keyIdent);
 }

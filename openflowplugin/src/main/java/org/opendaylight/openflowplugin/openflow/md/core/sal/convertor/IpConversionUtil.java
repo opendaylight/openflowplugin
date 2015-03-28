@@ -17,7 +17,7 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import java.util.Iterator;
 
 /**
- * Created by Martin Bobak <mbobak@cisco.com> on 5.3.2015.
+ * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 5.3.2015.
  */
 public final class IpConversionUtil {
 

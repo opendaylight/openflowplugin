@@ -81,7 +81,7 @@ public abstract class StatAbstractListenCommit<T extends DataObject, N extends N
     public void onDataChanged(final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> changeEvent) {
         Preconditions.checkNotNull(changeEvent,"Async ChangeEvent can not be null!");
         /*
-         * If we have opened read transaction for configuraiton data store,
+         * If we have opened read transaction for configuration data store,
          * we will close and null it.
          *
          * Latest read transaction will be allocated on another read using readLatestConfiguration

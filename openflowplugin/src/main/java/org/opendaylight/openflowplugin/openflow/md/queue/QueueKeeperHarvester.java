@@ -32,7 +32,6 @@ public class QueueKeeperHarvester<IN> implements Runnable, HarvesterHandle {
     /**
      * @param enqueuer
      * @param messageSources
-     * @param harvestLock
      */
     public QueueKeeperHarvester(final Enqueuer<QueueItem<IN>> enqueuer,
             final Collection<QueueKeeper<IN>> messageSources) {

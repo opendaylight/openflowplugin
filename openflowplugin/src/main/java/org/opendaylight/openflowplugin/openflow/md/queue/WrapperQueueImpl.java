@@ -27,7 +27,6 @@ public class WrapperQueueImpl<E> implements Queue<E> {
 
     /**
      * @param capacity
-     * @param queueZipper
      */
     public WrapperQueueImpl(int capacity, Queue<E> queueDefault,
             WaterMarkListener queueListenerMark) {

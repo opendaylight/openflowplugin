@@ -9,7 +9,7 @@
 package org.opendaylight.openflowplugin.api.openflow.device;
 
 /**
- * Created by Martin Bobak <mbobak@cisco.com> on 26.2.2015.
+ * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 26.2.2015.
  */
 public class Xid {
 

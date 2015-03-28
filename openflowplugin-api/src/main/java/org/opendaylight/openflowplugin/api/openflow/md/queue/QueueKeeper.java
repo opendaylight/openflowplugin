@@ -13,14 +13,13 @@ import org.opendaylight.openflowplugin.api.openflow.md.core.ConnectionConductor;
  * This processing mechanism based on queue. Processing consists of 2 steps: translate and publish.
  * Proposed workflow (might slightly deviate in implementations):
  * <ol>
- * <li>messages of input type are pushed in (via {@link QueueKeeper#push(Object, ConnectionConductor)} and similar)</li>
+ * <li>messages of input type are pushed in (via {@link QueueKeeper#push(Object, ConnectionConductor, QueueType)} and similar)</li>
  * <li>ticket (executable task) is build upon each pushed message and enqueued</li>
  * <li>ticket is translated using appropriate translator</li>
  * <li>ticket is dequeued and result is published by appropriate popListener</li>
  * </ol>
  * Message order might be not important, e.g. when speed is of the essence
  * @param <I> source type (IN)
- * @param <O> result type (OUT)
  */
 public interface QueueKeeper<I> extends AutoCloseable {
 

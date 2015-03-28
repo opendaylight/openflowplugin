@@ -38,7 +38,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  * StatisticsManager
  * It represent a central point for whole module. Implementation
  * StatisticsManager registers all Operation/DS {@link StatNotifyCommiter} and
- * Config/DS {@StatListeningCommiter}, as well as {@link StatPermCollector}
+ * Config/DS {@link StatListeningCommiter}, as well as {@link StatPermCollector}
  * for statistic collecting and {@link StatRpcMsgManager} as Device RPCs provider.
  * In next, StatisticsManager provides all DS contact Transaction services.
  *
@@ -92,7 +92,7 @@ public interface StatisticsManager extends AutoCloseable, TransactionChainListen
         /**
          * Apply all read / write (put|merge) operation for DataStore
          *
-         * @param {@link ReadWriteTransaction} tx
+         * @param tx {@link ReadWriteTransaction}
          */
         public abstract void applyOperation(ReadWriteTransaction tx);
 
@@ -101,9 +101,8 @@ public interface StatisticsManager extends AutoCloseable, TransactionChainListen
     /**
      * Method starts whole StatisticManager functionality
      *
-     * @param {@link NotificationProviderService} notifService
-     * @param {@link RpcConsumerRegistry} rpcRegistry
-     * @param minReqNetMonitInt
+     * @param notifService
+     * @param rpcRegistry
      */
     void start(final NotificationProviderService notifService,
             final RpcConsumerRegistry rpcRegistry);
@@ -117,7 +116,7 @@ public interface StatisticsManager extends AutoCloseable, TransactionChainListen
     void enqueue(final StatDataStoreOperation inventoryOper);
 
     /**
-     * Method wraps {@link StatisticCollector}.isProvidedFlowNodeActive method
+     * Method wraps {@link StatisticsManager#isProvidedFlowNodeActive(InstanceIdentifier)} method
      * to provide parallel statCollection process for Set of Nodes. So it has to
      * identify correct Node Set by NodeIdentifier
      *
@@ -177,14 +176,14 @@ public interface StatisticsManager extends AutoCloseable, TransactionChainListen
 
     /**
      * Define Method : {@link org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode}
-     * Operational/DS data change listener -> impl. target -> register FlowCapableNode to Statistic Collecting process
+     * Operational/DS data change listener -&gt; impl. target -&gt; register FlowCapableNode to Statistic Collecting process
      * @return {@link StatNodeRegistration}
      */
     StatNodeRegistration getNodeRegistrator();
 
     /**
-     * Define Method : Flow Config/DS data change listener -> impl. target ->
-     * -> make pair between Config/DS FlowId and Device Flow response Hash
+     * Define Method : Flow Config/DS data change listener -&gt; impl. target -&gt;
+     * -&gt; make pair between Config/DS FlowId and Device Flow response Hash
      * @return
      */
     StatListeningCommiter<Flow, OpendaylightFlowStatisticsListener> getFlowListenComit();

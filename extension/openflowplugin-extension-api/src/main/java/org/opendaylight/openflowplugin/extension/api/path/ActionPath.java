@@ -35,6 +35,8 @@ public enum ActionPath implements AugmentationPath {
      */
     NODES_NODE_TABLE_FLOW_INSTRUCTIONS_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION_EXTENSIONLIST_EXTENSION(null),
     /**
+     * openflowplugin-extension-general.yang
+     * <pre>
      * module: opendaylight-inventory
      *    +--rw nodes
      *       +--rw node* [id]
@@ -69,6 +71,8 @@ public enum ActionPath implements AugmentationPath {
      */
     FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_INSTRUCTIONS_INSTRUCTION_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION(null),
     /**
+     * openflowplugin-extension-general.yang
+     * <pre>
      * module: opendaylight-flow-statistics
      * notifications:
      *    +---n flows-statistics-update             

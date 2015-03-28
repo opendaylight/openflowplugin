@@ -9,7 +9,7 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
 /**
- * Created by Martin Bobak <mbobak@cisco.com> on 13.3.2015.
+ * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 13.3.2015.
  */
 public final class ActionUtil {
 

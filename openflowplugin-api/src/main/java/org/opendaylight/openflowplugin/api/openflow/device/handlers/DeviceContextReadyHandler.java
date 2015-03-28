@@ -11,7 +11,7 @@ package org.opendaylight.openflowplugin.api.openflow.device.handlers;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 
 /**
- * Created by Martin Bobak <mbobak@cisco.com> on 27.2.2015.
+ * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 27.2.2015.
  */
 public interface DeviceContextReadyHandler {
     /**

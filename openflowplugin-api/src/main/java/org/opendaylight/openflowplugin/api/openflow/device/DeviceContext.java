@@ -33,8 +33,8 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
  * which is enforced by keeping a cap on the number of outstanding requests a particular Request
  * Context can have at any point in time. Should this quota be exceeded, any further attempt to make
  * a request to the switch will fail immediately, with proper error indication.
- * <p/>
- * Created by Martin Bobak <mbobak@cisco.com> on 25.2.2015.
+ * <p>
+ * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 25.2.2015.
  */
 public interface DeviceContext extends MessageHandler {
 

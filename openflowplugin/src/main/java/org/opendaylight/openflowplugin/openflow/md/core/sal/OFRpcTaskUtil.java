@@ -135,8 +135,6 @@ public abstract class OFRpcTaskUtil {
     /**
      * @param task of rpcl
      * @param originalResult
-     * @param notificationProviderService
-     * @param notificationComposer lazy notification composer
      * @return chained result with barrier
      */
     public static <T extends TransactionAware, I extends DataContainer>

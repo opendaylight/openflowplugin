@@ -15,8 +15,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 /**
  * Each OpenFlow session is tracked by a Connection Context. These attach to a particular Device Context in such a way,
  * that there is at most one primary session associated with a Device Context.
- * <p/>
- * Created by Martin Bobak <mbobak@cisco.com> on 25.2.2015.
+ * <p>
+ * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 25.2.2015.
  */
 public interface ConnectionContext extends MultiMsgCollector {
 

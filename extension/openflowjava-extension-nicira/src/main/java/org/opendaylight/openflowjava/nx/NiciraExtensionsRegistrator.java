@@ -36,11 +36,10 @@ public class NiciraExtensionsRegistrator implements AutoCloseable {
     private final NiciraExtensionCodecRegistrator registrator;
 
     /**
-     * @param providers cannot be null
+     * @param registrator cannot be null
      */
     public NiciraExtensionsRegistrator(NiciraExtensionCodecRegistrator registrator) {
-        Preconditions.checkNotNull(registrator);
-        this.registrator = registrator;
+        this.registrator = Preconditions.checkNotNull(registrator);
     }
 
     public void registerNiciraExtensions() {

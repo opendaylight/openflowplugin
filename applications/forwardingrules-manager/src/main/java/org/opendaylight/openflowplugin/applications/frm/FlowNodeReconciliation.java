@@ -49,8 +49,8 @@ public interface FlowNodeReconciliation extends DataChangeListener, AutoCloseabl
     void flowNodeConnected(InstanceIdentifier<FlowCapableNode> connectedNode);
 
     /**
-     * Method contains functionality for registered Node {@FlowCapableNode} removing
-     * from {@Link ForwardingRulesManager}
+     * Method contains functionality for registered Node {@link FlowCapableNode} removing
+     * from {@link ForwardingRulesManager}
      *
      * @param disconnectedNode - {@link org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier} to removed Node
      */

@@ -12,7 +12,7 @@ package org.opendaylight.openflowplugin.api.openflow.device.handlers;
  * This handler does the same, but is not called in the same time as
  * RequestContextReadyHandler.
  *
- * Created by Martin Bobak <mbobak@cisco.com> on 27.2.2015.
+ * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 27.2.2015.
  */
 
 public interface DeviceSynchronizedHandler extends DeviceContextReadyHandler {
