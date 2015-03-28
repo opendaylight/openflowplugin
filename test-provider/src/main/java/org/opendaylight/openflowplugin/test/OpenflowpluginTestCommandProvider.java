@@ -3257,7 +3257,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
     /**
      * @param ci arguments: switchId flowType tableNum
-     *           <p/>
+     *           <p>
      *           <pre>
      *                     e.g.: addMDFlow openflow:1 f1 42
      *                     </pre>

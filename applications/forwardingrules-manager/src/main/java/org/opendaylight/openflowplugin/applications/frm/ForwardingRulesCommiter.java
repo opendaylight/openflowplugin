@@ -32,9 +32,9 @@ public interface ForwardingRulesCommiter <D extends DataObject> extends AutoClos
      * Method removes DataObject which is identified by InstanceIdentifier
      * from device.
      *
-     * @param InstanceIdentifier identifier - the whole path to DataObject
-     * @param DataObject remove - DataObject for removing
-     * @param InstanceIdentifier<FlowCapableNode> parent Node InstanceIdentifier
+     * @param identifier - the whole path to DataObject
+     * @param del - DataObject for removing
+     * @param nodeIdent Node InstanceIdentifier
      */
     void remove(InstanceIdentifier<D> identifier, D del,
             InstanceIdentifier<FlowCapableNode> nodeIdent);
@@ -43,9 +43,10 @@ public interface ForwardingRulesCommiter <D extends DataObject> extends AutoClos
      * Method updates the original DataObject to the update DataObject
      * in device. Both are identified by same InstanceIdentifier
      *
-     * @param InstanceIdentifier identifier - the whole path to DataObject
-     * @param DataObject original - original DataObject (for update)
-     * @param DataObject update - changed DataObject (contain updates)
+     * @param identifier - the whole path to DataObject
+     * @param original - original DataObject (for update)
+     * @param update - changed DataObject (contain updates)
+     * @param nodeIdent Node InstanceIdentifier
      */
     void update(InstanceIdentifier<D> identifier, D original, D update,
             InstanceIdentifier<FlowCapableNode> nodeIdent);
@@ -54,8 +55,9 @@ public interface ForwardingRulesCommiter <D extends DataObject> extends AutoClos
      * Method adds the DataObject which is identified by InstanceIdentifier
      * to device.
      *
-     * @param InstanceIdentifier identifier - the whole path to new DataObject
-     * @param DataObject add - new DataObject
+     * @param identifier - the whole path to new DataObject
+     * @param add - new DataObject
+     * @param nodeIdent Node InstanceIdentifier
      */
     void add(InstanceIdentifier<D> identifier, D add,
             InstanceIdentifier<FlowCapableNode> nodeIdent);

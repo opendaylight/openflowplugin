@@ -73,7 +73,7 @@ public interface StatPermCollector extends Runnable, AutoCloseable {
     /**
      * Add new connected node for permanent statistics collecting process
      *
-     * @param flowNode
+     * @param nodeIdent
      * @param statTypes
      * @param nrOfSwitchTables
      * @return true/false if the {@link Node} added successful
@@ -84,16 +84,16 @@ public interface StatPermCollector extends Runnable, AutoCloseable {
     /**
      * All disconnected Nodes need be removed from stat list Nodes
      *
-     * @param flowNode
+     * @param nodeIdent
      * @return true/false if the {@link Node} removed successful
      */
     boolean disconnectedNodeUnregistration(InstanceIdentifier<Node> nodeIdent);
 
     /**
      * Method add new feature {@link StatCapabTypes} to Node identified by
-     * nodeIdent -> InstanceIdentifier<Node>
+     * nodeIdent -&gt; InstanceIdentifier&lt;Node&gt;
      *
-     * @param flowNode
+     * @param nodeIdent
      * @return true/false if the {@link StatCapabTypes} add successful
      */
     boolean registerAdditionalNodeFeature(InstanceIdentifier<Node> nodeIdent, StatCapabTypes statCapab);
@@ -103,7 +103,7 @@ public interface StatPermCollector extends Runnable, AutoCloseable {
      * valid node registration in its internal {@link Node} map.
      * Otherwise return false.
      *
-     * @param flowNode
+     * @param nodeIdent
      * @return
      */
     boolean isProvidedFlowNodeActive(InstanceIdentifier<Node> nodeIdent);

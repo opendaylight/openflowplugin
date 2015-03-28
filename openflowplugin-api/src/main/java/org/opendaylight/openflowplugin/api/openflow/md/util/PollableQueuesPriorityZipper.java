@@ -13,12 +13,11 @@ import java.util.Queue;
  * Zipper groups together a list of queues and exposes one poll method. Polling
  * iterates through all groups and returns first not-null result of poll method
  * on each queue. If after polling each grouped queue for one time there is
- * still null result, poll will return null. <br/>
+ * still null result, poll will return null. <br>
  * Iterating keeps last position so this polling is supposed to be fairly
  * distributed.
  * 
- * @param <T>
- *            common item type of zipped queues
+ * @param <T> common item type of zipped queues
  */
 public class PollableQueuesPriorityZipper<T> {
 

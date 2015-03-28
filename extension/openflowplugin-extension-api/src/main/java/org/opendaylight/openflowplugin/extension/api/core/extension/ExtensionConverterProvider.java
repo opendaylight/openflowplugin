@@ -44,7 +44,7 @@ public interface ExtensionConverterProvider {
     <F extends Action, T extends DataContainer> ConvertorActionToOFJava<F, T> getConverter(TypeVersionKey<F> key);
     
     /**
-     * lookup converter<br/>
+     * lookup converter<br>
      * TODO: this method should be compatible with {@link #getConverter(MessageTypeKey)} after matches are migrated to similar structure
      * @param key
      * @return found converter
