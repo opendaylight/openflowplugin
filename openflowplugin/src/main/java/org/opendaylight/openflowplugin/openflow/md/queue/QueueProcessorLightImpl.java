@@ -38,15 +38,15 @@ import org.slf4j.LoggerFactory;
 
 /**
  * {@link org.opendaylight.openflowplugin.api.openflow.md.queue.QueueKeeper} implementation focused to keep order and use up mutiple threads for translation phase.
- * <br/>
+ * <br>
  * There is internal thread pool of limited size ({@link QueueProcessorLightImpl#setProcessingPoolSize(int)})
  * dedicated to translation. Then there is singleThreadPool dedicated to publishing (via popListeners)
- * <br/>
+ * <br>
  * Workflow:
  * <ol>
  * <li>upon message push ticket is created and enqueued</li>
  * <li>available threads from internal pool translate the massage wrapped in ticket</li>
- * <li>when translation of particular message is finished, result is set in future result of wrapping ticket</br>
+ * <li>when translation of particular message is finished, result is set in future result of wrapping ticket<br>
  *     (order of tickets in queue is not touched during translate)
  * </li>
  * <li>at the end of queue there is {@link TicketFinisher} running in singleThreadPool and for each ticket it does:

@@ -11,7 +11,7 @@ package org.opendaylight.openflowplugin.api.openflow.device;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * Created by Martin Bobak <mbobak@cisco.com> on 24.3.2015.
+ * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 24.3.2015.
  */
 public class XidGenerator {
 

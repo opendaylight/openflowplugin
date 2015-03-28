@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
- * Created by Martin Bobak <mbobak@cisco.com> on 26.3.2015.
+ * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 26.3.2015.
  */
 public class RpcResultConvertor<T extends DataObject> {
 

@@ -19,7 +19,7 @@ import com.google.common.base.Preconditions;
 /**
  * Provides augmentation resolving upon given {@link Augmentable}.
  * Used {@link #classes} share the same {@link Augmentable}.
- * <br/>
+ * <br>
  * <b>Usage:</b> in case there is {@link Augmentable} which might contain
  * multiple {@link Augmentation}s depending on origin. And those {@link Augmentation}s 
  * are sharing the same grouping so that they could be processed in the same way.
