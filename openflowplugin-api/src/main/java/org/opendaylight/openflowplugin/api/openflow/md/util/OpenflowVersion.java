@@ -1,7 +1,7 @@
 package org.opendaylight.openflowplugin.api.openflow.md.util;
 
 /** List of Openflow versions supported by the plugin
- *  Note: If you add a version here, make sure to update {@link OpenflowPortsUtil} as well.
+ *  Note: If you add a version here, make sure to update org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil as well.
  * Created by kramesha on 5/2/14.
  */
 public enum OpenflowVersion {

@@ -108,7 +108,7 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
     /**
      * Recursive helper method for
      * {@link OFRpcTaskFactory#chainFlowMods(java.util.List, int, org.opendaylight.openflowplugin.openflow.md.core.sal.OFRpcTaskContext, org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher)}
-     * {@link OFRpcTaskFactory#createUpdateFlowTask()} to chain results of multiple flowmods. The next flowmod gets
+     * {@link OFRpcTaskFactory#createUpdateFlowTask(org.opendaylight.openflowplugin.openflow.md.core.sal.OFRpcTaskContext, UpdateFlowInput, org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher)} to chain results of multiple flowmods. The next flowmod gets
      * executed if the earlier one is successful. All the flowmods should have the same xid, in-order to cross-reference
      * the notification
      */

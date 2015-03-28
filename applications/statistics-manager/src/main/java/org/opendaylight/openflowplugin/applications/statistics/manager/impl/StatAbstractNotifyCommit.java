@@ -77,10 +77,10 @@ public abstract class StatAbstractNotifyCommit<N extends NotificationListener> i
     protected abstract N getStatNotificationListener();
 
     /**
-     * PreConfigurationCheck - Node identified by input InstanceIdentifier<Node>
+     * PreConfigurationCheck - Node identified by input InstanceIdentifier&lt;Node&gt;
      * has to be registered in {@link org.opendaylight.openflowplugin.applications.statistics.manager.StatPermCollector}
      *
-     * @param InstanceIdentifier<Node> nodeIdent
+     * @param nodeIdent
      */
     protected boolean preConfigurationCheck(final InstanceIdentifier<Node> nodeIdent) {
         Preconditions.checkNotNull(nodeIdent, "FlowCapableNode ident can not be null!");
@@ -97,8 +97,8 @@ public abstract class StatAbstractNotifyCommit<N extends NotificationListener> i
      * getTransactionCacheContainer with 10sec TimeOut.
      * Method has returned {@link Optional} which could contains a {@link TransactionCacheContainer}
      *
-     * @param TransactionId transId
-     * @param NodeId nodeId
+     * @param transId
+     * @param nodeId
      * @return
      */
     protected Optional<TransactionCacheContainer<?>> getTransactionCacheContainer(final TransactionId transId, final NodeId nodeId) {
@@ -141,8 +141,8 @@ public abstract class StatAbstractNotifyCommit<N extends NotificationListener> i
      * isExpectedStatistics with 10sec TimeOut.
      * Method has checked registration for provided {@link TransactionId} and {@link NodeId}
      *
-     * @param TransactionId transId - Transaction identification
-     * @param NodeId nodeId - Node identification
+     * @param transId - Transaction identification
+     * @param nodeId - Node identification
      * @return boolean
      */
     protected boolean isExpectedStatistics(final TransactionId transId, final NodeId nodeId) {

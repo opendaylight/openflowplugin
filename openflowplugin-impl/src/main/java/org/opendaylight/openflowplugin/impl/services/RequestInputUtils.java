@@ -13,7 +13,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInputBuilder;
 
 /**
- * Created by Martin Bobak <mbobak@cisco.com> on 26.3.2015.
+ * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 26.3.2015.
  */
 public final class RequestInputUtils {
 

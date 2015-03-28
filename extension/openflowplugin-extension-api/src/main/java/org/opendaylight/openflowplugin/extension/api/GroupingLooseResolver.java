@@ -20,7 +20,7 @@ import com.google.common.base.Preconditions;
 /**
  * Provides augmentation resolving upon given {@link Augmentable}. 
  * Used {@link Augmentation}s do not share {@link Augmentable}.
- * <br/>
+ * <br>
  * <b>Usage:</b> in case there are multiple {@link Augmentable} classes which might contain
  * corresponding {@link Augmentation}s (1:1..n binding). And those {@link Augmentation}s 
  * are sharing the same grouping so that they could be processed in the same way.
@@ -34,7 +34,6 @@ public class GroupingLooseResolver<G> {
 
     /**
      * @param commonInterface
-     * @param common grouping Interface
      */
     public GroupingLooseResolver(Class<G> commonInterface) {
         this.commonInterface = commonInterface;

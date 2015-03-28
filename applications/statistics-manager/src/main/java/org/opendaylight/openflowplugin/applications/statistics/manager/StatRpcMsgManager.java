@@ -46,9 +46,9 @@ public interface StatRpcMsgManager extends Runnable, AutoCloseable {
      * Transaction container is definition for Multipart transaction
      * join container for all Multipart msg with same TransactionId
      * Input {@link DataObject} is a possible light-weight DataObject
-     * which is used for identification (e.g. Flow-> Priority,Match,Cookie,FlowId)
+     * which is used for identification (e.g. Flow -&gt; Priority,Match,Cookie,FlowId)
      *
-     * @param <T> extends TransactionAware -
+     * @param <T>
      */
     interface TransactionCacheContainer<T extends TransactionAware> {
 
@@ -67,7 +67,7 @@ public interface StatRpcMsgManager extends Runnable, AutoCloseable {
      * Method is used for check a transaction registration
      * for multipart cache holder
      *
-     * @param TransactionId id
+     * @param id
      * @return true if the transaction has been correctly registered
      */
     Future<Boolean> isExpectedStatistics(TransactionId id, NodeId nodeId);
@@ -95,7 +95,7 @@ public interface StatRpcMsgManager extends Runnable, AutoCloseable {
      * and build all to TransactionCacheContainer Object to return. This process clean
      * all instances in Cache.
      *
-     * @param TransactionId id
+     * @param id
      * @return TransactionCacheContainer
      */
     Future<Optional<TransactionCacheContainer<?>>> getTransactionCacheContainer(TransactionId id, NodeId nodeId);
@@ -104,7 +104,7 @@ public interface StatRpcMsgManager extends Runnable, AutoCloseable {
      * Method wraps OpendaylightGroupStatisticsService.getAllGroupStatistics
      * and registers to Transaction Cache
      *
-     * @param NodeRef nodeRef
+     * @param nodeRef
      */
     Future<TransactionId> getAllGroupsStat(NodeRef nodeRef);
 
@@ -112,7 +112,7 @@ public interface StatRpcMsgManager extends Runnable, AutoCloseable {
      * Method wraps OpendaylightGroupStatisticsService.getGroupDescription
      * and registers to Transaction Cache
      *
-     * @param NodeRef nodeRef
+     * @param nodeRef
      */
     Future<TransactionId> getAllGroupsConfStats(NodeRef nodeRef);
 
@@ -120,7 +120,7 @@ public interface StatRpcMsgManager extends Runnable, AutoCloseable {
      * Method wraps OpendaylightMeterStatisticsService.getGroupFeatures
      * and registers to Transaction Cache
      *
-     * @param NodeRef nodeRef
+     * @param nodeRef
      */
     void getGroupFeaturesStat(NodeRef nodeRef);
 
@@ -128,7 +128,7 @@ public interface StatRpcMsgManager extends Runnable, AutoCloseable {
      * Method wraps OpendaylightMeterStatisticsService.getAllMeterStatistics
      * and registers to Transaction Cache
      *
-     * @param NodeRef nodeRef
+     * @param nodeRef
      */
     Future<TransactionId> getAllMetersStat(NodeRef nodeRef);
 
@@ -136,7 +136,7 @@ public interface StatRpcMsgManager extends Runnable, AutoCloseable {
      * Method wraps OpendaylightMeterStatisticsService.getAllMeterConfigStatistics
      * and registers to Transaction Cache
      *
-     * @param NodeRef nodeRef
+     * @param nodeRef
      */
     Future<TransactionId> getAllMeterConfigStat(NodeRef nodeRef);
 
@@ -144,7 +144,7 @@ public interface StatRpcMsgManager extends Runnable, AutoCloseable {
      * Method wraps OpendaylightMeterStatisticsService.getMeterFeatures
      * and registers to Transaction Cache
      *
-     * @param NodeRef nodeRef
+     * @param nodeRef
      */
     void getMeterFeaturesStat(NodeRef nodeRef);
 
@@ -152,7 +152,7 @@ public interface StatRpcMsgManager extends Runnable, AutoCloseable {
      * Method wraps OpendaylightFlowStatisticsService.getAllFlowsStatisticsFromAllFlowTables
      * and registers to Transaction Cache
      *
-     * @param NodeRef nodeRef
+     * @param nodeRef
      */
     Future<TransactionId> getAllFlowsStat(NodeRef nodeRef);
 
@@ -160,8 +160,8 @@ public interface StatRpcMsgManager extends Runnable, AutoCloseable {
      * Method wraps OpendaylightFlowStatisticsService.getAggregateFlowStatisticsFromFlowTableForAllFlows
      * and registers to Transaction Cache
      *
-     * @param NodeRef nodeRef
-     * @param TableId tableId
+     * @param nodeRef
+     * @param tableId
      */
     void getAggregateFlowStat(NodeRef nodeRef, TableId tableId);
 
@@ -169,7 +169,7 @@ public interface StatRpcMsgManager extends Runnable, AutoCloseable {
      * Method wraps OpendaylightPortStatisticsService.getAllNodeConnectorsStatistics
      * and registers to Transaction Cache
      *
-     * @param NodeRef nodeRef
+     * @param nodeRef
      */
     Future<TransactionId> getAllPortsStat(NodeRef nodeRef);
 
@@ -177,7 +177,7 @@ public interface StatRpcMsgManager extends Runnable, AutoCloseable {
      * Method wraps OpendaylightFlowTableStatisticsService.getFlowTablesStatistics
      * and registers to Transaction Cache
      *
-     * @param NodeRef nodeRef
+     * @param nodeRef
      */
     Future<TransactionId> getAllTablesStat(NodeRef nodeRef);
 
@@ -185,7 +185,7 @@ public interface StatRpcMsgManager extends Runnable, AutoCloseable {
      * Method wraps OpendaylightQueueStatisticsService.getAllQueuesStatisticsFromAllPorts
      * and registers to Transaction Cache
      *
-     * @param NodeRef nodeRef
+     * @param nodeRef
      */
     Future<TransactionId> getAllQueueStat(NodeRef nodeRef);
 

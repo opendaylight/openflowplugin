@@ -13,16 +13,15 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
 /**
- * Created by Martin Bobak <mbobak@cisco.com> on 25.3.2015.
+ * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 25.3.2015.
+ * @param <T>
  */
 public interface RequestFutureContext<T extends DataObject> {
 
     /**
      * Method returns future to be used for handling device requests.
      *
-     * @param <T>
      * @return
      */
     SettableFuture<RpcResult<T>> getFuture();
-
 }

@@ -228,8 +228,8 @@ public abstract class OFRpcTaskFactory {
     }
 
     /**
-     * Recursive helper method for {@link OFRpcTaskFactory#createAddFlowTask()}
-     * and {@link OFRpcTaskFactory#createUpdateFlowTask()} to chain results
+     * Recursive helper method for {@link OFRpcTaskFactory#createAddFlowTask(OFRpcTaskContext, AddFlowInput, SwitchConnectionDistinguisher)}
+     * and {@link OFRpcTaskFactory#createUpdateFlowTask(OFRpcTaskContext, UpdateFlowInput, SwitchConnectionDistinguisher)} to chain results
      * of multiple flowmods.
      * The next flowmod gets executed if the earlier one is successful.
      * All the flowmods should have the same xid, in-order to cross-reference
@@ -357,7 +357,6 @@ public abstract class OFRpcTaskFactory {
 
 
     /**
-     * @param xId
      * @param input
      * @return
      */

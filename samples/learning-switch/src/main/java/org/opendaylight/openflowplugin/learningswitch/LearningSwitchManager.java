@@ -29,14 +29,14 @@ public interface LearningSwitchManager {
 
     /**
      * Set's Data Broker dependency.
-     * <p/>
+     * <p>
      * Data Broker is used to access overal operational and configuration
      * tree.
-     * <p/>
+     * <p>
      * In simple Learning Switch handler, data broker is used to listen
      * for changes in Openflow tables and to configure flows which will
      * be provisioned down to the Openflow switch.
-     * <p/>
+     * <p>
      * inject {@link DataBroker}
      *
      * @param data
@@ -45,10 +45,10 @@ public interface LearningSwitchManager {
 
     /**
      * Set's Packet Processing dependency.
-     * <p/>
+     * <p>
      * Packet Processing service is used to send packet Out on Openflow
      * switch.
-     * <p/>
+     * <p>
      * inject {@link PacketProcessingService}
      *
      * @param packetProcessingService
@@ -58,10 +58,10 @@ public interface LearningSwitchManager {
 
     /**
      * Set's Notification service dependency.
-     * <p/>
+     * <p>
      * Notification service is used to register for listening
      * packet-in notifications.
-     * <p/>
+     * <p>
      * inject {@link NotificationService}
      *
      * @param notificationService

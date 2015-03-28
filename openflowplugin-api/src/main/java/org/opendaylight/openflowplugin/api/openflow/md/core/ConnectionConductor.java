@@ -41,7 +41,7 @@ public interface ConnectionConductor {
     List<Short> versionOrder = Lists.newArrayList((short) 0x04, (short) 0x01);
 
     /**
-     * initialize wiring around {@link #connectionAdapter}
+     * initialize wiring around {@link ConnectionAdapter}
      */
     void init();
 

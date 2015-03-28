@@ -16,8 +16,8 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.MessageHandl
  * Connection manager manages connections with devices.
  * It instantiates and registers {@link ConnectionContext}
  * used for handling all communication with device when onSwitchConnected notification is processed.
- * <p/>
- * Created by Martin Bobak <mbobak@cisco.com> on 25.2.2015.
+ * <p>
+ * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 25.2.2015.
  */
 public interface ConnectionManager extends SwitchConnectionHandler {
 
