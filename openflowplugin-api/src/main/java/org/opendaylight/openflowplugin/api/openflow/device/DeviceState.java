@@ -8,12 +8,12 @@
 
 package org.opendaylight.openflowplugin.api.openflow.device;
 
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
 
 /**
  * Created by Martin Bobak <mbobak@cisco.com> on 25.2.2015.
@@ -52,7 +52,7 @@ public interface DeviceState {
      *
      * @return The Map of bandwidths for all OFPorts
      */
-    Map<Long, Boolean> getPortsBandwidth();
+    Map<Long, Long> getPortsBandwidth();
 
     /**
      * Returns a Set containing all port IDs of this switch.
@@ -75,7 +75,7 @@ public interface DeviceState {
      * @param portNumber the port ID
      * @return bandwidth
      */
-    Boolean getPortBandwidth(Long portNumber);
+    Long getPortBandwidth(Long portNumber);
 
     /**
      * Returns True if the port is enabled,
@@ -103,7 +103,7 @@ public interface DeviceState {
     /**
      * @return the unique xid for this session
      */
-    Long getNextXid();
+    Xid getNextXid();
 
     /**
      * @return seed value for random operations
