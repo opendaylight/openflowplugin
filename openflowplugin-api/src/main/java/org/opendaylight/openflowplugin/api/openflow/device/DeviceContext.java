@@ -8,22 +8,17 @@
 
 package org.opendaylight.openflowplugin.api.openflow.device;
 
-import org.opendaylight.controller.md.sal.common.api.data.TransactionChain;
+import java.math.BigInteger;
+import java.util.Map;
+import java.util.concurrent.Future;
+import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
+import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MessageHandler;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableFeatures;
-
-import java.math.BigInteger;
-
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.common.RpcResult;
-
-import com.google.common.util.concurrent.SettableFuture;
-
-import java.util.Collection;
-import java.util.Map;
-import java.util.concurrent.Future;
 
 /**
  * The central entity of OFP is the Device Context, which encapsulate the logical state of a switch
@@ -67,18 +62,19 @@ public interface DeviceContext extends MessageHandler {
     DeviceState getDeviceState();
 
     /**
-     * Method sets transaction chain used for all data store operations on device
-     * represented by this context. This transaction chain is write only.
-     *
-     * @param transactionChain
-     */
-    void setTransactionChain(TransactionChain transactionChain);
-
-    /**
      * Method exposes transaction created for device
      * represented by this context. This should be used as write only.
      */
-    TransactionChain getTransactionChain();
+    WriteTransaction getWriteTransaction();
+
+    /**
+     * Method exposes transaction created for device
+     * represented by this context. This should be used as read only.
+     * This read only transaction has a fresh dataStore snapshot and
+     * here is a possibility to get different data set from  DataStore
+     * as have a write transaction in this context.
+     */
+    ReadTransaction getReadTransaction();
 
     /**
      * Method provides capabilities of connected device.
@@ -104,20 +100,20 @@ public interface DeviceContext extends MessageHandler {
     Xid getNextXid();
 
     <T extends DataObject> Future<RpcResult<T>> sendRequest(Xid xid);
-    
+
     /**
      * Method provides requests map
      * @return
      */
     public Map<Xid, RequestFutureContext> getRequests();
-    
+
     /**
      * Method writes request context into request context map
      * @param xid
      * @param requestFutureContext
      */
     public void hookRequestCtx(Xid xid, RequestFutureContext requestFutureContext);
-    
+
     /**
      * Method that set future to context in Map
      * @param xid
