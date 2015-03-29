@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_9e169454",
+        "filename": "samples/learning-switch/src/main/java/org/opendaylight/openflowplugin/learningswitch/Activator.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2015-03-29T18:27:42Z",
+      "side": 1,
+      "message": "Talking about validity: there is missing paragraph end tag now. Why don\u0027t we use simple break-line tag? Does jdk8 really accept this?",
+      "range": {
+        "startLine": 22,
+        "startChar": 4,
+        "endLine": 22,
+        "endChar": 5
+      },
+      "revId": "2ece3f4d91c8dea6fb687467fd8057b27ee0475c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
