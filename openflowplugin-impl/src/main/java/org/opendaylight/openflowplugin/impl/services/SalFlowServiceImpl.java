@@ -47,8 +47,8 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
 
     @Override
     public Future<RpcResult<AddFlowOutput>> addFlow(final AddFlowInput input) {
-        return ServiceCallProcessingUtil.<AddFlowOutput, Void> handleServiceCall(rpcContext, PRIMARY_CONNECTION, deviceContext,
-                 new Function<BigInteger,Future<RpcResult<Void>>>() {
+        return this.<AddFlowOutput, Void> handleServiceCall(PRIMARY_CONNECTION,
+                new Function<BigInteger, Future<RpcResult<Void>>>() {
                     @Override
                     public ListenableFuture<RpcResult<Void>> apply(final BigInteger IDConnection) {
                         final List<FlowModInputBuilder> ofFlowModInputs = FlowConvertor.toFlowModInputs(input, version,
@@ -60,8 +60,8 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
 
     @Override
     public Future<RpcResult<RemoveFlowOutput>> removeFlow(final RemoveFlowInput input) {
-        return ServiceCallProcessingUtil.<RemoveFlowOutput, Void> handleServiceCall(rpcContext, PRIMARY_CONNECTION, deviceContext,
-                new Function<BigInteger,Future<RpcResult<Void>>>() {
+        return this.<RemoveFlowOutput, Void> handleServiceCall(PRIMARY_CONNECTION,
+                new Function<BigInteger, Future<RpcResult<Void>>>() {
                     @Override
                     public Future<RpcResult<Void>> apply(final BigInteger IDConnection) {
                         final FlowModInputBuilder ofFlowModInput = FlowConvertor.toFlowModInput(input, version,
@@ -98,8 +98,8 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
         allFlowMods.addAll(ofFlowModInputs);
         LOG.debug("Number of flows to push to switch: {}", allFlowMods.size());
         Collections.<String> emptyList();
-        return ServiceCallProcessingUtil.<UpdateFlowOutput, Void> handleServiceCall(rpcContext, PRIMARY_CONNECTION, deviceContext,
-                new Function<BigInteger,Future<RpcResult<Void>>>() {
+        return this.<UpdateFlowOutput, Void> handleServiceCall(PRIMARY_CONNECTION,
+                new Function<BigInteger, Future<RpcResult<Void>>>() {
                     @Override
                     public Future<RpcResult<Void>> apply(final BigInteger cookie) {
                         return chainFlowMods(allFlowMods, 0, cookie);

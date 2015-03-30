@@ -30,8 +30,8 @@ public class SalGroupServiceImpl extends CommonService implements SalGroupServic
 
     @Override
     public Future<RpcResult<AddGroupOutput>> addGroup(final AddGroupInput input) {
-        return ServiceCallProcessingUtil.<AddGroupOutput, Void> handleServiceCall(rpcContext, PRIMARY_CONNECTION,
-                deviceContext, new Function<BigInteger,Future<RpcResult<Void>>>() {
+        return this.<AddGroupOutput, Void> handleServiceCall( PRIMARY_CONNECTION,
+                 new Function<BigInteger,Future<RpcResult<Void>>>() {
 
                     @Override
                     public Future<RpcResult<Void>> apply(final BigInteger IDConnection) {
@@ -42,8 +42,8 @@ public class SalGroupServiceImpl extends CommonService implements SalGroupServic
 
     @Override
     public Future<RpcResult<UpdateGroupOutput>> updateGroup(final UpdateGroupInput input) {
-        return ServiceCallProcessingUtil.<UpdateGroupOutput, Void> handleServiceCall(rpcContext, PRIMARY_CONNECTION,
-                deviceContext, new Function<BigInteger,Future<RpcResult<Void>>>() {
+        return this.<UpdateGroupOutput, Void> handleServiceCall(PRIMARY_CONNECTION,
+                new Function<BigInteger, Future<RpcResult<Void>>>() {
 
                     @Override
                     public Future<RpcResult<Void>> apply(final BigInteger IDConnection) {
@@ -54,8 +54,8 @@ public class SalGroupServiceImpl extends CommonService implements SalGroupServic
 
     @Override
     public Future<RpcResult<RemoveGroupOutput>> removeGroup(final RemoveGroupInput input) {
-        return ServiceCallProcessingUtil.<RemoveGroupOutput, Void> handleServiceCall(rpcContext, PRIMARY_CONNECTION,
-                deviceContext, new Function<BigInteger,Future<RpcResult<Void>>>() {
+        return this.<RemoveGroupOutput, Void> handleServiceCall(PRIMARY_CONNECTION,
+                new Function<BigInteger, Future<RpcResult<Void>>>() {
 
                     @Override
                     public Future<RpcResult<Void>> apply(final BigInteger IDConnection) {

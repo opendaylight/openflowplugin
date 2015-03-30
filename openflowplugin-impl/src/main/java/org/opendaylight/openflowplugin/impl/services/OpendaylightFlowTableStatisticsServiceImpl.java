@@ -7,11 +7,10 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
+import com.google.common.base.Function;
+import java.math.BigInteger;
 import com.google.common.util.concurrent.JdkFutureAdapters;
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.SettableFuture;
 import java.util.concurrent.Future;
-import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.GetFlowTablesStatisticsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.GetFlowTablesStatisticsOutput;
@@ -31,37 +30,30 @@ public class OpendaylightFlowTableStatisticsServiceImpl extends CommonService im
     @Override
     public Future<RpcResult<GetFlowTablesStatisticsOutput>> getFlowTablesStatistics(
             final GetFlowTablesStatisticsInput input) {
-        final RequestContext<GetFlowTablesStatisticsOutput> requestContext = rpcContext.createRequestContext();
-        final SettableFuture<RpcResult<GetFlowTablesStatisticsOutput>> result = rpcContext.storeOrFail(requestContext);
+        return this.<GetFlowTablesStatisticsOutput, Void> handleServiceCall(PRIMARY_CONNECTION,
+                new Function<BigInteger, Future<RpcResult<Void>>>() {
 
-        if (!result.isDone()) {
+                    @Override
+                    public Future<RpcResult<Void>> apply(final BigInteger IDConnection) {
+                        final Xid xid = deviceContext.getNextXid();
 
-            final Xid xid = deviceContext.getNextXid();
+                        // Create multipart request body for fetch all the group stats
+                        final MultipartRequestTableCaseBuilder multipartRequestTableCaseBuilder = new MultipartRequestTableCaseBuilder();
+                        final MultipartRequestTableBuilder multipartRequestTableBuilder = new MultipartRequestTableBuilder();
+                        multipartRequestTableBuilder.setEmpty(true);
+                        multipartRequestTableCaseBuilder.setMultipartRequestTable(multipartRequestTableBuilder.build());
 
-            // Create multipart request body for fetch all the group stats
-            final MultipartRequestTableCaseBuilder multipartRequestTableCaseBuilder = new MultipartRequestTableCaseBuilder();
-            final MultipartRequestTableBuilder multipartRequestTableBuilder = new MultipartRequestTableBuilder();
-            multipartRequestTableBuilder.setEmpty(true);
-            multipartRequestTableCaseBuilder.setMultipartRequestTable(multipartRequestTableBuilder.build());
+                        // Set request body to main multipart request
+                        final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
+                                MultipartType.OFPMPFLOW, xid.getValue(), version);
 
-            // Set request body to main multipart request
-            final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
-                    MultipartType.OFPMPFLOW, xid.getValue(), version);
+                        mprInput.setMultipartRequestBody(multipartRequestTableCaseBuilder.build());
+                        final Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext()
+                                .getConnectionAdapter().multipartRequest(mprInput.build());
 
-            mprInput.setMultipartRequestBody(multipartRequestTableCaseBuilder.build());
-            final Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext()
-                    .getConnectionAdapter().multipartRequest(mprInput.build());
-
-            final ListenableFuture<RpcResult<Void>> futureResultFromOfLib = JdkFutureAdapters
-                    .listenInPoolThread(resultFromOFLib);
-
-            RpcResultConvertor<GetFlowTablesStatisticsOutput> rpcResultConvertor = new RpcResultConvertor<>(requestContext, deviceContext);
-            rpcResultConvertor.processResultFromOfJava(futureResultFromOfLib);
-
-        } else {
-            RequestContextUtil.closeRequstContext(requestContext);
-        }
-        return result;
+                        return JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
+                    }
+                });
     }
 
 }

@@ -7,11 +7,10 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
+import com.google.common.base.Function;
+import java.math.BigInteger;
 import com.google.common.util.concurrent.JdkFutureAdapters;
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.SettableFuture;
 import org.opendaylight.openflowplugin.api.OFConstants;
-import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
@@ -35,70 +34,61 @@ public class OpendaylightPortStatisticsServiceImpl extends CommonService impleme
     @Override
     public Future<RpcResult<GetAllNodeConnectorsStatisticsOutput>> getAllNodeConnectorsStatistics(
             final GetAllNodeConnectorsStatisticsInput input) {
-        final RequestContext<GetAllNodeConnectorsStatisticsOutput> requestContext = rpcContext.createRequestContext();
-        final SettableFuture<RpcResult<GetAllNodeConnectorsStatisticsOutput>> result = rpcContext.storeOrFail(requestContext);
+        return this
+                .<GetAllNodeConnectorsStatisticsOutput, Void> handleServiceCall(
+                        PRIMARY_CONNECTION,  new Function<BigInteger, Future<RpcResult<Void>>>() {
 
-        if (!result.isDone()) {
+                    @Override
+                    public Future<RpcResult<Void>> apply(final BigInteger IDConnection) {
+                        final Xid xid = deviceContext.getNextXid();
 
-            final Xid xid = deviceContext.getNextXid();
+                        MultipartRequestPortStatsCaseBuilder caseBuilder =
+                                new MultipartRequestPortStatsCaseBuilder();
+                        MultipartRequestPortStatsBuilder mprPortStatsBuilder =
+                                new MultipartRequestPortStatsBuilder();
+                        // Select all ports
+                        mprPortStatsBuilder.setPortNo(OFConstants.OFPP_ANY);
+                        caseBuilder.setMultipartRequestPortStats(mprPortStatsBuilder.build());
 
-            MultipartRequestPortStatsCaseBuilder caseBuilder =
-                    new MultipartRequestPortStatsCaseBuilder();
-            MultipartRequestPortStatsBuilder mprPortStatsBuilder =
-                    new MultipartRequestPortStatsBuilder();
-            // Select all ports
-            mprPortStatsBuilder.setPortNo(OFConstants.OFPP_ANY);
-            caseBuilder.setMultipartRequestPortStats(mprPortStatsBuilder.build());
-
-            MultipartRequestInputBuilder mprInput = RequestInputUtils
-                    .createMultipartHeader(MultipartType.OFPMPPORTSTATS, xid.getValue(), version);
-            mprInput.setMultipartRequestBody(caseBuilder.build());
-            Future<RpcResult<Void>> resultFromOFLib = deviceContext
-                    .getPrimaryConnectionContext().getConnectionAdapter().multipartRequest(mprInput.build());
-            ListenableFuture<RpcResult<Void>> futureResultFromOfLib = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
-
-            final RpcResultConvertor<GetAllNodeConnectorsStatisticsOutput> rpcResultConvertor = new RpcResultConvertor<>(requestContext, deviceContext);
-            rpcResultConvertor.<Void>processResultFromOfJava(futureResultFromOfLib);
-
-        } else {
-            RequestContextUtil.closeRequstContext(requestContext);
-        }
-        return result;
+                        MultipartRequestInputBuilder mprInput = RequestInputUtils
+                                .createMultipartHeader(MultipartType.OFPMPPORTSTATS, xid.getValue(), version);
+                        mprInput.setMultipartRequestBody(caseBuilder.build());
+                        Future<RpcResult<Void>> resultFromOFLib = deviceContext
+                                .getPrimaryConnectionContext().getConnectionAdapter().multipartRequest(mprInput.build());
+                        return JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
+                    }});
     }
 
     @Override
     public Future<RpcResult<GetNodeConnectorStatisticsOutput>> getNodeConnectorStatistics(
             final GetNodeConnectorStatisticsInput input) {
-        final RequestContext<GetNodeConnectorStatisticsOutput> requestContext = rpcContext.createRequestContext();
-        final SettableFuture<RpcResult<GetNodeConnectorStatisticsOutput>> result = rpcContext.storeOrFail(requestContext);
+        return this
+                .<GetNodeConnectorStatisticsOutput, Void> handleServiceCall(
+                        PRIMARY_CONNECTION,  new Function<BigInteger, Future<RpcResult<Void>>>() {
 
-        if (!result.isDone()) {
-            final Xid xid = deviceContext.getNextXid();
+                    @Override
+                    public Future<RpcResult<Void>> apply(final BigInteger IDConnection) {
+                        final Xid xid = deviceContext.getNextXid();
 
-            MultipartRequestPortStatsCaseBuilder caseBuilder =
-                    new MultipartRequestPortStatsCaseBuilder();
-            MultipartRequestPortStatsBuilder mprPortStatsBuilder =
-                    new MultipartRequestPortStatsBuilder();
-            // Set specific port
-            mprPortStatsBuilder
-                    .setPortNo(InventoryDataServiceUtil.portNumberfromNodeConnectorId(
-                            OpenflowVersion.get(version),
-                            input.getNodeConnectorId()));
-            caseBuilder.setMultipartRequestPortStats(mprPortStatsBuilder.build());
+                        MultipartRequestPortStatsCaseBuilder caseBuilder =
+                                new MultipartRequestPortStatsCaseBuilder();
+                        MultipartRequestPortStatsBuilder mprPortStatsBuilder =
+                                new MultipartRequestPortStatsBuilder();
+                        // Set specific port
+                        mprPortStatsBuilder
+                        .setPortNo(InventoryDataServiceUtil.portNumberfromNodeConnectorId(
+                                OpenflowVersion.get(version),
+                                input.getNodeConnectorId()));
+                        caseBuilder.setMultipartRequestPortStats(mprPortStatsBuilder.build());
 
-            MultipartRequestInputBuilder mprInput = RequestInputUtils
-                    .createMultipartHeader(MultipartType.OFPMPPORTSTATS, xid.getValue(), version);
-            mprInput.setMultipartRequestBody(caseBuilder.build());
-            Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext()
-                    .getConnectionAdapter().multipartRequest(mprInput.build());
-            ListenableFuture<RpcResult<Void>> futureResultFromOfLib = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
+                        MultipartRequestInputBuilder mprInput = RequestInputUtils
+                                .createMultipartHeader(MultipartType.OFPMPPORTSTATS, xid.getValue(), version);
+                        mprInput.setMultipartRequestBody(caseBuilder.build());
+                        Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext()
+                                .getConnectionAdapter().multipartRequest(mprInput.build());
+                        return JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
+                    }});
 
-            final RpcResultConvertor<GetNodeConnectorStatisticsOutput> rpcResultConvertor = new RpcResultConvertor<>(requestContext, deviceContext);
-            rpcResultConvertor.processResultFromOfJava(futureResultFromOfLib);
-        } else {
-            RequestContextUtil.closeRequstContext(requestContext);
-        }
-        return result;
     }
 
 }

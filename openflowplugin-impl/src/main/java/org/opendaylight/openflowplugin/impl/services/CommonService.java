@@ -7,6 +7,11 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
+import com.google.common.base.Function;
+import com.google.common.util.concurrent.SettableFuture;
+import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
+import org.opendaylight.yangtools.yang.binding.DataObject;
+
 import com.google.common.util.concurrent.Futures;
 import java.math.BigInteger;
 import java.util.concurrent.Future;
@@ -20,7 +25,7 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 
-public class CommonService {
+abstract class CommonService {
     private static final Logger LOG = org.slf4j.LoggerFactory.getLogger(CommonService.class);
     private static final long WAIT_TIME = 2000;
     protected final static Future<RpcResult<Void>> ERROR_RPC_RESULT = Futures.immediateFuture(RpcResultBuilder
@@ -34,7 +39,7 @@ public class CommonService {
     protected DeviceContext deviceContext;
     private ConnectionAdapter primaryConnectionAdapter;
 
-    public CommonService() {
+    CommonService() {
     }
 
     public CommonService(final RpcContext rpcContext) {
@@ -68,6 +73,25 @@ public class CommonService {
         }
 
         return primaryConnectionAdapter;
+    }
+
+    <T extends DataObject, F>  Future<RpcResult<T>> handleServiceCall(final BigInteger connectionID,
+            final Function<BigInteger,Future<RpcResult<F>>> function) {
+        LOG.debug("Calling the FlowMod RPC method on MessageDispatchService");
+
+        final RequestContext<T> requestContext = rpcContext.createRequestContext();
+        final SettableFuture<RpcResult<T>> result = rpcContext.storeOrFail(requestContext);
+
+        if (!result.isDone()) {
+            final Future<RpcResult<F>> resultFromOFLib = function.apply(connectionID);
+
+            final RpcResultConvertor<T> rpcResultConvertor = new RpcResultConvertor<>(requestContext, deviceContext);
+            rpcResultConvertor.processResultFromOfJava(resultFromOFLib);
+
+        } else {
+            RequestContextUtil.closeRequstContext(requestContext);
+        }
+        return result;
     }
 
 }

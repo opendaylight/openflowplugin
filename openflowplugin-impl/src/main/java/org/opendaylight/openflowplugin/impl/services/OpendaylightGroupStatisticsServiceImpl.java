@@ -7,12 +7,11 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
+import com.google.common.base.Function;
+import java.math.BigInteger;
 import com.google.common.util.concurrent.JdkFutureAdapters;
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.SettableFuture;
 import java.util.concurrent.Future;
 import org.opendaylight.openflowjava.protocol.api.util.BinContent;
-import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetAllGroupStatisticsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetAllGroupStatisticsOutput;
@@ -39,129 +38,102 @@ public class OpendaylightGroupStatisticsServiceImpl extends CommonService implem
 
     @Override
     public Future<RpcResult<GetAllGroupStatisticsOutput>> getAllGroupStatistics(final GetAllGroupStatisticsInput input) {
+        return this.<GetAllGroupStatisticsOutput, Void> handleServiceCall(PRIMARY_CONNECTION,
+                new Function<BigInteger, Future<RpcResult<Void>>>() {
 
-        final RequestContext<GetAllGroupStatisticsOutput> requestContext = rpcContext.createRequestContext();
-        final SettableFuture<RpcResult<GetAllGroupStatisticsOutput>> result = rpcContext.storeOrFail(requestContext);
+                    @Override
+                    public Future<RpcResult<Void>> apply(final BigInteger IDConnection) {
+                        final Xid xid = deviceContext.getNextXid();
 
-        if (!result.isDone()) {
+                        final MultipartRequestGroupCaseBuilder caseBuilder = new MultipartRequestGroupCaseBuilder();
+                        final MultipartRequestGroupBuilder mprGroupBuild = new MultipartRequestGroupBuilder();
+                        mprGroupBuild.setGroupId(new GroupId(
+                                BinContent
+                                        .intToUnsignedLong(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Group.OFPGALL
+                                                .getIntValue())));
+                        caseBuilder.setMultipartRequestGroup(mprGroupBuild.build());
 
-            final Xid xid = deviceContext.getNextXid();
+                        // Create multipart request header
+                        final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
+                                MultipartType.OFPMPGROUP, xid.getValue(), version);
 
-            final MultipartRequestGroupCaseBuilder caseBuilder = new MultipartRequestGroupCaseBuilder();
-            final MultipartRequestGroupBuilder mprGroupBuild = new MultipartRequestGroupBuilder();
-            mprGroupBuild
-                    .setGroupId(new GroupId(
-                            BinContent
-                                    .intToUnsignedLong(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Group.OFPGALL
-                                            .getIntValue())));
-            caseBuilder.setMultipartRequestGroup(mprGroupBuild.build());
+                        // Set request body to main multipart request
+                        mprInput.setMultipartRequestBody(caseBuilder.build());
 
-            // Create multipart request header
-            final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
-                    MultipartType.OFPMPGROUP, xid.getValue(), version);
+                        // Send the request, no cookies associated, use any connection
 
-            // Set request body to main multipart request
-            mprInput.setMultipartRequestBody(caseBuilder.build());
+                        final Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext()
+                                .getConnectionAdapter().multipartRequest(mprInput.build());
+                        return JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
+                    }
+                });
 
-            // Send the request, no cookies associated, use any connection
-
-            final Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext()
-                    .getConnectionAdapter().multipartRequest(mprInput.build());
-            final ListenableFuture<RpcResult<Void>> futureResultFromOfLib = JdkFutureAdapters
-                    .listenInPoolThread(resultFromOFLib);
-
-            final RpcResultConvertor<GetAllGroupStatisticsOutput> rpcResultConvertor = new RpcResultConvertor<>(requestContext, deviceContext);
-            rpcResultConvertor.processResultFromOfJava(futureResultFromOfLib);
-
-        } else {
-            RequestContextUtil.closeRequstContext(requestContext);
-        }
-        return result;
     }
 
     @Override
     public Future<RpcResult<GetGroupDescriptionOutput>> getGroupDescription(final GetGroupDescriptionInput input) {
+        return this.<GetGroupDescriptionOutput, Void> handleServiceCall(PRIMARY_CONNECTION,
+                new Function<BigInteger, Future<RpcResult<Void>>>() {
 
-        final RequestContext<GetGroupDescriptionOutput> requestContext = rpcContext.createRequestContext();
-        final SettableFuture<RpcResult<GetGroupDescriptionOutput>> result = rpcContext.storeOrFail(requestContext);
+                    @Override
+                    public Future<RpcResult<Void>> apply(final BigInteger IDConnection) {
+                        final Xid xid = deviceContext.getNextXid();
+                        final MultipartRequestGroupDescCaseBuilder mprGroupDescCaseBuild = new MultipartRequestGroupDescCaseBuilder();
+                        final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
+                                MultipartType.OFPMPGROUPDESC, xid.getValue(), version);
+                        mprInput.setMultipartRequestBody(mprGroupDescCaseBuild.build());
+                        final Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext()
+                                .getConnectionAdapter().multipartRequest(mprInput.build());
+                        return JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
+                    }
+                });
 
-        if (!result.isDone()) {
-
-            final Xid xid = deviceContext.getNextXid();
-            final MultipartRequestGroupDescCaseBuilder mprGroupDescCaseBuild = new MultipartRequestGroupDescCaseBuilder();
-            final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
-                    MultipartType.OFPMPGROUPDESC, xid.getValue(), version);
-            mprInput.setMultipartRequestBody(mprGroupDescCaseBuild.build());
-            final Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext()
-                    .getConnectionAdapter().multipartRequest(mprInput.build());
-            final ListenableFuture<RpcResult<Void>> futureResultFromOfLib = JdkFutureAdapters
-                    .listenInPoolThread(resultFromOFLib);
-
-            final RpcResultConvertor<GetGroupDescriptionOutput> rpcResultConvertor = new RpcResultConvertor<>(requestContext, deviceContext);
-            rpcResultConvertor.processResultFromOfJava(futureResultFromOfLib);
-        } else {
-            RequestContextUtil.closeRequstContext(requestContext);
-        }
-        return result;
     }
 
     @Override
     public Future<RpcResult<GetGroupFeaturesOutput>> getGroupFeatures(final GetGroupFeaturesInput input) {
+        return this.<GetGroupFeaturesOutput, Void> handleServiceCall(PRIMARY_CONNECTION,
+                new Function<BigInteger, Future<RpcResult<Void>>>() {
 
-        final RequestContext<GetGroupFeaturesOutput> requestContext = rpcContext.createRequestContext();
-        final SettableFuture<RpcResult<GetGroupFeaturesOutput>> result = rpcContext.storeOrFail(requestContext);
+                    @Override
+                    public Future<RpcResult<Void>> apply(final BigInteger IDConnection) {
+                        final Xid xid = deviceContext.getNextXid();
 
-        if (!result.isDone()) {
+                        final MultipartRequestGroupFeaturesCaseBuilder mprGroupFeaturesBuild = new MultipartRequestGroupFeaturesCaseBuilder();
+                        final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
+                                MultipartType.OFPMPGROUPFEATURES, xid.getValue(), version);
+                        mprInput.setMultipartRequestBody(mprGroupFeaturesBuild.build());
+                        final Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext()
+                                .getConnectionAdapter().multipartRequest(mprInput.build());
+                        return JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
+                    }
+                });
 
-            final Xid xid = deviceContext.getNextXid();
-
-            final MultipartRequestGroupFeaturesCaseBuilder mprGroupFeaturesBuild = new MultipartRequestGroupFeaturesCaseBuilder();
-            final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
-                    MultipartType.OFPMPGROUPFEATURES, xid.getValue(), version);
-            mprInput.setMultipartRequestBody(mprGroupFeaturesBuild.build());
-            final Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext()
-                    .getConnectionAdapter().multipartRequest(mprInput.build());
-            final ListenableFuture<RpcResult<Void>> futureResultFromOfLib = JdkFutureAdapters
-                    .listenInPoolThread(resultFromOFLib);
-
-            final RpcResultConvertor<GetGroupFeaturesOutput> rpcResultConvertor = new RpcResultConvertor<>(requestContext, deviceContext);
-            rpcResultConvertor.processResultFromOfJava(futureResultFromOfLib);
-        } else {
-            RequestContextUtil.closeRequstContext(requestContext);
-        }
-        return result;
     }
 
     @Override
     public Future<RpcResult<GetGroupStatisticsOutput>> getGroupStatistics(final GetGroupStatisticsInput input) {
+        return this.<GetGroupStatisticsOutput, Void> handleServiceCall(PRIMARY_CONNECTION,
+                new Function<BigInteger, Future<RpcResult<Void>>>() {
 
-        final RequestContext<GetGroupStatisticsOutput> requestContext = rpcContext.createRequestContext();
-        final SettableFuture<RpcResult<GetGroupStatisticsOutput>> result = rpcContext.storeOrFail(requestContext);
+                    @Override
+                    public Future<RpcResult<Void>> apply(final BigInteger IDConnection) {
+                        final Xid xid = deviceContext.getNextXid();
 
-        if (!result.isDone()) {
+                        final MultipartRequestGroupCaseBuilder caseBuilder = new MultipartRequestGroupCaseBuilder();
+                        final MultipartRequestGroupBuilder mprGroupBuild = new MultipartRequestGroupBuilder();
+                        mprGroupBuild.setGroupId(new GroupId(input.getGroupId().getValue()));
+                        caseBuilder.setMultipartRequestGroup(mprGroupBuild.build());
 
-            final Xid xid = deviceContext.getNextXid();
+                        final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
+                                MultipartType.OFPMPGROUP, xid.getValue(), version);
 
-            final MultipartRequestGroupCaseBuilder caseBuilder = new MultipartRequestGroupCaseBuilder();
-            final MultipartRequestGroupBuilder mprGroupBuild = new MultipartRequestGroupBuilder();
-            mprGroupBuild.setGroupId(new GroupId(input.getGroupId().getValue()));
-            caseBuilder.setMultipartRequestGroup(mprGroupBuild.build());
-
-            final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
-                    MultipartType.OFPMPGROUP, xid.getValue(), version);
-
-            mprInput.setMultipartRequestBody(caseBuilder.build());
-            final Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext()
-                    .getConnectionAdapter().multipartRequest(mprInput.build());
-            final ListenableFuture<RpcResult<Void>> futureResultFromOfLib = JdkFutureAdapters
-                    .listenInPoolThread(resultFromOFLib);
-
-            final RpcResultConvertor<GetGroupStatisticsOutput> rpcResultConvertor = new RpcResultConvertor<>(requestContext, deviceContext);
-            rpcResultConvertor.processResultFromOfJava(futureResultFromOfLib);
-        } else {
-            RequestContextUtil.closeRequstContext(requestContext);
-        }
-        return result;
+                        mprInput.setMultipartRequestBody(caseBuilder.build());
+                        final Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext()
+                                .getConnectionAdapter().multipartRequest(mprInput.build());
+                        return JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
+                    }
+                });
     }
 
 }
