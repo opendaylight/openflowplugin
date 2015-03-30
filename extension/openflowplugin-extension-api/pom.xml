@@ -48,7 +48,7 @@
                     <dependency>
                         <groupId>org.opendaylight.controller</groupId>
                         <artifactId>yang-jmx-generator-plugin</artifactId>
-                        <version>${config.parent.version}</version>
+                        <version>${config.version}</version>
                     </dependency>
                     <dependency>
                         <groupId>org.opendaylight.yangtools</groupId>
@@ -65,12 +65,6 @@
         <dependency>
             <groupId>org.opendaylight.yangtools</groupId>
             <artifactId>yang-model-api</artifactId>
-            <version>${yangtools.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.openflowjava</groupId>
-            <artifactId>openflow-protocol-api</artifactId>
-            <version>${openflowjava.version}</version><!--$NO-MVN-MAN-VER$-->
         </dependency>
 
         <!-- OpenFlowJava-API models -->
