@@ -10,11 +10,6 @@
         <relativePath>../</relativePath>
     </parent>
 
-    <properties>
-        <yangtools.version>0.7.0-SNAPSHOT</yangtools.version>
-        <ofjava.version>0.6.0-SNAPSHOT</ofjava.version>
-    </properties>
-
     <artifactId>openflowplugin-extension-parent</artifactId>
     <packaging>pom</packaging>
     <modules>
