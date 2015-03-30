@@ -18,8 +18,8 @@ import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionConve
 import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionConverterManagerImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFRoleManager;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
-import org.opendaylight.openflowplugin.api.statistics.MessageCountDumper;
-import org.opendaylight.openflowplugin.api.statistics.MessageObservatory;
+import org.opendaylight.openflowplugin.api.openflow.statistics.MessageCountDumper;
+import org.opendaylight.openflowplugin.api.openflow.statistics.MessageObservatory;
 import org.opendaylight.openflowplugin.statistics.MessageSpyCounterImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.common.config.impl.rev140326.OfpRole;
 import org.opendaylight.yangtools.yang.binding.DataContainer;

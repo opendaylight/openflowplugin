@@ -4,12 +4,10 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 
 import org.opendaylight.openflowplugin.openflow.md.core.sal.OpenflowPluginProvider;
-import org.opendaylight.openflowplugin.api.statistics.MessageCountDumper;
-import org.opendaylight.openflowplugin.api.statistics.MessageObservatory;
+import org.opendaylight.openflowplugin.api.openflow.statistics.MessageCountDumper;
+import org.opendaylight.openflowplugin.api.openflow.statistics.MessageObservatory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Strings;
 
 /**
  * MsgSpyServiceModul implements and register own MsgSpyServiceRuntimeMXBean

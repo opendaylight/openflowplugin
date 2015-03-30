@@ -12,7 +12,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 import org.junit.Test;
-import org.opendaylight.openflowplugin.api.statistics.MessageSpy;
+import org.opendaylight.openflowplugin.api.openflow.statistics.MessageSpy;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.Action;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 

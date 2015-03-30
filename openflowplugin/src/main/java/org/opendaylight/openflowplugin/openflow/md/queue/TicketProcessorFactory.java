@@ -13,7 +13,7 @@ import java.util.Map;
 
 import org.opendaylight.openflowplugin.api.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
-import org.opendaylight.openflowplugin.api.statistics.MessageSpy;
+import org.opendaylight.openflowplugin.api.openflow.statistics.MessageSpy;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 
