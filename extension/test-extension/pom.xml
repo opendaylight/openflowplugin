@@ -10,10 +10,6 @@
   </parent>
   <artifactId>test-extension</artifactId>
   
-  <properties>
-        <yangtools.version>0.7.0-SNAPSHOT</yangtools.version>
-    </properties>
-  
   <packaging>bundle</packaging>
     
     <build>
