@@ -1,6 +1,7 @@
 package org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.config.openflow.plugin.impl.rev150327;
 
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider;
+import org.opendaylight.openflowplugin.impl.OpenFlowPluginProviderImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +25,7 @@ public class OpenFlowProviderModule extends org.opendaylight.yang.gen.v1.urn.ope
     @Override
     public java.lang.AutoCloseable createInstance() {
         LOG.info("Initializing new OFP southbound.");
-        OpenFlowPluginProvider openflowPluginProvider = new org.opendaylight.openflowplugin.impl.OpenflowPluginProviderImpl();
+        OpenFlowPluginProvider openflowPluginProvider = new OpenFlowPluginProviderImpl();
 
         openflowPluginProvider.setSwitchConnectionProviders(getOpenflowSwitchConnectionProviderDependency());
         openflowPluginProvider.setRole(getRole());

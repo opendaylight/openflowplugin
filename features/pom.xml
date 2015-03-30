@@ -9,7 +9,7 @@
   </parent>
   <artifactId>features-openflowplugin</artifactId>
 
-  <packaging>jar</packaging>
+    <packaging>jar</packaging>
 
   <properties>
     <features.file>features.xml</features.file>
@@ -19,58 +19,58 @@
     <controller.model.version>1.2.0-SNAPSHOT</controller.model.version>
   </properties>
 
-  <dependencies>
-    <!-- feature dependencies -->
-    <dependency>
-      <groupId>org.opendaylight.controller</groupId>
-      <artifactId>features-mdsal</artifactId>
-      <version>${mdsal.version}</version>
-      <classifier>features</classifier>
-      <type>xml</type>
-    </dependency>
-    <dependency>
-      <groupId>org.opendaylight.yangtools</groupId>
-      <artifactId>features-yangtools</artifactId>
-      <classifier>features</classifier>
-      <version>${yangtools.version}</version>
-      <type>xml</type>
-    </dependency>
-    <dependency>
-      <groupId>org.opendaylight.controller</groupId>
-      <artifactId>features-restconf</artifactId>
-      <version>${mdsal.version}</version>
-      <classifier>features</classifier>
-      <type>xml</type>
-    </dependency>
-    <dependency>
-      <groupId>org.opendaylight.openflowjava</groupId>
-      <artifactId>features-openflowjava</artifactId>
-      <version>${openflowjava.version}</version>
-      <classifier>features</classifier>
-      <type>xml</type>
-    </dependency>
+    <dependencies>
+        <!-- feature dependencies -->
+        <dependency>
+            <groupId>org.opendaylight.controller</groupId>
+            <artifactId>features-mdsal</artifactId>
+            <version>${mdsal.version}</version>
+            <classifier>features</classifier>
+            <type>xml</type>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.yangtools</groupId>
+            <artifactId>features-yangtools</artifactId>
+            <classifier>features</classifier>
+            <version>${yangtools.version}</version>
+            <type>xml</type>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.controller</groupId>
+            <artifactId>features-restconf</artifactId>
+            <version>${mdsal.version}</version>
+            <classifier>features</classifier>
+            <type>xml</type>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowjava</groupId>
+            <artifactId>features-openflowjava</artifactId>
+            <version>${openflowjava.version}</version>
+            <classifier>features</classifier>
+            <type>xml</type>
+        </dependency>
 
-    <!-- bundle dependencies -->
-    <dependency>
-      <groupId>org.opendaylight.openflowplugin.model</groupId>
-      <artifactId>model-flow-base</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opendaylight.openflowplugin.model</groupId>
-      <artifactId>model-flow-service</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opendaylight.openflowplugin.model</groupId>
-      <artifactId>model-flow-statistics</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opendaylight.controller.model</groupId>
-      <artifactId>model-inventory</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opendaylight.controller.model</groupId>
-      <artifactId>model-topology</artifactId>
-    </dependency>
+        <!-- bundle dependencies -->
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin.model</groupId>
+            <artifactId>model-flow-base</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin.model</groupId>
+            <artifactId>model-flow-service</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin.model</groupId>
+            <artifactId>model-flow-statistics</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.controller.model</groupId>
+            <artifactId>model-inventory</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.controller.model</groupId>
+            <artifactId>model-topology</artifactId>
+        </dependency>
 
     <dependency>
       <groupId>org.opendaylight.openflowplugin.applications</groupId>
@@ -95,6 +95,20 @@
       <type>xml</type>
     </dependency>
 
+        <dependency>
+            <groupId>org.opendaylight.dlux</groupId>
+            <artifactId>features-dlux</artifactId>
+            <version>${dlux.version}</version>
+            <classifier>features</classifier>
+            <type>xml</type>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.controller</groupId>
+            <artifactId>features-netconf-connector</artifactId>
+            <version>${netconf.version}</version>
+            <classifier>features</classifier>
+            <type>xml</type>
+        </dependency>
 
     <dependency>
       <groupId>org.opendaylight.dlux</groupId>
@@ -111,7 +125,7 @@
       <type>xml</type>
     </dependency>
 
-    <!-- bundle dependencies -->
+    <!-- bundle dependencies --> 
     <dependency>
       <groupId>org.opendaylight.openflowplugin</groupId>
       <artifactId>openflowplugin-api</artifactId>
@@ -123,6 +137,10 @@
     <dependency>
       <groupId>org.opendaylight.openflowplugin</groupId>
       <artifactId>openflowplugin</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin</groupId>
+            <artifactId>openflowplugin-impl</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opendaylight.openflowplugin.applications</groupId>
@@ -188,84 +206,84 @@
       <version>${sal.api.version}</version>
     </dependency>
 
-    <!-- test the features.xml -->
-    <dependency>
-      <groupId>org.opendaylight.odlparent</groupId>
-      <artifactId>features-test</artifactId>
-    </dependency>
-    <!-- dependency for opendaylight-karaf-empty for use by testing -->
-    <dependency>
-      <groupId>org.opendaylight.controller</groupId>
-      <artifactId>opendaylight-karaf-empty</artifactId>
-      <version>${karaf.distro.empty.version}</version>
-      <type>zip</type>
-    </dependency>
-  </dependencies>
+        <!-- test the features.xml -->
+        <dependency>
+            <groupId>org.opendaylight.odlparent</groupId>
+            <artifactId>features-test</artifactId>
+        </dependency>
+        <!-- dependency for opendaylight-karaf-empty for use by testing -->
+        <dependency>
+            <groupId>org.opendaylight.controller</groupId>
+            <artifactId>opendaylight-karaf-empty</artifactId>
+            <version>${karaf.distro.empty.version}</version>
+            <type>zip</type>
+        </dependency>
+    </dependencies>
 
-  <build>
-    <resources>
-      <resource>
-        <filtering>true</filtering>
-        <directory>src/main/resources</directory>
-      </resource>
-    </resources>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-resources-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>filter</id>
-            <goals>
-              <goal>resources</goal>
-            </goals>
-            <phase>generate-resources</phase>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>attach-artifacts</id>
-            <goals>
-              <goal>attach-artifact</goal>
-            </goals>
-            <phase>package</phase>
-            <configuration>
-              <artifacts>
-                <artifact>
-                  <file>${project.build.directory}/classes/${features.file}</file>
-                  <type>xml</type>
-                  <classifier>features</classifier>
-                </artifact>
-              </artifacts>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.16</version>
-        <configuration>
-          <systemPropertyVariables>
-            <karaf.distro.groupId>org.opendaylight.controller</karaf.distro.groupId>
-            <karaf.distro.artifactId>opendaylight-karaf-empty</karaf.distro.artifactId>
-            <karaf.distro.version>${karaf.empty.distro.version}</karaf.distro.version>
-          </systemPropertyVariables>
-          <dependenciesToScan>
-           <dependency>org.opendaylight.odlparent:features-test</dependency>
-          </dependenciesToScan>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
-  <scm>
-    <connection>scm:git:ssh://git.opendaylight.org:29418/controller.git</connection>
-    <developerConnection>scm:git:ssh://git.opendaylight.org:29418/controller.git</developerConnection>
-    <tag>HEAD</tag>
-    <url>https://wiki.opendaylight.org/view/OpenDaylight_Controller:MD-SAL</url>
-  </scm>
+    <build>
+        <resources>
+            <resource>
+                <filtering>true</filtering>
+                <directory>src/main/resources</directory>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>filter</id>
+                        <goals>
+                            <goal>resources</goal>
+                        </goals>
+                        <phase>generate-resources</phase>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-artifacts</id>
+                        <goals>
+                            <goal>attach-artifact</goal>
+                        </goals>
+                        <phase>package</phase>
+                        <configuration>
+                            <artifacts>
+                                <artifact>
+                                    <file>${project.build.directory}/classes/${features.file}</file>
+                                    <type>xml</type>
+                                    <classifier>features</classifier>
+                                </artifact>
+                            </artifacts>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.16</version>
+                <configuration>
+                    <systemPropertyVariables>
+                        <karaf.distro.groupId>org.opendaylight.controller</karaf.distro.groupId>
+                        <karaf.distro.artifactId>opendaylight-karaf-empty</karaf.distro.artifactId>
+                        <karaf.distro.version>${karaf.empty.distro.version}</karaf.distro.version>
+                    </systemPropertyVariables>
+                    <dependenciesToScan>
+                        <dependency>org.opendaylight.odlparent:features-test</dependency>
+                    </dependenciesToScan>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <scm>
+        <connection>scm:git:ssh://git.opendaylight.org:29418/controller.git</connection>
+        <developerConnection>scm:git:ssh://git.opendaylight.org:29418/controller.git</developerConnection>
+        <tag>HEAD</tag>
+        <url>https://wiki.opendaylight.org/view/OpenDaylight_Controller:MD-SAL</url>
+    </scm>
 </project>
