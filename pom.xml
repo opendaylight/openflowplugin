@@ -44,18 +44,10 @@
 
     <properties>
       <project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
-      <mdsal.version>1.2.0-SNAPSHOT</mdsal.version>
-      <netconf.version>1.2.0-SNAPSHOT</netconf.version>
       <nexusproxy>http://nexus.opendaylight.org/content</nexusproxy>
       <openflowjava.version>0.6.0-SNAPSHOT</openflowjava.version>
       <openflowplugin.model.version>${project.version}</openflowplugin.model.version>
-      <controller.model.version>1.2.0-SNAPSHOT</controller.model.version>
-      <sal.binding.api.version>1.2.0-SNAPSHOT</sal.binding.api.version>
       <sal.api.version>0.9.0-SNAPSHOT</sal.api.version>
-      <sal.connection.api.version>0.2.0-SNAPSHOT</sal.connection.api.version>
-      <sal.common.util.version>1.2.0-SNAPSHOT</sal.common.util.version>
-      <netconf.parent.version>0.3.0-SNAPSHOT</netconf.parent.version>
-      <config.parent.version>0.3.0-SNAPSHOT</config.parent.version>
       <build.helper.version>1.8</build.helper.version>
       <jmxGeneratorPath>src/main/yang-gen-config</jmxGeneratorPath>
       <salGeneratorPath>src/main/yang-gen-sal</salGeneratorPath>
@@ -70,15 +62,14 @@
       <sonar.jacoco.itReportPath>target/code-coverage/jacoco-it.exec</sonar.jacoco.itReportPath>
       <sonar.profile>Sonar way with Findbugs</sonar.profile>
 
-      <karaf.distro.empty.version>1.5.0-SNAPSHOT</karaf.distro.empty.version>
-      <yang.binding.version>0.7.0-SNAPSHOT</yang.binding.version>
-      <dlux.version>0.2.0-SNAPSHOT</dlux.version>
       <config.version>0.3.0-SNAPSHOT</config.version>
+      <mdsal.version>1.2.0-SNAPSHOT</mdsal.version>
+      <netconf.version>0.3.0-SNAPSHOT</netconf.version>
       <yangtools.version>0.7.0-SNAPSHOT</yangtools.version>
-      <opendaylight-l2-types.version>2013.08.27.7-SNAPSHOT</opendaylight-l2-types.version>
-      <ietf-yang-types.version>2010.09.24.7-SNAPSHOT</ietf-yang-types.version>
-      <ietf-inet-types.version>2010.09.24.7-SNAPSHOT</ietf-inet-types.version>
-      <yang-ext.version>2013.09.07.7-SNAPSHOT</yang-ext.version>
+
+      <features.test.version>1.5.0-SNAPSHOT</features.test.version>
+      <karaf.distro.empty.version>1.5.0-SNAPSHOT</karaf.distro.empty.version>
+      <dlux.version>0.2.0-SNAPSHOT</dlux.version>
     </properties>
 
     <dependencyManagement>
@@ -90,31 +81,45 @@
           <scope>import</scope>
           <type>pom</type>
         </dependency>
+        <dependency>
+          <groupId>org.opendaylight.controller</groupId>
+          <artifactId>config-artifacts</artifactId>
+          <version>${config.version}</version>
+          <scope>import</scope>
+          <type>pom</type>
+        </dependency>
+        <dependency>
+          <groupId>org.opendaylight.controller</groupId>
+          <artifactId>mdsal-artifacts</artifactId>
+          <version>${mdsal.version}</version>
+          <scope>import</scope>
+          <type>pom</type>
+        </dependency>
+        <dependency>
+          <groupId>org.opendaylight.controller</groupId>
+          <artifactId>netconf-artifacts</artifactId>
+          <version>${netconf.version}</version>
+          <scope>import</scope>
+          <type>pom</type>
+        </dependency>
+        <dependency>
+          <groupId>org.opendaylight.openflowjava</groupId>
+          <artifactId>openflowjava-artifacts</artifactId>
+          <version>${openflowjava.version}</version>
+          <scope>import</scope>
+          <type>pom</type>
+        </dependency>
+        <dependency>
+          <groupId>org.opendaylight.odlparent</groupId>
+          <artifactId>features-test</artifactId>
+	  <version>${features.test.version}</version>
+	  <scope>test</scope>
+        </dependency>
 
         <dependency>
           <groupId>org.opendaylight.openflowplugin</groupId>
           <artifactId>openflowplugin-api</artifactId>
           <version>${project.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>org.opendaylight.openflowjava</groupId>
-          <artifactId>openflow-protocol-api</artifactId>
-          <version>${openflowjava.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>org.opendaylight.openflowjava</groupId>
-          <artifactId>openflow-protocol-spi</artifactId>
-          <version>${openflowjava.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>org.opendaylight.openflowjava</groupId>
-          <artifactId>util</artifactId>
-          <version>${openflowjava.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>org.opendaylight.openflowjava</groupId>
-          <artifactId>simple-client</artifactId>
-          <version>${openflowjava.version}</version>
         </dependency>
 
         <dependency>
@@ -134,125 +139,9 @@
         </dependency>
 
         <dependency>
-          <groupId>org.opendaylight.controller.model</groupId>
-          <artifactId>model-inventory</artifactId>
-          <version>${controller.model.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>org.opendaylight.controller.model</groupId>
-          <artifactId>model-topology</artifactId>
-          <version>${controller.model.version}</version>
-        </dependency>
-
-        <dependency>
-          <groupId>org.opendaylight.controller</groupId>
-          <artifactId>sal-binding-api</artifactId>
-          <version>${sal.binding.api.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>org.opendaylight.controller</groupId>
-          <artifactId>sal-binding-config</artifactId>
-          <version>${sal.binding.api.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>org.opendaylight.controller</groupId>
-          <artifactId>sal-binding-util</artifactId>
-          <version>${controller.model.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>liblldp</artifactId>
             <version>${sal.api.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.controller</groupId>
-            <artifactId>sal-common-util</artifactId>
-            <version>${sal.common.util.version}</version>
-        </dependency>
-        <!-- IT -->
-        <dependency>
-            <groupId>org.opendaylight.controller</groupId>
-            <artifactId>config-netconf-connector</artifactId>
-            <version>${netconf.parent.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.controller</groupId>
-            <artifactId>sal-binding-it</artifactId>
-            <version>${sal.binding.api.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>org.opendaylight.controller</groupId>
-          <artifactId>sal-binding-broker-impl</artifactId>
-          <version>${sal.binding.api.version}</version>
-
-          <!-- excluding old models pulled as transient dependencies
-               TODO: remove -->
-          <exclusions>
-            <exclusion>
-              <groupId>org.opendaylight.controller.model</groupId>
-              <artifactId>model-flow-base</artifactId>
-            </exclusion>
-            <exclusion>
-              <groupId>org.opendaylight.controller.model</groupId>
-              <artifactId>model-flow-service</artifactId>
-            </exclusion>
-            <exclusion>
-              <groupId>org.opendaylight.controller.model</groupId>
-              <artifactId>model-flow-statistics</artifactId>
-            </exclusion>
-          </exclusions>
-        </dependency>
-        <dependency>
-          <groupId>org.opendaylight.controller</groupId>
-          <artifactId>config-manager</artifactId>
-          <version>${config.parent.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>org.opendaylight.controller</groupId>
-          <artifactId>config-api</artifactId>
-          <version>${config.parent.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>org.opendaylight.controller</groupId>
-          <artifactId>logback-config</artifactId>
-          <version>${config.parent.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>org.opendaylight.controller</groupId>
-          <artifactId>config-persister-api</artifactId>
-          <version>${config.parent.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>org.opendaylight.controller</groupId>
-          <artifactId>config-persister-impl</artifactId>
-          <version>${config.parent.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>org.opendaylight.controller</groupId>
-          <artifactId>config-persister-file-xml-adapter</artifactId>
-          <version>${config.parent.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>org.opendaylight.controller</groupId>
-          <artifactId>netconf-monitoring</artifactId>
-          <version>${netconf.parent.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>org.opendaylight.controller</groupId>
-          <artifactId>netconf-client</artifactId>
-          <version>${netconf.parent.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>org.opendaylight.controller</groupId>
-          <artifactId>netconf-impl</artifactId>
-          <version>${netconf.parent.version}</version>
-        </dependency>
-
-        <dependency>
-          <groupId>org.opendaylight.odlparent</groupId>
-          <artifactId>features-test</artifactId>
-          <version>${features.test.version}</version>
         </dependency>
 
         <!-- thirdparty -->
@@ -379,7 +268,7 @@
             <plugin>
               <groupId>org.opendaylight.yangtools</groupId>
               <artifactId>yang-maven-plugin</artifactId>
-              <version>${yang.binding.version}</version>
+              <version>${yangtools.version}</version>
             </plugin>
             <plugin>
               <groupId>org.apache.felix</groupId>
