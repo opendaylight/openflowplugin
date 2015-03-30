@@ -11,14 +11,6 @@
     <artifactId>openflowplugin</artifactId>
     <packaging>bundle</packaging>
 
-    <properties>
-        <yangtools.version>0.7.0-SNAPSHOT</yangtools.version>
-        <yangtools.generator.version>0.7.0-SNAPSHOT</yangtools.generator.version>
-        <yangtools.binding.version>0.7.0-SNAPSHOT</yangtools.binding.version>
-        <jmxGeneratorPath>${project.build.directory}/generated-sources/config</jmxGeneratorPath>
-        <sal-binding-api.version>1.2.0-SNAPSHOT</sal-binding-api.version>
-    </properties>
-
     <build>
         <plugins>
             <plugin>
@@ -111,7 +103,7 @@
         <dependency>
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>sal-binding-broker-impl</artifactId>
-            <version>${sal-binding-api.version}</version>
+            <version>${sal.binding.api.version}</version>
         </dependency>
 
         <dependency>

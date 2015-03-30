@@ -83,44 +83,19 @@
 
     <dependencyManagement>
       <dependencies>
-         <dependency>
-            <groupId>org.opendaylight.yangtools</groupId>
-            <artifactId>yang-binding</artifactId>
-            <version>${yang.binding.version}</version>
-        </dependency>
         <dependency>
           <groupId>org.opendaylight.yangtools</groupId>
-          <artifactId>yang-common</artifactId>
-          <version>${yang.binding.version}</version>
+          <artifactId>yangtools-artifacts</artifactId>
+          <version>${yangtools.version}</version>
           <scope>import</scope>
           <type>pom</type>
         </dependency>
-        <dependency>
-          <groupId>org.opendaylight.yangtools.model</groupId>
-          <artifactId>ietf-inet-types</artifactId>
-          <version>${ietf-inet-types.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>org.opendaylight.yangtools.model</groupId>
-          <artifactId>ietf-yang-types</artifactId>
-          <version>${ietf-yang-types.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.yangtools.model</groupId>
-            <artifactId>yang-ext</artifactId>
-            <version>${yang-ext.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.yangtools.model</groupId>
-            <artifactId>opendaylight-l2-types</artifactId>
-            <version>${opendaylight-l2-types.version}</version>
-        </dependency>
 
-          <dependency>
-              <groupId>org.opendaylight.openflowplugin</groupId>
-              <artifactId>openflowplugin-api</artifactId>
-              <version>${project.version}</version>
-          </dependency>
+        <dependency>
+          <groupId>org.opendaylight.openflowplugin</groupId>
+          <artifactId>openflowplugin-api</artifactId>
+          <version>${project.version}</version>
+        </dependency>
         <dependency>
           <groupId>org.opendaylight.openflowjava</groupId>
           <artifactId>openflow-protocol-api</artifactId>
@@ -237,11 +212,6 @@
           <groupId>org.opendaylight.controller</groupId>
           <artifactId>config-api</artifactId>
           <version>${config.parent.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>org.opendaylight.yangtools.thirdparty</groupId>
-          <artifactId>antlr4-runtime-osgi-nohead</artifactId>
-          <version>4.0</version>
         </dependency>
         <dependency>
           <groupId>org.opendaylight.controller</groupId>
