@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.impl.services;
 
 import com.google.common.base.Function;
-import java.math.BigInteger;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
@@ -31,11 +30,10 @@ public class OpendaylightFlowTableStatisticsServiceImpl extends CommonService im
     public Future<RpcResult<GetFlowTablesStatisticsOutput>> getFlowTablesStatistics(
             final GetFlowTablesStatisticsInput input) {
         return this.<GetFlowTablesStatisticsOutput, Void> handleServiceCall(PRIMARY_CONNECTION,
-                new Function<BigInteger, Future<RpcResult<Void>>>() {
+                new Function<DataCrate<GetFlowTablesStatisticsOutput>, Future<RpcResult<Void>>>() {
 
                     @Override
-                    public Future<RpcResult<Void>> apply(final BigInteger IDConnection) {
-                        final Xid xid = deviceContext.getNextXid();
+                    public Future<RpcResult<Void>> apply(final DataCrate<GetFlowTablesStatisticsOutput> data) {
 
                         // Create multipart request body for fetch all the group stats
                         final MultipartRequestTableCaseBuilder multipartRequestTableCaseBuilder = new MultipartRequestTableCaseBuilder();
@@ -44,6 +42,8 @@ public class OpendaylightFlowTableStatisticsServiceImpl extends CommonService im
                         multipartRequestTableCaseBuilder.setMultipartRequestTable(multipartRequestTableBuilder.build());
 
                         // Set request body to main multipart request
+                        final Xid xid = deviceContext.getNextXid();
+                        data.getRequestContext().setXid(xid);
                         final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
                                 MultipartType.OFPMPFLOW, xid.getValue(), version);
 

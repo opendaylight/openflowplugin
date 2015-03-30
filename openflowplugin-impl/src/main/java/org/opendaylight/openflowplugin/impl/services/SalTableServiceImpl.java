@@ -7,8 +7,9 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
-import com.google.common.base.Function;
+import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 
+import com.google.common.base.Function;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
@@ -44,14 +45,13 @@ public class SalTableServiceImpl extends CommonService implements SalTableServic
 
     @Override
     public Future<RpcResult<UpdateTableOutput>> updateTable(final UpdateTableInput input) {
-        class FunctionImpl implements Function<BigInteger,Future<RpcResult<UpdateTableOutput>>> {
+        class FunctionImpl implements Function<DataCrate<UpdateTableOutput>,Future<RpcResult<UpdateTableOutput>>> {
 
             @Override
-            public Future<RpcResult<UpdateTableOutput>> apply(final BigInteger IDConnection) {
+            public Future<RpcResult<UpdateTableOutput>> apply(final DataCrate<UpdateTableOutput> data) {
 
                 final SettableFuture<RpcResult<UpdateTableOutput>> result = SettableFuture.create();
 
-                final long xid = deviceContext.getNextXid().getValue();
 
                 final MultipartRequestTableFeaturesCaseBuilder caseBuilder = new MultipartRequestTableFeaturesCaseBuilder();
                 final MultipartRequestTableFeaturesBuilder requestBuilder = new MultipartRequestTableFeaturesBuilder();
@@ -61,8 +61,10 @@ public class SalTableServiceImpl extends CommonService implements SalTableServic
                 caseBuilder.setMultipartRequestTableFeatures(requestBuilder.build());
 
                 // Set request body to main multipart request
+                final Xid xid = deviceContext.getNextXid();
+                data.getRequestContext().setXid(xid);
                 final MultipartRequestInputBuilder mprInput = createMultipartHeader(MultipartType.OFPMPTABLEFEATURES,
-                        xid);
+                        xid.getValue());
                 mprInput.setMultipartRequestBody(caseBuilder.build());
 
                 final Future<RpcResult<Void>> resultFromOFLib = provideConnectionAdapter(PRIMARY_CONNECTION)
@@ -74,7 +76,7 @@ public class SalTableServiceImpl extends CommonService implements SalTableServic
                     @Override
                     public UpdateTableOutput createResult() {
                         final UpdateTableOutputBuilder queueStatsFromPortBuilder = new UpdateTableOutputBuilder()
-                                .setTransactionId(new TransactionId(BigInteger.valueOf(xid)));
+                                .setTransactionId(new TransactionId(BigInteger.valueOf(xid.getValue())));
                         return queueStatsFromPortBuilder.build();
                     }
                 });

@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.impl.services;
 
 import com.google.common.base.Function;
-import java.math.BigInteger;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
@@ -37,12 +36,11 @@ public class OpendaylightQueueStatisticsServiceImpl extends CommonService implem
     public Future<RpcResult<GetAllQueuesStatisticsFromAllPortsOutput>> getAllQueuesStatisticsFromAllPorts(
             final GetAllQueuesStatisticsFromAllPortsInput input) {
         return this.<GetAllQueuesStatisticsFromAllPortsOutput, Void> handleServiceCall(
-                PRIMARY_CONNECTION,  new Function<BigInteger, Future<RpcResult<Void>>>() {
+                PRIMARY_CONNECTION,  new Function<DataCrate<GetAllQueuesStatisticsFromAllPortsOutput>, Future<RpcResult<Void>>>() {
 
                     @Override
-                    public Future<RpcResult<Void>> apply(final BigInteger IDConnection) {
+                    public Future<RpcResult<Void>> apply(final DataCrate<GetAllQueuesStatisticsFromAllPortsOutput> data) {
 
-                        final Xid xid = deviceContext.getNextXid();
 
                         MultipartRequestQueueCaseBuilder caseBuilder = new MultipartRequestQueueCaseBuilder();
                         MultipartRequestQueueBuilder mprQueueBuilder = new MultipartRequestQueueBuilder();
@@ -53,6 +51,8 @@ public class OpendaylightQueueStatisticsServiceImpl extends CommonService implem
                         caseBuilder.setMultipartRequestQueue(mprQueueBuilder.build());
 
                         // Set request body to main multipart request
+                        final Xid xid = deviceContext.getNextXid();
+                        data.getRequestContext().setXid(xid);
                         MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
                                 MultipartType.OFPMPQUEUE, xid.getValue(), version);
                         mprInput.setMultipartRequestBody(caseBuilder.build());
@@ -68,11 +68,10 @@ public class OpendaylightQueueStatisticsServiceImpl extends CommonService implem
     public Future<RpcResult<GetAllQueuesStatisticsFromGivenPortOutput>> getAllQueuesStatisticsFromGivenPort(
             final GetAllQueuesStatisticsFromGivenPortInput input) {
         return this.<GetAllQueuesStatisticsFromGivenPortOutput, Void> handleServiceCall(
-                 PRIMARY_CONNECTION,  new Function<BigInteger, Future<RpcResult<Void>>>() {
+                 PRIMARY_CONNECTION,  new Function<DataCrate<GetAllQueuesStatisticsFromGivenPortOutput>, Future<RpcResult<Void>>>() {
 
                     @Override
-                    public Future<RpcResult<Void>> apply(final BigInteger IDConnection) {
-                        final Xid xid = deviceContext.getNextXid();
+                    public Future<RpcResult<Void>> apply(final DataCrate<GetAllQueuesStatisticsFromGivenPortOutput> data) {
 
                         MultipartRequestQueueCaseBuilder caseBuilder = new MultipartRequestQueueCaseBuilder();
                         MultipartRequestQueueBuilder mprQueueBuilder = new MultipartRequestQueueBuilder();
@@ -84,6 +83,8 @@ public class OpendaylightQueueStatisticsServiceImpl extends CommonService implem
                         caseBuilder.setMultipartRequestQueue(mprQueueBuilder.build());
 
                         // Set request body to main multipart request
+                        final Xid xid = deviceContext.getNextXid();
+                        data.getRequestContext().setXid(xid);
                         MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
                                 MultipartType.OFPMPQUEUE, xid.getValue(), version);
                         mprInput.setMultipartRequestBody(caseBuilder.build());
@@ -99,11 +100,10 @@ public class OpendaylightQueueStatisticsServiceImpl extends CommonService implem
     public Future<RpcResult<GetQueueStatisticsFromGivenPortOutput>> getQueueStatisticsFromGivenPort(
             final GetQueueStatisticsFromGivenPortInput input) {
         return this.<GetQueueStatisticsFromGivenPortOutput, Void> handleServiceCall(
-                PRIMARY_CONNECTION,  new Function<BigInteger, Future<RpcResult<Void>>>() {
+                PRIMARY_CONNECTION,  new Function<DataCrate<GetQueueStatisticsFromGivenPortOutput>, Future<RpcResult<Void>>>() {
 
                     @Override
-                    public Future<RpcResult<Void>> apply(final BigInteger IDConnection) {
-                        final Xid xid = deviceContext.getNextXid();
+                    public Future<RpcResult<Void>> apply(final DataCrate<GetQueueStatisticsFromGivenPortOutput> data) {
 
                         MultipartRequestQueueCaseBuilder caseBuilder = new MultipartRequestQueueCaseBuilder();
                         MultipartRequestQueueBuilder mprQueueBuilder = new MultipartRequestQueueBuilder();
@@ -115,6 +115,8 @@ public class OpendaylightQueueStatisticsServiceImpl extends CommonService implem
                         caseBuilder.setMultipartRequestQueue(mprQueueBuilder.build());
 
                         // Set request body to main multipart request
+                        final Xid xid = deviceContext.getNextXid();
+                        data.getRequestContext().setXid(xid);
                         MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
                                 MultipartType.OFPMPQUEUE, xid.getValue(), version);
                         mprInput.setMultipartRequestBody(caseBuilder.build());

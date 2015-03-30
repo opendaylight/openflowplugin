@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.impl.services;
 
 import com.google.common.base.Function;
-import java.math.BigInteger;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import java.util.concurrent.Future;
 import org.opendaylight.openflowjava.protocol.api.util.BinContent;
@@ -39,11 +38,10 @@ public class OpendaylightGroupStatisticsServiceImpl extends CommonService implem
     @Override
     public Future<RpcResult<GetAllGroupStatisticsOutput>> getAllGroupStatistics(final GetAllGroupStatisticsInput input) {
         return this.<GetAllGroupStatisticsOutput, Void> handleServiceCall(PRIMARY_CONNECTION,
-                new Function<BigInteger, Future<RpcResult<Void>>>() {
+                new Function<DataCrate<GetAllGroupStatisticsOutput>, Future<RpcResult<Void>>>() {
 
                     @Override
-                    public Future<RpcResult<Void>> apply(final BigInteger IDConnection) {
-                        final Xid xid = deviceContext.getNextXid();
+                    public Future<RpcResult<Void>> apply(final DataCrate<GetAllGroupStatisticsOutput> data) {
 
                         final MultipartRequestGroupCaseBuilder caseBuilder = new MultipartRequestGroupCaseBuilder();
                         final MultipartRequestGroupBuilder mprGroupBuild = new MultipartRequestGroupBuilder();
@@ -54,6 +52,8 @@ public class OpendaylightGroupStatisticsServiceImpl extends CommonService implem
                         caseBuilder.setMultipartRequestGroup(mprGroupBuild.build());
 
                         // Create multipart request header
+                        final Xid xid = deviceContext.getNextXid();
+                        data.getRequestContext().setXid(xid);
                         final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
                                 MultipartType.OFPMPGROUP, xid.getValue(), version);
 
@@ -73,12 +73,14 @@ public class OpendaylightGroupStatisticsServiceImpl extends CommonService implem
     @Override
     public Future<RpcResult<GetGroupDescriptionOutput>> getGroupDescription(final GetGroupDescriptionInput input) {
         return this.<GetGroupDescriptionOutput, Void> handleServiceCall(PRIMARY_CONNECTION,
-                new Function<BigInteger, Future<RpcResult<Void>>>() {
+                new Function<DataCrate<GetGroupDescriptionOutput>, Future<RpcResult<Void>>>() {
 
                     @Override
-                    public Future<RpcResult<Void>> apply(final BigInteger IDConnection) {
-                        final Xid xid = deviceContext.getNextXid();
+                    public Future<RpcResult<Void>> apply(final DataCrate<GetGroupDescriptionOutput> data) {
                         final MultipartRequestGroupDescCaseBuilder mprGroupDescCaseBuild = new MultipartRequestGroupDescCaseBuilder();
+
+                        final Xid xid = deviceContext.getNextXid();
+                        data.getRequestContext().setXid(xid);
                         final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
                                 MultipartType.OFPMPGROUPDESC, xid.getValue(), version);
                         mprInput.setMultipartRequestBody(mprGroupDescCaseBuild.build());
@@ -93,13 +95,14 @@ public class OpendaylightGroupStatisticsServiceImpl extends CommonService implem
     @Override
     public Future<RpcResult<GetGroupFeaturesOutput>> getGroupFeatures(final GetGroupFeaturesInput input) {
         return this.<GetGroupFeaturesOutput, Void> handleServiceCall(PRIMARY_CONNECTION,
-                new Function<BigInteger, Future<RpcResult<Void>>>() {
+                new Function<DataCrate<GetGroupFeaturesOutput>, Future<RpcResult<Void>>>() {
 
                     @Override
-                    public Future<RpcResult<Void>> apply(final BigInteger IDConnection) {
-                        final Xid xid = deviceContext.getNextXid();
-
+                    public Future<RpcResult<Void>> apply(final DataCrate<GetGroupFeaturesOutput> data) {
                         final MultipartRequestGroupFeaturesCaseBuilder mprGroupFeaturesBuild = new MultipartRequestGroupFeaturesCaseBuilder();
+
+                        final Xid xid = deviceContext.getNextXid();
+                        data.getRequestContext().setXid(xid);
                         final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
                                 MultipartType.OFPMPGROUPFEATURES, xid.getValue(), version);
                         mprInput.setMultipartRequestBody(mprGroupFeaturesBuild.build());
@@ -114,17 +117,18 @@ public class OpendaylightGroupStatisticsServiceImpl extends CommonService implem
     @Override
     public Future<RpcResult<GetGroupStatisticsOutput>> getGroupStatistics(final GetGroupStatisticsInput input) {
         return this.<GetGroupStatisticsOutput, Void> handleServiceCall(PRIMARY_CONNECTION,
-                new Function<BigInteger, Future<RpcResult<Void>>>() {
+                new Function<DataCrate<GetGroupStatisticsOutput>, Future<RpcResult<Void>>>() {
 
                     @Override
-                    public Future<RpcResult<Void>> apply(final BigInteger IDConnection) {
-                        final Xid xid = deviceContext.getNextXid();
+                    public Future<RpcResult<Void>> apply(final DataCrate<GetGroupStatisticsOutput> data) {
 
                         final MultipartRequestGroupCaseBuilder caseBuilder = new MultipartRequestGroupCaseBuilder();
                         final MultipartRequestGroupBuilder mprGroupBuild = new MultipartRequestGroupBuilder();
                         mprGroupBuild.setGroupId(new GroupId(input.getGroupId().getValue()));
                         caseBuilder.setMultipartRequestGroup(mprGroupBuild.build());
 
+                        final Xid xid = deviceContext.getNextXid();
+                        data.getRequestContext().setXid(xid);
                         final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
                                 MultipartType.OFPMPGROUP, xid.getValue(), version);
 

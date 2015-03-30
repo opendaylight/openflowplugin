@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.impl.services;
 
 import com.google.common.base.Function;
-import java.math.BigInteger;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
@@ -36,11 +35,10 @@ public class OpendaylightPortStatisticsServiceImpl extends CommonService impleme
             final GetAllNodeConnectorsStatisticsInput input) {
         return this
                 .<GetAllNodeConnectorsStatisticsOutput, Void> handleServiceCall(
-                        PRIMARY_CONNECTION,  new Function<BigInteger, Future<RpcResult<Void>>>() {
+                        PRIMARY_CONNECTION,  new Function<DataCrate<GetAllNodeConnectorsStatisticsOutput>, Future<RpcResult<Void>>>() {
 
                     @Override
-                    public Future<RpcResult<Void>> apply(final BigInteger IDConnection) {
-                        final Xid xid = deviceContext.getNextXid();
+                    public Future<RpcResult<Void>> apply(final DataCrate<GetAllNodeConnectorsStatisticsOutput> data) {
 
                         MultipartRequestPortStatsCaseBuilder caseBuilder =
                                 new MultipartRequestPortStatsCaseBuilder();
@@ -50,6 +48,8 @@ public class OpendaylightPortStatisticsServiceImpl extends CommonService impleme
                         mprPortStatsBuilder.setPortNo(OFConstants.OFPP_ANY);
                         caseBuilder.setMultipartRequestPortStats(mprPortStatsBuilder.build());
 
+                        final Xid xid = deviceContext.getNextXid();
+                        data.getRequestContext().setXid(xid);
                         MultipartRequestInputBuilder mprInput = RequestInputUtils
                                 .createMultipartHeader(MultipartType.OFPMPPORTSTATS, xid.getValue(), version);
                         mprInput.setMultipartRequestBody(caseBuilder.build());
@@ -64,11 +64,10 @@ public class OpendaylightPortStatisticsServiceImpl extends CommonService impleme
             final GetNodeConnectorStatisticsInput input) {
         return this
                 .<GetNodeConnectorStatisticsOutput, Void> handleServiceCall(
-                        PRIMARY_CONNECTION,  new Function<BigInteger, Future<RpcResult<Void>>>() {
+                        PRIMARY_CONNECTION,  new Function<DataCrate<GetNodeConnectorStatisticsOutput>, Future<RpcResult<Void>>>() {
 
                     @Override
-                    public Future<RpcResult<Void>> apply(final BigInteger IDConnection) {
-                        final Xid xid = deviceContext.getNextXid();
+                    public Future<RpcResult<Void>> apply(final DataCrate<GetNodeConnectorStatisticsOutput> data) {
 
                         MultipartRequestPortStatsCaseBuilder caseBuilder =
                                 new MultipartRequestPortStatsCaseBuilder();
@@ -81,6 +80,8 @@ public class OpendaylightPortStatisticsServiceImpl extends CommonService impleme
                                 input.getNodeConnectorId()));
                         caseBuilder.setMultipartRequestPortStats(mprPortStatsBuilder.build());
 
+                        final Xid xid = deviceContext.getNextXid();
+                        data.getRequestContext().setXid(xid);
                         MultipartRequestInputBuilder mprInput = RequestInputUtils
                                 .createMultipartHeader(MultipartType.OFPMPPORTSTATS, xid.getValue(), version);
                         mprInput.setMultipartRequestBody(caseBuilder.build());
