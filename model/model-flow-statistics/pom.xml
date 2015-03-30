@@ -15,12 +15,10 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>model-flow-base</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>model-flow-service</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opendaylight.controller.model</groupId>
