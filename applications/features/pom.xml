@@ -24,28 +24,24 @@
       <type>xml</type>
     </dependency>
 
-  <dependency>
+    <dependency>
       <groupId>org.opendaylight.openflowplugin.applications</groupId>
       <artifactId>statistics-manager-config</artifactId>
-      <version>${project.version}</version>
       <type>xml</type>
       <classifier>config</classifier>
-  </dependency>
+    </dependency>
 
     <dependency>
       <groupId>org.opendaylight.openflowplugin.model</groupId>
       <artifactId>model-flow-base</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opendaylight.openflowplugin.model</groupId>
       <artifactId>model-flow-service</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opendaylight.openflowplugin.model</groupId>
       <artifactId>model-flow-statistics</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opendaylight.controller.model</groupId>
@@ -60,27 +56,22 @@
     <dependency>
       <groupId>org.opendaylight.openflowplugin.applications</groupId>
       <artifactId>topology-manager</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opendaylight.openflowplugin.applications</groupId>
       <artifactId>topology-lldp-discovery</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opendaylight.openflowplugin.applications</groupId>
       <artifactId>statistics-manager</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opendaylight.openflowplugin.applications</groupId>
       <artifactId>inventory-manager</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opendaylight.openflowplugin.applications</groupId>
       <artifactId>forwardingrules-manager</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <!-- test to validate features.xml -->
     <dependency>
