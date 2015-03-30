@@ -28,6 +28,27 @@
         <configfile finalname="etc/opendaylight/karaf/42-openflowplugin.xml">mvn:org.opendaylight.openflowplugin/openflowplugin-controller-config/${project.version}/xml/config</configfile>
         <configfile finalname="etc/opendaylight/karaf/43-msg-spy.xml">mvn:org.opendaylight.openflowplugin/openflowplugin-controller-config/${project.version}/xml/configmsgspy</configfile>
     </feature>
+
+    <feature name='odl-openflowplugin-new-southbound' description="OpenDaylight :: Openflow Plugin :: New southBound API implementation - right now for testing purpose only" version='${project.version}'>
+        <!-- TODO : next two features should be extracted to separate feature tags, it is assembled this way only for testing of new-southbound during devel -->
+        <feature version="${project.version}">odl-openflowplugin-nsf-services</feature>
+        <feature version="${project.version}">odl-openflowplugin-app-config-pusher</feature>
+        <feature version="${project.version}">odl-openflowplugin-app-lldp-speaker</feature>
+        <feature version="${mdsal.version}">odl-restconf</feature>
+
+
+        <feature version="${mdsal.version}">odl-mdsal-broker</feature>
+        <feature version="${project.version}">odl-openflowplugin-nsf-model</feature>
+        <feature version="${openflowjava.version}">odl-openflowjava-protocol</feature>
+        <!-- TODO : remove dependency on openflowplugin in the future -->
+        <bundle>mvn:org.opendaylight.openflowplugin/openflowplugin/${project.version}</bundle>
+        <bundle>mvn:org.opendaylight.openflowplugin/openflowplugin-impl/${project.version}</bundle>
+        <bundle>mvn:org.opendaylight.openflowplugin/openflowplugin-api/${project.version}</bundle>
+        <bundle>mvn:org.opendaylight.openflowplugin/openflowplugin-extension-api/${project.version}</bundle>
+        <bundle>mvn:org.opendaylight.controller/liblldp/${sal.api.version}</bundle>
+        <configfile finalname="etc/opendaylight/karaf/42-openflowplugin-new.xml">mvn:org.opendaylight.openflowplugin/openflowplugin-controller-config/${project.version}/xml/ofplugin-config</configfile>
+    </feature>
+
     <feature name='odl-openflowplugin-flow-services' description="OpenDaylight :: Openflow Plugin :: Flow Services" version='${project.version}'>
         <feature version="${project.version}">odl-openflowplugin-nsf-services</feature>
         <feature version="${project.version}">odl-openflowplugin-southbound</feature>
