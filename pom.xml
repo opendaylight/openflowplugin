@@ -46,7 +46,7 @@
       <project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
       <nexusproxy>http://nexus.opendaylight.org/content</nexusproxy>
       <openflowjava.version>0.6.0-SNAPSHOT</openflowjava.version>
-      <openflowplugin.model.version>${project.version}</openflowplugin.model.version>
+      <openflowplugin.version>0.1.0-SNAPSHOT</openflowplugin.version>
       <sal.api.version>0.9.0-SNAPSHOT</sal.api.version>
       <build.helper.version>1.8</build.helper.version>
       <jmxGeneratorPath>src/main/yang-gen-config</jmxGeneratorPath>
@@ -74,6 +74,14 @@
 
     <dependencyManagement>
       <dependencies>
+        <dependency>
+          <groupId>org.opendaylight.openflowplugin</groupId>
+          <artifactId>openflowplugin-artifacts</artifactId>
+          <version>${openflowplugin.version}</version>
+          <scope>import</scope>
+          <type>pom</type>
+        </dependency>
+
         <dependency>
           <groupId>org.opendaylight.yangtools</groupId>
           <artifactId>yangtools-artifacts</artifactId>
@@ -114,28 +122,6 @@
           <artifactId>features-test</artifactId>
 	  <version>${features.test.version}</version>
 	  <scope>test</scope>
-        </dependency>
-
-        <dependency>
-          <groupId>org.opendaylight.openflowplugin</groupId>
-          <artifactId>openflowplugin-api</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-          <groupId>org.opendaylight.openflowplugin.model</groupId>
-          <artifactId>model-flow-base</artifactId>
-          <version>${openflowplugin.model.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>org.opendaylight.openflowplugin.model</groupId>
-          <artifactId>model-flow-service</artifactId>
-          <version>${openflowplugin.model.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>org.opendaylight.openflowplugin.model</groupId>
-          <artifactId>model-flow-statistics</artifactId>
-          <version>${openflowplugin.model.version}</version>
         </dependency>
 
         <dependency>
@@ -486,6 +472,7 @@
     </profiles>
 
     <modules>
+      <module>artifacts</module>
       <module>openflowplugin-api</module>
       <module>openflowplugin</module>
       <module>openflowplugin-impl</module>

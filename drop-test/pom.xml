@@ -16,7 +16,6 @@
         <dependency>
             <groupId>org.opendaylight.openflowplugin</groupId>
             <artifactId>test-common</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -30,19 +29,19 @@
             <groupId>org.opendaylight.openflowplugin.model</groupId>
             <artifactId>model-flow-service</artifactId>
         </dependency>    
-	    <dependency>
-	      <groupId>org.opendaylight.openflowplugin.model</groupId>
-	      <artifactId>model-flow-base</artifactId>
-	    </dependency>
+            <dependency>
+            <groupId>org.opendaylight.openflowplugin.model</groupId>
+            <artifactId>model-flow-base</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.opendaylight.controller.model</groupId>
             <artifactId>model-inventory</artifactId>
         </dependency>
         <dependency>
-	        <groupId>equinoxSDK381</groupId>
-	        <artifactId>org.eclipse.osgi</artifactId>
-	    </dependency>
-	    <dependency>
+            <groupId>equinoxSDK381</groupId>
+            <artifactId>org.eclipse.osgi</artifactId>
+        </dependency>
+        <dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
         </dependency>
