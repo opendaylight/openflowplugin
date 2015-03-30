@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- vi: set et smarttab sw=4 tabstop=4: -->
+<!--
+Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
+
+This program and the accompanying materials are made available under the
+terms of the Eclipse Public License v1.0 which accompanies this distribution,
+and is available at http://www.eclipse.org/legal/epl-v10.html
+-->
+<snapshot>
+  <required-capabilities>
+    <!-- openflowjava -->
+    <capability>urn:opendaylight:params:xml:ns:yang:openflow:switch:connection:provider:impl?module=openflow-switch-connection-provider-impl&amp;revision=2014-03-28</capability>
+    <capability>urn:opendaylight:params:xml:ns:yang:openflow:switch:connection:provider?module=openflow-switch-connection-provider&amp;revision=2014-03-28</capability>
+    <!-- openflowplugin -->
+    <capability>urn:opendaylight:params:xml:ns:yang:openflow:common:config:impl?module=openflow-provider-impl&amp;revision=2014-03-26</capability>
+    <capability>urn:opendaylight:params:xml:ns:yang:openflow:common:config?module=openflow-provider&amp;revision=2014-03-26</capability>
+    <!-- binding-broker-impl - provided -->
+  </required-capabilities>
+
+  <configuration>
+
+    <data xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+      <modules xmlns="urn:opendaylight:params:xml:ns:yang:controller:config">
+        <!-- default OF-switch-connection-provider (port 6633) -->
+        <module>
+          <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:openflow:switch:connection:provider:impl">prefix:openflow-switch-connection-provider-impl</type>
+          <name>openflow-switch-connection-provider-default-impl</name>
+          <port>6633</port>
+<!--      Possible transport-protocol options: TCP, TLS, UDP -->
+          <transport-protocol>TCP</transport-protocol>
+          <switch-idle-timeout>15000</switch-idle-timeout>
+<!--           Exemplary TLS configuration:
+                - uncomment the <tls> tag
+                - copy exemplary-switch-privkey.pem, exemplary-switch-cert.pem and exemplary-cacert.pem
+                  files into your virtual machine
+                - set VM encryption options to use copied keys
+                - start communication
+               Please visit OpenflowPlugin or Openflow Protocol Library#Documentation wiki pages
+               for detailed information regarding TLS -->
+<!--           <tls>
+                 <keystore>/exemplary-ctlKeystore</keystore>
+                 <keystore-type>JKS</keystore-type>
+                 <keystore-path-type>CLASSPATH</keystore-path-type>
+                 <keystore-password>opendaylight</keystore-password>
+                 <truststore>/exemplary-ctlTrustStore</truststore>
+                 <truststore-type>JKS</truststore-type>
+                 <truststore-path-type>CLASSPATH</truststore-path-type>
+                 <truststore-password>opendaylight</truststore-password>
+                 <certificate-password>opendaylight</certificate-password>
+               </tls> -->
+<!--           Exemplary thread model configuration. Uncomment <threads> tag below to adjust default thread model -->
+<!--           <threads>
+                 <boss-threads>2</boss-threads>
+                 <worker-threads>8</worker-threads>
+               </threads> -->
+        </module>
+        <!-- default OF-switch-connection-provider (port 6653) -->
+        <module>
+          <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:openflow:switch:connection:provider:impl">prefix:openflow-switch-connection-provider-impl</type>
+          <name>openflow-switch-connection-provider-legacy-impl</name>
+          <port>6653</port>
+<!--      Possible transport-protocol options: TCP, TLS, UDP -->
+          <transport-protocol>TCP</transport-protocol>
+          <switch-idle-timeout>15000</switch-idle-timeout>
+<!--           Exemplary TLS configuration:
+                - uncomment the <tls> tag
+                - copy exemplary-switch-privkey.pem, exemplary-switch-cert.pem and exemplary-cacert.pem
+                  files into your virtual machine
+                - set VM encryption options to use copied keys
+                - start communication
+               Please visit OpenflowPlugin or Openflow Protocol Library#Documentation wiki pages
+               for detailed information regarding TLS -->
+<!--           <tls>
+                 <keystore>/exemplary-ctlKeystore</keystore>
+                 <keystore-type>JKS</keystore-type>
+                 <keystore-path-type>CLASSPATH</keystore-path-type>
+                 <keystore-password>opendaylight</keystore-password>
+                 <truststore>/exemplary-ctlTrustStore</truststore>
+                 <truststore-type>JKS</truststore-type>
+                 <truststore-path-type>CLASSPATH</truststore-path-type>
+                 <truststore-password>opendaylight</truststore-password>
+                 <certificate-password>opendaylight</certificate-password>
+               </tls> -->
+<!--           Exemplary thread model configuration. Uncomment <threads> tag below to adjust default thread model -->
+<!--           <threads>
+                 <boss-threads>2</boss-threads>
+                 <worker-threads>8</worker-threads>
+               </threads> -->
+        </module>
+
+
+        <module>
+          <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:openflow:common:config:impl">prefix:openflow-provider-impl</type>
+          <name>openflow-provider-impl</name>
+          
+          <openflow-switch-connection-provider>
+            <type xmlns:ofSwitch="urn:opendaylight:params:xml:ns:yang:openflow:switch:connection:provider">ofSwitch:openflow-switch-connection-provider</type>
+            <name>openflow-switch-connection-provider-default</name>
+          </openflow-switch-connection-provider>
+          <openflow-switch-connection-provider>
+            <type xmlns:ofSwitch="urn:opendaylight:params:xml:ns:yang:openflow:switch:connection:provider">ofSwitch:openflow-switch-connection-provider</type>
+            <name>openflow-switch-connection-provider-legacy</name>
+          </openflow-switch-connection-provider>
+
+
+          <binding-aware-broker>
+            <type xmlns:binding="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding">binding:binding-broker-osgi-registry</type>
+            <name>binding-osgi-broker</name>
+          </binding-aware-broker>
+        </module>
+      </modules>
+
+      <services xmlns="urn:opendaylight:params:xml:ns:yang:controller:config">
+        <service>
+          <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:openflow:switch:connection:provider">prefix:openflow-switch-connection-provider</type>
+          <instance>
+            <name>openflow-switch-connection-provider-default</name>
+            <provider>/modules/module[type='openflow-switch-connection-provider-impl'][name='openflow-switch-connection-provider-default-impl']</provider>
+          </instance>
+          <instance>
+            <name>openflow-switch-connection-provider-legacy</name>
+            <provider>/modules/module[type='openflow-switch-connection-provider-impl'][name='openflow-switch-connection-provider-legacy-impl']</provider>
+          </instance>
+        </service>
+
+        <service>
+          <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:openflow:common:config">prefix:openflow-provider</type>
+          <instance>
+            <name>openflow-provider</name>
+            <provider>/modules/module[type='openflow-provider-impl'][name='openflow-provider-impl']</provider>
+          </instance>
+        </service>
+      </services>
+    </data>
+
+  </configuration>
+</snapshot>
