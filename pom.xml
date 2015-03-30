@@ -115,27 +115,12 @@
 	  <version>${features.test.version}</version>
 	  <scope>test</scope>
         </dependency>
-
         <dependency>
-          <groupId>org.opendaylight.openflowplugin</groupId>
-          <artifactId>openflowplugin-api</artifactId>
+          <groupId>org.opendaylight.openflowjava</groupId>
+          <artifactId>openflowplugin-artifacts</artifactId>
           <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-          <groupId>org.opendaylight.openflowplugin.model</groupId>
-          <artifactId>model-flow-base</artifactId>
-          <version>${openflowplugin.model.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>org.opendaylight.openflowplugin.model</groupId>
-          <artifactId>model-flow-service</artifactId>
-          <version>${openflowplugin.model.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>org.opendaylight.openflowplugin.model</groupId>
-          <artifactId>model-flow-statistics</artifactId>
-          <version>${openflowplugin.model.version}</version>
+          <scope>import</scope>
+          <type>pom</type>
         </dependency>
 
         <dependency>
@@ -486,6 +471,7 @@
     </profiles>
 
     <modules>
+      <module>artifacts</module>
       <module>openflowplugin-api</module>
       <module>openflowplugin</module>
       <module>openflowplugin-impl</module>
