@@ -29,8 +29,8 @@ public class SalMeterServiceImpl extends CommonService implements SalMeterServic
 
     @Override
     public Future<RpcResult<AddMeterOutput>> addMeter(final AddMeterInput input) {
-        return ServiceCallProcessingUtil.<AddMeterOutput, Void>handleServiceCall(rpcContext, PRIMARY_CONNECTION,
-                deviceContext, new Function<BigInteger,Future<RpcResult<Void>>>() {
+        return this.<AddMeterOutput, Void>handleServiceCall( PRIMARY_CONNECTION,
+                 new Function<BigInteger,Future<RpcResult<Void>>>() {
                     @Override
                     public Future<RpcResult<Void>> apply(final BigInteger IDConnection) {
                         return convertAndSend(input, IDConnection);
@@ -40,8 +40,8 @@ public class SalMeterServiceImpl extends CommonService implements SalMeterServic
 
     @Override
     public Future<RpcResult<UpdateMeterOutput>> updateMeter(final UpdateMeterInput input) {
-        return ServiceCallProcessingUtil.<UpdateMeterOutput, Void>handleServiceCall(rpcContext, PRIMARY_CONNECTION,
-                deviceContext, new Function<BigInteger,Future<RpcResult<Void>>>() {
+        return this.<UpdateMeterOutput, Void>handleServiceCall( PRIMARY_CONNECTION,
+                 new Function<BigInteger,Future<RpcResult<Void>>>() {
                     @Override
                     public Future<RpcResult<Void>> apply(final BigInteger IDConnection) {
                         return convertAndSend(input.getUpdatedMeter(), IDConnection);
@@ -51,8 +51,8 @@ public class SalMeterServiceImpl extends CommonService implements SalMeterServic
 
     @Override
     public Future<RpcResult<RemoveMeterOutput>> removeMeter(final RemoveMeterInput input) {
-        return ServiceCallProcessingUtil.<RemoveMeterOutput, Void>handleServiceCall(rpcContext, PRIMARY_CONNECTION,
-                deviceContext, new Function<BigInteger,Future<RpcResult<Void>>>() {
+        return this.<RemoveMeterOutput, Void>handleServiceCall( PRIMARY_CONNECTION,
+                 new Function<BigInteger,Future<RpcResult<Void>>>() {
                     @Override
                     public Future<RpcResult<Void>> apply(final BigInteger IDConnection) {
                         return convertAndSend(input, IDConnection);

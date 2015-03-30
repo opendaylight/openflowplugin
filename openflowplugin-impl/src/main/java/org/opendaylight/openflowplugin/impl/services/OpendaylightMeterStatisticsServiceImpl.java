@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
+import com.google.common.base.Function;
+import java.math.BigInteger;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
@@ -42,38 +44,32 @@ public class OpendaylightMeterStatisticsServiceImpl extends CommonService implem
     @Override
     public Future<RpcResult<GetAllMeterConfigStatisticsOutput>> getAllMeterConfigStatistics(
             final GetAllMeterConfigStatisticsInput input) {
+        return this
+                .<GetAllMeterConfigStatisticsOutput, Void> handleServiceCall(
+                        PRIMARY_CONNECTION,  new Function<BigInteger, Future<RpcResult<Void>>>() {
 
-        final RequestContext<GetAllMeterConfigStatisticsOutput> requestContext = rpcContext.createRequestContext();
-        final SettableFuture<RpcResult<GetAllMeterConfigStatisticsOutput>> result = rpcContext.storeOrFail(requestContext);
+                    @Override
+                    public Future<RpcResult<Void>> apply(final BigInteger IDConnection) {
+                        final Xid xid = deviceContext.getNextXid();
 
-        if (!result.isDone()) {
+                        MultipartRequestMeterConfigCaseBuilder caseBuilder =
+                                new MultipartRequestMeterConfigCaseBuilder();
+                        MultipartRequestMeterConfigBuilder mprMeterConfigBuild =
+                                new MultipartRequestMeterConfigBuilder();
+                        mprMeterConfigBuild.setMeterId(new MeterId(BinContent.intToUnsignedLong(
+                                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common
+                                .types.rev130731.Meter.OFPMALL.getIntValue())));
+                        caseBuilder.setMultipartRequestMeterConfig(mprMeterConfigBuild.build());
 
-            final Xid xid = deviceContext.getNextXid();
+                        MultipartRequestInputBuilder mprInput = RequestInputUtils
+                                .createMultipartHeader(MultipartType.OFPMPMETERCONFIG, xid.getValue(), version);
+                        mprInput.setMultipartRequestBody(caseBuilder.build());
+                        Future<RpcResult<Void>> resultFromOFLib = deviceContext
+                                .getPrimaryConnectionContext().getConnectionAdapter().multipartRequest(mprInput.build());
+                        return JdkFutureAdapters
+                                .listenInPoolThread(resultFromOFLib);
+                    }});
 
-            MultipartRequestMeterConfigCaseBuilder caseBuilder =
-                    new MultipartRequestMeterConfigCaseBuilder();
-            MultipartRequestMeterConfigBuilder mprMeterConfigBuild =
-                    new MultipartRequestMeterConfigBuilder();
-            mprMeterConfigBuild.setMeterId(new MeterId(BinContent.intToUnsignedLong(
-                    org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common
-                            .types.rev130731.Meter.OFPMALL.getIntValue())));
-            caseBuilder.setMultipartRequestMeterConfig(mprMeterConfigBuild.build());
-
-            MultipartRequestInputBuilder mprInput = RequestInputUtils
-                    .createMultipartHeader(MultipartType.OFPMPMETERCONFIG, xid.getValue(), version);
-            mprInput.setMultipartRequestBody(caseBuilder.build());
-            Future<RpcResult<Void>> resultFromOFLib = deviceContext
-                    .getPrimaryConnectionContext().getConnectionAdapter().multipartRequest(mprInput.build());
-            ListenableFuture<RpcResult<Void>> futureResultFromOfLib = JdkFutureAdapters
-                    .listenInPoolThread(resultFromOFLib);
-
-            final RpcResultConvertor<GetAllMeterConfigStatisticsOutput> rpcResultConvertor = new RpcResultConvertor<>(requestContext, deviceContext);
-            rpcResultConvertor.processResultFromOfJava(futureResultFromOfLib);
-
-        } else {
-            RequestContextUtil.closeRequstContext(requestContext);
-        }
-        return result;
     }
 
     @Override

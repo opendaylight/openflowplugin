@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
- * 
+ *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
@@ -19,6 +19,7 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 public class PacketProcessingServiceImpl extends CommonService implements PacketProcessingService {
 
     @Override
+    //TODO this implementation is incorrect. Handling of exceptional states as in ServiceCallProcessingUtil.handleServiceCall() is missing
     public Future<RpcResult<Void>> transmitPacket(final TransmitPacketInput input) {
         final PacketOutInput message = PacketOutConvertor.toPacketOutInput(input, version, deviceContext.getNextXid()
                 .getValue(), datapathId);

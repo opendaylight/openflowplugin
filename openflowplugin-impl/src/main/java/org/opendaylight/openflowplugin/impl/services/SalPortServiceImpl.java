@@ -26,8 +26,8 @@ public class SalPortServiceImpl extends CommonService implements SalPortService 
 
     @Override
     public Future<RpcResult<UpdatePortOutput>> updatePort(final UpdatePortInput input) {
-        return ServiceCallProcessingUtil.<UpdatePortOutput, Void>handleServiceCall(rpcContext, PRIMARY_CONNECTION,
-                deviceContext, new Function<BigInteger,Future<RpcResult<Void>>>() {
+        return this.<UpdatePortOutput, Void> handleServiceCall(PRIMARY_CONNECTION,
+                new Function<BigInteger, Future<RpcResult<Void>>>() {
                     @Override
                     public Future<RpcResult<Void>> apply(final BigInteger IDConnection) {
                         final Port inputPort = input.getUpdatedPort().getPort().getPort().get(0);

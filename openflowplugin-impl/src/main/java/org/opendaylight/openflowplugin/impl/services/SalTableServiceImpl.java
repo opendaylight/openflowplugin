@@ -83,8 +83,8 @@ public class SalTableServiceImpl extends CommonService implements SalTableServic
             }
         }
 
-        return ServiceCallProcessingUtil.<UpdateTableOutput, UpdateTableOutput>handleServiceCall(rpcContext, PRIMARY_CONNECTION,
-                deviceContext, new FunctionImpl());
+        return this.<UpdateTableOutput, UpdateTableOutput>handleServiceCall( PRIMARY_CONNECTION,
+                 new FunctionImpl());
     }
 
     private MultipartRequestInputBuilder createMultipartHeader(final MultipartType multipart, final Long xid) {

@@ -7,11 +7,11 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
+import com.google.common.base.Function;
+import java.math.BigInteger;
 import org.opendaylight.yangtools.yang.binding.DataObject;
-
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.SettableFuture;
 import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
@@ -50,218 +50,201 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
     public Future<RpcResult<GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput>> getAggregateFlowStatisticsFromFlowTableForAllFlows(
             final GetAggregateFlowStatisticsFromFlowTableForAllFlowsInput input) {
 
-        final RequestContext<GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput> requestContext = rpcContext.createRequestContext();
-        final SettableFuture<RpcResult<GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput>> result = rpcContext
-                .storeOrFail(requestContext);
-        if (!result.isDone()) {
-            final Xid xid = deviceContext.getNextXid();
+        return this.<GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput, Void> handleServiceCall(
+                PRIMARY_CONNECTION, new Function<BigInteger, Future<RpcResult<Void>>>() {
 
-            // Create multipart request body for fetch all the group stats
-            final MultipartRequestAggregateCaseBuilder multipartRequestAggregateCaseBuilder = new MultipartRequestAggregateCaseBuilder();
-            final MultipartRequestAggregateBuilder mprAggregateRequestBuilder = new MultipartRequestAggregateBuilder();
-            mprAggregateRequestBuilder.setTableId(input.getTableId().getValue());
-            mprAggregateRequestBuilder.setOutPort(OFConstants.OFPP_ANY);
-            mprAggregateRequestBuilder.setOutGroup(OFConstants.OFPG_ANY);
-            mprAggregateRequestBuilder.setCookie(OFConstants.DEFAULT_COOKIE);
-            mprAggregateRequestBuilder.setCookieMask(OFConstants.DEFAULT_COOKIE_MASK);
+                    @Override
+                    public Future<RpcResult<Void>> apply(final BigInteger IDConnection) {
+                        final Xid xid = deviceContext.getNextXid();
 
-            FlowCreatorUtil.setWildcardedFlowMatch(version, mprAggregateRequestBuilder);
+                        // Create multipart request body for fetch all the group stats
+                        final MultipartRequestAggregateCaseBuilder multipartRequestAggregateCaseBuilder = new MultipartRequestAggregateCaseBuilder();
+                        final MultipartRequestAggregateBuilder mprAggregateRequestBuilder = new MultipartRequestAggregateBuilder();
+                        mprAggregateRequestBuilder.setTableId(input.getTableId().getValue());
+                        mprAggregateRequestBuilder.setOutPort(OFConstants.OFPP_ANY);
+                        mprAggregateRequestBuilder.setOutGroup(OFConstants.OFPG_ANY);
+                        mprAggregateRequestBuilder.setCookie(OFConstants.DEFAULT_COOKIE);
+                        mprAggregateRequestBuilder.setCookieMask(OFConstants.DEFAULT_COOKIE_MASK);
 
-            // Set request body to main multipart request
-            multipartRequestAggregateCaseBuilder.setMultipartRequestAggregate(mprAggregateRequestBuilder.build());
-            final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
-                    MultipartType.OFPMPAGGREGATE, xid.getValue(), version);
+                        FlowCreatorUtil.setWildcardedFlowMatch(version, mprAggregateRequestBuilder);
 
-            mprInput.setMultipartRequestBody(multipartRequestAggregateCaseBuilder.build());
+                        // Set request body to main multipart request
+                        multipartRequestAggregateCaseBuilder.setMultipartRequestAggregate(mprAggregateRequestBuilder
+                                .build());
+                        final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
+                                MultipartType.OFPMPAGGREGATE, xid.getValue(), version);
 
-            final Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext()
-                    .getConnectionAdapter().multipartRequest(mprInput.build());
+                        mprInput.setMultipartRequestBody(multipartRequestAggregateCaseBuilder.build());
 
-            final ListenableFuture<RpcResult<Void>> futureResultFromOfLib = JdkFutureAdapters
-                    .listenInPoolThread(resultFromOFLib);
+                        final Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext()
+                                .getConnectionAdapter().multipartRequest(mprInput.build());
 
-            convertRpcResultToRequestFuture(requestContext, futureResultFromOfLib);
+                        return JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
+                    }
+                });
 
-        }
-
-        return result;
     }
 
     @Override
     public Future<RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>> getAggregateFlowStatisticsFromFlowTableForGivenMatch(
             final GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput input) {
-        final RequestContext<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput> requestContext = rpcContext.createRequestContext();
-        final SettableFuture<RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>> result = rpcContext
-                .storeOrFail(requestContext);
-        if (!result.isDone()) {
-            final Xid xid = deviceContext.getNextXid();
-            final MultipartRequestAggregateCaseBuilder multipartRequestAggregateCaseBuilder = new MultipartRequestAggregateCaseBuilder();
-            final MultipartRequestAggregateBuilder mprAggregateRequestBuilder = new MultipartRequestAggregateBuilder();
-            mprAggregateRequestBuilder.setTableId(input.getTableId());
-            mprAggregateRequestBuilder.setOutPort(input.getOutPort().longValue());
-            // TODO: repeating code
-            if (version == OFConstants.OFP_VERSION_1_3) {
-                mprAggregateRequestBuilder.setCookie(input.getCookie().getValue());
-                mprAggregateRequestBuilder.setCookieMask(input.getCookieMask().getValue());
-                mprAggregateRequestBuilder.setOutGroup(input.getOutGroup());
-            } else {
-                mprAggregateRequestBuilder.setOutGroup(OFConstants.OFPG_ANY);
-                mprAggregateRequestBuilder.setCookie(OFConstants.DEFAULT_COOKIE);
-                mprAggregateRequestBuilder.setCookieMask(OFConstants.DEFAULT_COOKIE_MASK);
-            }
+        return this.<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput, Void> handleServiceCall(
+                PRIMARY_CONNECTION, new Function<BigInteger, Future<RpcResult<Void>>>() {
 
-            MatchReactor.getInstance().convert(input.getMatch(), version, mprAggregateRequestBuilder,
-                    deviceContext.getPrimaryConnectionContext().getFeatures().getDatapathId());
+                    @Override
+                    public Future<RpcResult<Void>> apply(final BigInteger IDConnection) {
+                        final Xid xid = deviceContext.getNextXid();
+                        final MultipartRequestAggregateCaseBuilder multipartRequestAggregateCaseBuilder = new MultipartRequestAggregateCaseBuilder();
+                        final MultipartRequestAggregateBuilder mprAggregateRequestBuilder = new MultipartRequestAggregateBuilder();
+                        mprAggregateRequestBuilder.setTableId(input.getTableId());
+                        mprAggregateRequestBuilder.setOutPort(input.getOutPort().longValue());
+                        // TODO: repeating code
+                        if (version == OFConstants.OFP_VERSION_1_3) {
+                            mprAggregateRequestBuilder.setCookie(input.getCookie().getValue());
+                            mprAggregateRequestBuilder.setCookieMask(input.getCookieMask().getValue());
+                            mprAggregateRequestBuilder.setOutGroup(input.getOutGroup());
+                        } else {
+                            mprAggregateRequestBuilder.setOutGroup(OFConstants.OFPG_ANY);
+                            mprAggregateRequestBuilder.setCookie(OFConstants.DEFAULT_COOKIE);
+                            mprAggregateRequestBuilder.setCookieMask(OFConstants.DEFAULT_COOKIE_MASK);
+                        }
 
-            FlowCreatorUtil.setWildcardedFlowMatch(version, mprAggregateRequestBuilder);
+                        MatchReactor.getInstance().convert(input.getMatch(), version, mprAggregateRequestBuilder,
+                                deviceContext.getPrimaryConnectionContext().getFeatures().getDatapathId());
 
-            // Set request body to main multipart request
-            multipartRequestAggregateCaseBuilder.setMultipartRequestAggregate(mprAggregateRequestBuilder.build());
+                        FlowCreatorUtil.setWildcardedFlowMatch(version, mprAggregateRequestBuilder);
 
-            final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
-                    MultipartType.OFPMPAGGREGATE, xid.getValue(), version);
+                        // Set request body to main multipart request
+                        multipartRequestAggregateCaseBuilder.setMultipartRequestAggregate(mprAggregateRequestBuilder
+                                .build());
 
-            mprInput.setMultipartRequestBody(multipartRequestAggregateCaseBuilder.build());
-            final Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext()
-                    .getConnectionAdapter().multipartRequest(mprInput.build());
-            final ListenableFuture<RpcResult<Void>> futureResultFromOfLib = JdkFutureAdapters
-                    .listenInPoolThread(resultFromOFLib);
+                        final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
+                                MultipartType.OFPMPAGGREGATE, xid.getValue(), version);
 
-            convertRpcResultToRequestFuture(requestContext, futureResultFromOfLib);
+                        mprInput.setMultipartRequestBody(multipartRequestAggregateCaseBuilder.build());
+                        final Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext()
+                                .getConnectionAdapter().multipartRequest(mprInput.build());
+                        return JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
+                    }
+                });
 
-        }
-        return result;
     }
 
     @Override
     public Future<RpcResult<GetAllFlowStatisticsFromFlowTableOutput>> getAllFlowStatisticsFromFlowTable(
             final GetAllFlowStatisticsFromFlowTableInput input) {
+        return this.<GetAllFlowStatisticsFromFlowTableOutput, Void> handleServiceCall(PRIMARY_CONNECTION,
+                new Function<BigInteger, Future<RpcResult<Void>>>() {
 
-        final RequestContext<GetAllFlowStatisticsFromFlowTableOutput> requestContext = rpcContext.createRequestContext();
-        final SettableFuture<RpcResult<GetAllFlowStatisticsFromFlowTableOutput>> result = rpcContext
-                .storeOrFail(requestContext);
-        if (!result.isDone()) {
+                    @Override
+                    public Future<RpcResult<Void>> apply(final BigInteger IDConnection) {
+                        final Xid xid = deviceContext.getNextXid();
 
-            final Xid xid = deviceContext.getNextXid();
+                        final MultipartRequestFlowBuilder mprFlowRequestBuilder = new MultipartRequestFlowBuilder();
+                        mprFlowRequestBuilder.setTableId(input.getTableId().getValue());
+                        mprFlowRequestBuilder.setOutPort(OFConstants.OFPP_ANY);
+                        mprFlowRequestBuilder.setOutGroup(OFConstants.OFPG_ANY);
+                        mprFlowRequestBuilder.setCookie(OFConstants.DEFAULT_COOKIE);
+                        mprFlowRequestBuilder.setCookieMask(OFConstants.DEFAULT_COOKIE_MASK);
+                        FlowCreatorUtil.setWildcardedFlowMatch(version, mprFlowRequestBuilder);
 
-            final MultipartRequestFlowBuilder mprFlowRequestBuilder = new MultipartRequestFlowBuilder();
-            mprFlowRequestBuilder.setTableId(input.getTableId().getValue());
-            mprFlowRequestBuilder.setOutPort(OFConstants.OFPP_ANY);
-            mprFlowRequestBuilder.setOutGroup(OFConstants.OFPG_ANY);
-            mprFlowRequestBuilder.setCookie(OFConstants.DEFAULT_COOKIE);
-            mprFlowRequestBuilder.setCookieMask(OFConstants.DEFAULT_COOKIE_MASK);
-            FlowCreatorUtil.setWildcardedFlowMatch(version, mprFlowRequestBuilder);
+                        final MultipartRequestFlowCaseBuilder multipartRequestFlowCaseBuilder = new MultipartRequestFlowCaseBuilder();
+                        multipartRequestFlowCaseBuilder.setMultipartRequestFlow(mprFlowRequestBuilder.build());
 
-            final MultipartRequestFlowCaseBuilder multipartRequestFlowCaseBuilder = new MultipartRequestFlowCaseBuilder();
-            multipartRequestFlowCaseBuilder.setMultipartRequestFlow(mprFlowRequestBuilder.build());
+                        final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
+                                MultipartType.OFPMPFLOW, xid.getValue(), version);
 
-            final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
-                    MultipartType.OFPMPFLOW, xid.getValue(), version);
-
-            mprInput.setMultipartRequestBody(multipartRequestFlowCaseBuilder.build());
-            final Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext()
-                    .getConnectionAdapter().multipartRequest(mprInput.build());
-            final ListenableFuture<RpcResult<Void>> futureResultFromOfLib = JdkFutureAdapters
-                    .listenInPoolThread(resultFromOFLib);
-
-            convertRpcResultToRequestFuture(requestContext, futureResultFromOfLib);
-
-        }
-        return result;
+                        mprInput.setMultipartRequestBody(multipartRequestFlowCaseBuilder.build());
+                        final Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext()
+                                .getConnectionAdapter().multipartRequest(mprInput.build());
+                        return JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
+                    }
+                });
     }
 
     @Override
     public Future<RpcResult<GetAllFlowsStatisticsFromAllFlowTablesOutput>> getAllFlowsStatisticsFromAllFlowTables(
             final GetAllFlowsStatisticsFromAllFlowTablesInput input) {
+        return this.<GetAllFlowsStatisticsFromAllFlowTablesOutput, Void> handleServiceCall(PRIMARY_CONNECTION,
+                new Function<BigInteger, Future<RpcResult<Void>>>() {
 
-        final RequestContext<GetAllFlowsStatisticsFromAllFlowTablesOutput> requestContext = rpcContext.createRequestContext();
-        final SettableFuture<RpcResult<GetAllFlowsStatisticsFromAllFlowTablesOutput>> result = rpcContext
-                .storeOrFail(requestContext);
-        if (!result.isDone()) {
+                    @Override
+                    public Future<RpcResult<Void>> apply(final BigInteger IDConnection) {
+                        final Xid xid = deviceContext.getNextXid();
 
-            final Xid xid = deviceContext.getNextXid();
+                        final MultipartRequestFlowCaseBuilder multipartRequestFlowCaseBuilder = new MultipartRequestFlowCaseBuilder();
+                        final MultipartRequestFlowBuilder mprFlowRequestBuilder = new MultipartRequestFlowBuilder();
+                        mprFlowRequestBuilder.setTableId(OFConstants.OFPTT_ALL);
+                        mprFlowRequestBuilder.setOutPort(OFConstants.OFPP_ANY);
+                        mprFlowRequestBuilder.setOutGroup(OFConstants.OFPG_ANY);
+                        mprFlowRequestBuilder.setCookie(OFConstants.DEFAULT_COOKIE);
+                        mprFlowRequestBuilder.setCookieMask(OFConstants.DEFAULT_COOKIE_MASK);
+                        FlowCreatorUtil.setWildcardedFlowMatch(version, mprFlowRequestBuilder);
 
-            final MultipartRequestFlowCaseBuilder multipartRequestFlowCaseBuilder = new MultipartRequestFlowCaseBuilder();
-            final MultipartRequestFlowBuilder mprFlowRequestBuilder = new MultipartRequestFlowBuilder();
-            mprFlowRequestBuilder.setTableId(OFConstants.OFPTT_ALL);
-            mprFlowRequestBuilder.setOutPort(OFConstants.OFPP_ANY);
-            mprFlowRequestBuilder.setOutGroup(OFConstants.OFPG_ANY);
-            mprFlowRequestBuilder.setCookie(OFConstants.DEFAULT_COOKIE);
-            mprFlowRequestBuilder.setCookieMask(OFConstants.DEFAULT_COOKIE_MASK);
-            FlowCreatorUtil.setWildcardedFlowMatch(version, mprFlowRequestBuilder);
+                        final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
+                                MultipartType.OFPMPFLOW, xid.getValue(), version);
 
-            final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
-                    MultipartType.OFPMPFLOW, xid.getValue(), version);
-
-            multipartRequestFlowCaseBuilder.setMultipartRequestFlow(mprFlowRequestBuilder.build());
-            mprInput.setMultipartRequestBody(multipartRequestFlowCaseBuilder.build());
-            final Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext()
-                    .getConnectionAdapter().multipartRequest(mprInput.build());
-            final ListenableFuture<RpcResult<Void>> futureResultFromOfLib = JdkFutureAdapters
-                    .listenInPoolThread(resultFromOFLib);
-
-            convertRpcResultToRequestFuture(requestContext, futureResultFromOfLib);
-        }
-        return result;
+                        multipartRequestFlowCaseBuilder.setMultipartRequestFlow(mprFlowRequestBuilder.build());
+                        mprInput.setMultipartRequestBody(multipartRequestFlowCaseBuilder.build());
+                        final Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext()
+                                .getConnectionAdapter().multipartRequest(mprInput.build());
+                        return JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
+                    }
+                });
     }
 
     @Override
     public Future<RpcResult<GetFlowStatisticsFromFlowTableOutput>> getFlowStatisticsFromFlowTable(
             final GetFlowStatisticsFromFlowTableInput input) {
-        final RequestContext<GetFlowStatisticsFromFlowTableOutput> requestContext = rpcContext.createRequestContext();
-        final SettableFuture<RpcResult<GetFlowStatisticsFromFlowTableOutput>> result = rpcContext
-                .storeOrFail(requestContext);
-        if (!result.isDone()) {
-            final Xid xid = deviceContext.getNextXid();
+        return this.<GetFlowStatisticsFromFlowTableOutput, Void> handleServiceCall(PRIMARY_CONNECTION,
+                new Function<BigInteger, Future<RpcResult<Void>>>() {
 
-            final MultipartRequestFlowCaseBuilder multipartRequestFlowCaseBuilder = new MultipartRequestFlowCaseBuilder();
-            final MultipartRequestFlowBuilder mprFlowRequestBuilder = new MultipartRequestFlowBuilder();
-            mprFlowRequestBuilder.setTableId(input.getTableId());
+                    @Override
+                    public Future<RpcResult<Void>> apply(final BigInteger IDConnection) {
+                        final Xid xid = deviceContext.getNextXid();
 
-            if (input.getOutPort() != null) {
-                mprFlowRequestBuilder.setOutPort(input.getOutPort().longValue());
-            } else {
-                mprFlowRequestBuilder.setOutPort(OFConstants.OFPP_ANY);
-            }
+                        final MultipartRequestFlowCaseBuilder multipartRequestFlowCaseBuilder = new MultipartRequestFlowCaseBuilder();
+                        final MultipartRequestFlowBuilder mprFlowRequestBuilder = new MultipartRequestFlowBuilder();
+                        mprFlowRequestBuilder.setTableId(input.getTableId());
 
-            if (input.getOutGroup() != null) {
-                mprFlowRequestBuilder.setOutGroup(input.getOutGroup());
-            } else {
-                mprFlowRequestBuilder.setOutGroup(OFConstants.OFPG_ANY);
-            }
+                        if (input.getOutPort() != null) {
+                            mprFlowRequestBuilder.setOutPort(input.getOutPort().longValue());
+                        } else {
+                            mprFlowRequestBuilder.setOutPort(OFConstants.OFPP_ANY);
+                        }
 
-            if (input.getCookie() != null) {
-                mprFlowRequestBuilder.setCookie(input.getCookie().getValue());
-            } else {
-                mprFlowRequestBuilder.setCookie(OFConstants.DEFAULT_COOKIE);
-            }
+                        if (input.getOutGroup() != null) {
+                            mprFlowRequestBuilder.setOutGroup(input.getOutGroup());
+                        } else {
+                            mprFlowRequestBuilder.setOutGroup(OFConstants.OFPG_ANY);
+                        }
 
-            if (input.getCookieMask() != null) {
-                mprFlowRequestBuilder.setCookieMask(input.getCookieMask().getValue());
-            } else {
-                mprFlowRequestBuilder.setCookieMask(OFConstants.DEFAULT_COOKIE_MASK);
-            }
+                        if (input.getCookie() != null) {
+                            mprFlowRequestBuilder.setCookie(input.getCookie().getValue());
+                        } else {
+                            mprFlowRequestBuilder.setCookie(OFConstants.DEFAULT_COOKIE);
+                        }
 
-            // convert and inject match
-            MatchReactor.getInstance().convert(input.getMatch(), version, mprFlowRequestBuilder,
-                    deviceContext.getPrimaryConnectionContext().getFeatures().getDatapathId());
+                        if (input.getCookieMask() != null) {
+                            mprFlowRequestBuilder.setCookieMask(input.getCookieMask().getValue());
+                        } else {
+                            mprFlowRequestBuilder.setCookieMask(OFConstants.DEFAULT_COOKIE_MASK);
+                        }
 
-            // Set request body to main multipart request
-            multipartRequestFlowCaseBuilder.setMultipartRequestFlow(mprFlowRequestBuilder.build());
-            final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
-                    MultipartType.OFPMPFLOW, xid.getValue(), version);
-            mprInput.setMultipartRequestBody(multipartRequestFlowCaseBuilder.build());
-            final Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext()
-                    .getConnectionAdapter().multipartRequest(mprInput.build());
-            final ListenableFuture<RpcResult<Void>> futureResultFromOfLib = JdkFutureAdapters
-                    .listenInPoolThread(resultFromOFLib);
+                        // convert and inject match
+                        MatchReactor.getInstance().convert(input.getMatch(), version, mprFlowRequestBuilder,
+                                deviceContext.getPrimaryConnectionContext().getFeatures().getDatapathId());
 
-            convertRpcResultToRequestFuture(requestContext, futureResultFromOfLib);
-
-        } else {
-            RequestContextUtil.closeRequstContext(requestContext);
-        }
-        return result;
+                        // Set request body to main multipart request
+                        multipartRequestFlowCaseBuilder.setMultipartRequestFlow(mprFlowRequestBuilder.build());
+                        final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
+                                MultipartType.OFPMPFLOW, xid.getValue(), version);
+                        mprInput.setMultipartRequestBody(multipartRequestFlowCaseBuilder.build());
+                        final Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext()
+                                .getConnectionAdapter().multipartRequest(mprInput.build());
+                        return JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
+                    }
+                });
     }
 
     private <T extends DataObject> void convertRpcResultToRequestFuture(final RequestContext<T> requestContext,
