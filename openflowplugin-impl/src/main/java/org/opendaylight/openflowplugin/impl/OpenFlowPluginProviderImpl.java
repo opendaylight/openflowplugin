@@ -23,7 +23,7 @@ import java.util.Collection;
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 27.3.2015.
  */
-public class OpenflowPluginProviderImpl implements OpenFlowPluginProvider {
+public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider {
 
     private DeviceManager deviceManager;
     private RpcManager rpcManager;
