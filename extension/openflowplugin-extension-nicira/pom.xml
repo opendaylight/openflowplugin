@@ -76,7 +76,6 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>openflowplugin-extension-api</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -90,7 +89,6 @@
             <!-- configSubsystem yang should be moved to API and this would be doomed for removal -->
             <groupId>org.opendaylight.openflowplugin</groupId>
             <artifactId>openflowplugin</artifactId>
-            <version>${project.version}</version>
         </dependency>
 
         <!-- MD-SAL models -->

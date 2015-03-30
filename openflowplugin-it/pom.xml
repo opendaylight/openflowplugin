@@ -84,19 +84,16 @@
         <dependency>
             <groupId>org.opendaylight.openflowplugin</groupId>
             <artifactId>openflowplugin-api</artifactId>
-            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.openflowplugin</groupId>
             <artifactId>openflowplugin</artifactId>
-            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.openflowplugin</groupId>
             <artifactId>openflowplugin-extension-api</artifactId>
-            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -252,13 +249,11 @@
             <groupId>org.opendaylight.openflowplugin.applications</groupId>
             <artifactId>forwardingrules-manager</artifactId>
             <scope>test</scope>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.openflowplugin.applications</groupId>
             <artifactId>inventory-manager</artifactId>
             <scope>test</scope>
-            <version>${project.version}</version>
         </dependency>
 
         <dependency>

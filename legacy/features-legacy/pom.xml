@@ -73,7 +73,6 @@
       <dependency>
         <groupId>org.opendaylight.openflowplugin</groupId>
         <artifactId>features-openflowplugin</artifactId>
-        <version>${project.version}</version>
         <classifier>features</classifier>
         <type>xml</type>
       </dependency>
@@ -98,7 +97,6 @@
       <dependency>
         <groupId>org.opendaylight.openflowplugin.legacy</groupId>
         <artifactId>sal-compatibility</artifactId>
-        <version>${project.version}</version>
       </dependency>
 
     <!--
