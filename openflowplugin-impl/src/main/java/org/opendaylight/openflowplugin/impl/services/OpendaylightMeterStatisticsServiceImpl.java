@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.impl.services;
 
 import com.google.common.base.Function;
-import java.math.BigInteger;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
@@ -46,11 +45,10 @@ public class OpendaylightMeterStatisticsServiceImpl extends CommonService implem
             final GetAllMeterConfigStatisticsInput input) {
         return this
                 .<GetAllMeterConfigStatisticsOutput, Void> handleServiceCall(
-                        PRIMARY_CONNECTION,  new Function<BigInteger, Future<RpcResult<Void>>>() {
+                        PRIMARY_CONNECTION,  new Function<DataCrate<GetAllMeterConfigStatisticsOutput>, Future<RpcResult<Void>>>() {
 
                     @Override
-                    public Future<RpcResult<Void>> apply(final BigInteger IDConnection) {
-                        final Xid xid = deviceContext.getNextXid();
+                    public Future<RpcResult<Void>> apply(final DataCrate<GetAllMeterConfigStatisticsOutput> data) {
 
                         MultipartRequestMeterConfigCaseBuilder caseBuilder =
                                 new MultipartRequestMeterConfigCaseBuilder();
@@ -61,6 +59,8 @@ public class OpendaylightMeterStatisticsServiceImpl extends CommonService implem
                                 .types.rev130731.Meter.OFPMALL.getIntValue())));
                         caseBuilder.setMultipartRequestMeterConfig(mprMeterConfigBuild.build());
 
+                        final Xid xid = deviceContext.getNextXid();
+                        data.getRequestContext().setXid(xid);
                         MultipartRequestInputBuilder mprInput = RequestInputUtils
                                 .createMultipartHeader(MultipartType.OFPMPMETERCONFIG, xid.getValue(), version);
                         mprInput.setMultipartRequestBody(caseBuilder.build());

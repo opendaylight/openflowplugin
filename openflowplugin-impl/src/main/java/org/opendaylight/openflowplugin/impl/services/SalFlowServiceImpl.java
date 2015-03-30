@@ -7,8 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
+import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
-
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.SettableFuture;
@@ -48,36 +48,14 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
         super(rpcContext);
     }
 
-    private class DataCrate {
-        final BigInteger iDConnection;
-        final FlowModInputBuilder flowModInputBuilder;
-
-        public DataCrate(final BigInteger iDConnection, final FlowModInputBuilder flowModInputBuilder) {
-            this.iDConnection = iDConnection;
-            this.flowModInputBuilder = flowModInputBuilder;
-        }
-
-        /**
-         * @return the flowModInputBuilder
-         */
-        public FlowModInputBuilder getFlowModInputBuilder() {
-            return flowModInputBuilder;
-        }
-
-        /**
-         * @return the iDConnection
-         */
-        public BigInteger getiDConnection() {
-            return iDConnection;
-        }
-    }
-
-    <T extends DataObject, F> ListenableFuture<RpcResult<T>> handleServiceCall(final DataCrate dataCrate,
-            final Function<DataCrate, Future<RpcResult<F>>> function) {
+    <T extends DataObject, F> ListenableFuture<RpcResult<T>> handleServiceCall(final BigInteger connectionID,
+            final FlowModInputBuilder flowModInputBuilder, final Function<DataCrate<T>, Future<RpcResult<F>>> function) {
         LOG.debug("Calling the FlowMod RPC method on MessageDispatchService");
 
         final RequestContext<T> requestContext = rpcContext.createRequestContext();
         final SettableFuture<RpcResult<T>> result = rpcContext.storeOrFail(requestContext);
+        final DataCrate<T> dataCrate = DataCrateBuilder.<T> builder().setiDConnection(connectionID)
+                .setRequestContext(requestContext).setFlowModInputBuilder(flowModInputBuilder).build();
 
         if (!result.isDone()) {
             final Future<RpcResult<F>> resultFromOFLib = function.apply(dataCrate);
@@ -99,13 +77,14 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
 
     @Override
     public Future<RpcResult<RemoveFlowOutput>> removeFlow(final RemoveFlowInput input) {
+
         return this.<RemoveFlowOutput, Void> handleServiceCall(PRIMARY_CONNECTION,
-                new Function<BigInteger, Future<RpcResult<Void>>>() {
+                new Function<DataCrate<RemoveFlowOutput>, Future<RpcResult<Void>>>() {
                     @Override
-                    public Future<RpcResult<Void>> apply(final BigInteger IDConnection) {
+                    public Future<RpcResult<Void>> apply(final DataCrate<RemoveFlowOutput> data) {
                         final FlowModInputBuilder ofFlowModInput = FlowConvertor.toFlowModInput(input, version,
                                 datapathId);
-                        return createResultForFlowMod(ofFlowModInput, IDConnection);
+                        return createResultForFlowMod(data, ofFlowModInput);
                     }
                 });
     }
@@ -138,16 +117,17 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
         return processFlowModInputBuilders(allFlowMods);
     }
 
-    private <T extends DataObject> Future<RpcResult<T>> processFlowModInputBuilders(final List<FlowModInputBuilder> ofFlowModInputs) {
+    private <T extends DataObject> Future<RpcResult<T>> processFlowModInputBuilders(
+            final List<FlowModInputBuilder> ofFlowModInputs) {
         final List<ListenableFuture<RpcResult<T>>> partialFutures = new ArrayList<>();
         for (FlowModInputBuilder flowModInputBuilder : ofFlowModInputs) {
-            ListenableFuture<RpcResult<T>> partialFuture = handleServiceCall(new DataCrate(
-                    PRIMARY_CONNECTION, flowModInputBuilder), new Function<DataCrate, Future<RpcResult<Void>>>() {
-                @Override
-                public ListenableFuture<RpcResult<Void>> apply(final DataCrate dataCrate) {
-                    return createResultForFlowMod(dataCrate.getFlowModInputBuilder(), dataCrate.getiDConnection());
-                }
-            });
+            ListenableFuture<RpcResult<T>> partialFuture = handleServiceCall(PRIMARY_CONNECTION, flowModInputBuilder,
+                    new Function<DataCrate<T>, Future<RpcResult<Void>>>() {
+                        @Override
+                        public ListenableFuture<RpcResult<Void>> apply(final DataCrate<T> data) {
+                            return createResultForFlowMod(data);
+                        }
+                    });
             partialFutures.add(partialFuture);
         }
 
@@ -158,7 +138,7 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
             public void onSuccess(List<RpcResult<T>> result) {
                 for (RpcResult<T> rpcResult : result) {
                     if (rpcResult.isSuccessful()) {
-                        //TODO: AddFlowOutput has getTransactionId() - shouldn't it have some value?
+                        // TODO: AddFlowOutput has getTransactionId() - shouldn't it have some value?
                         finalFuture.set(RpcResultBuilder.<T> success().build());
                     }
                 }
@@ -166,18 +146,24 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
 
             @Override
             public void onFailure(Throwable t) {
-                finalFuture.set(RpcResultBuilder.<T> failed()
-                        .withError(ErrorType.APPLICATION, "", t.getMessage()).build());
+                finalFuture.set(RpcResultBuilder.<T> failed().withError(ErrorType.APPLICATION, "", t.getMessage())
+                        .build());
             }
         });
 
         return finalFuture;
     }
 
-    protected ListenableFuture<RpcResult<Void>> createResultForFlowMod(final FlowModInputBuilder flowModInput,
-            final BigInteger cookie) {
-        flowModInput.setXid(deviceContext.getNextXid().getValue());
-        Future<RpcResult<Void>> flowModResult = provideConnectionAdapter(cookie).flowMod(flowModInput.build());
+    protected <T extends DataObject> ListenableFuture<RpcResult<Void>> createResultForFlowMod(final DataCrate<T> data) {
+        return createResultForFlowMod(data, data.getFlowModInputBuilder()) ;
+    }
+
+    protected <T extends DataObject> ListenableFuture<RpcResult<Void>> createResultForFlowMod(final DataCrate<T> data, final FlowModInputBuilder flowModInput) {
+        final Xid xId = deviceContext.getNextXid();
+        flowModInput.setXid(xId.getValue());
+        data.getRequestContext().setXid(xId);
+        Future<RpcResult<Void>> flowModResult = provideConnectionAdapter(data.getiDConnection()).flowMod(
+                flowModInput.build());
         return JdkFutureAdapters.listenInPoolThread(flowModResult);
     }
 

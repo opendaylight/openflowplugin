@@ -11,7 +11,6 @@ import com.google.common.base.Function;
 import com.google.common.util.concurrent.SettableFuture;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.yangtools.yang.binding.DataObject;
-
 import com.google.common.util.concurrent.Futures;
 import java.math.BigInteger;
 import java.util.concurrent.Future;
@@ -75,15 +74,16 @@ abstract class CommonService {
         return primaryConnectionAdapter;
     }
 
-    <T extends DataObject, F>  Future<RpcResult<T>> handleServiceCall(final BigInteger connectionID,
-            final Function<BigInteger,Future<RpcResult<F>>> function) {
+    <T extends DataObject, F> Future<RpcResult<T>> handleServiceCall(final BigInteger connectionID,
+            final Function<DataCrate<T>, Future<RpcResult<F>>> function) {
         LOG.debug("Calling the FlowMod RPC method on MessageDispatchService");
 
         final RequestContext<T> requestContext = rpcContext.createRequestContext();
         final SettableFuture<RpcResult<T>> result = rpcContext.storeOrFail(requestContext);
-
+        final DataCrate<T> dataCrate = DataCrateBuilder.<T> builder().setiDConnection(connectionID)
+                .setRequestContext(requestContext).build();
         if (!result.isDone()) {
-            final Future<RpcResult<F>> resultFromOFLib = function.apply(connectionID);
+            final Future<RpcResult<F>> resultFromOFLib = function.apply(dataCrate);
 
             final RpcResultConvertor<T> rpcResultConvertor = new RpcResultConvertor<>(requestContext, deviceContext);
             rpcResultConvertor.processResultFromOfJava(resultFromOFLib);

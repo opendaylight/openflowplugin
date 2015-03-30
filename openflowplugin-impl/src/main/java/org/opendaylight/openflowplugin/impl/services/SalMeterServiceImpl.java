@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
+import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import com.google.common.base.Function;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.MeterConvertor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterInput;
@@ -20,7 +22,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MeterModInputBuilder;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
-import java.math.BigInteger;
 import java.util.concurrent.Future;
 
 public class SalMeterServiceImpl extends CommonService implements SalMeterService {
@@ -30,10 +31,10 @@ public class SalMeterServiceImpl extends CommonService implements SalMeterServic
     @Override
     public Future<RpcResult<AddMeterOutput>> addMeter(final AddMeterInput input) {
         return this.<AddMeterOutput, Void>handleServiceCall( PRIMARY_CONNECTION,
-                 new Function<BigInteger,Future<RpcResult<Void>>>() {
+                 new Function<DataCrate<AddMeterOutput>,Future<RpcResult<Void>>>() {
                     @Override
-                    public Future<RpcResult<Void>> apply(final BigInteger IDConnection) {
-                        return convertAndSend(input, IDConnection);
+                    public Future<RpcResult<Void>> apply(final DataCrate<AddMeterOutput> data) {
+                        return convertAndSend(input, data);
                     }
                 });
     }
@@ -41,10 +42,10 @@ public class SalMeterServiceImpl extends CommonService implements SalMeterServic
     @Override
     public Future<RpcResult<UpdateMeterOutput>> updateMeter(final UpdateMeterInput input) {
         return this.<UpdateMeterOutput, Void>handleServiceCall( PRIMARY_CONNECTION,
-                 new Function<BigInteger,Future<RpcResult<Void>>>() {
+                 new Function<DataCrate<UpdateMeterOutput>,Future<RpcResult<Void>>>() {
                     @Override
-                    public Future<RpcResult<Void>> apply(final BigInteger IDConnection) {
-                        return convertAndSend(input.getUpdatedMeter(), IDConnection);
+                    public Future<RpcResult<Void>> apply(final DataCrate<UpdateMeterOutput> data) {
+                        return convertAndSend(input.getUpdatedMeter(), data);
                     }
                 });
     }
@@ -52,17 +53,19 @@ public class SalMeterServiceImpl extends CommonService implements SalMeterServic
     @Override
     public Future<RpcResult<RemoveMeterOutput>> removeMeter(final RemoveMeterInput input) {
         return this.<RemoveMeterOutput, Void>handleServiceCall( PRIMARY_CONNECTION,
-                 new Function<BigInteger,Future<RpcResult<Void>>>() {
+                 new Function<DataCrate<RemoveMeterOutput>,Future<RpcResult<Void>>>() {
                     @Override
-                    public Future<RpcResult<Void>> apply(final BigInteger IDConnection) {
-                        return convertAndSend(input, IDConnection);
+                    public Future<RpcResult<Void>> apply(final DataCrate<RemoveMeterOutput> data) {
+                        return convertAndSend(input, data);
                     }
                 });
     }
 
-    Future<RpcResult<Void>> convertAndSend(final Meter iputMeter, final BigInteger IDConnection) {
+    <T extends DataObject> Future<RpcResult<Void>> convertAndSend(final Meter iputMeter, final DataCrate<T> data) {
         final MeterModInputBuilder ofMeterModInput = MeterConvertor.toMeterModInput(iputMeter, version);
-        ofMeterModInput.setXid(deviceContext.getNextXid().getValue());
-        return provideConnectionAdapter(IDConnection).meterMod(ofMeterModInput.build());
+        Xid xid = deviceContext.getNextXid();
+        ofMeterModInput.setXid(xid.getValue());
+        data.getRequestContext().setXid(xid);
+        return provideConnectionAdapter(data.getiDConnection()).meterMod(ofMeterModInput.build());
     }
 }
