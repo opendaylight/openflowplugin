@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.impl.device;
 
 import com.google.common.base.Preconditions;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
-import org.opendaylight.openflowplugin.api.openflow.device.XidGenerator;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
@@ -41,7 +40,6 @@ class DeviceStateImpl implements DeviceState {
     private final GetFeaturesOutput featuresOutput;
     private final Map<Long, PortGrouping> portGrouping;
     private final Map<Long, Long> portsBandwidth;
-    private final XidGenerator xidGenerator;
     private final NodeId nodeId;
     private boolean valid;
 
@@ -50,7 +48,6 @@ class DeviceStateImpl implements DeviceState {
         Preconditions.checkArgument(featuresReply.getPhyPort() != null);
         featuresOutput = new GetFeaturesOutputBuilder(featuresReply).build();
         this.nodeId = Preconditions.checkNotNull(nodeId);
-        xidGenerator = new XidGenerator();
         portGrouping = new HashMap<>();
         portsBandwidth = new HashMap<>();
         for (final PhyPort port : featuresReply.getPhyPort()) {

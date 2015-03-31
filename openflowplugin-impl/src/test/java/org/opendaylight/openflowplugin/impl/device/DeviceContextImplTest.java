@@ -19,12 +19,12 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
+import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
-import org.opendaylight.openflowplugin.api.openflow.device.XidGenerator;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetAsyncOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetAsyncOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetAsyncReply;
@@ -39,7 +39,6 @@ import org.slf4j.LoggerFactory;
 public class DeviceContextImplTest {
     private static final Logger LOG = LoggerFactory
             .getLogger(DeviceContextImplTest.class);
-    XidGenerator xidGen;
     DeviceContextImpl deviceContext;
     @Mock
     RequestContext<GetAsyncReply> requestContext;
@@ -59,45 +58,27 @@ public class DeviceContextImplTest {
     @Before
     public void setUp() {
         Mockito.when(txChainFactory.newWriteOnlyTransaction()).thenReturn(wTx);
-        Mockito.when(dataBroker.createTransactionChain(Mockito.any(DeviceContextImpl.class))).thenReturn(txChainFactory);
+        Mockito.when(dataBroker.createTransactionChain(Mockito.any(TransactionChainListener.class))).thenReturn(txChainFactory);
         Mockito.when(dataBroker.newReadOnlyTransaction()).thenReturn(rTx);
-        deviceContext = new DeviceContextImpl(connectionContext, deviceState, dataBroker);
-        xidGen = new XidGenerator();
+        deviceContext = new DeviceContextImpl();
         final SettableFuture<RpcResult<GetAsyncReply>> settableFuture = SettableFuture.create();
         Mockito.when(requestContext.getFuture()).thenReturn(settableFuture);
         deviceContext.hookRequestCtx(deviceContext.getNextXid(), requestContext);
     }
 
-    @Test(expected=NullPointerException.class)
-    public void testDeviceContextImplConstructorNullConnectionContext() {
-        new DeviceContextImpl(null, deviceState, dataBroker);
-    }
 
-    @Test(expected=NullPointerException.class)
-    public void testDeviceContextImplConstructorNullDataBroker() {
-        new DeviceContextImpl(connectionContext, deviceState, null);
-    }
-
-    @Test(expected=NullPointerException.class)
-    public void testDeviceContextImplConstructorNullDeviceState() {
-        new DeviceContextImpl(connectionContext, null, dataBroker);
-    }
-
-    @Test
     public void testGetDeviceState() {
         final DeviceState deviceSt = deviceContext.getDeviceState();
         Assert.assertNotNull(deviceSt);
         Assert.assertEquals(deviceState, deviceSt);
     }
 
-    @Test
     public void testGetReadTransaction() {
         final ReadTransaction readTx = deviceContext.getReadTransaction();
         Assert.assertNotNull(readTx);
         Assert.assertEquals(rTx, readTx);
     }
 
-    @Test
     public void testGetWriteTransaction() {
         final WriteTransaction writeTx = deviceContext.getWriteTransaction();
         Assert.assertNotNull(writeTx);
@@ -106,7 +87,7 @@ public class DeviceContextImplTest {
 
     @Test
     public void testProcessReply() {
-        final Xid xid = xidGen.generate();
+        final Xid xid = new Xid(1l);
         final GetAsyncOutput asyncOutput = createAsyncOutput(xid);
         LOG.info("Hooking RequestContext");
         deviceContext.hookRequestCtx(xid, requestContext);
