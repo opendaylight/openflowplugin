@@ -7,12 +7,21 @@
  */
 package org.opendaylight.openflowplugin.impl.device;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.SettableFuture;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Future;
-
+import javax.annotation.Nonnull;
+import org.opendaylight.controller.md.sal.binding.api.BindingTransactionChain;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
+import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
+import org.opendaylight.controller.md.sal.common.api.data.AsyncTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChain;
+import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
@@ -27,53 +36,70 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Table
 import org.opendaylight.yangtools.yang.binding.ChildOf;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.common.RpcResult;
-
-import com.google.common.util.concurrent.SettableFuture;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  */
-public class DeviceContextImpl implements DeviceContext {
-    private Map<Xid, RequestFutureContext> requests =
-            new HashMap<Xid, RequestFutureContext>();
+public class DeviceContextImpl implements DeviceContext, TransactionChainListener {
 
-    private final Map<SwitchConnectionDistinguisher, ConnectionContext> auxiliaryConnectionContexts = new HashMap<>();
+    private static final Logger LOG = LoggerFactory.getLogger(DeviceContextImpl.class);
 
-    private XidGenerator xidGenerator = new XidGenerator();
+    private final ConnectionContext primaryConnectionContext;
+    private final DeviceState deviceState;
+    private final DataBroker dataBroker;
+    private final XidGenerator xidGenerator;
+
+    private final Map<Xid, RequestFutureContext> requests;
+    private final Map<SwitchConnectionDistinguisher, ConnectionContext> auxiliaryConnectionContexts;
+    private BindingTransactionChain txChainFactory;
+
+    @VisibleForTesting
+    DeviceContextImpl(@Nonnull final ConnectionContext primaryConnectionContext,
+            @Nonnull final DeviceState deviceState, @Nonnull final DataBroker dataBroker) {
+        this.primaryConnectionContext = Preconditions.checkNotNull(primaryConnectionContext);
+        this.deviceState = Preconditions.checkNotNull(deviceState);
+        this.dataBroker = Preconditions.checkNotNull(dataBroker);
+        xidGenerator = new XidGenerator();
+        txChainFactory = dataBroker.createTransactionChain(DeviceContextImpl.this);
+        auxiliaryConnectionContexts = new HashMap<>();
+        requests = new HashMap<>();
+    }
+
     @Override
-    public <M extends ChildOf<DataObject>> void onMessage(M message, RequestContext requestContext) {
+    public <M extends ChildOf<DataObject>> void onMessage(final M message, final RequestContext requestContext) {
         // TODO Auto-generated method stub
 
     }
 
     @Override
-    public void addAuxiliaryConenctionContext(ConnectionContext connectionContext) {
-        SwitchConnectionDistinguisher connectionDistinguisher = new SwitchConnectionCookieOFImpl(connectionContext.getFeatures().getAuxiliaryId());
+    public void addAuxiliaryConenctionContext(final ConnectionContext connectionContext) {
+        final SwitchConnectionDistinguisher connectionDistinguisher = new SwitchConnectionCookieOFImpl(connectionContext.getFeatures().getAuxiliaryId());
         auxiliaryConnectionContexts.put(connectionDistinguisher, connectionContext);
     }
 
     @Override
-    public void removeAuxiliaryConenctionContext(ConnectionContext connectionContext) {
+    public void removeAuxiliaryConenctionContext(final ConnectionContext connectionContext) {
         // TODO Auto-generated method stub
 
     }
 
     @Override
     public DeviceState getDeviceState() {
-        // TODO Auto-generated method stub
-        return null;
+        return deviceState;
     }
 
     @Override
-    public void setTransactionChain(TransactionChain transactionChain) {
-        // TODO Auto-generated method stub
-
+    public ReadTransaction getReadTransaction() {
+        return dataBroker.newReadOnlyTransaction();
     }
 
     @Override
-    public TransactionChain getTransactionChain() {
-        // TODO Auto-generated method stub
-        return null;
+    public WriteTransaction getWriteTransaction() {
+        // FIXME : we wana to have only one WriteTransaction exposed in one time
+        // so thing about blocking notification mechanism for wait to new transaction
+        return txChainFactory.newWriteOnlyTransaction();
     }
 
     @Override
@@ -84,7 +110,7 @@ public class DeviceContextImpl implements DeviceContext {
 
     @Override
     public ConnectionContext getPrimaryConnectionContext() {
-        return null;
+        return primaryConnectionContext;
     }
 
     @Override
@@ -98,7 +124,7 @@ public class DeviceContextImpl implements DeviceContext {
     }
 
     @Override
-    public <T extends DataObject> Future<RpcResult<T>> sendRequest(Xid xid) {
+    public <T extends DataObject> Future<RpcResult<T>> sendRequest(final Xid xid) {
         return null;
     }
 
@@ -109,16 +135,28 @@ public class DeviceContextImpl implements DeviceContext {
     }
 
     @Override
-    public void hookRequestCtx(Xid xid, RequestFutureContext requestFutureContext) {
+    public void hookRequestCtx(final Xid xid, final RequestFutureContext requestFutureContext) {
         // TODO Auto-generated method stub
         requests.put(xid, requestFutureContext);
     }
 
     @Override
-    public void processReply(Xid xid, OfHeader ofHeader) {
+    public void processReply(final Xid xid, final OfHeader ofHeader) {
         // TODO Auto-generated method stub
-        SettableFuture replyFuture = getRequests().get(xid).getFuture();
+        final SettableFuture replyFuture = getRequests().get(xid).getFuture();
         replyFuture.set(ofHeader);
+    }
+
+    @Override
+    public void onTransactionChainFailed(final TransactionChain<?, ?> chain,
+            final AsyncTransaction<?, ?> transaction, final Throwable cause) {
+        txChainFactory.close();
+        txChainFactory = dataBroker.createTransactionChain(DeviceContextImpl.this);
+    }
+
+    @Override
+    public void onTransactionChainSuccessful(final TransactionChain<?, ?> chain) {
+        // NOOP - only yet, here is probably place for notification to get new WriteTransaction
     }
 
 }

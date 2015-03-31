@@ -7,17 +7,15 @@
  */
 package org.opendaylight.openflowplugin.impl.device;
 
+import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.SettableFuture;
-
+import javax.annotation.CheckForNull;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
-import org.opendaylight.openflowplugin.api.openflow.device.RequestFutureContext;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
-import org.opendaylight.openflowplugin.api.openflow.device.XidGenerator;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceContextReadyHandler;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartRequestFlags;
@@ -25,13 +23,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestDescCaseBuilder;
 import org.opendaylight.yangtools.yang.binding.DataObject;
-import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 /**
  *
@@ -40,29 +33,27 @@ public class DeviceManagerImpl implements DeviceManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceManagerImpl.class);
 
-    private XidGenerator xidGenerator = new XidGenerator();
-
-
     @Override
-    public void deviceConnected(ConnectionContext connectionContext) {
-        Xid xid = xidGenerator.generate();
-        DeviceContextImpl deviceContextImpl = new DeviceContextImpl();
+    public void deviceConnected(@CheckForNull final ConnectionContext connectionContext) {
+        Preconditions.checkArgument(connectionContext != null);
+        final DeviceState deviceState = new DeviceStateImpl(connectionContext.getFeatures(), connectionContext.getNodeId());
+//        final DeviceContextImpl deviceContextImpl = new DeviceContextImpl(connectionContext, deviceState);
 
-        try {
-            FlowCapableNode description = queryDescription(connectionContext, deviceContextImpl.getNextXid()).get();
+//        try {
+//            final FlowCapableNode description = queryDescription(connectionContext, deviceContextImpl.getNextXid()).get();
 
-        } catch (InterruptedException | ExecutionException e) {
-            // TODO Auto-generated catch block
-            LOG.info("Failed to retrieve node static info: {}", e.getMessage());
-        }
+//        } catch (InterruptedException | ExecutionException e) {
+//            // TODO Auto-generated catch block
+//            LOG.info("Failed to retrieve node static info: {}", e.getMessage());
+//        }
     }
 
     /**
      * @param connectionContext
      * @param xid
      */
-    private static ListenableFuture<FlowCapableNode> queryDescription(ConnectionContext connectionContext, Xid xid) {
-        MultipartRequestInputBuilder builder = new MultipartRequestInputBuilder();
+    private static ListenableFuture<FlowCapableNode> queryDescription(final ConnectionContext connectionContext, final Xid xid) {
+        final MultipartRequestInputBuilder builder = new MultipartRequestInputBuilder();
         builder.setType(MultipartType.OFPMPDESC);
         builder.setVersion(connectionContext.getFeatures().getVersion());
         builder.setFlags(new MultipartRequestFlags(false));
@@ -77,19 +68,19 @@ public class DeviceManagerImpl implements DeviceManager {
     }
 
     @Override
-    public void sendMessage(DataObject dataObject, RequestContext requestContext) {
+    public void sendMessage(final DataObject dataObject, final RequestContext requestContext) {
         // TODO Auto-generated method stub
 
     }
 
     @Override
-    public Xid sendRequest(DataObject dataObject, RequestContext requestContext) {
+    public Xid sendRequest(final DataObject dataObject, final RequestContext requestContext) {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public void addRequestContextReadyHandler(DeviceContextReadyHandler deviceContextReadyHandler) {
+    public void addRequestContextReadyHandler(final DeviceContextReadyHandler deviceContextReadyHandler) {
         // TODO Auto-generated method stub
 
     }
