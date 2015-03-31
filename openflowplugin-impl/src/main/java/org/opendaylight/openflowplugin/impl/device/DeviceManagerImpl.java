@@ -7,13 +7,10 @@
  */
 package org.opendaylight.openflowplugin.impl.device;
 
-import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import javax.annotation.CheckForNull;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceContextReadyHandler;
@@ -25,6 +22,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.util.concurrent.ExecutionException;
 
 /**
  *
@@ -33,27 +31,26 @@ public class DeviceManagerImpl implements DeviceManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceManagerImpl.class);
 
+
     @Override
-    public void deviceConnected(@CheckForNull final ConnectionContext connectionContext) {
-        Preconditions.checkArgument(connectionContext != null);
-        final DeviceState deviceState = new DeviceStateImpl(connectionContext.getFeatures(), connectionContext.getNodeId());
-//        final DeviceContextImpl deviceContextImpl = new DeviceContextImpl(connectionContext, deviceState);
+    public void deviceConnected(ConnectionContext connectionContext) {
+        DeviceContextImpl deviceContextImpl = new DeviceContextImpl();
 
-//        try {
-//            final FlowCapableNode description = queryDescription(connectionContext, deviceContextImpl.getNextXid()).get();
+        try {
+            FlowCapableNode description = queryDescription(connectionContext, deviceContextImpl.getNextXid()).get();
 
-//        } catch (InterruptedException | ExecutionException e) {
-//            // TODO Auto-generated catch block
-//            LOG.info("Failed to retrieve node static info: {}", e.getMessage());
-//        }
+        } catch (InterruptedException | ExecutionException e) {
+            // TODO Auto-generated catch block
+            LOG.info("Failed to retrieve node static info: {}", e.getMessage());
+        }
     }
 
     /**
      * @param connectionContext
      * @param xid
      */
-    private static ListenableFuture<FlowCapableNode> queryDescription(final ConnectionContext connectionContext, final Xid xid) {
-        final MultipartRequestInputBuilder builder = new MultipartRequestInputBuilder();
+    private static ListenableFuture<FlowCapableNode> queryDescription(ConnectionContext connectionContext, Xid xid) {
+        MultipartRequestInputBuilder builder = new MultipartRequestInputBuilder();
         builder.setType(MultipartType.OFPMPDESC);
         builder.setVersion(connectionContext.getFeatures().getVersion());
         builder.setFlags(new MultipartRequestFlags(false));
@@ -68,19 +65,19 @@ public class DeviceManagerImpl implements DeviceManager {
     }
 
     @Override
-    public void sendMessage(final DataObject dataObject, final RequestContext requestContext) {
+    public void sendMessage(DataObject dataObject, RequestContext requestContext) {
         // TODO Auto-generated method stub
 
     }
 
     @Override
-    public Xid sendRequest(final DataObject dataObject, final RequestContext requestContext) {
+    public Xid sendRequest(DataObject dataObject, RequestContext requestContext) {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public void addRequestContextReadyHandler(final DeviceContextReadyHandler deviceContextReadyHandler) {
+    public void addRequestContextReadyHandler(DeviceContextReadyHandler deviceContextReadyHandler) {
         // TODO Auto-generated method stub
 
     }
