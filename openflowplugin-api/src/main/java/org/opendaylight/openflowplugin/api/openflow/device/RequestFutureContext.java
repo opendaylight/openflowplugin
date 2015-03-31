@@ -9,13 +9,12 @@
 package org.opendaylight.openflowplugin.api.openflow.device;
 
 import com.google.common.util.concurrent.SettableFuture;
-import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
 /**
  * Created by Martin Bobak <mbobak@cisco.com> on 25.3.2015.
  */
-public interface RequestFutureContext<T extends DataObject> {
+public interface RequestFutureContext<T> {
 
     /**
      * Method returns future to be used for handling device requests.

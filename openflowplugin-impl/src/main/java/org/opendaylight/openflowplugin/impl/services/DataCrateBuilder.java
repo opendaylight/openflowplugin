@@ -7,13 +7,11 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
-import org.opendaylight.yangtools.yang.binding.DataObject;
-
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import java.math.BigInteger;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
 
-public class DataCrateBuilder<T extends DataObject> {
+public class DataCrateBuilder<T> {
     BigInteger iDConnection;
     RequestContext<T> requestContext;
     FlowModInputBuilder flowModInputBuilder;
@@ -36,7 +34,7 @@ public class DataCrateBuilder<T extends DataObject> {
         return this;
     }
 
-    public static <T extends DataObject> DataCrateBuilder<T> builder() {
+    public static <T> DataCrateBuilder<T> builder() {
         return new DataCrateBuilder<>();
     }
 

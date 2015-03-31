@@ -30,8 +30,8 @@ public class RpcContextImpl implements RpcContext {
     private final List<RequestContext<? extends DataObject>> requestContexts = new ArrayList<>();
     private final DeviceContext deviceContext;
     private final List<RoutedRpcRegistration> rpcRegistrations = new ArrayList<>();
-    private final List<RequestContext<? extends DataObject>> synchronizedRequestsList = Collections
-            .<RequestContext<? extends DataObject>>synchronizedList(new ArrayList<RequestContext<? extends DataObject>>());
+    private final List<RequestContext<?>> synchronizedRequestsList = Collections
+            .<RequestContext<?>>synchronizedList(new ArrayList<RequestContext<?>>());
 
     private int maxRequestsPerDevice;
 
@@ -51,7 +51,7 @@ public class RpcContextImpl implements RpcContext {
     }
 
     @Override
-    public <T extends DataObject> SettableFuture<RpcResult<T>> storeOrFail(final RequestContext<T> requestContext) {
+    public <T> SettableFuture<RpcResult<T>> storeOrFail(final RequestContext<T> requestContext) {
         final SettableFuture<RpcResult<T>> rpcResultFuture = requestContext.getFuture();
 
         if (synchronizedRequestsList.size() < maxRequestsPerDevice) {
@@ -71,7 +71,7 @@ public class RpcContextImpl implements RpcContext {
      */
     @Override
     public void close() throws Exception {
-        for (final RoutedRpcRegistration rpcRegistration : rpcRegistrations) {
+        for (final RoutedRpcRegistration<?> rpcRegistration : rpcRegistrations) {
             rpcRegistration.close();
         }
     }
@@ -85,7 +85,7 @@ public class RpcContextImpl implements RpcContext {
     }
 
     @Override
-    public <T extends DataObject> void forgetRequestContext(final RequestContext<T> requestContext) {
+    public <T> void forgetRequestContext(final RequestContext<T> requestContext) {
         requestContexts.remove(requestContext);
     }
 
@@ -95,7 +95,7 @@ public class RpcContextImpl implements RpcContext {
     }
 
     @Override
-    public <T extends DataObject> RequestContext<T> createRequestContext() {
+    public <T> RequestContext<T> createRequestContext() {
         return new RequestContextImpl<T>(this);
     }
 

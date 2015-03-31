@@ -28,33 +28,33 @@ public interface RpcContext extends AutoCloseable {
     /**
      * Method adds request to request queue which has limited quota. After number of requests exceeds quota limit future
      * will be done immediately and will contain information about exceeded request quota.
-     * 
+     *
      * @param data
      */
-    <T extends DataObject> SettableFuture<RpcResult<T>> storeOrFail(RequestContext<T> data);
+    <T> SettableFuture<RpcResult<T>> storeOrFail(RequestContext<T> data);
 
     /**
      * Method for setting request quota value. When the Request Context quota is exceeded, incoming RPCs fail
      * immediately, with a well-defined error.
-     * 
+     *
      * @param maxRequestsPerDevice
      */
     void setRequestContextQuota(int maxRequestsPerDevice);
 
-    <T extends DataObject> void forgetRequestContext(RequestContext<T> requestContext);
+    <T> void forgetRequestContext(RequestContext<T> requestContext);
 
     /**
      * Method provides device context.
-     * 
+     *
      * @return
      */
     DeviceContext getDeviceContext();
 
     /**
      * Method returns new request context for current request.
-     * 
+     *
      * @return
      */
-    <T extends DataObject> RequestContext<T> createRequestContext();
+    <T> RequestContext<T> createRequestContext();
 
 }

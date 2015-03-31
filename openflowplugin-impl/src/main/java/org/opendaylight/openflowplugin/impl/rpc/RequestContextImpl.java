@@ -12,13 +12,12 @@ import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import com.google.common.util.concurrent.SettableFuture;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
-import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
 /**
  * @author joe
  */
-public class RequestContextImpl<T extends DataObject> implements RequestContext<T> {
+public class RequestContextImpl<T> implements RequestContext<T> {
 
     private final RpcContext rpcContext;
     private SettableFuture<RpcResult<T>> rpcResultFuture;

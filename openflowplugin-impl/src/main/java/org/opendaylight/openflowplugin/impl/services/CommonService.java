@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.impl.services;
 import com.google.common.base.Function;
 import com.google.common.util.concurrent.SettableFuture;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
-import org.opendaylight.yangtools.yang.binding.DataObject;
 import com.google.common.util.concurrent.Futures;
 import java.math.BigInteger;
 import java.util.concurrent.Future;
@@ -63,10 +62,8 @@ abstract class CommonService {
             return primaryConnectionAdapter;
         }
 
-        // TODO uncomment when getAuxiali.... will be merged to APIs
-        // final ConnectionContext auxiliaryConnectionContext =
-        // deviceContext.getAuxiliaryConnectionContext(connectionID);
-        final ConnectionContext auxiliaryConnectionContext = null;
+        final ConnectionContext auxiliaryConnectionContext =
+        deviceContext.getAuxiliaryConnectiobContexts(connectionID);
         if (auxiliaryConnectionContext != null) {
             return auxiliaryConnectionContext.getConnectionAdapter();
         }
@@ -74,7 +71,7 @@ abstract class CommonService {
         return primaryConnectionAdapter;
     }
 
-    <T extends DataObject, F> Future<RpcResult<T>> handleServiceCall(final BigInteger connectionID,
+    protected <T, F> Future<RpcResult<T>> handleServiceCall(final BigInteger connectionID,
             final Function<DataCrate<T>, Future<RpcResult<F>>> function) {
         LOG.debug("Calling the FlowMod RPC method on MessageDispatchService");
 
