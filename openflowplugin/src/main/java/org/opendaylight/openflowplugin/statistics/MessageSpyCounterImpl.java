@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 
-import org.opendaylight.openflowplugin.api.statistics.MessageObservatory;
+import org.opendaylight.openflowplugin.api.openflow.statistics.MessageObservatory;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

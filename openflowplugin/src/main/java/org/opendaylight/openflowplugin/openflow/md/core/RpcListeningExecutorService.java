@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.opendaylight.openflowplugin.openflow.md.core.sal.OFRpcTask;
-import org.opendaylight.openflowplugin.api.statistics.MessageSpy;
+import org.opendaylight.openflowplugin.api.openflow.statistics.MessageSpy;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 
 import com.google.common.util.concurrent.ListenableFuture;

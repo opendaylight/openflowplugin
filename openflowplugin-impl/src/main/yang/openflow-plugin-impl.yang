@@ -31,7 +31,7 @@ module openflow-plugin-provider-impl {
         description
             "MessageCountDumperServiceInterface as a MsgSpyService interface identity";
         base config:service-type;
-        config:java-class "org.opendaylight.openflowplugin.api.statistics.MessageCountDumper";
+        config:java-class "org.opendaylight.openflowplugin.api.openflow.statistics.MessageCountDumper";
     }
 
     identity msg-spy-service-impl {
