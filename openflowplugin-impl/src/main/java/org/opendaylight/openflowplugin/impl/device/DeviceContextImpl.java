@@ -10,11 +10,6 @@ package org.opendaylight.openflowplugin.impl.device;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.SettableFuture;
-import java.math.BigInteger;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.Future;
-import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.BindingTransactionChain;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
@@ -35,9 +30,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableFeatures;
 import org.opendaylight.yangtools.yang.binding.ChildOf;
 import org.opendaylight.yangtools.yang.binding.DataObject;
-import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import javax.annotation.Nonnull;
+import java.math.BigInteger;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -57,7 +55,7 @@ public class DeviceContextImpl implements DeviceContext, TransactionChainListene
 
     @VisibleForTesting
     DeviceContextImpl(@Nonnull final ConnectionContext primaryConnectionContext,
-            @Nonnull final DeviceState deviceState, @Nonnull final DataBroker dataBroker) {
+                      @Nonnull final DeviceState deviceState, @Nonnull final DataBroker dataBroker) {
         this.primaryConnectionContext = Preconditions.checkNotNull(primaryConnectionContext);
         this.deviceState = Preconditions.checkNotNull(deviceState);
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
@@ -124,32 +122,24 @@ public class DeviceContextImpl implements DeviceContext, TransactionChainListene
     }
 
     @Override
-    public <T extends DataObject> Future<RpcResult<T>> sendRequest(final Xid xid) {
-        return null;
-    }
-
-    @Override
     public Map<Xid, RequestFutureContext> getRequests() {
-        // TODO Auto-generated method stub
         return requests;
     }
 
     @Override
     public void hookRequestCtx(final Xid xid, final RequestFutureContext requestFutureContext) {
-        // TODO Auto-generated method stub
         requests.put(xid, requestFutureContext);
     }
 
     @Override
     public void processReply(final Xid xid, final OfHeader ofHeader) {
-        // TODO Auto-generated method stub
         final SettableFuture replyFuture = getRequests().get(xid).getFuture();
         replyFuture.set(ofHeader);
     }
 
     @Override
     public void onTransactionChainFailed(final TransactionChain<?, ?> chain,
-            final AsyncTransaction<?, ?> transaction, final Throwable cause) {
+                                         final AsyncTransaction<?, ?> transaction, final Throwable cause) {
         txChainFactory.close();
         txChainFactory = dataBroker.createTransactionChain(DeviceContextImpl.this);
     }
