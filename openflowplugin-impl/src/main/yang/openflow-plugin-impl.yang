@@ -1,17 +1,17 @@
 module openflow-plugin-provider-impl {
 	yang-version 1;
-    namespace "urn:opendaylight:params:xml:ns:yang:openflow:common:config:impl";
+    namespace "urn:opendaylight:params:xml:ns:yang:config:openflow:plugin:impl";
     prefix "openflow-plugin-provider-impl";
 
     import config {prefix config; revision-date 2013-04-05;}
     import rpc-context { prefix rpcx; revision-date 2013-06-17; }
-    import openflow-provider {prefix openflow-provider;}
+    import openflow-provider {prefix openflow-provider; revision-date 2015-03-31;}
     import openflow-switch-connection-provider {prefix openflow-switch-connection-provider;revision-date 2014-03-28;}
     import opendaylight-md-sal-binding { prefix md-sal-binding; revision-date 2013-10-28;}
-
+    import openflow-plugin-types { prefix ofp-types; revision-date 2015-03-27;}
 
     description
-        "openflow-plugin-custom-config-impl";
+        "openflow-plugin-impl";
 
     revision "2015-03-27" {
         description
@@ -22,39 +22,6 @@ module openflow-plugin-provider-impl {
         base config:module-type;
         config:provided-service openflow-provider:openflow-provider;
         config:java-name-prefix OpenFlowProvider;
-    }
-
-//TODO this needs to be split to API and IMPL - crate new yang describing API in openflowplugin-api
-//TODO this needs to be split to API and IMPL - crate new yang describing IMPL in openflowplugin-impl
-/*
-    identity msg-spy-service {
-        description
-            "MessageCountDumperServiceInterface as a MsgSpyService interface identity";
-        base config:service-type;
-        config:java-class "org.opendaylight.openflowplugin.api.openflow.statistics.MessageCountDumper";
-    }
-
-    identity msg-spy-service-impl {
-        description
-            "This is the definition of MsgSpyService implementation module identity.";
-        base config:module-type;
-        config:provided-service msg-spy-service;
-        config:java-name-prefix MsgSpyService;
-    }
-*/
-    // role of OFPlugin instance
-    typedef ofp-role {
-        type enumeration {
-            enum NOCHANGE {
-                description "no change to role";
-            }
-            enum BECOMEMASTER {
-                description "promote current role to MASTER";
-            }
-            enum BECOMESLAVE {
-                description "demote current role to SLAVE";
-            }
-        }
     }
 
     augment "/config:modules/config:module/config:configuration" {
@@ -78,64 +45,10 @@ module openflow-plugin-provider-impl {
                 }
             }
             leaf role {
-                type ofp-role;
+                type ofp-types:ofp-role;
                 default "NOCHANGE";
             }
         }
 
-/*
-        case msg-spy-service-impl {
-            when "/config:modules/config:module/config:type = 'msg-spy-service-impl'";
-
-            container openflow-plugin-provider {
-                uses config:service-ref {
-                    refine type {
-                        mandatory true;
-                        config:required-identity openflow-provider:openflow-provider;
-                    }
-                }
-            }
-        }
-*/
-    }
-
-
-/*
-    augment "/config:modules/config:module/config:state" {
-        case msg-spy-service-impl {
-            when "/config:modules/config:module/config:type = 'msg-spy-service-impl'";
-
-            description
-                "MXBean designed for Message Statistic providing to JConsole.";
-
-            leaf msgStatistics {
-                type string;
-            }
-
-            rpcx:rpc-context-instance "make-msg-statistics-rpc";
-        }
-    }
-*/
-
-    identity make-msg-statistics-rpc;
-
-    rpc make-msg-statistics {
-
-        description
-            "Shortcut JMX call to getMsgStatistics.";
-
-        input {
-            uses rpcx:rpc-context-ref {
-                refine context-instance {
-                    rpcx:rpc-context-instance make-msg-statistics-rpc;
-                }
-            }
-        }
-
-        output {
-            leaf result {
-                type string;
-            }
-        }
     }
 }
