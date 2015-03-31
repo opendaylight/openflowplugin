@@ -7,25 +7,31 @@
  */
 package org.opendaylight.openflowplugin.impl.connection;
 
+import com.google.common.util.concurrent.ListenableFuture;
+import java.util.Collection;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
+import org.opendaylight.openflowplugin.api.openflow.connection.MultiMsgCollector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 
 /**
  * 
  */
 public class ConnectionContextImpl implements ConnectionContext {
 
-    private ConnectionAdapter connectionAdapter;
+    private final ConnectionAdapter connectionAdapter;
     private CONNECTION_STATE connectionState;
     private FeaturesReply featuresReply;
+    private final MultiMsgCollector multipartCollector;
 
     /**
      * @param connectionAdapter
      */
-    public ConnectionContextImpl(ConnectionAdapter connectionAdapter) {
+    public ConnectionContextImpl(final ConnectionAdapter connectionAdapter) {
         this.connectionAdapter = connectionAdapter;
+        multipartCollector = new MultiMsgCollectorImpl();
     }
 
     @Override
@@ -45,7 +51,7 @@ public class ConnectionContextImpl implements ConnectionContext {
     }
 
     @Override
-    public void setConnectionState(CONNECTION_STATE connectionState) {
+    public void setConnectionState(final CONNECTION_STATE connectionState) {
         this.connectionState = connectionState;
     }
 
@@ -55,7 +61,18 @@ public class ConnectionContextImpl implements ConnectionContext {
     }
 
     @Override
-    public void setFeatures(FeaturesReply featuresReply) {
+    public void setFeatures(final FeaturesReply featuresReply) {
         this.featuresReply = featuresReply;
+
+    }
+
+    @Override
+    public ListenableFuture<Collection<MultipartReply>> registerMultipartMsg(final long xid) {
+        return multipartCollector.registerMultipartMsg(xid);
+    }
+
+    @Override
+    public void addMultipartMsg(final MultipartReply reply) {
+        multipartCollector.addMultipartMsg(reply);
     }
 }
