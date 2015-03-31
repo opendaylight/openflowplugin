@@ -52,7 +52,7 @@ public interface DeviceState {
      *
      * @return The Map of bandwidths for all OFPorts
      */
-    Map<Long, Boolean> getPortsBandwidth();
+    Map<Long, Long> getPortsBandwidth();
 
     /**
      * Returns a Set containing all port IDs of this switch.
@@ -75,7 +75,7 @@ public interface DeviceState {
      * @param portNumber the port ID
      * @return bandwidth
      */
-    Boolean getPortBandwidth(Long portNumber);
+    Long getPortBandwidth(Long portNumber);
 
     /**
      * Returns True if the port is enabled,
@@ -99,11 +99,6 @@ public interface DeviceState {
      * @return List containing all enabled ports of this switch
      */
     List<PortGrouping> getEnabledPorts();
-
-    /**
-     * @return the unique xid for this session
-     */
-    Long getNextXid();
 
     /**
      * @return seed value for random operations
