@@ -7,11 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.device;
 
-import java.math.BigInteger;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.Future;
-
+import com.google.common.util.concurrent.SettableFuture;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChain;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -19,7 +15,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestFutureContext;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
-import org.opendaylight.openflowplugin.api.openflow.device.XidGenerator;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SwitchConnectionCookieOFImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
@@ -27,8 +22,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Table
 import org.opendaylight.yangtools.yang.binding.ChildOf;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.common.RpcResult;
-
-import com.google.common.util.concurrent.SettableFuture;
+import java.math.BigInteger;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  *
@@ -40,6 +38,7 @@ public class DeviceContextImpl implements DeviceContext {
     private final Map<SwitchConnectionDistinguisher, ConnectionContext> auxiliaryConnectionContexts = new HashMap<>();
 
     private XidGenerator xidGenerator = new XidGenerator();
+
     @Override
     public <M extends ChildOf<DataObject>> void onMessage(M message, RequestContext requestContext) {
         // TODO Auto-generated method stub
@@ -121,4 +120,12 @@ public class DeviceContextImpl implements DeviceContext {
         replyFuture.set(ofHeader);
     }
 
+    private final class XidGenerator {
+
+        private AtomicLong xid = new AtomicLong(0);
+
+        public Xid generate() {
+            return new Xid(xid.incrementAndGet());
+        }
+    }
 }

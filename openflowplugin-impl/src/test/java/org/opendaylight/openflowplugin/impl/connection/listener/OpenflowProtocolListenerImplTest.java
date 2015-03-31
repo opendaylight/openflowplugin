@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.impl.connection.listener;
 
 import static org.junit.Assert.fail;
+
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -18,7 +19,6 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.HandshakeContext;
-import org.opendaylight.openflowplugin.api.openflow.device.XidGenerator;
 import org.opendaylight.openflowplugin.impl.connection.testutil.MsgGeneratorTestUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessage;
@@ -26,18 +26,17 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 /**
  * openflowplugin-impl
  * org.opendaylight.openflowplugin.impl.connection.listener
- *
+ * <p/>
  * test of {@link OpenflowProtocolListenerImpl} - lightweight version, using basic ways (TDD)
  *
  * @author <a href="mailto:vdemcak@cisco.com">Vaclav Demcak</a>
- *
- * Created: Mar 26, 2015
+ *         <p/>
+ *         Created: Mar 26, 2015
  */
 @RunWith(MockitoJUnitRunner.class)
 public class OpenflowProtocolListenerImplTest {
 
-    private static XidGenerator xidGenerator = new XidGenerator();
-
+    private static final long xid = 1l;
     private OpenflowProtocolListenerImpl ofProtocolListener;
 
     @Mock
@@ -57,8 +56,8 @@ public class OpenflowProtocolListenerImplTest {
      */
     @Test
     @Ignore
-    public void testOpenflowProtocolListenerImpl(){
-    fail("Not yet implemented");
+    public void testOpenflowProtocolListenerImpl() {
+        fail("Not yet implemented");
     }
 
     /**
@@ -66,8 +65,8 @@ public class OpenflowProtocolListenerImplTest {
      */
     @Test
     @Ignore
-    public void testOnEchoRequestMessage(){
-    fail("Not yet implemented");
+    public void testOnEchoRequestMessage() {
+        fail("Not yet implemented");
     }
 
     /**
@@ -75,8 +74,8 @@ public class OpenflowProtocolListenerImplTest {
      */
     @Test
     @Ignore
-    public void testOnErrorMessage(){
-    fail("Not yet implemented");
+    public void testOnErrorMessage() {
+        fail("Not yet implemented");
     }
 
     /**
@@ -84,8 +83,8 @@ public class OpenflowProtocolListenerImplTest {
      */
     @Test
     @Ignore
-    public void testOnExperimenterMessage(){
-    fail("Not yet implemented");
+    public void testOnExperimenterMessage() {
+        fail("Not yet implemented");
     }
 
     /**
@@ -93,8 +92,8 @@ public class OpenflowProtocolListenerImplTest {
      */
     @Test
     @Ignore
-    public void testOnFlowRemovedMessage(){
-    fail("Not yet implemented");
+    public void testOnFlowRemovedMessage() {
+        fail("Not yet implemented");
     }
 
     /**
@@ -102,16 +101,15 @@ public class OpenflowProtocolListenerImplTest {
      */
     @Test
     @Ignore
-    public void testOnHelloMessage(){
-    fail("Not yet implemented");
+    public void testOnHelloMessage() {
+        fail("Not yet implemented");
     }
 
     /**
      * Test method for {@link org.opendaylight.openflowplugin.impl.connection.listener.OpenflowProtocolListenerImpl#onMultipartReplyMessage(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessage)}.
      */
     @Test
-    public void testOnMultipartReplyMessage(){
-        final long xid = xidGenerator.generate().getValue();
+    public void testOnMultipartReplyMessage() {
         Mockito.when(connectionContext.getConnectionState()).thenReturn(ConnectionContext.CONNECTION_STATE.WORKING);
         final MultipartReply multipartReply = MsgGeneratorTestUtils.makeMultipartDescReply(xid, "test-val", false);
         ofProtocolListener.onMultipartReplyMessage((MultipartReplyMessage) multipartReply);
@@ -123,8 +121,8 @@ public class OpenflowProtocolListenerImplTest {
      */
     @Test
     @Ignore
-    public void testOnPacketInMessage(){
-    fail("Not yet implemented");
+    public void testOnPacketInMessage() {
+        fail("Not yet implemented");
     }
 
     /**
@@ -132,8 +130,8 @@ public class OpenflowProtocolListenerImplTest {
      */
     @Test
     @Ignore
-    public void testOnPortStatusMessage(){
-    fail("Not yet implemented");
+    public void testOnPortStatusMessage() {
+        fail("Not yet implemented");
     }
 
     /**
@@ -141,8 +139,8 @@ public class OpenflowProtocolListenerImplTest {
      */
     @Test
     @Ignore
-    public void testCheckState(){
-    fail("Not yet implemented");
+    public void testCheckState() {
+        fail("Not yet implemented");
     }
 
 }
