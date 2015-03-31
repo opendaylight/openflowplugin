@@ -15,16 +15,21 @@ import java.util.concurrent.Future;
 
 import javax.annotation.Nonnull;
 
+import com.google.common.util.concurrent.SettableFuture;
 import org.opendaylight.controller.md.sal.binding.api.BindingTransactionChain;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChain;
-import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.*;
 import org.opendaylight.openflowplugin.api.openflow.device.exception.DeviceDataException;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
+import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
+import org.opendaylight.openflowplugin.api.openflow.device.RequestFutureContext;
+import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
@@ -47,6 +52,12 @@ import org.slf4j.LoggerFactory;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.SettableFuture;
+import javax.annotation.Nonnull;
+import java.math.BigInteger;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  *
@@ -79,38 +90,39 @@ public class DeviceContextImpl implements DeviceContext, DeviceReplyProcessor, T
     }
 
     @Override
-    public <M extends ChildOf<DataObject>> void onMessage(final M message, final RequestContext requestContext) {
+    public <M extends ChildOf<DataObject>> void onMessage(M message, RequestContext requestContext) {
         // TODO Auto-generated method stub
 
     }
 
     @Override
-    public void addAuxiliaryConenctionContext(final ConnectionContext connectionContext) {
-        final SwitchConnectionDistinguisher connectionDistinguisher = new SwitchConnectionCookieOFImpl(connectionContext.getFeatures().getAuxiliaryId());
+    public void addAuxiliaryConenctionContext(ConnectionContext connectionContext) {
+        SwitchConnectionDistinguisher connectionDistinguisher = new SwitchConnectionCookieOFImpl(connectionContext.getFeatures().getAuxiliaryId());
         auxiliaryConnectionContexts.put(connectionDistinguisher, connectionContext);
     }
 
     @Override
-    public void removeAuxiliaryConenctionContext(final ConnectionContext connectionContext) {
+    public void removeAuxiliaryConenctionContext(ConnectionContext connectionContext) {
         // TODO Auto-generated method stub
 
     }
 
     @Override
     public DeviceState getDeviceState() {
-        return deviceState;
+        // TODO Auto-generated method stub
+        return null;
     }
 
     @Override
-    public ReadTransaction getReadTransaction() {
-        return dataBroker.newReadOnlyTransaction();
+    public void setTransactionChain(TransactionChain transactionChain) {
+        // TODO Auto-generated method stub
+
     }
 
     @Override
-    public WriteTransaction getWriteTransaction() {
-        // FIXME : we wana to have only one WriteTransaction exposed in one time
-        // so thing about blocking notification mechanism for wait to new transaction
-        return txChainFactory.newWriteOnlyTransaction();
+    public TransactionChain getTransactionChain() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     @Override
@@ -121,7 +133,7 @@ public class DeviceContextImpl implements DeviceContext, DeviceReplyProcessor, T
 
     @Override
     public ConnectionContext getPrimaryConnectionContext() {
-        return primaryConnectionContext;
+        return null;
     }
 
     @Override
@@ -245,5 +257,14 @@ public class DeviceContextImpl implements DeviceContext, DeviceReplyProcessor, T
 
     public void setTranslatorLibrary(TranslatorLibrary translatorLibrary) {
         this.translatorLibrary = translatorLibrary;
+
+}
+    private final class XidGenerator {
+
+        private AtomicLong xid = new AtomicLong(0);
+
+        public Xid generate() {
+            return new Xid(xid.incrementAndGet());
+        }
     }
 }
