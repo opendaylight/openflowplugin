@@ -63,10 +63,8 @@ public abstract class CommonService {
             return primaryConnectionAdapter;
         }
 
-        // TODO uncomment when getAuxiali.... will be merged to APIs
-        // final ConnectionContext auxiliaryConnectionContext =
-        // deviceContext.getAuxiliaryConnectionContext(connectionID);
-        final ConnectionContext auxiliaryConnectionContext = null;
+        final ConnectionContext auxiliaryConnectionContext =
+        deviceContext.getAuxiliaryConnectiobContexts(connectionID);
         if (auxiliaryConnectionContext != null) {
             return auxiliaryConnectionContext.getConnectionAdapter();
         }
@@ -74,7 +72,7 @@ public abstract class CommonService {
         return primaryConnectionAdapter;
     }
 
-    public <T extends DataObject, F> Future<RpcResult<T>> handleServiceCall(final BigInteger connectionID,
+    public <T, F> Future<RpcResult<T>> handleServiceCall(final BigInteger connectionID,
                                                                             final Function<DataCrate<T>, Future<RpcResult<F>>> function) {
         LOG.debug("Calling the FlowMod RPC method on MessageDispatchService");
 

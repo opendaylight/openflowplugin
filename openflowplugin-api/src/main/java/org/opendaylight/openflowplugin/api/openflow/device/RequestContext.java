@@ -16,7 +16,7 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
  * <p>
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 25.2.2015.
  */
-public interface RequestContext<T extends DataObject> extends RequestFutureContext<T>, AutoCloseable {
+public interface RequestContext<T> extends RequestFutureContext<T>, AutoCloseable {
 
     /**
      * Returns xid generated for this request.

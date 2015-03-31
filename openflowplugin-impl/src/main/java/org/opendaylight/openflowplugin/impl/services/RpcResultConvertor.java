@@ -14,7 +14,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
-import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -22,7 +21,7 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 26.3.2015.
  */
-public class RpcResultConvertor<T extends DataObject> {
+public class RpcResultConvertor<T> {
 
     private final RequestContext<T> requestContext;
     private final DeviceContext deviceContext;
