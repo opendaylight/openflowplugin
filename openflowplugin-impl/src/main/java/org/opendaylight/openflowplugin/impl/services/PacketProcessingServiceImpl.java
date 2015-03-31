@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
+import com.google.common.base.Function;
+import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import java.math.BigInteger;
 import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.PacketOutConvertor;
@@ -19,17 +21,26 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 public class PacketProcessingServiceImpl extends CommonService implements PacketProcessingService {
 
     @Override
-    //TODO this implementation is incorrect. Handling of exceptional states as in ServiceCallProcessingUtil.handleServiceCall() is missing
     public Future<RpcResult<Void>> transmitPacket(final TransmitPacketInput input) {
-        final PacketOutInput message = PacketOutConvertor.toPacketOutInput(input, version, deviceContext.getNextXid()
-                .getValue(), datapathId);
 
-        BigInteger connectionID = PRIMARY_CONNECTION;
-        final ConnectionCookie connectionCookie = input.getConnectionCookie();
-        if (connectionCookie != null && connectionCookie.getValue() != null) {
-            connectionID = BigInteger.valueOf(connectionCookie.getValue());
-        }
+        return handleServiceCall(PRIMARY_CONNECTION, new Function<DataCrate<Void>, Future<RpcResult<Void>>>() {
 
-        return provideConnectionAdapter(connectionID).packetOut(message);
+            @Override
+            public Future<RpcResult<Void>> apply(DataCrate<Void> data) {
+                final Xid xid = deviceContext.getNextXid();
+                data.getRequestContext().setXid(xid);
+                final PacketOutInput message = PacketOutConvertor.toPacketOutInput(input, version, xid.getValue(),
+                        datapathId);
+
+                BigInteger connectionID = PRIMARY_CONNECTION;
+                final ConnectionCookie connectionCookie = input.getConnectionCookie();
+                if (connectionCookie != null && connectionCookie.getValue() != null) {
+                    connectionID = BigInteger.valueOf(connectionCookie.getValue());
+                }
+
+                return provideConnectionAdapter(connectionID).packetOut(message);
+            }
+        });
+
     }
 }
