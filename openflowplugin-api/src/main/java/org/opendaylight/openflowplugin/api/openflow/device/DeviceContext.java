@@ -99,8 +99,6 @@ public interface DeviceContext extends MessageHandler {
 
     Xid getNextXid();
 
-    <T extends DataObject> Future<RpcResult<T>> sendRequest(Xid xid);
-
     /**
      * Method provides requests map
      * @return
