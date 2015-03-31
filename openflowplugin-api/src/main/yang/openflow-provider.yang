@@ -1,0 +1,20 @@
+module openflow-provider {
+	yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:openflow:api";
+    prefix "ofplugin-cfg";
+
+    import config {prefix config; revision-date 2013-04-05; }
+
+    description
+        "openflow-plugin-custom-config";
+
+    revision "2015-03-31" {
+        description
+            "Initial revision";
+    }
+
+    identity openflow-provider{
+        base config:service-type;
+        config:java-class "org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider";
+    }
+}
