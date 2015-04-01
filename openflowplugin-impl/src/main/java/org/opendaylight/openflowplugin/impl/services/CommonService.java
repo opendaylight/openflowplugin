@@ -8,43 +8,43 @@
 package org.opendaylight.openflowplugin.impl.services;
 
 import com.google.common.base.Function;
-import com.google.common.util.concurrent.SettableFuture;
-import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
-import org.opendaylight.yangtools.yang.binding.DataObject;
 import com.google.common.util.concurrent.Futures;
-import java.math.BigInteger;
-import java.util.concurrent.Future;
+import com.google.common.util.concurrent.SettableFuture;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
-import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
+import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
+import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
+import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
+import java.math.BigInteger;
+import java.util.concurrent.Future;
 
 public abstract class CommonService {
     private static final Logger LOG = org.slf4j.LoggerFactory.getLogger(CommonService.class);
     private static final long WAIT_TIME = 2000;
     protected final static Future<RpcResult<Void>> ERROR_RPC_RESULT = Futures.immediateFuture(RpcResultBuilder
-            .<Void> failed().withError(ErrorType.APPLICATION, "", "Request quota exceeded.").build());
+            .<Void>failed().withError(ErrorType.APPLICATION, "", "Request quota exceeded.").build());
     protected static final BigInteger PRIMARY_CONNECTION = new BigInteger("0");
 
     // protected OFRpcTaskContext rpcTaskContext;
     protected short version;
     protected BigInteger datapathId;
-    protected RpcContext rpcContext;
+    protected RequestContextStack requestContextStack;
     protected DeviceContext deviceContext;
     private ConnectionAdapter primaryConnectionAdapter;
 
     public CommonService() {
     }
 
-    public CommonService(final RpcContext rpcContext) {
-        this.rpcContext = rpcContext;
+    public CommonService(final RequestContextStack requestContextStack, DeviceContext deviceContext) {
+        this.requestContextStack = requestContextStack;
 
-        this.deviceContext = rpcContext.getDeviceContext();
+        this.deviceContext = deviceContext;
         final FeaturesReply features = this.deviceContext.getPrimaryConnectionContext().getFeatures();
         this.datapathId = features.getDatapathId();
         this.version = features.getVersion();
@@ -75,12 +75,12 @@ public abstract class CommonService {
     }
 
     <T extends DataObject, F> Future<RpcResult<T>> handleServiceCall(final BigInteger connectionID,
-            final Function<DataCrate<T>, Future<RpcResult<F>>> function) {
+                                                                     final Function<DataCrate<T>, Future<RpcResult<F>>> function) {
         LOG.debug("Calling the FlowMod RPC method on MessageDispatchService");
 
-        final RequestContext<T> requestContext = rpcContext.createRequestContext();
-        final SettableFuture<RpcResult<T>> result = rpcContext.storeOrFail(requestContext);
-        final DataCrate<T> dataCrate = DataCrateBuilder.<T> builder().setiDConnection(connectionID)
+        final RequestContext<T> requestContext = requestContextStack.createRequestContext();
+        final SettableFuture<RpcResult<T>> result = requestContextStack.storeOrFail(requestContext);
+        final DataCrate<T> dataCrate = DataCrateBuilder.<T>builder().setiDConnection(connectionID)
                 .setRequestContext(requestContext).build();
         if (!result.isDone()) {
             final Future<RpcResult<F>> resultFromOFLib = function.apply(dataCrate);

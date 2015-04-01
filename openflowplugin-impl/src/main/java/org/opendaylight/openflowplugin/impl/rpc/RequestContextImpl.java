@@ -7,11 +7,10 @@
  */
 package org.opendaylight.openflowplugin.impl.rpc;
 
-import org.opendaylight.openflowplugin.api.openflow.device.Xid;
-
 import com.google.common.util.concurrent.SettableFuture;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
-import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
+import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
+import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
@@ -20,18 +19,18 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
  */
 public class RequestContextImpl<T extends DataObject> implements RequestContext<T> {
 
-    private final RpcContext rpcContext;
+    private final RequestContextStack requestContextStack;
     private SettableFuture<RpcResult<T>> rpcResultFuture;
     private long waitTimeout;
     private Xid xid;
 
-    public RequestContextImpl(RpcContext rpcContext) {
-        this.rpcContext = rpcContext;
+    public RequestContextImpl(RequestContextStack requestContextStack) {
+        this.requestContextStack = requestContextStack;
     }
 
     @Override
     public void close() {
-        rpcContext.forgetRequestContext(this);
+        requestContextStack.forgetRequestContext(this);
     }
 
     @Override

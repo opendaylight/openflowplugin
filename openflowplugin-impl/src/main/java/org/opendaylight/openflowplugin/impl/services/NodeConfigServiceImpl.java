@@ -28,8 +28,8 @@ public class NodeConfigServiceImpl extends CommonService implements NodeConfigSe
 
     @Override
     public Future<RpcResult<SetConfigOutput>> setConfig(final SetConfigInput input) {
-        final RequestContext requestContext = rpcContext.createRequestContext();
-        final SettableFuture<RpcResult<SetConfigOutput>> result = rpcContext.storeOrFail(requestContext);
+        final RequestContext requestContext = requestContextStack.createRequestContext();
+        final SettableFuture<RpcResult<SetConfigOutput>> result = requestContextStack.storeOrFail(requestContext);
         if (!result.isDone()) {
             SetConfigInputBuilder builder = new SetConfigInputBuilder();
             SwitchConfigFlag flag = SwitchConfigFlag.valueOf(input.getFlag());

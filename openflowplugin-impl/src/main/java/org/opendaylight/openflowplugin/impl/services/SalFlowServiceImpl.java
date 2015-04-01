@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -44,16 +46,17 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
 
     private static final Logger LOG = org.slf4j.LoggerFactory.getLogger(SalFlowServiceImpl.class);
 
-    public SalFlowServiceImpl(final RpcContext rpcContext) {
-        super(rpcContext);
+
+    public SalFlowServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
+        super(requestContextStack, deviceContext);
     }
 
     <T extends DataObject, F> ListenableFuture<RpcResult<T>> handleServiceCall(final BigInteger connectionID,
             final FlowModInputBuilder flowModInputBuilder, final Function<DataCrate<T>, Future<RpcResult<F>>> function) {
         LOG.debug("Calling the FlowMod RPC method on MessageDispatchService");
 
-        final RequestContext<T> requestContext = rpcContext.createRequestContext();
-        final SettableFuture<RpcResult<T>> result = rpcContext.storeOrFail(requestContext);
+        final RequestContext<T> requestContext = requestContextStack.createRequestContext();
+        final SettableFuture<RpcResult<T>> result = requestContextStack.storeOrFail(requestContext);
         final DataCrate<T> dataCrate = DataCrateBuilder.<T> builder().setiDConnection(connectionID)
                 .setRequestContext(requestContext).setFlowModInputBuilder(flowModInputBuilder).build();
 

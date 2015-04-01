@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.util;
 
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.impl.services.NodeConfigServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.OpendaylightFlowStatisticsServiceImpl;
@@ -42,8 +43,8 @@ public class MdSalRegistratorUtils {
         throw new IllegalStateException();
     }
 
-    public static void registerServices(final RpcContext rpcContext) {
-        rpcContext.registerRpcServiceImplementation(SalFlowService.class, new SalFlowServiceImpl(rpcContext));
+    public static void registerServices(final RpcContext rpcContext, final DeviceContext deviceContext) {
+        rpcContext.registerRpcServiceImplementation(SalFlowService.class, new SalFlowServiceImpl(rpcContext, deviceContext));
         rpcContext.registerRpcServiceImplementation(SalMeterService.class, new SalMeterServiceImpl());
         rpcContext.registerRpcServiceImplementation(SalGroupService.class, new SalGroupServiceImpl());
         rpcContext.registerRpcServiceImplementation(SalTableService.class, new SalTableServiceImpl());

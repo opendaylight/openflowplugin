@@ -32,6 +32,6 @@ public class RpcManagerImpl implements RpcManager {
     @Override
     public void deviceConnected(final DeviceContext deviceContext) {
         final RpcContext rpcContext = new RpcContextImpl(providerContext, deviceContext);
-        MdSalRegistratorUtils.registerServices(rpcContext);
+        MdSalRegistratorUtils.registerServices(rpcContext, deviceContext);
     }
 }

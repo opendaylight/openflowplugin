@@ -74,8 +74,8 @@ public class OpendaylightMeterStatisticsServiceImpl extends CommonService implem
 
     @Override
     public Future<RpcResult<GetAllMeterStatisticsOutput>> getAllMeterStatistics(final GetAllMeterStatisticsInput input) {
-        final RequestContext<GetAllMeterStatisticsOutput> requestContext = rpcContext.createRequestContext();
-        final SettableFuture<RpcResult<GetAllMeterStatisticsOutput>> result = rpcContext.storeOrFail(requestContext);
+        final RequestContext<GetAllMeterStatisticsOutput> requestContext = requestContextStack.createRequestContext();
+        final SettableFuture<RpcResult<GetAllMeterStatisticsOutput>> result = requestContextStack.storeOrFail(requestContext);
 
         if (!result.isDone()) {
 
@@ -108,8 +108,8 @@ public class OpendaylightMeterStatisticsServiceImpl extends CommonService implem
 
     @Override
     public Future<RpcResult<GetMeterFeaturesOutput>> getMeterFeatures(final GetMeterFeaturesInput input) {
-        final RequestContext requestContext = rpcContext.createRequestContext();
-        final SettableFuture<RpcResult<GetMeterFeaturesOutput>> result = rpcContext.storeOrFail(requestContext);
+        final RequestContext requestContext = requestContextStack.createRequestContext();
+        final SettableFuture<RpcResult<GetMeterFeaturesOutput>> result = requestContextStack.storeOrFail(requestContext);
 
         if (!result.isDone()) {
 
@@ -134,8 +134,8 @@ public class OpendaylightMeterStatisticsServiceImpl extends CommonService implem
 
     @Override
     public Future<RpcResult<GetMeterStatisticsOutput>> getMeterStatistics(final GetMeterStatisticsInput input) {
-        final RequestContext requestContext = rpcContext.createRequestContext();
-        final SettableFuture<RpcResult<GetMeterStatisticsOutput>> result = rpcContext.storeOrFail(requestContext);
+        final RequestContext requestContext = requestContextStack.createRequestContext();
+        final SettableFuture<RpcResult<GetMeterStatisticsOutput>> result = requestContextStack.storeOrFail(requestContext);
 
         if (!result.isDone()) {
 
