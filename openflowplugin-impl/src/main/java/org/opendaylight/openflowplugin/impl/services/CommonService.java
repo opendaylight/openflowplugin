@@ -32,11 +32,11 @@ public abstract class CommonService {
     protected static final BigInteger PRIMARY_CONNECTION = new BigInteger("0");
 
     // protected OFRpcTaskContext rpcTaskContext;
-    protected short version;
-    protected BigInteger datapathId;
-    protected RequestContextStack requestContextStack;
-    protected DeviceContext deviceContext;
-    private ConnectionAdapter primaryConnectionAdapter;
+    public short version;
+    public BigInteger datapathId;
+    public RequestContextStack requestContextStack;
+    public DeviceContext deviceContext;
+    public ConnectionAdapter primaryConnectionAdapter;
 
     public CommonService() {
     }
@@ -74,8 +74,8 @@ public abstract class CommonService {
         return primaryConnectionAdapter;
     }
 
-    <T extends DataObject, F> Future<RpcResult<T>> handleServiceCall(final BigInteger connectionID,
-                                                                     final Function<DataCrate<T>, Future<RpcResult<F>>> function) {
+    public <T extends DataObject, F> Future<RpcResult<T>> handleServiceCall(final BigInteger connectionID,
+                                                                            final Function<DataCrate<T>, Future<RpcResult<F>>> function) {
         LOG.debug("Calling the FlowMod RPC method on MessageDispatchService");
 
         final RequestContext<T> requestContext = requestContextStack.createRequestContext();
