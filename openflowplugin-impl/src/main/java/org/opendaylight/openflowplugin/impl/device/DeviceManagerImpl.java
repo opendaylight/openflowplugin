@@ -46,6 +46,9 @@ public class DeviceManagerImpl implements DeviceManager {
 //            // TODO Auto-generated catch block
 //            LOG.info("Failed to retrieve node static info: {}", e.getMessage());
 //        }
+
+
+        //TODO: inject translatorLibrary into deviceCtx
     }
 
     /**

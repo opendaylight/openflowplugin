@@ -11,7 +11,7 @@ package org.opendaylight.openflowplugin.api.openflow.device;
 import java.util.List;
 
 import org.opendaylight.openflowplugin.api.openflow.device.exception.DeviceDataException;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.*;
 
 /**
  *
@@ -39,5 +39,23 @@ public interface DeviceReplyProcessor {
      * @param deviceDataException
      */
     public void processException(Xid xid, DeviceDataException deviceDataException);
+
+    /**
+     * Method process async flow removed from device
+     * @param flowRemoved
+     */
+    public void processFlowRemovedMessage(FlowRemoved flowRemoved);
+
+    /**
+     * Method process async port status from device
+     * @param portStatus
+     */
+    public void processPortStatusMessage(PortStatusMessage portStatus);
+
+    /**
+     * Method process async packet in from device
+     * @param packetInMessage
+     */
+    public void processPacketInMessage(PacketInMessage packetInMessage);
 
 }
