@@ -41,21 +41,21 @@ public class RpcManagerImplTest {
 
     final ProviderContext mockedProviderContext = mock(ProviderContext.class);
     final RpcManagerImpl rpcManager = new RpcManagerImpl(mockedProviderContext);
-    final DeviceContext mockedRequestContext = mock(DeviceContext.class);
+    final RequestContext mockedRequestContext = mock(RequestContext.class);
+    final RpcContext mockedRpcContext = mock(RpcContext.class);
+    final AddFlowInput mockedFlowInput = prepareTestingAddFlow();
+    final DeviceContext mockedDeviceContext = mock(DeviceContext.class);
 
     @Ignore
     @Test
     public void deviceConnectedTest() {
 
-        rpcManager.deviceConnected(mockedRequestContext);
+        rpcManager.deviceConnected(mockedDeviceContext, mockedRequestContext);
 
         verify(mockedProviderContext, times(AWAITED_NUM_OF_CALL_ADD_ROUTED_RPC)).addRoutedRpcImplementation(
                 Matchers.any(Class.class), Matchers.any(RpcService.class));
     }
 
-    final RpcContext mockedRpcContext = mock(RpcContext.class);
-    final AddFlowInput mockedFlowInput = prepareTestingAddFlow();
-    final DeviceContext mockedDeviceContext = mock(DeviceContext.class);
 
     /**
      * Tests behavior of RpcContextImpl when calling rpc from MD-SAL

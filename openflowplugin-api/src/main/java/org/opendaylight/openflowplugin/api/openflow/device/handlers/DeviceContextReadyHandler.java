@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.api.openflow.device.handlers;
 
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 27.2.2015.
@@ -18,6 +19,6 @@ public interface DeviceContextReadyHandler {
      * Method is used to propagate information about established connection with device. It propagates connected
      * device's device context.
      */
-    void deviceConnected(DeviceContext deviceContext);
+    void deviceConnected(DeviceContext deviceContext, RequestContext requestContext);
 
 }
