@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import javax.annotation.CheckForNull;
 import org.opendaylight.openflowplugin.api.openflow.connection.MultiMsgCollector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
@@ -72,6 +73,11 @@ class MultiMsgCollectorImpl implements MultiMsgCollector {
                 .initialCapacity(200)
                 .maximumSize(500)
                 .concurrencyLevel(1);
+    }
+
+    public void registerMultipartFutureMsg(final long xid, @CheckForNull final SettableFuture<Collection<MultipartReply>> future) {
+        Preconditions.checkArgument(future != null);
+        cache.put(xid, new MultiCollectorObject(future));
     }
 
     @Override

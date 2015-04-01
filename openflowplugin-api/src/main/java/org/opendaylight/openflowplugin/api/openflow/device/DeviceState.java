@@ -8,12 +8,15 @@
 
 package org.opendaylight.openflowplugin.api.openflow.device;
 
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
+import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 25.2.2015.
@@ -24,6 +27,11 @@ public interface DeviceState {
      * @return id of encapsulated node
      */
     NodeId getNodeId();
+
+    /**
+     * @return {@link Node} instance identifier
+     */
+    KeyedInstanceIdentifier<Node, NodeKey> getNodeInstanceIdentifier();
 
     /**
      * @return the features of corresponding switch

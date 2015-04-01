@@ -9,7 +9,9 @@
 package org.opendaylight.openflowplugin.api.openflow.connection;
 
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.SettableFuture;
 import java.util.Collection;
+import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 
@@ -41,6 +43,15 @@ public interface MultiMsgCollector {
      * @return
      */
     ListenableFuture<Collection<MultipartReply>> registerMultipartMsg(long xid);
+
+    /**
+     * Method registers a transaction id xid to the Multipart messages collector
+     * with {@link SettableFuture} input object for all {@link MultipartReply} msgs.
+     *
+     * @param xid
+     * @param future
+     */
+    void registerMultipartFutureMsg(final long xid, @CheckForNull final SettableFuture<Collection<MultipartReply>> future);
 
     /**
      * Method adds a reply multipart message to the collection and if the message has marker
