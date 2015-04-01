@@ -5,13 +5,17 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.openflowplugin.impl.services;
+package org.opendaylight.openflowplugin.impl.statistics.services;
 
 import com.google.common.base.Function;
 import com.google.common.util.concurrent.JdkFutureAdapters;
-import java.util.concurrent.Future;
 import org.opendaylight.openflowjava.protocol.api.util.BinContent;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
+import org.opendaylight.openflowplugin.impl.services.CommonService;
+import org.opendaylight.openflowplugin.impl.services.DataCrate;
+import org.opendaylight.openflowplugin.impl.services.RequestInputUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetAllGroupStatisticsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetAllGroupStatisticsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetGroupDescriptionInput;
@@ -29,15 +33,23 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestGroupFeaturesCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.group._case.MultipartRequestGroupBuilder;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import java.util.concurrent.Future;
 
 /**
  * @author joe
  */
 public class OpendaylightGroupStatisticsServiceImpl extends CommonService implements OpendaylightGroupStatisticsService {
 
+
+    public OpendaylightGroupStatisticsServiceImpl(final RequestContextStack requestContextStack, DeviceContext deviceContext) {
+        super(requestContextStack, deviceContext);
+    }
+
     @Override
     public Future<RpcResult<GetAllGroupStatisticsOutput>> getAllGroupStatistics(final GetAllGroupStatisticsInput input) {
-        return this.<GetAllGroupStatisticsOutput, Void> handleServiceCall(PRIMARY_CONNECTION,
+
+
+        return this.<GetAllGroupStatisticsOutput, Void>handleServiceCall(PRIMARY_CONNECTION,
                 new Function<DataCrate<GetAllGroupStatisticsOutput>, Future<RpcResult<Void>>>() {
 
                     @Override
@@ -72,7 +84,7 @@ public class OpendaylightGroupStatisticsServiceImpl extends CommonService implem
 
     @Override
     public Future<RpcResult<GetGroupDescriptionOutput>> getGroupDescription(final GetGroupDescriptionInput input) {
-        return this.<GetGroupDescriptionOutput, Void> handleServiceCall(PRIMARY_CONNECTION,
+        return this.<GetGroupDescriptionOutput, Void>handleServiceCall(PRIMARY_CONNECTION,
                 new Function<DataCrate<GetGroupDescriptionOutput>, Future<RpcResult<Void>>>() {
 
                     @Override
@@ -94,7 +106,7 @@ public class OpendaylightGroupStatisticsServiceImpl extends CommonService implem
 
     @Override
     public Future<RpcResult<GetGroupFeaturesOutput>> getGroupFeatures(final GetGroupFeaturesInput input) {
-        return this.<GetGroupFeaturesOutput, Void> handleServiceCall(PRIMARY_CONNECTION,
+        return this.<GetGroupFeaturesOutput, Void>handleServiceCall(PRIMARY_CONNECTION,
                 new Function<DataCrate<GetGroupFeaturesOutput>, Future<RpcResult<Void>>>() {
 
                     @Override
@@ -116,7 +128,7 @@ public class OpendaylightGroupStatisticsServiceImpl extends CommonService implem
 
     @Override
     public Future<RpcResult<GetGroupStatisticsOutput>> getGroupStatistics(final GetGroupStatisticsInput input) {
-        return this.<GetGroupStatisticsOutput, Void> handleServiceCall(PRIMARY_CONNECTION,
+        return this.<GetGroupStatisticsOutput, Void>handleServiceCall(PRIMARY_CONNECTION,
                 new Function<DataCrate<GetGroupStatisticsOutput>, Future<RpcResult<Void>>>() {
 
                     @Override

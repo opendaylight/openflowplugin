@@ -5,12 +5,16 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.openflowplugin.impl.services;
+package org.opendaylight.openflowplugin.impl.statistics.services;
 
 import com.google.common.base.Function;
 import com.google.common.util.concurrent.JdkFutureAdapters;
-import java.util.concurrent.Future;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
+import org.opendaylight.openflowplugin.impl.services.CommonService;
+import org.opendaylight.openflowplugin.impl.services.DataCrate;
+import org.opendaylight.openflowplugin.impl.services.RequestInputUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.GetFlowTablesStatisticsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.GetFlowTablesStatisticsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.OpendaylightFlowTableStatisticsService;
@@ -19,6 +23,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestTableCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.table._case.MultipartRequestTableBuilder;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import java.util.concurrent.Future;
 
 /**
  * @author joe
@@ -26,10 +31,16 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 public class OpendaylightFlowTableStatisticsServiceImpl extends CommonService implements
         OpendaylightFlowTableStatisticsService {
 
+    public OpendaylightFlowTableStatisticsServiceImpl(final RequestContextStack requestContextStack, DeviceContext deviceContext) {
+        super(requestContextStack, deviceContext);
+    }
+
     @Override
     public Future<RpcResult<GetFlowTablesStatisticsOutput>> getFlowTablesStatistics(
             final GetFlowTablesStatisticsInput input) {
-        return this.<GetFlowTablesStatisticsOutput, Void> handleServiceCall(PRIMARY_CONNECTION,
+
+
+        return this.<GetFlowTablesStatisticsOutput, Void>handleServiceCall(PRIMARY_CONNECTION,
                 new Function<DataCrate<GetFlowTablesStatisticsOutput>, Future<RpcResult<Void>>>() {
 
                     @Override

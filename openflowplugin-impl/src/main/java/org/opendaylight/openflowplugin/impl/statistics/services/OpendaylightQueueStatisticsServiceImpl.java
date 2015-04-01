@@ -5,13 +5,18 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.openflowplugin.impl.services;
+package org.opendaylight.openflowplugin.impl.statistics.services;
 
 import com.google.common.base.Function;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
+import org.opendaylight.openflowplugin.impl.services.CommonService;
+import org.opendaylight.openflowplugin.impl.services.DataCrate;
+import org.opendaylight.openflowplugin.impl.services.RequestInputUtils;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInputBuilder;
@@ -32,11 +37,15 @@ import java.util.concurrent.Future;
  */
 public class OpendaylightQueueStatisticsServiceImpl extends CommonService implements OpendaylightQueueStatisticsService {
 
+    public OpendaylightQueueStatisticsServiceImpl(final RequestContextStack requestContextStack, DeviceContext deviceContext) {
+        super(requestContextStack, deviceContext);
+    }
+
     @Override
     public Future<RpcResult<GetAllQueuesStatisticsFromAllPortsOutput>> getAllQueuesStatisticsFromAllPorts(
             final GetAllQueuesStatisticsFromAllPortsInput input) {
-        return this.<GetAllQueuesStatisticsFromAllPortsOutput, Void> handleServiceCall(
-                PRIMARY_CONNECTION,  new Function<DataCrate<GetAllQueuesStatisticsFromAllPortsOutput>, Future<RpcResult<Void>>>() {
+        return this.<GetAllQueuesStatisticsFromAllPortsOutput, Void>handleServiceCall(
+                PRIMARY_CONNECTION, new Function<DataCrate<GetAllQueuesStatisticsFromAllPortsOutput>, Future<RpcResult<Void>>>() {
 
                     @Override
                     public Future<RpcResult<Void>> apply(final DataCrate<GetAllQueuesStatisticsFromAllPortsOutput> data) {
@@ -67,8 +76,8 @@ public class OpendaylightQueueStatisticsServiceImpl extends CommonService implem
     @Override
     public Future<RpcResult<GetAllQueuesStatisticsFromGivenPortOutput>> getAllQueuesStatisticsFromGivenPort(
             final GetAllQueuesStatisticsFromGivenPortInput input) {
-        return this.<GetAllQueuesStatisticsFromGivenPortOutput, Void> handleServiceCall(
-                 PRIMARY_CONNECTION,  new Function<DataCrate<GetAllQueuesStatisticsFromGivenPortOutput>, Future<RpcResult<Void>>>() {
+        return this.<GetAllQueuesStatisticsFromGivenPortOutput, Void>handleServiceCall(
+                PRIMARY_CONNECTION, new Function<DataCrate<GetAllQueuesStatisticsFromGivenPortOutput>, Future<RpcResult<Void>>>() {
 
                     @Override
                     public Future<RpcResult<Void>> apply(final DataCrate<GetAllQueuesStatisticsFromGivenPortOutput> data) {
@@ -99,8 +108,8 @@ public class OpendaylightQueueStatisticsServiceImpl extends CommonService implem
     @Override
     public Future<RpcResult<GetQueueStatisticsFromGivenPortOutput>> getQueueStatisticsFromGivenPort(
             final GetQueueStatisticsFromGivenPortInput input) {
-        return this.<GetQueueStatisticsFromGivenPortOutput, Void> handleServiceCall(
-                PRIMARY_CONNECTION,  new Function<DataCrate<GetQueueStatisticsFromGivenPortOutput>, Future<RpcResult<Void>>>() {
+        return this.<GetQueueStatisticsFromGivenPortOutput, Void>handleServiceCall(
+                PRIMARY_CONNECTION, new Function<DataCrate<GetQueueStatisticsFromGivenPortOutput>, Future<RpcResult<Void>>>() {
 
                     @Override
                     public Future<RpcResult<Void>> apply(final DataCrate<GetQueueStatisticsFromGivenPortOutput> data) {

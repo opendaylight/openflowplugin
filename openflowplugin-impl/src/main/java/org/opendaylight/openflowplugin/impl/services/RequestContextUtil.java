@@ -20,7 +20,7 @@ public final class RequestContextUtil {
     }
 
 
-    static void closeRequstContext(final RequestContext<?> requestContext) {
+    public static void closeRequstContext(final RequestContext<?> requestContext) {
         try {
             requestContext.close();
         } catch (Exception e) {

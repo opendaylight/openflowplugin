@@ -5,16 +5,20 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.openflowplugin.impl.services;
+package org.opendaylight.openflowplugin.impl.statistics.services;
 
 import com.google.common.base.Function;
-import org.opendaylight.yangtools.yang.binding.DataObject;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
-import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
+import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
+import org.opendaylight.openflowplugin.impl.services.CommonService;
+import org.opendaylight.openflowplugin.impl.services.DataCrate;
+import org.opendaylight.openflowplugin.impl.services.RequestInputUtils;
+import org.opendaylight.openflowplugin.impl.services.RpcResultConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchReactor;
 import org.opendaylight.openflowplugin.openflow.md.util.FlowCreatorUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForAllFlowsInput;
@@ -34,9 +38,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestFlowCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.aggregate._case.MultipartRequestAggregateBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.flow._case.MultipartRequestFlowBuilder;
+import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.util.concurrent.Future;
 
 /**
  * @author joe
@@ -45,12 +51,18 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
 
     private static final Logger LOG = LoggerFactory.getLogger(OpendaylightFlowStatisticsServiceImpl.class);
 
+    public OpendaylightFlowStatisticsServiceImpl(final RequestContextStack requestContextStack, DeviceContext deviceContext) {
+        super(requestContextStack, deviceContext);
+    }
+
     @Override
     public Future<RpcResult<GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput>> getAggregateFlowStatisticsFromFlowTableForAllFlows(
             final GetAggregateFlowStatisticsFromFlowTableForAllFlowsInput input) {
 
-        return this.<GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput, Void> handleServiceCall(
-                PRIMARY_CONNECTION, new Function<DataCrate<GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput>, Future<RpcResult<Void>>>() {
+
+        return this.<GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput, Void>handleServiceCall(
+                PRIMARY_CONNECTION,
+                new Function<DataCrate<GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput>, Future<RpcResult<Void>>>() {
 
                     @Override
                     public Future<RpcResult<Void>> apply(final DataCrate<GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput> data) {
@@ -88,8 +100,11 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
     @Override
     public Future<RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>> getAggregateFlowStatisticsFromFlowTableForGivenMatch(
             final GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput input) {
-        return this.<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput, Void> handleServiceCall(
-                PRIMARY_CONNECTION, new Function<DataCrate<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>, Future<RpcResult<Void>>>() {
+
+
+        return this.<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput, Void>handleServiceCall(
+                PRIMARY_CONNECTION,
+                new Function<DataCrate<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>, Future<RpcResult<Void>>>() {
 
                     @Override
                     public Future<RpcResult<Void>> apply(final DataCrate<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput> data) {
@@ -134,7 +149,8 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
     @Override
     public Future<RpcResult<GetAllFlowStatisticsFromFlowTableOutput>> getAllFlowStatisticsFromFlowTable(
             final GetAllFlowStatisticsFromFlowTableInput input) {
-        return this.<GetAllFlowStatisticsFromFlowTableOutput, Void> handleServiceCall(PRIMARY_CONNECTION,
+
+        return this.<GetAllFlowStatisticsFromFlowTableOutput, Void>handleServiceCall(PRIMARY_CONNECTION,
                 new Function<DataCrate<GetAllFlowStatisticsFromFlowTableOutput>, Future<RpcResult<Void>>>() {
 
                     @Override
@@ -167,7 +183,9 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
     @Override
     public Future<RpcResult<GetAllFlowsStatisticsFromAllFlowTablesOutput>> getAllFlowsStatisticsFromAllFlowTables(
             final GetAllFlowsStatisticsFromAllFlowTablesInput input) {
-        return this.<GetAllFlowsStatisticsFromAllFlowTablesOutput, Void> handleServiceCall(PRIMARY_CONNECTION,
+
+
+        return this.<GetAllFlowsStatisticsFromAllFlowTablesOutput, Void>handleServiceCall(PRIMARY_CONNECTION,
                 new Function<DataCrate<GetAllFlowsStatisticsFromAllFlowTablesOutput>, Future<RpcResult<Void>>>() {
 
                     @Override
@@ -199,7 +217,9 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
     @Override
     public Future<RpcResult<GetFlowStatisticsFromFlowTableOutput>> getFlowStatisticsFromFlowTable(
             final GetFlowStatisticsFromFlowTableInput input) {
-        return this.<GetFlowStatisticsFromFlowTableOutput, Void> handleServiceCall(PRIMARY_CONNECTION,
+
+
+        return this.<GetFlowStatisticsFromFlowTableOutput, Void>handleServiceCall(PRIMARY_CONNECTION,
                 new Function<DataCrate<GetFlowStatisticsFromFlowTableOutput>, Future<RpcResult<Void>>>() {
 
                     @Override
@@ -252,7 +272,7 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
     }
 
     private <T extends DataObject> void convertRpcResultToRequestFuture(final RequestContext<T> requestContext,
-            final ListenableFuture<RpcResult<Void>> futureResultFromOfLib) {
+                                                                        final ListenableFuture<RpcResult<Void>> futureResultFromOfLib) {
         final RpcResultConvertor<T> rpcResultConvertor = new RpcResultConvertor<>(requestContext, deviceContext);
         rpcResultConvertor.processResultFromOfJava(futureResultFromOfLib);
     }
