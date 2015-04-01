@@ -11,6 +11,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceContextReadyHandler;
@@ -34,18 +35,17 @@ public class DeviceManagerImpl implements DeviceManager {
 
     @Override
     public void deviceConnected(ConnectionContext connectionContext) {
-//        final DeviceContextImpl deviceContextImpl = new DeviceContextImpl(connectionContext, deviceState);
 
-//        try {
-//            final FlowCapableNode description = queryDescription(connectionContext, deviceContextImpl.getNextXid()).get();
+/*
+        DeviceContextImpl deviceContextImpl = new DeviceContextImpl(connectionContext.getFeatures(), connectionContext.getNodeId());
+        try {
+            FlowCapableNode description = queryDescription(connectionContext, deviceContextImpl.getNextXid()).get();
 
-//        } catch (InterruptedException | ExecutionException e) {
-//            // TODO Auto-generated catch block
-//            LOG.info("Failed to retrieve node static info: {}", e.getMessage());
-//        }
-
-
-        //TODO: inject translatorLibrary into deviceCtx
+        } catch (InterruptedException | ExecutionException e) {
+            // TODO Auto-generated catch block
+            LOG.info("Failed to retrieve node static info: {}", e.getMessage());
+        }
+*/
     }
 
     /**
