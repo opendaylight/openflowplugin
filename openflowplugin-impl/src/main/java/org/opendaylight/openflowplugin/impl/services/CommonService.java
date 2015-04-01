@@ -24,7 +24,7 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 
-abstract class CommonService {
+public abstract class CommonService {
     private static final Logger LOG = org.slf4j.LoggerFactory.getLogger(CommonService.class);
     private static final long WAIT_TIME = 2000;
     protected final static Future<RpcResult<Void>> ERROR_RPC_RESULT = Futures.immediateFuture(RpcResultBuilder
@@ -38,7 +38,7 @@ abstract class CommonService {
     protected DeviceContext deviceContext;
     private ConnectionAdapter primaryConnectionAdapter;
 
-    CommonService() {
+    public CommonService() {
     }
 
     public CommonService(final RpcContext rpcContext) {
