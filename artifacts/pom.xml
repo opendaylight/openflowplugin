@@ -165,6 +165,13 @@
                 <artifactId>openflowplugin-controller-config</artifactId>
                 <version>${project.version}</version>
                 <type>xml</type>
+                <classifier>ofplugin-config</classifier>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>openflowplugin-controller-config</artifactId>
+                <version>${project.version}</version>
+                <type>xml</type>
                 <classifier>configmsgspy</classifier>
             </dependency>
             <dependency>
