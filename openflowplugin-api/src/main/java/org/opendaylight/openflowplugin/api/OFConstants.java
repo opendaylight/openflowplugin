@@ -12,10 +12,10 @@ import java.math.BigInteger;
 /**
  * OFP related constants
  */
-public class OFConstants {
+public final class OFConstants {
 
     private OFConstants() {
-        //hiding implicit constructor
+        throw new UnsupportedOperationException("OF plugin Constants holder class");
     }
 
     /** reserved port: process with normal L2/L3 switching  */
@@ -30,6 +30,8 @@ public class OFConstants {
     public static final short OFP_VERSION_1_0 = 0x01;
     /** openflow protocol 1.3 - version identifier */
     public static final short OFP_VERSION_1_3 = 0x04;
+
+    public final static String OF_URI_PREFIX = "openflow:";
 
     public static final Short OFPTT_ALL = 0xff;
     public static final Long ANY = Long.parseLong("ffffffff", 16);
