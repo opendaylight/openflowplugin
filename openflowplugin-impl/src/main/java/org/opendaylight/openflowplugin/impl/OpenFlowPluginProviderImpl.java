@@ -50,6 +50,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider {
         deviceManager = new DeviceManagerImpl();
         rpcManager = new RpcManagerImpl(providerContext);
         //TODO : initialize statistics manager
+        //TODO : initialize translatorLibrary + inject into deviceMngr
     }
 
     @Override

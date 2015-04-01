@@ -7,9 +7,14 @@
  */
 package org.opendaylight.openflowplugin.impl.device;
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Preconditions;
-import com.google.common.util.concurrent.SettableFuture;
+import java.math.BigInteger;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Future;
+
+import javax.annotation.Nonnull;
+
 import org.opendaylight.controller.md.sal.binding.api.BindingTransactionChain;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
@@ -21,9 +26,15 @@ import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext
 import org.opendaylight.openflowplugin.api.openflow.device.*;
 import org.opendaylight.openflowplugin.api.openflow.device.exception.DeviceDataException;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
+import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
+import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
+import org.opendaylight.openflowplugin.impl.device.translator.PacketReceivedTranslator;
+import org.opendaylight.openflowplugin.impl.device.translator.PortUpdateTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SwitchConnectionCookieOFImpl;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.*;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.Error;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableFeatures;
 import org.opendaylight.yangtools.yang.binding.ChildOf;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -33,12 +44,9 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nonnull;
-import java.math.BigInteger;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Future;
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.SettableFuture;
 
 /**
  *
@@ -56,6 +64,7 @@ public class DeviceContextImpl implements DeviceContext, DeviceReplyProcessor, T
 
     private final Map<SwitchConnectionDistinguisher, ConnectionContext> auxiliaryConnectionContexts;
     private BindingTransactionChain txChainFactory;
+    private TranslatorLibrary translatorLibrary;
 
     @VisibleForTesting
     DeviceContextImpl(@Nonnull final ConnectionContext primaryConnectionContext,
@@ -200,6 +209,27 @@ public class DeviceContextImpl implements DeviceContext, DeviceReplyProcessor, T
     }
 
     @Override
+    public void processFlowRemovedMessage(FlowRemoved flowRemoved) {
+        //TODO: will be defined later
+    }
+
+    @Override
+    public void processPortStatusMessage(PortStatusMessage portStatus) {
+        TranslatorKey translatorKey = new TranslatorKey(portStatus.getVersion(), PortUpdateTranslator.class.getName());
+        MessageTranslator<PortStatusMessage, FlowCapableNodeConnector> messageTranslator = translatorLibrary.lookupTranslator(translatorKey);
+        FlowCapableNodeConnector nodeConnector = messageTranslator.translate(portStatus, this, null);
+        //TODO write into datastore
+    }
+
+    @Override
+    public void processPacketInMessage(PacketInMessage packetInMessage) {
+        TranslatorKey translatorKey = new TranslatorKey(packetInMessage.getVersion(), PacketReceivedTranslator.class.getName());
+        MessageTranslator<PacketInMessage, PacketReceived> messageTranslator = translatorLibrary.lookupTranslator(translatorKey);
+        PacketReceived packetReceived = messageTranslator.translate(packetInMessage, this, null);
+        //TODO publish to MD-SAL
+    }
+
+    @Override
     public void onTransactionChainFailed(TransactionChain<?, ?> chain,
             AsyncTransaction<?, ?> transaction, Throwable cause) {
         txChainFactory.close();
@@ -213,4 +243,7 @@ public class DeviceContextImpl implements DeviceContext, DeviceReplyProcessor, T
 
     }
 
+    public void setTranslatorLibrary(TranslatorLibrary translatorLibrary) {
+        this.translatorLibrary = translatorLibrary;
+    }
 }
