@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.device.translator;
 
+import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
@@ -28,14 +29,14 @@ public class PortUpdateTranslator implements MessageTranslator<PortStatusMessage
         // TODO Auto-generated method stub
         FlowCapableNodeConnectorBuilder builder = new FlowCapableNodeConnectorBuilder();
         //OF1.0
-        if(input.getVersion() == OpenflowVersion.OF10.getVersion()) {
+        if(input.getVersion() == OFConstants.OFP_VERSION_1_0) {
             builder.setAdvertisedFeatures(PortTranslatorUtil.translatePortFeatures(input.getAdvertisedFeaturesV10()));
             builder.setConfiguration(PortTranslatorUtil.translatePortConfig(input.getConfigV10()));
             builder.setCurrentFeature(PortTranslatorUtil.translatePortFeatures(input.getCurrentFeaturesV10()));
             builder.setPeerFeatures(PortTranslatorUtil.translatePortFeatures(input.getPeerFeaturesV10()));
             builder.setState(PortTranslatorUtil.translatePortState(input.getStateV10()));
             builder.setSupported(PortTranslatorUtil.translatePortFeatures(input.getSupportedFeaturesV10()));
-        } else if (input.getVersion() == OpenflowVersion.OF13.getVersion()) {
+        } else if (input.getVersion() == OFConstants.OFP_VERSION_1_3) {
             builder.setAdvertisedFeatures(PortTranslatorUtil.translatePortFeatures(input.getAdvertisedFeatures()));
             builder.setConfiguration(PortTranslatorUtil.translatePortConfig(input.getConfig()));
             builder.setCurrentFeature(PortTranslatorUtil.translatePortFeatures(input.getCurrentFeatures()));

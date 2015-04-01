@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.device.translator;
 
+import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
@@ -41,9 +42,9 @@ public class PacketReceivedTranslator implements MessageTranslator<PacketInMessa
 
         // extract the port number
         Long port = null;
-        if(input.getVersion() == OpenflowVersion.OF10.getVersion()) {
+        if(input.getVersion() == OFConstants.OFP_VERSION_1_0 && input.getInPort() != null) {
             port = input.getInPort().longValue();
-        } else if (input.getVersion() == OpenflowVersion.OF13.getVersion()) {
+        } else if (input.getVersion() == OFConstants.OFP_VERSION_1_3) {
             if (input.getMatch() != null && input.getMatch().getMatchEntry() != null) {
                 port = getPortNumberFromMatch(input.getMatch().getMatchEntry());
             }
@@ -52,15 +53,23 @@ public class PacketReceivedTranslator implements MessageTranslator<PacketInMessa
         //TODO connection cookie from connection distinguisher
 //        packetReceivedBuilder.setConnectionCookie(new ConnectionCookie(input.getCookie().longValue()));
         packetReceivedBuilder.setPayload(input.getData());
-        packetReceivedBuilder.setFlowCookie(new FlowCookie(input.getCookie()));
-        packetReceivedBuilder.setIngress(InventoryDataServiceUtil.nodeConnectorRefFromDatapathIdPortno(datapathId, port, OpenflowVersion.get(input.getVersion())));
-
+        // get the Cookie if it exists
+        if (input.getCookie() != null) {
+            packetReceivedBuilder.setFlowCookie(new FlowCookie(input.getCookie()));
+        }
+        if(port != null) {
+            packetReceivedBuilder.setIngress(InventoryDataServiceUtil.nodeConnectorRefFromDatapathIdPortno(datapathId, port, OpenflowVersion.get(input.getVersion())));
+        }
         packetReceivedBuilder.setPacketInReason(PacketInUtil.getMdSalPacketInReason(input.getReason()));
-        packetReceivedBuilder.setTableId(new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableId(input.getTableId().getValue().shortValue()));
 
+        if(input.getTableId() != null) {
+            packetReceivedBuilder.setTableId(new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableId(input.getTableId().getValue().shortValue()));
+        }
 
-        org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match packetInMatch = getPacketInMatch(input, datapathId);
-        packetReceivedBuilder.setMatch(packetInMatch);
+        if(input.getMatch() != null) {
+            org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match packetInMatch = getPacketInMatch(input, datapathId);
+            packetReceivedBuilder.setMatch(packetInMatch);
+        }
 
         return packetReceivedBuilder.build();
     }
