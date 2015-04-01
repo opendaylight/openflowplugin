@@ -9,21 +9,25 @@
 package org.opendaylight.openflowplugin.impl.device;
 
 import com.google.common.base.Preconditions;
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
-import org.opendaylight.openflowplugin.api.openflow.device.XidGenerator;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.features.reply.PhyPort;
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.features.reply.PhyPort;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 
 /**
  * openflowplugin-impl
@@ -41,8 +45,8 @@ class DeviceStateImpl implements DeviceState {
     private final GetFeaturesOutput featuresOutput;
     private final Map<Long, PortGrouping> portGrouping;
     private final Map<Long, Long> portsBandwidth;
-    private final XidGenerator xidGenerator;
     private final NodeId nodeId;
+    private final KeyedInstanceIdentifier<Node, NodeKey> nodeII;
     private boolean valid;
 
     public DeviceStateImpl(@CheckForNull final FeaturesReply featuresReply, @Nonnull final NodeId nodeId) {
@@ -50,7 +54,7 @@ class DeviceStateImpl implements DeviceState {
         Preconditions.checkArgument(featuresReply.getPhyPort() != null);
         featuresOutput = new GetFeaturesOutputBuilder(featuresReply).build();
         this.nodeId = Preconditions.checkNotNull(nodeId);
-        xidGenerator = new XidGenerator();
+        nodeII = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(nodeId));
         portGrouping = new HashMap<>();
         portsBandwidth = new HashMap<>();
         for (final PhyPort port : featuresReply.getPhyPort()) {
@@ -62,6 +66,11 @@ class DeviceStateImpl implements DeviceState {
     @Override
     public NodeId getNodeId() {
         return nodeId;
+    }
+
+    @Override
+    public KeyedInstanceIdentifier<Node, NodeKey> getNodeInstanceIdentifier() {
+        return nodeII;
     }
 
     @Override
