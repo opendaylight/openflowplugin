@@ -112,6 +112,7 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
     private static GroupStatsResponseConvertor groupStatsConvertor = new GroupStatsResponseConvertor();
     private static MeterStatsResponseConvertor meterStatsConvertor = new MeterStatsResponseConvertor();
 
+
     @Override
     public  List<DataObject> translate(SwitchConnectionDistinguisher cookie, SessionContext sc, OfHeader msg) {
         
