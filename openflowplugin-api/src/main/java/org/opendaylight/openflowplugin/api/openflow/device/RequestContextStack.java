@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.api.openflow.device;
 
 import com.google.common.util.concurrent.SettableFuture;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
-import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
 /**
@@ -18,7 +17,7 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
  */
 public interface RequestContextStack {
 
-    <T extends DataObject> void forgetRequestContext(RequestContext<T> requestContext);
+    <T> void forgetRequestContext(RequestContext<T> requestContext);
 
     /**
      * Method adds request to request queue which has limited quota. After number of requests exceeds quota limit future
@@ -26,13 +25,13 @@ public interface RequestContextStack {
      *
      * @param data
      */
-    <T extends DataObject> SettableFuture<RpcResult<T>> storeOrFail(RequestContext<T> data);
+    <T> SettableFuture<RpcResult<T>> storeOrFail(RequestContext<T> data);
 
     /**
      * Method returns new request context for current request.
      *
      * @return
      */
-    <T extends DataObject> RequestContext<T> createRequestContext();
+    <T> RequestContext<T> createRequestContext();
 
 }

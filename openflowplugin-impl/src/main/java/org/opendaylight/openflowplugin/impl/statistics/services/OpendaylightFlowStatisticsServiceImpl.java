@@ -38,7 +38,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestFlowCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.aggregate._case.MultipartRequestAggregateBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.flow._case.MultipartRequestFlowBuilder;
-import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -271,7 +270,7 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
                 });
     }
 
-    private <T extends DataObject> void convertRpcResultToRequestFuture(final RequestContext<T> requestContext,
+    private <T> void convertRpcResultToRequestFuture(final RequestContext<T> requestContext,
                                                                         final ListenableFuture<RpcResult<Void>> futureResultFromOfLib) {
         final RpcResultConvertor<T> rpcResultConvertor = new RpcResultConvertor<>(requestContext, deviceContext);
         rpcResultConvertor.processResultFromOfJava(futureResultFromOfLib);

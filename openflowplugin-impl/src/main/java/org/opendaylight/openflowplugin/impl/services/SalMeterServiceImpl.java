@@ -7,7 +7,6 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
-import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import com.google.common.base.Function;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.MeterConvertor;
@@ -61,7 +60,7 @@ public class SalMeterServiceImpl extends CommonService implements SalMeterServic
                 });
     }
 
-    <T extends DataObject> Future<RpcResult<Void>> convertAndSend(final Meter iputMeter, final DataCrate<T> data) {
+    <T> Future<RpcResult<Void>> convertAndSend(final Meter iputMeter, final DataCrate<T> data) {
         final MeterModInputBuilder ofMeterModInput = MeterConvertor.toMeterModInput(iputMeter, version);
         Xid xid = deviceContext.getNextXid();
         ofMeterModInput.setXid(xid.getValue());

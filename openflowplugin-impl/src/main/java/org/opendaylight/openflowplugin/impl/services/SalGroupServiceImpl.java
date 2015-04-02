@@ -9,7 +9,6 @@ package org.opendaylight.openflowplugin.impl.services;
 
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 
-import org.opendaylight.yangtools.yang.binding.DataObject;
 import com.google.common.base.Function;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.GroupConvertor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput;
@@ -65,7 +64,7 @@ public class SalGroupServiceImpl extends CommonService implements SalGroupServic
                 });
     }
 
-    <T extends DataObject> Future<RpcResult<Void>> convertAndSend(final Group iputGroup, final DataCrate<T> data) {
+    <T> Future<RpcResult<Void>> convertAndSend(final Group iputGroup, final DataCrate<T> data) {
         final GroupModInputBuilder ofGroupModInput = GroupConvertor.toGroupModInput(iputGroup, version, datapathId);
         final Xid xid = deviceContext.getNextXid();
         ofGroupModInput.setXid(xid.getValue());

@@ -15,7 +15,6 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.SettableFuture;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
-import org.opendaylight.yangtools.yang.binding.DataObject;
 import com.google.common.base.Function;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
@@ -24,7 +23,6 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
-import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.FlowConvertor;
 import org.opendaylight.openflowplugin.openflow.md.util.FlowCreatorUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
@@ -51,7 +49,7 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
         super(requestContextStack, deviceContext);
     }
 
-    <T extends DataObject, F> ListenableFuture<RpcResult<T>> handleServiceCall(final BigInteger connectionID,
+    <T, F> ListenableFuture<RpcResult<T>> handleServiceCall(final BigInteger connectionID,
             final FlowModInputBuilder flowModInputBuilder, final Function<DataCrate<T>, Future<RpcResult<F>>> function) {
         LOG.debug("Calling the FlowMod RPC method on MessageDispatchService");
 
@@ -120,7 +118,7 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
         return processFlowModInputBuilders(allFlowMods);
     }
 
-    private <T extends DataObject> Future<RpcResult<T>> processFlowModInputBuilders(
+    private <T> Future<RpcResult<T>> processFlowModInputBuilders(
             final List<FlowModInputBuilder> ofFlowModInputs) {
         final List<ListenableFuture<RpcResult<T>>> partialFutures = new ArrayList<>();
         for (FlowModInputBuilder flowModInputBuilder : ofFlowModInputs) {
@@ -157,11 +155,11 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
         return finalFuture;
     }
 
-    protected <T extends DataObject> ListenableFuture<RpcResult<Void>> createResultForFlowMod(final DataCrate<T> data) {
+    protected <T> ListenableFuture<RpcResult<Void>> createResultForFlowMod(final DataCrate<T> data) {
         return createResultForFlowMod(data, data.getFlowModInputBuilder()) ;
     }
 
-    protected <T extends DataObject> ListenableFuture<RpcResult<Void>> createResultForFlowMod(final DataCrate<T> data, final FlowModInputBuilder flowModInput) {
+    protected <T> ListenableFuture<RpcResult<Void>> createResultForFlowMod(final DataCrate<T> data, final FlowModInputBuilder flowModInput) {
         final Xid xId = deviceContext.getNextXid();
         flowModInput.setXid(xId.getValue());
         data.getRequestContext().setXid(xId);
