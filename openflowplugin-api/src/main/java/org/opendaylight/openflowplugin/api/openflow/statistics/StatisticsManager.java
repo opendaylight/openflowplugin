@@ -8,12 +8,13 @@
 
 package org.opendaylight.openflowplugin.api.openflow.statistics;
 
+import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceContextReadyHandler;
 
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 26.2.2015.
  */
-public interface StatisticsManager extends DeviceContextReadyHandler {
+public interface StatisticsManager extends RequestContextStack, DeviceContextReadyHandler {
 
 
 }
