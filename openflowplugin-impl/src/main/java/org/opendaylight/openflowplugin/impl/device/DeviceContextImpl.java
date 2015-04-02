@@ -10,10 +10,14 @@ package org.opendaylight.openflowplugin.impl.device;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.SettableFuture;
+import io.netty.util.HashedWheelTimer;
+import io.netty.util.Timeout;
+import io.netty.util.TimerTask;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
@@ -61,6 +65,7 @@ public class DeviceContextImpl implements DeviceContext, DeviceReplyProcessor {
     private final DeviceState deviceState;
     private final DataBroker dataBroker;
     private final XidGenerator xidGenerator;
+    private final HashedWheelTimer hashedWheelTimer;
     private Map<Long, RequestContext> requests = new HashMap<Long, RequestContext>();
 
     private final Map<SwitchConnectionDistinguisher, ConnectionContext> auxiliaryConnectionContexts;
@@ -69,18 +74,30 @@ public class DeviceContextImpl implements DeviceContext, DeviceReplyProcessor {
 
     @VisibleForTesting
     DeviceContextImpl(@Nonnull final ConnectionContext primaryConnectionContext,
-                      @Nonnull final DeviceState deviceState, @Nonnull final DataBroker dataBroker) {
+                      @Nonnull final DeviceState deviceState, @Nonnull final DataBroker dataBroker,
+                      @Nonnull final HashedWheelTimer hashedWheelTimer) {
         this.primaryConnectionContext = Preconditions.checkNotNull(primaryConnectionContext);
         this.deviceState = Preconditions.checkNotNull(deviceState);
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
+        this.hashedWheelTimer = Preconditions.checkNotNull(hashedWheelTimer);
         xidGenerator = new XidGenerator();
         txChainManager = new TransactionChainManager(dataBroker, 500L);
         auxiliaryConnectionContexts = new HashMap<>();
         requests = new HashMap<>();
     }
 
+    /**
+     * This method is called from {@link DeviceManagerImpl} only. So we could say "posthandshake process finish"
+     * and we are able to set a scheduler for an automatic transaction submitting by time (0,5sec).
+     */
     void submitTransaction() {
         txChainManager.submitTransaction();
+        hashedWheelTimer.newTimeout(new TimerTask() {
+            @Override
+            public void run(final Timeout timeout) throws Exception {
+                submitTransaction();
+            }
+        }, 0, TimeUnit.MILLISECONDS);
     }
 
     @Override
