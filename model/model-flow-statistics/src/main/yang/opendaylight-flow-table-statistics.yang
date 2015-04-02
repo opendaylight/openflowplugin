@@ -25,6 +25,14 @@ module opendaylight-flow-table-statistics {
         uses flow-table-statistics;
     }
     
+    augment "/inv:nodes/inv:node/flow-node:table" {
+        description "Openflow flow table features data into the table node.";
+        ext:augment-identifier "node-table-features";
+        container table-feature-container {
+            uses table-types:table-features;
+        }
+    }
+    
     grouping flow-table-statistics {
         description "TODO:: simplify.";
         container flow-table-statistics {

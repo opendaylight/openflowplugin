@@ -17,6 +17,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
@@ -37,16 +39,19 @@ public class DeviceManagerImplTest {
     private ConnectionAdapter connectionAdapter;
     @Mock
     private FeaturesReply features;
+    @Mock
+    private ProviderContext providerContext;
 
     /**
      * @throws java.lang.Exception
      */
     @Before
     public void setUp() throws Exception {
+        Mockito.when(providerContext.getSALService(DataBroker.class)).thenReturn(Mockito.mock(DataBroker.class));
         Mockito.when(connectionContext.getConnectionAdapter()).thenReturn(connectionAdapter);
         Mockito.when(connectionContext.getFeatures()).thenReturn(features);
         Mockito.when(features.getVersion()).thenReturn((short) 42);
-        deviceManager = new DeviceManagerImpl();
+        deviceManager = new DeviceManagerImpl(providerContext);
     }
 
     /**

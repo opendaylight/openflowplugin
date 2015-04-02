@@ -87,9 +87,7 @@ public class OpenflowProtocolListenerImpl implements OpenflowProtocolListener {
     @Override
     public void onMultipartReplyMessage(final MultipartReplyMessage notification) {
         LOG.trace("Multipart Reply with XID: {}", notification.getXid());
-        if (checkState(ConnectionContext.CONNECTION_STATE.WORKING)) {
-            connectionContext.addMultipartMsg(notification);
-        }
+        connectionContext.addMultipartMsg(notification);
     }
 
     @Override

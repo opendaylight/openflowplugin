@@ -47,6 +47,7 @@ class DeviceStateImpl implements DeviceState {
     private final Map<Long, Long> portsBandwidth;
     private final NodeId nodeId;
     private final KeyedInstanceIdentifier<Node, NodeKey> nodeII;
+    private final short version;
     private boolean valid;
 
     public DeviceStateImpl(@CheckForNull final FeaturesReply featuresReply, @Nonnull final NodeId nodeId) {
@@ -55,6 +56,7 @@ class DeviceStateImpl implements DeviceState {
         featuresOutput = new GetFeaturesOutputBuilder(featuresReply).build();
         this.nodeId = Preconditions.checkNotNull(nodeId);
         nodeII = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(nodeId));
+        version = featuresReply.getVersion();
         portGrouping = new HashMap<>();
         portsBandwidth = new HashMap<>();
         for (final PhyPort port : featuresReply.getPhyPort()) {
@@ -131,6 +133,11 @@ class DeviceStateImpl implements DeviceState {
     @Override
     public int getSeed() {
         return hashCode();
+    }
+
+    @Override
+    public short getVersion() {
+        return version;
     }
 
 }
