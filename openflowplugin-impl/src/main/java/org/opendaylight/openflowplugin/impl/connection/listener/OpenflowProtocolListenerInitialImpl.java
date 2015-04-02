@@ -11,24 +11,16 @@ import com.google.common.base.Objects;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.HandshakeContext;
 import org.opendaylight.openflowplugin.openflow.md.core.HandshakeStepWrapper;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoRequestMessage;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessage;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterMessage;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemovedMessage;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloMessage;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessage;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OpenflowProtocolListener;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  *
  */
-public class OpenflowProtocolListenerImpl implements OpenflowProtocolListener {
+public class OpenflowProtocolListenerInitialImpl implements OpenflowProtocolListener {
 
-    private static final Logger LOG = LoggerFactory.getLogger(OpenflowProtocolListenerImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(OpenflowProtocolListenerInitialImpl.class);
 
     private final ConnectionContext connectionContext;
     private final HandshakeContext handshakeContext;
@@ -37,34 +29,37 @@ public class OpenflowProtocolListenerImpl implements OpenflowProtocolListener {
      * @param connectionContext
      * @param handshakeContext
      */
-    public OpenflowProtocolListenerImpl(final ConnectionContext connectionContext,
-            final HandshakeContext handshakeContext) {
+    public OpenflowProtocolListenerInitialImpl(final ConnectionContext connectionContext,
+                                               final HandshakeContext handshakeContext) {
         this.connectionContext = connectionContext;
         this.handshakeContext = handshakeContext;
     }
 
     @Override
-    public void onEchoRequestMessage(final EchoRequestMessage notification) {
-        // TODO Auto-generated method stub
+    public void onEchoRequestMessage(final EchoRequestMessage echoRequestMessage) {
+        LOG.debug("echo request received: {}", echoRequestMessage.getXid());
+        EchoReplyInputBuilder builder = new EchoReplyInputBuilder();
+        builder.setVersion(echoRequestMessage.getVersion());
+        builder.setXid(echoRequestMessage.getXid());
+        builder.setData(echoRequestMessage.getData());
 
+        connectionContext.getConnectionAdapter().echoReply(builder.build());
     }
 
     @Override
     public void onErrorMessage(final ErrorMessage notification) {
-        // TODO Auto-generated method stub
-
+        // TODO: log
     }
 
     @Override
     public void onExperimenterMessage(final ExperimenterMessage notification) {
-        // TODO Auto-generated method stub
+        // NOOP
 
     }
 
     @Override
     public void onFlowRemovedMessage(final FlowRemovedMessage notification) {
-        // TODO Auto-generated method stub
-
+        // NOOP
     }
 
     @Override
@@ -86,20 +81,17 @@ public class OpenflowProtocolListenerImpl implements OpenflowProtocolListener {
 
     @Override
     public void onMultipartReplyMessage(final MultipartReplyMessage notification) {
-        LOG.trace("Multipart Reply with XID: {}", notification.getXid());
-        connectionContext.addMultipartMsg(notification);
+        // NOOP
     }
 
     @Override
     public void onPacketInMessage(final PacketInMessage notification) {
-        // TODO Auto-generated method stub
-
+        // NOOP
     }
 
     @Override
     public void onPortStatusMessage(final PortStatusMessage notification) {
-        // TODO Auto-generated method stub
-
+        // NOOP
     }
 
     /**
@@ -115,5 +107,4 @@ public class OpenflowProtocolListenerImpl implements OpenflowProtocolListener {
 
         return verdict;
     }
-
 }

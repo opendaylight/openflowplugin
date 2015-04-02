@@ -18,6 +18,10 @@ public class DeviceDataException extends Exception {
     private static final long serialVersionUID = 1L;
     private Error error;
 
+    public DeviceDataException(String message) {
+        super(message);
+    }
+
     public DeviceDataException(String message, Throwable cause) {
         super(message, cause);
     }
