@@ -37,9 +37,7 @@ import java.util.List;
  */
 public final class StatisticsGatheringUtils {
 
-    private static final FlowStatsResponseConvertor FLOW_STATS_RESPONSE_CONVERTOR = new FlowStatsResponseConvertor();
-    private static final MultipartReplyTranslator MULTIPART_REPLY_TRANSLATOR = new MultipartReplyTranslator();
-
+    private static final SinglePurposeMultipartReplyTranslator MULTIPART_REPLY_TRANSLATOR = new SinglePurposeMultipartReplyTranslator();
 
     private StatisticsGatheringUtils() {
         throw new IllegalStateException("This class should not be instantiated.");
