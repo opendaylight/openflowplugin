@@ -7,31 +7,26 @@
  */
 package org.opendaylight.openflowplugin.impl.device;
 
-import com.google.common.base.Preconditions;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.JdkFutureAdapters;
-import com.google.common.util.concurrent.ListenableFuture;
-import io.netty.util.HashedWheelTimer;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+import java.util.*;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+
+import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.*;
+import io.netty.util.HashedWheelTimer;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
-import org.opendaylight.openflowplugin.api.openflow.device.Xid;
+import org.opendaylight.openflowplugin.api.openflow.device.*;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceContextReadyHandler;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.impl.common.MultipartRequestInputFactory;
 import org.opendaylight.openflowplugin.impl.common.NodeStaticReplyTranslatorUtil;
+import org.opendaylight.openflowplugin.impl.device.listener.OpenflowProtocolListenerFullImpl;
+import org.opendaylight.openflowplugin.impl.rpc.RequestContextImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableBuilder;
@@ -52,6 +47,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.table.features._case.MultipartReplyTableFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,34 +64,53 @@ public class DeviceManagerImpl implements DeviceManager {
     private final RpcManager rpcManager;
     private final DataBroker dataBroker;
     private final HashedWheelTimer hashedWheelTimer;
+    private RequestContextStack dummyRequestContextStack;
 
 
     public DeviceManagerImpl (@Nonnull final RpcManager rpcManager, @Nonnull final DataBroker dataBroker) {
         this.rpcManager = Preconditions.checkNotNull(rpcManager);
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
         hashedWheelTimer = new HashedWheelTimer(TICK_DURATION, TimeUnit.MILLISECONDS, 10);
+
+        dummyRequestContextStack = new RequestContextStack() {
+            @Override
+            public <T> void forgetRequestContext(RequestContext<T> requestContext) {
+                //NOOP
+            }
+            @Override
+            public <T> SettableFuture<RpcResult<T>> storeOrFail(RequestContext<T> data) {
+                return data.getFuture();
+            }
+            @Override
+            public <T> RequestContext<T> createRequestContext() {
+                return new RequestContextImpl<>(this);
+            }
+        };
     }
 
     @Override
     public void deviceConnected(@CheckForNull final ConnectionContext connectionContext) {
         Preconditions.checkArgument(connectionContext != null);
         final DeviceState deviceState = new DeviceStateImpl(connectionContext.getFeatures(), connectionContext.getNodeId());
-        final DeviceContext deviceContext = new DeviceContextImpl(connectionContext, deviceState, dataBroker, hashedWheelTimer);
+        final DeviceContextImpl deviceContext = new DeviceContextImpl(connectionContext, deviceState, dataBroker, hashedWheelTimer);
+        final OpenflowProtocolListenerFullImpl messageListener = new OpenflowProtocolListenerFullImpl(
+                connectionContext.getConnectionAdapter(), deviceContext);
+        connectionContext.getConnectionAdapter().setMessageListener(messageListener);
 
         final Xid nodeDescXid = deviceContext.getNextXid();
-        final ListenableFuture<Collection<MultipartReply>> replyDesc = getNodeStaticInfo(nodeDescXid, connectionContext,
+        final ListenableFuture<Collection<MultipartReply>> replyDesc = getNodeStaticInfo(nodeDescXid, messageListener,
                 MultipartType.OFPMPDESC, deviceContext, deviceState.getNodeInstanceIdentifier(), deviceState.getVersion());
 
         final Xid nodeMeterXid = deviceContext.getNextXid();
-        final ListenableFuture<Collection<MultipartReply>> replyMeterFeature = getNodeStaticInfo(nodeMeterXid, connectionContext,
+        final ListenableFuture<Collection<MultipartReply>> replyMeterFeature = getNodeStaticInfo(nodeMeterXid, messageListener,
                 MultipartType.OFPMPMETERFEATURES, deviceContext, deviceState.getNodeInstanceIdentifier(), deviceState.getVersion());
 
         final Xid nodeGroupXid = deviceContext.getNextXid();
-        final ListenableFuture<Collection<MultipartReply>> replyGroupFeatures = getNodeStaticInfo(nodeGroupXid, connectionContext,
+        final ListenableFuture<Collection<MultipartReply>> replyGroupFeatures = getNodeStaticInfo(nodeGroupXid, messageListener,
                 MultipartType.OFPMPGROUPFEATURES, deviceContext, deviceState.getNodeInstanceIdentifier(), deviceState.getVersion());
 
         final Xid nodeTableXid = deviceContext.getNextXid();
-        final ListenableFuture<Collection<MultipartReply>> replyTableFeatures = getNodeStaticInfo(nodeTableXid, connectionContext,
+        final ListenableFuture<Collection<MultipartReply>> replyTableFeatures = getNodeStaticInfo(nodeTableXid, messageListener,
                 MultipartType.OFPMPTABLEFEATURES, deviceContext, deviceState.getNodeInstanceIdentifier(), deviceState.getVersion());
 
         final ListenableFuture<List<Collection<MultipartReply>>> deviceFeaturesFuture =
@@ -105,7 +120,7 @@ public class DeviceManagerImpl implements DeviceManager {
             public void onSuccess(final List<Collection<MultipartReply>> result) {
                 // FIXME : add statistics
                 rpcManager.deviceConnected(deviceContext);
-                ((DeviceContextImpl) deviceContext).submitTransaction();
+                deviceContext.submitTransaction();
             }
 
             @Override
@@ -120,25 +135,39 @@ public class DeviceManagerImpl implements DeviceManager {
         // TODO Auto-generated method stub
     }
 
-    private static ListenableFuture<Collection<MultipartReply>> getNodeStaticInfo(final Xid xid, final ConnectionContext cContext,
-            final MultipartType type, final DeviceContext dContext, final InstanceIdentifier<Node> nodeII, final short version) {
-        final ListenableFuture<Collection<MultipartReply>> future = cContext.registerMultipartMsg(xid.getValue());
-        Futures.addCallback(future, new FutureCallback<Collection<MultipartReply>>() {
+    private ListenableFuture<Collection<MultipartReply>> getNodeStaticInfo(final Xid xid,
+            final MultiMsgCollector multiMsgCollector, final MultipartType type, final DeviceContext dContext,
+            final InstanceIdentifier<Node> nodeII, final short version) {
+        final ListenableFuture<Collection<MultipartReply>> future = multiMsgCollector.registerMultipartMsg(xid.getValue());
+
+        RequestContext<List<MultipartReply>> requestContext = dummyRequestContextStack.createRequestContext();
+        dContext.hookRequestCtx(xid, requestContext);
+        Futures.addCallback(requestContext.getFuture(), new FutureCallback<RpcResult<List<MultipartReply>>>() {
             @Override
-            public void onSuccess(final Collection<MultipartReply> result) {
-                Preconditions.checkArgument(result != null);
-                translateAndWriteReply(type, dContext, nodeII, result);
+            public void onSuccess(final RpcResult<List<MultipartReply>> rpcResult) {
+                List<MultipartReply> result = rpcResult.getResult();
+                if (result != null) {
+                    translateAndWriteReply(type, dContext, nodeII, result);
+                } else {
+                    Iterator<RpcError> rpcErrorIterator = rpcResult.getErrors().iterator();
+                    while (rpcErrorIterator.hasNext()) {
+                        Throwable t = rpcErrorIterator.next().getCause();
+                        LOG.info("Failed to retrieve static node {} info: {}", type, t.getMessage());
+                        LOG.trace("Detailed error:", t);
+                    }
+                    if (MultipartType.OFPMPTABLE.equals(type)) {
+                        makeEmptyTables(dContext, nodeII, dContext.getPrimaryConnectionContext().getFeatures().getTables());
+                    }
+                }
             }
+
             @Override
             public void onFailure(final Throwable t) {
-                // TODO : ovs TableFeatures are broken for yet so we have to add workaround
-                if (MultipartType.OFPMPTABLE.equals(type)) {
-                    makeEmptyTables(dContext, nodeII, cContext.getFeatures().getTables());
-                }
                 LOG.info("Failed to retrieve static node {} info: {}", type, t.getMessage());
             }
         });
-        final Future<RpcResult<Void>> rpcFuture = cContext.getConnectionAdapter()
+
+        final Future<RpcResult<Void>> rpcFuture = dContext.getPrimaryConnectionContext().getConnectionAdapter()
                 .multipartRequest(MultipartRequestInputFactory.makeMultipartRequestInput(xid.getValue(), version, type));
         Futures.addCallback(JdkFutureAdapters.listenInPoolThread(rpcFuture), new FutureCallback<RpcResult<Void>>() {
             @Override
