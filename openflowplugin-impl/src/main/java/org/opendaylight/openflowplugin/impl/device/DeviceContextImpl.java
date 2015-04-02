@@ -7,14 +7,9 @@
  */
 package org.opendaylight.openflowplugin.impl.device;
 
-import java.math.BigInteger;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Future;
-
-import javax.annotation.Nonnull;
-
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.SettableFuture;
 import org.opendaylight.controller.md.sal.binding.api.BindingTransactionChain;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
@@ -23,17 +18,25 @@ import org.opendaylight.controller.md.sal.common.api.data.AsyncTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChain;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
-import org.opendaylight.openflowplugin.api.openflow.device.*;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceReplyProcessor;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
+import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
+import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
+import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
+import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.device.exception.DeviceDataException;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
-import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.impl.device.translator.PacketReceivedTranslator;
 import org.opendaylight.openflowplugin.impl.device.translator.PortUpdateTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SwitchConnectionCookieOFImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.*;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.Error;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemoved;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableFeatures;
 import org.opendaylight.yangtools.yang.binding.ChildOf;
@@ -43,10 +46,12 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Preconditions;
-import com.google.common.util.concurrent.SettableFuture;
+import javax.annotation.Nonnull;
+import java.math.BigInteger;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  *
@@ -151,15 +156,15 @@ public class DeviceContextImpl implements DeviceContext, DeviceReplyProcessor, T
         getRequests().remove(ofHeader.getXid());
         RpcResult<OfHeader> rpcResult;
 
-        if(ofHeader instanceof Error) {
+        if (ofHeader instanceof Error) {
             Error error = (Error) ofHeader;
             String message = "Operation on device failed";
-            rpcResult= RpcResultBuilder
+            rpcResult = RpcResultBuilder
                     .<OfHeader>failed()
                     .withError(RpcError.ErrorType.APPLICATION, message, new DeviceDataException(message, error))
                     .build();
         } else {
-            rpcResult= RpcResultBuilder
+            rpcResult = RpcResultBuilder
                     .<OfHeader>success()
                     .withResult(ofHeader)
                     .build();
@@ -178,10 +183,10 @@ public class DeviceContextImpl implements DeviceContext, DeviceReplyProcessor, T
         RequestContext requestContext = getRequests().get(xid.getValue());
         SettableFuture replyFuture = requestContext.getFuture();
         getRequests().remove(xid.getValue());
-        RpcResult<List<OfHeader>> rpcResult= RpcResultBuilder
-                                                .<List<OfHeader>>success()
-                                                .withResult(ofHeaderList)
-                                                .build();
+        RpcResult<List<OfHeader>> rpcResult = RpcResultBuilder
+                .<List<OfHeader>>success()
+                .withResult(ofHeaderList)
+                .build();
         replyFuture.set(rpcResult);
         try {
             requestContext.close();
@@ -196,7 +201,7 @@ public class DeviceContextImpl implements DeviceContext, DeviceReplyProcessor, T
 
         SettableFuture replyFuture = requestContext.getFuture();
         getRequests().remove(xid.getValue());
-        RpcResult<List<OfHeader>> rpcResult= RpcResultBuilder
+        RpcResult<List<OfHeader>> rpcResult = RpcResultBuilder
                 .<List<OfHeader>>failed()
                 .withError(RpcError.ErrorType.APPLICATION, "Message processing failed", deviceDataException)
                 .build();
@@ -231,7 +236,7 @@ public class DeviceContextImpl implements DeviceContext, DeviceReplyProcessor, T
 
     @Override
     public void onTransactionChainFailed(TransactionChain<?, ?> chain,
-            AsyncTransaction<?, ?> transaction, Throwable cause) {
+                                         AsyncTransaction<?, ?> transaction, Throwable cause) {
         txChainFactory.close();
         txChainFactory = dataBroker.createTransactionChain(DeviceContextImpl.this);
 
@@ -239,11 +244,21 @@ public class DeviceContextImpl implements DeviceContext, DeviceReplyProcessor, T
 
     @Override
     public void onTransactionChainSuccessful(TransactionChain<?, ?> chain) {
-     // NOOP - only yet, here is probably place for notification to get new WriteTransaction
+        // NOOP - only yet, here is probably place for notification to get new WriteTransaction
 
     }
 
     public void setTranslatorLibrary(TranslatorLibrary translatorLibrary) {
         this.translatorLibrary = translatorLibrary;
+    }
+
+
+    private class XidGenerator {
+
+        private AtomicLong xid = new AtomicLong(0);
+
+        public Xid generate() {
+            return new Xid(xid.incrementAndGet());
+        }
     }
 }
