@@ -9,8 +9,6 @@
 package org.opendaylight.openflowplugin.api.openflow.device;
 
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceConnectedHandler;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceContextReadyHandler;
-import org.opendaylight.yangtools.yang.binding.DataObject;
 
 /**
  * This interface is responsible for instantiating DeviceContext and
@@ -21,29 +19,5 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
  */
 public interface DeviceManager extends DeviceConnectedHandler {
 
-
-    /**
-     * Method allows to send message that will be using RequestContext
-     * wrapped by this context.
-     *
-     * @param dataObject
-     */
-    void sendMessage(DataObject dataObject, RequestContext requestContext);
-
-    /**
-     * Method allows to send rpc request that will be using RequestContext
-     * wrapped by this context.
-     *
-     * @param dataObject
-     */
-    Xid sendRequest(DataObject dataObject, RequestContext requestContext);
-
-    /**
-     * Method registers handler responsible for handling operations related to connected device after
-     * request context is created.
-     *
-     * @param deviceContextReadyHandler
-     */
-    public void addRequestContextReadyHandler(DeviceContextReadyHandler deviceContextReadyHandler);
-
 }
+

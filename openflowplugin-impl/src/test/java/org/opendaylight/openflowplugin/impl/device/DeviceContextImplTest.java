@@ -3,6 +3,7 @@ package org.opendaylight.openflowplugin.impl.device;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import com.google.common.util.concurrent.SettableFuture;
+import io.netty.util.HashedWheelTimer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -73,6 +74,8 @@ public class DeviceContextImplTest {
     ReadOnlyTransaction rTx;
     @Mock
     BindingTransactionChain txChainFactory;
+    @Mock
+    HashedWheelTimer timer;
 
     @Before
     public void setUp() {
@@ -85,24 +88,29 @@ public class DeviceContextImplTest {
         Mockito.when(txChainFactory.newWriteOnlyTransaction()).thenReturn(wTx);
         Mockito.when(dataBroker.newReadOnlyTransaction()).thenReturn(rTx);
 
-        deviceContext = new DeviceContextImpl(connectionContext, deviceState, dataBroker);
+        deviceContext = new DeviceContextImpl(connectionContext, deviceState, dataBroker, timer);
         xid = deviceContext.getNextXid();
         xidMulti = deviceContext.getNextXid();
     }
 
     @Test(expected = NullPointerException.class)
     public void testDeviceContextImplConstructorNullConnectionContext() {
-        new DeviceContextImpl(null, deviceState, dataBroker);
+        new DeviceContextImpl(null, deviceState, dataBroker, timer);
     }
 
     @Test(expected = NullPointerException.class)
     public void testDeviceContextImplConstructorNullDataBroker() {
-        new DeviceContextImpl(connectionContext, deviceState, null);
+        new DeviceContextImpl(connectionContext, deviceState, null, timer);
     }
 
     @Test(expected = NullPointerException.class)
     public void testDeviceContextImplConstructorNullDeviceState() {
-        new DeviceContextImpl(connectionContext, null, dataBroker);
+        new DeviceContextImpl(connectionContext, null, dataBroker, timer);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testDeviceContextImplConstructorNullTimer() {
+        new DeviceContextImpl(null, deviceState, dataBroker, null);
     }
 
     @Test
