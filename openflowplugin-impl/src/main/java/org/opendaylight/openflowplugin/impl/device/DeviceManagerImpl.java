@@ -19,7 +19,6 @@ import java.util.concurrent.Future;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
@@ -77,23 +76,22 @@ public class DeviceManagerImpl implements DeviceManager {
         final DataBroker dataBroker = providerContext.getSALService(DataBroker.class);
         final DeviceState deviceState = new DeviceStateImpl(connectionContext.getFeatures(), connectionContext.getNodeId());
         final DeviceContext deviceContext = new DeviceContextImpl(connectionContext, deviceState, dataBroker);
-        final WriteTransaction tx = deviceContext.getWriteTransaction();
 
         final Xid nodeDescXid = deviceContext.getNextXid();
         final ListenableFuture<Collection<MultipartReply>> replyDesc = getNodeStaticInfo(nodeDescXid, connectionContext,
-                MultipartType.OFPMPDESC, tx, deviceState.getNodeInstanceIdentifier(), deviceState.getVersion());
+                MultipartType.OFPMPDESC, deviceContext, deviceState.getNodeInstanceIdentifier(), deviceState.getVersion());
 
         final Xid nodeMeterXid = deviceContext.getNextXid();
         final ListenableFuture<Collection<MultipartReply>> replyMeterFeature = getNodeStaticInfo(nodeMeterXid, connectionContext,
-                MultipartType.OFPMPMETERFEATURES, tx, deviceState.getNodeInstanceIdentifier(), deviceState.getVersion());
+                MultipartType.OFPMPMETERFEATURES, deviceContext, deviceState.getNodeInstanceIdentifier(), deviceState.getVersion());
 
         final Xid nodeGroupXid = deviceContext.getNextXid();
         final ListenableFuture<Collection<MultipartReply>> replyGroupFeatures = getNodeStaticInfo(nodeGroupXid, connectionContext,
-                MultipartType.OFPMPGROUPFEATURES, tx, deviceState.getNodeInstanceIdentifier(), deviceState.getVersion());
+                MultipartType.OFPMPGROUPFEATURES, deviceContext, deviceState.getNodeInstanceIdentifier(), deviceState.getVersion());
 
         final Xid nodeTableXid = deviceContext.getNextXid();
         final ListenableFuture<Collection<MultipartReply>> replyTableFeatures = getNodeStaticInfo(nodeTableXid, connectionContext,
-                MultipartType.OFPMPTABLEFEATURES, tx, deviceState.getNodeInstanceIdentifier(), deviceState.getVersion());
+                MultipartType.OFPMPTABLEFEATURES, deviceContext, deviceState.getNodeInstanceIdentifier(), deviceState.getVersion());
 
         // FIXME : add statistics
         final RpcManager rpcManager = new RpcManagerImpl(providerContext);
@@ -101,7 +99,6 @@ public class DeviceManagerImpl implements DeviceManager {
         final RequestContext<?> requestContext = new RequestContextImpl<>(rcs);
         rpcManager.deviceConnected(deviceContext, requestContext);
         // TODO : barier...
-        tx.submit();
     }
 
     @Override
@@ -123,13 +120,13 @@ public class DeviceManagerImpl implements DeviceManager {
     }
 
     private static ListenableFuture<Collection<MultipartReply>> getNodeStaticInfo(final Xid xid, final ConnectionContext cContext,
-            final MultipartType type, final WriteTransaction tx, final InstanceIdentifier<Node> nodeII, final short version) {
+            final MultipartType type, final DeviceContext dContext, final InstanceIdentifier<Node> nodeII, final short version) {
         final ListenableFuture<Collection<MultipartReply>> future = cContext.registerMultipartMsg(xid.getValue());
         Futures.addCallback(future, new FutureCallback<Collection<MultipartReply>>() {
             @Override
             public void onSuccess(final Collection<MultipartReply> result) {
                 Preconditions.checkArgument(result != null);
-                translateAndWriteReply(type, tx, nodeII, result);
+                translateAndWriteReply(type, dContext, nodeII, result);
             }
             @Override
             public void onFailure(final Throwable t) {
@@ -151,7 +148,7 @@ public class DeviceManagerImpl implements DeviceManager {
         return future;
     }
 
-    private static void translateAndWriteReply(final MultipartType type, final WriteTransaction tx,
+    private static void translateAndWriteReply(final MultipartType type, final DeviceContext dContext,
             final InstanceIdentifier<Node> nodeII, final Collection<MultipartReply> result) {
         for (final MultipartReply reply : result) {
             switch (type) {
@@ -159,7 +156,7 @@ public class DeviceManagerImpl implements DeviceManager {
                 Preconditions.checkArgument(reply instanceof MultipartReplyDesc);
                 final FlowCapableNode fcNode = NodeStaticReplyTranslatorUtil.nodeDescTranslator((MultipartReplyDesc) reply);
                 final InstanceIdentifier<FlowCapableNode> fNodeII = nodeII.augmentation(FlowCapableNode.class);
-                tx.put(LogicalDatastoreType.OPERATIONAL, fNodeII, fcNode);
+                dContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, fNodeII, fcNode);
                 break;
 
             case OFPMPTABLEFEATURES:
@@ -168,7 +165,7 @@ public class DeviceManagerImpl implements DeviceManager {
                 for (final TableFeatures table : tables) {
                     final Short tableId = table.getTableId();
                     final InstanceIdentifier<Table> tableII = nodeII.augmentation(FlowCapableNode.class).child(Table.class, new TableKey(tableId));
-                    tx.put(LogicalDatastoreType.OPERATIONAL, tableII, new TableBuilder().setId(tableId).setTableFeatures(Collections.singletonList(table)).build());
+                    dContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, tableII, new TableBuilder().setId(tableId).setTableFeatures(Collections.singletonList(table)).build());
                 }
                 break;
 
@@ -176,14 +173,14 @@ public class DeviceManagerImpl implements DeviceManager {
                 Preconditions.checkArgument(reply instanceof MultipartReplyMeterFeatures);
                 final NodeMeterFeatures mFeature = NodeStaticReplyTranslatorUtil.nodeMeterFeatureTranslator((MultipartReplyMeterFeatures) reply);
                 final InstanceIdentifier<NodeMeterFeatures> mFeatureII = nodeII.augmentation(NodeMeterFeatures.class);
-                tx.put(LogicalDatastoreType.OPERATIONAL, mFeatureII, mFeature);
+                dContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, mFeatureII, mFeature);
                 break;
 
             case OFPMPGROUPFEATURES:
                 Preconditions.checkArgument(reply instanceof MultipartReplyGroupFeatures);
                 final NodeGroupFeatures gFeature = NodeStaticReplyTranslatorUtil.nodeGroupFeatureTranslator((MultipartReplyGroupFeatures) reply);
                 final InstanceIdentifier<NodeGroupFeatures> gFeatureII = nodeII.augmentation(NodeGroupFeatures.class);
-                tx.put(LogicalDatastoreType.OPERATIONAL, gFeatureII, gFeature);
+                dContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, gFeatureII, gFeature);
                 break;
 
             default:
