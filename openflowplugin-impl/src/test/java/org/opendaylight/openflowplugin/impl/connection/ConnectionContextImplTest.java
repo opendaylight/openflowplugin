@@ -9,12 +9,9 @@
 package org.opendaylight.openflowplugin.impl.connection;
 
 import static org.junit.Assert.fail;
+
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
-import java.util.Collection;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -23,24 +20,26 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
-import org.opendaylight.openflowplugin.api.openflow.device.XidGenerator;
 import org.opendaylight.openflowplugin.impl.connection.testutil.MsgGeneratorTestUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
+import java.util.Collection;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * openflowplugin-impl
  * org.opendaylight.openflowplugin.impl.connection
- *
+ * <p/>
  * test of {@link ConnectionContextImpl} - lightweight version, using basic ways (TDD)
  *
  * @author <a href="mailto:vdemcak@cisco.com">Vaclav Demcak</a>
- *
- * Created: Mar 26, 2015
+ *         <p/>
+ *         Created: Mar 26, 2015
  */
 @RunWith(MockitoJUnitRunner.class)
 public class ConnectionContextImplTest {
 
-    private static XidGenerator xidGenerator = new XidGenerator();
     private ConnectionContextImpl conContext;
 
     @Mock
@@ -57,8 +56,8 @@ public class ConnectionContextImplTest {
      */
     @Test
     @Ignore
-    public void testConnectionContextImpl(){
-    fail("Not yet implemented");
+    public void testConnectionContextImpl() {
+        fail("Not yet implemented");
     }
 
     /**
@@ -66,8 +65,8 @@ public class ConnectionContextImplTest {
      */
     @Test
     @Ignore
-    public void testGetConnectionAdapter(){
-    fail("Not yet implemented");
+    public void testGetConnectionAdapter() {
+        fail("Not yet implemented");
     }
 
     /**
@@ -75,8 +74,8 @@ public class ConnectionContextImplTest {
      */
     @Test
     @Ignore
-    public void testGetConnectionState(){
-    fail("Not yet implemented");
+    public void testGetConnectionState() {
+        fail("Not yet implemented");
     }
 
     /**
@@ -84,8 +83,8 @@ public class ConnectionContextImplTest {
      */
     @Test
     @Ignore
-    public void testGetNodeId(){
-    fail("Not yet implemented");
+    public void testGetNodeId() {
+        fail("Not yet implemented");
     }
 
     /**
@@ -93,8 +92,8 @@ public class ConnectionContextImplTest {
      */
     @Test
     @Ignore
-    public void testSetConnectionState(){
-    fail("Not yet implemented");
+    public void testSetConnectionState() {
+        fail("Not yet implemented");
     }
 
     /**
@@ -102,8 +101,8 @@ public class ConnectionContextImplTest {
      */
     @Test
     @Ignore
-    public void testGetFeatures(){
-    fail("Not yet implemented");
+    public void testGetFeatures() {
+        fail("Not yet implemented");
     }
 
     /**
@@ -111,16 +110,16 @@ public class ConnectionContextImplTest {
      */
     @Test
     @Ignore
-    public void testSetFeatures(){
-    fail("Not yet implemented");
+    public void testSetFeatures() {
+        fail("Not yet implemented");
     }
 
     /**
      * Test method for {@link org.opendaylight.openflowplugin.impl.connection.ConnectionContextImpl#registerMultipartMsg(long)}.
      */
     @Test
-    public void testRegisterMultipartMsg(){
-        final long xid = xidGenerator.generate().getValue();
+    public void testRegisterMultipartMsg() {
+        final long xid = 1l;
         final ListenableFuture<Collection<MultipartReply>> futureObj = conContext.registerMultipartMsg(xid);
         Assert.assertNotNull(futureObj);
         Assert.assertTrue(futureObj instanceof SettableFuture);
@@ -128,13 +127,14 @@ public class ConnectionContextImplTest {
 
     /**
      * Test method for {@link org.opendaylight.openflowplugin.impl.connection.ConnectionContextImpl#addMultipartMsg(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply)}.
+     *
      * @throws TimeoutException
      * @throws ExecutionException
      * @throws InterruptedException
      */
     @Test
-    public void testAddMultipartMsg() throws InterruptedException, ExecutionException, TimeoutException{
-        final long xid = xidGenerator.generate().getValue();
+    public void testAddMultipartMsg() throws InterruptedException, ExecutionException, TimeoutException {
+        final long xid = 1l;
         final ListenableFuture<Collection<MultipartReply>> futureObj = conContext.registerMultipartMsg(xid);
         Assert.assertNotNull(futureObj);
         final MultipartReply muplipartReply = MsgGeneratorTestUtils.makeMultipartDescReply(xid, "test-value", false);
