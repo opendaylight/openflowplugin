@@ -9,24 +9,13 @@
 package org.opendaylight.openflowplugin.api.openflow.device;
 
 import java.math.BigInteger;
-import java.util.Map;
-import java.util.concurrent.Future;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
-import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
-import org.opendaylight.openflowplugin.api.openflow.device.exception.DeviceDataException;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MessageHandler;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableFeatures;
 import org.opendaylight.yangtools.yang.binding.DataObject;
-import org.opendaylight.yangtools.yang.common.RpcResult;
-
-import com.google.common.util.concurrent.SettableFuture;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Future;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 /**
  * The central entity of OFP is the Device Context, which encapsulate the logical state of a switch
@@ -70,10 +59,9 @@ public interface DeviceContext extends MessageHandler {
     DeviceState getDeviceState();
 
     /**
-     * Method exposes transaction created for device
-     * represented by this context. This should be used as write only.
+     * Method exposes possibility for write a child of {@link DataObject} to transaction for DataStore.
      */
-    WriteTransaction getWriteTransaction();
+    <T extends DataObject> void writeToTransaction(final LogicalDatastoreType store, final InstanceIdentifier<T> path, final T data);
 
     /**
      * Method exposes transaction created for device
