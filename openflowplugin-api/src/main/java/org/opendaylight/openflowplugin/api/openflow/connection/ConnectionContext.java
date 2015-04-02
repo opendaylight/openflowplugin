@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.api.openflow.connection;
 
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 
@@ -18,7 +19,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * <p>
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 25.2.2015.
  */
-public interface ConnectionContext extends MultiMsgCollector {
+public interface ConnectionContext {
 
     /**
      * distinguished connection states
@@ -84,6 +85,4 @@ public interface ConnectionContext extends MultiMsgCollector {
      * @return featureReply as received from device during handshake
      */
     FeaturesReply getFeatures();
-
-
 }

@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.openflowplugin.impl.connection;
+package org.opendaylight.openflowplugin.impl.device.listener;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
@@ -18,10 +18,15 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import javax.annotation.CheckForNull;
-import org.opendaylight.openflowplugin.api.openflow.connection.MultiMsgCollector;
+
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceReplyProcessor;
+import org.opendaylight.openflowplugin.api.openflow.device.Xid;
+import org.opendaylight.openflowplugin.api.openflow.device.exception.DeviceDataException;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.slf4j.Logger;
@@ -45,6 +50,7 @@ class MultiMsgCollectorImpl implements MultiMsgCollector {
     private static final Logger LOG = LoggerFactory.getLogger(MultiMsgCollectorImpl.class);
 
     private final Cache<Long, MultiCollectorObject> cache;
+    private DeviceReplyProcessor deviceReplyProcessor;
 
     public MultiMsgCollectorImpl () {
         cache = initCacheBuilder(DEFAULT_TIME_OUT).build();
@@ -94,20 +100,25 @@ class MultiMsgCollectorImpl implements MultiMsgCollector {
         final Long xid = reply.getXid();
         final MultiCollectorObject cachedRef = cache.getIfPresent(xid);
         if (cachedRef == null) {
-            LOG.info("Orphaned multipart msg with XID : {}", xid);
+            LOG.trace("Orphaned multipart msg with XID : {}", xid);
+            deviceReplyProcessor.processException(new Xid(xid), new DeviceDataException("unknown xid received"));
             return;
         }
         cachedRef.add(reply);
         if ( ! reply.getFlags().isOFPMPFREQMORE()) {
             // flag OFPMFFREEQMORE false says "I'm a last one'
-            cachedRef.populateSettableFuture(); // settable futue has now whole collection
+            cachedRef.populateSettableFuture(xid); // settable futue has now whole collection
             cache.invalidate(xid);              // we don't need a reference anymore
         }
     }
 
+    public void setDeviceReplyProcessor(DeviceReplyProcessor deviceReplyProcessor) {
+        this.deviceReplyProcessor = deviceReplyProcessor;
+    }
+
     private class MultiCollectorObject {
         private final SettableFuture<Collection<MultipartReply>> future;
-        private final Collection<MultipartReply> replyCollection;
+        private final List<MultipartReply> replyCollection;
         private MultipartType msgType;
 
         MultiCollectorObject (final SettableFuture<Collection<MultipartReply>> future) {
@@ -121,8 +132,9 @@ class MultiMsgCollectorImpl implements MultiMsgCollector {
             replyCollection.add(reply);
         }
 
-        void populateSettableFuture() {
+        void populateSettableFuture(long xid) {
             future.set(replyCollection);
+            deviceReplyProcessor.processReply(new Xid(xid), replyCollection);
         }
 
         void invalidateFutureByTimeout() {
