@@ -109,6 +109,13 @@ public interface DeviceState {
     List<PortGrouping> getEnabledPorts();
 
     /**
+     * Return node current OF protocol version
+     *
+     * @return
+     */
+    short getVersion();
+
+    /**
      * @return seed value for random operations
      */
     int getSeed();

@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.impl;
 
 
+import java.util.Collection;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider;
@@ -18,7 +19,6 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager
 import org.opendaylight.openflowplugin.impl.device.DeviceManagerImpl;
 import org.opendaylight.openflowplugin.impl.rpc.RpcManagerImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.api.types.rev150327.OfpRole;
-import java.util.Collection;
 
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 27.3.2015.
@@ -47,7 +47,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider {
 
     @Override
     public void initialize() {
-        deviceManager = new DeviceManagerImpl();
+        deviceManager = new DeviceManagerImpl(providerContext);
         rpcManager = new RpcManagerImpl(providerContext);
         //TODO : initialize statistics manager
         //TODO : initialize translatorLibrary + inject into deviceMngr
