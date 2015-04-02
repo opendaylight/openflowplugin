@@ -12,6 +12,7 @@ import com.google.common.base.Function;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.FlowStatisticsService;
 import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.FlowTableStatisticsService;
@@ -19,13 +20,46 @@ import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.GroupS
 import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.MeterStatisticsService;
 import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.PortStatisticsService;
 import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.QueueStatisticsService;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.FlowStatsResponseConvertor;
-import org.opendaylight.openflowplugin.openflow.md.core.translator.MultipartReplyTranslator;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.MeterKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowsStatisticsUpdate;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.FlowTableStatisticsData;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.flow.table.and.statistics.map.FlowTableAndStatisticsMap;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.flow.table.statistics.FlowTableStatistics;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.flow.table.statistics.FlowTableStatisticsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.queues.Queue;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.queues.QueueKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.NodeGroupStatistics;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.group.statistics.GroupStatistics;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.group.statistics.GroupStatisticsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply.GroupStats;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.NodeMeterStatistics;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.nodes.node.meter.MeterStatistics;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.nodes.node.meter.MeterStatisticsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.statistics.reply.MeterStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessage;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.FlowCapableNodeConnectorStatisticsData;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.flow.capable.node.connector.statistics.FlowCapableNodeConnectorStatistics;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.flow.capable.node.connector.statistics.FlowCapableNodeConnectorStatisticsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.node.connector.statistics.and.port.number.map.NodeConnectorStatisticsAndPortNumberMap;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.FlowCapableNodeConnectorQueueStatisticsData;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.FlowCapableNodeConnectorQueueStatisticsDataBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.flow.capable.node.connector.queue.statistics.FlowCapableNodeConnectorQueueStatistics;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.flow.capable.node.connector.queue.statistics.FlowCapableNodeConnectorQueueStatisticsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.queue.id.and.statistics.map.QueueIdAndStatisticsMap;
+import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -115,7 +149,76 @@ public final class StatisticsGatheringUtils {
             @Override
             public Boolean apply(final RpcResult<List<MultipartReply>> rpcResult) {
                 if (rpcResult.isSuccessful()) {
-                    //TODO : implement data read and put them into transaction chain
+                    InstanceIdentifier basicIId = getInstanceIdentifier(deviceContext);
+                    for (MultipartReply singleReply : rpcResult.getResult()) {
+                        List<? extends DataObject> multipartDataList = MULTIPART_REPLY_TRANSLATOR.translate(deviceContext, singleReply);
+                        for (DataObject singleMultipartData : multipartDataList) {
+                            MultipartReplyMessage mpReply = (MultipartReplyMessage) singleMultipartData;
+                            switch (mpReply.getType()) {
+                                case OFPMPGROUPDESC:
+                                    final GroupStatistics groupStatistics = new GroupStatisticsBuilder((GroupStats) singleMultipartData).build();
+                                    final InstanceIdentifier<Group> groupIdent = basicIId.child(Group.class, new GroupKey(groupStatistics.getGroupId()));
+                                    final InstanceIdentifier<NodeGroupStatistics> nGroupStatIdent = groupIdent
+                                            .augmentation(NodeGroupStatistics.class);
+                                    final InstanceIdentifier<GroupStatistics> gsIdent = nGroupStatIdent.child(GroupStatistics.class);
+                                    deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, gsIdent, groupStatistics);
+                                    break;
+                                case OFPMPMETERCONFIG:
+                                    final MeterStatistics stats = new MeterStatisticsBuilder((MeterStats) singleMultipartData).build();
+                                    final InstanceIdentifier<Meter> meterIdent = basicIId.child(Meter.class, new MeterKey(stats.getMeterId()));
+                                    final InstanceIdentifier<NodeMeterStatistics> nodeMeterStatIdent = meterIdent
+                                            .augmentation(NodeMeterStatistics.class);
+                                    final InstanceIdentifier<MeterStatistics> msIdent = nodeMeterStatIdent.child(MeterStatistics.class);
+                                    deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, msIdent, stats);
+                                    break;
+                                case OFPMPPORTDESC:
+                                    NodeConnectorStatisticsAndPortNumberMap nodeConnectorStatisticsAndPortNumberMap = (NodeConnectorStatisticsAndPortNumberMap) singleMultipartData;
+                                    final FlowCapableNodeConnectorStatistics nodeConnectorStatistics = new FlowCapableNodeConnectorStatisticsBuilder(nodeConnectorStatisticsAndPortNumberMap).build();
+                                    final NodeConnectorKey key = new NodeConnectorKey(nodeConnectorStatisticsAndPortNumberMap.getNodeConnectorId());
+                                    final InstanceIdentifier<NodeConnector> nodeConnectorIdent = basicIId.child(NodeConnector.class, key);
+                                    final InstanceIdentifier<FlowCapableNodeConnectorStatisticsData> nodeConnStatIdent = nodeConnectorIdent
+                                            .augmentation(FlowCapableNodeConnectorStatisticsData.class);
+                                    final InstanceIdentifier<FlowCapableNodeConnectorStatistics> flowCapNodeConnStatIdent =
+                                            nodeConnStatIdent.child(FlowCapableNodeConnectorStatistics.class);
+                                    deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, flowCapNodeConnStatIdent, nodeConnectorStatistics);
+                                    break;
+                                case OFPMPTABLE:
+                                    FlowTableAndStatisticsMap flowTableAndStatisticsMap = (FlowTableAndStatisticsMap) singleMultipartData;
+                                    final InstanceIdentifier<Table> tableIdent = basicIId
+                                            .child(Table.class, new TableKey(flowTableAndStatisticsMap.getTableId().getValue()));
+                                    final FlowTableStatistics flowTableStatistics = new FlowTableStatisticsBuilder(flowTableAndStatisticsMap).build();
+                                    final InstanceIdentifier<FlowTableStatisticsData> tableStatIdent = tableIdent
+                                            .augmentation(FlowTableStatisticsData.class);
+
+                                    final InstanceIdentifier<FlowTableStatistics> tStatIdent = tableStatIdent.child(FlowTableStatistics.class);
+                                    deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, tStatIdent, flowTableStatistics);
+                                    break;
+                                case OFPMPQUEUE:
+                                    QueueIdAndStatisticsMap queueIdAndStatisticsMap = (QueueIdAndStatisticsMap) singleMultipartData;
+                                    final FlowCapableNodeConnectorQueueStatistics statChild =
+                                            new FlowCapableNodeConnectorQueueStatisticsBuilder(queueIdAndStatisticsMap).build();
+                                    final FlowCapableNodeConnectorQueueStatisticsDataBuilder statBuild =
+                                            new FlowCapableNodeConnectorQueueStatisticsDataBuilder();
+                                    statBuild.setFlowCapableNodeConnectorQueueStatistics(statChild);
+                                    final QueueKey qKey = new QueueKey(queueIdAndStatisticsMap.getQueueId());
+                                    final InstanceIdentifier<Queue> queueIdent = basicIId
+                                            .child(NodeConnector.class, new NodeConnectorKey(queueIdAndStatisticsMap.getNodeConnectorId()))
+                                            .augmentation(FlowCapableNodeConnector.class)
+                                            .child(Queue.class, qKey);
+                                    final InstanceIdentifier<FlowCapableNodeConnectorQueueStatisticsData> queueStatIdent = queueIdent.augmentation(FlowCapableNodeConnectorQueueStatisticsData.class);
+                                    deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, queueStatIdent, statBuild.build());
+                                    break;
+                                case OFPMPFLOW:
+                                    FlowsStatisticsUpdate flowsStatisticsUpdate = (FlowsStatisticsUpdate) singleMultipartData;
+                                    deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, basicIId, flowsStatisticsUpdate);
+                                    break;
+                                case OFPMPEXPERIMENTER:
+                                    //TODO : implement this
+                                    break;
+
+                            }
+                        }
+                    }
                     return Boolean.TRUE;
                 }
                 return Boolean.FALSE;
