@@ -27,5 +27,4 @@ public interface StatisticsManager extends DeviceContextReadyHandler {
     public void addRequestDeviceSynchronizedHandler(DeviceSynchronizedHandler deviceSynchronizedHandler);
 
 
-
 }
