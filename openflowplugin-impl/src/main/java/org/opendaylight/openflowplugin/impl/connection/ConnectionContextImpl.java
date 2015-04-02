@@ -26,6 +26,7 @@ public class ConnectionContextImpl implements ConnectionContext {
     private CONNECTION_STATE connectionState;
     private FeaturesReply featuresReply;
     private final MultiMsgCollector multipartCollector;
+    private NodeId nodeId;
 
     /**
      * @param connectionAdapter
@@ -47,8 +48,12 @@ public class ConnectionContextImpl implements ConnectionContext {
 
     @Override
     public NodeId getNodeId() {
-        // TODO Auto-generated method stub
-        return null;
+        return nodeId;
+    }
+
+    @Override
+    public void setNodeId(NodeId nodeId) {
+        this.nodeId = nodeId;
     }
 
     @Override

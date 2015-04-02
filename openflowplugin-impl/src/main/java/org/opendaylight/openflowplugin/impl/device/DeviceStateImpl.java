@@ -25,7 +25,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.features.reply.PhyPort;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 
@@ -52,17 +51,17 @@ class DeviceStateImpl implements DeviceState {
 
     public DeviceStateImpl(@CheckForNull final FeaturesReply featuresReply, @Nonnull final NodeId nodeId) {
         Preconditions.checkArgument(featuresReply != null);
-        Preconditions.checkArgument(featuresReply.getPhyPort() != null);
         featuresOutput = new GetFeaturesOutputBuilder(featuresReply).build();
         this.nodeId = Preconditions.checkNotNull(nodeId);
         nodeII = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(nodeId));
         version = featuresReply.getVersion();
         portGrouping = new HashMap<>();
         portsBandwidth = new HashMap<>();
-        for (final PhyPort port : featuresReply.getPhyPort()) {
-            portGrouping.put(port.getPortNo(), port);
-            portsBandwidth.put(port.getPortNo(), port.getMaxSpeed());
-        }
+//        TODO: remove ports
+//        for (final PhyPort port : featuresReply.getPhyPort()) {
+//            portGrouping.put(port.getPortNo(), port);
+//            portsBandwidth.put(port.getPortNo(), port.getMaxSpeed());
+//        }
     }
 
     @Override

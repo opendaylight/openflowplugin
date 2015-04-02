@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.connection;
 
+import org.opendaylight.openflowplugin.openflow.md.core.ErrorHandlerSimpleImpl;
+
 import java.net.InetAddress;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -98,6 +100,8 @@ public class ConnectionManagerImpl implements ConnectionManager {
                 ConnectionConductor.versionOrder);
         handshakeManager.setUseVersionBitmap(isBitmapNegotiationEnabled());
         handshakeManager.setHandshakeListener(handshakeListener);
+        handshakeManager.setErrorHandler(new ErrorHandlerSimpleImpl());
+
         return handshakeManager;
     }
 

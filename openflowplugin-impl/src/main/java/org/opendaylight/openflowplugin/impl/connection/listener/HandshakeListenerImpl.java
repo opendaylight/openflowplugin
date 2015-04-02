@@ -1,11 +1,13 @@
 /**
  * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
- * 
+ *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 package org.opendaylight.openflowplugin.impl.connection.listener;
+
+import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceConnectedHandler;
@@ -15,18 +17,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 
+ *
  */
 public class HandshakeListenerImpl implements HandshakeListener {
-    
+
     private static final Logger LOG = LoggerFactory.getLogger(HandshakeListenerImpl.class);
-    
+
     private ConnectionContext connectionContext;
     private DeviceConnectedHandler deviceConnectedHandler;
 
     /**
      * @param connectionContext
-     * @param deviceConnectedHandler 
+     * @param deviceConnectedHandler
      */
     public HandshakeListenerImpl(ConnectionContext connectionContext, DeviceConnectedHandler deviceConnectedHandler) {
         this.connectionContext = connectionContext;
@@ -37,7 +39,8 @@ public class HandshakeListenerImpl implements HandshakeListener {
     public void onHandshakeSuccessfull(GetFeaturesOutput featureOutput, Short version) {
         connectionContext.setConnectionState(ConnectionContext.CONNECTION_STATE.WORKING);
         connectionContext.setFeatures(featureOutput);
-        deviceConnectedHandler.deviceConnected(connectionContext); 
+        connectionContext.setNodeId(InventoryDataServiceUtil.nodeIdFromDatapathId(featureOutput.getDatapathId()));
+        deviceConnectedHandler.deviceConnected(connectionContext);
     }
 
     @Override

@@ -43,6 +43,12 @@ public interface ConnectionContext extends MultiMsgCollector {
     }
 
     /**
+     * setter for nodeId
+     * @param nodeId
+     */
+    void setNodeId(NodeId nodeId);
+
+    /**
      * Method returns identifier of device whic connection represents this context.
      *
      * @return {@link org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId}
@@ -78,5 +84,6 @@ public interface ConnectionContext extends MultiMsgCollector {
      * @return featureReply as received from device during handshake
      */
     FeaturesReply getFeatures();
+
 
 }
