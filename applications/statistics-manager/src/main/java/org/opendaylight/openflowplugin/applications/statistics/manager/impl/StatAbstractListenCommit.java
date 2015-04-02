@@ -8,9 +8,10 @@
 
 package org.opendaylight.openflowplugin.applications.statistics.manager.impl;
 
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
@@ -28,9 +29,6 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.NotificationListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 
 /**
  * statistics-manager
@@ -58,6 +56,7 @@ public abstract class StatAbstractListenCommit<T extends DataObject, N extends N
     private final DataBroker dataBroker;
 
     private volatile ReadOnlyTransaction currentReadTx;
+    private volatile boolean currentReadTxStale;
 
     /* Constructor has to make a registration */
     public StatAbstractListenCommit(final StatisticsManager manager, final DataBroker db,
@@ -80,17 +79,13 @@ public abstract class StatAbstractListenCommit<T extends DataObject, N extends N
     @Override
     public void onDataChanged(final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> changeEvent) {
         Preconditions.checkNotNull(changeEvent,"Async ChangeEvent can not be null!");
+
         /*
-         * If we have opened read transaction for configuration data store,
-         * we will close and null it.
+         * If we have opened read transaction for configuration data store, we need to mark it as stale.
          *
          * Latest read transaction will be allocated on another read using readLatestConfiguration
          */
-        if(currentReadTx != null) {
-            final ReadOnlyTransaction previous = currentReadTx;
-            currentReadTx = null;
-            previous.close();
-        }
+        currentReadTxStale = true;
     }
 
     @SuppressWarnings("unchecked")
@@ -134,15 +129,26 @@ public abstract class StatAbstractListenCommit<T extends DataObject, N extends N
      * @return
      */
     protected final <K extends DataObject> Optional<K> readLatestConfiguration(final InstanceIdentifier<K> path) {
-        if(currentReadTx == null) {
-             currentReadTx = dataBroker.newReadOnlyTransaction();
+        for(int i = 0; i < 2; i++) {
+            ReadOnlyTransaction localReadTx = currentReadTx;
+            if(localReadTx == null || currentReadTxStale) {
+                if(localReadTx != null) {
+                    localReadTx.close();
+                }
+
+                localReadTx = dataBroker.newReadOnlyTransaction();
+                currentReadTx = localReadTx;
+            }
+
+            try {
+                return localReadTx.read(LogicalDatastoreType.CONFIGURATION, path).checkedGet();
+            } catch (final ReadFailedException e) {
+                LOG.debug("It wasn't possible to read {} from datastore. Exception: {}", path, e);
+                currentReadTxStale = true;
+            }
         }
-        try {
-            return currentReadTx.read(LogicalDatastoreType.CONFIGURATION, path).checkedGet();
-        } catch (final ReadFailedException e) {
-            LOG.debug("It wasn't possible to read {} from datastore. Exception: {}", path, e);
-            return Optional.absent();
-        }
+
+        return Optional.absent();
     }
 }
 
