@@ -12,11 +12,13 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
+import io.netty.util.HashedWheelTimer;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
@@ -25,9 +27,7 @@ import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
-import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceContextReadyHandler;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.impl.common.MultipartRequestInputFactory;
 import org.opendaylight.openflowplugin.impl.common.NodeStaticReplyTranslatorUtil;
@@ -45,7 +45,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.meter.features._case.MultipartReplyMeterFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.table.features._case.MultipartReplyTableFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
-import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
@@ -58,20 +57,24 @@ public class DeviceManagerImpl implements DeviceManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceManagerImpl.class);
 
+    private static final long TICK_DURATION = 500; // 0.5 sec.
+
     private final RpcManager rpcManager;
     private final DataBroker dataBroker;
+    private final HashedWheelTimer hashedWheelTimer;
 
 
     public DeviceManagerImpl (@Nonnull final RpcManager rpcManager, @Nonnull final DataBroker dataBroker) {
         this.rpcManager = Preconditions.checkNotNull(rpcManager);
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
+        hashedWheelTimer = new HashedWheelTimer(TICK_DURATION, TimeUnit.MILLISECONDS, 10);
     }
 
     @Override
     public void deviceConnected(@CheckForNull final ConnectionContext connectionContext) {
         Preconditions.checkArgument(connectionContext != null);
         final DeviceState deviceState = new DeviceStateImpl(connectionContext.getFeatures(), connectionContext.getNodeId());
-        final DeviceContext deviceContext = new DeviceContextImpl(connectionContext, deviceState, dataBroker);
+        final DeviceContext deviceContext = new DeviceContextImpl(connectionContext, deviceState, dataBroker, hashedWheelTimer);
 
         final Xid nodeDescXid = deviceContext.getNextXid();
         final ListenableFuture<Collection<MultipartReply>> replyDesc = getNodeStaticInfo(nodeDescXid, connectionContext,
@@ -97,6 +100,7 @@ public class DeviceManagerImpl implements DeviceManager {
                 // FIXME : add statistics
                 rpcManager.deviceConnected(deviceContext);
                 ((DeviceContextImpl) deviceContext).submitTransaction();
+                ((DeviceContextImpl) deviceContext).submitTransaction();
             }
 
             @Override
@@ -104,24 +108,6 @@ public class DeviceManagerImpl implements DeviceManager {
                 // FIXME : remove session
             }
         });
-    }
-
-    @Override
-    public void sendMessage(final DataObject dataObject, final RequestContext requestContext) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public Xid sendRequest(final DataObject dataObject, final RequestContext requestContext) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public void addRequestContextReadyHandler(final DeviceContextReadyHandler deviceContextReadyHandler) {
-        // TODO Auto-generated method stub
-
     }
 
     private static ListenableFuture<Collection<MultipartReply>> getNodeStaticInfo(final Xid xid, final ConnectionContext cContext,

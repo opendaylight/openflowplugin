@@ -10,10 +10,14 @@ package org.opendaylight.openflowplugin.impl.device;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.SettableFuture;
+import io.netty.util.HashedWheelTimer;
+import io.netty.util.Timeout;
+import io.netty.util.TimerTask;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
@@ -57,30 +61,43 @@ public class DeviceContextImpl implements DeviceContext, DeviceReplyProcessor {
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceContextImpl.class);
 
+    private static Object TIMER_LOCK = new Object();
+
     private final ConnectionContext primaryConnectionContext;
     private final DeviceState deviceState;
     private final DataBroker dataBroker;
     private final XidGenerator xidGenerator;
+    private final HashedWheelTimer hashedWheelTimer;
     private Map<Long, RequestContext> requests = new HashMap<Long, RequestContext>();
 
     private final Map<SwitchConnectionDistinguisher, ConnectionContext> auxiliaryConnectionContexts;
     private final TransactionChainManager txChainManager;
     private TranslatorLibrary translatorLibrary;
+    boolean timerIsSetted;
 
     @VisibleForTesting
     DeviceContextImpl(@Nonnull final ConnectionContext primaryConnectionContext,
-                      @Nonnull final DeviceState deviceState, @Nonnull final DataBroker dataBroker) {
+                      @Nonnull final DeviceState deviceState, @Nonnull final DataBroker dataBroker,
+                      @Nonnull final HashedWheelTimer hashedWheelTimer) {
         this.primaryConnectionContext = Preconditions.checkNotNull(primaryConnectionContext);
         this.deviceState = Preconditions.checkNotNull(deviceState);
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
+        this.hashedWheelTimer = Preconditions.checkNotNull(hashedWheelTimer);
         xidGenerator = new XidGenerator();
         txChainManager = new TransactionChainManager(dataBroker, 500L);
         auxiliaryConnectionContexts = new HashMap<>();
         requests = new HashMap<>();
     }
 
+    /**
+     * This method is called from {@link DeviceManagerImpl} only. So we could say "posthandshake process finish"
+     * and we are able to change {@link DeviceState#setValid(TRUE)} what start a Timer (0,5sec) for every
+     * {@link TransactionChainManager#writeToTransaction(LogicalDatastoreType, InstanceIdentifier, DataObject)}
+     * to submit TxChain to DS
+     */
     void submitTransaction() {
         txChainManager.submitTransaction();
+        deviceState.setValid(true);
     }
 
     @Override
@@ -113,7 +130,25 @@ public class DeviceContextImpl implements DeviceContext, DeviceReplyProcessor {
     @Override
     public <T extends DataObject> void writeToTransaction(final LogicalDatastoreType store,
             final InstanceIdentifier<T> path, final T data) {
+
         txChainManager.writeToTransaction(store, path, data);
+
+        if (( ! timerIsSetted) && deviceState.isValid()) {
+            synchronized (TIMER_LOCK) {
+                if ( ! timerIsSetted) {
+                    timerIsSetted = true;
+                    hashedWheelTimer.newTimeout(new TimerTask() {
+                        @Override
+                        public void run(final Timeout timeout) throws Exception {
+                            txChainManager.submitTransaction();
+                            synchronized (TIMER_LOCK) {
+                                timerIsSetted = false;
+                            }
+                        }
+                    }, 0, TimeUnit.MILLISECONDS);
+                }
+            }
+        }
     }
 
     @Override
