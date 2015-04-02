@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.api.openflow.device;
 
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceConnectedHandler;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceContextReadyHandler;
 
 /**
  * This interface is responsible for instantiating DeviceContext and
@@ -19,5 +20,12 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceConnec
  */
 public interface DeviceManager extends DeviceConnectedHandler {
 
+    /**
+     * Method registers handler responsible for handling operations related to connected device after
+     * request context is created.
+     *
+     * @param deviceContextReadyHandler
+     */
+    public void addRequestContextReadyHandler(DeviceContextReadyHandler deviceContextReadyHandler);
 }
 

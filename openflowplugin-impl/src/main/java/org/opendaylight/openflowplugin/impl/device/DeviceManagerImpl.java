@@ -28,6 +28,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceContextReadyHandler;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.impl.common.MultipartRequestInputFactory;
 import org.opendaylight.openflowplugin.impl.common.NodeStaticReplyTranslatorUtil;
@@ -109,6 +110,11 @@ public class DeviceManagerImpl implements DeviceManager {
         });
     }
 
+    @Override
+    public void addRequestContextReadyHandler(final DeviceContextReadyHandler deviceContextReadyHandler) {
+        // TODO Auto-generated method stub
+    }
+
     private static ListenableFuture<Collection<MultipartReply>> getNodeStaticInfo(final Xid xid, final ConnectionContext cContext,
             final MultipartType type, final DeviceContext dContext, final InstanceIdentifier<Node> nodeII, final short version) {
         final ListenableFuture<Collection<MultipartReply>> future = cContext.registerMultipartMsg(xid.getValue());
@@ -178,5 +184,4 @@ public class DeviceManagerImpl implements DeviceManager {
             }
         }
     }
-
 }

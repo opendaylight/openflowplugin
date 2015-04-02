@@ -28,6 +28,7 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager
 import org.opendaylight.openflowplugin.impl.connection.ConnectionManagerImpl;
 import org.opendaylight.openflowplugin.impl.device.DeviceManagerImpl;
 import org.opendaylight.openflowplugin.impl.rpc.RpcManagerImpl;
+import org.opendaylight.openflowplugin.impl.statistics.StatisticsManagerImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.api.types.rev150327.OfpRole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,6 +56,9 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider {
         rpcManager = new RpcManagerImpl(providerContext);
         deviceManager = new DeviceManagerImpl(rpcManager, providerContext.getSALService(DataBroker.class));
         connectionManager.setDeviceConnectedHandler(deviceManager);
+        statisticsManager = new StatisticsManagerImpl();
+        deviceManager.addRequestContextReadyHandler(statisticsManager);
+        statisticsManager.addRequestDeviceSynchronizedHandler(rpcManager);
         //TODO : initialize statistics manager
         //TODO : initialize translatorLibrary + inject into deviceMngr
         startSwitchConnections();
