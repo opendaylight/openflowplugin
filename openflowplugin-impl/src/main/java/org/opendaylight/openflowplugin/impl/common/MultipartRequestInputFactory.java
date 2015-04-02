@@ -46,6 +46,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestTableCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestTableFeaturesCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestTableFeaturesCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.table.features._case.MultipartRequestTableFeaturesBuilder;
 
 /**
  * openflowplugin-impl
@@ -179,7 +180,9 @@ public final class MultipartRequestInputFactory {
         case OFPMPMETERFEATURES:
             return new MultipartRequestMeterFeaturesCaseBuilder().build();
         case OFPMPTABLEFEATURES:
-            return new MultipartRequestTableFeaturesCaseBuilder().build();
+            MultipartRequestTableFeaturesCaseBuilder tableFeaturesCaseBuilder = new MultipartRequestTableFeaturesCaseBuilder();
+            tableFeaturesCaseBuilder.setMultipartRequestTableFeatures(new MultipartRequestTableFeaturesBuilder().build());
+            return tableFeaturesCaseBuilder.build();
         case OFPMPPORTDESC:
             return new MultipartRequestPortDescCaseBuilder().build();
         case OFPMPEXPERIMENTER:

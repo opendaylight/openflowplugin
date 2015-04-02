@@ -41,6 +41,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.NodeMeterFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.MultipartReplyBody;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyDescCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyGroupFeaturesCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyMeterFeaturesCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyTableFeaturesCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.desc._case.MultipartReplyDesc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group.features._case.MultipartReplyGroupFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.meter.features._case.MultipartReplyMeterFeatures;
@@ -126,6 +131,10 @@ public class DeviceManagerImpl implements DeviceManager {
             }
             @Override
             public void onFailure(final Throwable t) {
+                // TODO : ovs TableFeatures are broken for yet so we have to add workaround
+                if (MultipartType.OFPMPTABLE.equals(type)) {
+                    makeEmptyTables(dContext, nodeII, cContext.getFeatures().getTables());
+                }
                 LOG.info("Failed to retrieve static node {} info: {}", type, t.getMessage());
             }
         });
@@ -144,20 +153,32 @@ public class DeviceManagerImpl implements DeviceManager {
         return future;
     }
 
+    // FIXME : remove after ovs tableFeatures fix
+    private static void makeEmptyTables(final DeviceContext dContext, final InstanceIdentifier<Node> nodeII, final Short nrOfTables) {
+        for (int i = 0; i < nrOfTables; i++) {
+            final short tId = (short) i;
+            final InstanceIdentifier<Table> tableII = nodeII.augmentation(FlowCapableNode.class).child(Table.class, new TableKey(tId));
+            dContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, tableII, new TableBuilder().setId(tId).build());
+        }
+    }
+
     private static void translateAndWriteReply(final MultipartType type, final DeviceContext dContext,
             final InstanceIdentifier<Node> nodeII, final Collection<MultipartReply> result) {
         for (final MultipartReply reply : result) {
+            final MultipartReplyBody body = reply.getMultipartReplyBody();
             switch (type) {
             case OFPMPDESC:
-                Preconditions.checkArgument(reply instanceof MultipartReplyDesc);
-                final FlowCapableNode fcNode = NodeStaticReplyTranslatorUtil.nodeDescTranslator((MultipartReplyDesc) reply);
+                Preconditions.checkArgument(body instanceof MultipartReplyDescCase);
+                final MultipartReplyDesc replyDesc = ((MultipartReplyDescCase) body).getMultipartReplyDesc();
+                final FlowCapableNode fcNode = NodeStaticReplyTranslatorUtil.nodeDescTranslator(replyDesc);
                 final InstanceIdentifier<FlowCapableNode> fNodeII = nodeII.augmentation(FlowCapableNode.class);
                 dContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, fNodeII, fcNode);
                 break;
 
             case OFPMPTABLEFEATURES:
-                Preconditions.checkArgument(reply instanceof MultipartReplyTableFeatures);
-                final List<TableFeatures> tables = NodeStaticReplyTranslatorUtil.nodeTableFeatureTranslator((MultipartReplyTableFeatures) reply);
+                Preconditions.checkArgument(body instanceof MultipartReplyTableFeaturesCase);
+                final MultipartReplyTableFeatures tableFeatures = ((MultipartReplyTableFeaturesCase) body).getMultipartReplyTableFeatures();
+                final List<TableFeatures> tables = NodeStaticReplyTranslatorUtil.nodeTableFeatureTranslator(tableFeatures);
                 for (final TableFeatures table : tables) {
                     final Short tableId = table.getTableId();
                     final InstanceIdentifier<Table> tableII = nodeII.augmentation(FlowCapableNode.class).child(Table.class, new TableKey(tableId));
@@ -166,15 +187,17 @@ public class DeviceManagerImpl implements DeviceManager {
                 break;
 
             case OFPMPMETERFEATURES:
-                Preconditions.checkArgument(reply instanceof MultipartReplyMeterFeatures);
-                final NodeMeterFeatures mFeature = NodeStaticReplyTranslatorUtil.nodeMeterFeatureTranslator((MultipartReplyMeterFeatures) reply);
+                Preconditions.checkArgument(body instanceof MultipartReplyMeterFeaturesCase);
+                final MultipartReplyMeterFeatures meterFeatures = ((MultipartReplyMeterFeaturesCase) body).getMultipartReplyMeterFeatures();
+                final NodeMeterFeatures mFeature = NodeStaticReplyTranslatorUtil.nodeMeterFeatureTranslator(meterFeatures);
                 final InstanceIdentifier<NodeMeterFeatures> mFeatureII = nodeII.augmentation(NodeMeterFeatures.class);
                 dContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, mFeatureII, mFeature);
                 break;
 
             case OFPMPGROUPFEATURES:
-                Preconditions.checkArgument(reply instanceof MultipartReplyGroupFeatures);
-                final NodeGroupFeatures gFeature = NodeStaticReplyTranslatorUtil.nodeGroupFeatureTranslator((MultipartReplyGroupFeatures) reply);
+                Preconditions.checkArgument(body instanceof MultipartReplyGroupFeaturesCase);
+                final MultipartReplyGroupFeatures groupFeatures = ((MultipartReplyGroupFeaturesCase) body).getMultipartReplyGroupFeatures();
+                final NodeGroupFeatures gFeature = NodeStaticReplyTranslatorUtil.nodeGroupFeatureTranslator(groupFeatures);
                 final InstanceIdentifier<NodeGroupFeatures> gFeatureII = nodeII.augmentation(NodeGroupFeatures.class);
                 dContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, gFeatureII, gFeature);
                 break;
