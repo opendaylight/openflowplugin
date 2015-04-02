@@ -9,7 +9,6 @@ package org.opendaylight.openflowplugin.impl.rpc;
 
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
-import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.impl.util.MdSalRegistratorUtils;
@@ -31,7 +30,7 @@ public class RpcManagerImpl implements RpcManager {
      * @see org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceContextReadyHandler#deviceConnected(org.opendaylight.openflowplugin.api.openflow.device.DeviceContext, org.opendaylight.openflowplugin.api.openflow.device.RequestContext)
      */
     @Override
-    public void deviceConnected(final DeviceContext deviceContext, final RequestContext requestContext) {
+    public void deviceConnected(final DeviceContext deviceContext) {
         final RpcContext rpcContext = new RpcContextImpl(providerContext, deviceContext);
         MdSalRegistratorUtils.registerServices(rpcContext, deviceContext);
     }

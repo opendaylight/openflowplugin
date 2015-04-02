@@ -11,7 +11,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
+import java.math.BigInteger;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Matchers;
@@ -29,9 +31,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalF
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yangtools.yang.binding.RpcService;
 import org.opendaylight.yangtools.yang.common.RpcResult;
-import java.math.BigInteger;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 public class RpcManagerImplTest {
 
@@ -41,7 +40,6 @@ public class RpcManagerImplTest {
 
     final ProviderContext mockedProviderContext = mock(ProviderContext.class);
     final RpcManagerImpl rpcManager = new RpcManagerImpl(mockedProviderContext);
-    final RequestContext mockedRequestContext = mock(RequestContext.class);
     final RpcContext mockedRpcContext = mock(RpcContext.class);
     final AddFlowInput mockedFlowInput = prepareTestingAddFlow();
     final DeviceContext mockedDeviceContext = mock(DeviceContext.class);
@@ -50,7 +48,7 @@ public class RpcManagerImplTest {
     @Test
     public void deviceConnectedTest() {
 
-        rpcManager.deviceConnected(mockedDeviceContext, mockedRequestContext);
+        rpcManager.deviceConnected(mockedDeviceContext);
 
         verify(mockedProviderContext, times(AWAITED_NUM_OF_CALL_ADD_ROUTED_RPC)).addRoutedRpcImplementation(
                 Matchers.any(Class.class), Matchers.any(RpcService.class));

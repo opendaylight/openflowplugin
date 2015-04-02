@@ -18,9 +18,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
+import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestDescCase;
@@ -40,18 +40,19 @@ public class DeviceManagerImplTest {
     @Mock
     private FeaturesReply features;
     @Mock
-    private ProviderContext providerContext;
+    private DataBroker dataBroker;
+    @Mock
+    private RpcManager rpcManager;
 
     /**
      * @throws java.lang.Exception
      */
     @Before
     public void setUp() throws Exception {
-        Mockito.when(providerContext.getSALService(DataBroker.class)).thenReturn(Mockito.mock(DataBroker.class));
         Mockito.when(connectionContext.getConnectionAdapter()).thenReturn(connectionAdapter);
         Mockito.when(connectionContext.getFeatures()).thenReturn(features);
         Mockito.when(features.getVersion()).thenReturn((short) 42);
-        deviceManager = new DeviceManagerImpl(providerContext);
+        deviceManager = new DeviceManagerImpl(rpcManager, dataBroker);
     }
 
     /**

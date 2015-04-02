@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.impl;
 
 
 import java.util.Collection;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider;
@@ -47,8 +48,8 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider {
 
     @Override
     public void initialize() {
-        deviceManager = new DeviceManagerImpl(providerContext);
         rpcManager = new RpcManagerImpl(providerContext);
+        deviceManager = new DeviceManagerImpl(rpcManager, providerContext.getSALService(DataBroker.class));
         //TODO : initialize statistics manager
         //TODO : initialize translatorLibrary + inject into deviceMngr
     }

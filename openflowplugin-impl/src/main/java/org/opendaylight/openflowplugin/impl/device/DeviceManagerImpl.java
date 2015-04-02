@@ -21,22 +21,16 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
-import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceContextReadyHandler;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.impl.common.MultipartRequestInputFactory;
 import org.opendaylight.openflowplugin.impl.common.NodeStaticReplyTranslatorUtil;
-import org.opendaylight.openflowplugin.impl.rpc.RequestContextImpl;
-import org.opendaylight.openflowplugin.impl.rpc.RpcContextImpl;
-import org.opendaylight.openflowplugin.impl.rpc.RpcManagerImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableBuilder;
@@ -64,17 +58,18 @@ public class DeviceManagerImpl implements DeviceManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceManagerImpl.class);
 
-    private final BindingAwareBroker.ProviderContext providerContext;
+    private final RpcManager rpcManager;
+    private final DataBroker dataBroker;
 
 
-    public DeviceManagerImpl (@Nonnull final ProviderContext providerContext) {
-        this.providerContext = Preconditions.checkNotNull(providerContext);
+    public DeviceManagerImpl (@Nonnull final RpcManager rpcManager, @Nonnull final DataBroker dataBroker) {
+        this.rpcManager = Preconditions.checkNotNull(rpcManager);
+        this.dataBroker = Preconditions.checkNotNull(dataBroker);
     }
 
     @Override
     public void deviceConnected(@CheckForNull final ConnectionContext connectionContext) {
         Preconditions.checkArgument(connectionContext != null);
-        final DataBroker dataBroker = providerContext.getSALService(DataBroker.class);
         final DeviceState deviceState = new DeviceStateImpl(connectionContext.getFeatures(), connectionContext.getNodeId());
         final DeviceContext deviceContext = new DeviceContextImpl(connectionContext, deviceState, dataBroker);
 
@@ -100,10 +95,7 @@ public class DeviceManagerImpl implements DeviceManager {
             @Override
             public void onSuccess(final List<Collection<MultipartReply>> result) {
                 // FIXME : add statistics
-                final RpcManager rpcManager = new RpcManagerImpl(providerContext);
-                final RequestContextStack rcs = new RpcContextImpl(providerContext, deviceContext);
-                final RequestContext<?> requestContext = new RequestContextImpl<>(rcs);
-                rpcManager.deviceConnected(deviceContext, requestContext);
+                rpcManager.deviceConnected(deviceContext);
                 ((DeviceContextImpl) deviceContext).submitTransaction();
             }
 
