@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -79,6 +80,7 @@ public class DeviceStateImplTest {
      * Test method for {@link DeviceStateImpl#DeviceStateImpl(FeaturesReply, NodeId)}.
      */
     @Test(expected=IllegalArgumentException.class)
+    @Ignore // Available for OF1.0 only
     public void testDeviceStateImplNullPhyPort(){
         final FeaturesReply emptyFeaturesReply = Mockito.mock(FeaturesReply.class);
         Mockito.when(emptyFeaturesReply.getPhyPort()).thenReturn(null);
@@ -111,6 +113,7 @@ public class DeviceStateImplTest {
      * Test method for {@link DeviceStateImpl#getPhysicalPorts()}.
      */
     @Test
+    @Ignore // Available for OF1.0 only
     public void testGetPhysicalPorts(){
         final Map<Long, PortGrouping> getPhysPort = deviceState.getPhysicalPorts();
         Assert.assertNotNull(getPhysPort);
@@ -121,6 +124,7 @@ public class DeviceStateImplTest {
      * Test method for {@link DeviceStateImpl#getPortsBandwidth()}.
      */
     @Test
+    @Ignore // Available for OF1.0 only
     public void testGetPortsBandwidth(){
         final Map<Long, Long> portBandwidth = deviceState.getPortsBandwidth();
         Assert.assertNotNull(portBandwidth);
@@ -132,6 +136,7 @@ public class DeviceStateImplTest {
      * Test method for {@link DeviceStateImpl#getPorts()}.
      */
     @Test
+    @Ignore // Available for OF1.0 only
     public void testGetPorts(){
         final Set<Long> portNrs = deviceState.getPorts();
         Assert.assertTrue(portNrs.contains(portNr));
@@ -141,6 +146,7 @@ public class DeviceStateImplTest {
      * Test method for {@link DeviceStateImpl#getPhysicalPort(java.lang.Long)}.
      */
     @Test
+    @Ignore // Available for OF1.0 only
     public void testGetPhysicalPort(){
         Assert.assertEquals(pPort.get(0), deviceState.getPhysicalPort(portNr));
     }
@@ -149,6 +155,7 @@ public class DeviceStateImplTest {
      * Test method for {@link DeviceStateImpl#getPortBandwidth(java.lang.Long)}.
      */
     @Test
+    @Ignore // Available for OF1.0 only
     public void testGetPortBandwidth(){
         Assert.assertEquals(portBandwidth, deviceState.getPortBandwidth((portNr)));
     }
@@ -157,6 +164,7 @@ public class DeviceStateImplTest {
      * Test method for {@link DeviceStateImpl#isPortEnabled(long)}.
      */
     @Test
+    @Ignore // Available for OF1.0 only
     public void testIsPortEnabledLong(){
         Assert.assertTrue(deviceState.isPortEnabled(portNr));
     }
@@ -165,6 +173,7 @@ public class DeviceStateImplTest {
      * Test method for {@link DeviceStateImpl#isPortEnabled(PortGrouping)}.
      */
     @Test
+    @Ignore // Available for OF1.0 only
     public void testIsPortEnabledPortGrouping(){
         Assert.assertTrue(deviceState.isPortEnabled(pPort.get(0)));
     }
@@ -173,6 +182,7 @@ public class DeviceStateImplTest {
      * Test method for {@link DeviceStateImpl#getEnabledPorts()}.
      */
     @Test
+    @Ignore // Available for OF1.0 only
     public void testGetEnabledPorts(){
         final List<PortGrouping> getEnabledPort = deviceState.getEnabledPorts();
         Assert.assertNotNull(getEnabledPort);

@@ -9,32 +9,36 @@
 package org.opendaylight.openflowplugin.api.openflow;
 
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
+
+import java.util.Collection;
+import org.opendaylight.controller.sal.binding.api.BindingAwareProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.api.types.rev150327.OfpRole;
-import java.util.Collection;
 
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 27.3.2015.
  */
-public interface OpenFlowPluginProvider extends AutoCloseable {
-
-
-    public void onSessionInitiated(BindingAwareBroker.ProviderContext session);
+public interface OpenFlowPluginProvider extends AutoCloseable, BindingAwareProvider {
 
     /**
      * Method sets openflow java's connection providers.
      */
-    public void setSwitchConnectionProviders(Collection<SwitchConnectionProvider> switchConnectionProvider);
+    void setSwitchConnectionProviders(Collection<SwitchConnectionProvider> switchConnectionProvider);
 
+    /**
+     * setter
+     * @param bindingAwareBroker
+     */
+    void setBindingAwareBroker(BindingAwareBroker bindingAwareBroker);
 
     /**
      * Method sets role of this application in clustered environment.
      */
-    public void setRole(OfpRole role);
+    void setRole(OfpRole role);
 
     /**
      * Method initializes all DeviceManager, RpcManager and related contexts.
      */
-    public void initialize();
+    void initialize();
 
 }
