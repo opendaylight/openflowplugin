@@ -8,32 +8,26 @@
 
 package org.opendaylight.openflowplugin.impl.statistics;
 
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.impl.rpc.RequestContextImpl;
+import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.MeterStatisticsService;
 import org.opendaylight.openflowplugin.impl.statistics.services.OpendaylightFlowStatisticsServiceImpl;
 import org.opendaylight.openflowplugin.impl.statistics.services.OpendaylightFlowTableStatisticsServiceImpl;
 import org.opendaylight.openflowplugin.impl.statistics.services.OpendaylightGroupStatisticsServiceImpl;
-import org.opendaylight.openflowplugin.impl.statistics.services.OpendaylightMeterStatisticsServiceImpl;
-import org.opendaylight.openflowplugin.impl.statistics.services.OpendaylightPortStatisticsServiceImpl;
-import org.opendaylight.openflowplugin.impl.statistics.services.OpendaylightQueueStatisticsServiceImpl;
+import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.PortStatisticsService;
+import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.QueueStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.OpendaylightFlowStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.OpendaylightFlowTableStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.OpendaylightGroupStatisticsService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.OpendaylightMeterStatisticsService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.OpendaylightPortStatisticsService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.OpendaylightQueueStatisticsService;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -49,9 +43,9 @@ public class StatisticsContextImpl implements StatisticsContext {
     private final OpendaylightFlowStatisticsService flowStatisticsService;
     private final OpendaylightFlowTableStatisticsService flowTableStatisticsService;
     private final OpendaylightGroupStatisticsService groupStatisticsService;
-    private final OpendaylightMeterStatisticsService meterStatisticsService;
-    private final OpendaylightPortStatisticsService portStatisticsService;
-    private final OpendaylightQueueStatisticsService queueStatisticsService;
+    private final MeterStatisticsService meterStatisticsService;
+    private final PortStatisticsService portStatisticsService;
+    private final QueueStatisticsService queueStatisticsService;
 
 
     public StatisticsContextImpl(DeviceContext deviceContext, RequestContext requestContext) {
@@ -61,9 +55,9 @@ public class StatisticsContextImpl implements StatisticsContext {
         flowStatisticsService = new OpendaylightFlowStatisticsServiceImpl(this, deviceContext);
         flowTableStatisticsService = new OpendaylightFlowTableStatisticsServiceImpl(this, deviceContext);
         groupStatisticsService = new OpendaylightGroupStatisticsServiceImpl(this, deviceContext);
-        meterStatisticsService = new OpendaylightMeterStatisticsServiceImpl(this, deviceContext);
-        portStatisticsService = new OpendaylightPortStatisticsServiceImpl(this, deviceContext);
-        queueStatisticsService = new OpendaylightQueueStatisticsServiceImpl(this, deviceContext);
+        meterStatisticsService = new MeterStatisticsService(this, deviceContext);
+        portStatisticsService = new PortStatisticsService(this, deviceContext);
+        queueStatisticsService = new QueueStatisticsService(this, deviceContext);
 
     }
 
@@ -76,7 +70,21 @@ public class StatisticsContextImpl implements StatisticsContext {
         ListenableFuture<Boolean> meterStatistics = StatisticsGatheringUtils.gatherMeterStatistics(meterStatisticsService, deviceContext);
         ListenableFuture<Boolean> portStatistics = StatisticsGatheringUtils.gatherPortStatistics(portStatisticsService, deviceContext);
         ListenableFuture<Boolean> queueStatistics = StatisticsGatheringUtils.gatherQueueStatistics(queueStatisticsService, deviceContext);
-        return null;
+
+        ListenableFuture<List<Boolean>> allFutures = Futures.allAsList(Arrays.asList(flowStatistics, tableStatistics, groupStatistics, meterStatistics, portStatistics, queueStatistics));
+        final SettableFuture<Void> resultingFuture = SettableFuture.create();
+        Futures.addCallback(allFutures, new FutureCallback<List<Boolean>>() {
+            @Override
+            public void onSuccess(final List<Boolean> booleans) {
+                resultingFuture.set(null);
+            }
+
+            @Override
+            public void onFailure(final Throwable throwable) {
+                resultingFuture.setException(throwable);
+            }
+        });
+        return resultingFuture;
     }
 
     @Override
