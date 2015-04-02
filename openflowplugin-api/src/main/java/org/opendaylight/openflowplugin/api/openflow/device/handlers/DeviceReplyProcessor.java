@@ -6,10 +6,11 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.openflowplugin.api.openflow.device;
+package org.opendaylight.openflowplugin.api.openflow.device.handlers;
 
 import java.util.List;
 
+import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.device.exception.DeviceDataException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.*;
 
@@ -31,7 +32,7 @@ public interface DeviceReplyProcessor {
      * @param xid,
      * @param ofHeaderList
      */
-    public void processReply(Xid xid, List<OfHeader> ofHeaderList);
+    public void processReply(Xid xid, List<MultipartReply> ofHeaderList);
 
     /**
      * Method that set exception to the future
