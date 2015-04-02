@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_62ebd9b0",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2015-04-02T16:33:00Z",
+      "side": 1,
+      "message": "move to place where initialization finished (first submit after rpcContext ready)",
+      "range": {
+        "startLine": 100,
+        "startChar": 8,
+        "endLine": 100,
+        "endChar": 28
+      },
+      "revId": "2c706123bf117e7cb6ecb4880c0bb86700aa8720",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_82de2510",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 136,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2015-04-02T16:33:00Z",
+      "side": 1,
+      "message": "please, move timing to submitTransaction place",
+      "range": {
+        "startLine": 136,
+        "startChar": 8,
+        "endLine": 136,
+        "endChar": 10
+      },
+      "revId": "2c706123bf117e7cb6ecb4880c0bb86700aa8720",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
