@@ -14,6 +14,7 @@ import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
@@ -26,7 +27,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
-import org.opendaylight.openflowplugin.api.openflow.device.XidGenerator;
 import org.opendaylight.openflowplugin.api.openflow.device.exception.DeviceDataException;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
@@ -162,7 +162,7 @@ public class DeviceContextImpl implements DeviceContext, DeviceReplyProcessor {
                     .withError(RpcError.ErrorType.APPLICATION, message, new DeviceDataException(message, error))
                     .build();
         } else {
-            rpcResult= RpcResultBuilder
+            rpcResult = RpcResultBuilder
                     .<OfHeader>success()
                     .withResult(ofHeader)
                     .build();
@@ -234,5 +234,15 @@ public class DeviceContextImpl implements DeviceContext, DeviceReplyProcessor {
 
     public void setTranslatorLibrary(final TranslatorLibrary translatorLibrary) {
         this.translatorLibrary = translatorLibrary;
+    }
+
+
+    private class XidGenerator {
+
+        private final AtomicLong xid = new AtomicLong(0);
+
+        public Xid generate() {
+            return new Xid(xid.incrementAndGet());
+        }
     }
 }

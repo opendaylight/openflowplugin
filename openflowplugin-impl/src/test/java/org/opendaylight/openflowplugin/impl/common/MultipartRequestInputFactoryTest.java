@@ -11,7 +11,6 @@ package org.opendaylight.openflowplugin.impl.common;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.opendaylight.openflowplugin.api.openflow.device.XidGenerator;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.MultipartRequestBody;
@@ -59,12 +58,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  */
 public class MultipartRequestInputFactoryTest {
 
-    private XidGenerator xidGenerator;
     private short ofVersion;
 
     @Before
     public void initialization() {
-        xidGenerator = new XidGenerator();
         ofVersion = 13;
     }
 
@@ -74,7 +71,7 @@ public class MultipartRequestInputFactoryTest {
      */
     @Test(expected=IllegalArgumentException.class)
     public void testMakeMultipartRequestInputLongShortMultipartTypeNullType(){
-        final long xid = xidGenerator.generate().getValue();
+        final long xid = 1l;
         MultipartRequestInputFactory.makeMultipartRequestInput(xid, ofVersion, null);
     }
 
@@ -84,7 +81,7 @@ public class MultipartRequestInputFactoryTest {
      */
     @Test
     public void testMakeMultipartRequestInputLongShortMultipartTypeDesc(){
-        final long xid = xidGenerator.generate().getValue();
+        final long xid = 1l;
         final MultipartType type = MultipartType.OFPMPDESC;
         final MultipartRequestInput multipartReqInput = MultipartRequestInputFactory.makeMultipartRequestInput(xid, ofVersion, type);
         final MultipartRequestDescCase defaultBodyForComparison = new MultipartRequestDescCaseBuilder().build();
@@ -97,7 +94,7 @@ public class MultipartRequestInputFactoryTest {
      */
     @Test
     public void testMakeMultipartRequestInputLongShortMultipartTypeFlow(){
-        final long xid = xidGenerator.generate().getValue();
+        final long xid = 1l;
         final MultipartType type = MultipartType.OFPMPFLOW;
         final MultipartRequestInput multipartReqInput = MultipartRequestInputFactory.makeMultipartRequestInput(xid, ofVersion, type);
         final MultipartRequestFlowCase defaultBodyForComparison = new MultipartRequestFlowCaseBuilder().build();
@@ -110,7 +107,7 @@ public class MultipartRequestInputFactoryTest {
      */
     @Test
     public void testMakeMultipartRequestInputLongShortMultipartTypeAggr(){
-        final long xid = xidGenerator.generate().getValue();
+        final long xid = 1l;
         final MultipartType type = MultipartType.OFPMPAGGREGATE;
         final MultipartRequestInput multipartReqInput = MultipartRequestInputFactory.makeMultipartRequestInput(xid, ofVersion, type);
         final MultipartRequestAggregateCase defaultBodyForComparison = new MultipartRequestAggregateCaseBuilder().build();
@@ -123,7 +120,7 @@ public class MultipartRequestInputFactoryTest {
      */
     @Test
     public void testMakeMultipartRequestInputLongShortMultipartTypeTable(){
-        final long xid = xidGenerator.generate().getValue();
+        final long xid = 1l;
         final MultipartType type = MultipartType.OFPMPTABLE;
         final MultipartRequestInput multipartReqInput = MultipartRequestInputFactory.makeMultipartRequestInput(xid, ofVersion, type);
         final MultipartRequestTableCase defaultBodyForComparison = new MultipartRequestTableCaseBuilder().build();
@@ -136,7 +133,7 @@ public class MultipartRequestInputFactoryTest {
      */
     @Test
     public void testMakeMultipartRequestInputLongShortMultipartTypePortStat(){
-        final long xid = xidGenerator.generate().getValue();
+        final long xid = 1l;
         final MultipartType type = MultipartType.OFPMPPORTSTATS;
         final MultipartRequestInput multipartReqInput = MultipartRequestInputFactory.makeMultipartRequestInput(xid, ofVersion, type);
         final MultipartRequestPortStatsCase defaultBodyForComparison = new MultipartRequestPortStatsCaseBuilder().build();
@@ -149,7 +146,7 @@ public class MultipartRequestInputFactoryTest {
      */
     @Test
     public void testMakeMultipartRequestInputLongShortMultipartTypeQueue(){
-        final long xid = xidGenerator.generate().getValue();
+        final long xid = 1l;
         final MultipartType type = MultipartType.OFPMPQUEUE;
         final MultipartRequestInput multipartReqInput = MultipartRequestInputFactory.makeMultipartRequestInput(xid, ofVersion, type);
         final MultipartRequestQueueCase defaultBodyForComparison = new MultipartRequestQueueCaseBuilder().build();
@@ -162,7 +159,7 @@ public class MultipartRequestInputFactoryTest {
      */
     @Test
     public void testMakeMultipartRequestInputLongShortMultipartTypeGroup(){
-        final long xid = xidGenerator.generate().getValue();
+        final long xid = 1l;
         final MultipartType type = MultipartType.OFPMPGROUP;
         final MultipartRequestInput multipartReqInput = MultipartRequestInputFactory.makeMultipartRequestInput(xid, ofVersion, type);
         final MultipartRequestGroupCase defaultBodyForComparison = new MultipartRequestGroupCaseBuilder().build();
@@ -175,7 +172,7 @@ public class MultipartRequestInputFactoryTest {
      */
     @Test
     public void testMakeMultipartRequestInputLongShortMultipartTypeGrupDesc(){
-        final long xid = xidGenerator.generate().getValue();
+        final long xid = 1l;
         final MultipartType type = MultipartType.OFPMPGROUPDESC;
         final MultipartRequestInput multipartReqInput = MultipartRequestInputFactory.makeMultipartRequestInput(xid, ofVersion, type);
         final MultipartRequestGroupDescCase defaultBodyForComparison = new MultipartRequestGroupDescCaseBuilder().build();
@@ -188,7 +185,7 @@ public class MultipartRequestInputFactoryTest {
      */
     @Test
     public void testMakeMultipartRequestInputLongShortMultipartTypeGroupFeaturs(){
-        final long xid = xidGenerator.generate().getValue();
+        final long xid = 1l;
         final MultipartType type = MultipartType.OFPMPGROUPFEATURES;
         final MultipartRequestInput multipartReqInput = MultipartRequestInputFactory.makeMultipartRequestInput(xid, ofVersion, type);
         final MultipartRequestGroupFeaturesCase defaultBodyForComparison = new MultipartRequestGroupFeaturesCaseBuilder().build();
@@ -201,7 +198,7 @@ public class MultipartRequestInputFactoryTest {
      */
     @Test
     public void testMakeMultipartRequestInputLongShortMultipartTypeMeter(){
-        final long xid = xidGenerator.generate().getValue();
+        final long xid = 1l;
         final MultipartType type = MultipartType.OFPMPMETER;
         final MultipartRequestInput multipartReqInput = MultipartRequestInputFactory.makeMultipartRequestInput(xid, ofVersion, type);
         final MultipartRequestMeterCase defaultBodyForComparison = new MultipartRequestMeterCaseBuilder().build();
@@ -214,7 +211,7 @@ public class MultipartRequestInputFactoryTest {
      */
     @Test
     public void testMakeMultipartRequestInputLongShortMultipartTypeMeterConf(){
-        final long xid = xidGenerator.generate().getValue();
+        final long xid = 1l;
         final MultipartType type = MultipartType.OFPMPMETERCONFIG;
         final MultipartRequestInput multipartReqInput = MultipartRequestInputFactory.makeMultipartRequestInput(xid, ofVersion, type);
         final MultipartRequestMeterConfigCase defaultBodyForComparison = new MultipartRequestMeterConfigCaseBuilder().build();
@@ -227,7 +224,7 @@ public class MultipartRequestInputFactoryTest {
      */
     @Test
     public void testMakeMultipartRequestInputLongShortMultipartTypeMeterFeatures(){
-        final long xid = xidGenerator.generate().getValue();
+        final long xid = 1l;
         final MultipartType type = MultipartType.OFPMPMETERFEATURES;
         final MultipartRequestInput multipartReqInput = MultipartRequestInputFactory.makeMultipartRequestInput(xid, ofVersion, type);
         final MultipartRequestMeterFeaturesCase defaultBodyForComparison = new MultipartRequestMeterFeaturesCaseBuilder().build();
@@ -240,7 +237,7 @@ public class MultipartRequestInputFactoryTest {
      */
     @Test
     public void testMakeMultipartRequestInputLongShortMultipartTypeTableFeatures(){
-        final long xid = xidGenerator.generate().getValue();
+        final long xid = 1l;
         final MultipartType type = MultipartType.OFPMPTABLEFEATURES;
         final MultipartRequestInput multipartReqInput = MultipartRequestInputFactory.makeMultipartRequestInput(xid, ofVersion, type);
         final MultipartRequestTableFeaturesCase defaultBodyForComparison = new MultipartRequestTableFeaturesCaseBuilder().build();
@@ -253,7 +250,7 @@ public class MultipartRequestInputFactoryTest {
      */
     @Test
     public void testMakeMultipartRequestInputLongShortMultipartTypePortDesc(){
-        final long xid = xidGenerator.generate().getValue();
+        final long xid = 1l;
         final MultipartType type = MultipartType.OFPMPPORTDESC;
         final MultipartRequestInput multipartReqInput = MultipartRequestInputFactory.makeMultipartRequestInput(xid, ofVersion, type);
         final MultipartRequestPortDescCase defaultBodyForComparison = new MultipartRequestPortDescCaseBuilder().build();
@@ -266,7 +263,7 @@ public class MultipartRequestInputFactoryTest {
      */
     @Test
     public void testMakeMultipartRequestInputLongShortMultipartTypeExperimenter(){
-        final long xid = xidGenerator.generate().getValue();
+        final long xid = 1l;
         final MultipartType type = MultipartType.OFPMPEXPERIMENTER;
         final MultipartRequestInput multipartReqInput = MultipartRequestInputFactory.makeMultipartRequestInput(xid, ofVersion, type);
         final MultipartRequestExperimenterCase defaultBodyForComparison = new MultipartRequestExperimenterCaseBuilder().build();
@@ -279,7 +276,7 @@ public class MultipartRequestInputFactoryTest {
      */
     @Test
     public void testMakeMultipartRequestInputLongShortMultipartTypeMultipartRequestBodyDesc(){
-        final long xid = xidGenerator.generate().getValue();
+        final long xid = 1l;
         final MultipartType type = MultipartType.OFPMPDESC;
         final MultipartRequestDescCase body = new MultipartRequestDescCaseBuilder().build();
         final MultipartRequestInput multipartReqInput = MultipartRequestInputFactory.makeMultipartRequestInput(xid, ofVersion, type, body);
@@ -292,7 +289,7 @@ public class MultipartRequestInputFactoryTest {
      */
     @Test
     public void testMakeMultipartRequestInputLongShortMultipartTypeMultipartRequestBodyFlow(){
-        final long xid = xidGenerator.generate().getValue();
+        final long xid = 1l;
         final MultipartType type = MultipartType.OFPMPFLOW;
         final MultipartRequestFlowCase body = new MultipartRequestFlowCaseBuilder().build();
         final MultipartRequestInput multipartReqInput = MultipartRequestInputFactory.makeMultipartRequestInput(xid, ofVersion, type, body);
@@ -305,7 +302,7 @@ public class MultipartRequestInputFactoryTest {
      */
     @Test
     public void testMakeMultipartRequestInputLongShortMultipartTypeMultipartRequestBodyAggr(){
-        final long xid = xidGenerator.generate().getValue();
+        final long xid = 1l;
         final MultipartType type = MultipartType.OFPMPAGGREGATE;
         final MultipartRequestAggregateCase body = new MultipartRequestAggregateCaseBuilder().build();
         final MultipartRequestInput multipartReqInput = MultipartRequestInputFactory.makeMultipartRequestInput(xid, ofVersion, type, body);
@@ -318,7 +315,7 @@ public class MultipartRequestInputFactoryTest {
      */
     @Test
     public void testMakeMultipartRequestInputLongShortMultipartTypeMultipartRequestBodyTable(){
-        final long xid = xidGenerator.generate().getValue();
+        final long xid = 1l;
         final MultipartType type = MultipartType.OFPMPTABLE;
         final MultipartRequestTableCase body = new MultipartRequestTableCaseBuilder().build();
         final MultipartRequestInput multipartReqInput = MultipartRequestInputFactory.makeMultipartRequestInput(xid, ofVersion, type, body);
@@ -331,7 +328,7 @@ public class MultipartRequestInputFactoryTest {
      */
     @Test
     public void testMakeMultipartRequestInputLongShortMultipartTypeMultipartRequestBodyPortStat(){
-        final long xid = xidGenerator.generate().getValue();
+        final long xid = 1l;
         final MultipartType type = MultipartType.OFPMPPORTSTATS;
         final MultipartRequestPortStatsCase body = new MultipartRequestPortStatsCaseBuilder().build();
         final MultipartRequestInput multipartReqInput = MultipartRequestInputFactory.makeMultipartRequestInput(xid, ofVersion, type, body);
@@ -344,7 +341,7 @@ public class MultipartRequestInputFactoryTest {
      */
     @Test
     public void testMakeMultipartRequestInputLongShortMultipartTypeMultipartRequestBodyQueue(){
-        final long xid = xidGenerator.generate().getValue();
+        final long xid = 1l;
         final MultipartType type = MultipartType.OFPMPQUEUE;
         final MultipartRequestQueueCase body = new MultipartRequestQueueCaseBuilder().build();
         final MultipartRequestInput multipartReqInput = MultipartRequestInputFactory.makeMultipartRequestInput(xid, ofVersion, type, body);
@@ -357,7 +354,7 @@ public class MultipartRequestInputFactoryTest {
      */
     @Test
     public void testMakeMultipartRequestInputLongShortMultipartTypeMultipartRequestBodyGroup(){
-        final long xid = xidGenerator.generate().getValue();
+        final long xid = 1l;
         final MultipartType type = MultipartType.OFPMPGROUP;
         final MultipartRequestGroupCase body = new MultipartRequestGroupCaseBuilder().build();
         final MultipartRequestInput multipartReqInput = MultipartRequestInputFactory.makeMultipartRequestInput(xid, ofVersion, type, body);
@@ -370,7 +367,7 @@ public class MultipartRequestInputFactoryTest {
      */
     @Test
     public void testMakeMultipartRequestInputLongShortMultipartTypeMultipartRequestBodyGrupDesc(){
-        final long xid = xidGenerator.generate().getValue();
+        final long xid = 1l;
         final MultipartType type = MultipartType.OFPMPGROUPDESC;
         final MultipartRequestGroupDescCase body = new MultipartRequestGroupDescCaseBuilder().build();
         final MultipartRequestInput multipartReqInput = MultipartRequestInputFactory.makeMultipartRequestInput(xid, ofVersion, type, body);
@@ -383,7 +380,7 @@ public class MultipartRequestInputFactoryTest {
      */
     @Test
     public void testMakeMultipartRequestInputLongShortMultipartTypeMultipartRequestBodyGroupFeaturs(){
-        final long xid = xidGenerator.generate().getValue();
+        final long xid = 1l;
         final MultipartType type = MultipartType.OFPMPGROUPFEATURES;
         final MultipartRequestGroupFeaturesCase body = new MultipartRequestGroupFeaturesCaseBuilder().build();
         final MultipartRequestInput multipartReqInput = MultipartRequestInputFactory.makeMultipartRequestInput(xid, ofVersion, type, body);
@@ -396,7 +393,7 @@ public class MultipartRequestInputFactoryTest {
      */
     @Test
     public void testMakeMultipartRequestInputLongShortMultipartTypeMultipartRequestBodyMeter(){
-        final long xid = xidGenerator.generate().getValue();
+        final long xid = 1l;
         final MultipartType type = MultipartType.OFPMPMETER;
         final MultipartRequestMeterCase body = new MultipartRequestMeterCaseBuilder().build();
         final MultipartRequestInput multipartReqInput = MultipartRequestInputFactory.makeMultipartRequestInput(xid, ofVersion, type, body);
@@ -409,7 +406,7 @@ public class MultipartRequestInputFactoryTest {
      */
     @Test
     public void testMakeMultipartRequestInputLongShortMultipartTypeMultipartRequestBodyMeterConf(){
-        final long xid = xidGenerator.generate().getValue();
+        final long xid = 1l;
         final MultipartType type = MultipartType.OFPMPMETERCONFIG;
         final MultipartRequestMeterConfigCase body = new MultipartRequestMeterConfigCaseBuilder().build();
         final MultipartRequestInput multipartReqInput = MultipartRequestInputFactory.makeMultipartRequestInput(xid, ofVersion, type, body);
@@ -422,7 +419,7 @@ public class MultipartRequestInputFactoryTest {
      */
     @Test
     public void testMakeMultipartRequestInputLongShortMultipartTypeMultipartRequestBodyMeterFeatures(){
-        final long xid = xidGenerator.generate().getValue();
+        final long xid = 1l;
         final MultipartType type = MultipartType.OFPMPMETERFEATURES;
         final MultipartRequestMeterFeaturesCase body = new MultipartRequestMeterFeaturesCaseBuilder().build();
         final MultipartRequestInput multipartReqInput = MultipartRequestInputFactory.makeMultipartRequestInput(xid, ofVersion, type, body);
@@ -435,7 +432,7 @@ public class MultipartRequestInputFactoryTest {
      */
     @Test
     public void testMakeMultipartRequestInputLongShortMultipartTypeMultipartRequestBodyTableFeatures(){
-        final long xid = xidGenerator.generate().getValue();
+        final long xid = 1l;
         final MultipartType type = MultipartType.OFPMPTABLEFEATURES;
         final MultipartRequestTableFeaturesCase body = new MultipartRequestTableFeaturesCaseBuilder().build();
         final MultipartRequestInput multipartReqInput = MultipartRequestInputFactory.makeMultipartRequestInput(xid, ofVersion, type, body);
@@ -448,7 +445,7 @@ public class MultipartRequestInputFactoryTest {
      */
     @Test
     public void testMakeMultipartRequestInputLongShortMultipartTypeMultipartRequestBodyPortDesc(){
-        final long xid = xidGenerator.generate().getValue();
+        final long xid = 1l;
         final MultipartType type = MultipartType.OFPMPPORTDESC;
         final MultipartRequestPortDescCase body = new MultipartRequestPortDescCaseBuilder().build();
         final MultipartRequestInput multipartReqInput = MultipartRequestInputFactory.makeMultipartRequestInput(xid, ofVersion, type, body);
@@ -461,7 +458,7 @@ public class MultipartRequestInputFactoryTest {
      */
     @Test
     public void testMakeMultipartRequestInputLongShortMultipartTypeMultipartRequestBodyExperimenter(){
-        final long xid = xidGenerator.generate().getValue();
+        final long xid = 1l;
         final MultipartType type = MultipartType.OFPMPEXPERIMENTER;
         final MultipartRequestExperimenterCase body = new MultipartRequestExperimenterCaseBuilder().build();
         final MultipartRequestInput multipartReqInput = MultipartRequestInputFactory.makeMultipartRequestInput(xid, ofVersion, type, body);
@@ -474,7 +471,7 @@ public class MultipartRequestInputFactoryTest {
      */
     @Test(expected=IllegalArgumentException.class)
     public void testMakeMultipartRequestInputLongShortMultipartTypeMultipartRequestBodyNullType(){
-        final long xid = xidGenerator.generate().getValue();
+        final long xid = 1l;
         final MultipartRequestDescCase body = new MultipartRequestDescCaseBuilder().build();
         MultipartRequestInputFactory.makeMultipartRequestInput(xid, ofVersion, null, body);
     }
@@ -485,7 +482,7 @@ public class MultipartRequestInputFactoryTest {
      */
     @Test(expected=IllegalArgumentException.class)
     public void testMakeMultipartRequestInputLongShortMultipartTypeMultipartRequestBodyNullBody(){
-        final long xid = xidGenerator.generate().getValue();
+        final long xid = 1l;
         final MultipartType type = MultipartType.OFPMPDESC;
         MultipartRequestInputFactory.makeMultipartRequestInput(xid, ofVersion, type, null);
     }
@@ -496,7 +493,7 @@ public class MultipartRequestInputFactoryTest {
      */
     @Test(expected=IllegalArgumentException.class)
     public void testMakeMultipartRequestInputLongShortMultipartTypeMultipartRequestBodyBadType(){
-        final long xid = xidGenerator.generate().getValue();
+        final long xid = 1l;
         final MultipartType type = MultipartType.OFPMPEXPERIMENTER;
         final MultipartRequestDescCase body = new MultipartRequestDescCaseBuilder().build();
         MultipartRequestInputFactory.makeMultipartRequestInput(xid, ofVersion, type, body);
@@ -509,7 +506,7 @@ public class MultipartRequestInputFactoryTest {
      */
     @Test
     public void testMakeMultipartRequestInputLongShortMultipartTypeBoolean(){
-        final long xid = xidGenerator.generate().getValue();
+        final long xid = 1l;
         final MultipartType type = MultipartType.OFPMPDESC;
         final MultipartRequestInput multipartReqInput = MultipartRequestInputFactory.makeMultipartRequestInput(xid, ofVersion, type, true);
         final MultipartRequestDescCase defaultBodyForComparison = new MultipartRequestDescCaseBuilder().build();
@@ -524,7 +521,7 @@ public class MultipartRequestInputFactoryTest {
      */
     @Test
     public void testMakeMultipartRequestInputLongShortMultipartTypeBooleanMultipartRequestBody(){
-        final long xid = xidGenerator.generate().getValue();
+        final long xid = 1l;
         final MultipartType type = MultipartType.OFPMPDESC;
         final MultipartRequestDescCase body = new MultipartRequestDescCaseBuilder().build();
         final MultipartRequestInput multipartReqInput = MultipartRequestInputFactory.makeMultipartRequestInput(xid, ofVersion, type, true, body);

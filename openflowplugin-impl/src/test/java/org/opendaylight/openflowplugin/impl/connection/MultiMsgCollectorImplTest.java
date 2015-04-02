@@ -21,7 +21,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import org.junit.Before;
 import org.junit.Test;
-import org.opendaylight.openflowplugin.api.openflow.device.XidGenerator;
 import org.opendaylight.openflowplugin.impl.connection.testutil.MsgGeneratorTestUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
@@ -41,7 +40,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  */
 public class MultiMsgCollectorImplTest {
 
-    private static XidGenerator xidGenerator = new XidGenerator();
     private MultiMsgCollectorImpl collector;
 
     @Before
@@ -57,7 +55,7 @@ public class MultiMsgCollectorImplTest {
      */
     @Test
     public void testRegisterMultipartMsg() throws InterruptedException, ExecutionException, TimeoutException{
-        final long xid = xidGenerator.generate().getValue();
+        final long xid = 1l;
         final String hwTestValue = "test-value";
         final ListenableFuture<Collection<MultipartReply>> response = collector.registerMultipartMsg(xid);
         collector.addMultipartMsg(MsgGeneratorTestUtils.makeMultipartDescReply(xid, hwTestValue, false));
@@ -73,7 +71,7 @@ public class MultiMsgCollectorImplTest {
      */
     @Test
     public void testAddMultipartMsg() throws InterruptedException, ExecutionException, TimeoutException{
-        final long xid = xidGenerator.generate().getValue();
+        final long xid = 1l;
         final String hwTestValue1 = "test-value1";
         final String hwTestValue2 = "test-value2";
         final ListenableFuture<Collection<MultipartReply>> response = collector.registerMultipartMsg(xid);
@@ -88,7 +86,7 @@ public class MultiMsgCollectorImplTest {
      */
     @Test
     public void testAddMultipartMsgNotExpectedXid() {
-        final long xid = xidGenerator.generate().getValue();
+        final long xid = 1l;
         final String hwTestValue = "test-value";
         collector.addMultipartMsg(MsgGeneratorTestUtils.makeMultipartDescReply(xid, hwTestValue, true));
     }
@@ -100,7 +98,7 @@ public class MultiMsgCollectorImplTest {
      */
     @Test
     public void testCheckExistMultipartMsgInCacheAfterTimeout() throws InterruptedException, TimeoutException {
-        final long xid = xidGenerator.generate().getValue();
+        final long xid = 1l;
         try {
             final ListenableFuture<Collection<MultipartReply>> response = collector.registerMultipartMsg(xid);
             assertNotNull(response);
@@ -125,7 +123,7 @@ public class MultiMsgCollectorImplTest {
      */
     @Test
     public void testCheckErrorForBadMultipartMsgType() throws InterruptedException {
-        final long xid = xidGenerator.generate().getValue();
+        final long xid = 1l;
         final ListenableFuture<Collection<MultipartReply>> response = collector.registerMultipartMsg(xid);
         assertNotNull(response);
         collector.addMultipartMsg(MsgGeneratorTestUtils.makeMultipartDescReply(xid, "hw-text-value", true));

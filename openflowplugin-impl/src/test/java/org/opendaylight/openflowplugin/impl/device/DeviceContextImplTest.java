@@ -26,7 +26,6 @@ import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
-import org.opendaylight.openflowplugin.api.openflow.device.XidGenerator;
 import org.opendaylight.openflowplugin.api.openflow.device.exception.DeviceDataException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartRequestFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.Error;
@@ -53,8 +52,6 @@ import org.slf4j.LoggerFactory;
 public class DeviceContextImplTest {
     private static final Logger LOG = LoggerFactory
             .getLogger(DeviceContextImplTest.class);
-    XidGenerator xidGen;
-
     Xid xid;
     Xid xidMulti;
     DeviceContextImpl deviceContext;
@@ -91,20 +88,19 @@ public class DeviceContextImplTest {
         deviceContext = new DeviceContextImpl(connectionContext, deviceState, dataBroker);
         xid = deviceContext.getNextXid();
         xidMulti = deviceContext.getNextXid();
-        xidGen = new XidGenerator();
     }
 
-    @Test(expected=NullPointerException.class)
+    @Test(expected = NullPointerException.class)
     public void testDeviceContextImplConstructorNullConnectionContext() {
         new DeviceContextImpl(null, deviceState, dataBroker);
     }
 
-    @Test(expected=NullPointerException.class)
+    @Test(expected = NullPointerException.class)
     public void testDeviceContextImplConstructorNullDataBroker() {
         new DeviceContextImpl(connectionContext, deviceState, null);
     }
 
-    @Test(expected=NullPointerException.class)
+    @Test(expected = NullPointerException.class)
     public void testDeviceContextImplConstructorNullDeviceState() {
         new DeviceContextImpl(connectionContext, null, dataBroker);
     }
@@ -225,15 +221,15 @@ public class DeviceContextImplTest {
                                                         .setMultipartReplyDesc(descValue).build();
         final List<OfHeader> multipartReplies = new ArrayList<OfHeader>();
         multipartReplies.add(new MultipartReplyMessageBuilder()
-                                    .setMultipartReplyBody(replyBody)
-                                    .setXid(xid.getValue())
-                                    .setFlags(new MultipartRequestFlags(false))
-                                    .build());
+                .setMultipartReplyBody(replyBody)
+                .setXid(xid.getValue())
+                .setFlags(new MultipartRequestFlags(false))
+                .build());
         multipartReplies.add(new MultipartReplyMessageBuilder()
-                                    .setMultipartReplyBody(replyBody)
-                                    .setXid(xid.getValue())
-                                    .setFlags(new MultipartRequestFlags(true))
-                                    .build());
+                .setMultipartReplyBody(replyBody)
+                .setXid(xid.getValue())
+                .setFlags(new MultipartRequestFlags(true))
+                .build());
         return multipartReplies;
     }
 
@@ -259,8 +255,8 @@ public class DeviceContextImplTest {
                 final DeviceDataException cause = (DeviceDataException) errors.get(0).getCause();
                 Assert.assertTrue(cause.getCause() instanceof NullPointerException);
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
-                LOG.error("Test failed when checking RequestContext.future", e);
-                fail("fail");
+            LOG.error("Test failed when checking RequestContext.future", e);
+            fail("fail");
         }
         Assert.assertTrue(deviceContext.getRequests().isEmpty());
     }
