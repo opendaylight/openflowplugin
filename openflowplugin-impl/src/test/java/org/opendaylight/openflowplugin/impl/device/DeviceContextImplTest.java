@@ -2,14 +2,13 @@ package org.opendaylight.openflowplugin.impl.device;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
-
+import com.google.common.util.concurrent.SettableFuture;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,8 +49,6 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.util.concurrent.SettableFuture;
-
 @RunWith(MockitoJUnitRunner.class)
 public class DeviceContextImplTest {
     private static final Logger LOG = LoggerFactory
@@ -61,6 +58,7 @@ public class DeviceContextImplTest {
     Xid xid;
     Xid xidMulti;
     DeviceContextImpl deviceContext;
+    DeviceTransactionChainManager txChainManager;
     @Mock
     RequestContext<GetAsyncReply> requestContext;
     @Mock
@@ -81,12 +79,13 @@ public class DeviceContextImplTest {
 
     @Before
     public void setUp() {
-        SettableFuture<RpcResult<GetAsyncReply>> settableFuture = SettableFuture.create();
-        SettableFuture<RpcResult<MultipartReply>> settableFutureMultiReply = SettableFuture.create();
+        Mockito.when(dataBroker.createTransactionChain(Mockito.any(DeviceTransactionChainManager.class))).thenReturn(txChainFactory);
+        txChainManager = new DeviceTransactionChainManager(dataBroker);
+        final SettableFuture<RpcResult<GetAsyncReply>> settableFuture = SettableFuture.create();
+        final SettableFuture<RpcResult<MultipartReply>> settableFutureMultiReply = SettableFuture.create();
         Mockito.when(requestContext.getFuture()).thenReturn(settableFuture);
         Mockito.when(requestContextMultiReply.getFuture()).thenReturn(settableFutureMultiReply);
         Mockito.when(txChainFactory.newWriteOnlyTransaction()).thenReturn(wTx);
-        Mockito.when(dataBroker.createTransactionChain(Mockito.any(DeviceContextImpl.class))).thenReturn(txChainFactory);
         Mockito.when(dataBroker.newReadOnlyTransaction()).thenReturn(rTx);
 
         deviceContext = new DeviceContextImpl(connectionContext, deviceState, dataBroker);
@@ -124,15 +123,8 @@ public class DeviceContextImplTest {
         Assert.assertEquals(rTx, readTx);
     }
 
-    @Test
-    public void testGetWriteTransaction() {
-        final WriteTransaction writeTx = deviceContext.getWriteTransaction();
-        Assert.assertNotNull(writeTx);
-        Assert.assertEquals(wTx, writeTx);
-    }
-
-    private static GetAsyncOutput createAsyncOutput(Xid xid) {
-        GetAsyncOutputBuilder asyncOutputBuilder = new GetAsyncOutputBuilder();
+    private static GetAsyncOutput createAsyncOutput(final Xid xid) {
+        final GetAsyncOutputBuilder asyncOutputBuilder = new GetAsyncOutputBuilder();
         asyncOutputBuilder.setFlowRemovedMask(Collections.<FlowRemovedMask> emptyList());
         asyncOutputBuilder.setPacketInMask(Collections.<PacketInMask> emptyList());
         asyncOutputBuilder.setPortStatusMask(Collections.<PortStatusMask> emptyList());
@@ -143,7 +135,7 @@ public class DeviceContextImplTest {
 
     @Test
     public void testProcessReply() {
-        GetAsyncOutput asyncOutput = createAsyncOutput(xid);
+        final GetAsyncOutput asyncOutput = createAsyncOutput(xid);
         LOG.info("Hooking RequestContext");
         deviceContext.hookRequestCtx(xid, requestContext);
         Assert.assertEquals(requestContext, deviceContext.getRequests().get(xid.getValue()));
@@ -155,9 +147,9 @@ public class DeviceContextImplTest {
 
         LOG.info("Checking RequestContext.future");
         try {
-            Object object = requestContext.getFuture().get(1L, TimeUnit.SECONDS);
-            RpcResult<OfHeader> rpcResult = (RpcResult<OfHeader>) object;
-            GetAsyncOutput getAsyncOutput = (GetAsyncOutput) rpcResult.getResult();
+            final Object object = requestContext.getFuture().get(1L, TimeUnit.SECONDS);
+            final RpcResult<OfHeader> rpcResult = (RpcResult<OfHeader>) object;
+            final GetAsyncOutput getAsyncOutput = (GetAsyncOutput) rpcResult.getResult();
             assertEquals(asyncOutput.getVersion(), getAsyncOutput.getVersion());
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             LOG.error("Test failed when checking RequestContext.future", e);
@@ -166,8 +158,8 @@ public class DeviceContextImplTest {
         Assert.assertTrue(deviceContext.getRequests().isEmpty());
     }
 
-    private static Error createError(Xid xid) {
-        ErrorMessageBuilder errorMessageBuilder = new ErrorMessageBuilder();
+    private static Error createError(final Xid xid) {
+        final ErrorMessageBuilder errorMessageBuilder = new ErrorMessageBuilder();
         errorMessageBuilder.setCode(42);
         errorMessageBuilder.setCodeString("42");
         errorMessageBuilder.setXid(xid.getValue());
@@ -182,18 +174,18 @@ public class DeviceContextImplTest {
 
         Assert.assertFalse(requestContext.getFuture().isDone());
         LOG.info("Sending error reply from device");
-        Error error = createError(xid);
+        final Error error = createError(xid);
         deviceContext.processReply(error);
         Assert.assertTrue(requestContext.getFuture().isDone());
 
         LOG.info("Checking RequestContext.future");
         try {
-            Object object = requestContext.getFuture().get(1L, TimeUnit.SECONDS);
-            RpcResult<OfHeader> rpcResult = (RpcResult<OfHeader>) object;
+            final Object object = requestContext.getFuture().get(1L, TimeUnit.SECONDS);
+            final RpcResult<OfHeader> rpcResult = (RpcResult<OfHeader>) object;
             Assert.assertFalse(rpcResult.isSuccessful());
-            List<RpcError> errors = (List<RpcError>) rpcResult.getErrors();
+            final List<RpcError> errors = (List<RpcError>) rpcResult.getErrors();
             Assert.assertTrue(errors.get(0).getCause() instanceof DeviceDataException);
-            DeviceDataException cause = (DeviceDataException) errors.get(0).getCause();
+            final DeviceDataException cause = (DeviceDataException) errors.get(0).getCause();
             Assert.assertEquals(error, cause.getError());
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             LOG.error("Test failed when checking RequestContext.future", e);
@@ -215,10 +207,10 @@ public class DeviceContextImplTest {
 
         LOG.info("Checking RequestContext.future");
         try {
-            Object object = requestContextMultiReply.getFuture().get(1L, TimeUnit.SECONDS);
-            RpcResult<List<OfHeader>> rpcResult = (RpcResult<List<OfHeader>>) object;
-            List<OfHeader> multipartReplies = rpcResult.getResult();
-            List<OfHeader> expectedMpReplies = createMultipartReplyList(xidMulti);
+            final Object object = requestContextMultiReply.getFuture().get(1L, TimeUnit.SECONDS);
+            final RpcResult<List<OfHeader>> rpcResult = (RpcResult<List<OfHeader>>) object;
+            final List<OfHeader> multipartReplies = rpcResult.getResult();
+            final List<OfHeader> expectedMpReplies = createMultipartReplyList(xidMulti);
             assertEquals(expectedMpReplies, multipartReplies);
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             LOG.error("Test failed when checking RequestContext.future", e);
@@ -227,11 +219,11 @@ public class DeviceContextImplTest {
         Assert.assertTrue(deviceContext.getRequests().isEmpty());
     }
 
-    private static List<OfHeader> createMultipartReplyList(Xid xid) {
+    private static List<OfHeader> createMultipartReplyList(final Xid xid) {
         final MultipartReplyDesc descValue = new MultipartReplyDescBuilder().setHwDesc("hw-test-value").build();
         final MultipartReplyDescCase replyBody = new MultipartReplyDescCaseBuilder()
                                                         .setMultipartReplyDesc(descValue).build();
-        List<OfHeader> multipartReplies = new ArrayList<OfHeader>();
+        final List<OfHeader> multipartReplies = new ArrayList<OfHeader>();
         multipartReplies.add(new MultipartReplyMessageBuilder()
                                     .setMultipartReplyBody(replyBody)
                                     .setXid(xid.getValue())
@@ -259,12 +251,12 @@ public class DeviceContextImplTest {
 
         LOG.info("Checking RequestContext.future");
         try {
-                Object object = requestContext.getFuture().get(1L, TimeUnit.SECONDS);
-                RpcResult<OfHeader> rpcResult = (RpcResult<OfHeader>) object;
+                final Object object = requestContext.getFuture().get(1L, TimeUnit.SECONDS);
+                final RpcResult<OfHeader> rpcResult = (RpcResult<OfHeader>) object;
                 Assert.assertFalse(rpcResult.isSuccessful());
-                List<RpcError> errors = (List<RpcError>) rpcResult.getErrors();
+                final List<RpcError> errors = (List<RpcError>) rpcResult.getErrors();
                 Assert.assertTrue(errors.get(0).getCause() instanceof DeviceDataException);
-                DeviceDataException cause = (DeviceDataException) errors.get(0).getCause();
+                final DeviceDataException cause = (DeviceDataException) errors.get(0).getCause();
                 Assert.assertTrue(cause.getCause() instanceof NullPointerException);
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
                 LOG.error("Test failed when checking RequestContext.future", e);
