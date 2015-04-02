@@ -8,15 +8,13 @@
 
 package org.opendaylight.openflowplugin.api.openflow.statistics;
 
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
-import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
+import com.google.common.util.concurrent.ListenableFuture;
+import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 27.2.2015.
  */
-public interface StatisticsContext {
+public interface StatisticsContext extends RequestContextStack {
 
-    void setDeviceContext(DeviceContext deviceContext);
-
-    void setRequestContext(RequestContext requestContext);
+    public ListenableFuture<Void> gatherDynamicData();
 }
