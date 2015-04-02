@@ -8,6 +8,8 @@
 
 package org.opendaylight.openflowplugin.impl.statistics;
 
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import java.util.ArrayList;
@@ -37,7 +39,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.O
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.OpendaylightQueueStatisticsService;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.FlowStatisticsService;
+import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.FlowTableStatisticsService;
+import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.GroupStatisticsService;
+import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.MeterStatisticsService;
+import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.PortStatisticsService;
+import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.QueueStatisticsService;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import java.util.Arrays;
 
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 1.4.2015.
@@ -46,32 +55,25 @@ public class StatisticsContextImpl implements StatisticsContext {
 
     private final List<RequestContext> requestContexts = new ArrayList();
     private final DeviceContext deviceContext;
-    private final RequestContext requestContext;
 
 
-    private final OpendaylightFlowStatisticsService flowStatisticsService;
-    private final OpendaylightFlowTableStatisticsService flowTableStatisticsService;
-    private final OpendaylightGroupStatisticsService groupStatisticsService;
-    private final OpendaylightMeterStatisticsService meterStatisticsService;
-    private final OpendaylightPortStatisticsService portStatisticsService;
-    private final OpendaylightQueueStatisticsService queueStatisticsService;
+    private final FlowStatisticsService flowStatisticsService;
+    private final FlowTableStatisticsService flowTableStatisticsService;
+    private final GroupStatisticsService groupStatisticsService;
+    private final MeterStatisticsService meterStatisticsService;
+    private final PortStatisticsService portStatisticsService;
+    private final QueueStatisticsService queueStatisticsService;
 
 
-    /**
-     * FIXME : Why we need RequestContext
-     * @param deviceContext
-     * @param requestContext
-     */
-    public StatisticsContextImpl(final DeviceContext deviceContext, final RequestContext requestContext) {
+    public StatisticsContextImpl(DeviceContext deviceContext) {
         this.deviceContext = deviceContext;
-        this.requestContext = requestContext;
 
-        flowStatisticsService = new OpendaylightFlowStatisticsServiceImpl(this, deviceContext);
-        flowTableStatisticsService = new OpendaylightFlowTableStatisticsServiceImpl(this, deviceContext);
-        groupStatisticsService = new OpendaylightGroupStatisticsServiceImpl(this, deviceContext);
-        meterStatisticsService = new OpendaylightMeterStatisticsServiceImpl(this, deviceContext);
-        portStatisticsService = new OpendaylightPortStatisticsServiceImpl(this, deviceContext);
-        queueStatisticsService = new OpendaylightQueueStatisticsServiceImpl(this, deviceContext);
+        flowStatisticsService = new FlowStatisticsService(this, deviceContext);
+        flowTableStatisticsService = new FlowTableStatisticsService(this, deviceContext);
+        groupStatisticsService = new GroupStatisticsService(this, deviceContext);
+        meterStatisticsService = new MeterStatisticsService(this, deviceContext);
+        portStatisticsService = new PortStatisticsService(this, deviceContext);
+        queueStatisticsService = new QueueStatisticsService(this, deviceContext);
 
     }
 
@@ -81,19 +83,32 @@ public class StatisticsContextImpl implements StatisticsContext {
         final GetAllFlowsStatisticsFromAllFlowTablesInputBuilder builder =
                 new GetAllFlowsStatisticsFromAllFlowTablesInputBuilder();
         builder.setNode(nodeRef);
-        final Future<RpcResult<GetAllFlowsStatisticsFromAllFlowTablesOutput>> flowStatisticsResult = flowStatisticsService.getAllFlowsStatisticsFromAllFlowTables(builder.build());
         //TODO : process data from result
     }
 
     @Override
     public ListenableFuture<Void> gatherDynamicData() {
-        final ListenableFuture<Boolean> flowStatistics = StatisticsGatheringUtils.gatherFlowStatistics(flowStatisticsService, deviceContext);
-        final ListenableFuture<Boolean> tableStatistics = StatisticsGatheringUtils.gatherTableStatistics(flowTableStatisticsService, deviceContext);
-        final ListenableFuture<Boolean> groupStatistics = StatisticsGatheringUtils.gatherGroupStatistics(groupStatisticsService, deviceContext);
-        final ListenableFuture<Boolean> meterStatistics = StatisticsGatheringUtils.gatherMeterStatistics(meterStatisticsService, deviceContext);
-        final ListenableFuture<Boolean> portStatistics = StatisticsGatheringUtils.gatherPortStatistics(portStatisticsService, deviceContext);
-        final ListenableFuture<Boolean> queueStatistics = StatisticsGatheringUtils.gatherQueueStatistics(queueStatisticsService, deviceContext);
-        return null;
+        ListenableFuture<Boolean> flowStatistics = StatisticsGatheringUtils.gatherFlowStatistics(flowStatisticsService, deviceContext);
+        ListenableFuture<Boolean> tableStatistics = StatisticsGatheringUtils.gatherTableStatistics(flowTableStatisticsService, deviceContext);
+        ListenableFuture<Boolean> groupStatistics = StatisticsGatheringUtils.gatherGroupStatistics(groupStatisticsService, deviceContext);
+        ListenableFuture<Boolean> meterStatistics = StatisticsGatheringUtils.gatherMeterStatistics(meterStatisticsService, deviceContext);
+        ListenableFuture<Boolean> portStatistics = StatisticsGatheringUtils.gatherPortStatistics(portStatisticsService, deviceContext);
+        ListenableFuture<Boolean> queueStatistics = StatisticsGatheringUtils.gatherQueueStatistics(queueStatisticsService, deviceContext);
+
+        ListenableFuture<List<Boolean>> allFutures = Futures.allAsList(Arrays.asList(flowStatistics, tableStatistics, groupStatistics, meterStatistics, portStatistics, queueStatistics));
+        final SettableFuture<Void> resultingFuture = SettableFuture.create();
+        Futures.addCallback(allFutures, new FutureCallback<List<Boolean>>() {
+            @Override
+            public void onSuccess(final List<Boolean> booleans) {
+                resultingFuture.set(null);
+            }
+
+            @Override
+            public void onFailure(final Throwable throwable) {
+                resultingFuture.setException(throwable);
+            }
+        });
+        return resultingFuture;
     }
 
     @Override

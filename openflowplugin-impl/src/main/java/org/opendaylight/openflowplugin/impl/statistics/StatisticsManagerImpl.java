@@ -32,7 +32,7 @@ public class StatisticsManagerImpl implements StatisticsManager {
 
     @Override
     public void deviceConnected(final DeviceContext deviceContext) {
-        final StatisticsContext statisticsContext = new StatisticsContextImpl(deviceContext, null);
+        final StatisticsContext statisticsContext = new StatisticsContextImpl(deviceContext);
         final ListenableFuture<Void> weHaveDynamicData = statisticsContext.gatherDynamicData();
         Futures.addCallback(weHaveDynamicData, new FutureCallback<Void>() {
             @Override
