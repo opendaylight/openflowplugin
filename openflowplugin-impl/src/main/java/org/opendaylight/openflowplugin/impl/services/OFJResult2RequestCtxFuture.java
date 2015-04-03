@@ -37,9 +37,14 @@ public class OFJResult2RequestCtxFuture<T> {
         Futures.addCallback(futureResultFromOfLib, new FutureCallback<RpcResult<F>>() {
             @Override
             public void onSuccess(final RpcResult<F> fRpcResult) {
-                LOG.trace("Going to wait for result with preset timeout value {}.", requestContext.getWaitTimeout());
                 if (!fRpcResult.isSuccessful()) {
-                    LOG.trace("OF Java result for XID {} was not successful .", requestContext.getXid().getValue());
+                    StringBuilder rpcErrors = new StringBuilder();
+                    if (null != fRpcResult.getErrors() && fRpcResult.getErrors().size() > 0) {
+                        for (RpcError error : fRpcResult.getErrors()) {
+                            rpcErrors.append(error.getMessage());
+                        }
+                    }
+                    LOG.trace("OF Java result for XID {} was not successful. Errors : {}", requestContext.getXid().getValue(), rpcErrors.toString());
                     requestContext.getFuture().set(
                             RpcResultBuilder.<T>failed().withRpcErrors(fRpcResult.getErrors()).build());
                     RequestContextUtil.closeRequstContext(requestContext);
