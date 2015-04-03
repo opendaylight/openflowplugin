@@ -53,6 +53,7 @@ public class MeterStatisticsService extends CommonService {
                         caseBuilder.setMultipartRequestMeter(mprMeterBuild.build());
 
                         final Xid xid = deviceContext.getNextXid();
+                        data.getRequestContext().setXid(xid);
                         multiMsgCollector.registerMultipartXid(xid.getValue());
 
                         MultipartRequestInputBuilder mprInput = RequestInputUtils
