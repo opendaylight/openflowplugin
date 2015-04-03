@@ -16,7 +16,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
-import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -83,8 +82,8 @@ public abstract class CommonService {
         if (!result.isDone()) {
             final Future<RpcResult<F>> resultFromOFLib = function.apply(dataCrate);
 
-            final RpcResultConvertor<T> rpcResultConvertor = new RpcResultConvertor<>(requestContext, deviceContext);
-            rpcResultConvertor.processResultFromOfJava(resultFromOFLib);
+            final OFJResult2RequestCtxFuture<T> OFJResult2RequestCtxFuture = new OFJResult2RequestCtxFuture<>(requestContext, deviceContext);
+            OFJResult2RequestCtxFuture.processResultFromOfJava(resultFromOFLib);
 
         } else {
             RequestContextUtil.closeRequstContext(requestContext);
