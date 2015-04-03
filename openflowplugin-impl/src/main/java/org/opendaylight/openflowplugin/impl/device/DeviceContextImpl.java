@@ -57,7 +57,7 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  *
  */
-public class DeviceContextImpl implements DeviceContext, DeviceReplyProcessor {
+public class DeviceContextImpl implements DeviceContext{
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceContextImpl.class);
 

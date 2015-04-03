@@ -47,4 +47,7 @@ public interface MultiMsgCollector {
      * @param reply
      */
     void addMultipartMsg(@Nonnull MultipartReply reply);
+
+
+    public void setDeviceReplyProcessor(DeviceReplyProcessor deviceReplyProcessor);
 }

@@ -33,7 +33,7 @@ public class OpenflowProtocolListenerFullImpl implements OpenflowProtocolListene
     private static final Logger LOG = LoggerFactory.getLogger(OpenflowProtocolListenerFullImpl.class);
 
     private final ConnectionAdapter connectionAdapter;
-    private final DeviceReplyProcessor deviceReplyProcessor;
+    private DeviceReplyProcessor deviceReplyProcessor;
     private final MultiMsgCollectorImpl multiMsgCollector;
 
     /**
@@ -103,5 +103,10 @@ public class OpenflowProtocolListenerFullImpl implements OpenflowProtocolListene
     @Override
     public void addMultipartMsg(@Nonnull final MultipartReply reply) {
         multiMsgCollector.addMultipartMsg(reply);
+    }
+
+    @Override
+    public void setDeviceReplyProcessor(final DeviceReplyProcessor deviceReplyProcessor) {
+        this.deviceReplyProcessor = deviceReplyProcessor;
     }
 }
