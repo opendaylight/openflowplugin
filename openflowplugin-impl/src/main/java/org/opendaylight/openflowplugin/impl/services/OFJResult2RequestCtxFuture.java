@@ -8,10 +8,9 @@
 
 package org.opendaylight.openflowplugin.impl.services;
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.yangtools.yang.common.RpcError;
@@ -34,30 +33,36 @@ public class OFJResult2RequestCtxFuture<T> {
         this.deviceContext = deviceContext;
     }
 
-    public <F> void processResultFromOfJava(final Future<RpcResult<F>> futureResultFromOfLib) {
-        try {
-            final RpcResult<F> rpcResult = futureResultFromOfLib.get(requestContext.getWaitTimeout(), TimeUnit.MILLISECONDS);
-            if (!rpcResult.isSuccessful()) {
-                requestContext.getFuture().set(
-                        RpcResultBuilder.<T>failed().withRpcErrors(rpcResult.getErrors()).build());
-                RequestContextUtil.closeRequstContext(requestContext);
-            } else {
-                LOG.trace("Hooking xid {} to device context.", requestContext.getXid().getValue());
-                deviceContext.hookRequestCtx(requestContext.getXid(), requestContext);
+    public <F> void processResultFromOfJava(final ListenableFuture<RpcResult<F>> futureResultFromOfLib) {
+        Futures.addCallback(futureResultFromOfLib, new FutureCallback<RpcResult<F>>() {
+            @Override
+            public void onSuccess(final RpcResult<F> fRpcResult) {
+                if (!fRpcResult.isSuccessful()) {
+                    StringBuilder rpcErrors = new StringBuilder();
+                    if (null != fRpcResult.getErrors() && fRpcResult.getErrors().size() > 0) {
+                        for (RpcError error : fRpcResult.getErrors()) {
+                            rpcErrors.append(error.getMessage());
+                        }
+                    }
+                    LOG.trace("OF Java result for XID {} was not successful. Errors : {}", requestContext.getXid().getValue(), rpcErrors.toString());
+                    requestContext.getFuture().set(
+                            RpcResultBuilder.<T>failed().withRpcErrors(fRpcResult.getErrors()).build());
+                    RequestContextUtil.closeRequstContext(requestContext);
+                } else {
+                    LOG.trace("Hooking xid {} to device context.", requestContext.getXid().getValue());
+                    deviceContext.hookRequestCtx(requestContext.getXid(), requestContext);
+                }
             }
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            requestContext.getFuture().set(
-                    RpcResultBuilder
-                            .<T>failed()
-                            .withError(RpcError.ErrorType.APPLICATION, "",
-                                    "Flow modification on device wasn't successfull.").build());
-            RequestContextUtil.closeRequstContext(requestContext);
-        } catch (final Exception e) {
-            requestContext.getFuture().set(
-                    RpcResultBuilder.<T>failed()
-                            .withError(RpcError.ErrorType.APPLICATION, "", "Flow translation to OF JAVA failed.")
-                            .build());
-            RequestContextUtil.closeRequstContext(requestContext);
-        }
+
+            @Override
+            public void onFailure(final Throwable throwable) {
+                LOG.trace("Exception occured while processing OF Java response for XID {}.", requestContext.getXid().getValue(), throwable);
+                requestContext.getFuture().set(
+                        RpcResultBuilder.<T>failed()
+                                .withError(RpcError.ErrorType.APPLICATION, "", "Flow translation to OF JAVA failed.")
+                                .build());
+                RequestContextUtil.closeRequstContext(requestContext);
+            }
+        });
     }
 }

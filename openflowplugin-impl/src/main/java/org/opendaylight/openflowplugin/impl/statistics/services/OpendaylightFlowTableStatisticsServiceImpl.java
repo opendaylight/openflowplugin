@@ -9,6 +9,7 @@ package org.opendaylight.openflowplugin.impl.statistics.services;
 
 import com.google.common.base.Function;
 import com.google.common.util.concurrent.JdkFutureAdapters;
+import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
@@ -41,10 +42,10 @@ public class OpendaylightFlowTableStatisticsServiceImpl extends CommonService im
 
 
         return this.<GetFlowTablesStatisticsOutput, Void>handleServiceCall(PRIMARY_CONNECTION,
-                new Function<DataCrate<GetFlowTablesStatisticsOutput>, Future<RpcResult<Void>>>() {
+                new Function<DataCrate<GetFlowTablesStatisticsOutput>, ListenableFuture<RpcResult<Void>>>() {
 
                     @Override
-                    public Future<RpcResult<Void>> apply(final DataCrate<GetFlowTablesStatisticsOutput> data) {
+                    public ListenableFuture<RpcResult<Void>> apply(final DataCrate<GetFlowTablesStatisticsOutput> data) {
 
                         // Create multipart request body for fetch all the group stats
                         final MultipartRequestTableCaseBuilder multipartRequestTableCaseBuilder = new MultipartRequestTableCaseBuilder();

@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.impl.statistics.services.dedicated;
 
 import com.google.common.base.Function;
 import com.google.common.util.concurrent.JdkFutureAdapters;
+import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
@@ -38,9 +39,9 @@ public class PortStatisticsService extends CommonService {
 
     public Future<RpcResult<List<MultipartReply>>> getAllNodeConnectorsStatistics(final MultiMsgCollector multiMsgCollector) {
         return handleServiceCall(
-                PRIMARY_CONNECTION, new Function<DataCrate<List<MultipartReply>>, Future<RpcResult<Void>>>() {
+                PRIMARY_CONNECTION, new Function<DataCrate<List<MultipartReply>>, ListenableFuture<RpcResult<Void>>>() {
                     @Override
-                    public Future<RpcResult<Void>> apply(final DataCrate<List<MultipartReply>> data) {
+                    public ListenableFuture<RpcResult<Void>> apply(final DataCrate<List<MultipartReply>> data) {
 
                         final Xid xid = deviceContext.getNextXid();
                         data.getRequestContext().setXid(xid);
