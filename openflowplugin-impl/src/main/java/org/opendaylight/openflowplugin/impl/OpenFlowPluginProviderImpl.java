@@ -64,6 +64,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider {
         statisticsManager.addRequestDeviceSynchronizedHandler(rpcManager);
         TranslatorLibraryUtil.setBasicTranslatorLibrary(deviceManager);
         //TODO : initialize translatorLibrary + inject into deviceMngr
+        startSwitchConnections();
     }
 
     private void startSwitchConnections() {
