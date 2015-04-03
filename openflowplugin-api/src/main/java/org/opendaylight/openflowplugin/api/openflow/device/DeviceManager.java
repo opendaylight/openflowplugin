@@ -27,5 +27,13 @@ public interface DeviceManager extends DeviceConnectedHandler {
      * @param deviceContextReadyHandler
      */
     public void addRequestContextReadyHandler(DeviceContextReadyHandler deviceContextReadyHandler);
+
+    /**
+     * Method registers translator library for translating message objects.
+     *
+     * @param translatorLibrary
+     */
+    public void setTranslatorLibrary(TranslatorLibrary translatorLibrary);
+
 }
 

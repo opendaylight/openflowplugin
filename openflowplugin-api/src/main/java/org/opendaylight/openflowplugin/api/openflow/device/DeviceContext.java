@@ -102,5 +102,12 @@ public interface DeviceContext extends MessageHandler {
      */
     public void hookRequestCtx(Xid xid, RequestContext requestFutureContext);
 
+    /**
+     * Method registers translator library for translating message objects.
+     *
+     * @param translatorLibrary
+     */
+    public void setTranslatorLibrary(TranslatorLibrary translatorLibrary);
+
 }
 
