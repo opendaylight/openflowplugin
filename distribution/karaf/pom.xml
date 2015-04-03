@@ -172,7 +172,6 @@
           <!-- no startupFeatures -->
           <bootFeatures>
             <feature>standard</feature>
-            <feature>odl-openflowplugin-flow-services-rest</feature>
             <feature>odl-restconf</feature>
           </bootFeatures>
           <!-- no installedFeatures -->

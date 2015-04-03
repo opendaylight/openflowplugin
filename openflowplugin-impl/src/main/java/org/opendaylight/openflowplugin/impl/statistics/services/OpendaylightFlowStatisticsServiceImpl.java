@@ -61,10 +61,10 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
 
         return this.<GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput, Void>handleServiceCall(
                 PRIMARY_CONNECTION,
-                new Function<DataCrate<GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput>, Future<RpcResult<Void>>>() {
+                new Function<DataCrate<GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput>, ListenableFuture<RpcResult<Void>>>() {
 
                     @Override
-                    public Future<RpcResult<Void>> apply(final DataCrate<GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput> data) {
+                    public ListenableFuture<RpcResult<Void>> apply(final DataCrate<GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput> data) {
 
                         // Create multipart request body for fetch all the group stats
                         final MultipartRequestAggregateCaseBuilder multipartRequestAggregateCaseBuilder = new MultipartRequestAggregateCaseBuilder();
@@ -103,10 +103,10 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
 
         return this.<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput, Void>handleServiceCall(
                 PRIMARY_CONNECTION,
-                new Function<DataCrate<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>, Future<RpcResult<Void>>>() {
+                new Function<DataCrate<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>, ListenableFuture<RpcResult<Void>>>() {
 
                     @Override
-                    public Future<RpcResult<Void>> apply(final DataCrate<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput> data) {
+                    public ListenableFuture<RpcResult<Void>> apply(final DataCrate<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput> data) {
                         final MultipartRequestAggregateCaseBuilder multipartRequestAggregateCaseBuilder = new MultipartRequestAggregateCaseBuilder();
                         final MultipartRequestAggregateBuilder mprAggregateRequestBuilder = new MultipartRequestAggregateBuilder();
                         mprAggregateRequestBuilder.setTableId(input.getTableId());
@@ -150,10 +150,10 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
             final GetAllFlowStatisticsFromFlowTableInput input) {
 
         return this.<GetAllFlowStatisticsFromFlowTableOutput, Void>handleServiceCall(PRIMARY_CONNECTION,
-                new Function<DataCrate<GetAllFlowStatisticsFromFlowTableOutput>, Future<RpcResult<Void>>>() {
+                new Function<DataCrate<GetAllFlowStatisticsFromFlowTableOutput>, ListenableFuture<RpcResult<Void>>>() {
 
                     @Override
-                    public Future<RpcResult<Void>> apply(final DataCrate<GetAllFlowStatisticsFromFlowTableOutput> data) {
+                    public ListenableFuture<RpcResult<Void>> apply(final DataCrate<GetAllFlowStatisticsFromFlowTableOutput> data) {
 
                         final MultipartRequestFlowBuilder mprFlowRequestBuilder = new MultipartRequestFlowBuilder();
                         mprFlowRequestBuilder.setTableId(input.getTableId().getValue());
@@ -185,10 +185,10 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
 
 
         return this.<GetAllFlowsStatisticsFromAllFlowTablesOutput, Void>handleServiceCall(PRIMARY_CONNECTION,
-                new Function<DataCrate<GetAllFlowsStatisticsFromAllFlowTablesOutput>, Future<RpcResult<Void>>>() {
+                new Function<DataCrate<GetAllFlowsStatisticsFromAllFlowTablesOutput>, ListenableFuture<RpcResult<Void>>>() {
 
                     @Override
-                    public Future<RpcResult<Void>> apply(final DataCrate<GetAllFlowsStatisticsFromAllFlowTablesOutput> data) {
+                    public ListenableFuture<RpcResult<Void>> apply(final DataCrate<GetAllFlowsStatisticsFromAllFlowTablesOutput> data) {
 
                         final MultipartRequestFlowCaseBuilder multipartRequestFlowCaseBuilder = new MultipartRequestFlowCaseBuilder();
                         final MultipartRequestFlowBuilder mprFlowRequestBuilder = new MultipartRequestFlowBuilder();
@@ -219,10 +219,10 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
 
 
         return this.<GetFlowStatisticsFromFlowTableOutput, Void>handleServiceCall(PRIMARY_CONNECTION,
-                new Function<DataCrate<GetFlowStatisticsFromFlowTableOutput>, Future<RpcResult<Void>>>() {
+                new Function<DataCrate<GetFlowStatisticsFromFlowTableOutput>, ListenableFuture<RpcResult<Void>>>() {
 
                     @Override
-                    public Future<RpcResult<Void>> apply(final DataCrate<GetFlowStatisticsFromFlowTableOutput> data) {
+                    public ListenableFuture<RpcResult<Void>> apply(final DataCrate<GetFlowStatisticsFromFlowTableOutput> data) {
 
                         final MultipartRequestFlowCaseBuilder multipartRequestFlowCaseBuilder = new MultipartRequestFlowCaseBuilder();
                         final MultipartRequestFlowBuilder mprFlowRequestBuilder = new MultipartRequestFlowBuilder();
