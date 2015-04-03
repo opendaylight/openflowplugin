@@ -213,13 +213,14 @@ public class DeviceContextImpl implements DeviceContext, DeviceReplyProcessor {
 
     @Override
     public void processException(final Xid xid, final DeviceDataException deviceDataException) {
+
         final RequestContext requestContext = getRequests().get(xid.getValue());
 
         final SettableFuture replyFuture = requestContext.getFuture();
         getRequests().remove(xid.getValue());
         final RpcResult<List<OfHeader>> rpcResult = RpcResultBuilder
                 .<List<OfHeader>>failed()
-                .withError(RpcError.ErrorType.APPLICATION, "Message processing failed", deviceDataException)
+                .withError(RpcError.ErrorType.APPLICATION, String.format("Message processing failed : %s", deviceDataException.getError()), deviceDataException)
                 .build();
         replyFuture.set(rpcResult);
         try {

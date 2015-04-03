@@ -8,25 +8,20 @@
 
 package org.opendaylight.openflowplugin.api.openflow.device.handlers;
 
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.SettableFuture;
-import java.util.Collection;
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
+import javax.annotation.Nonnull;
 
 /**
  * openflowplugin-api
  * org.opendaylight.openflowplugin.api.openflow.device
- *
+ * <p/>
  * Collects multipart msgs from device by provided XID and returns them
  * to the caller as request/collection response one-to-one contract.
  *
  * @author <a href="mailto:vdemcak@cisco.com">Vaclav Demcak</a>
  * @author <a href="mailto:tkubas@cisco.com">Timotej Kubas</a>
- *
- * Created: Mar 23, 2015
+ *         <p/>
+ *         Created: Mar 23, 2015
  */
 public interface MultiMsgCollector {
 
@@ -43,16 +38,7 @@ public interface MultiMsgCollector {
      * @param xid
      * @return
      */
-    ListenableFuture<Collection<MultipartReply>> registerMultipartMsg(long xid);
-
-    /**
-     * Method registers a transaction id xid to the Multipart messages collector
-     * with {@link SettableFuture} input object for all {@link MultipartReply} msgs.
-     *
-     * @param xid
-     * @param future
-     */
-    void registerMultipartFutureMsg(final long xid, @CheckForNull final SettableFuture<Collection<MultipartReply>> future);
+    void registerMultipartXid(long xid);
 
     /**
      * Method adds a reply multipart message to the collection and if the message has marker

@@ -111,7 +111,7 @@ public class OpenflowProtocolListenerFullImplTest {
     @Test
     public void testOnMultipartReplyMessage() {
         final long xid = 1l;
-        ofProtocolListener.registerMultipartMsg(xid);
+        ofProtocolListener.registerMultipartXid(xid);
         final MultipartReply multipartReply = MsgGeneratorTestUtils.makeMultipartDescReply(xid, "test-val", false);
         ofProtocolListener.onMultipartReplyMessage((MultipartReplyMessage) multipartReply);
         Mockito.verify(deviceReplyProcessor, Mockito.times(1)).processReply(Mockito.any(Xid.class), Mockito.anyListOf(MultipartReply.class));
