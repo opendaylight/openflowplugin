@@ -97,7 +97,8 @@ public interface DeviceContext extends MessageHandler, TranslatorLibrarian {
     Xid getNextXid();
 
     /**
-     * Method writes request context into request context map
+     * Method writes request context into request context map. This method
+     * is ment to be used by {@link org.opendaylight.openflowplugin.impl.services.OFJResult2RequestCtxFuture#processResultFromOfJava}
      *
      * @param xid
      * @param requestFutureContext
