@@ -17,12 +17,15 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 26.3.2015.
  */
 public class OFJResult2RequestCtxFuture<T> {
 
+    private static final Logger LOG = LoggerFactory.getLogger(OFJResult2RequestCtxFuture.class);
     private final RequestContext<T> requestContext;
     private final DeviceContext deviceContext;
 
@@ -36,21 +39,22 @@ public class OFJResult2RequestCtxFuture<T> {
             final RpcResult<F> rpcResult = futureResultFromOfLib.get(requestContext.getWaitTimeout(), TimeUnit.MILLISECONDS);
             if (!rpcResult.isSuccessful()) {
                 requestContext.getFuture().set(
-                        RpcResultBuilder.<T> failed().withRpcErrors(rpcResult.getErrors()).build());
+                        RpcResultBuilder.<T>failed().withRpcErrors(rpcResult.getErrors()).build());
                 RequestContextUtil.closeRequstContext(requestContext);
             } else {
+                LOG.trace("Hooking xid {} to device context.", requestContext.getXid().getValue());
                 deviceContext.hookRequestCtx(requestContext.getXid(), requestContext);
             }
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             requestContext.getFuture().set(
                     RpcResultBuilder
-                            .<T> failed()
+                            .<T>failed()
                             .withError(RpcError.ErrorType.APPLICATION, "",
                                     "Flow modification on device wasn't successfull.").build());
             RequestContextUtil.closeRequstContext(requestContext);
         } catch (final Exception e) {
             requestContext.getFuture().set(
-                    RpcResultBuilder.<T> failed()
+                    RpcResultBuilder.<T>failed()
                             .withError(RpcError.ErrorType.APPLICATION, "", "Flow translation to OF JAVA failed.")
                             .build());
             RequestContextUtil.closeRequstContext(requestContext);
