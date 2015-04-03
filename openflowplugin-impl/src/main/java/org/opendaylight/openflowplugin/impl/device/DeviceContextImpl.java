@@ -13,13 +13,6 @@ import com.google.common.util.concurrent.SettableFuture;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
-import java.math.BigInteger;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
-import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -53,6 +46,13 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import javax.annotation.Nonnull;
+import java.math.BigInteger;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  *
@@ -214,19 +214,25 @@ public class DeviceContextImpl implements DeviceContext, DeviceReplyProcessor {
     @Override
     public void processException(final Xid xid, final DeviceDataException deviceDataException) {
 
+        LOG.trace("Processing exception for xid : {}", xid.getValue());
+
         final RequestContext requestContext = getRequests().get(xid.getValue());
 
-        final SettableFuture replyFuture = requestContext.getFuture();
-        getRequests().remove(xid.getValue());
-        final RpcResult<List<OfHeader>> rpcResult = RpcResultBuilder
-                .<List<OfHeader>>failed()
-                .withError(RpcError.ErrorType.APPLICATION, String.format("Message processing failed : %s", deviceDataException.getError()), deviceDataException)
-                .build();
-        replyFuture.set(rpcResult);
-        try {
-            requestContext.close();
-        } catch (final Exception e) {
-            LOG.error("Closing RequestContext failed: ", e);
+        if (null != requestContext) {
+            final SettableFuture replyFuture = requestContext.getFuture();
+            getRequests().remove(xid.getValue());
+            final RpcResult<List<OfHeader>> rpcResult = RpcResultBuilder
+                    .<List<OfHeader>>failed()
+                    .withError(RpcError.ErrorType.APPLICATION, String.format("Message processing failed : %s", deviceDataException.getError()), deviceDataException)
+                    .build();
+            replyFuture.set(rpcResult);
+            try {
+                requestContext.close();
+            } catch (final Exception e) {
+                LOG.error("Closing RequestContext failed: ", e);
+            }
+        } else {
+            LOG.error("Can't find request context registered for xid : {}", xid);
         }
     }
 

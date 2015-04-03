@@ -138,17 +138,11 @@ public class DeviceManagerImpl implements DeviceManager {
         final ListenableFuture<RpcResult<List<MultipartReply>>> replyGroupFeatures = getNodeStaticInfo(messageListener,
                 MultipartType.OFPMPGROUPFEATURES, deviceContext, deviceState.getNodeInstanceIdentifier(), deviceState.getVersion());
 
-/*
         final ListenableFuture<RpcResult<List<MultipartReply>>> replyTableFeatures = getNodeStaticInfo(messageListener,
                 MultipartType.OFPMPTABLEFEATURES, deviceContext, deviceState.getNodeInstanceIdentifier(), deviceState.getVersion());
-*/
 
-/*
         final ListenableFuture<List<RpcResult<List<MultipartReply>>>> deviceFeaturesFuture =
                 Futures.allAsList(Arrays.asList(replyDesc, replyMeterFeature, replyGroupFeatures, replyTableFeatures));
-*/
-        final ListenableFuture<List<RpcResult<List<MultipartReply>>>> deviceFeaturesFuture =
-                Futures.allAsList(Arrays.asList(replyDesc, replyMeterFeature, replyGroupFeatures));
 
         Futures.addCallback(deviceFeaturesFuture, new FutureCallback<List<RpcResult<List<MultipartReply>>>>() {
             @Override
