@@ -25,7 +25,7 @@ import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceReplyProcessor;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceReplyProcessor;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
@@ -38,11 +38,8 @@ import org.opendaylight.openflowplugin.impl.translator.PacketReceivedTranslator;
 import org.opendaylight.openflowplugin.impl.translator.PortUpdateTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SwitchConnectionCookieOFImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.*;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.Error;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemoved;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableFeatures;
 import org.opendaylight.yangtools.yang.binding.ChildOf;
@@ -194,12 +191,12 @@ public class DeviceContextImpl implements DeviceContext, DeviceReplyProcessor {
     }
 
     @Override
-    public void processReply(final Xid xid, final List<OfHeader> ofHeaderList) {
+    public void processReply(final Xid xid, final List<MultipartReply> ofHeaderList) {
         final RequestContext requestContext = getRequests().get(xid.getValue());
         final SettableFuture replyFuture = requestContext.getFuture();
         getRequests().remove(xid.getValue());
-        final RpcResult<List<OfHeader>> rpcResult= RpcResultBuilder
-                                                .<List<OfHeader>>success()
+        final RpcResult<List<MultipartReply>> rpcResult= RpcResultBuilder
+                                                .<List<MultipartReply>>success()
                                                 .withResult(ofHeaderList)
                                                 .build();
         replyFuture.set(rpcResult);

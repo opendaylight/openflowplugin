@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.openflowplugin.impl.connection;
+package org.opendaylight.openflowplugin.impl.device.listener;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -21,6 +21,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceReplyProcessor;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.impl.connection.testutil.MsgGeneratorTestUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
@@ -31,24 +36,28 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * openflowplugin-api
  * org.opendaylight.openflowplugin.impl.openflow.device
  *
- * Test class for testing basic method functionality for {@link org.opendaylight.openflowplugin.api.openflow.connection.MultiMsgCollector}
+ * Test class for testing basic method functionality for {@link MultiMsgCollector}
  *
  * @author <a href="mailto:vdemcak@cisco.com">Vaclav Demcak</a>
  * @author <a href="mailto:tkubas@cisco.com">Timotej Kubas</a>
  *
  * Created: Mar 23, 2015
  */
+@RunWith(MockitoJUnitRunner.class)
 public class MultiMsgCollectorImplTest {
 
     private MultiMsgCollectorImpl collector;
+    @Mock
+    DeviceReplyProcessor deviceProcessor;
 
     @Before
     public void initialization() {
         collector = new MultiMsgCollectorImpl(3);
+        collector.setDeviceReplyProcessor(deviceProcessor);
     }
 
     /**
-     * Test method for {@link org.opendaylight.openflowplugin.impl.connection.openflow.device.MultiMsgCollectorImpl#registerMultipartMsg(org.opendaylight.openflowplugin.api.openflow.device.Xid)}.
+     * Test method for {@link MultiMsgCollectorImpl#registerMultipartMsg(long)}.
      * @throws ExecutionException
      * @throws InterruptedException
      * @throws TimeoutException
@@ -64,7 +73,7 @@ public class MultiMsgCollectorImplTest {
     }
 
     /**
-     * Test method for {@link org.opendaylight.openflowplugin.impl.connection.openflow.device.MultiMsgCollectorImpl#addMultipartMsg(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply)}.
+     * Test method for {@link MultiMsgCollectorImpl#addMultipartMsg(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply)}.
      * @throws TimeoutException
      * @throws ExecutionException
      * @throws InterruptedException

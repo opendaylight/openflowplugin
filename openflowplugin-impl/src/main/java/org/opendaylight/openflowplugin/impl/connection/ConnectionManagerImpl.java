@@ -25,7 +25,7 @@ import org.opendaylight.openflowplugin.api.openflow.md.core.HandshakeListener;
 import org.opendaylight.openflowplugin.api.openflow.md.core.HandshakeManager;
 import org.opendaylight.openflowplugin.impl.connection.listener.ConnectionReadyListenerImpl;
 import org.opendaylight.openflowplugin.impl.connection.listener.HandshakeListenerImpl;
-import org.opendaylight.openflowplugin.impl.connection.listener.OpenflowProtocolListenerImpl;
+import org.opendaylight.openflowplugin.impl.connection.listener.OpenflowProtocolListenerInitialImpl;
 import org.opendaylight.openflowplugin.impl.connection.listener.SystemNotificationsListenerImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.HandshakeManagerImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.ThreadPoolLoggingExecutor;
@@ -67,7 +67,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
         connectionAdapter.setConnectionReadyListener(connectionReadyListener);
 
         final OpenflowProtocolListener ofMessageListener =
-                new OpenflowProtocolListenerImpl(connectionContext, handshakeContext);
+                new OpenflowProtocolListenerInitialImpl(connectionContext, handshakeContext);
         connectionAdapter.setMessageListener(ofMessageListener);
 
         final SystemNotificationsListener systemListener = new SystemNotificationsListenerImpl(connectionContext);

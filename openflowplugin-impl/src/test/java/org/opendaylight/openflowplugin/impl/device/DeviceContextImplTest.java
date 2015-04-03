@@ -214,7 +214,7 @@ public class DeviceContextImplTest {
             final Object object = requestContextMultiReply.getFuture().get(1L, TimeUnit.SECONDS);
             final RpcResult<List<OfHeader>> rpcResult = (RpcResult<List<OfHeader>>) object;
             final List<OfHeader> multipartReplies = rpcResult.getResult();
-            final List<OfHeader> expectedMpReplies = createMultipartReplyList(xidMulti);
+            final List<MultipartReply> expectedMpReplies = createMultipartReplyList(xidMulti);
             assertEquals(expectedMpReplies, multipartReplies);
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             LOG.error("Test failed when checking RequestContext.future", e);
@@ -223,11 +223,11 @@ public class DeviceContextImplTest {
         Assert.assertTrue(deviceContext.getRequests().isEmpty());
     }
 
-    private static List<OfHeader> createMultipartReplyList(final Xid xid) {
+    private static List<MultipartReply> createMultipartReplyList(final Xid xid) {
         final MultipartReplyDesc descValue = new MultipartReplyDescBuilder().setHwDesc("hw-test-value").build();
         final MultipartReplyDescCase replyBody = new MultipartReplyDescCaseBuilder()
                                                         .setMultipartReplyDesc(descValue).build();
-        final List<OfHeader> multipartReplies = new ArrayList<OfHeader>();
+        final List<MultipartReply> multipartReplies = new ArrayList<>();
         multipartReplies.add(new MultipartReplyMessageBuilder()
                 .setMultipartReplyBody(replyBody)
                 .setXid(xid.getValue())
