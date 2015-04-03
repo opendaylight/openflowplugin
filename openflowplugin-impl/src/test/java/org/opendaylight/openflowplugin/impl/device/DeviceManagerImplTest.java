@@ -52,7 +52,7 @@ public class DeviceManagerImplTest {
         Mockito.when(connectionContext.getConnectionAdapter()).thenReturn(connectionAdapter);
         Mockito.when(connectionContext.getFeatures()).thenReturn(features);
         Mockito.when(features.getVersion()).thenReturn((short) 42);
-        deviceManager = new DeviceManagerImpl(rpcManager, dataBroker);
+        deviceManager = new DeviceManagerImpl(dataBroker);
     }
 
     /**
