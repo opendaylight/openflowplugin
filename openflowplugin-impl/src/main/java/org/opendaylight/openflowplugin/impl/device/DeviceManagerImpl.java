@@ -182,7 +182,6 @@ public class DeviceManagerImpl implements DeviceManager {
         final Xid xid = deviceContext.getNextXid();
         final RequestContext<List<MultipartReply>> requestContext = dummyRequestContextStack.createRequestContext();
         multiMsgCollector.registerMultipartXid(xid.getValue());
-        deviceContext.hookRequestCtx(xid, requestContext);
         Futures.addCallback(requestContext.getFuture(), new FutureCallback<RpcResult<List<MultipartReply>>>() {
             @Override
             public void onSuccess(final RpcResult<List<MultipartReply>> rpcResult) {
