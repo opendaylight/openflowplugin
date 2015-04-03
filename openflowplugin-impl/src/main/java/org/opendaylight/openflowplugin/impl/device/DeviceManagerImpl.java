@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.impl.device;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import io.netty.util.HashedWheelTimer;
@@ -40,7 +39,7 @@ import org.opendaylight.openflowplugin.impl.common.MultipartRequestInputFactory;
 import org.opendaylight.openflowplugin.impl.common.NodeStaticReplyTranslatorUtil;
 import org.opendaylight.openflowplugin.impl.device.listener.OpenflowProtocolListenerFullImpl;
 import org.opendaylight.openflowplugin.impl.rpc.RequestContextImpl;
-import org.opendaylight.openflowplugin.impl.services.RpcResultConvertor;
+import org.opendaylight.openflowplugin.impl.services.OFJResult2RequestCtxFuture;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableBuilder;
@@ -211,8 +210,8 @@ public class DeviceManagerImpl implements DeviceManager {
 
         final Future<RpcResult<Void>> rpcFuture = deviceContext.getPrimaryConnectionContext().getConnectionAdapter()
                 .multipartRequest(MultipartRequestInputFactory.makeMultipartRequestInput(xid.getValue(), version, type));
-        RpcResultConvertor rpcResultConvertor = new RpcResultConvertor(requestContext, deviceContext);
-        rpcResultConvertor.processResultFromOfJava(rpcFuture);
+        OFJResult2RequestCtxFuture OFJResult2RequestCtxFuture = new OFJResult2RequestCtxFuture(requestContext, deviceContext);
+        OFJResult2RequestCtxFuture.processResultFromOfJava(rpcFuture);
 
         return requestContext.getFuture();
     }

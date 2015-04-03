@@ -61,8 +61,8 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
         if (!result.isDone()) {
             final Future<RpcResult<F>> resultFromOFLib = function.apply(dataCrate);
 
-            final RpcResultConvertor<T> rpcResultConvertor = new RpcResultConvertor<>(requestContext, deviceContext);
-            rpcResultConvertor.processResultFromOfJava(resultFromOFLib);
+            final OFJResult2RequestCtxFuture<T> OFJResult2RequestCtxFuture = new OFJResult2RequestCtxFuture<>(requestContext, deviceContext);
+            OFJResult2RequestCtxFuture.processResultFromOfJava(resultFromOFLib);
 
         } else {
             RequestContextUtil.closeRequstContext(requestContext);

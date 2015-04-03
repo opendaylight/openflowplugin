@@ -18,7 +18,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.services.CommonService;
 import org.opendaylight.openflowplugin.impl.services.DataCrate;
 import org.opendaylight.openflowplugin.impl.services.RequestInputUtils;
-import org.opendaylight.openflowplugin.impl.services.RpcResultConvertor;
+import org.opendaylight.openflowplugin.impl.services.OFJResult2RequestCtxFuture;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchReactor;
 import org.opendaylight.openflowplugin.openflow.md.util.FlowCreatorUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForAllFlowsInput;
@@ -272,8 +272,8 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
 
     private <T> void convertRpcResultToRequestFuture(final RequestContext<T> requestContext,
                                                                         final ListenableFuture<RpcResult<Void>> futureResultFromOfLib) {
-        final RpcResultConvertor<T> rpcResultConvertor = new RpcResultConvertor<>(requestContext, deviceContext);
-        rpcResultConvertor.processResultFromOfJava(futureResultFromOfLib);
+        final OFJResult2RequestCtxFuture<T> OFJResult2RequestCtxFuture = new OFJResult2RequestCtxFuture<>(requestContext, deviceContext);
+        OFJResult2RequestCtxFuture.processResultFromOfJava(futureResultFromOfLib);
     }
 
 }

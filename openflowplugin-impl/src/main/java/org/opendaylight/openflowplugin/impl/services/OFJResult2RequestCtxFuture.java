@@ -21,12 +21,12 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 26.3.2015.
  */
-public class RpcResultConvertor<T> {
+public class OFJResult2RequestCtxFuture<T> {
 
     private final RequestContext<T> requestContext;
     private final DeviceContext deviceContext;
 
-    public RpcResultConvertor(final RequestContext<T> requestContext, final DeviceContext deviceContext) {
+    public OFJResult2RequestCtxFuture(final RequestContext<T> requestContext, final DeviceContext deviceContext) {
         this.requestContext = requestContext;
         this.deviceContext = deviceContext;
     }
