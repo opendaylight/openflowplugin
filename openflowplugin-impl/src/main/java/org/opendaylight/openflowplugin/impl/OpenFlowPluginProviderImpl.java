@@ -21,18 +21,14 @@ import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
-import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
 import org.opendaylight.openflowplugin.impl.connection.ConnectionManagerImpl;
 import org.opendaylight.openflowplugin.impl.device.DeviceManagerImpl;
 import org.opendaylight.openflowplugin.impl.rpc.RpcManagerImpl;
 import org.opendaylight.openflowplugin.impl.statistics.StatisticsManagerImpl;
-import org.opendaylight.openflowplugin.impl.translator.PacketReceivedTranslator;
-import org.opendaylight.openflowplugin.impl.translator.PortUpdateTranslator;
 import org.opendaylight.openflowplugin.impl.translator.TranslatorKeyFactory;
-import org.opendaylight.openflowplugin.impl.translator.TranslatorLibraryBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
+import org.opendaylight.openflowplugin.impl.util.TranslatorLibraryUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.api.types.rev150327.OfpRole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,11 +62,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider {
         statisticsManager = new StatisticsManagerImpl();
         deviceManager.addRequestContextReadyHandler(statisticsManager);
         statisticsManager.addRequestDeviceSynchronizedHandler(rpcManager);
-        TranslatorKeyFactory of13TranslatorKeyFactory = new TranslatorKeyFactory(OFConstants.OFP_VERSION_1_3);
-        TranslatorLibrary translatorLibrary = new TranslatorLibraryBuilder().
-                addTranslator(of13TranslatorKeyFactory.createTranslatorKey(PacketReceived.class), new PacketReceivedTranslator()).
-                addTranslator(of13TranslatorKeyFactory.createTranslatorKey(PacketReceived.class), new PortUpdateTranslator()).
-                build();
+        TranslatorLibraryUtil.setBasicTranslatorLibrary(deviceManager);
         //TODO : initialize translatorLibrary + inject into deviceMngr
     }
 
