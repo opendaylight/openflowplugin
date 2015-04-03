@@ -42,6 +42,7 @@ class TransactionChainManager implements TransactionChainListener {
     private BindingTransactionChain txChainFactory;
     private WriteTransaction wTx;
     private long nrOfActualTx;
+    private boolean counterIsEnabled;
 
     TransactionChainManager(@Nonnull final DataBroker dataBroker, final long maxTx) {
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
@@ -56,6 +57,9 @@ class TransactionChainManager implements TransactionChainListener {
             wTx = txChainFactory.newWriteOnlyTransaction();
         }
         wTx.put(store, path, data);
+        if ( ! counterIsEnabled) {
+            return;
+        }
         nrOfActualTx += 1L;
         if (nrOfActualTx == maxTx) {
             submitTransaction();
@@ -68,6 +72,10 @@ class TransactionChainManager implements TransactionChainListener {
             wTx = null;
             nrOfActualTx = 0L;
         }
+    }
+
+    synchronized void enableCounter() {
+        counterIsEnabled = true;
     }
 
     @Override
