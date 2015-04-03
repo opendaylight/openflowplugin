@@ -10,8 +10,6 @@ package org.opendaylight.openflowplugin.impl.device;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -24,7 +22,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.features.reply.PhyPort;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.features.reply.PhyPortBuilder;
 
@@ -107,86 +104,6 @@ public class DeviceStateImplTest {
         Assert.assertNotNull(getFeatures);
         Assert.assertEquals(expetedResult.getVersion(), getFeatures.getVersion());
         Assert.assertEquals(expetedResult.getPhyPort(), getFeatures.getPhyPort());
-    }
-
-    /**
-     * Test method for {@link DeviceStateImpl#getPhysicalPorts()}.
-     */
-    @Test
-    @Ignore // Available for OF1.0 only
-    public void testGetPhysicalPorts(){
-        final Map<Long, PortGrouping> getPhysPort = deviceState.getPhysicalPorts();
-        Assert.assertNotNull(getPhysPort);
-        Assert.assertTrue(getPhysPort.values().contains(pPort.get(0)));
-    }
-
-    /**
-     * Test method for {@link DeviceStateImpl#getPortsBandwidth()}.
-     */
-    @Test
-    @Ignore // Available for OF1.0 only
-    public void testGetPortsBandwidth(){
-        final Map<Long, Long> portBandwidth = deviceState.getPortsBandwidth();
-        Assert.assertNotNull(portBandwidth);
-        Assert.assertTrue(portBandwidth.containsKey(portNr));
-        Assert.assertEquals(this.portBandwidth, portBandwidth.get(portNr));
-    }
-
-    /**
-     * Test method for {@link DeviceStateImpl#getPorts()}.
-     */
-    @Test
-    @Ignore // Available for OF1.0 only
-    public void testGetPorts(){
-        final Set<Long> portNrs = deviceState.getPorts();
-        Assert.assertTrue(portNrs.contains(portNr));
-    }
-
-    /**
-     * Test method for {@link DeviceStateImpl#getPhysicalPort(java.lang.Long)}.
-     */
-    @Test
-    @Ignore // Available for OF1.0 only
-    public void testGetPhysicalPort(){
-        Assert.assertEquals(pPort.get(0), deviceState.getPhysicalPort(portNr));
-    }
-
-    /**
-     * Test method for {@link DeviceStateImpl#getPortBandwidth(java.lang.Long)}.
-     */
-    @Test
-    @Ignore // Available for OF1.0 only
-    public void testGetPortBandwidth(){
-        Assert.assertEquals(portBandwidth, deviceState.getPortBandwidth((portNr)));
-    }
-
-    /**
-     * Test method for {@link DeviceStateImpl#isPortEnabled(long)}.
-     */
-    @Test
-    @Ignore // Available for OF1.0 only
-    public void testIsPortEnabledLong(){
-        Assert.assertTrue(deviceState.isPortEnabled(portNr));
-    }
-
-    /**
-     * Test method for {@link DeviceStateImpl#isPortEnabled(PortGrouping)}.
-     */
-    @Test
-    @Ignore // Available for OF1.0 only
-    public void testIsPortEnabledPortGrouping(){
-        Assert.assertTrue(deviceState.isPortEnabled(pPort.get(0)));
-    }
-
-    /**
-     * Test method for {@link DeviceStateImpl#getEnabledPorts()}.
-     */
-    @Test
-    @Ignore // Available for OF1.0 only
-    public void testGetEnabledPorts(){
-        final List<PortGrouping> getEnabledPort = deviceState.getEnabledPorts();
-        Assert.assertNotNull(getEnabledPort);
-        Assert.assertTrue(getEnabledPort.contains(pPort.get(0)));
     }
 
 }
