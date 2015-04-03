@@ -8,23 +8,12 @@
 
 package org.opendaylight.openflowplugin.api.openflow.statistics;
 
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceContextReadyHandler;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceSynchronizedHandler;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializator;
 
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 26.2.2015.
  */
-public interface StatisticsManager extends DeviceContextReadyHandler {
-
-
-    /**
-     * Method registers handler responsible for handling operations needed to be done when
-     * device state is synchronized. Synchronized state means, that all dynamic information
-     * (groups, meters, etc ...) are stored in operational datastore.
-     *
-     * @param deviceSynchronizedHandler
-     */
-    public void addRequestDeviceSynchronizedHandler(DeviceSynchronizedHandler deviceSynchronizedHandler);
-
+public interface StatisticsManager extends DeviceInitializator, DeviceInitializationPhaseHandler {
 
 }
