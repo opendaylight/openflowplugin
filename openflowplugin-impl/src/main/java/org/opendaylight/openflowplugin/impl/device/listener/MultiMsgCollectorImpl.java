@@ -39,7 +39,7 @@ import java.util.concurrent.TimeUnit;
  *         Created: Mar 23, 2015
  */
 @VisibleForTesting
-class MultiMsgCollectorImpl implements MultiMsgCollector {
+public class MultiMsgCollectorImpl implements MultiMsgCollector {
 
     private static final Logger LOG = LoggerFactory.getLogger(MultiMsgCollectorImpl.class);
 
@@ -98,6 +98,7 @@ class MultiMsgCollectorImpl implements MultiMsgCollector {
         }
     }
 
+    @Override
     public void setDeviceReplyProcessor(DeviceReplyProcessor deviceReplyProcessor) {
         this.deviceReplyProcessor = deviceReplyProcessor;
     }
