@@ -55,7 +55,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider {
         providerContext = providerContextArg;
 
         connectionManager = new ConnectionManagerImpl();
-        deviceManager = new DeviceManagerImpl(rpcManager, providerContext.getSALService(DataBroker.class));
+        deviceManager = new DeviceManagerImpl(providerContext.getSALService(DataBroker.class));
         statisticsManager = new StatisticsManagerImpl();
         rpcManager = new RpcManagerImpl(providerContext);
 

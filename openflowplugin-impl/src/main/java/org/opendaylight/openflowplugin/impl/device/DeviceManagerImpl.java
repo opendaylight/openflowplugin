@@ -74,7 +74,6 @@ public class DeviceManagerImpl implements DeviceManager {
 
     private static final long TICK_DURATION = 500; // 0.5 sec.
 
-    private final RpcManager rpcManager;
     private final DataBroker dataBroker;
     private final HashedWheelTimer hashedWheelTimer;
     private RequestContextStack dummyRequestContextStack;
@@ -82,8 +81,7 @@ public class DeviceManagerImpl implements DeviceManager {
     private DeviceInitializationPhaseHandler deviceInitPhaseHandler;
 
 
-    public DeviceManagerImpl(@Nonnull final RpcManager rpcManager, @Nonnull final DataBroker dataBroker) {
-        this.rpcManager = Preconditions.checkNotNull(rpcManager);
+    public DeviceManagerImpl(@Nonnull final DataBroker dataBroker) {
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
         hashedWheelTimer = new HashedWheelTimer(TICK_DURATION, TimeUnit.MILLISECONDS, 10);
 
