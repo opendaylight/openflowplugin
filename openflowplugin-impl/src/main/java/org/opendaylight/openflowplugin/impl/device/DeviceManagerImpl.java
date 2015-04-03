@@ -153,6 +153,11 @@ public class DeviceManagerImpl implements DeviceManager {
     }
 
     @Override
+    public TranslatorLibrary oook() {
+        return translatorLibrary;
+    }
+
+    @Override
     public void setTranslatorLibrary(final TranslatorLibrary translatorLibrary) {
         this.translatorLibrary = translatorLibrary;
     }

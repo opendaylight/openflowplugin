@@ -8,14 +8,15 @@
 
 package org.opendaylight.openflowplugin.api.openflow.device;
 
-import java.math.BigInteger;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MessageHandler;
+import org.opendaylight.openflowplugin.api.openflow.translator.TranslatorLibrarian;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableFeatures;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import java.math.BigInteger;
 
 /**
  * The central entity of OFP is the Device Context, which encapsulate the logical state of a switch
@@ -30,10 +31,10 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  * which is enforced by keeping a cap on the number of outstanding requests a particular Request
  * Context can have at any point in time. Should this quota be exceeded, any further attempt to make
  * a request to the switch will fail immediately, with proper error indication.
- * <p>
+ * <p/>
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 25.2.2015.
  */
-public interface DeviceContext extends MessageHandler {
+public interface DeviceContext extends MessageHandler, TranslatorLibrarian {
 
 
     /**
@@ -97,17 +98,11 @@ public interface DeviceContext extends MessageHandler {
 
     /**
      * Method writes request context into request context map
+     *
      * @param xid
      * @param requestFutureContext
      */
     public void hookRequestCtx(Xid xid, RequestContext requestFutureContext);
-
-    /**
-     * Method registers translator library for translating message objects.
-     *
-     * @param translatorLibrary
-     */
-    public void setTranslatorLibrary(TranslatorLibrary translatorLibrary);
 
 }
 

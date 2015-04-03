@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.api.openflow.device;
 
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceConnectedHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceContextReadyHandler;
+import org.opendaylight.openflowplugin.api.openflow.translator.TranslatorLibrarian;
 
 /**
  * This interface is responsible for instantiating DeviceContext and
@@ -18,7 +19,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceContex
  * <p>
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 25.2.2015.
  */
-public interface DeviceManager extends DeviceConnectedHandler {
+public interface DeviceManager extends DeviceConnectedHandler, TranslatorLibrarian {
 
     /**
      * Method registers handler responsible for handling operations related to connected device after
@@ -27,13 +28,6 @@ public interface DeviceManager extends DeviceConnectedHandler {
      * @param deviceContextReadyHandler
      */
     public void addRequestContextReadyHandler(DeviceContextReadyHandler deviceContextReadyHandler);
-
-    /**
-     * Method registers translator library for translating message objects.
-     *
-     * @param translatorLibrary
-     */
-    public void setTranslatorLibrary(TranslatorLibrary translatorLibrary);
 
 }
 

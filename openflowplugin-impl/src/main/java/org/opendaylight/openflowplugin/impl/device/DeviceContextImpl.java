@@ -251,6 +251,11 @@ public class DeviceContextImpl implements DeviceContext, DeviceReplyProcessor {
     }
 
     @Override
+    public TranslatorLibrary oook() {
+        return translatorLibrary;
+    }
+
+    @Override
     public void setTranslatorLibrary(final TranslatorLibrary translatorLibrary) {
         this.translatorLibrary = translatorLibrary;
     }
