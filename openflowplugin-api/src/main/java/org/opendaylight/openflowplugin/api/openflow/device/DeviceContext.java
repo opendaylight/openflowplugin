@@ -97,7 +97,7 @@ public interface DeviceContext extends MessageHandler, TranslatorLibrarian {
     Xid getNextXid();
 
     /**
-     * Method writes request context into request context map
+     * Method writes request context into request context map.
      *
      * @param xid
      * @param requestFutureContext
