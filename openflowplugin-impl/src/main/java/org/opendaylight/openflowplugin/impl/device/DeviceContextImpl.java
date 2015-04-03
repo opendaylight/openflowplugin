@@ -232,7 +232,7 @@ public class DeviceContextImpl implements DeviceContext{
                 LOG.error("Closing RequestContext failed: ", e);
             }
         } else {
-            LOG.error("Can't find request context registered for xid : {}", xid);
+            LOG.error("Can't find request context registered for xid : {}", xid.getValue());
         }
     }
 
