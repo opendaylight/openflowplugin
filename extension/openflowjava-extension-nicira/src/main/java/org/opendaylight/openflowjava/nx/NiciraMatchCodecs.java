@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
- * 
+ *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
@@ -24,6 +24,8 @@ import org.opendaylight.openflowjava.nx.codec.match.Reg5Codec;
 import org.opendaylight.openflowjava.nx.codec.match.Reg6Codec;
 import org.opendaylight.openflowjava.nx.codec.match.Reg7Codec;
 import org.opendaylight.openflowjava.nx.codec.match.TunIdCodec;
+import org.opendaylight.openflowjava.nx.codec.match.TunIpv4DstCodec;
+import org.opendaylight.openflowjava.nx.codec.match.TunIpv4SrcCodec;
 import org.opendaylight.openflowjava.nx.codec.match.NspCodec;
 import org.opendaylight.openflowjava.nx.codec.match.NsiCodec;
 
@@ -49,6 +51,8 @@ public class NiciraMatchCodecs {
     public static final ArpTpaCodec ARP_TPA_CODEC = new ArpTpaCodec();
     public static final EthDstCodec ETH_DST_CODEC = new EthDstCodec();
     public static final EthSrcCodec ETH_SRC_CODEC = new EthSrcCodec();
+    public static final TunIpv4DstCodec TUN_IPV4_DST_CODEC = new TunIpv4DstCodec();
+    public static final TunIpv4SrcCodec TUN_IPV4_SRC_CODEC = new TunIpv4SrcCodec();
     public static final EthTypeCodec ETH_TYPE_CODEC = new EthTypeCodec();
     public static final NspCodec NSP_CODEC = new NspCodec();
     public static final NsiCodec NSI_CODEC = new NsiCodec();
