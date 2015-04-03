@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
+import com.google.common.util.concurrent.JdkFutureAdapters;
+import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 
 import com.google.common.base.Function;
@@ -31,10 +33,10 @@ public class SalGroupServiceImpl extends CommonService implements SalGroupServic
     @Override
     public Future<RpcResult<AddGroupOutput>> addGroup(final AddGroupInput input) {
         return this.<AddGroupOutput, Void> handleServiceCall( PRIMARY_CONNECTION,
-                 new Function<DataCrate<AddGroupOutput>,Future<RpcResult<Void>>>() {
+                 new Function<DataCrate<AddGroupOutput>,ListenableFuture<RpcResult<Void>>>() {
 
                     @Override
-                    public Future<RpcResult<Void>> apply(final DataCrate<AddGroupOutput> data) {
+                    public ListenableFuture<RpcResult<Void>> apply(final DataCrate<AddGroupOutput> data) {
                         return convertAndSend(input, data);
                     }
                 });
@@ -43,10 +45,10 @@ public class SalGroupServiceImpl extends CommonService implements SalGroupServic
     @Override
     public Future<RpcResult<UpdateGroupOutput>> updateGroup(final UpdateGroupInput input) {
         return this.<UpdateGroupOutput, Void> handleServiceCall(PRIMARY_CONNECTION,
-                new Function<DataCrate<UpdateGroupOutput>, Future<RpcResult<Void>>>() {
+                new Function<DataCrate<UpdateGroupOutput>, ListenableFuture<RpcResult<Void>>>() {
 
                     @Override
-                    public Future<RpcResult<Void>> apply(final DataCrate<UpdateGroupOutput> data) {
+                    public ListenableFuture<RpcResult<Void>> apply(final DataCrate<UpdateGroupOutput> data) {
                         return convertAndSend(input.getUpdatedGroup(), data);
                     }
                 });
@@ -55,20 +57,20 @@ public class SalGroupServiceImpl extends CommonService implements SalGroupServic
     @Override
     public Future<RpcResult<RemoveGroupOutput>> removeGroup(final RemoveGroupInput input) {
         return this.<RemoveGroupOutput, Void> handleServiceCall(PRIMARY_CONNECTION,
-                new Function<DataCrate<RemoveGroupOutput>, Future<RpcResult<Void>>>() {
+                new Function<DataCrate<RemoveGroupOutput>, ListenableFuture<RpcResult<Void>>>() {
 
                     @Override
-                    public Future<RpcResult<Void>> apply(final DataCrate<RemoveGroupOutput> data) {
+                    public ListenableFuture<RpcResult<Void>> apply(final DataCrate<RemoveGroupOutput> data) {
                         return convertAndSend(input, data);
                     }
                 });
     }
 
-    <T> Future<RpcResult<Void>> convertAndSend(final Group iputGroup, final DataCrate<T> data) {
+    <T> ListenableFuture<RpcResult<Void>> convertAndSend(final Group iputGroup, final DataCrate<T> data) {
         final GroupModInputBuilder ofGroupModInput = GroupConvertor.toGroupModInput(iputGroup, version, datapathId);
         final Xid xid = deviceContext.getNextXid();
         ofGroupModInput.setXid(xid.getValue());
         data.getRequestContext().setXid(xid);
-        return provideConnectionAdapter(data.getiDConnection()).groupMod(ofGroupModInput.build());
+        return JdkFutureAdapters.listenInPoolThread(provideConnectionAdapter(data.getiDConnection()).groupMod(ofGroupModInput.build()));
     }
 }

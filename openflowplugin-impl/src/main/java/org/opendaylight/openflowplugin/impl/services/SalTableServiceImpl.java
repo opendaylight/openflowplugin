@@ -45,10 +45,10 @@ public class SalTableServiceImpl extends CommonService implements SalTableServic
 
     @Override
     public Future<RpcResult<UpdateTableOutput>> updateTable(final UpdateTableInput input) {
-        class FunctionImpl implements Function<DataCrate<UpdateTableOutput>,Future<RpcResult<UpdateTableOutput>>> {
+        class FunctionImpl implements Function<DataCrate<UpdateTableOutput>,ListenableFuture<RpcResult<UpdateTableOutput>>> {
 
             @Override
-            public Future<RpcResult<UpdateTableOutput>> apply(final DataCrate<UpdateTableOutput> data) {
+            public ListenableFuture<RpcResult<UpdateTableOutput>> apply(final DataCrate<UpdateTableOutput> data) {
 
                 final SettableFuture<RpcResult<UpdateTableOutput>> result = SettableFuture.create();
 

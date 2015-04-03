@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
+import com.google.common.util.concurrent.JdkFutureAdapters;
+import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 
 import com.google.common.base.Function;
@@ -27,16 +29,16 @@ public class SalPortServiceImpl extends CommonService implements SalPortService 
     @Override
     public Future<RpcResult<UpdatePortOutput>> updatePort(final UpdatePortInput input) {
         return this.<UpdatePortOutput, Void> handleServiceCall(PRIMARY_CONNECTION,
-                new Function<DataCrate<UpdatePortOutput>, Future<RpcResult<Void>>>() {
+                new Function<DataCrate<UpdatePortOutput>, ListenableFuture<RpcResult<Void>>>() {
                     @Override
-                    public Future<RpcResult<Void>> apply(final DataCrate<UpdatePortOutput> data) {
+                    public ListenableFuture<RpcResult<Void>> apply(final DataCrate<UpdatePortOutput> data) {
                         final Port inputPort = input.getUpdatedPort().getPort().getPort().get(0);
                         final PortModInput ofPortModInput = PortConvertor.toPortModInput(inputPort, version);
                         final PortModInputBuilder mdInput = new PortModInputBuilder(ofPortModInput);
                         Xid xid = deviceContext.getNextXid();
                         mdInput.setXid(xid.getValue());
                         data.getRequestContext().setXid(xid);
-                        return provideConnectionAdapter(data.getiDConnection()).portMod(mdInput.build());
+                        return JdkFutureAdapters.listenInPoolThread(provideConnectionAdapter(data.getiDConnection()).portMod(mdInput.build()));
                     }
                 });
     }

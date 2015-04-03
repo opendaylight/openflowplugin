@@ -8,10 +8,9 @@
 
 package org.opendaylight.openflowplugin.impl.services;
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.yangtools.yang.common.RpcError;
@@ -34,10 +33,25 @@ public class OFJResult2RequestCtxFuture<T> {
         this.deviceContext = deviceContext;
     }
 
-    public <F> void processResultFromOfJava(final Future<RpcResult<F>> futureResultFromOfLib) {
-        try {
-            final RpcResult<F> rpcResult = futureResultFromOfLib.get(requestContext.getWaitTimeout(), TimeUnit.MILLISECONDS);
-            if (!rpcResult.isSuccessful()) {
+    public <F> void processResultFromOfJava(final ListenableFuture<RpcResult<F>> futureResultFromOfLib) {
+        Futures.addCallback(futureResultFromOfLib, new FutureCallback<RpcResult<F>>() {
+            @Override
+            public void onSuccess(final RpcResult<F> fRpcResult) {
+                LOG.trace("Going to wait for result with preset timeout value {}.", requestContext.getWaitTimeout());
+                if (!fRpcResult.isSuccessful()) {
+                    LOG.trace("OF Java result for XID {} was not successful .", requestContext.getXid().getValue());
+                    requestContext.getFuture().set(
+                            RpcResultBuilder.<T>failed().withRpcErrors(fRpcResult.getErrors()).build());
+                    RequestContextUtil.closeRequstContext(requestContext);
+                } else {
+                    LOG.trace("Hooking xid {} to device context.", requestContext.getXid().getValue());
+                    deviceContext.hookRequestCtx(requestContext.getXid(), requestContext);
+                }
+            }
+
+            @Override
+            public void onFailure(final Throwable throwable) {
+                LOG.trace("Exception occured while processing OF Java response for XID {}.", requestContext.getXid().getValue(), throwable);
                 requestContext.getFuture().set(
                         RpcResultBuilder.<T>failed().withRpcErrors(rpcResult.getErrors()).build());
                 RequestContextUtil.closeRequstContext(requestContext);

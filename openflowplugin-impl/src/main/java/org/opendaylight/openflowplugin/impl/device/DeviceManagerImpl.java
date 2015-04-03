@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.impl.device;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import io.netty.util.HashedWheelTimer;
@@ -201,8 +202,8 @@ public class DeviceManagerImpl implements DeviceManager {
             }
         });
 
-        final Future<RpcResult<Void>> rpcFuture = deviceContext.getPrimaryConnectionContext().getConnectionAdapter()
-                .multipartRequest(MultipartRequestInputFactory.makeMultipartRequestInput(xid.getValue(), version, type));
+        final ListenableFuture<RpcResult<Void>> rpcFuture = JdkFutureAdapters.listenInPoolThread(deviceContext.getPrimaryConnectionContext().getConnectionAdapter()
+                .multipartRequest(MultipartRequestInputFactory.makeMultipartRequestInput(xid.getValue(), version, type)));
         OFJResult2RequestCtxFuture OFJResult2RequestCtxFuture = new OFJResult2RequestCtxFuture(requestContext, deviceContext);
         OFJResult2RequestCtxFuture.processResultFromOfJava(rpcFuture);
 
