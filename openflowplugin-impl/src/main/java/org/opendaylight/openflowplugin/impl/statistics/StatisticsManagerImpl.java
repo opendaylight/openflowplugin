@@ -27,6 +27,7 @@ public class StatisticsManagerImpl implements StatisticsManager {
 
     private DeviceInitializationPhaseHandler deviceInitPhaseHandler;
 
+
     @Override
     public void setDeviceInitializationPhaseHandler(final DeviceInitializationPhaseHandler handler) {
         deviceInitPhaseHandler = handler;

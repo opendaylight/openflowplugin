@@ -14,6 +14,7 @@ import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.impl.services.CommonService;
 import org.opendaylight.openflowplugin.impl.services.DataCrate;
 import org.opendaylight.openflowplugin.impl.services.RequestInputUtils;
@@ -34,7 +35,7 @@ public class PortStatisticsService extends CommonService {
         super(requestContextStack, deviceContext);
     }
 
-    public Future<RpcResult<List<MultipartReply>>> getAllNodeConnectorsStatistics() {
+    public Future<RpcResult<List<MultipartReply>>> getAllNodeConnectorsStatistics(final MultiMsgCollector multiMsgCollector) {
         return handleServiceCall(
                 PRIMARY_CONNECTION, new Function<DataCrate<List<MultipartReply>>, Future<RpcResult<Void>>>() {
                     @Override
@@ -49,6 +50,7 @@ public class PortStatisticsService extends CommonService {
                         caseBuilder.setMultipartRequestPortStats(mprPortStatsBuilder.build());
 
                         final Xid xid = deviceContext.getNextXid();
+                        multiMsgCollector.registerMultipartXid(xid.getValue());
                         data.getRequestContext().setXid(xid);
                         MultipartRequestInputBuilder mprInput = RequestInputUtils
                                 .createMultipartHeader(MultipartType.OFPMPPORTSTATS, xid.getValue(), version);

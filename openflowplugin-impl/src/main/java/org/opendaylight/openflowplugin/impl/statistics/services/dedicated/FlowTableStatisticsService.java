@@ -13,6 +13,7 @@ import com.google.common.util.concurrent.JdkFutureAdapters;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.impl.services.CommonService;
 import org.opendaylight.openflowplugin.impl.services.DataCrate;
 import org.opendaylight.openflowplugin.impl.services.RequestInputUtils;
@@ -33,7 +34,7 @@ public class FlowTableStatisticsService extends CommonService {
         super(requestContextStack, deviceContext);
     }
 
-    public Future<RpcResult<List<MultipartReply>>> getFlowTablesStatistics() {
+    public Future<RpcResult<List<MultipartReply>>> getFlowTablesStatistics(final MultiMsgCollector multiMsgCollector) {
         return handleServiceCall(
                 PRIMARY_CONNECTION, new Function<DataCrate<List<MultipartReply>>, Future<RpcResult<Void>>>() {
                     @Override
@@ -48,6 +49,7 @@ public class FlowTableStatisticsService extends CommonService {
                         // Set request body to main multipart request
                         final Xid xid = deviceContext.getNextXid();
                         data.getRequestContext().setXid(xid);
+                        multiMsgCollector.registerMultipartXid(xid.getValue());
                         final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
                                 MultipartType.OFPMPFLOW, xid.getValue(), version);
 

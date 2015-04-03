@@ -14,6 +14,7 @@ import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.FlowStatisticsService;
 import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.FlowTableStatisticsService;
 import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.GroupStatisticsService;
@@ -86,59 +87,71 @@ public final class StatisticsGatheringUtils {
         return InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(deviceContext.getPrimaryConnectionContext().getNodeId()));
     }
 
-    public static ListenableFuture<Boolean> gatherQueueStatistics(QueueStatisticsService queueStatisticsService, final DeviceContext deviceContext) {
+    public static ListenableFuture<Boolean> gatherQueueStatistics(final QueueStatisticsService queueStatisticsService,
+                                                                  final DeviceContext deviceContext,
+                                                                  final MultiMsgCollector multiMsgCollector) {
 
         ListenableFuture<RpcResult<List<MultipartReply>>> statisticsDataInFuture =
-                JdkFutureAdapters.listenInPoolThread(queueStatisticsService.getAllQueuesStatisticsFromAllPorts());
+                JdkFutureAdapters.listenInPoolThread(queueStatisticsService.getAllQueuesStatisticsFromAllPorts(multiMsgCollector));
 
         return transformAndStoreStatisticsData(statisticsDataInFuture, deviceContext);
     }
 
 
-    public static ListenableFuture<Boolean> gatherPortStatistics(PortStatisticsService portStatisticsService, final DeviceContext deviceContext) {
+    public static ListenableFuture<Boolean> gatherPortStatistics(final PortStatisticsService portStatisticsService,
+                                                                 final DeviceContext deviceContext,
+                                                                 final MultiMsgCollector multiMsgCollector) {
 
         ListenableFuture<RpcResult<List<MultipartReply>>> statisticsDataInFuture =
-                JdkFutureAdapters.listenInPoolThread(portStatisticsService.getAllNodeConnectorsStatistics());
+                JdkFutureAdapters.listenInPoolThread(portStatisticsService.getAllNodeConnectorsStatistics(multiMsgCollector));
 
         return transformAndStoreStatisticsData(statisticsDataInFuture, deviceContext);
     }
 
-    public static ListenableFuture<Boolean> gatherMeterStatistics(MeterStatisticsService meterStatisticsService, final DeviceContext deviceContext) {
+    public static ListenableFuture<Boolean> gatherMeterStatistics(final MeterStatisticsService meterStatisticsService,
+                                                                  final DeviceContext deviceContext,
+                                                                  final MultiMsgCollector multiMsgCollector) {
 
 
         ListenableFuture<RpcResult<List<MultipartReply>>> statisticsDataInFuture =
                 JdkFutureAdapters.
                         listenInPoolThread(meterStatisticsService.
-                                getAllMeterStatistics());
+                                getAllMeterStatistics(multiMsgCollector));
 
         return transformAndStoreStatisticsData(statisticsDataInFuture, deviceContext);
     }
 
 
-    public static ListenableFuture<Boolean> gatherGroupStatistics(GroupStatisticsService groupStatisticsService, final DeviceContext deviceContext) {
+    public static ListenableFuture<Boolean> gatherGroupStatistics(final GroupStatisticsService groupStatisticsService,
+                                                                  final DeviceContext deviceContext,
+                                                                  final MultiMsgCollector multiMsgCollector) {
         ListenableFuture<RpcResult<List<MultipartReply>>> statisticsDataInFuture =
                 JdkFutureAdapters.
                         listenInPoolThread(groupStatisticsService.
-                                getAllGroupStatistics());
+                                getAllGroupStatistics(multiMsgCollector));
 
         return transformAndStoreStatisticsData(statisticsDataInFuture, deviceContext);
     }
 
-    public static ListenableFuture<Boolean> gatherFlowStatistics(FlowStatisticsService flowStatisticsService, final DeviceContext deviceContext) {
+    public static ListenableFuture<Boolean> gatherFlowStatistics(final FlowStatisticsService flowStatisticsService,
+                                                                 final DeviceContext deviceContext,
+                                                                 final MultiMsgCollector multiMsgCollector) {
         ListenableFuture<RpcResult<List<MultipartReply>>> statisticsDataInFuture =
                 JdkFutureAdapters.
                         listenInPoolThread(flowStatisticsService.
 
-                                getAllFlowsStatisticsFromAllFlowTables());
+                                getAllFlowsStatisticsFromAllFlowTables(multiMsgCollector));
         return transformAndStoreStatisticsData(statisticsDataInFuture, deviceContext);
 
     }
 
-    public static ListenableFuture<Boolean> gatherTableStatistics(FlowTableStatisticsService flowTableStatisticsService, final DeviceContext deviceContext) {
+    public static ListenableFuture<Boolean> gatherTableStatistics(final FlowTableStatisticsService flowTableStatisticsService,
+                                                                  final DeviceContext deviceContext,
+                                                                  final MultiMsgCollector multiMsgCollector) {
 
         ListenableFuture<RpcResult<List<MultipartReply>>> statisticsDataInFuture =
                 JdkFutureAdapters.listenInPoolThread(
-                        flowTableStatisticsService.getFlowTablesStatistics());
+                        flowTableStatisticsService.getFlowTablesStatistics(multiMsgCollector));
 
         return transformAndStoreStatisticsData(statisticsDataInFuture, deviceContext);
     }
