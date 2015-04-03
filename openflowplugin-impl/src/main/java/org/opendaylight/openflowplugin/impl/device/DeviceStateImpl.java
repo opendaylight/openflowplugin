@@ -9,11 +9,6 @@
 package org.opendaylight.openflowplugin.impl.device;
 
 import com.google.common.base.Preconditions;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
@@ -24,7 +19,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 
@@ -42,8 +36,6 @@ import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 class DeviceStateImpl implements DeviceState {
 
     private final GetFeaturesOutput featuresOutput;
-    private final Map<Long, PortGrouping> portGrouping;
-    private final Map<Long, Long> portsBandwidth;
     private final NodeId nodeId;
     private final KeyedInstanceIdentifier<Node, NodeKey> nodeII;
     private final short version;
@@ -55,13 +47,6 @@ class DeviceStateImpl implements DeviceState {
         this.nodeId = Preconditions.checkNotNull(nodeId);
         nodeII = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(nodeId));
         version = featuresReply.getVersion();
-        portGrouping = new HashMap<>();
-        portsBandwidth = new HashMap<>();
-//        TODO: remove ports
-//        for (final PhyPort port : featuresReply.getPhyPort()) {
-//            portGrouping.put(port.getPortNo(), port);
-//            portsBandwidth.put(port.getPortNo(), port.getMaxSpeed());
-//        }
     }
 
     @Override
@@ -87,51 +72,6 @@ class DeviceStateImpl implements DeviceState {
     @Override
     public void setValid(final boolean valid) {
         this.valid = valid;
-    }
-
-    @Override
-    public Map<Long, PortGrouping> getPhysicalPorts() {
-        return portGrouping;
-    }
-
-    @Override
-    public Map<Long, Long> getPortsBandwidth() {
-        return portsBandwidth;
-    }
-
-    @Override
-    public Set<Long> getPorts() {
-        return portGrouping.keySet();
-    }
-
-    @Override
-    public PortGrouping getPhysicalPort(final Long portNumber) {
-        return portGrouping.get(portNumber);
-    }
-
-    @Override
-    public Long getPortBandwidth(final Long portNumber) {
-        return portsBandwidth.get(portNumber);
-    }
-
-    @Override
-    public boolean isPortEnabled(final long portNumber) {
-        return portGrouping.containsKey(portNumber);
-    }
-
-    @Override
-    public boolean isPortEnabled(final PortGrouping port) {
-        return portGrouping.containsValue(port);
-    }
-
-    @Override
-    public List<PortGrouping> getEnabledPorts() {
-        return new ArrayList<PortGrouping>(portGrouping.values());
-    }
-
-    @Override
-    public int getSeed() {
-        return hashCode();
     }
 
     @Override
