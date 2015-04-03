@@ -14,6 +14,15 @@ import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import io.netty.util.HashedWheelTimer;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
@@ -24,7 +33,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceContextReadyHandler;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.impl.common.MultipartRequestInputFactory;
@@ -55,15 +64,6 @@ import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 /**
  *
@@ -79,6 +79,7 @@ public class DeviceManagerImpl implements DeviceManager {
     private final HashedWheelTimer hashedWheelTimer;
     private RequestContextStack dummyRequestContextStack;
     private TranslatorLibrary translatorLibrary;
+    private DeviceInitializationPhaseHandler deviceInitPhaseHandler;
 
 
     public DeviceManagerImpl(@Nonnull final RpcManager rpcManager, @Nonnull final DataBroker dataBroker) {
@@ -88,12 +89,12 @@ public class DeviceManagerImpl implements DeviceManager {
 
         dummyRequestContextStack = new RequestContextStack() {
             @Override
-            public <T> void forgetRequestContext(RequestContext<T> requestContext) {
+            public <T> void forgetRequestContext(final RequestContext<T> requestContext) {
                 //NOOP
             }
 
             @Override
-            public <T> SettableFuture<RpcResult<T>> storeOrFail(RequestContext<T> data) {
+            public <T> SettableFuture<RpcResult<T>> storeOrFail(final RequestContext<T> data) {
                 return data.getFuture();
             }
 
@@ -102,6 +103,18 @@ public class DeviceManagerImpl implements DeviceManager {
                 return new RequestContextImpl<>(this);
             }
         };
+    }
+
+    @Override
+    public void setDeviceInitializationPhaseHandler(final DeviceInitializationPhaseHandler handler) {
+        deviceInitPhaseHandler = handler;
+    }
+
+    @Override
+    public void onDeviceContextLevelUp(final DeviceContext deviceContext) {
+        // final phase - we have to add new Device to MD-SAL DataStore
+        Preconditions.checkNotNull(deviceContext != null);
+        ((DeviceContextImpl) deviceContext).submitTransaction();
     }
 
     @Override
@@ -135,9 +148,8 @@ public class DeviceManagerImpl implements DeviceManager {
         Futures.addCallback(deviceFeaturesFuture, new FutureCallback<List<Collection<MultipartReply>>>() {
             @Override
             public void onSuccess(final List<Collection<MultipartReply>> result) {
-                // FIXME : add statistics
-                rpcManager.deviceConnected(deviceContext);
-                deviceContext.submitTransaction();
+                // wake up statistics
+                deviceInitPhaseHandler.onDeviceContextLevelUp(deviceContext);
             }
 
             @Override
@@ -145,11 +157,6 @@ public class DeviceManagerImpl implements DeviceManager {
                 // FIXME : remove session
             }
         });
-    }
-
-    @Override
-    public void addRequestContextReadyHandler(final DeviceContextReadyHandler deviceContextReadyHandler) {
-        // TODO Auto-generated method stub
     }
 
     @Override
@@ -167,18 +174,18 @@ public class DeviceManagerImpl implements DeviceManager {
                                                                            final InstanceIdentifier<Node> nodeII, final short version) {
         final ListenableFuture<Collection<MultipartReply>> future = multiMsgCollector.registerMultipartMsg(xid.getValue());
 
-        RequestContext<List<MultipartReply>> requestContext = dummyRequestContextStack.createRequestContext();
+        final RequestContext<List<MultipartReply>> requestContext = dummyRequestContextStack.createRequestContext();
         dContext.hookRequestCtx(xid, requestContext);
         Futures.addCallback(requestContext.getFuture(), new FutureCallback<RpcResult<List<MultipartReply>>>() {
             @Override
             public void onSuccess(final RpcResult<List<MultipartReply>> rpcResult) {
-                List<MultipartReply> result = rpcResult.getResult();
+                final List<MultipartReply> result = rpcResult.getResult();
                 if (result != null) {
                     translateAndWriteReply(type, dContext, nodeII, result);
                 } else {
-                    Iterator<RpcError> rpcErrorIterator = rpcResult.getErrors().iterator();
+                    final Iterator<RpcError> rpcErrorIterator = rpcResult.getErrors().iterator();
                     while (rpcErrorIterator.hasNext()) {
-                        Throwable t = rpcErrorIterator.next().getCause();
+                        final Throwable t = rpcErrorIterator.next().getCause();
                         LOG.info("Failed to retrieve static node {} info: {}", type, t.getMessage());
                         LOG.trace("Detailed error:", t);
                     }

@@ -13,11 +13,13 @@ import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
-import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
@@ -27,14 +29,10 @@ import org.opendaylight.openflowplugin.impl.connection.ConnectionManagerImpl;
 import org.opendaylight.openflowplugin.impl.device.DeviceManagerImpl;
 import org.opendaylight.openflowplugin.impl.rpc.RpcManagerImpl;
 import org.opendaylight.openflowplugin.impl.statistics.StatisticsManagerImpl;
-import org.opendaylight.openflowplugin.impl.translator.TranslatorKeyFactory;
 import org.opendaylight.openflowplugin.impl.util.TranslatorLibraryUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.api.types.rev150327.OfpRole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 27.3.2015.
@@ -55,15 +53,18 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider {
     @Override
     public void onSessionInitiated(final ProviderContext providerContextArg) {
         providerContext = providerContextArg;
+
         connectionManager = new ConnectionManagerImpl();
-        rpcManager = new RpcManagerImpl(providerContext);
         deviceManager = new DeviceManagerImpl(rpcManager, providerContext.getSALService(DataBroker.class));
-        connectionManager.setDeviceConnectedHandler(deviceManager);
         statisticsManager = new StatisticsManagerImpl();
-        deviceManager.addRequestContextReadyHandler(statisticsManager);
-        statisticsManager.addRequestDeviceSynchronizedHandler(rpcManager);
+        rpcManager = new RpcManagerImpl(providerContext);
+
+        connectionManager.setDeviceConnectedHandler(deviceManager);
+        deviceManager.setDeviceInitializationPhaseHandler(statisticsManager);
+        statisticsManager.setDeviceInitializationPhaseHandler(rpcManager);
+        rpcManager.setDeviceInitializationPhaseHandler(deviceManager);
+
         TranslatorLibraryUtil.setBasicTranslatorLibrary(deviceManager);
-        //TODO : initialize translatorLibrary + inject into deviceMngr
         startSwitchConnections();
     }
 

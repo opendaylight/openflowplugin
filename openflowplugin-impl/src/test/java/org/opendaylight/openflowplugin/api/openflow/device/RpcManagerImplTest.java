@@ -48,7 +48,7 @@ public class RpcManagerImplTest {
     @Test
     public void deviceConnectedTest() {
 
-        rpcManager.deviceConnected(mockedDeviceContext);
+        rpcManager.onDeviceContextLevelUp(mockedDeviceContext);
 
         verify(mockedProviderContext, times(AWAITED_NUM_OF_CALL_ADD_ROUTED_RPC)).addRoutedRpcImplementation(
                 Matchers.any(Class.class), Matchers.any(RpcService.class));
