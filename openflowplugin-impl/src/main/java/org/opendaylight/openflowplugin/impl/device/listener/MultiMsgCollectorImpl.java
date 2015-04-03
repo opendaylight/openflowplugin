@@ -14,6 +14,9 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalListener;
 import com.google.common.cache.RemovalNotification;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.device.exception.DeviceDataException;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceReplyProcessor;
@@ -22,9 +25,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -58,9 +58,11 @@ public class MultiMsgCollectorImpl implements MultiMsgCollector {
         return new RemovalListener<Long, MultiCollectorObject>() {
             @Override
             public void onRemoval(final RemovalNotification<Long, MultiCollectorObject> notification) {
-                LOG.warn("Removing data with XID {} from cache", notification.getKey());
-                deviceReplyProcessor.processException(new Xid(notification.getKey()), new DeviceDataException("Data removed from cache"));
-                notification.getValue().invalidateFutureByTimeout(notification.getKey());
+                LOG.trace("Removing data with XID {} from cache, cause: {}", notification.getKey(), notification.getCause());
+                switch (notification.getCause()) {
+                    case EXPIRED:
+                        notification.getValue().invalidateFutureByTimeout(notification.getKey());
+                }
             }
         };
     }
@@ -90,11 +92,16 @@ public class MultiMsgCollectorImpl implements MultiMsgCollector {
             deviceReplyProcessor.processException(new Xid(xid), new DeviceDataException("unknown xid received"));
             return;
         }
-        cachedRef.add(reply);
-        if (!reply.getFlags().isOFPMPFREQMORE()) {
-            // flag OFPMFFREEQMORE false says "I'm a last one'
-            cachedRef.populateSettableFuture(xid); // settable futue has now whole collection
-            cache.invalidate(xid);              // we don't need a reference anymore
+
+        try {
+            cachedRef.add(reply);
+            if (!reply.getFlags().isOFPMPFREQMORE()) {
+                // flag OFPMFFREEQMORE false says "I'm a last one'
+                cachedRef.populateSettableFuture(xid); // settable future has now whole collection
+                cache.invalidate(xid);              // we don't need a reference anymore - remove explicitly
+            }
+        } catch (DeviceDataException e) {
+            deviceReplyProcessor.processException(new Xid(xid), e);
         }
     }
 
@@ -111,7 +118,7 @@ public class MultiMsgCollectorImpl implements MultiMsgCollector {
             replyCollection = new ArrayList<>();
         }
 
-        void add(final MultipartReply reply) {
+        void add(final MultipartReply reply) throws DeviceDataException {
             /* Rise possible exception if it possible */
             msgTypeValidation(reply.getType(), reply.getXid());
             replyCollection.add(reply);
@@ -126,19 +133,16 @@ public class MultiMsgCollectorImpl implements MultiMsgCollector {
             deviceReplyProcessor.processException(new Xid(key), new DeviceDataException(msg));
         }
 
-        void invalidateFutureByInputType(final MultipartType type, final long key) {
-            final String msg = "MultiMsgCollector get incorrect multipart msg with type " + type
-                    + " but expected type is " + msgType;
-            deviceReplyProcessor.processException(new Xid(key), new DeviceDataException(msg));
-        }
-
-        private void msgTypeValidation(final MultipartType type, final long key) {
+        private void msgTypeValidation(final MultipartType type, final long key) throws DeviceDataException {
             if (msgType == null) {
                 msgType = type;
                 return;
             }
             if (!msgType.equals(type)) {
-                invalidateFutureByInputType(type, key);
+                final String msg = "MultiMsgCollector get incorrect multipart msg with type {}"
+                        + " but expected type is {}";
+                LOG.trace(msg, type, msgType);
+                throw new DeviceDataException("multipart message type mismatch");
             }
         }
     }
