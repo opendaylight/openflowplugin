@@ -113,7 +113,7 @@ public abstract class AbstractDataChangeListener <T extends DataObject> implemen
     protected void registrationListener(final DataBroker db, int i) {
         try {
             listenerRegistration = db.registerDataChangeListener(LogicalDatastoreType.OPERATIONAL,
-                    getWildCardPath(), this, DataChangeScope.BASE);
+                    getWildCardPath(), this, DataChangeScope.SUBTREE);
         } catch (final Exception e) {
             if (i >= 1) {
                 try {
