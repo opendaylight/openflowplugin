@@ -34,7 +34,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
-import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.impl.common.MultipartRequestInputFactory;
 import org.opendaylight.openflowplugin.impl.common.NodeStaticReplyTranslatorUtil;
 import org.opendaylight.openflowplugin.impl.device.listener.OpenflowProtocolListenerFullImpl;
@@ -183,9 +182,11 @@ public class DeviceManagerImpl implements DeviceManager {
                 } else {
                     final Iterator<RpcError> rpcErrorIterator = rpcResult.getErrors().iterator();
                     while (rpcErrorIterator.hasNext()) {
-                        final Throwable t = rpcErrorIterator.next().getCause();
-                        LOG.info("Failed to retrieve static node {} info: {}", type, t.getMessage());
-                        LOG.trace("Detailed error:", t);
+                        RpcError rpcError = rpcErrorIterator.next();
+                        LOG.info("Failed to retrieve static node {} info: {}", type, rpcError.getMessage());
+                        if (null != rpcError.getCause()) {
+                            LOG.trace("Detailed error:", rpcError.getCause());
+                        }
                     }
                     if (MultipartType.OFPMPTABLE.equals(type)) {
                         makeEmptyTables(deviceContext, nodeII, deviceContext.getPrimaryConnectionContext().getFeatures().getTables());
