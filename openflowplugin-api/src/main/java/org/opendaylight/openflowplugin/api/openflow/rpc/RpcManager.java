@@ -8,7 +8,8 @@
 
 package org.opendaylight.openflowplugin.api.openflow.rpc;
 
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceSynchronizedHandler;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializator;
 
 /**
  * The RPC Manager will maintain an RPC Context for each online switch. RPC context for device is created when
@@ -17,6 +18,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceSynchr
  * <p>
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 25.2.2015.
  */
-public interface RpcManager extends DeviceSynchronizedHandler {
+public interface RpcManager extends DeviceInitializator, DeviceInitializationPhaseHandler {
 
 }

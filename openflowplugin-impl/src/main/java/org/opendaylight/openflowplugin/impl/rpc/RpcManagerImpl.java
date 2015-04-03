@@ -9,29 +9,30 @@ package org.opendaylight.openflowplugin.impl.rpc;
 
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.impl.util.MdSalRegistratorUtils;
 
 public class RpcManagerImpl implements RpcManager {
 
-    private DeviceContext deviceContext;
-
-
     private final ProviderContext providerContext;
+    private DeviceInitializationPhaseHandler deviceInitPhaseHandler;
 
     public RpcManagerImpl(final ProviderContext providerContext) {
         this.providerContext = providerContext;
     }
 
-    /**
-     * (non-Javadoc)
-     *
-     * @see org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceContextReadyHandler#deviceConnected(org.opendaylight.openflowplugin.api.openflow.device.DeviceContext, org.opendaylight.openflowplugin.api.openflow.device.RequestContext)
-     */
     @Override
-    public void deviceConnected(final DeviceContext deviceContext) {
+    public void setDeviceInitializationPhaseHandler(final DeviceInitializationPhaseHandler handler) {
+        deviceInitPhaseHandler = handler;
+    }
+
+    @Override
+    public void onDeviceContextLevelUp(final DeviceContext deviceContext) {
         final RpcContext rpcContext = new RpcContextImpl(providerContext, deviceContext);
         MdSalRegistratorUtils.registerServices(rpcContext, deviceContext);
+        // finish device initialization cycle back to DeviceManager
+        deviceInitPhaseHandler.onDeviceContextLevelUp(deviceContext);
     }
 }
