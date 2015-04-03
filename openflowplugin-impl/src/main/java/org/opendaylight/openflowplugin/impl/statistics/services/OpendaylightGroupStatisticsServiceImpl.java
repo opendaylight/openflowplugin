@@ -9,6 +9,7 @@ package org.opendaylight.openflowplugin.impl.statistics.services;
 
 import com.google.common.base.Function;
 import com.google.common.util.concurrent.JdkFutureAdapters;
+import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.openflowjava.protocol.api.util.BinContent;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
@@ -50,10 +51,10 @@ public class OpendaylightGroupStatisticsServiceImpl extends CommonService implem
 
 
         return this.<GetAllGroupStatisticsOutput, Void>handleServiceCall(PRIMARY_CONNECTION,
-                new Function<DataCrate<GetAllGroupStatisticsOutput>, Future<RpcResult<Void>>>() {
+                new Function<DataCrate<GetAllGroupStatisticsOutput>, ListenableFuture<RpcResult<Void>>>() {
 
                     @Override
-                    public Future<RpcResult<Void>> apply(final DataCrate<GetAllGroupStatisticsOutput> data) {
+                    public ListenableFuture<RpcResult<Void>> apply(final DataCrate<GetAllGroupStatisticsOutput> data) {
 
                         final MultipartRequestGroupCaseBuilder caseBuilder = new MultipartRequestGroupCaseBuilder();
                         final MultipartRequestGroupBuilder mprGroupBuild = new MultipartRequestGroupBuilder();
@@ -85,10 +86,10 @@ public class OpendaylightGroupStatisticsServiceImpl extends CommonService implem
     @Override
     public Future<RpcResult<GetGroupDescriptionOutput>> getGroupDescription(final GetGroupDescriptionInput input) {
         return this.<GetGroupDescriptionOutput, Void>handleServiceCall(PRIMARY_CONNECTION,
-                new Function<DataCrate<GetGroupDescriptionOutput>, Future<RpcResult<Void>>>() {
+                new Function<DataCrate<GetGroupDescriptionOutput>, ListenableFuture<RpcResult<Void>>>() {
 
                     @Override
-                    public Future<RpcResult<Void>> apply(final DataCrate<GetGroupDescriptionOutput> data) {
+                    public ListenableFuture<RpcResult<Void>> apply(final DataCrate<GetGroupDescriptionOutput> data) {
                         final MultipartRequestGroupDescCaseBuilder mprGroupDescCaseBuild = new MultipartRequestGroupDescCaseBuilder();
 
                         final Xid xid = deviceContext.getNextXid();
@@ -107,10 +108,10 @@ public class OpendaylightGroupStatisticsServiceImpl extends CommonService implem
     @Override
     public Future<RpcResult<GetGroupFeaturesOutput>> getGroupFeatures(final GetGroupFeaturesInput input) {
         return this.<GetGroupFeaturesOutput, Void>handleServiceCall(PRIMARY_CONNECTION,
-                new Function<DataCrate<GetGroupFeaturesOutput>, Future<RpcResult<Void>>>() {
+                new Function<DataCrate<GetGroupFeaturesOutput>, ListenableFuture<RpcResult<Void>>>() {
 
                     @Override
-                    public Future<RpcResult<Void>> apply(final DataCrate<GetGroupFeaturesOutput> data) {
+                    public ListenableFuture<RpcResult<Void>> apply(final DataCrate<GetGroupFeaturesOutput> data) {
                         final MultipartRequestGroupFeaturesCaseBuilder mprGroupFeaturesBuild = new MultipartRequestGroupFeaturesCaseBuilder();
 
                         final Xid xid = deviceContext.getNextXid();
@@ -129,10 +130,10 @@ public class OpendaylightGroupStatisticsServiceImpl extends CommonService implem
     @Override
     public Future<RpcResult<GetGroupStatisticsOutput>> getGroupStatistics(final GetGroupStatisticsInput input) {
         return this.<GetGroupStatisticsOutput, Void>handleServiceCall(PRIMARY_CONNECTION,
-                new Function<DataCrate<GetGroupStatisticsOutput>, Future<RpcResult<Void>>>() {
+                new Function<DataCrate<GetGroupStatisticsOutput>, ListenableFuture<RpcResult<Void>>>() {
 
                     @Override
-                    public Future<RpcResult<Void>> apply(final DataCrate<GetGroupStatisticsOutput> data) {
+                    public ListenableFuture<RpcResult<Void>> apply(final DataCrate<GetGroupStatisticsOutput> data) {
 
                         final MultipartRequestGroupCaseBuilder caseBuilder = new MultipartRequestGroupCaseBuilder();
                         final MultipartRequestGroupBuilder mprGroupBuild = new MultipartRequestGroupBuilder();

@@ -9,6 +9,7 @@ package org.opendaylight.openflowplugin.impl.services;
 
 import com.google.common.base.Function;
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
@@ -72,7 +73,7 @@ public abstract class CommonService {
     }
 
     public <T, F> Future<RpcResult<T>> handleServiceCall(final BigInteger connectionID,
-                                                                            final Function<DataCrate<T>, Future<RpcResult<F>>> function) {
+                                                                            final Function<DataCrate<T>, ListenableFuture<RpcResult<F>>> function) {
         LOG.debug("Calling the FlowMod RPC method on MessageDispatchService");
 
         final RequestContext<T> requestContext = requestContextStack.createRequestContext();
@@ -80,7 +81,7 @@ public abstract class CommonService {
         final DataCrate<T> dataCrate = DataCrateBuilder.<T>builder().setiDConnection(connectionID)
                 .setRequestContext(requestContext).build();
         if (!result.isDone()) {
-            final Future<RpcResult<F>> resultFromOFLib = function.apply(dataCrate);
+            final ListenableFuture<RpcResult<F>> resultFromOFLib = function.apply(dataCrate);
 
             final OFJResult2RequestCtxFuture<T> OFJResult2RequestCtxFuture = new OFJResult2RequestCtxFuture<>(requestContext, deviceContext);
             OFJResult2RequestCtxFuture.processResultFromOfJava(resultFromOFLib);

@@ -9,6 +9,7 @@ package org.opendaylight.openflowplugin.impl.statistics.services;
 
 import com.google.common.base.Function;
 import com.google.common.util.concurrent.JdkFutureAdapters;
+import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
@@ -44,10 +45,10 @@ public class OpendaylightPortStatisticsServiceImpl extends CommonService impleme
             final GetAllNodeConnectorsStatisticsInput input) {
         return this
                 .<GetAllNodeConnectorsStatisticsOutput, Void>handleServiceCall(
-                        PRIMARY_CONNECTION, new Function<DataCrate<GetAllNodeConnectorsStatisticsOutput>, Future<RpcResult<Void>>>() {
+                        PRIMARY_CONNECTION, new Function<DataCrate<GetAllNodeConnectorsStatisticsOutput>, ListenableFuture<RpcResult<Void>>>() {
 
                             @Override
-                            public Future<RpcResult<Void>> apply(final DataCrate<GetAllNodeConnectorsStatisticsOutput> data) {
+                            public ListenableFuture<RpcResult<Void>> apply(final DataCrate<GetAllNodeConnectorsStatisticsOutput> data) {
 
                                 MultipartRequestPortStatsCaseBuilder caseBuilder =
                                         new MultipartRequestPortStatsCaseBuilder();
@@ -74,10 +75,10 @@ public class OpendaylightPortStatisticsServiceImpl extends CommonService impleme
             final GetNodeConnectorStatisticsInput input) {
         return this
                 .<GetNodeConnectorStatisticsOutput, Void>handleServiceCall(
-                        PRIMARY_CONNECTION, new Function<DataCrate<GetNodeConnectorStatisticsOutput>, Future<RpcResult<Void>>>() {
+                        PRIMARY_CONNECTION, new Function<DataCrate<GetNodeConnectorStatisticsOutput>, ListenableFuture<RpcResult<Void>>>() {
 
                             @Override
-                            public Future<RpcResult<Void>> apply(final DataCrate<GetNodeConnectorStatisticsOutput> data) {
+                            public ListenableFuture<RpcResult<Void>> apply(final DataCrate<GetNodeConnectorStatisticsOutput> data) {
 
                                 MultipartRequestPortStatsCaseBuilder caseBuilder =
                                         new MultipartRequestPortStatsCaseBuilder();

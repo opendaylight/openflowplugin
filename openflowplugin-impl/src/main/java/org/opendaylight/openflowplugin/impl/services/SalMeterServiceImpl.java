@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
+import com.google.common.util.concurrent.JdkFutureAdapters;
+import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import com.google.common.base.Function;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.MeterConvertor;
@@ -30,9 +32,9 @@ public class SalMeterServiceImpl extends CommonService implements SalMeterServic
     @Override
     public Future<RpcResult<AddMeterOutput>> addMeter(final AddMeterInput input) {
         return this.<AddMeterOutput, Void>handleServiceCall( PRIMARY_CONNECTION,
-                 new Function<DataCrate<AddMeterOutput>,Future<RpcResult<Void>>>() {
+                 new Function<DataCrate<AddMeterOutput>,ListenableFuture<RpcResult<Void>>>() {
                     @Override
-                    public Future<RpcResult<Void>> apply(final DataCrate<AddMeterOutput> data) {
+                    public ListenableFuture<RpcResult<Void>> apply(final DataCrate<AddMeterOutput> data) {
                         return convertAndSend(input, data);
                     }
                 });
@@ -41,9 +43,9 @@ public class SalMeterServiceImpl extends CommonService implements SalMeterServic
     @Override
     public Future<RpcResult<UpdateMeterOutput>> updateMeter(final UpdateMeterInput input) {
         return this.<UpdateMeterOutput, Void>handleServiceCall( PRIMARY_CONNECTION,
-                 new Function<DataCrate<UpdateMeterOutput>,Future<RpcResult<Void>>>() {
+                 new Function<DataCrate<UpdateMeterOutput>,ListenableFuture<RpcResult<Void>>>() {
                     @Override
-                    public Future<RpcResult<Void>> apply(final DataCrate<UpdateMeterOutput> data) {
+                    public ListenableFuture<RpcResult<Void>> apply(final DataCrate<UpdateMeterOutput> data) {
                         return convertAndSend(input.getUpdatedMeter(), data);
                     }
                 });
@@ -52,19 +54,19 @@ public class SalMeterServiceImpl extends CommonService implements SalMeterServic
     @Override
     public Future<RpcResult<RemoveMeterOutput>> removeMeter(final RemoveMeterInput input) {
         return this.<RemoveMeterOutput, Void>handleServiceCall( PRIMARY_CONNECTION,
-                 new Function<DataCrate<RemoveMeterOutput>,Future<RpcResult<Void>>>() {
+                 new Function<DataCrate<RemoveMeterOutput>,ListenableFuture<RpcResult<Void>>>() {
                     @Override
-                    public Future<RpcResult<Void>> apply(final DataCrate<RemoveMeterOutput> data) {
+                    public ListenableFuture<RpcResult<Void>> apply(final DataCrate<RemoveMeterOutput> data) {
                         return convertAndSend(input, data);
                     }
                 });
     }
 
-    <T> Future<RpcResult<Void>> convertAndSend(final Meter iputMeter, final DataCrate<T> data) {
+    <T> ListenableFuture<RpcResult<Void>> convertAndSend(final Meter iputMeter, final DataCrate<T> data) {
         final MeterModInputBuilder ofMeterModInput = MeterConvertor.toMeterModInput(iputMeter, version);
         Xid xid = deviceContext.getNextXid();
         ofMeterModInput.setXid(xid.getValue());
         data.getRequestContext().setXid(xid);
-        return provideConnectionAdapter(data.getiDConnection()).meterMod(ofMeterModInput.build());
+        return JdkFutureAdapters.listenInPoolThread(provideConnectionAdapter(data.getiDConnection()).meterMod(ofMeterModInput.build()));
     }
 }

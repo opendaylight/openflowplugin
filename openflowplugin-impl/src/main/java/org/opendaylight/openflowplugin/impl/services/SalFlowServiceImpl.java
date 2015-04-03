@@ -50,7 +50,7 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
     }
 
     <T, F> ListenableFuture<RpcResult<T>> handleServiceCall(final BigInteger connectionID,
-            final FlowModInputBuilder flowModInputBuilder, final Function<DataCrate<T>, Future<RpcResult<F>>> function) {
+            final FlowModInputBuilder flowModInputBuilder, final Function<DataCrate<T>, ListenableFuture<RpcResult<F>>> function) {
         LOG.debug("Calling the FlowMod RPC method on MessageDispatchService");
 
         final RequestContext<T> requestContext = requestContextStack.createRequestContext();
@@ -59,7 +59,7 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
                 .setRequestContext(requestContext).setFlowModInputBuilder(flowModInputBuilder).build();
 
         if (!result.isDone()) {
-            final Future<RpcResult<F>> resultFromOFLib = function.apply(dataCrate);
+            final ListenableFuture<RpcResult<F>> resultFromOFLib = function.apply(dataCrate);
 
             final OFJResult2RequestCtxFuture<T> OFJResult2RequestCtxFuture = new OFJResult2RequestCtxFuture<>(requestContext, deviceContext);
             OFJResult2RequestCtxFuture.processResultFromOfJava(resultFromOFLib);
@@ -80,9 +80,9 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
     public Future<RpcResult<RemoveFlowOutput>> removeFlow(final RemoveFlowInput input) {
 
         return this.<RemoveFlowOutput, Void> handleServiceCall(PRIMARY_CONNECTION,
-                new Function<DataCrate<RemoveFlowOutput>, Future<RpcResult<Void>>>() {
+                new Function<DataCrate<RemoveFlowOutput>, ListenableFuture<RpcResult<Void>>>() {
                     @Override
-                    public Future<RpcResult<Void>> apply(final DataCrate<RemoveFlowOutput> data) {
+                    public ListenableFuture<RpcResult<Void>> apply(final DataCrate<RemoveFlowOutput> data) {
                         final FlowModInputBuilder ofFlowModInput = FlowConvertor.toFlowModInput(input, version,
                                 datapathId);
                         return createResultForFlowMod(data, ofFlowModInput);
@@ -123,7 +123,7 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
         final List<ListenableFuture<RpcResult<T>>> partialFutures = new ArrayList<>();
         for (FlowModInputBuilder flowModInputBuilder : ofFlowModInputs) {
             ListenableFuture<RpcResult<T>> partialFuture = handleServiceCall(PRIMARY_CONNECTION, flowModInputBuilder,
-                    new Function<DataCrate<T>, Future<RpcResult<Void>>>() {
+                    new Function<DataCrate<T>, ListenableFuture<RpcResult<Void>>>() {
                         @Override
                         public ListenableFuture<RpcResult<Void>> apply(final DataCrate<T> data) {
                             return createResultForFlowMod(data);

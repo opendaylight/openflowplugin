@@ -9,6 +9,7 @@ package org.opendaylight.openflowplugin.impl.statistics.services;
 
 import com.google.common.base.Function;
 import com.google.common.util.concurrent.JdkFutureAdapters;
+import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.openflowjava.protocol.api.util.BinContent;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
@@ -51,10 +52,10 @@ public class OpendaylightMeterStatisticsServiceImpl extends CommonService implem
             final GetAllMeterConfigStatisticsInput input) {
         return this
                 .<GetAllMeterConfigStatisticsOutput, Void>handleServiceCall(
-                        PRIMARY_CONNECTION, new Function<DataCrate<GetAllMeterConfigStatisticsOutput>, Future<RpcResult<Void>>>() {
+                        PRIMARY_CONNECTION, new Function<DataCrate<GetAllMeterConfigStatisticsOutput>, ListenableFuture<RpcResult<Void>>>() {
 
                             @Override
-                            public Future<RpcResult<Void>> apply(final DataCrate<GetAllMeterConfigStatisticsOutput> data) {
+                            public ListenableFuture<RpcResult<Void>> apply(final DataCrate<GetAllMeterConfigStatisticsOutput> data) {
 
                                 MultipartRequestMeterConfigCaseBuilder caseBuilder =
                                         new MultipartRequestMeterConfigCaseBuilder();
@@ -85,9 +86,9 @@ public class OpendaylightMeterStatisticsServiceImpl extends CommonService implem
         final long xid = deviceContext.getNextXid().getValue();
         return this.<GetAllMeterStatisticsOutput, Void>handleServiceCall(
                 PRIMARY_CONNECTION,
-                new Function<DataCrate<GetAllMeterStatisticsOutput>, Future<RpcResult<Void>>>() {
+                new Function<DataCrate<GetAllMeterStatisticsOutput>, ListenableFuture<RpcResult<Void>>>() {
                     @Override
-                    public Future<RpcResult<Void>> apply(final DataCrate<GetAllMeterStatisticsOutput> data) {
+                    public ListenableFuture<RpcResult<Void>> apply(final DataCrate<GetAllMeterStatisticsOutput> data) {
 
                         MultipartRequestMeterCaseBuilder caseBuilder =
                                 new MultipartRequestMeterCaseBuilder();
@@ -116,9 +117,9 @@ public class OpendaylightMeterStatisticsServiceImpl extends CommonService implem
         final long xid = deviceContext.getNextXid().getValue();
         return this.<GetMeterFeaturesOutput, Void>handleServiceCall(
                 PRIMARY_CONNECTION,
-                new Function<DataCrate<GetMeterFeaturesOutput>, Future<RpcResult<Void>>>() {
+                new Function<DataCrate<GetMeterFeaturesOutput>, ListenableFuture<RpcResult<Void>>>() {
                     @Override
-                    public Future<RpcResult<Void>> apply(final DataCrate<GetMeterFeaturesOutput> data) {
+                    public ListenableFuture<RpcResult<Void>> apply(final DataCrate<GetMeterFeaturesOutput> data) {
 
                         MultipartRequestMeterFeaturesCaseBuilder mprMeterFeaturesBuild =
                                 new MultipartRequestMeterFeaturesCaseBuilder();
@@ -137,9 +138,9 @@ public class OpendaylightMeterStatisticsServiceImpl extends CommonService implem
         final long xid = deviceContext.getNextXid().getValue();
         return this.<GetMeterStatisticsOutput, Void>handleServiceCall(
                 PRIMARY_CONNECTION,
-                new Function<DataCrate<GetMeterStatisticsOutput>, Future<RpcResult<Void>>>() {
+                new Function<DataCrate<GetMeterStatisticsOutput>, ListenableFuture<RpcResult<Void>>>() {
                     @Override
-                    public Future<RpcResult<Void>> apply(final DataCrate<GetMeterStatisticsOutput> data) {
+                    public ListenableFuture<RpcResult<Void>> apply(final DataCrate<GetMeterStatisticsOutput> data) {
                         MultipartRequestMeterCaseBuilder caseBuilder =
                                 new MultipartRequestMeterCaseBuilder();
                         MultipartRequestMeterBuilder mprMeterBuild =
