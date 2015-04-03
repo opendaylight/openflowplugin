@@ -169,29 +169,32 @@ public class DeviceContextImpl implements DeviceContext {
     @Override
     public void processReply(final OfHeader ofHeader) {
         final RequestContext requestContext = getRequests().get(ofHeader.getXid());
-        final SettableFuture replyFuture = requestContext.getFuture();
-        getRequests().remove(ofHeader.getXid());
-        RpcResult<OfHeader> rpcResult;
+        if (null != requestContext) {
+            final SettableFuture replyFuture = requestContext.getFuture();
+            getRequests().remove(ofHeader.getXid());
+            RpcResult<OfHeader> rpcResult;
+            if (ofHeader instanceof Error) {
+                final Error error = (Error) ofHeader;
+                final String message = "Operation on device failed";
+                rpcResult = RpcResultBuilder
+                        .<OfHeader>failed()
+                        .withError(RpcError.ErrorType.APPLICATION, message, new DeviceDataException(message, error))
+                        .build();
+            } else {
+                rpcResult = RpcResultBuilder
+                        .<OfHeader>success()
+                        .withResult(ofHeader)
+                        .build();
+            }
 
-        if (ofHeader instanceof Error) {
-            final Error error = (Error) ofHeader;
-            final String message = "Operation on device failed";
-            rpcResult = RpcResultBuilder
-                    .<OfHeader>failed()
-                    .withError(RpcError.ErrorType.APPLICATION, message, new DeviceDataException(message, error))
-                    .build();
+            replyFuture.set(rpcResult);
+            try {
+                requestContext.close();
+            } catch (final Exception e) {
+                LOG.error("Closing RequestContext failed: ", e);
+            }
         } else {
-            rpcResult = RpcResultBuilder
-                    .<OfHeader>success()
-                    .withResult(ofHeader)
-                    .build();
-        }
-
-        replyFuture.set(rpcResult);
-        try {
-            requestContext.close();
-        } catch (final Exception e) {
-            LOG.error("Closing RequestContext failed: ", e);
+            LOG.error("Can't find request context registered for xid : {}", ofHeader.getXid());
         }
     }
 
