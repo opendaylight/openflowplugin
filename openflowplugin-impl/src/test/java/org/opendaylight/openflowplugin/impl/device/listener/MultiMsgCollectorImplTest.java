@@ -56,39 +56,7 @@ public class MultiMsgCollectorImplTest {
         collector.setDeviceReplyProcessor(deviceProcessor);
     }
 
-    /**
-     * Test method for {@link MultiMsgCollectorImpl#registerMultipartMsg(long)}.
-     * @throws ExecutionException
-     * @throws InterruptedException
-     * @throws TimeoutException
-     */
-    @Test
-    public void testRegisterMultipartMsg() throws InterruptedException, ExecutionException, TimeoutException{
-        final long xid = 1l;
-        final String hwTestValue = "test-value";
-        final ListenableFuture<Collection<MultipartReply>> response = collector.registerMultipartMsg(xid);
-        collector.addMultipartMsg(MsgGeneratorTestUtils.makeMultipartDescReply(xid, hwTestValue, false));
 
-        validateDescReply(response, xid, Collections.singletonList(hwTestValue));
-    }
-
-    /**
-     * Test method for {@link MultiMsgCollectorImpl#addMultipartMsg(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply)}.
-     * @throws TimeoutException
-     * @throws ExecutionException
-     * @throws InterruptedException
-     */
-    @Test
-    public void testAddMultipartMsg() throws InterruptedException, ExecutionException, TimeoutException{
-        final long xid = 1l;
-        final String hwTestValue1 = "test-value1";
-        final String hwTestValue2 = "test-value2";
-        final ListenableFuture<Collection<MultipartReply>> response = collector.registerMultipartMsg(xid);
-        collector.addMultipartMsg(MsgGeneratorTestUtils.makeMultipartDescReply(xid, hwTestValue1, true));
-        collector.addMultipartMsg(MsgGeneratorTestUtils.makeMultipartDescReply(xid, hwTestValue2, false));
-
-        validateDescReply(response, xid, Arrays.asList(hwTestValue1, hwTestValue2));
-    }
 
     /**
      * Test could return NullPointerException if the body of addMultipartMsg not
@@ -100,71 +68,4 @@ public class MultiMsgCollectorImplTest {
         collector.addMultipartMsg(MsgGeneratorTestUtils.makeMultipartDescReply(xid, hwTestValue, true));
     }
 
-    /**
-     * Test could return NullPointerException if the body of addMultipartMsg not
-     * @throws InterruptedException
-     * @throws TimeoutException
-     */
-    @Test
-    public void testCheckExistMultipartMsgInCacheAfterTimeout() throws InterruptedException, TimeoutException {
-        final long xid = 1l;
-        try {
-            final ListenableFuture<Collection<MultipartReply>> response = collector.registerMultipartMsg(xid);
-            assertNotNull(response);
-            collector.addMultipartMsg(MsgGeneratorTestUtils.makeMultipartDescReply(xid, "hw-test-value", true));
-            Thread.sleep(4000);
-            collector.addMultipartMsg(MsgGeneratorTestUtils.makeMultipartDescReply(xid, "hw-test-value2", false));
-            collector.registerMultipartMsg(5L);
-            response.get(1, TimeUnit.SECONDS);
-            fail("We expected timeout exception");
-        }
-        catch (final ExecutionException e) {
-            assertNotNull(e.getMessage());
-            assertNotNull(e.getMessage().contains(""+xid));
-            assertNotNull(e.getCause() instanceof TimeoutException);
-        }
-    }
-
-    /**
-     * Test returns ExcetionException because we set different MultipartType as is expected for second
-     * message. So Internal {@link MultiMsgCollectorImpl} validation has to rise IllgalStateException
-     * @throws InterruptedException
-     */
-    @Test
-    public void testCheckErrorForBadMultipartMsgType() throws InterruptedException {
-        final long xid = 1l;
-        final ListenableFuture<Collection<MultipartReply>> response = collector.registerMultipartMsg(xid);
-        assertNotNull(response);
-        collector.addMultipartMsg(MsgGeneratorTestUtils.makeMultipartDescReply(xid, "hw-text-value", true));
-        final MultipartReply nextMultipart = new MultipartReplyMessageBuilder(MsgGeneratorTestUtils
-                .makeMultipartDescReply(xid, "hw-test-next", true)).setType(MultipartType.OFPMPEXPERIMENTER).build();
-        collector.addMultipartMsg(nextMultipart);
-        try {
-            response.get();
-            fail("We expect Illgal argument exception in ExecutionException");
-        }
-        catch (final ExecutionException e) {
-            assertNotNull(e.getMessage());
-            assertTrue(e.getMessage().contains("OFPMPEXPERIMENTER"));
-            assertTrue(e.getCause() instanceof IllegalArgumentException);
-        }
-    }
-
-    private void validateDescReply(final ListenableFuture<Collection<MultipartReply>> response, final long xid,
-            final Collection<String> hwTestValues) throws InterruptedException, ExecutionException, TimeoutException {
-        assertNotNull(response);
-        assertNotNull(xid);
-        assertNotNull(hwTestValues);
-
-        final Collection<MultipartReply> multipartReplyColl = response.get(1L, TimeUnit.SECONDS);
-        assertNotNull(multipartReplyColl);
-        assertTrue(multipartReplyColl.size() > 0);
-        for (final MultipartReply reply : multipartReplyColl) {
-            assertEquals(xid, reply.getXid().longValue());
-            assertTrue(reply.getMultipartReplyBody() instanceof MultipartReplyDescCase);
-            final String replayHwTestString = ((MultipartReplyDescCase) reply.getMultipartReplyBody())
-                    .getMultipartReplyDesc().getHwDesc();
-            assertTrue(hwTestValues.contains(replayHwTestString));
-        }
-    }
 }

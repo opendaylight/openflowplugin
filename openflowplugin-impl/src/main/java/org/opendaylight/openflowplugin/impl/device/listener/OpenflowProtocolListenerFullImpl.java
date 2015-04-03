@@ -7,11 +7,6 @@
  */
 package org.opendaylight.openflowplugin.impl.device.listener;
 
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.SettableFuture;
-import java.util.Collection;
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceReplyProcessor;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
@@ -28,6 +23,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import javax.annotation.Nonnull;
 
 /**
  *
@@ -100,13 +96,8 @@ public class OpenflowProtocolListenerFullImpl implements OpenflowProtocolListene
     }
 
     @Override
-    public ListenableFuture<Collection<MultipartReply>> registerMultipartMsg(final long xid) {
-        return multiMsgCollector.registerMultipartMsg(xid);
-    }
-
-    @Override
-    public void registerMultipartFutureMsg(final long xid, @CheckForNull final SettableFuture<Collection<MultipartReply>> future) {
-        multiMsgCollector.registerMultipartFutureMsg(xid, future);
+    public void registerMultipartXid(final long xid) {
+        multiMsgCollector.registerMultipartXid(xid);
     }
 
     @Override

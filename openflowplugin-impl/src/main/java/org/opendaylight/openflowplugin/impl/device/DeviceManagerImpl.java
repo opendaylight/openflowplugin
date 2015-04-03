@@ -40,6 +40,7 @@ import org.opendaylight.openflowplugin.impl.common.MultipartRequestInputFactory;
 import org.opendaylight.openflowplugin.impl.common.NodeStaticReplyTranslatorUtil;
 import org.opendaylight.openflowplugin.impl.device.listener.OpenflowProtocolListenerFullImpl;
 import org.opendaylight.openflowplugin.impl.rpc.RequestContextImpl;
+import org.opendaylight.openflowplugin.impl.services.RpcResultConvertor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableBuilder;
@@ -120,34 +121,41 @@ public class DeviceManagerImpl implements DeviceManager {
     @Override
     public void deviceConnected(@CheckForNull final ConnectionContext connectionContext) {
         Preconditions.checkArgument(connectionContext != null);
+
         final DeviceState deviceState = new DeviceStateImpl(connectionContext.getFeatures(), connectionContext.getNodeId());
+
         final DeviceContextImpl deviceContext = new DeviceContextImpl(connectionContext, deviceState, dataBroker, hashedWheelTimer);
         deviceContext.setTranslatorLibrary(translatorLibrary);
+
         final OpenflowProtocolListenerFullImpl messageListener = new OpenflowProtocolListenerFullImpl(
                 connectionContext.getConnectionAdapter(), deviceContext);
+
         connectionContext.getConnectionAdapter().setMessageListener(messageListener);
 
-        final Xid nodeDescXid = deviceContext.getNextXid();
-        final ListenableFuture<Collection<MultipartReply>> replyDesc = getNodeStaticInfo(nodeDescXid, messageListener,
+        final ListenableFuture<RpcResult<List<MultipartReply>>> replyDesc = getNodeStaticInfo(messageListener,
                 MultipartType.OFPMPDESC, deviceContext, deviceState.getNodeInstanceIdentifier(), deviceState.getVersion());
 
-        final Xid nodeMeterXid = deviceContext.getNextXid();
-        final ListenableFuture<Collection<MultipartReply>> replyMeterFeature = getNodeStaticInfo(nodeMeterXid, messageListener,
+        final ListenableFuture<RpcResult<List<MultipartReply>>> replyMeterFeature = getNodeStaticInfo(messageListener,
                 MultipartType.OFPMPMETERFEATURES, deviceContext, deviceState.getNodeInstanceIdentifier(), deviceState.getVersion());
 
-        final Xid nodeGroupXid = deviceContext.getNextXid();
-        final ListenableFuture<Collection<MultipartReply>> replyGroupFeatures = getNodeStaticInfo(nodeGroupXid, messageListener,
+        final ListenableFuture<RpcResult<List<MultipartReply>>> replyGroupFeatures = getNodeStaticInfo(messageListener,
                 MultipartType.OFPMPGROUPFEATURES, deviceContext, deviceState.getNodeInstanceIdentifier(), deviceState.getVersion());
 
-        final Xid nodeTableXid = deviceContext.getNextXid();
-        final ListenableFuture<Collection<MultipartReply>> replyTableFeatures = getNodeStaticInfo(nodeTableXid, messageListener,
+/*
+        final ListenableFuture<RpcResult<List<MultipartReply>>> replyTableFeatures = getNodeStaticInfo(messageListener,
                 MultipartType.OFPMPTABLEFEATURES, deviceContext, deviceState.getNodeInstanceIdentifier(), deviceState.getVersion());
+*/
 
-        final ListenableFuture<List<Collection<MultipartReply>>> deviceFeaturesFuture =
+/*
+        final ListenableFuture<List<RpcResult<List<MultipartReply>>>> deviceFeaturesFuture =
                 Futures.allAsList(Arrays.asList(replyDesc, replyMeterFeature, replyGroupFeatures, replyTableFeatures));
-        Futures.addCallback(deviceFeaturesFuture, new FutureCallback<List<Collection<MultipartReply>>>() {
+*/
+        final ListenableFuture<List<RpcResult<List<MultipartReply>>>> deviceFeaturesFuture =
+                Futures.allAsList(Arrays.asList(replyDesc, replyMeterFeature, replyGroupFeatures));
+
+        Futures.addCallback(deviceFeaturesFuture, new FutureCallback<List<RpcResult<List<MultipartReply>>>>() {
             @Override
-            public void onSuccess(final List<Collection<MultipartReply>> result) {
+            public void onSuccess(final List<RpcResult<List<MultipartReply>>> result) {
                 // wake up statistics
                 deviceInitPhaseHandler.onDeviceContextLevelUp(deviceContext);
             }
@@ -169,19 +177,19 @@ public class DeviceManagerImpl implements DeviceManager {
         this.translatorLibrary = translatorLibrary;
     }
 
-    private ListenableFuture<Collection<MultipartReply>> getNodeStaticInfo(final Xid xid,
-                                                                           final MultiMsgCollector multiMsgCollector, final MultipartType type, final DeviceContext dContext,
-                                                                           final InstanceIdentifier<Node> nodeII, final short version) {
-        final ListenableFuture<Collection<MultipartReply>> future = multiMsgCollector.registerMultipartMsg(xid.getValue());
+    private ListenableFuture<RpcResult<List<MultipartReply>>> getNodeStaticInfo(final MultiMsgCollector multiMsgCollector, final MultipartType type, final DeviceContext deviceContext,
+                                                                                final InstanceIdentifier<Node> nodeII, final short version) {
 
+        final Xid xid = deviceContext.getNextXid();
         final RequestContext<List<MultipartReply>> requestContext = dummyRequestContextStack.createRequestContext();
-        dContext.hookRequestCtx(xid, requestContext);
+        multiMsgCollector.registerMultipartXid(xid.getValue());
+        deviceContext.hookRequestCtx(xid, requestContext);
         Futures.addCallback(requestContext.getFuture(), new FutureCallback<RpcResult<List<MultipartReply>>>() {
             @Override
             public void onSuccess(final RpcResult<List<MultipartReply>> rpcResult) {
                 final List<MultipartReply> result = rpcResult.getResult();
                 if (result != null) {
-                    translateAndWriteReply(type, dContext, nodeII, result);
+                    translateAndWriteReply(type, deviceContext, nodeII, result);
                 } else {
                     final Iterator<RpcError> rpcErrorIterator = rpcResult.getErrors().iterator();
                     while (rpcErrorIterator.hasNext()) {
@@ -190,7 +198,7 @@ public class DeviceManagerImpl implements DeviceManager {
                         LOG.trace("Detailed error:", t);
                     }
                     if (MultipartType.OFPMPTABLE.equals(type)) {
-                        makeEmptyTables(dContext, nodeII, dContext.getPrimaryConnectionContext().getFeatures().getTables());
+                        makeEmptyTables(deviceContext, nodeII, deviceContext.getPrimaryConnectionContext().getFeatures().getTables());
                     }
                 }
             }
@@ -201,20 +209,12 @@ public class DeviceManagerImpl implements DeviceManager {
             }
         });
 
-        final Future<RpcResult<Void>> rpcFuture = dContext.getPrimaryConnectionContext().getConnectionAdapter()
+        final Future<RpcResult<Void>> rpcFuture = deviceContext.getPrimaryConnectionContext().getConnectionAdapter()
                 .multipartRequest(MultipartRequestInputFactory.makeMultipartRequestInput(xid.getValue(), version, type));
-        Futures.addCallback(JdkFutureAdapters.listenInPoolThread(rpcFuture), new FutureCallback<RpcResult<Void>>() {
-            @Override
-            public void onSuccess(final RpcResult<Void> result) {
-                // NOOP
-            }
+        RpcResultConvertor rpcResultConvertor = new RpcResultConvertor(requestContext, deviceContext);
+        rpcResultConvertor.processResultFromOfJava(rpcFuture);
 
-            @Override
-            public void onFailure(final Throwable t) {
-                future.cancel(true);
-            }
-        });
-        return future;
+        return requestContext.getFuture();
     }
 
     // FIXME : remove after ovs tableFeatures fix
