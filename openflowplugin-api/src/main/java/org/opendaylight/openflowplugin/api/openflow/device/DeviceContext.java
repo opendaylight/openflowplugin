@@ -8,15 +8,17 @@
 
 package org.opendaylight.openflowplugin.api.openflow.device;
 
+import java.math.BigInteger;
+
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MessageHandler;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.OutstandingMessageExtractor;
 import org.opendaylight.openflowplugin.api.openflow.translator.TranslatorLibrarian;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableFeatures;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import java.math.BigInteger;
 
 /**
  * The central entity of OFP is the Device Context, which encapsulate the logical state of a switch
@@ -34,7 +36,7 @@ import java.math.BigInteger;
  * <p/>
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 25.2.2015.
  */
-public interface DeviceContext extends MessageHandler, TranslatorLibrarian {
+public interface DeviceContext extends MessageHandler, TranslatorLibrarian, OutstandingMessageExtractor {
 
 
     /**

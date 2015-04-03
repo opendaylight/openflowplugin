@@ -8,7 +8,8 @@
 
 package org.opendaylight.openflowplugin.impl.device;
 
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.OutstandingMessageExtractor;
 
 /**
  * openflowplugin-impl
@@ -22,7 +23,20 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
  */
 public class BarrierProcessor {
 
-    public static void processOutstandingRequests(final long xid, final DeviceContext deviceCtx) {
-        // TODO
+    /**
+     * for all requestContexts from deviceContext cache which are older than barrier (lower barrierXid value) we do: <br>
+     *     <ul>
+     *         <li>remove from cache</li>
+     *         <li>cancel inner future</li>
+     *     </ul>
+     *
+     * @param barrierXid
+     * @param messageExtractor
+     */
+    public static void processOutstandingRequests(final long barrierXid, final OutstandingMessageExtractor messageExtractor) {
+        RequestContext nextRequestContext;
+        while ((nextRequestContext = messageExtractor.extractNextOutstandingMessage(barrierXid)) != null ) {
+            nextRequestContext.getFuture().cancel(false);
+        }
     }
 }

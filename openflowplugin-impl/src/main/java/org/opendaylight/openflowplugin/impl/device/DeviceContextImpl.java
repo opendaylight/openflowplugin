@@ -7,19 +7,22 @@
  */
 package org.opendaylight.openflowplugin.impl.device;
 
+import javax.annotation.Nonnull;
+import java.math.BigInteger;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
+
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.SettableFuture;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
-import java.math.BigInteger;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
-import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -66,7 +69,7 @@ public class DeviceContextImpl implements DeviceContext, DeviceReplyProcessor {
     private final DataBroker dataBroker;
     private final XidGenerator xidGenerator;
     private final HashedWheelTimer hashedWheelTimer;
-    private Map<Long, RequestContext> requests = new HashMap<Long, RequestContext>();
+    private Map<Long, RequestContext> requests = new TreeMap<>();
 
     private final Map<SwitchConnectionDistinguisher, ConnectionContext> auxiliaryConnectionContexts;
     private final TransactionChainManager txChainManager;
@@ -269,5 +272,18 @@ public class DeviceContextImpl implements DeviceContext, DeviceReplyProcessor {
         public Xid generate() {
             return new Xid(xid.incrementAndGet());
         }
+    }
+
+    @Override
+    public RequestContext extractNextOutstandingMessage(long barrierXid) {
+        RequestContext nextMessage = null;
+        Iterator<Long> keyIterator = requests.keySet().iterator();
+        if (keyIterator.hasNext()) {
+            Long oldestXid = keyIterator.next();
+            if (oldestXid < barrierXid) {
+                nextMessage = requests.remove(oldestXid);
+            }
+        }
+        return nextMessage;
     }
 }
