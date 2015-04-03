@@ -15,6 +15,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
+import org.opendaylight.openflowplugin.impl.common.MultipartRequestInputFactory;
 import org.opendaylight.openflowplugin.impl.services.CommonService;
 import org.opendaylight.openflowplugin.impl.services.DataCrate;
 import org.opendaylight.openflowplugin.impl.services.RequestInputUtils;
@@ -41,22 +42,18 @@ public class PortStatisticsService extends CommonService {
                     @Override
                     public Future<RpcResult<Void>> apply(final DataCrate<List<MultipartReply>> data) {
 
-                        MultipartRequestPortStatsCaseBuilder caseBuilder =
-                                new MultipartRequestPortStatsCaseBuilder();
-                        MultipartRequestPortStatsBuilder mprPortStatsBuilder =
-                                new MultipartRequestPortStatsBuilder();
-                        // Select all ports
-                        mprPortStatsBuilder.setPortNo(OFConstants.OFPP_ANY);
-                        caseBuilder.setMultipartRequestPortStats(mprPortStatsBuilder.build());
-
                         final Xid xid = deviceContext.getNextXid();
-                        multiMsgCollector.registerMultipartXid(xid.getValue());
                         data.getRequestContext().setXid(xid);
-                        MultipartRequestInputBuilder mprInput = RequestInputUtils
-                                .createMultipartHeader(MultipartType.OFPMPPORTSTATS, xid.getValue(), version);
-                        mprInput.setMultipartRequestBody(caseBuilder.build());
-                        Future<RpcResult<Void>> resultFromOFLib = deviceContext
-                                .getPrimaryConnectionContext().getConnectionAdapter().multipartRequest(mprInput.build());
+                        multiMsgCollector.registerMultipartXid(xid.getValue());
+                        deviceContext.hookRequestCtx(xid, data.getRequestContext());
+
+
+                        final Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext()
+                                .getConnectionAdapter().multipartRequest(
+                                        MultipartRequestInputFactory.makeMultipartRequestInput(
+                                                xid.getValue(),
+                                                version,
+                                                MultipartType.OFPMPPORTSTATS));
                         return JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
                     }
                 }

@@ -201,17 +201,21 @@ public class DeviceContextImpl implements DeviceContext {
     @Override
     public void processReply(final Xid xid, final List<MultipartReply> ofHeaderList) {
         final RequestContext requestContext = getRequests().get(xid.getValue());
-        final SettableFuture replyFuture = requestContext.getFuture();
-        getRequests().remove(xid.getValue());
-        final RpcResult<List<MultipartReply>> rpcResult = RpcResultBuilder
-                .<List<MultipartReply>>success()
-                .withResult(ofHeaderList)
-                .build();
-        replyFuture.set(rpcResult);
-        try {
-            requestContext.close();
-        } catch (final Exception e) {
-            LOG.error("Closing RequestContext failed: ", e);
+        if (null != requestContext) {
+            final SettableFuture replyFuture = requestContext.getFuture();
+            getRequests().remove(xid.getValue());
+            final RpcResult<List<MultipartReply>> rpcResult = RpcResultBuilder
+                    .<List<MultipartReply>>success()
+                    .withResult(ofHeaderList)
+                    .build();
+            replyFuture.set(rpcResult);
+            try {
+                requestContext.close();
+            } catch (final Exception e) {
+                LOG.error("Closing RequestContext failed: ", e);
+            }
+        } else {
+            LOG.error("Can't find request context registered for xid : {}", xid.getValue());
         }
     }
 

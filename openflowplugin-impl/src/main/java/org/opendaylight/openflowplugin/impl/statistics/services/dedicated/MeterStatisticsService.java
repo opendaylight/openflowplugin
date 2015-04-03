@@ -15,6 +15,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
+import org.opendaylight.openflowplugin.impl.common.MultipartRequestInputFactory;
 import org.opendaylight.openflowplugin.impl.services.CommonService;
 import org.opendaylight.openflowplugin.impl.services.DataCrate;
 import org.opendaylight.openflowplugin.impl.services.RequestInputUtils;
@@ -43,25 +44,18 @@ public class MeterStatisticsService extends CommonService {
                     @Override
                     public Future<RpcResult<Void>> apply(final DataCrate<List<MultipartReply>> data) {
 
-                        MultipartRequestMeterCaseBuilder caseBuilder =
-                                new MultipartRequestMeterCaseBuilder();
-                        MultipartRequestMeterBuilder mprMeterBuild =
-                                new MultipartRequestMeterBuilder();
-                        mprMeterBuild.setMeterId(new MeterId(BinContent.intToUnsignedLong(
-                                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common
-                                        .types.rev130731.Meter.OFPMALL.getIntValue())));
-                        caseBuilder.setMultipartRequestMeter(mprMeterBuild.build());
-
                         final Xid xid = deviceContext.getNextXid();
                         data.getRequestContext().setXid(xid);
                         multiMsgCollector.registerMultipartXid(xid.getValue());
+                        deviceContext.hookRequestCtx(xid, data.getRequestContext());
 
-                        MultipartRequestInputBuilder mprInput = RequestInputUtils
-                                .createMultipartHeader(MultipartType.OFPMPMETER, xid.getValue(), version);
-                        mprInput.setMultipartRequestBody(caseBuilder.build());
-                        Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext()
-                                .getConnectionAdapter().multipartRequest(mprInput.build());
 
+                        final Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext()
+                                .getConnectionAdapter().multipartRequest(
+                                        MultipartRequestInputFactory.makeMultipartRequestInput(
+                                                xid.getValue(),
+                                                version,
+                                                MultipartType.OFPMPMETER));
                         return JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
                     }
                 }

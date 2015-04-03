@@ -14,6 +14,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
+import org.opendaylight.openflowplugin.impl.common.MultipartRequestInputFactory;
 import org.opendaylight.openflowplugin.impl.services.CommonService;
 import org.opendaylight.openflowplugin.impl.services.DataCrate;
 import org.opendaylight.openflowplugin.impl.services.RequestInputUtils;
@@ -39,23 +40,14 @@ public class FlowTableStatisticsService extends CommonService {
                 PRIMARY_CONNECTION, new Function<DataCrate<List<MultipartReply>>, Future<RpcResult<Void>>>() {
                     @Override
                     public Future<RpcResult<Void>> apply(final DataCrate<List<MultipartReply>> data) {
-
-                        // Create multipart request body for fetch all the group stats
-                        final MultipartRequestTableCaseBuilder multipartRequestTableCaseBuilder = new MultipartRequestTableCaseBuilder();
-                        final MultipartRequestTableBuilder multipartRequestTableBuilder = new MultipartRequestTableBuilder();
-                        multipartRequestTableBuilder.setEmpty(true);
-                        multipartRequestTableCaseBuilder.setMultipartRequestTable(multipartRequestTableBuilder.build());
-
                         // Set request body to main multipart request
                         final Xid xid = deviceContext.getNextXid();
                         data.getRequestContext().setXid(xid);
                         multiMsgCollector.registerMultipartXid(xid.getValue());
-                        final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
-                                MultipartType.OFPMPFLOW, xid.getValue(), version);
+                        deviceContext.hookRequestCtx(xid, data.getRequestContext());
 
-                        mprInput.setMultipartRequestBody(multipartRequestTableCaseBuilder.build());
                         final Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext()
-                                .getConnectionAdapter().multipartRequest(mprInput.build());
+                                .getConnectionAdapter().multipartRequest(MultipartRequestInputFactory.makeMultipartRequestInput(xid.getValue(), version, MultipartType.OFPMPTABLE));
 
                         return JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
                     }
