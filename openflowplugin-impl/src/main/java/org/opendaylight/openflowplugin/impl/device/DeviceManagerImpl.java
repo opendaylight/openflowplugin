@@ -131,7 +131,7 @@ public class DeviceManagerImpl implements DeviceManager {
         final OpenflowProtocolListenerFullImpl messageListener = new OpenflowProtocolListenerFullImpl(
                 connectionContext.getConnectionAdapter(), deviceContext);
 
-        connectionContext.getConnectionAdapter().setMessageListener(messageListener);
+        deviceContext.attachAnyMessageTypeListener(messageListener);
 
         final ListenableFuture<RpcResult<List<MultipartReply>>> replyDesc = getNodeStaticInfo(messageListener,
                 MultipartType.OFPMPDESC, deviceContext, deviceState.getNodeInstanceIdentifier(), deviceState.getVersion());
