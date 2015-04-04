@@ -9,10 +9,14 @@
 package org.opendaylight.openflowplugin.impl.common;
 
 import com.google.common.base.Preconditions;
+import java.math.BigInteger;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartRequestFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmMatchType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.MultipartRequestBody;
@@ -46,24 +50,26 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestTableCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestTableFeaturesCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestTableFeaturesCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.flow._case.MultipartRequestFlowBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.queue._case.MultipartRequestQueueBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.table.features._case.MultipartRequestTableFeaturesBuilder;
 
 /**
  * openflowplugin-impl
  * org.opendaylight.openflowplugin.impl.common
- *
+ * <p/>
  * Factory class is designed for easy producing a MultipartRequestInput. Class should help
  * to understand a relationship between {@link MultipartType} and {@link MultipartRequestInput}
  * without touch OF specification 1.3.2  - a section 7.3.5. Multipart Messages
  * {@see https://www.opennetworking.org/images/stories/downloads/sdn-resources/onf-specifications/openflow/openflow-spec-v1.3.2.pdf}
  *
  * @author <a href="mailto:vdemcak@cisco.com">Vaclav Demcak</a>
- *
- * Created: Mar 27, 2015
+ *         <p/>
+ *         Created: Mar 27, 2015
  */
 public final class MultipartRequestInputFactory {
 
-    private MultipartRequestInputFactory () {
+    private MultipartRequestInputFactory() {
         throw new UnsupportedOperationException("Factory class");
     }
 
@@ -78,7 +84,7 @@ public final class MultipartRequestInputFactory {
      * @return
      */
     public static MultipartRequestInput makeMultipartRequestInput(final long xid, final short ofVersion,
-            @Nonnull final MultipartType type) {
+                                                                  @Nonnull final MultipartType type) {
         return maker(xid, type, ofVersion, false, makeDefaultEmptyRequestBody(type));
     }
 
@@ -93,7 +99,7 @@ public final class MultipartRequestInputFactory {
      * @return
      */
     public static MultipartRequestInput makeMultipartRequestInput(final long xid, final short ofVersion,
-            @Nonnull final MultipartType type, @Nonnull final MultipartRequestBody body) {
+                                                                  @Nonnull final MultipartType type, @Nonnull final MultipartRequestBody body) {
         Preconditions.checkArgument(validationOfMultipartTypeAndRequestBody(type, body));
         return maker(xid, type, ofVersion, false, body);
     }
@@ -109,7 +115,7 @@ public final class MultipartRequestInputFactory {
      * @return
      */
     public static MultipartRequestInput makeMultipartRequestInput(final long xid, final short ofVersion,
-            @Nonnull final MultipartType type, final boolean moreRequests) {
+                                                                  @Nonnull final MultipartType type, final boolean moreRequests) {
         return maker(xid, type, ofVersion, moreRequests, makeDefaultEmptyRequestBody(type));
     }
 
@@ -124,8 +130,8 @@ public final class MultipartRequestInputFactory {
      * @return
      */
     public static MultipartRequestInput makeMultipartRequestInput(final long xid, final short ofVersion,
-            @Nonnull final MultipartType type, final boolean moreRequests,
-            @Nonnull final MultipartRequestBody body) {
+                                                                  @Nonnull final MultipartType type, final boolean moreRequests,
+                                                                  @Nonnull final MultipartRequestBody body) {
         Preconditions.checkArgument(validationOfMultipartTypeAndRequestBody(type, body));
         return maker(xid, type, ofVersion, moreRequests, body);
     }
@@ -142,7 +148,7 @@ public final class MultipartRequestInputFactory {
      * @return
      */
     private static MultipartRequestInput maker(final long xid, final MultipartType type,
-            final short ofVersion, final boolean moreRequests, final MultipartRequestBody body) {
+                                               final short ofVersion, final boolean moreRequests, final MultipartRequestBody body) {
         final MultipartRequestInputBuilder builder = new MultipartRequestInputBuilder();
         builder.setFlags(new MultipartRequestFlags(moreRequests));
         builder.setMultipartRequestBody(body);
@@ -155,80 +161,94 @@ public final class MultipartRequestInputFactory {
     private static MultipartRequestBody makeDefaultEmptyRequestBody(@CheckForNull final MultipartType type) {
         Preconditions.checkArgument(type != null, "Multipart Request can not by build without type!");
         switch (type) {
-        case OFPMPDESC:
-            return new MultipartRequestDescCaseBuilder().build();
-        case OFPMPFLOW:
-            return new MultipartRequestFlowCaseBuilder().build();
-        case OFPMPAGGREGATE:
-            return new MultipartRequestAggregateCaseBuilder().build();
-        case OFPMPTABLE:
-            return new MultipartRequestTableCaseBuilder().build();
-        case OFPMPPORTSTATS:
-            return new MultipartRequestPortStatsCaseBuilder().build();
-        case OFPMPQUEUE:
-            return new MultipartRequestQueueCaseBuilder().build();
-        case OFPMPGROUP:
-            return new MultipartRequestGroupCaseBuilder().build();
-        case OFPMPGROUPDESC:
-            return new MultipartRequestGroupDescCaseBuilder().build();
-        case OFPMPGROUPFEATURES:
-            return new MultipartRequestGroupFeaturesCaseBuilder().build();
-        case OFPMPMETER:
-            return new MultipartRequestMeterCaseBuilder().build();
-        case OFPMPMETERCONFIG:
-            return new MultipartRequestMeterConfigCaseBuilder().build();
-        case OFPMPMETERFEATURES:
-            return new MultipartRequestMeterFeaturesCaseBuilder().build();
-        case OFPMPTABLEFEATURES:
-            MultipartRequestTableFeaturesCaseBuilder tableFeaturesCaseBuilder = new MultipartRequestTableFeaturesCaseBuilder();
-            tableFeaturesCaseBuilder.setMultipartRequestTableFeatures(new MultipartRequestTableFeaturesBuilder().build());
-            return tableFeaturesCaseBuilder.build();
-        case OFPMPPORTDESC:
-            return new MultipartRequestPortDescCaseBuilder().build();
-        case OFPMPEXPERIMENTER:
-            return new MultipartRequestExperimenterCaseBuilder().build();
-        default:
-            throw new IllegalArgumentException("Unknown MultipartType " + type);
+            case OFPMPDESC:
+                return new MultipartRequestDescCaseBuilder().build();
+            case OFPMPFLOW:
+                MultipartRequestFlowCaseBuilder multipartRequestFlowCaseBuilder = new MultipartRequestFlowCaseBuilder();
+                MultipartRequestFlowBuilder multipartRequestFlowBuilder = new MultipartRequestFlowBuilder();
+                multipartRequestFlowBuilder.setTableId(OFConstants.OFPTT_ALL);
+                multipartRequestFlowBuilder.setOutPort(OFConstants.OFPP_ANY);
+                multipartRequestFlowBuilder.setOutGroup(OFConstants.OFPG_ANY);
+                multipartRequestFlowBuilder.setCookie(BigInteger.ZERO);
+                multipartRequestFlowBuilder.setCookieMask(BigInteger.ZERO);
+                multipartRequestFlowBuilder.setMatch(new MatchBuilder().setType(OxmMatchType.class).build());
+                multipartRequestFlowCaseBuilder.setMultipartRequestFlow(multipartRequestFlowBuilder.build());
+                return multipartRequestFlowCaseBuilder.build();
+            case OFPMPAGGREGATE:
+                return new MultipartRequestAggregateCaseBuilder().build();
+            case OFPMPTABLE:
+                return new MultipartRequestTableCaseBuilder().build();
+            case OFPMPPORTSTATS:
+                return new MultipartRequestPortStatsCaseBuilder().build();
+            case OFPMPQUEUE:
+                MultipartRequestQueueCaseBuilder multipartRequestQueueCaseBuilder = new MultipartRequestQueueCaseBuilder();
+                MultipartRequestQueueBuilder multipartRequestQueueBuilder = new MultipartRequestQueueBuilder();
+                multipartRequestQueueBuilder.setPortNo(OFConstants.OFPP_ANY);
+                multipartRequestQueueBuilder.setQueueId(OFConstants.OFPQ_ANY);
+                multipartRequestQueueCaseBuilder.setMultipartRequestQueue(multipartRequestQueueBuilder.build());
+                return multipartRequestQueueCaseBuilder.build();
+            case OFPMPGROUP:
+                return new MultipartRequestGroupCaseBuilder().build();
+            case OFPMPGROUPDESC:
+                return new MultipartRequestGroupDescCaseBuilder().build();
+            case OFPMPGROUPFEATURES:
+                return new MultipartRequestGroupFeaturesCaseBuilder().build();
+            case OFPMPMETER:
+                return new MultipartRequestMeterCaseBuilder().build();
+            case OFPMPMETERCONFIG:
+                return new MultipartRequestMeterConfigCaseBuilder().build();
+            case OFPMPMETERFEATURES:
+                return new MultipartRequestMeterFeaturesCaseBuilder().build();
+            case OFPMPTABLEFEATURES:
+                MultipartRequestTableFeaturesCaseBuilder tableFeaturesCaseBuilder = new MultipartRequestTableFeaturesCaseBuilder();
+                tableFeaturesCaseBuilder.setMultipartRequestTableFeatures(new MultipartRequestTableFeaturesBuilder().build());
+                return tableFeaturesCaseBuilder.build();
+            case OFPMPPORTDESC:
+                return new MultipartRequestPortDescCaseBuilder().build();
+            case OFPMPEXPERIMENTER:
+                return new MultipartRequestExperimenterCaseBuilder().build();
+            default:
+                throw new IllegalArgumentException("Unknown MultipartType " + type);
         }
     }
 
     private static boolean validationOfMultipartTypeAndRequestBody(@CheckForNull final MultipartType type,
-            @CheckForNull final MultipartRequestBody body) {
+                                                                   @CheckForNull final MultipartRequestBody body) {
         Preconditions.checkArgument(type != null, "Multipart Request can not by build without type!");
         Preconditions.checkArgument(body != null, "Multipart Request can not by build without body!");
         switch (type) {
-        case OFPMPDESC:
-            return body instanceof MultipartRequestDescCase;
-        case OFPMPFLOW:
-            return body instanceof MultipartRequestFlowCase;
-        case OFPMPAGGREGATE:
-            return body instanceof MultipartRequestAggregateCase;
-        case OFPMPTABLE:
-            return body instanceof MultipartRequestTableCase;
-        case OFPMPPORTSTATS:
-            return body instanceof MultipartRequestPortStatsCase;
-        case OFPMPQUEUE:
-            return body instanceof MultipartRequestQueueCase;
-        case OFPMPGROUP:
-            return body instanceof MultipartRequestGroupCase;
-        case OFPMPGROUPDESC:
-            return body instanceof MultipartRequestGroupDescCase;
-        case OFPMPGROUPFEATURES:
-            return body instanceof MultipartRequestGroupFeaturesCase;
-        case OFPMPMETER:
-            return body instanceof MultipartRequestMeterCase;
-        case OFPMPMETERCONFIG:
-            return body instanceof MultipartRequestMeterConfigCase;
-        case OFPMPMETERFEATURES:
-            return body instanceof MultipartRequestMeterFeaturesCase;
-        case OFPMPTABLEFEATURES:
-            return body instanceof MultipartRequestTableFeaturesCase;
-        case OFPMPPORTDESC:
-            return body instanceof MultipartRequestPortDescCase;
-        case OFPMPEXPERIMENTER:
-            return body instanceof MultipartRequestExperimenterCase;
-        default:
-            throw new IllegalArgumentException("Unknown MultipartType " + type);
+            case OFPMPDESC:
+                return body instanceof MultipartRequestDescCase;
+            case OFPMPFLOW:
+                return body instanceof MultipartRequestFlowCase;
+            case OFPMPAGGREGATE:
+                return body instanceof MultipartRequestAggregateCase;
+            case OFPMPTABLE:
+                return body instanceof MultipartRequestTableCase;
+            case OFPMPPORTSTATS:
+                return body instanceof MultipartRequestPortStatsCase;
+            case OFPMPQUEUE:
+                return body instanceof MultipartRequestQueueCase;
+            case OFPMPGROUP:
+                return body instanceof MultipartRequestGroupCase;
+            case OFPMPGROUPDESC:
+                return body instanceof MultipartRequestGroupDescCase;
+            case OFPMPGROUPFEATURES:
+                return body instanceof MultipartRequestGroupFeaturesCase;
+            case OFPMPMETER:
+                return body instanceof MultipartRequestMeterCase;
+            case OFPMPMETERCONFIG:
+                return body instanceof MultipartRequestMeterConfigCase;
+            case OFPMPMETERFEATURES:
+                return body instanceof MultipartRequestMeterFeaturesCase;
+            case OFPMPTABLEFEATURES:
+                return body instanceof MultipartRequestTableFeaturesCase;
+            case OFPMPPORTDESC:
+                return body instanceof MultipartRequestPortDescCase;
+            case OFPMPEXPERIMENTER:
+                return body instanceof MultipartRequestExperimenterCase;
+            default:
+                throw new IllegalArgumentException("Unknown MultipartType " + type);
         }
     }
 }
