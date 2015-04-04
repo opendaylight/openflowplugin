@@ -24,11 +24,16 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInput;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 4.4.2015.
  */
 public class StatisticsGatheringService extends CommonService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(StatisticsGatheringService.class);
+
     public StatisticsGatheringService(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
 
         super(requestContextStack, deviceContext);
@@ -41,6 +46,7 @@ public class StatisticsGatheringService extends CommonService {
                     @Override
                     public ListenableFuture<RpcResult<Void>> apply(final DataCrate<List<MultipartReply>> data) {
 
+                        LOG.info("Calling multipart request for type {}", type);
                         final Xid xid = deviceContext.getNextXid();
                         data.getRequestContext().setXid(xid);
                         multiMsgCollector.registerMultipartXid(xid.getValue());
