@@ -8,13 +8,12 @@
 package org.opendaylight.openflowplugin.api.openflow.connection;
 
 import java.util.concurrent.ThreadPoolExecutor;
-
 import org.opendaylight.openflowplugin.api.openflow.md.core.HandshakeManager;
 
 /**
  * OF handshake context holder
  */
-public interface HandshakeContext {
+public interface HandshakeContext extends AutoCloseable {
 
     /**
      * @return handshakeManager

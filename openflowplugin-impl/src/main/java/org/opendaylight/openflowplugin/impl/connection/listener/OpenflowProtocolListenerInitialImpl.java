@@ -11,7 +11,16 @@ import com.google.common.base.Objects;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.HandshakeContext;
 import org.opendaylight.openflowplugin.openflow.md.core.HandshakeStepWrapper;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.*;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoReplyInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoRequestMessage;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessage;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterMessage;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemovedMessage;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloMessage;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessage;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OpenflowProtocolListener;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,7 +81,9 @@ public class OpenflowProtocolListenerInitialImpl implements OpenflowProtocolList
         if (checkState(ConnectionContext.CONNECTION_STATE.HANDSHAKING)) {
             final HandshakeStepWrapper handshakeStepWrapper = new HandshakeStepWrapper(
                     hello, handshakeContext.getHandshakeManager(), connectionContext.getConnectionAdapter());
-            handshakeContext.getHandshakePool().submit(handshakeStepWrapper);
+            //handshakeContext.getHandshakePool().submit(handshakeStepWrapper);
+            // use up netty thread
+            handshakeStepWrapper.run();
         } else {
             //TODO: consider disconnecting of bad behaving device
         }

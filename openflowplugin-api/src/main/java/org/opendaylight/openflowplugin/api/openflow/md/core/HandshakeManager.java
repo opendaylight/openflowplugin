@@ -7,7 +7,6 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.md.core;
 
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloMessage;
 
 /**
@@ -19,16 +18,6 @@ public interface HandshakeManager {
      * @return negotiated version
      */
     Short getVersion();
-
-    /**
-     * @return obtained connection features
-     */
-    GetFeaturesOutput getFeatures();
-
-    /**
-     * @param receivedHello from switch
-     */
-    void setReceivedHello(HelloMessage receivedHello);
 
     /**
      * @param errorHandler the errorHandler to set
@@ -46,7 +35,8 @@ public interface HandshakeManager {
     void setUseVersionBitmap(boolean isBitmapNegotiationEnable);
 
     /**
+     * @param receivedHello message from device we need to act upon
      * process current handshake step
      */
-    void shake();
+    void shake(HelloMessage receivedHello);
 }

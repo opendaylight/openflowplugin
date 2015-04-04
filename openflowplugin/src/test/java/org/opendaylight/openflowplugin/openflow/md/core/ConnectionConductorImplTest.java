@@ -9,7 +9,6 @@
 package org.opendaylight.openflowplugin.openflow.md.core;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -30,17 +29,18 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.api.openflow.connection.HandshakeContext;
 import org.opendaylight.openflowplugin.api.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.api.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
+import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
+import org.opendaylight.openflowplugin.api.openflow.md.queue.PopListener;
+import org.opendaylight.openflowplugin.api.openflow.statistics.MessageSpy;
 import org.opendaylight.openflowplugin.openflow.md.core.plan.ConnectionAdapterStackImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.plan.EventFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.plan.SwitchTestEvent;
-import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
-import org.opendaylight.openflowplugin.api.openflow.md.queue.PopListener;
 import org.opendaylight.openflowplugin.openflow.md.queue.QueueProcessorLightImpl;
-import org.opendaylight.openflowplugin.api.openflow.statistics.MessageSpy;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Capabilities;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortFeaturesV10;
@@ -56,6 +56,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessageBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatus;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessageBuilder;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
@@ -101,6 +102,8 @@ public class ConnectionConductorImplTest {
     private int expectedErrors = 0;
     @Mock
     private MessageSpy<DataContainer> messageSpy;
+    @Mock
+    HandshakeContext handshakeContext;
 
     public void incrExperimenterMessageCounter() {
         this.experimenterMessageCounter++;
@@ -162,6 +165,7 @@ public class ConnectionConductorImplTest {
         connectionConductor.setQueueProcessor(queueProcessor);
         connectionConductor.setErrorHandler(errorHandler);
         connectionConductor.init();
+        connectionConductor.setHandshakeContext(handshakeContext);
         eventPlan = new Stack<>();
         adapter.setEventPlan(eventPlan);
         adapter.setProceedTimeout(5000L);
@@ -189,7 +193,7 @@ public class ConnectionConductorImplTest {
             libSimulation.join();
         }
         queueProcessor.shutdown();
-        connectionConductor.shutdownPool();
+        connectionConductor.getHsPool().shutdown();
 
         for (Exception problem : adapter.getOccuredExceptions()) {
             LOG.error("during simulation on adapter side: "
@@ -322,7 +326,7 @@ public class ConnectionConductorImplTest {
                 EventFactory.createDefaultWaitForRpcEvent(45, "getFeatures"));
 
         eventPlan.add(0, EventFactory.createDefaultRpcResponseEvent(45,
-                EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
+                (short) 0x01, getFeatureResponseMsg()));
 
         int i = 1;
         eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(i++, "multipartRequestInput"));
@@ -360,7 +364,7 @@ public class ConnectionConductorImplTest {
                 EventFactory.createDefaultWaitForRpcEvent(45, "getFeatures"));
 
         eventPlan.add(0, EventFactory.createDefaultRpcResponseEvent(45,
-                EventFactory.DEFAULT_VERSION, getFeatureResponseMsg()));
+                (short) 0x01, getFeatureResponseMsg()));
 
         int i = 1;
         eventPlan.add(0, EventFactory.createDefaultWaitForRpcEvent(i++, "multipartRequestInput"));
@@ -497,7 +501,7 @@ public class ConnectionConductorImplTest {
      */
     private void executeNow() throws InterruptedException {
         execute(true);
-        connectionConductor.shutdownPool();
+        connectionConductor.getHsPool().shutdown();
     }
 
     /**
@@ -592,7 +596,7 @@ public class ConnectionConductorImplTest {
 
     /**
      * Test method for
-     * {@link org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductorImpl#onExperimenterMessage(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessage)}
+     * {@link org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductorImpl#onExperimenterMessage(ExperimenterMessage)}
      * .
      *
      * @throws InterruptedException
@@ -642,7 +646,7 @@ public class ConnectionConductorImplTest {
 
     /**
      * Test method for
-     * {@link org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductorImpl#processPortStatusMsg(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage)}
+     * {@link org.opendaylight.openflowplugin.openflow.md.core.ConnectionConductorImpl#processPortStatusMsg(PortStatus)}
      * <br><br>
      * Tests for getting features from port status message by port version
      * <ul>
@@ -667,13 +671,13 @@ public class ConnectionConductorImplTest {
         PortFeatures featuresMal = new PortFeatures(true, false, false, false, null, false, false, false, false, false, false, false, false, false, false, false);
         PortFeaturesV10 featuresV10 = new PortFeaturesV10(true, false, false, false, false, false, false, false, false, false, false, false);
 
-        //Malformed features	        
+        //Malformed features
         builder.setVersion((short) 1).setPortNo(portNumber).setReason(PortReason.OFPPRADD).setCurrentFeatures(featuresMal);
         connectionConductor.processPortStatusMsg(builder.build());
         Assert.assertTrue(connectionConductor.getSessionContext().getPortsBandwidth().isEmpty());
         Assert.assertTrue(connectionConductor.getSessionContext().getPhysicalPorts().isEmpty());
 
-        //Version-features mismatch	        
+        //Version-features mismatch
         builder.setCurrentFeatures(features);
         connectionConductor.processPortStatusMsg(builder.build());
         Assert.assertTrue(connectionConductor.getSessionContext().getPortsBandwidth().isEmpty());

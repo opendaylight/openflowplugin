@@ -7,12 +7,9 @@
  */
 package org.opendaylight.openflowplugin.impl.connection;
 
-import org.opendaylight.openflowplugin.openflow.md.core.ErrorHandlerSimpleImpl;
-
 import java.net.InetAddress;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
-
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionReadyListener;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
@@ -27,6 +24,7 @@ import org.opendaylight.openflowplugin.impl.connection.listener.ConnectionReadyL
 import org.opendaylight.openflowplugin.impl.connection.listener.HandshakeListenerImpl;
 import org.opendaylight.openflowplugin.impl.connection.listener.OpenflowProtocolListenerInitialImpl;
 import org.opendaylight.openflowplugin.impl.connection.listener.SystemNotificationsListenerImpl;
+import org.opendaylight.openflowplugin.openflow.md.core.ErrorHandlerSimpleImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.HandshakeManagerImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.ThreadPoolLoggingExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OpenflowProtocolListener;
@@ -46,7 +44,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
 
     @Override
     public void onSwitchConnected(final ConnectionAdapter connectionAdapter) {
-        LOG.trace("preparing handshake");
+        LOG.trace("preparing handshake: {}", connectionAdapter.getRemoteAddress());
 
         final int handshakeThreadLimit = 1; //TODO: move to constants/parametrize
         final ThreadPoolLoggingExecutor handshakePool = createHandshakePool(
@@ -60,6 +58,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
 
         LOG.trace("prepare handshake context");
         HandshakeContext handshakeContext = new HandshakeContextImpl(handshakePool, handshakeManager);
+        handshakeListener.setHandshakeContext(handshakeContext);
 
         LOG.trace("prepare connection listeners");
         final ConnectionReadyListener connectionReadyListener = new ConnectionReadyListenerImpl(
@@ -73,7 +72,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
         final SystemNotificationsListener systemListener = new SystemNotificationsListenerImpl(connectionContext);
         connectionAdapter.setSystemListener(systemListener);
 
-        LOG.trace("connection balet finished");
+        LOG.trace("connection ballet finished");
     }
 
     /**

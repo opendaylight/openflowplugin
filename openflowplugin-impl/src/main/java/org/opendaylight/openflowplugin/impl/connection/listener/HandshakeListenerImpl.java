@@ -7,11 +7,11 @@
  */
 package org.opendaylight.openflowplugin.impl.connection.listener;
 
-import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
-
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
+import org.opendaylight.openflowplugin.api.openflow.connection.HandshakeContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceConnectedHandler;
 import org.opendaylight.openflowplugin.api.openflow.md.core.HandshakeListener;
+import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +25,7 @@ public class HandshakeListenerImpl implements HandshakeListener {
 
     private ConnectionContext connectionContext;
     private DeviceConnectedHandler deviceConnectedHandler;
+    private HandshakeContext handshakeContext;
 
     /**
      * @param connectionContext
@@ -47,6 +48,16 @@ public class HandshakeListenerImpl implements HandshakeListener {
     public void onHandshakeFailure() {
         LOG.info("handshake failed: {}", connectionContext.getConnectionAdapter().getRemoteAddress());
         connectionContext.setConnectionState(ConnectionContext.CONNECTION_STATE.RIP);
-        // TODO ensure that connection is closed
+        try {
+            handshakeContext.close();
+        } catch (Exception e) {
+            LOG.warn("Closing handshake context failed: {}", e.getMessage());
+            LOG.debug("Detail in hanshake context close:", e);
+        }
+    }
+
+    @Override
+    public void setHandshakeContext(HandshakeContext handshakeContext) {
+        this.handshakeContext = handshakeContext;
     }
 }

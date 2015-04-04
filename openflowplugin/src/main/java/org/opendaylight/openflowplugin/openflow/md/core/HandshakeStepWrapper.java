@@ -19,20 +19,20 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class HandshakeStepWrapper implements Runnable {
-    
+
     private static final Logger LOG = LoggerFactory
             .getLogger(HandshakeStepWrapper.class);
-    
+
     private HelloMessage helloMessage;
     private HandshakeManager handshakeManager;
     private ConnectionAdapter connectionAdapter;
-    
-    
-    
+
+
+
     /**
      * @param helloMessage
      * @param handshakeManager
-     * @param connectionAdapter 
+     * @param connectionAdapter
      */
     public HandshakeStepWrapper(HelloMessage helloMessage,
             HandshakeManager handshakeManager, ConnectionAdapter connectionAdapter) {
@@ -44,8 +44,7 @@ public class HandshakeStepWrapper implements Runnable {
     @Override
     public void run() {
         if (connectionAdapter.isAlive()) {
-            handshakeManager.setReceivedHello(helloMessage);
-            handshakeManager.shake();
+            handshakeManager.shake(helloMessage);
         } else {
             LOG.debug("connection is down - skipping handshake step");
         }

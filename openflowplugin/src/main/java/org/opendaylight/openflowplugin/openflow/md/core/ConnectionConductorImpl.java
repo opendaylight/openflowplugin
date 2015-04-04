@@ -8,14 +8,16 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.util.concurrent.Futures;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionReadyListener;
 import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.api.openflow.connection.HandshakeContext;
 import org.opendaylight.openflowplugin.api.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.api.openflow.md.core.ErrorHandler;
 import org.opendaylight.openflowplugin.api.openflow.md.core.HandshakeListener;
@@ -65,8 +67,6 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.util.concurrent.Futures;
-
 /**
  * @author mirehak
  */
@@ -111,6 +111,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
     private int conductorId;
 
     private int ingressMaxQueueSize;
+    private HandshakeContext handshakeContext;
 
     /**
      * @param connectionAdapter
@@ -456,7 +457,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
 
     @Override
     public void onHandshakeSuccessfull(GetFeaturesOutput featureOutput,
-            Short negotiatedVersion) {
+                                       Short negotiatedVersion) {
         postHandshakeBasic(featureOutput, negotiatedVersion);
 
         // post-handshake actions
@@ -477,7 +478,7 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
 
     /**
      * used by tests
-     * 
+     *
      * @param featureOutput
      * @param negotiatedVersion
      */
@@ -567,23 +568,6 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
         this.isBitmapNegotiationEnable = isBitmapNegotiationEnable;
     }
 
-    protected void shutdownPool() {
-        hsPool.shutdownNow();
-        LOG.debug("pool is terminated: {}", hsPool.isTerminated());
-    }
-
-    protected void shutdownPoolPolitely() {
-        hsPool.shutdown();
-        try {
-            hsPool.awaitTermination(1, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            LOG.info("Error while awaiting termination on pool. Will use shutdownNow method.");
-            shutdownPool();
-        }
-        hsPool.purge();
-        LOG.debug("pool is terminated: {}", hsPool.isTerminated());
-    }
-
     @Override
     public void setId(int conductorId) {
         this.conductorId = conductorId;
@@ -591,7 +575,22 @@ public class ConnectionConductorImpl implements OpenflowProtocolListener,
 
     @Override
     public void close() {
-        shutdownPoolPolitely();
         conductorState = CONDUCTOR_STATE.RIP;
+        try {
+            handshakeContext.close();
+        } catch (Exception e) {
+            LOG.warn("Closing handshake context failed: {}", e.getMessage());
+            LOG.debug("Detail in hanshake context close:", e);
+        }
+    }
+
+    @Override
+    public void setHandshakeContext(HandshakeContext handshakeContext) {
+        this.handshakeContext = handshakeContext;
+    }
+
+    @VisibleForTesting
+    ThreadPoolExecutor getHsPool() {
+        return hsPool;
     }
 }

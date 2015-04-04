@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
- * 
+ *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
@@ -18,9 +18,9 @@ import org.slf4j.LoggerFactory;
  * oneshot listener - once connection is ready, initiate handshake (if not already started by device)
  */
 public class ConnectionReadyListenerImpl implements ConnectionReadyListener {
-    
+
     private static final Logger LOG = LoggerFactory.getLogger(ConnectionReadyListenerImpl.class);
-    
+
     private ConnectionContext connectionContext;
     private HandshakeContext handshakeContext;
 
@@ -36,7 +36,9 @@ public class ConnectionReadyListenerImpl implements ConnectionReadyListener {
 
     @Override
     public void onConnectionReady() {
-        LOG.debug("device is connected and ready-to-use (pipeline prepared)");
+        LOG.debug("device is connected and ready-to-use (pipeline prepared): {}",
+                connectionContext.getConnectionAdapter().getRemoteAddress());
+
         if (connectionContext.getConnectionState() == null) {
             HandshakeStepWrapper handshakeStepWrapper = new HandshakeStepWrapper(
                     null, handshakeContext.getHandshakeManager(), connectionContext.getConnectionAdapter());
