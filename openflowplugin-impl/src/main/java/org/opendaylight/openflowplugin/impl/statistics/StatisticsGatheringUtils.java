@@ -115,9 +115,8 @@ public final class StatisticsGatheringUtils {
                     for (MultipartReply singleReply : rpcResult.getResult()) {
                         List<? extends DataObject> multipartDataList = MULTIPART_REPLY_TRANSLATOR.translate(deviceContext, singleReply);
                         for (DataObject singleMultipartData : multipartDataList) {
-                            if (singleMultipartData instanceof GroupDescStatsUpdatedBuilder) {
-                                GroupDescStatsUpdatedBuilder groupDescStatsUpdatedBuilder = (GroupDescStatsUpdatedBuilder) singleMultipartData;
-                                GroupDescStatsUpdated groupDescStatsUpdated = groupDescStatsUpdatedBuilder.build();
+                            if (singleMultipartData instanceof GroupDescStatsUpdated) {
+                                GroupDescStatsUpdated groupDescStatsUpdated = (GroupDescStatsUpdated) singleMultipartData;
                                 for (GroupDescStats groupDescStats : groupDescStatsUpdated.getGroupDescStats()) {
                                     final InstanceIdentifier<Node> nodeIdent = InstanceIdentifier
                                             .create(Nodes.class).child(Node.class, new NodeKey(groupDescStatsUpdated.getId()));
@@ -133,8 +132,8 @@ public final class StatisticsGatheringUtils {
                                 }
                             }
 
-                            if (singleMultipartData instanceof MeterStatisticsUpdatedBuilder) {
-                                MeterStatisticsUpdated meterStatisticsUpdated = ((MeterStatisticsUpdatedBuilder) singleMultipartData).build();
+                            if (singleMultipartData instanceof MeterStatisticsUpdated) {
+                                MeterStatisticsUpdated meterStatisticsUpdated = (MeterStatisticsUpdated) singleMultipartData;
                                 final InstanceIdentifier<Node> nodeIdent = InstanceIdentifier
                                         .create(Nodes.class).child(Node.class, new NodeKey(meterStatisticsUpdated.getId()));
                                 final InstanceIdentifier<FlowCapableNode> fNodeIdent = nodeIdent.augmentation(FlowCapableNode.class);
@@ -150,8 +149,8 @@ public final class StatisticsGatheringUtils {
                                     deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, msIdent, stats);
                                 }
                             }
-                            if (singleMultipartData instanceof NodeConnectorStatisticsUpdateBuilder) {
-                                NodeConnectorStatisticsUpdate nodeConnectorStatisticsUpdate = ((NodeConnectorStatisticsUpdateBuilder) singleMultipartData).build();
+                            if (singleMultipartData instanceof NodeConnectorStatisticsUpdate) {
+                                NodeConnectorStatisticsUpdate nodeConnectorStatisticsUpdate = (NodeConnectorStatisticsUpdate) singleMultipartData;
                                 final InstanceIdentifier<Node> nodeIdent = InstanceIdentifier.create(Nodes.class)
                                         .child(Node.class, new NodeKey(nodeConnectorStatisticsUpdate.getId()));
                                 for (final NodeConnectorStatisticsAndPortNumberMap nConnectPort : nodeConnectorStatisticsUpdate.getNodeConnectorStatisticsAndPortNumberMap()) {
@@ -166,9 +165,9 @@ public final class StatisticsGatheringUtils {
                                     deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, flowCapNodeConnStatIdent, stats);
                                 }
                             }
-                            if (singleMultipartData instanceof FlowTableStatisticsUpdateBuilder) {
+                            if (singleMultipartData instanceof FlowTableStatisticsUpdate) {
 
-                                FlowTableStatisticsUpdate flowTableStatisticsUpdate = ((FlowTableStatisticsUpdateBuilder) singleMultipartData).build();
+                                FlowTableStatisticsUpdate flowTableStatisticsUpdate = (FlowTableStatisticsUpdate) singleMultipartData;
                                 final InstanceIdentifier<Node> nodeIdent = InstanceIdentifier.create(Nodes.class)
                                         .child(Node.class, new NodeKey(flowTableStatisticsUpdate.getId()));
                                 final InstanceIdentifier<FlowCapableNode> fNodeIdent = nodeIdent.augmentation(FlowCapableNode.class);
@@ -183,8 +182,8 @@ public final class StatisticsGatheringUtils {
                                     deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, tStatIdent, stats);
                                 }
                             }
-                            if (singleMultipartData instanceof QueueStatisticsUpdateBuilder) {
-                                QueueStatisticsUpdate queueStatisticsUpdate = ((QueueStatisticsUpdateBuilder) singleMultipartData).build();
+                            if (singleMultipartData instanceof QueueStatisticsUpdate) {
+                                QueueStatisticsUpdate queueStatisticsUpdate = (QueueStatisticsUpdate) singleMultipartData;
                                 final InstanceIdentifier<Node> nodeIdent = InstanceIdentifier.create(Nodes.class)
                                         .child(Node.class, new NodeKey(queueStatisticsUpdate.getId()));
                                 for (final QueueIdAndStatisticsMap queueStat : queueStatisticsUpdate.getQueueIdAndStatisticsMap()) {
@@ -205,8 +204,8 @@ public final class StatisticsGatheringUtils {
                                     }
                                 }
                             }
-                            if (singleMultipartData instanceof FlowsStatisticsUpdateBuilder) {
-                                FlowsStatisticsUpdate flowsStatistics = ((FlowsStatisticsUpdateBuilder) singleMultipartData).build();
+                            if (singleMultipartData instanceof FlowsStatisticsUpdate) {
+                                FlowsStatisticsUpdate flowsStatistics = (FlowsStatisticsUpdate) singleMultipartData;
                                 final InstanceIdentifier<Node> nodeIdent = InstanceIdentifier.create(Nodes.class)
                                         .child(Node.class, new NodeKey(flowsStatistics.getId()));
 
