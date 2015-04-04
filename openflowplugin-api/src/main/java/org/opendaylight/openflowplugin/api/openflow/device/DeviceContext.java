@@ -15,6 +15,7 @@ import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceReplyProcessor;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MessageHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.OutstandingMessageExtractor;
+import org.opendaylight.openflowplugin.api.openflow.device.listener.AnyMessageTypeListener;
 import org.opendaylight.openflowplugin.api.openflow.translator.TranslatorLibrarian;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableFeatures;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -107,5 +108,10 @@ public interface DeviceContext extends MessageHandler, TranslatorLibrarian, Outs
      */
     public void hookRequestCtx(Xid xid, RequestContext requestFutureContext);
 
+    /**
+     * Method that attaches anyMessageTypeListener to connection adapters as message listener.
+     * @param anyMessageTypeListener
+     */
+    public void attachAnyMessageTypeListener(AnyMessageTypeListener anyMessageTypeListener);
 }
 
