@@ -288,6 +288,11 @@ public class DeviceContextImpl implements DeviceContext {
         this.translatorLibrary = translatorLibrary;
     }
 
+    @Override
+    public HashedWheelTimer getTimer() {
+        return this.hashedWheelTimer;
+    }
+
 
     private class XidGenerator {
 

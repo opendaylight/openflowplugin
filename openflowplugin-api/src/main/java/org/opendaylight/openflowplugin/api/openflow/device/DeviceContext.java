@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.api.openflow.device;
 import java.math.BigInteger;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.openflowplugin.api.openflow.OpenflowPluginTimer;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceReplyProcessor;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MessageHandler;
@@ -37,7 +38,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  * <p/>
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 25.2.2015.
  */
-public interface DeviceContext extends MessageHandler, TranslatorLibrarian, OutstandingMessageExtractor, DeviceReplyProcessor {
+public interface DeviceContext extends OpenflowPluginTimer, MessageHandler, TranslatorLibrarian, OutstandingMessageExtractor, DeviceReplyProcessor {
 
 
     /**
@@ -110,9 +111,11 @@ public interface DeviceContext extends MessageHandler, TranslatorLibrarian, Outs
 
     /**
      * Method that attaches anyMessageTypeListener to connection adapters as message listener.
+     *
      * @param anyMessageTypeListener
      */
     public void attachAnyMessageTypeListener(AnyMessageTypeListener anyMessageTypeListener);
+
     public AnyMessageTypeListener getAnyMessageTypeListener();
 
 }
