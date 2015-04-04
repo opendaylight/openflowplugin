@@ -86,6 +86,7 @@ public class DeviceManagerImpl implements DeviceManager {
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
         hashedWheelTimer = new HashedWheelTimer(TICK_DURATION, TimeUnit.MILLISECONDS, 10);
 
+
         dummyRequestContextStack = new RequestContextStack() {
             @Override
             public <T> void forgetRequestContext(final RequestContext<T> requestContext) {
