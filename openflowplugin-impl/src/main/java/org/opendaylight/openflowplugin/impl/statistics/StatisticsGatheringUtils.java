@@ -16,7 +16,6 @@ import java.util.List;
 import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.StatisticsGatheringService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
@@ -77,63 +76,11 @@ public final class StatisticsGatheringUtils {
         return InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(deviceContext.getPrimaryConnectionContext().getNodeId()));
     }
 
-    public static ListenableFuture<Boolean> gatherQueueStatistics(final StatisticsGatheringService statisticsGatheringService,
-                                                                  final DeviceContext deviceContext,
-                                                                  final MultiMsgCollector multiMsgCollector) {
+    public static ListenableFuture<Boolean> gatherStatistics(final StatisticsGatheringService statisticsGatheringService,
+                                                             final DeviceContext deviceContext,
+                                                             MultipartType type) {
         ListenableFuture<RpcResult<List<MultipartReply>>> statisticsDataInFuture =
-                JdkFutureAdapters.listenInPoolThread(statisticsGatheringService.getStatisticsOfType(MultipartType.OFPMPQUEUE, multiMsgCollector));
-        return transformAndStoreStatisticsData(statisticsDataInFuture, deviceContext);
-    }
-
-
-    public static ListenableFuture<Boolean> gatherPortStatistics(final StatisticsGatheringService statisticsGatheringService,
-                                                                 final DeviceContext deviceContext,
-                                                                 final MultiMsgCollector multiMsgCollector) {
-
-        ListenableFuture<RpcResult<List<MultipartReply>>> statisticsDataInFuture =
-                JdkFutureAdapters.
-                        listenInPoolThread(statisticsGatheringService.getStatisticsOfType(MultipartType.OFPMPPORTSTATS, multiMsgCollector));
-
-        return transformAndStoreStatisticsData(statisticsDataInFuture, deviceContext);
-    }
-
-    public static ListenableFuture<Boolean> gatherMeterStatistics(final StatisticsGatheringService statisticsGatheringService,
-                                                                  final DeviceContext deviceContext,
-                                                                  final MultiMsgCollector multiMsgCollector) {
-        ListenableFuture<RpcResult<List<MultipartReply>>> statisticsDataInFuture =
-                JdkFutureAdapters.
-                        listenInPoolThread(statisticsGatheringService.
-                                getStatisticsOfType(MultipartType.OFPMPMETER, multiMsgCollector));
-        return transformAndStoreStatisticsData(statisticsDataInFuture, deviceContext);
-    }
-
-
-    public static ListenableFuture<Boolean> gatherGroupStatistics(final StatisticsGatheringService statisticsGatheringService,
-                                                                  final DeviceContext deviceContext,
-                                                                  final MultiMsgCollector multiMsgCollector) {
-        ListenableFuture<RpcResult<List<MultipartReply>>> statisticsDataInFuture =
-                JdkFutureAdapters.
-                        listenInPoolThread(statisticsGatheringService.
-                                getStatisticsOfType(MultipartType.OFPMPGROUPDESC, multiMsgCollector));
-        return transformAndStoreStatisticsData(statisticsDataInFuture, deviceContext);
-    }
-
-    public static ListenableFuture<Boolean> gatherFlowStatistics(final StatisticsGatheringService statisticsGatheringService,
-                                                                 final DeviceContext deviceContext,
-                                                                 final MultiMsgCollector multiMsgCollector) {
-        ListenableFuture<RpcResult<List<MultipartReply>>> statisticsDataInFuture =
-                JdkFutureAdapters.
-                        listenInPoolThread(statisticsGatheringService.
-                                getStatisticsOfType(MultipartType.OFPMPFLOW, multiMsgCollector));
-        return transformAndStoreStatisticsData(statisticsDataInFuture, deviceContext);
-    }
-
-    public static ListenableFuture<Boolean> gatherTableStatistics(final StatisticsGatheringService statisticsGatheringService,
-                                                                  final DeviceContext deviceContext,
-                                                                  final MultiMsgCollector multiMsgCollector) {
-        ListenableFuture<RpcResult<List<MultipartReply>>> statisticsDataInFuture =
-                JdkFutureAdapters.listenInPoolThread(
-                        statisticsGatheringService.getStatisticsOfType(MultipartType.OFPMPTABLE, multiMsgCollector));
+                JdkFutureAdapters.listenInPoolThread(statisticsGatheringService.getStatisticsOfType(type, deviceContext.getAnyMessageTypeListener()));
         return transformAndStoreStatisticsData(statisticsDataInFuture, deviceContext);
     }
 
