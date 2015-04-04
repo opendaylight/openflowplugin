@@ -12,15 +12,12 @@ import com.google.common.base.Function;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
+import java.util.List;
+import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
-import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.FlowStatisticsService;
-import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.FlowTableStatisticsService;
-import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.GroupStatisticsService;
-import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.MeterStatisticsService;
-import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.PortStatisticsService;
-import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.QueueStatisticsService;
+import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.StatisticsGatheringService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.MeterKey;
@@ -39,7 +36,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply.GroupStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
@@ -49,6 +45,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.nodes.node.meter.MeterStatistics;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.nodes.node.meter.MeterStatisticsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.statistics.reply.MeterStats;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.FlowCapableNodeConnectorStatisticsData;
@@ -64,8 +61,6 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
-import javax.annotation.Nullable;
-import java.util.List;
 
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 2.4.2015.
@@ -82,72 +77,63 @@ public final class StatisticsGatheringUtils {
         return InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(deviceContext.getPrimaryConnectionContext().getNodeId()));
     }
 
-    public static ListenableFuture<Boolean> gatherQueueStatistics(final QueueStatisticsService queueStatisticsService,
+    public static ListenableFuture<Boolean> gatherQueueStatistics(final StatisticsGatheringService statisticsGatheringService,
                                                                   final DeviceContext deviceContext,
                                                                   final MultiMsgCollector multiMsgCollector) {
-
         ListenableFuture<RpcResult<List<MultipartReply>>> statisticsDataInFuture =
-                JdkFutureAdapters.listenInPoolThread(queueStatisticsService.getAllQueuesStatisticsFromAllPorts(multiMsgCollector));
-
+                JdkFutureAdapters.listenInPoolThread(statisticsGatheringService.getStatisticsOfType(MultipartType.OFPMPQUEUE, multiMsgCollector));
         return transformAndStoreStatisticsData(statisticsDataInFuture, deviceContext);
     }
 
 
-    public static ListenableFuture<Boolean> gatherPortStatistics(final PortStatisticsService portStatisticsService,
+    public static ListenableFuture<Boolean> gatherPortStatistics(final StatisticsGatheringService statisticsGatheringService,
                                                                  final DeviceContext deviceContext,
                                                                  final MultiMsgCollector multiMsgCollector) {
 
         ListenableFuture<RpcResult<List<MultipartReply>>> statisticsDataInFuture =
-                JdkFutureAdapters.listenInPoolThread(portStatisticsService.getAllNodeConnectorsStatistics(multiMsgCollector));
-
-        return transformAndStoreStatisticsData(statisticsDataInFuture, deviceContext);
-    }
-
-    public static ListenableFuture<Boolean> gatherMeterStatistics(final MeterStatisticsService meterStatisticsService,
-                                                                  final DeviceContext deviceContext,
-                                                                  final MultiMsgCollector multiMsgCollector) {
-
-
-        ListenableFuture<RpcResult<List<MultipartReply>>> statisticsDataInFuture =
                 JdkFutureAdapters.
-                        listenInPoolThread(meterStatisticsService.
-                                getAllMeterStatistics(multiMsgCollector));
+                        listenInPoolThread(statisticsGatheringService.getStatisticsOfType(MultipartType.OFPMPPORTSTATS, multiMsgCollector));
 
         return transformAndStoreStatisticsData(statisticsDataInFuture, deviceContext);
     }
 
-
-    public static ListenableFuture<Boolean> gatherGroupStatistics(final GroupStatisticsService groupStatisticsService,
+    public static ListenableFuture<Boolean> gatherMeterStatistics(final StatisticsGatheringService statisticsGatheringService,
                                                                   final DeviceContext deviceContext,
                                                                   final MultiMsgCollector multiMsgCollector) {
         ListenableFuture<RpcResult<List<MultipartReply>>> statisticsDataInFuture =
                 JdkFutureAdapters.
-                        listenInPoolThread(groupStatisticsService.
-                                getAllGroupStatistics(multiMsgCollector));
-
+                        listenInPoolThread(statisticsGatheringService.
+                                getStatisticsOfType(MultipartType.OFPMPMETER, multiMsgCollector));
         return transformAndStoreStatisticsData(statisticsDataInFuture, deviceContext);
     }
 
-    public static ListenableFuture<Boolean> gatherFlowStatistics(final FlowStatisticsService flowStatisticsService,
+
+    public static ListenableFuture<Boolean> gatherGroupStatistics(final StatisticsGatheringService statisticsGatheringService,
+                                                                  final DeviceContext deviceContext,
+                                                                  final MultiMsgCollector multiMsgCollector) {
+        ListenableFuture<RpcResult<List<MultipartReply>>> statisticsDataInFuture =
+                JdkFutureAdapters.
+                        listenInPoolThread(statisticsGatheringService.
+                                getStatisticsOfType(MultipartType.OFPMPGROUPDESC, multiMsgCollector));
+        return transformAndStoreStatisticsData(statisticsDataInFuture, deviceContext);
+    }
+
+    public static ListenableFuture<Boolean> gatherFlowStatistics(final StatisticsGatheringService statisticsGatheringService,
                                                                  final DeviceContext deviceContext,
                                                                  final MultiMsgCollector multiMsgCollector) {
         ListenableFuture<RpcResult<List<MultipartReply>>> statisticsDataInFuture =
                 JdkFutureAdapters.
-                        listenInPoolThread(flowStatisticsService.
-
-                                getAllFlowsStatisticsFromAllFlowTables(multiMsgCollector));
+                        listenInPoolThread(statisticsGatheringService.
+                                getStatisticsOfType(MultipartType.OFPMPFLOW, multiMsgCollector));
         return transformAndStoreStatisticsData(statisticsDataInFuture, deviceContext);
-
     }
 
-    public static ListenableFuture<Boolean> gatherTableStatistics(final FlowTableStatisticsService flowTableStatisticsService,
+    public static ListenableFuture<Boolean> gatherTableStatistics(final StatisticsGatheringService statisticsGatheringService,
                                                                   final DeviceContext deviceContext,
                                                                   final MultiMsgCollector multiMsgCollector) {
-
         ListenableFuture<RpcResult<List<MultipartReply>>> statisticsDataInFuture =
                 JdkFutureAdapters.listenInPoolThread(
-                        flowTableStatisticsService.getFlowTablesStatistics(multiMsgCollector));
-
+                        statisticsGatheringService.getStatisticsOfType(MultipartType.OFPMPTABLE, multiMsgCollector));
         return transformAndStoreStatisticsData(statisticsDataInFuture, deviceContext);
     }
 

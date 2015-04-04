@@ -11,7 +11,8 @@ package org.opendaylight.openflowplugin.impl.statistics.services.dedicated;
 import com.google.common.base.Function;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
-import org.opendaylight.openflowjava.protocol.api.util.BinContent;
+import java.util.List;
+import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
@@ -19,28 +20,22 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgColl
 import org.opendaylight.openflowplugin.impl.common.MultipartRequestInputFactory;
 import org.opendaylight.openflowplugin.impl.services.CommonService;
 import org.opendaylight.openflowplugin.impl.services.DataCrate;
-import org.opendaylight.openflowplugin.impl.services.RequestInputUtils;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestMeterCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.meter._case.MultipartRequestMeterBuilder;
 import org.opendaylight.yangtools.yang.common.RpcResult;
-import java.util.List;
-import java.util.concurrent.Future;
 
 /**
- * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 2.4.2015.
+ * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 4.4.2015.
  */
-public class MeterStatisticsService extends CommonService {
+public class StatisticsGatheringService extends CommonService {
+    public StatisticsGatheringService(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
 
-    public MeterStatisticsService(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
         super(requestContextStack, deviceContext);
     }
 
-    public Future<RpcResult<List<MultipartReply>>> getAllMeterStatistics(final MultiMsgCollector multiMsgCollector) {
+
+    public Future<RpcResult<List<MultipartReply>>> getStatisticsOfType(final MultipartType type, final MultiMsgCollector multiMsgCollector) {
         return handleServiceCall(
                 PRIMARY_CONNECTION, new Function<DataCrate<List<MultipartReply>>, ListenableFuture<RpcResult<Void>>>() {
                     @Override
@@ -50,18 +45,17 @@ public class MeterStatisticsService extends CommonService {
                         data.getRequestContext().setXid(xid);
                         multiMsgCollector.registerMultipartXid(xid.getValue());
 
-                        final MultipartRequestInput multipartRequestInput = MultipartRequestInputFactory.makeMultipartRequestInput(
-                                xid.getValue(),
-                                version,
-                                MultipartType.OFPMPMETER);
+                        MultipartRequestInput multipartRequestInput = MultipartRequestInputFactory.
+                                makeMultipartRequestInput(xid.getValue(),
+                                        version,
+                                        type);
                         final Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext()
-                                .getConnectionAdapter().multipartRequest(
-                                        multipartRequestInput);
+                                .getConnectionAdapter().multipartRequest(multipartRequestInput);
                         return JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
                     }
                 }
-        );
 
+        );
     }
 
 }
