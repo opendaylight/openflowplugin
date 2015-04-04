@@ -28,18 +28,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowsStatisticsUpdate;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowsStatisticsUpdateBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.flow.and.statistics.map.list.FlowAndStatisticsMapList;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.FlowTableStatisticsData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.FlowTableStatisticsUpdate;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.FlowTableStatisticsUpdateBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.flow.table.and.statistics.map.FlowTableAndStatisticsMap;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.flow.table.statistics.FlowTableStatistics;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.flow.table.statistics.FlowTableStatisticsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.queues.Queue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.queues.QueueKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GroupDescStatsUpdated;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GroupDescStatsUpdatedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.NodeGroupDescStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.NodeGroupDescStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.group.desc.GroupDescBuilder;
@@ -53,7 +50,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.No
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.MeterStatisticsUpdated;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.MeterStatisticsUpdatedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.NodeMeterStatistics;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.nodes.node.meter.MeterStatistics;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.nodes.node.meter.MeterStatisticsBuilder;
@@ -62,14 +58,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.FlowCapableNodeConnectorStatisticsData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.NodeConnectorStatisticsUpdate;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.NodeConnectorStatisticsUpdateBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.flow.capable.node.connector.statistics.FlowCapableNodeConnectorStatistics;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.flow.capable.node.connector.statistics.FlowCapableNodeConnectorStatisticsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.node.connector.statistics.and.port.number.map.NodeConnectorStatisticsAndPortNumberMap;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.FlowCapableNodeConnectorQueueStatisticsData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.FlowCapableNodeConnectorQueueStatisticsDataBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.QueueStatisticsUpdate;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.QueueStatisticsUpdateBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.flow.capable.node.connector.queue.statistics.FlowCapableNodeConnectorQueueStatistics;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.flow.capable.node.connector.queue.statistics.FlowCapableNodeConnectorQueueStatisticsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.queue.id.and.statistics.map.QueueIdAndStatisticsMap;
@@ -115,6 +109,7 @@ public final class StatisticsGatheringUtils {
                     for (MultipartReply singleReply : rpcResult.getResult()) {
                         List<? extends DataObject> multipartDataList = MULTIPART_REPLY_TRANSLATOR.translate(deviceContext, singleReply);
                         for (DataObject singleMultipartData : multipartDataList) {
+                            boolean logFirstTime = true;
                             if (singleMultipartData instanceof GroupDescStatsUpdated) {
                                 GroupDescStatsUpdated groupDescStatsUpdated = (GroupDescStatsUpdated) singleMultipartData;
                                 for (GroupDescStats groupDescStats : groupDescStatsUpdated.getGroupDescStats()) {
@@ -127,7 +122,10 @@ public final class StatisticsGatheringUtils {
                                     final NodeGroupDescStatsBuilder groupDesc = new NodeGroupDescStatsBuilder();
                                     groupDesc.setGroupDesc(new GroupDescBuilder(groupDescStats).build());
                                     groupBuilder.addAugmentation(NodeGroupDescStats.class, groupDesc.build());
-                                    LOG.info("Writing group statistics to operational DS.");
+                                    if (logFirstTime) {
+                                        logFirstTime = false;
+                                        LOG.info("Writing group statistics to operational DS.");
+                                    }
                                     deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, groupRef, groupBuilder.build());
                                 }
                             }
@@ -145,7 +143,10 @@ public final class StatisticsGatheringUtils {
                                     final InstanceIdentifier<NodeMeterStatistics> nodeMeterStatIdent = meterIdent
                                             .augmentation(NodeMeterStatistics.class);
                                     final InstanceIdentifier<MeterStatistics> msIdent = nodeMeterStatIdent.child(MeterStatistics.class);
-                                    LOG.info("Writing meter statistics to operational DS.");
+                                    if (logFirstTime) {
+                                        logFirstTime = false;
+                                        LOG.info("Writing meter statistics to operational DS.");
+                                    }
                                     deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, msIdent, stats);
                                 }
                             }
@@ -161,7 +162,10 @@ public final class StatisticsGatheringUtils {
                                             .augmentation(FlowCapableNodeConnectorStatisticsData.class);
                                     final InstanceIdentifier<FlowCapableNodeConnectorStatistics> flowCapNodeConnStatIdent =
                                             nodeConnStatIdent.child(FlowCapableNodeConnectorStatistics.class);
-                                    LOG.info("Writing port statistics to operational DS.");
+                                    if (logFirstTime) {
+                                        logFirstTime = false;
+                                        LOG.info("Writing port statistics to operational DS.");
+                                    }
                                     deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, flowCapNodeConnStatIdent, stats);
                                 }
                             }
@@ -178,7 +182,10 @@ public final class StatisticsGatheringUtils {
                                     final InstanceIdentifier<FlowTableStatisticsData> tableStatIdent = tableIdent.augmentation(FlowTableStatisticsData.class);
                                     final FlowTableStatistics stats = new FlowTableStatisticsBuilder(tableStat).build();
                                     final InstanceIdentifier<FlowTableStatistics> tStatIdent = tableStatIdent.child(FlowTableStatistics.class);
-                                    LOG.info("Writing table statistics to operational DS.");
+                                    if (logFirstTime) {
+                                        logFirstTime = false;
+                                        LOG.info("Writing table statistics to operational DS.");
+                                    }
                                     deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, tStatIdent, stats);
                                 }
                             }
@@ -199,7 +206,10 @@ public final class StatisticsGatheringUtils {
                                                 .augmentation(FlowCapableNodeConnector.class)
                                                 .child(Queue.class, qKey);
                                         final InstanceIdentifier<FlowCapableNodeConnectorQueueStatisticsData> queueStatIdent = queueIdent.augmentation(FlowCapableNodeConnectorQueueStatisticsData.class);
-                                        LOG.info("Writing queue statistics to operational DS.");
+                                        if (logFirstTime) {
+                                            logFirstTime = false;
+                                            LOG.info("Writing queue statistics to operational DS.");
+                                        }
                                         deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, queueStatIdent, statBuild.build());
                                     }
                                 }
@@ -217,7 +227,10 @@ public final class StatisticsGatheringUtils {
                                     TableKey tableKey = new TableKey(flowStat.getTableId());
                                     final InstanceIdentifier<FlowCapableNode> fNodeIdent = nodeIdent.augmentation(FlowCapableNode.class);
                                     final InstanceIdentifier<Flow> flowIdent = fNodeIdent.child(Table.class, tableKey).child(Flow.class, flowKey);
-                                    LOG.info("Writing queue statistics to operational DS.");
+                                    if (logFirstTime) {
+                                        logFirstTime = false;
+                                        LOG.info("Writing queue statistics to operational DS.");
+                                    }
                                     deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, flowIdent, flowBuilder.build());
                                 }
                             }

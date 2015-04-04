@@ -11,6 +11,12 @@ package org.opendaylight.openflowplugin.impl.statistics;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import io.netty.util.HashedWheelTimer;
+import io.netty.util.Timeout;
+import io.netty.util.TimerTask;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
@@ -27,6 +33,9 @@ public class StatisticsManagerImpl implements StatisticsManager {
 
     private DeviceInitializationPhaseHandler deviceInitPhaseHandler;
 
+    private HashedWheelTimer hashedWheelTimer;
+
+    private List<StatisticsContext> contexts = new ArrayList();
 
     @Override
     public void setDeviceInitializationPhaseHandler(final DeviceInitializationPhaseHandler handler) {
@@ -35,12 +44,21 @@ public class StatisticsManagerImpl implements StatisticsManager {
 
     @Override
     public void onDeviceContextLevelUp(final DeviceContext deviceContext) {
+
+        if (null == hashedWheelTimer) {
+            LOG.trace("This is first device that delivered timer. Starting statistics polling immediately.");
+            hashedWheelTimer = deviceContext.getTimer();
+            pollStatistics();
+        }
+
         final StatisticsContext statisticsContext = new StatisticsContextImpl(deviceContext);
         final ListenableFuture<Void> weHaveDynamicData = statisticsContext.gatherDynamicData();
         Futures.addCallback(weHaveDynamicData, new FutureCallback<Void>() {
             @Override
             public void onSuccess(final Void aVoid) {
                 // wake up RPC registration
+                LOG.trace("Device dynamic info collected. Going to announce raise to next level.");
+                contexts.add(statisticsContext);
                 deviceInitPhaseHandler.onDeviceContextLevelUp(deviceContext);
             }
 
@@ -49,5 +67,30 @@ public class StatisticsManagerImpl implements StatisticsManager {
                 LOG.error("Statistics manager was not able to collect dynamic info for device {}", deviceContext.getDeviceState().getNodeId());
             }
         });
+    }
+
+    private void pollStatistics() {
+        for (final StatisticsContext statisticsContext : contexts) {
+            ListenableFuture deviceStatisticsCollectionFuture = statisticsContext.gatherDynamicData();
+            Futures.addCallback(deviceStatisticsCollectionFuture, new FutureCallback() {
+                @Override
+                public void onSuccess(final Object o) {
+                    //nothing to do here
+                }
+
+                @Override
+                public void onFailure(final Throwable throwable) {
+                    LOG.info("Statistics gathering for single node was not successful.");
+                }
+            });
+        }
+        if (null != hashedWheelTimer) {
+            hashedWheelTimer.newTimeout(new TimerTask() {
+                @Override
+                public void run(final Timeout timeout) throws Exception {
+                    pollStatistics();
+                }
+            }, 3000, TimeUnit.MILLISECONDS);
+        }
     }
 }
