@@ -14,5 +14,5 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 4.4.2015.
  */
-public interface AnyMessageTypeListener extends OpenflowProtocolListener, MultiMsgCollector {
+public interface OpenflowMessageListenerFacade extends OpenflowProtocolListener, MultiMsgCollector {
 }

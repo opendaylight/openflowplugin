@@ -33,7 +33,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.device.exception.DeviceDataException;
-import org.opendaylight.openflowplugin.api.openflow.device.listener.AnyMessageTypeListener;
+import org.opendaylight.openflowplugin.api.openflow.device.listener.OpenflowMessageListenerFacade;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.impl.translator.PacketReceivedTranslator;
@@ -73,7 +73,7 @@ public class DeviceContextImpl implements DeviceContext {
     private final Map<SwitchConnectionDistinguisher, ConnectionContext> auxiliaryConnectionContexts;
     private final TransactionChainManager txChainManager;
     private TranslatorLibrary translatorLibrary;
-    private AnyMessageTypeListener anyMessageTypeListener;
+    private OpenflowMessageListenerFacade openflowMessageListenerFacade;
 
     @VisibleForTesting
     DeviceContextImpl(@Nonnull final ConnectionContext primaryConnectionContext,
@@ -169,14 +169,14 @@ public class DeviceContextImpl implements DeviceContext {
     }
 
     @Override
-    public void attachAnyMessageTypeListener(final AnyMessageTypeListener anyMessageTypeListener) {
-        this.anyMessageTypeListener = anyMessageTypeListener;
-        primaryConnectionContext.getConnectionAdapter().setMessageListener(anyMessageTypeListener);
+    public void attachOpenflowMessageListener(final OpenflowMessageListenerFacade openflowMessageListenerFacade) {
+        this.openflowMessageListenerFacade = openflowMessageListenerFacade;
+        primaryConnectionContext.getConnectionAdapter().setMessageListener(openflowMessageListenerFacade);
     }
 
     @Override
-    public AnyMessageTypeListener getAnyMessageTypeListener() {
-        return this.anyMessageTypeListener;
+    public OpenflowMessageListenerFacade getOpenflowMessageListenerFacade() {
+        return this.openflowMessageListenerFacade;
     }
 
     @Override

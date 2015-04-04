@@ -16,7 +16,6 @@ import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.impl.common.MultipartRequestInputFactory;
 import org.opendaylight.openflowplugin.impl.services.CommonService;
 import org.opendaylight.openflowplugin.impl.services.DataCrate;
@@ -49,7 +48,7 @@ public class StatisticsGatheringService extends CommonService {
                         LOG.info("Calling multipart request for type {}", type);
                         final Xid xid = deviceContext.getNextXid();
                         data.getRequestContext().setXid(xid);
-                        deviceContext.getAnyMessageTypeListener().registerMultipartXid(xid.getValue());
+                        deviceContext.getOpenflowMessageListenerFacade().registerMultipartXid(xid.getValue());
                         MultipartRequestInput multipartRequestInput = MultipartRequestInputFactory.
                                 makeMultipartRequestInput(xid.getValue(),
                                         version,
