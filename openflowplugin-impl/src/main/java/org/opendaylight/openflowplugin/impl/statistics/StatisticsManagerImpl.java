@@ -14,8 +14,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
@@ -35,7 +34,7 @@ public class StatisticsManagerImpl implements StatisticsManager {
 
     private HashedWheelTimer hashedWheelTimer;
 
-    private List<StatisticsContext> contexts = new ArrayList();
+    private ConcurrentHashMap<DeviceContext, StatisticsContext> contexts = new ConcurrentHashMap();
 
     @Override
     public void setDeviceInitializationPhaseHandler(final DeviceInitializationPhaseHandler handler) {
@@ -58,7 +57,7 @@ public class StatisticsManagerImpl implements StatisticsManager {
             public void onSuccess(final Void aVoid) {
                 // wake up RPC registration
                 LOG.trace("Device dynamic info collected. Going to announce raise to next level.");
-                contexts.add(statisticsContext);
+                contexts.put(deviceContext, statisticsContext);
                 deviceInitPhaseHandler.onDeviceContextLevelUp(deviceContext);
             }
 
@@ -70,7 +69,7 @@ public class StatisticsManagerImpl implements StatisticsManager {
     }
 
     private void pollStatistics() {
-        for (final StatisticsContext statisticsContext : contexts) {
+        for (final StatisticsContext statisticsContext : contexts.values()) {
             ListenableFuture deviceStatisticsCollectionFuture = statisticsContext.gatherDynamicData();
             Futures.addCallback(deviceStatisticsCollectionFuture, new FutureCallback() {
                 @Override
