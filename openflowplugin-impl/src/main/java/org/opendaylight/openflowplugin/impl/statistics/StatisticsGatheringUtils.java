@@ -77,12 +77,7 @@ public final class StatisticsGatheringUtils {
     private StatisticsGatheringUtils() {
         throw new IllegalStateException("This class should not be instantiated.");
     }
-
-    private static NodeRef createNodeRef(DeviceContext deviceContext) {
-        final KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier = getInstanceIdentifier(deviceContext);
-        return new NodeRef(nodeInstanceIdentifier);
-    }
-
+    
     private static KeyedInstanceIdentifier<Node, NodeKey> getInstanceIdentifier(final DeviceContext deviceContext) {
         return InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(deviceContext.getPrimaryConnectionContext().getNodeId()));
     }
