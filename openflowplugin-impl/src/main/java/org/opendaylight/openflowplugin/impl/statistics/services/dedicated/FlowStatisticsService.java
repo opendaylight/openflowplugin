@@ -20,10 +20,9 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgColl
 import org.opendaylight.openflowplugin.impl.common.MultipartRequestInputFactory;
 import org.opendaylight.openflowplugin.impl.services.CommonService;
 import org.opendaylight.openflowplugin.impl.services.DataCrate;
-import org.opendaylight.openflowplugin.impl.services.RequestInputUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInput;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
 /**
@@ -44,8 +43,12 @@ public class FlowStatisticsService extends CommonService {
                         data.getRequestContext().setXid(xid);
                         multiMsgCollector.registerMultipartXid(xid.getValue());
 
+                        MultipartRequestInput multipartRequestInput = MultipartRequestInputFactory.
+                                makeMultipartRequestInput(xid.getValue(),
+                                        version,
+                                        MultipartType.OFPMPFLOW);
                         final Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext()
-                                .getConnectionAdapter().multipartRequest(MultipartRequestInputFactory.makeMultipartRequestInput(xid.getValue(), version, MultipartType.OFPMPFLOW));
+                                .getConnectionAdapter().multipartRequest(multipartRequestInput);
                         return JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
                     }
                 }

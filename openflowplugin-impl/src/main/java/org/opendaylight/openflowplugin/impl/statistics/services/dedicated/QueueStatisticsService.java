@@ -22,6 +22,7 @@ import org.opendaylight.openflowplugin.impl.services.CommonService;
 import org.opendaylight.openflowplugin.impl.services.DataCrate;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInput;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
 /**
@@ -44,12 +45,13 @@ public class QueueStatisticsService extends CommonService {
                         data.getRequestContext().setXid(xid);
                         multiMsgCollector.registerMultipartXid(xid.getValue());
 
+                        final MultipartRequestInput multipartRequestInput = MultipartRequestInputFactory.makeMultipartRequestInput(
+                                xid.getValue(),
+                                version,
+                                MultipartType.OFPMPQUEUE);
                         final Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext()
                                 .getConnectionAdapter().multipartRequest(
-                                        MultipartRequestInputFactory.makeMultipartRequestInput(
-                                                xid.getValue(),
-                                                version,
-                                                MultipartType.OFPMPQUEUE));
+                                        multipartRequestInput);
                         return JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
                     }
                 });

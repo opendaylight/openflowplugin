@@ -11,6 +11,8 @@ package org.opendaylight.openflowplugin.impl.statistics.services.dedicated;
 import com.google.common.base.Function;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
+import java.util.List;
+import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
@@ -18,15 +20,10 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgColl
 import org.opendaylight.openflowplugin.impl.common.MultipartRequestInputFactory;
 import org.opendaylight.openflowplugin.impl.services.CommonService;
 import org.opendaylight.openflowplugin.impl.services.DataCrate;
-import org.opendaylight.openflowplugin.impl.services.RequestInputUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestTableCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.table._case.MultipartRequestTableBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInput;
 import org.opendaylight.yangtools.yang.common.RpcResult;
-import java.util.List;
-import java.util.concurrent.Future;
 
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 2.4.2015.
@@ -46,8 +43,12 @@ public class FlowTableStatisticsService extends CommonService {
                         data.getRequestContext().setXid(xid);
                         multiMsgCollector.registerMultipartXid(xid.getValue());
 
+                        MultipartRequestInput multipartRequestInput = MultipartRequestInputFactory.
+                                makeMultipartRequestInput(xid.getValue(),
+                                        version,
+                                        MultipartType.OFPMPTABLE);
                         final Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext()
-                                .getConnectionAdapter().multipartRequest(MultipartRequestInputFactory.makeMultipartRequestInput(xid.getValue(), version, MultipartType.OFPMPTABLE));
+                                .getConnectionAdapter().multipartRequest(multipartRequestInput);
 
                         return JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
                     }

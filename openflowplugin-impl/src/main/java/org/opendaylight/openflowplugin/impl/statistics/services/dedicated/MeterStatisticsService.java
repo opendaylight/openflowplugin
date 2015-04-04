@@ -23,6 +23,7 @@ import org.opendaylight.openflowplugin.impl.services.RequestInputUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestMeterCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.meter._case.MultipartRequestMeterBuilder;
@@ -49,12 +50,13 @@ public class MeterStatisticsService extends CommonService {
                         data.getRequestContext().setXid(xid);
                         multiMsgCollector.registerMultipartXid(xid.getValue());
 
+                        final MultipartRequestInput multipartRequestInput = MultipartRequestInputFactory.makeMultipartRequestInput(
+                                xid.getValue(),
+                                version,
+                                MultipartType.OFPMPMETER);
                         final Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext()
                                 .getConnectionAdapter().multipartRequest(
-                                        MultipartRequestInputFactory.makeMultipartRequestInput(
-                                                xid.getValue(),
-                                                version,
-                                                MultipartType.OFPMPMETER));
+                                        multipartRequestInput);
                         return JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
                     }
                 }
