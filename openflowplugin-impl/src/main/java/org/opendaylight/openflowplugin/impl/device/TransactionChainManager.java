@@ -56,7 +56,7 @@ class TransactionChainManager implements TransactionChainListener {
         if (wTx == null) {
             wTx = txChainFactory.newWriteOnlyTransaction();
         }
-        wTx.put(store, path, data, true);
+        wTx.put(store, path, data);
         if ( ! counterIsEnabled) {
             return;
         }
