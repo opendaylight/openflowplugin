@@ -40,7 +40,7 @@ public class StatisticsGatheringService extends CommonService {
     }
 
 
-    public Future<RpcResult<List<MultipartReply>>> getStatisticsOfType(final MultipartType type, final MultiMsgCollector multiMsgCollector) {
+    public Future<RpcResult<List<MultipartReply>>> getStatisticsOfType(final MultipartType type) {
         return handleServiceCall(
                 PRIMARY_CONNECTION, new Function<DataCrate<List<MultipartReply>>, ListenableFuture<RpcResult<Void>>>() {
                     @Override
@@ -49,8 +49,7 @@ public class StatisticsGatheringService extends CommonService {
                         LOG.info("Calling multipart request for type {}", type);
                         final Xid xid = deviceContext.getNextXid();
                         data.getRequestContext().setXid(xid);
-                        multiMsgCollector.registerMultipartXid(xid.getValue());
-
+                        deviceContext.getAnyMessageTypeListener().registerMultipartXid(xid.getValue());
                         MultipartRequestInput multipartRequestInput = MultipartRequestInputFactory.
                                 makeMultipartRequestInput(xid.getValue(),
                                         version,

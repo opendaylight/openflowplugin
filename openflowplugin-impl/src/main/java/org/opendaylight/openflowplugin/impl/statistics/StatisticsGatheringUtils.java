@@ -101,7 +101,7 @@ public final class StatisticsGatheringUtils {
                                                              MultipartType type) {
         //FIXME : anytype listener must not be send as parameter, it has to be extracted from device context inside service
         ListenableFuture<RpcResult<List<MultipartReply>>> statisticsDataInFuture =
-                JdkFutureAdapters.listenInPoolThread(statisticsGatheringService.getStatisticsOfType(type, deviceContext.getAnyMessageTypeListener()));
+                JdkFutureAdapters.listenInPoolThread(statisticsGatheringService.getStatisticsOfType(type));
         return transformAndStoreStatisticsData(statisticsDataInFuture, deviceContext);
     }
 
