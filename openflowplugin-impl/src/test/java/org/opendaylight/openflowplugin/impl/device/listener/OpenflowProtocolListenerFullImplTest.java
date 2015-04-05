@@ -8,28 +8,43 @@
 
 package org.opendaylight.openflowplugin.impl.device.listener;
 
-import static org.junit.Assert.fail;
-
+import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
-import org.opendaylight.openflowplugin.api.openflow.device.Xid;
+import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceReplyProcessor;
-import org.opendaylight.openflowplugin.impl.connection.listener.OpenflowProtocolListenerInitialImpl;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.impl.connection.testutil.MsgGeneratorTestUtils;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoReplyInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoRequestMessage;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoRequestMessageBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessage;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessageBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterMessage;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterMessageBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemovedMessage;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemovedMessageBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloMessage;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessage;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessageBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessageBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessageBuilder;
 
 /**
  * openflowplugin-impl
  * org.opendaylight.openflowplugin.impl.connection.listener
  * <p/>
- * test of {@link OpenflowProtocolListenerInitialImpl} - lightweight version, using basic ways (TDD)
+ * test of {@link OpenflowProtocolListenerFullImpl} - lightweight version, using basic ways (TDD)
  *
  * @author <a href="mailto:vdemcak@cisco.com">Vaclav Demcak</a>
  *         <p/>
@@ -38,111 +53,129 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 @RunWith(MockitoJUnitRunner.class)
 public class OpenflowProtocolListenerFullImplTest {
 
-
     private OpenflowProtocolListenerFullImpl ofProtocolListener;
 
     @Mock
     private DeviceReplyProcessor deviceReplyProcessor;
     @Mock
     private ConnectionAdapter connectionAdapter;
+    @Mock
+    private MultiMsgCollector multiMessageCollector;
+
+    private final String hwDescValue = "test-val";
+    private final long xid = 42L;
 
     @Before
     public void setUp() {
         // place for mocking method's general behavior for HandshakeContext and ConnectionContext
         ofProtocolListener = new OpenflowProtocolListenerFullImpl(connectionAdapter, deviceReplyProcessor);
+        ofProtocolListener.setMultiMsgCollector(multiMessageCollector);
+    }
+
+    @After
+    public void tearDown() {
+        Mockito.verifyNoMoreInteractions(connectionAdapter, deviceReplyProcessor, multiMessageCollector);
     }
 
     /**
-     * Test method for {@link OpenflowProtocolListenerInitialImpl#OpenflowProtocolListenerInitialImpl(org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext, org.opendaylight.openflowplugin.api.openflow.connection.HandshakeContext)}.
+     * Test method for {@link OpenflowProtocolListenerFullImpl#onEchoRequestMessage(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoRequestMessage)}.
      */
     @Test
-    @Ignore
-    public void testOpenflowProtocolListenerImpl() {
-        fail("Not yet implemented");
-    }
-
-    /**
-     * Test method for {@link OpenflowProtocolListenerInitialImpl#onEchoRequestMessage(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoRequestMessage)}.
-     */
-    @Test
-    @Ignore
     public void testOnEchoRequestMessage() {
-        fail("Not yet implemented");
+        EchoRequestMessage echoRequestMessage = new EchoRequestMessageBuilder()
+                .setVersion(OFConstants.OFP_VERSION_1_3).setXid(xid).build();
+        ofProtocolListener.onEchoRequestMessage(echoRequestMessage);
+
+        Mockito.verify(connectionAdapter).echoReply(Matchers.any(EchoReplyInput.class));
     }
 
     /**
-     * Test method for {@link OpenflowProtocolListenerInitialImpl#onErrorMessage(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessage)}.
+     * Test method for {@link OpenflowProtocolListenerFullImpl#onErrorMessage(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessage)}.
      */
     @Test
-    @Ignore
     public void testOnErrorMessage() {
-        fail("Not yet implemented");
+        ErrorMessage errorMessage = new ErrorMessageBuilder()
+                .setVersion(OFConstants.OFP_VERSION_1_3).setXid(xid).build();
+        ofProtocolListener.onErrorMessage(errorMessage);
+
+        Mockito.verify(deviceReplyProcessor).processReply(Matchers.any(ErrorMessage.class));
     }
 
     /**
-     * Test method for {@link OpenflowProtocolListenerInitialImpl#onExperimenterMessage(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterMessage)}.
+     * Test method for {@link OpenflowProtocolListenerFullImpl#onExperimenterMessage(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterMessage)}.
      */
     @Test
-    @Ignore
     public void testOnExperimenterMessage() {
-        fail("Not yet implemented");
+        ExperimenterMessage experimenterMessage = new ExperimenterMessageBuilder()
+                .setVersion(OFConstants.OFP_VERSION_1_3).setXid(xid).build();
+        ofProtocolListener.onExperimenterMessage(experimenterMessage);
+        // NOOP
     }
 
     /**
-     * Test method for {@link OpenflowProtocolListenerInitialImpl#onFlowRemovedMessage(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemovedMessage)}.
+     * Test method for {@link OpenflowProtocolListenerFullImpl#onFlowRemovedMessage(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemovedMessage)}.
      */
     @Test
-    @Ignore
     public void testOnFlowRemovedMessage() {
-        fail("Not yet implemented");
+        FlowRemovedMessage flowRemovedMessage = new FlowRemovedMessageBuilder()
+                .setVersion(OFConstants.OFP_VERSION_1_3).setXid(xid).build();
+        ofProtocolListener.onFlowRemovedMessage(flowRemovedMessage);
+
+        Mockito.verify(deviceReplyProcessor).processFlowRemovedMessage(Matchers.any(FlowRemovedMessage.class));
     }
 
     /**
-     * Test method for {@link OpenflowProtocolListenerInitialImpl#onHelloMessage(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloMessage)}.
+     * Test method for {@link OpenflowProtocolListenerFullImpl#onHelloMessage(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloMessage)}.
      */
     @Test
-    @Ignore
     public void testOnHelloMessage() {
-        fail("Not yet implemented");
+        HelloMessage helloMessage = new HelloMessageBuilder()
+                .setVersion(OFConstants.OFP_VERSION_1_3).setXid(xid).build();
+        ofProtocolListener.onHelloMessage(helloMessage);
+        // NOOP
     }
 
     /**
-     * Test method for {@link OpenflowProtocolListenerInitialImpl#onMultipartReplyMessage(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessage)}.
+     * Test method for {@link OpenflowProtocolListenerFullImpl#onMultipartReplyMessage(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessage)}.
      */
     @Test
     public void testOnMultipartReplyMessage() {
-        final long xid = 1l;
+        final MultipartReply multipartReply = MsgGeneratorTestUtils.makeMultipartDescReply(xid, hwDescValue, false).build();
         ofProtocolListener.registerMultipartXid(xid);
-        final MultipartReply multipartReply = MsgGeneratorTestUtils.makeMultipartDescReply(xid, "test-val", false).build();
         ofProtocolListener.onMultipartReplyMessage((MultipartReplyMessage) multipartReply);
-        Mockito.verify(deviceReplyProcessor, Mockito.times(1)).processReply(Mockito.any(Xid.class), Mockito.anyListOf(MultipartReply.class));
+        Mockito.verify(multiMessageCollector).registerMultipartXid(xid);
+        Mockito.verify(multiMessageCollector).addMultipartMsg(Mockito.any(MultipartReply.class));
     }
 
     /**
-     * Test method for {@link OpenflowProtocolListenerInitialImpl#onPacketInMessage(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage)}.
+     * Test method for {@link OpenflowProtocolListenerFullImpl#onPacketInMessage(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage)}.
      */
     @Test
-    @Ignore
     public void testOnPacketInMessage() {
-        fail("Not yet implemented");
+        PacketInMessage packetInMessage = new PacketInMessageBuilder()
+                .setVersion(OFConstants.OFP_VERSION_1_3).setXid(xid).build();
+        ofProtocolListener.onPacketInMessage(packetInMessage);
+
+        Mockito.verify(deviceReplyProcessor).processPacketInMessage(Matchers.any(PacketInMessage.class));
     }
 
     /**
-     * Test method for {@link OpenflowProtocolListenerInitialImpl#onPortStatusMessage(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage)}.
+     * Test method for {@link OpenflowProtocolListenerFullImpl#onPortStatusMessage(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage)}.
      */
     @Test
-    @Ignore
     public void testOnPortStatusMessage() {
-        fail("Not yet implemented");
+        PortStatusMessage portStatusMessage = new PortStatusMessageBuilder()
+                .setVersion(OFConstants.OFP_VERSION_1_3).setXid(xid).build();
+        ofProtocolListener.onPortStatusMessage(portStatusMessage);
+
+        Mockito.verify(deviceReplyProcessor).processPortStatusMessage(Matchers.any(PortStatusMessage.class));
     }
 
-    /**
-     * Test method for {@link OpenflowProtocolListenerInitialImpl#checkState(org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext.CONNECTION_STATE)}.
-     */
     @Test
-    @Ignore
-    public void testCheckState() {
-        fail("Not yet implemented");
-    }
+    public void testAddMultipartMsg() throws Exception {
+        MultipartReplyMessageBuilder multipartDescReply = MsgGeneratorTestUtils.makeMultipartDescReply(xid, hwDescValue, false);
+        ofProtocolListener.addMultipartMsg(multipartDescReply.build());
 
+        // NOOP
+    }
 }

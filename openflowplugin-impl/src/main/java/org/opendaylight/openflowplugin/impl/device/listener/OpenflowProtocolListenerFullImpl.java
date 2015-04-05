@@ -7,9 +7,11 @@
  */
 package org.opendaylight.openflowplugin.impl.device.listener;
 
+import com.google.common.annotations.VisibleForTesting;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceReplyProcessor;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.api.openflow.device.listener.OpenflowMessageListenerFacade;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoReplyInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoRequestMessage;
@@ -33,7 +35,7 @@ public class OpenflowProtocolListenerFullImpl implements OpenflowMessageListener
 
     private final ConnectionAdapter connectionAdapter;
     private DeviceReplyProcessor deviceReplyProcessor;
-    private final MultiMsgCollectorImpl multiMsgCollector;
+    private MultiMsgCollector multiMsgCollector;
 
     /**
      * @param connectionAdapter
@@ -101,11 +103,16 @@ public class OpenflowProtocolListenerFullImpl implements OpenflowMessageListener
 
     @Override
     public void addMultipartMsg(@Nonnull final MultipartReply reply) {
-        multiMsgCollector.addMultipartMsg(reply);
+        // NOOP (not delegated)
     }
 
     @Override
     public void setDeviceReplyProcessor(final DeviceReplyProcessor deviceReplyProcessor) {
         this.deviceReplyProcessor = deviceReplyProcessor;
+    }
+
+    @VisibleForTesting
+    void setMultiMsgCollector(MultiMsgCollector multiMsgCollector) {
+        this.multiMsgCollector = multiMsgCollector;
     }
 }
