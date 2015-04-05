@@ -10,6 +10,8 @@ package org.opendaylight.openflowplugin.impl.device;
 
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.OutstandingMessageExtractor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * openflowplugin-impl
@@ -23,6 +25,8 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.OutstandingM
  */
 public class BarrierProcessor {
 
+    private static Logger LOG = LoggerFactory.getLogger(BarrierProcessor.class);
+
     /**
      * for all requestContexts from deviceContext cache which are older than barrier (lower barrierXid value) we do: <br>
      *     <ul>
@@ -34,8 +38,10 @@ public class BarrierProcessor {
      * @param messageExtractor
      */
     public static void processOutstandingRequests(final long barrierXid, final OutstandingMessageExtractor messageExtractor) {
+        LOG.trace("processing barrier response [{}]", barrierXid);
         RequestContext nextRequestContext;
         while ((nextRequestContext = messageExtractor.extractNextOutstandingMessage(barrierXid)) != null ) {
+            LOG.trace("flushing outstanding request [{}]", nextRequestContext.getXid().getValue());
             nextRequestContext.getFuture().cancel(false);
         }
     }
