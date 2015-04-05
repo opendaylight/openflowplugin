@@ -20,6 +20,8 @@ import org.opendaylight.controller.md.sal.common.api.data.TransactionChain;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * openflowplugin-impl
@@ -37,6 +39,8 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 @VisibleForTesting
 class TransactionChainManager implements TransactionChainListener {
 
+    private static Logger LOG = LoggerFactory.getLogger(TransactionChainManager.class);
+
     private final DataBroker dataBroker;
     private final long maxTx;
     private BindingTransactionChain txChainFactory;
@@ -49,6 +53,7 @@ class TransactionChainManager implements TransactionChainListener {
         this.maxTx = maxTx;
         txChainFactory = dataBroker.createTransactionChain(TransactionChainManager.this);
         nrOfActualTx = 0L;
+        LOG.debug("created txChainManager with operation limit {}", maxTx);
     }
 
     synchronized <T extends DataObject> void writeToTransaction(final LogicalDatastoreType store,
@@ -68,6 +73,7 @@ class TransactionChainManager implements TransactionChainListener {
 
     synchronized void submitTransaction() {
         if (wTx != null) {
+            LOG.trace("submitting transaction, counter: {}", nrOfActualTx);
             wTx.submit();
             wTx = null;
             nrOfActualTx = 0L;
@@ -81,6 +87,8 @@ class TransactionChainManager implements TransactionChainListener {
     @Override
     public void onTransactionChainFailed(final TransactionChain<?, ?> chain,
             final AsyncTransaction<?, ?> transaction, final Throwable cause) {
+        LOG.debug("txChain failed -> recreating");
+        LOG.trace("reason", cause);
         txChainFactory.close();
         txChainFactory = dataBroker.createTransactionChain(TransactionChainManager.this);
     }
