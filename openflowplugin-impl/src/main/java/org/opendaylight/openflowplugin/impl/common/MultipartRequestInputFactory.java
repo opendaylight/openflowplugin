@@ -13,6 +13,7 @@ import java.math.BigInteger;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartRequestFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmMatchType;
@@ -51,6 +52,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestTableFeaturesCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestTableFeaturesCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.flow._case.MultipartRequestFlowBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.meter._case.MultipartRequestMeterBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.port.stats._case.MultipartRequestPortStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.queue._case.MultipartRequestQueueBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.table.features._case.MultipartRequestTableFeaturesBuilder;
 
@@ -179,7 +182,11 @@ public final class MultipartRequestInputFactory {
             case OFPMPTABLE:
                 return new MultipartRequestTableCaseBuilder().build();
             case OFPMPPORTSTATS:
-                return new MultipartRequestPortStatsCaseBuilder().build();
+                MultipartRequestPortStatsCaseBuilder multipartRequestPortStatsCaseBuilder = new MultipartRequestPortStatsCaseBuilder();
+                MultipartRequestPortStatsBuilder multipartRequestPortStatsBuilder = new MultipartRequestPortStatsBuilder();
+                multipartRequestPortStatsBuilder.setPortNo(OFConstants.OFPP_ANY);
+                multipartRequestPortStatsCaseBuilder.setMultipartRequestPortStats(multipartRequestPortStatsBuilder.build());
+                return multipartRequestPortStatsCaseBuilder.build();
             case OFPMPQUEUE:
                 MultipartRequestQueueCaseBuilder multipartRequestQueueCaseBuilder = new MultipartRequestQueueCaseBuilder();
                 MultipartRequestQueueBuilder multipartRequestQueueBuilder = new MultipartRequestQueueBuilder();
@@ -194,7 +201,12 @@ public final class MultipartRequestInputFactory {
             case OFPMPGROUPFEATURES:
                 return new MultipartRequestGroupFeaturesCaseBuilder().build();
             case OFPMPMETER:
-                return new MultipartRequestMeterCaseBuilder().build();
+                MultipartRequestMeterCaseBuilder multipartRequestMeterCaseBuilder = new MultipartRequestMeterCaseBuilder();
+                MultipartRequestMeterBuilder multipartRequestMeterBuilder = new MultipartRequestMeterBuilder();
+                MeterId meterId = new MeterId(OFConstants.OFPP_ANY);
+                multipartRequestMeterBuilder.setMeterId(meterId);
+                multipartRequestMeterCaseBuilder.setMultipartRequestMeter(multipartRequestMeterBuilder.build());
+                return multipartRequestMeterCaseBuilder.build();
             case OFPMPMETERCONFIG:
                 return new MultipartRequestMeterConfigCaseBuilder().build();
             case OFPMPMETERFEATURES:
