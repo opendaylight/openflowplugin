@@ -47,7 +47,7 @@ public class MultiMsgCollectorImpl implements MultiMsgCollector {
     private DeviceReplyProcessor deviceReplyProcessor;
 
     public MultiMsgCollectorImpl() {
-        cache = initCacheBuilder(DEFAULT_TIME_OUT).build();
+        this(DEFAULT_TIME_OUT);
     }
 
     public MultiMsgCollectorImpl(final int timeout) {
@@ -95,9 +95,10 @@ public class MultiMsgCollectorImpl implements MultiMsgCollector {
 
         try {
             cachedRef.add(reply);
+            LOG.trace("Multipart reply msg with XID {} added successfully.", reply.getXid());
             if (!reply.getFlags().isOFPMPFREQMORE()) {
                 // flag OFPMFFREEQMORE false says "I'm a last one'
-                cachedRef.populateSettableFuture(xid); // settable future has now whole collection
+                cachedRef.publishCollection(xid); // settable future has now whole collection
                 cache.invalidate(xid);              // we don't need a reference anymore - remove explicitly
             }
         } catch (DeviceDataException e) {
@@ -124,7 +125,7 @@ public class MultiMsgCollectorImpl implements MultiMsgCollector {
             replyCollection.add(reply);
         }
 
-        void populateSettableFuture(long xid) {
+        void publishCollection(long xid) {
             deviceReplyProcessor.processReply(new Xid(xid), replyCollection);
         }
 

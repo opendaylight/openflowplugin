@@ -13,17 +13,22 @@
         <level value="DEBUG" />
         <appender-ref ref="console" />
     </logger>
-    
+
     <logger name="org.opendaylight.openflowplugin.impl" additivity="false">
         <level value="DEBUG" />
         <appender-ref ref="console" />
     </logger>
-    
+
     <logger name="org.opendaylight.openflowplugin.impl.connection" additivity="false">
         <level value="TRACE" />
         <appender-ref ref="console" />
     </logger>
-    
+
+    <logger name="org.opendaylight.openflowplugin.impl.device" additivity="false">
+        <level value="TRACE" />
+        <appender-ref ref="console" />
+    </logger>
+
     <logger name="org.opendaylight.openflowplugin.openflow.md.core.HandshakeManagerImpl" additivity="false">
         <level value="TRACE" />
         <appender-ref ref="console" />

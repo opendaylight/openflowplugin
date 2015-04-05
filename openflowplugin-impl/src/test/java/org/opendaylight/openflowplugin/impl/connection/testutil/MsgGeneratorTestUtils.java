@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.impl.connection.testutil;
 
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartRequestFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyDescCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyDescCaseBuilder;
@@ -33,11 +32,16 @@ public class MsgGeneratorTestUtils {
         throw new UnsupportedOperationException("Test Utility class");
     }
 
-    public static MultipartReply makeMultipartDescReply(final long xid, final String value, final boolean hasNext) {
+    public static MultipartReplyMessageBuilder makeMultipartDescReply(final long xid, final String value, final boolean hasNext) {
         final MultipartReplyDesc descValue = new MultipartReplyDescBuilder().setHwDesc(value).build();
         final MultipartReplyDescCase replyBody = new MultipartReplyDescCaseBuilder()
                                                         .setMultipartReplyDesc(descValue).build();
-        return new MultipartReplyMessageBuilder().setMultipartReplyBody(replyBody)
-                .setXid(xid).setFlags(new MultipartRequestFlags(hasNext)).setType(MultipartType.OFPMPDESC).build();
+
+        MultipartReplyMessageBuilder messageBuilder = new MultipartReplyMessageBuilder()
+                .setMultipartReplyBody(replyBody)
+                .setXid(xid)
+                .setFlags(new MultipartRequestFlags(hasNext))
+                .setType(MultipartType.OFPMPDESC);
+        return messageBuilder;
     }
 }

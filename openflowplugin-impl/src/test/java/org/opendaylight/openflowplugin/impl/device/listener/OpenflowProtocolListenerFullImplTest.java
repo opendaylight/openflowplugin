@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.impl.device.listener;
 
 import static org.junit.Assert.fail;
+
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -112,7 +113,7 @@ public class OpenflowProtocolListenerFullImplTest {
     public void testOnMultipartReplyMessage() {
         final long xid = 1l;
         ofProtocolListener.registerMultipartXid(xid);
-        final MultipartReply multipartReply = MsgGeneratorTestUtils.makeMultipartDescReply(xid, "test-val", false);
+        final MultipartReply multipartReply = MsgGeneratorTestUtils.makeMultipartDescReply(xid, "test-val", false).build();
         ofProtocolListener.onMultipartReplyMessage((MultipartReplyMessage) multipartReply);
         Mockito.verify(deviceReplyProcessor, Mockito.times(1)).processReply(Mockito.any(Xid.class), Mockito.anyListOf(MultipartReply.class));
     }
