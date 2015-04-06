@@ -16,6 +16,7 @@ import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcR
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeContext;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.RpcService;
 import org.opendaylight.yangtools.yang.common.RpcError;
@@ -47,7 +48,9 @@ public class RpcContextImpl implements RpcContext {
     @Override
     public <S extends RpcService> void registerRpcServiceImplementation(final Class<S> serviceClass,
             final S serviceInstance) {
-        rpcRegistrations.add(providerContext.addRoutedRpcImplementation(serviceClass, serviceInstance));
+        final RoutedRpcRegistration<S> routedRpcReg = providerContext.addRoutedRpcImplementation(serviceClass, serviceInstance);
+        routedRpcReg.registerPath(NodeContext.class, deviceContext.getDeviceState().getNodeInstanceIdentifier());
+        rpcRegistrations.add(routedRpcReg);
     }
 
     @Override
@@ -72,6 +75,7 @@ public class RpcContextImpl implements RpcContext {
     @Override
     public void close() throws Exception {
         for (final RoutedRpcRegistration<?> rpcRegistration : rpcRegistrations) {
+            rpcRegistration.unregisterPath(NodeContext.class, deviceContext.getDeviceState().getNodeInstanceIdentifier());
             rpcRegistration.close();
         }
     }
