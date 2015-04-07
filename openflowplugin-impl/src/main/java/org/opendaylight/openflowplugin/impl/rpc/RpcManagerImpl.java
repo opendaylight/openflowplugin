@@ -18,9 +18,12 @@ public class RpcManagerImpl implements RpcManager {
 
     private final ProviderContext providerContext;
     private DeviceInitializationPhaseHandler deviceInitPhaseHandler;
+    private final Long maxRequestsQuota;
 
-    public RpcManagerImpl(final ProviderContext providerContext) {
+    public RpcManagerImpl(final ProviderContext providerContext,
+                          final Long quotaValue) {
         this.providerContext = providerContext;
+        maxRequestsQuota = quotaValue;
     }
 
     @Override
@@ -31,6 +34,7 @@ public class RpcManagerImpl implements RpcManager {
     @Override
     public void onDeviceContextLevelUp(final DeviceContext deviceContext) {
         final RpcContext rpcContext = new RpcContextImpl(providerContext, deviceContext);
+        rpcContext.setRequestContextQuota(maxRequestsQuota.intValue());
         MdSalRegistratorUtils.registerServices(rpcContext, deviceContext);
         // finish device initialization cycle back to DeviceManager
         deviceInitPhaseHandler.onDeviceContextLevelUp(deviceContext);
