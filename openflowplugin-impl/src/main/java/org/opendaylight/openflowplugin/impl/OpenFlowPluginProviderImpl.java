@@ -49,6 +49,11 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider {
     private ProviderContext providerContext;
     private OfpRole role;
     private Collection<SwitchConnectionProvider> switchConnectionProviders;
+    private Long rpcRequestsQuota;
+
+    public OpenFlowPluginProviderImpl(final Long rpcRequestsQuota) {
+        this.rpcRequestsQuota = rpcRequestsQuota;
+    }
 
     @Override
     public void onSessionInitiated(final ProviderContext providerContextArg) {
@@ -57,7 +62,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider {
         connectionManager = new ConnectionManagerImpl();
         deviceManager = new DeviceManagerImpl(providerContext.getSALService(DataBroker.class));
         statisticsManager = new StatisticsManagerImpl();
-        rpcManager = new RpcManagerImpl(providerContext);
+        rpcManager = new RpcManagerImpl(providerContext, rpcRequestsQuota);
 
         connectionManager.setDeviceConnectedHandler(deviceManager);
         deviceManager.setDeviceInitializationPhaseHandler(statisticsManager);
@@ -100,6 +105,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider {
     public void setRole(final OfpRole role) {
         this.role = role;
     }
+
 
     @Override
     public void setBindingAwareBroker(final BindingAwareBroker bindingAwareBroker) {

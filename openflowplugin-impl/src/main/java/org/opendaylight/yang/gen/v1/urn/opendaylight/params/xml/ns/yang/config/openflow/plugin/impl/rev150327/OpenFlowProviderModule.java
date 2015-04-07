@@ -27,7 +27,7 @@ public class OpenFlowProviderModule extends org.opendaylight.yang.gen.v1.urn.ope
     public java.lang.AutoCloseable createInstance() {
         LOG.info("Initializing new OFP southbound.");
         OpenflowPortsUtil.init();
-        OpenFlowPluginProvider openflowPluginProvider = new OpenFlowPluginProviderImpl();
+        OpenFlowPluginProvider openflowPluginProvider = new OpenFlowPluginProviderImpl(getRpcRequestsQuota());
 
         openflowPluginProvider.setSwitchConnectionProviders(getOpenflowSwitchConnectionProviderDependency());
         openflowPluginProvider.setRole(getRole());
