@@ -44,6 +44,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.NodeGroupFeatures;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.NodeMeterFeatures;
@@ -84,7 +86,8 @@ public class DeviceManagerImpl implements DeviceManager {
     public DeviceManagerImpl(@Nonnull final DataBroker dataBroker) {
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
         hashedWheelTimer = new HashedWheelTimer(TICK_DURATION, TimeUnit.MILLISECONDS, 10);
-
+        /* merge empty nodes to oper DS to predict any problems with missing parent for Node */
+        dataBroker.newWriteOnlyTransaction().merge(LogicalDatastoreType.OPERATIONAL, InstanceIdentifier.create(Nodes.class), new NodesBuilder().build());
 
         dummyRequestContextStack = new RequestContextStack() {
             @Override
@@ -188,7 +191,7 @@ public class DeviceManagerImpl implements DeviceManager {
                 } else {
                     final Iterator<RpcError> rpcErrorIterator = rpcResult.getErrors().iterator();
                     while (rpcErrorIterator.hasNext()) {
-                        RpcError rpcError = rpcErrorIterator.next();
+                        final RpcError rpcError = rpcErrorIterator.next();
                         LOG.info("Failed to retrieve static node {} info: {}", type, rpcError.getMessage());
                         if (null != rpcError.getCause()) {
                             LOG.trace("Detailed error:", rpcError.getCause());
@@ -208,7 +211,7 @@ public class DeviceManagerImpl implements DeviceManager {
 
         final ListenableFuture<RpcResult<Void>> rpcFuture = JdkFutureAdapters.listenInPoolThread(deviceContext.getPrimaryConnectionContext().getConnectionAdapter()
                 .multipartRequest(MultipartRequestInputFactory.makeMultipartRequestInput(xid.getValue(), version, type)));
-        OFJResult2RequestCtxFuture OFJResult2RequestCtxFuture = new OFJResult2RequestCtxFuture(requestContext, deviceContext);
+        final OFJResult2RequestCtxFuture OFJResult2RequestCtxFuture = new OFJResult2RequestCtxFuture(requestContext, deviceContext);
         OFJResult2RequestCtxFuture.processResultFromOfJava(rpcFuture);
 
         return requestContext.getFuture();

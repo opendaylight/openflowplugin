@@ -18,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
@@ -43,6 +44,8 @@ public class DeviceManagerImplTest {
     private DataBroker dataBroker;
     @Mock
     private RpcManager rpcManager;
+    @Mock
+    private WriteTransaction wTx;
 
     /**
      * @throws java.lang.Exception
@@ -52,6 +55,7 @@ public class DeviceManagerImplTest {
         Mockito.when(connectionContext.getConnectionAdapter()).thenReturn(connectionAdapter);
         Mockito.when(connectionContext.getFeatures()).thenReturn(features);
         Mockito.when(features.getVersion()).thenReturn((short) 42);
+        Mockito.when(dataBroker.newWriteOnlyTransaction()).thenReturn(wTx);
         deviceManager = new DeviceManagerImpl(dataBroker);
     }
 
