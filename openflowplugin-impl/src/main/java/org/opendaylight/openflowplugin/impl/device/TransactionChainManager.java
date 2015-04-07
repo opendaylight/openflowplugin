@@ -26,15 +26,15 @@ import org.slf4j.LoggerFactory;
 /**
  * openflowplugin-impl
  * org.opendaylight.openflowplugin.impl.device
- *
+ * <p/>
  * Package protected class for controlling {@link WriteTransaction} life cycle. It is
  * a {@link TransactionChainListener} and provide package protected methods for writeToTransaction
  * method (wrapped {@link WriteTransaction#put(LogicalDatastoreType, InstanceIdentifier, DataObject)})
  * and submitTransaction method (wrapped {@link WriteTransaction#submit()})
  *
  * @author <a href="mailto:vdemcak@cisco.com">Vaclav Demcak</a>
- *
- * Created: Apr 2, 2015
+ *         <p/>
+ *         Created: Apr 2, 2015
  */
 @VisibleForTesting
 class TransactionChainManager implements TransactionChainListener {
@@ -57,12 +57,12 @@ class TransactionChainManager implements TransactionChainListener {
     }
 
     synchronized <T extends DataObject> void writeToTransaction(final LogicalDatastoreType store,
-            final InstanceIdentifier<T> path, final T data) {
+                                                                final InstanceIdentifier<T> path, final T data) {
         if (wTx == null) {
             wTx = txChainFactory.newWriteOnlyTransaction();
         }
-        wTx.put(store, path, data);
-        if ( ! counterIsEnabled) {
+        wTx.put(store, path, data, true);
+        if (!counterIsEnabled) {
             return;
         }
         nrOfActualTx += 1L;
@@ -86,7 +86,7 @@ class TransactionChainManager implements TransactionChainListener {
 
     @Override
     public void onTransactionChainFailed(final TransactionChain<?, ?> chain,
-            final AsyncTransaction<?, ?> transaction, final Throwable cause) {
+                                         final AsyncTransaction<?, ?> transaction, final Throwable cause) {
         LOG.debug("txChain failed -> recreating");
         LOG.trace("reason", cause);
         txChainFactory.close();

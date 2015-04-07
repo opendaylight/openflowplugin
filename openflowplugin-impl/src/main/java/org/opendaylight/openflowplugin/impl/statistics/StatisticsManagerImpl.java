@@ -63,7 +63,7 @@ public class StatisticsManagerImpl implements StatisticsManager {
 
             @Override
             public void onFailure(final Throwable throwable) {
-                LOG.error("Statistics manager was not able to collect dynamic info for device {}", deviceContext.getDeviceState().getNodeId());
+                LOG.warn("Statistics manager was not able to collect dynamic info for device {}", deviceContext.getDeviceState().getNodeId(), throwable);
             }
         });
     }
