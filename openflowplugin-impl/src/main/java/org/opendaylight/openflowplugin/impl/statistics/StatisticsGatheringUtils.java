@@ -229,7 +229,7 @@ public final class StatisticsGatheringUtils {
                                     final InstanceIdentifier<Flow> flowIdent = fNodeIdent.child(Table.class, tableKey).child(Flow.class, flowKey);
                                     if (logFirstTime) {
                                         logFirstTime = false;
-                                        LOG.info("Writing queue statistics to operational DS.");
+                                        LOG.info("Writing flow statistics to operational DS.");
                                     }
                                     deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, flowIdent, flowBuilder.build());
                                 }

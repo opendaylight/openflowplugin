@@ -29,12 +29,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 1.4.2015.
  */
 public class StatisticsContextImpl implements StatisticsContext {
 
+    private static final Logger LOG = LoggerFactory.getLogger(StatisticsContextImpl.class);
     private final List<RequestContext> requestContexts = new ArrayList();
     private final DeviceContext deviceContext;
 
@@ -58,12 +61,17 @@ public class StatisticsContextImpl implements StatisticsContext {
 
     @Override
     public ListenableFuture<Void> gatherDynamicData() {
-        ListenableFuture<Boolean> flowStatistics = StatisticsGatheringUtils.gatherStatistics(statisticsGatheringService, deviceContext, MultipartType.OFPMPFLOW);
-        ListenableFuture<Boolean> tableStatistics = StatisticsGatheringUtils.gatherStatistics(statisticsGatheringService, deviceContext, MultipartType.OFPMPTABLE);
-        ListenableFuture<Boolean> groupStatistics = StatisticsGatheringUtils.gatherStatistics(statisticsGatheringService, deviceContext, MultipartType.OFPMPGROUPDESC);
-        ListenableFuture<Boolean> meterStatistics = StatisticsGatheringUtils.gatherStatistics(statisticsGatheringService, deviceContext, MultipartType.OFPMPMETER);
-        ListenableFuture<Boolean> portStatistics = StatisticsGatheringUtils.gatherStatistics(statisticsGatheringService, deviceContext, MultipartType.OFPMPPORTSTATS);
-        ListenableFuture<Boolean> queueStatistics = StatisticsGatheringUtils.gatherStatistics(statisticsGatheringService, deviceContext, MultipartType.OFPMPQUEUE);
+        ListenableFuture<Boolean> flowStatistics = wrapLoggingOnStatisticsRequestCall(MultipartType.OFPMPFLOW);
+
+        ListenableFuture<Boolean> tableStatistics = wrapLoggingOnStatisticsRequestCall(MultipartType.OFPMPTABLE);
+
+        ListenableFuture<Boolean> groupStatistics = wrapLoggingOnStatisticsRequestCall(MultipartType.OFPMPGROUPDESC);
+
+        ListenableFuture<Boolean> meterStatistics = wrapLoggingOnStatisticsRequestCall(MultipartType.OFPMPMETER);
+
+        ListenableFuture<Boolean> portStatistics = wrapLoggingOnStatisticsRequestCall(MultipartType.OFPMPPORTSTATS);
+
+        ListenableFuture<Boolean> queueStatistics = wrapLoggingOnStatisticsRequestCall(MultipartType.OFPMPQUEUE);
 
         ListenableFuture<List<Boolean>> allFutures = Futures.allAsList(Arrays.asList(flowStatistics, tableStatistics, groupStatistics, meterStatistics, portStatistics, queueStatistics));
         final SettableFuture<Void> resultingFuture = SettableFuture.create();
@@ -79,6 +87,22 @@ public class StatisticsContextImpl implements StatisticsContext {
             }
         });
         return resultingFuture;
+    }
+
+    private ListenableFuture<Boolean> wrapLoggingOnStatisticsRequestCall(final MultipartType type) {
+        ListenableFuture<Boolean> future = StatisticsGatheringUtils.gatherStatistics(statisticsGatheringService, deviceContext, type);
+        Futures.addCallback(future, new FutureCallback() {
+            @Override
+            public void onSuccess(final Object o) {
+                LOG.trace("Multipart response for {} was successful.", type);
+            }
+
+            @Override
+            public void onFailure(final Throwable throwable) {
+                LOG.trace("Multipart response for {} FAILED.", type, throwable);
+            }
+        });
+        return future;
     }
 
     @Override
