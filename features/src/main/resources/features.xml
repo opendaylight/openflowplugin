@@ -33,7 +33,7 @@
         <!-- TODO : next two features should be extracted to separate feature tags, it is assembled this way only for testing of new-southbound during devel -->
         <feature version="${project.version}">odl-openflowplugin-nsf-services</feature>
         <feature version="${mdsal.version}">odl-restconf</feature>
-        
+
         <feature version="${mdsal.version}">odl-mdsal-broker</feature>
         <feature version="${project.version}">odl-openflowplugin-nsf-model</feature>
         <feature version="${openflowjava.version}">odl-openflowjava-protocol</feature>
@@ -47,10 +47,10 @@
     </feature>
 
     <feature name='odl-openflowplugin-flow-services' description="OpenDaylight :: Openflow Plugin :: Flow Services" version='${project.version}'>
-        <feature version="${project.version}">odl-openflowplugin-nsf-services</feature>
         <feature version="${project.version}">odl-openflowplugin-southbound</feature>
         <feature version="${project.version}">odl-openflowplugin-app-config-pusher</feature>
         <feature version="${project.version}">odl-openflowplugin-app-lldp-speaker</feature>
+        <feature version="${project.version}">odl-openflowplugin-nsf-services</feature>
     </feature>
 
     <feature name='odl-openflowplugin-nsf-services' version='${project.version}'
