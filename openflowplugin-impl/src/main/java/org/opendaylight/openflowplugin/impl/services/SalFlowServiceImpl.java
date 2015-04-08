@@ -78,20 +78,13 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
     public Future<RpcResult<AddFlowOutput>> addFlow(final AddFlowInput input) {
         final List<FlowModInputBuilder> ofFlowModInputs = FlowConvertor.toFlowModInputs(input, version, datapathId);
         final ListenableFuture future = processFlowModInputBuilders(ofFlowModInputs);
-        Futures.addCallback(future, new FutureCallback() {
-            @Override
-            public void onSuccess(final Object o) {
-                FlowHash flowHash = FlowHashFactory.create(input);
-                FlowId flowId = input.getFlowRef().getValue().firstKeyOf(Flow.class, FlowKey.class).getId();
-                deviceContext.getFlowRegistry().store(flowHash, flowId);
-            }
 
-            @Override
-            public void onFailure(final Throwable throwable) {
-                LOG.trace("Service call for adding flows failed.", throwable);
-                LOG.trace("Future is canceld : {}.", future.isCancelled());
-            }
-        });
+        if (!future.isCancelled()) {
+            FlowHash flowHash = FlowHashFactory.create(input);
+            FlowId flowId = input.getFlowRef().getValue().firstKeyOf(Flow.class, FlowKey.class).getId();
+            deviceContext.getFlowRegistry().store(flowHash, flowId);
+        }
+
         return future;
     }
 
