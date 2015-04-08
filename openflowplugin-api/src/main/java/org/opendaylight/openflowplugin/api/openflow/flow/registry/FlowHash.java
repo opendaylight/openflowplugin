@@ -14,5 +14,4 @@ package org.opendaylight.openflowplugin.api.openflow.flow.registry;
  */
 public interface FlowHash {
 
-    long getHash();
 }

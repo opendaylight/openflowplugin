@@ -77,7 +77,7 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
     @Override
     public Future<RpcResult<AddFlowOutput>> addFlow(final AddFlowInput input) {
         final List<FlowModInputBuilder> ofFlowModInputs = FlowConvertor.toFlowModInputs(input, version, datapathId);
-        ListenableFuture future = JdkFutureAdapters.listenInPoolThread(processFlowModInputBuilders(ofFlowModInputs));
+        final ListenableFuture future = processFlowModInputBuilders(ofFlowModInputs);
         Futures.addCallback(future, new FutureCallback() {
             @Override
             public void onSuccess(final Object o) {
@@ -88,7 +88,8 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
 
             @Override
             public void onFailure(final Throwable throwable) {
-
+                LOG.trace("Service call for adding flows failed.", throwable);
+                LOG.trace("Future is canceld : {}.", future.isCancelled());
             }
         });
         return future;
@@ -146,8 +147,8 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
         }
 
         allFlowMods.addAll(ofFlowModInputs);
-        Future future = processFlowModInputBuilders(allFlowMods);
-        Futures.addCallback(JdkFutureAdapters.listenInPoolThread(future), new FutureCallback() {
+        ListenableFuture future = processFlowModInputBuilders(allFlowMods);
+        Futures.addCallback(future, new FutureCallback() {
             @Override
             public void onSuccess(final Object o) {
                 FlowHash flowHash = FlowHashFactory.create(original);
@@ -167,7 +168,7 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
         return future;
     }
 
-    private <T> Future<RpcResult<T>> processFlowModInputBuilders(
+    private <T> ListenableFuture<RpcResult<T>> processFlowModInputBuilders(
             final List<FlowModInputBuilder> ofFlowModInputs) {
         final List<ListenableFuture<RpcResult<T>>> partialFutures = new ArrayList<>();
         for (FlowModInputBuilder flowModInputBuilder : ofFlowModInputs) {

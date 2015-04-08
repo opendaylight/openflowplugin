@@ -23,12 +23,12 @@ public class FlowHashFactory {
     }
 
     public static FlowHash create(Flow flow) {
-        long hash = calculateHash(flow);
+        int hash = calculateHash(flow);
         return new FlowHashDto(hash);
     }
 
-    private static long calculateHash(Flow flow) {
-        long hash = 0;
+    private static int calculateHash(Flow flow) {
+        int hash = 0;
         Match match = flow.getMatch();
         hash = HashUtil.calculateMatchHash(match);
         hash += flow.getPriority();
@@ -40,23 +40,26 @@ public class FlowHashFactory {
 
     private static final class FlowHashDto implements FlowHash {
 
-        private long hashCode;
+        private final int hashCode;
 
-        public FlowHashDto(final long hashCode) {
+        public FlowHashDto(final int hashCode) {
             this.hashCode = hashCode;
         }
 
         @Override
-        public long getHash() {
+        public int hashCode() {
             return hashCode;
         }
 
         @Override
         public boolean equals(final Object obj) {
+            if (null == obj) {
+                return false;
+            }
             if (!(obj instanceof FlowHash)) {
                 return false;
             }
-            if (this.hashCode == ((FlowHash) obj).getHash()) {
+            if (this.hashCode == obj.hashCode()) {
                 return true;
             }
             return false;

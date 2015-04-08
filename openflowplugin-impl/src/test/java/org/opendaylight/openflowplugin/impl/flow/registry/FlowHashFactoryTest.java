@@ -8,10 +8,12 @@
 
 package org.opendaylight.openflowplugin.impl.flow.registry;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,7 +37,6 @@ public class FlowHashFactoryTest {
 
 
     private static final FlowsStatisticsUpdateBuilder FLOWS_STATISTICS_UPDATE_BUILDER = new FlowsStatisticsUpdateBuilder();
-    private static final FlowHashFactory flowHashFactory = new FlowHashFactory();
 
 
     @Before
@@ -70,7 +71,15 @@ public class FlowHashFactoryTest {
 
     @Test
     public void testEquals() throws Exception {
+        FlowsStatisticsUpdate flowStats = FLOWS_STATISTICS_UPDATE_BUILDER.build();
 
+        HashSet<FlowHash> flowHashs = new HashSet();
+        for (FlowAndStatisticsMapList item : flowStats.getFlowAndStatisticsMapList()) {
+            FlowHash flowHash = FlowHashFactory.create(item);
+            flowHashs.add(flowHash);
+            flowHashs.add(flowHash);
+        }
+        assertEquals(3, flowHashs.size());
     }
 
     @Test
@@ -78,7 +87,7 @@ public class FlowHashFactoryTest {
         FlowsStatisticsUpdate flowStats = FLOWS_STATISTICS_UPDATE_BUILDER.build();
 
         for (FlowAndStatisticsMapList item : flowStats.getFlowAndStatisticsMapList()) {
-            FlowHash flowHash = flowHashFactory.create(item);
+            FlowHash flowHash = FlowHashFactory.create(item);
             FlowHash lastHash = null;
             if (null != lastHash) {
                 assertNotEquals(lastHash, flowHash);

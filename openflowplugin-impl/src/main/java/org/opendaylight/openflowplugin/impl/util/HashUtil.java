@@ -20,8 +20,8 @@ public final class HashUtil {
         throw new IllegalStateException("This class should not be instantiated.");
     }
 
-    public static long calculateMatchHash(final Match match) {
-        long hash = 0;
+    public static int calculateMatchHash(final Match match) {
+        int hash = 0;
         int base = 0;
         if (null != match) {
             if (null != match.getEthernetMatch()) {
