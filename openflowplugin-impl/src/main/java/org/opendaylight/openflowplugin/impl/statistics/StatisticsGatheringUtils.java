@@ -16,6 +16,9 @@ import java.util.List;
 import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.flow.registry.FlowHash;
+import org.opendaylight.openflowplugin.api.openflow.flow.registry.FlowRegistryException;
+import org.opendaylight.openflowplugin.impl.flow.registry.FlowHashFactory;
 import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.StatisticsGatheringService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
@@ -221,7 +224,14 @@ public final class StatisticsGatheringUtils {
 
                                 for (final FlowAndStatisticsMapList flowStat : flowsStatistics.getFlowAndStatisticsMapList()) {
                                     final FlowBuilder flowBuilder = new FlowBuilder(flowStat);
-                                    FlowId flowId = new FlowId(flowStat.getFlowId());
+                                    FlowId flowId = null;
+                                    try {
+                                        FlowHash flowHash = FlowHashFactory.create(flowBuilder.build());
+                                        flowId = deviceContext.getFlowRegistry().retrieveIdForFlow(flowHash);
+                                    } catch (FlowRegistryException e) {
+                                        LOG.trace("No flowId found in device's flow registry for flow retrieved by statistics.");
+                                        //TODO : create alien ID for flow
+                                    }
                                     FlowKey flowKey = new FlowKey(flowId);
                                     flowBuilder.setKey(flowKey);
                                     TableKey tableKey = new TableKey(flowStat.getTableId());
