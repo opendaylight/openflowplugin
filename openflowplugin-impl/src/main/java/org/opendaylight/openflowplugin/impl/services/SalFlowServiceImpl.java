@@ -183,6 +183,7 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
                 for (RpcResult<T> rpcResult : result) {
                     if (rpcResult.isSuccessful()) {
                         // TODO: AddFlowOutput has getTransactionId() - shouldn't it have some value?
+                        LOG.trace("Flow mods chained future successful.");
                         finalFuture.set(RpcResultBuilder.<T>success().build());
                     }
                 }
@@ -190,6 +191,7 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
 
             @Override
             public void onFailure(Throwable t) {
+                LOG.trace("Flow mods chained future failed.");
                 finalFuture.set(RpcResultBuilder.<T>failed().withError(ErrorType.APPLICATION, "", t.getMessage())
                         .build());
             }
