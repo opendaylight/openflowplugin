@@ -40,6 +40,8 @@ class DeviceStateImpl implements DeviceState {
     private final KeyedInstanceIdentifier<Node, NodeKey> nodeII;
     private final short version;
     private boolean valid;
+    private boolean meterIsAvailable;
+    private boolean groupIsAvailable;
 
     public DeviceStateImpl(@CheckForNull final FeaturesReply featuresReply, @Nonnull final NodeId nodeId) {
         Preconditions.checkArgument(featuresReply != null);
@@ -77,6 +79,26 @@ class DeviceStateImpl implements DeviceState {
     @Override
     public short getVersion() {
         return version;
+    }
+
+    @Override
+    public boolean isMetersAvailable() {
+        return meterIsAvailable;
+    }
+
+    @Override
+    public void meterIsAvailable() {
+        meterIsAvailable = true;
+    }
+
+    @Override
+    public boolean isGroupAvailable() {
+        return groupIsAvailable;
+    }
+
+    @Override
+    public void groupIsAvailable() {
+        groupIsAvailable = true;
     }
 
 }

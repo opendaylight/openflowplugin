@@ -180,7 +180,7 @@ public class DeviceContextImpl implements DeviceContext {
 
     @Override
     public OpenflowMessageListenerFacade getOpenflowMessageListenerFacade() {
-        return this.openflowMessageListenerFacade;
+        return openflowMessageListenerFacade;
     }
 
     @Override
@@ -299,7 +299,7 @@ public class DeviceContextImpl implements DeviceContext {
 
     @Override
     public HashedWheelTimer getTimer() {
-        return this.hashedWheelTimer;
+        return hashedWheelTimer;
     }
 
 
@@ -313,11 +313,11 @@ public class DeviceContextImpl implements DeviceContext {
     }
 
     @Override
-    public RequestContext extractNextOutstandingMessage(long barrierXid) {
+    public RequestContext extractNextOutstandingMessage(final long barrierXid) {
         RequestContext nextMessage = null;
-        Iterator<Long> keyIterator = requests.keySet().iterator();
+        final Iterator<Long> keyIterator = requests.keySet().iterator();
         if (keyIterator.hasNext()) {
-            Long oldestXid = keyIterator.next();
+            final Long oldestXid = keyIterator.next();
             if (oldestXid < barrierXid) {
                 nextMessage = requests.remove(oldestXid);
             }
