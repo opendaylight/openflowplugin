@@ -12,6 +12,7 @@ package org.opendaylight.openflowplugin.api.openflow.flow.registry;
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 8.4.2015.
  */
 public class FlowRegistryException extends Exception {
+
     public FlowRegistryException(final String message) {
         super(message);
     }
