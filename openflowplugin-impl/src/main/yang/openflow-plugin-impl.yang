@@ -48,6 +48,10 @@ module openflow-plugin-provider-impl {
                 type ofp-types:ofp-role;
                 default "NOCHANGE";
             }
+            leaf rpc-requests-quota {
+                type uint32;
+                default 500;
+            }
         }
 
     }

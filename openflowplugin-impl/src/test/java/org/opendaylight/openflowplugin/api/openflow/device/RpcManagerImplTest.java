@@ -11,6 +11,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
 import java.math.BigInteger;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -39,7 +40,7 @@ public class RpcManagerImplTest {
     private static final int AWAITED_NUM_OF_CALL_ADD_NEW_REQUEST = 1;
 
     final ProviderContext mockedProviderContext = mock(ProviderContext.class);
-    final RpcManagerImpl rpcManager = new RpcManagerImpl(mockedProviderContext);
+    final RpcManagerImpl rpcManager = new RpcManagerImpl(mockedProviderContext, 500l);
     final RpcContext mockedRpcContext = mock(RpcContext.class);
     final AddFlowInput mockedFlowInput = prepareTestingAddFlow();
     final DeviceContext mockedDeviceContext = mock(DeviceContext.class);
