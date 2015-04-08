@@ -21,6 +21,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
+import org.opendaylight.openflowplugin.api.openflow.device.exception.DeviceDataException;
 import org.opendaylight.openflowplugin.api.openflow.flow.registry.FlowHash;
 import org.opendaylight.openflowplugin.impl.flow.registry.FlowHashFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.FlowConvertor;
@@ -78,12 +79,21 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
     public Future<RpcResult<AddFlowOutput>> addFlow(final AddFlowInput input) {
         final List<FlowModInputBuilder> ofFlowModInputs = FlowConvertor.toFlowModInputs(input, version, datapathId);
         final ListenableFuture future = processFlowModInputBuilders(ofFlowModInputs);
+        final FlowId flowId = input.getFlowRef().getValue().firstKeyOf(Flow.class, FlowKey.class).getId();
 
-        if (!future.isCancelled()) {
-            FlowHash flowHash = FlowHashFactory.create(input);
-            FlowId flowId = input.getFlowRef().getValue().firstKeyOf(Flow.class, FlowKey.class).getId();
-            deviceContext.getFlowRegistry().store(flowHash, flowId);
-        }
+        Futures.addCallback(future, new FutureCallback() {
+            @Override
+            public void onSuccess(final Object o) {
+                FlowHash flowHash = FlowHashFactory.create(input);
+                deviceContext.getFlowRegistry().store(flowHash, flowId);
+                LOG.debug("flow add finished without error, id={}", flowId.getValue());
+            }
+
+            @Override
+            public void onFailure(final Throwable throwable) {
+                LOG.trace("Service call for adding flows failed, id={}.", flowId.getValue(), throwable);
+            }
+        });
 
         return future;
     }
@@ -175,25 +185,34 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
             partialFutures.add(partialFuture);
         }
 
-        ListenableFuture<List<RpcResult<T>>> allFutures = Futures.allAsList(partialFutures);
+        final ListenableFuture<List<RpcResult<T>>> allFutures = Futures.allAsList(partialFutures);
         final SettableFuture<RpcResult<T>> finalFuture = SettableFuture.create();
         Futures.addCallback(allFutures, new FutureCallback<List<RpcResult<T>>>() {
             @Override
             public void onSuccess(List<RpcResult<T>> result) {
-                for (RpcResult<T> rpcResult : result) {
-                    if (rpcResult.isSuccessful()) {
-                        // TODO: AddFlowOutput has getTransactionId() - shouldn't it have some value?
-                        LOG.trace("Flow mods chained future successful.");
-                        finalFuture.set(RpcResultBuilder.<T>success().build());
-                    }
+                LOG.warn("Positive confirmation of flow push is not supported by OF-spec");
+                for (FlowModInputBuilder ofFlowModInput : ofFlowModInputs) {
+                    LOG.warn("flow future result was successful [{}] = this should have never happen",
+                            ofFlowModInput.getXid());
                 }
+                finalFuture.setException(new DeviceDataException("positive confirmation of flow occurred"));
             }
-
             @Override
             public void onFailure(Throwable t) {
                 LOG.trace("Flow mods chained future failed.");
-                finalFuture.set(RpcResultBuilder.<T>failed().withError(ErrorType.APPLICATION, "", t.getMessage())
-                        .build());
+                RpcResultBuilder<T> resultBuilder;
+                if (allFutures.isCancelled()) {
+                    if (LOG.isTraceEnabled()) {
+                        for (FlowModInputBuilder ofFlowModInput : ofFlowModInputs) {
+                            LOG.trace("flow future result was cancelled [{}] = barrier passed it without error",
+                                    ofFlowModInput.getXid());
+                        }
+                    }
+                    resultBuilder = RpcResultBuilder.<T>success();
+                } else {
+                    resultBuilder = RpcResultBuilder.<T>failed().withError(ErrorType.APPLICATION, "", t.getMessage());
+                }
+                finalFuture.set(resultBuilder.build());
             }
         });
 
