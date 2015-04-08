@@ -77,6 +77,7 @@ public class DeviceContextImpl implements DeviceContext {
     private TranslatorLibrary translatorLibrary;
     private OpenflowMessageListenerFacade openflowMessageListenerFacade;
     private FlowRegistry flowRegistry;
+    private Timeout barrierTaskTimeout;
 
     @VisibleForTesting
     DeviceContextImpl(@Nonnull final ConnectionContext primaryConnectionContext,
@@ -162,6 +163,7 @@ public class DeviceContextImpl implements DeviceContext {
         return xidGenerator.generate();
     }
 
+    @Override
     public Map<Long, RequestContext> getRequests() {
         return requests;
     }
@@ -323,5 +325,15 @@ public class DeviceContextImpl implements DeviceContext {
             }
         }
         return nextMessage;
+    }
+
+    @Override
+    public void setCurrentBarrierTimeout(Timeout timeout) {
+        barrierTaskTimeout = timeout;
+    }
+
+    @Override
+    public Timeout getBarrierTaskTimeout() {
+        return barrierTaskTimeout;
     }
 }

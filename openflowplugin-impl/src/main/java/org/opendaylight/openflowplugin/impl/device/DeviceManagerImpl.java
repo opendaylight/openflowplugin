@@ -132,6 +132,7 @@ public class DeviceManagerImpl implements DeviceManager {
         // final phase - we have to add new Device to MD-SAL DataStore
         Preconditions.checkNotNull(deviceContext != null);
         ((DeviceContextImpl) deviceContext).submitTransaction();
+        new BarrierTaskBuilder(deviceContext).buildAndFireBarrierTask();
     }
 
     @Override

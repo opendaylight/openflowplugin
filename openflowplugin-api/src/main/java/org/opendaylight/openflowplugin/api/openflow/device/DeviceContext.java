@@ -8,7 +8,9 @@
 
 package org.opendaylight.openflowplugin.api.openflow.device;
 
+import io.netty.util.Timeout;
 import java.math.BigInteger;
+import java.util.Map;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.openflow.OpenflowPluginTimer;
@@ -102,6 +104,11 @@ public interface DeviceContext extends OpenflowPluginTimer, MessageHandler, Tran
     Xid getNextXid();
 
     /**
+     * @return readonly map of outstanding requests
+     */
+    Map<Long, RequestContext> getRequests();
+
+    /**
      * Method writes request context into request context map. This method
      * is ment to be used by {@link org.opendaylight.openflowplugin.impl.services.OFJResult2RequestCtxFuture#processResultFromOfJava}
      *
@@ -121,5 +128,14 @@ public interface DeviceContext extends OpenflowPluginTimer, MessageHandler, Tran
 
     FlowRegistry getFlowRegistry();
 
+    /**
+     * store cancellable timeout handler of currently running barrier task
+     */
+    void setCurrentBarrierTimeout(Timeout timeout);
+
+    /**
+     * @return cancellable timeout handle of currently running barrier task
+     */
+    Timeout getBarrierTaskTimeout();
 }
 

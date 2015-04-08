@@ -13,7 +13,6 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
-import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
 import java.util.concurrent.Future;
@@ -40,26 +39,34 @@ public class BarrierTaskBuilder {
 
     private static final Logger LOG = LoggerFactory.getLogger(BarrierTaskBuilder.class);
 
-    private final HashedWheelTimer hashedWheelTimer;
     private final DeviceContext deviceCtx;
 
-    public BarrierTaskBuilder (final DeviceContext deviceCtx, final HashedWheelTimer hashedWheelTimer) {
-        this.hashedWheelTimer = Preconditions.checkNotNull(hashedWheelTimer);
+    public BarrierTaskBuilder (final DeviceContext deviceCtx) {
         this.deviceCtx = Preconditions.checkNotNull(deviceCtx);
+        Preconditions.checkNotNull(deviceCtx.getTimer());
     }
 
     public void buildAndFireBarrierTask() {
-        hashedWheelTimer.newTimeout(makeTimerTask(), 500, TimeUnit.MILLISECONDS);
+        Timeout timeout = deviceCtx.getTimer().newTimeout(makeTimerTask(), 1000L, TimeUnit.MILLISECONDS);
+        deviceCtx.setCurrentBarrierTimeout(timeout);
     }
 
     private TimerTask makeTimerTask() {
         return new TimerTask() {
             @Override
             public void run(final Timeout timeout) throws Exception {
-                final Future<RpcResult<BarrierOutput>> future = deviceCtx.getPrimaryConnectionContext()
-                        .getConnectionAdapter().barrier(makeBarier());
-                final ListenableFuture<RpcResult<BarrierOutput>> lsFuture = JdkFutureAdapters.listenInPoolThread(future);
-                Futures.addCallback(lsFuture, makeCallBack());
+                // check outstanding requests first
+                if (! deviceCtx.getRequests().isEmpty()) {
+                    BarrierInput barrierInput = makeBarrier();
+                    LOG.trace("sending out barrier [{}]", barrierInput.getXid());
+                    final Future<RpcResult<BarrierOutput>> future = deviceCtx.getPrimaryConnectionContext()
+                            .getConnectionAdapter().barrier(barrierInput);
+                    final ListenableFuture<RpcResult<BarrierOutput>> lsFuture = JdkFutureAdapters.listenInPoolThread(future);
+                    Futures.addCallback(lsFuture, makeCallBack());
+                } else {
+                    // if no requests
+                    buildAndFireBarrierTask();
+                }
             }
         };
     }
@@ -79,7 +86,10 @@ public class BarrierTaskBuilder {
         };
     }
 
-    private BarrierInput makeBarier() {
+    /**
+     * @return OF-message, ready to send
+     */
+    private BarrierInput makeBarrier() {
         final BarrierInputBuilder biBuilder = new BarrierInputBuilder();
         biBuilder.setVersion(deviceCtx.getDeviceState().getVersion());
         biBuilder.setXid(deviceCtx.getNextXid().getValue());
