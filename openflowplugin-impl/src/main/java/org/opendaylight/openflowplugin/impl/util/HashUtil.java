@@ -25,7 +25,7 @@ public final class HashUtil {
         int base = 0;
         if (null != match) {
             if (null != match.getEthernetMatch()) {
-                hash = 1 << 0;
+                hash = 1 << base;
             }
             base++;
             if (null != match.getIcmpv4Match()) {
@@ -56,6 +56,14 @@ public final class HashUtil {
                 hash = 1 << base;
             }
             base++;
+            if (null != match.getIcmpv6Match()) {
+                hash = 1 << base;
+            }
+            base++;
+            if (null != match.getIcmpv4Match()) {
+                hash = 1 << base;
+            }
+            base++;
             if (null != match.getMetadata()) {
                 hash = 1 << base;
             }
@@ -75,7 +83,6 @@ public final class HashUtil {
             if (null != match.getTunnel()) {
                 hash = 1 << base;
             }
-
         }
         return hash;
     }
