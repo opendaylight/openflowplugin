@@ -14,6 +14,8 @@ import org.opendaylight.openflowplugin.api.openflow.flow.registry.FlowHash;
 import org.opendaylight.openflowplugin.api.openflow.flow.registry.FlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.flow.registry.FlowRegistryException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
+
 
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 8.4.2015.
@@ -23,7 +25,8 @@ public class DeviceFlowRegistry implements FlowRegistry {
     private static final Map<FlowHash, FlowId> flowRegistry = new HashMap<>();
 
     @Override
-    public FlowId getFlowId(final FlowHash hash) throws FlowRegistryException {
+    public FlowId retrieveIdForFlow(final Flow flow) throws FlowRegistryException {
+        FlowHashDto hash = new FlowHashDto(flow);
         if (flowRegistry.containsKey(hash)) {
             return flowRegistry.get(hash);
         }
@@ -31,13 +34,16 @@ public class DeviceFlowRegistry implements FlowRegistry {
     }
 
     @Override
-    public void store(final FlowHash hash, final FlowId flowId) {
-        flowRegistry.put(hash, flowId);
+    public void store(final Flow flow) {
+        FlowHashDto hash = new FlowHashDto(flow);
+        flowRegistry.put(hash, flow.getId());
     }
 
     @Override
-    public void remove(final FlowHash flowHash) {
+    public void remove(final Flow flow) {
+        FlowHashDto flowHash = new FlowHashDto(flow);
         flowRegistry.remove(flowHash);
+
     }
 
 }
