@@ -22,12 +22,12 @@ public class FlowHashFactory {
     public FlowHashFactory() {
     }
 
-    public FlowHash create(Flow flow) {
+    public static FlowHash create(Flow flow) {
         long hash = calculateHash(flow);
         return new FlowHashDto(hash);
     }
 
-    private long calculateHash(Flow flow) {
+    private static long calculateHash(Flow flow) {
         long hash = 0;
         Match match = flow.getMatch();
         hash = HashUtil.calculateMatchHash(match);
@@ -38,7 +38,7 @@ public class FlowHashFactory {
     }
 
 
-    private final class FlowHashDto implements FlowHash {
+    private static final class FlowHashDto implements FlowHash {
 
         private long hashCode;
 

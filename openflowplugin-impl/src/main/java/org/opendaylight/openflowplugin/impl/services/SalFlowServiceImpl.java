@@ -7,24 +7,27 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
-import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
-import org.opendaylight.openflowplugin.api.openflow.device.Xid;
-import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
-import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.SettableFuture;
-import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import com.google.common.base.Function;
+import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.SettableFuture;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
+import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
+import org.opendaylight.openflowplugin.api.openflow.device.Xid;
+import org.opendaylight.openflowplugin.api.openflow.flow.registry.FlowHash;
+import org.opendaylight.openflowplugin.impl.flow.registry.FlowHashFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.FlowConvertor;
 import org.opendaylight.openflowplugin.openflow.md.util.FlowCreatorUtil;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
@@ -37,25 +40,26 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.Upda
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.OriginalFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.UpdatedFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
+import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 
 public class SalFlowServiceImpl extends CommonService implements SalFlowService {
 
     private static final Logger LOG = org.slf4j.LoggerFactory.getLogger(SalFlowServiceImpl.class);
 
-
     public SalFlowServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
         super(requestContextStack, deviceContext);
     }
 
     <T, F> ListenableFuture<RpcResult<T>> handleServiceCall(final BigInteger connectionID,
-            final FlowModInputBuilder flowModInputBuilder, final Function<DataCrate<T>, ListenableFuture<RpcResult<F>>> function) {
+                                                            final FlowModInputBuilder flowModInputBuilder, final Function<DataCrate<T>, ListenableFuture<RpcResult<F>>> function) {
         LOG.debug("Calling the FlowMod RPC method on MessageDispatchService");
 
         final RequestContext<T> requestContext = requestContextStack.createRequestContext();
         final SettableFuture<RpcResult<T>> result = requestContextStack.storeOrFail(requestContext);
-        final DataCrate<T> dataCrate = DataCrateBuilder.<T> builder().setiDConnection(connectionID)
+        final DataCrate<T> dataCrate = DataCrateBuilder.<T>builder().setiDConnection(connectionID)
                 .setRequestContext(requestContext).setFlowModInputBuilder(flowModInputBuilder).build();
 
         if (!result.isDone()) {
@@ -73,19 +77,46 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
     @Override
     public Future<RpcResult<AddFlowOutput>> addFlow(final AddFlowInput input) {
         final List<FlowModInputBuilder> ofFlowModInputs = FlowConvertor.toFlowModInputs(input, version, datapathId);
-        return processFlowModInputBuilders(ofFlowModInputs);
+        ListenableFuture future = JdkFutureAdapters.listenInPoolThread(processFlowModInputBuilders(ofFlowModInputs));
+        Futures.addCallback(future, new FutureCallback() {
+            @Override
+            public void onSuccess(final Object o) {
+                FlowHash flowHash = FlowHashFactory.create(input);
+                FlowId flowId = input.getFlowRef().getValue().firstKeyOf(Flow.class, FlowKey.class).getId();
+                deviceContext.getFlowRegistry().store(flowHash, flowId);
+            }
+
+            @Override
+            public void onFailure(final Throwable throwable) {
+
+            }
+        });
+        return future;
     }
 
     @Override
     public Future<RpcResult<RemoveFlowOutput>> removeFlow(final RemoveFlowInput input) {
 
-        return this.<RemoveFlowOutput, Void> handleServiceCall(PRIMARY_CONNECTION,
+        return this.<RemoveFlowOutput, Void>handleServiceCall(PRIMARY_CONNECTION,
                 new Function<DataCrate<RemoveFlowOutput>, ListenableFuture<RpcResult<Void>>>() {
                     @Override
                     public ListenableFuture<RpcResult<Void>> apply(final DataCrate<RemoveFlowOutput> data) {
                         final FlowModInputBuilder ofFlowModInput = FlowConvertor.toFlowModInput(input, version,
                                 datapathId);
-                        return createResultForFlowMod(data, ofFlowModInput);
+                        ListenableFuture future = createResultForFlowMod(data, ofFlowModInput);
+                        Futures.addCallback(future, new FutureCallback() {
+                            @Override
+                            public void onSuccess(final Object o) {
+                                FlowHash flowHash = FlowHashFactory.create(input);
+                                deviceContext.getFlowRegistry().remove(flowHash);
+                            }
+
+                            @Override
+                            public void onFailure(final Throwable throwable) {
+                                //NOOP
+                            }
+                        });
+                        return future;
                     }
                 });
     }
@@ -115,7 +146,25 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
         }
 
         allFlowMods.addAll(ofFlowModInputs);
-        return processFlowModInputBuilders(allFlowMods);
+        Future future = processFlowModInputBuilders(allFlowMods);
+        Futures.addCallback(JdkFutureAdapters.listenInPoolThread(future), new FutureCallback() {
+            @Override
+            public void onSuccess(final Object o) {
+                FlowHash flowHash = FlowHashFactory.create(original);
+                deviceContext.getFlowRegistry().remove(flowHash);
+
+                flowHash = FlowHashFactory.create(updated);
+                FlowId flowId = input.getFlowRef().getValue().firstKeyOf(Flow.class, FlowKey.class).getId();
+                deviceContext.getFlowRegistry().store(flowHash, flowId);
+
+            }
+
+            @Override
+            public void onFailure(final Throwable throwable) {
+
+            }
+        });
+        return future;
     }
 
     private <T> Future<RpcResult<T>> processFlowModInputBuilders(
@@ -140,14 +189,14 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
                 for (RpcResult<T> rpcResult : result) {
                     if (rpcResult.isSuccessful()) {
                         // TODO: AddFlowOutput has getTransactionId() - shouldn't it have some value?
-                        finalFuture.set(RpcResultBuilder.<T> success().build());
+                        finalFuture.set(RpcResultBuilder.<T>success().build());
                     }
                 }
             }
 
             @Override
             public void onFailure(Throwable t) {
-                finalFuture.set(RpcResultBuilder.<T> failed().withError(ErrorType.APPLICATION, "", t.getMessage())
+                finalFuture.set(RpcResultBuilder.<T>failed().withError(ErrorType.APPLICATION, "", t.getMessage())
                         .build());
             }
         });
@@ -156,7 +205,7 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
     }
 
     protected <T> ListenableFuture<RpcResult<Void>> createResultForFlowMod(final DataCrate<T> data) {
-        return createResultForFlowMod(data, data.getFlowModInputBuilder()) ;
+        return createResultForFlowMod(data, data.getFlowModInputBuilder());
     }
 
     protected <T> ListenableFuture<RpcResult<Void>> createResultForFlowMod(final DataCrate<T> data, final FlowModInputBuilder flowModInput) {

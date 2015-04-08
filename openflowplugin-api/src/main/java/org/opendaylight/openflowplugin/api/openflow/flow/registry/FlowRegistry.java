@@ -8,17 +8,17 @@
 
 package org.opendaylight.openflowplugin.api.openflow.flow.registry;
 
+
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 8.4.2015.
  */
 public interface FlowRegistry {
 
-    FlowId retrieveIdForFlow(Flow flow) throws FlowRegistryException;
+    FlowId retrieveIdForFlow(FlowHash flowHash) throws FlowRegistryException;
 
-    void store(Flow flow);
+    void store(FlowHash flowHash, FlowId flowId);
 
-    void remove(Flow flowHash);
+    void remove(FlowHash flowHash);
 }
