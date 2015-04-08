@@ -20,6 +20,7 @@ import org.opendaylight.openflowplugin.api.openflow.flow.registry.FlowHash;
 import org.opendaylight.openflowplugin.api.openflow.flow.registry.FlowRegistryException;
 import org.opendaylight.openflowplugin.impl.flow.registry.FlowHashFactory;
 import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.StatisticsGatheringService;
+import org.opendaylight.openflowplugin.impl.util.FlowUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
@@ -225,12 +226,12 @@ public final class StatisticsGatheringUtils {
                                 for (final FlowAndStatisticsMapList flowStat : flowsStatistics.getFlowAndStatisticsMapList()) {
                                     final FlowBuilder flowBuilder = new FlowBuilder(flowStat);
                                     FlowId flowId = null;
+                                    FlowHash flowHash = FlowHashFactory.create(flowBuilder.build());
                                     try {
-                                        FlowHash flowHash = FlowHashFactory.create(flowBuilder.build());
                                         flowId = deviceContext.getFlowRegistry().retrieveIdForFlow(flowHash);
                                     } catch (FlowRegistryException e) {
-                                        LOG.trace("No flowId found in device's flow registry for flow retrieved by statistics.");
-                                        //TODO : create alien ID for flow
+                                        flowId = FlowUtil.createAlienFlowId(flowStat.getTableId());
+                                        deviceContext.getFlowRegistry().store(flowHash, flowId);
                                     }
                                     FlowKey flowKey = new FlowKey(flowId);
                                     flowBuilder.setKey(flowKey);
