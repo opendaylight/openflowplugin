@@ -37,6 +37,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.listener.OpenflowMess
 import org.opendaylight.openflowplugin.api.openflow.flow.registry.FlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
+import org.opendaylight.openflowplugin.impl.flow.registry.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.impl.translator.PacketReceivedTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SwitchConnectionCookieOFImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
@@ -89,6 +90,7 @@ public class DeviceContextImpl implements DeviceContext {
         txChainManager = new TransactionChainManager(dataBroker, 500L);
         auxiliaryConnectionContexts = new HashMap<>();
         requests = new HashMap<>();
+        flowRegistry = new DeviceFlowRegistry();
     }
 
     /**
