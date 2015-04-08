@@ -51,4 +51,28 @@ public interface DeviceState {
      */
     short getVersion();
 
+    /**
+     * Return true if we have relevant meter information
+     * from device
+     * @return
+     */
+    boolean isMetersAvailable();
+
+    /**
+     * We already have information about meters
+     */
+    void meterIsAvailable();
+
+    /**
+     * Return true if we have relevant group information
+     * from device
+     * @return
+     */
+    boolean isGroupAvailable();
+
+    /**
+     * We already have information about groups
+     */
+    void groupIsAvailable();
+
 }
