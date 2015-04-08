@@ -8,11 +8,14 @@
 
 package org.opendaylight.openflowplugin.impl.flow.registry;
 
+import static org.junit.Assert.assertNotEquals;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
+import org.opendaylight.openflowplugin.api.openflow.flow.registry.FlowHash;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowsStatisticsUpdate;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowsStatisticsUpdateBuilder;
@@ -26,17 +29,19 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class FlowHashDtoTest {
+public class FlowHashFactoryTest {
 
-    private static final Logger LOG = LoggerFactory.getLogger(FlowHashDtoTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(FlowHashFactoryTest.class);
 
 
     private static final FlowsStatisticsUpdateBuilder FLOWS_STATISTICS_UPDATE_BUILDER = new FlowsStatisticsUpdateBuilder();
+    private static final FlowHashFactory flowHashFactory = new FlowHashFactory();
+
 
     @Before
     public void setup() {
         List<FlowAndStatisticsMapList> flowAndStatisticsMapListList = new ArrayList();
-        for (int i = 0; i < 3; i++) {
+        for (int i = 1; i < 4; i++) {
             FlowAndStatisticsMapListBuilder flowAndStatisticsMapListBuilder = new FlowAndStatisticsMapListBuilder();
             flowAndStatisticsMapListBuilder.setPriority(i);
             flowAndStatisticsMapListBuilder.setTableId((short) i);
@@ -71,10 +76,15 @@ public class FlowHashDtoTest {
     @Test
     public void testGetHash() throws Exception {
         FlowsStatisticsUpdate flowStats = FLOWS_STATISTICS_UPDATE_BUILDER.build();
+
         for (FlowAndStatisticsMapList item : flowStats.getFlowAndStatisticsMapList()) {
-            FlowHashDto flowHashDto = new FlowHashDto(item);
-            long generatedHash = flowHashDto.getHash();
-            LOG.info("generated hash : {}", generatedHash);
+            FlowHash flowHash = flowHashFactory.create(item);
+            FlowHash lastHash = null;
+            if (null != lastHash) {
+                assertNotEquals(lastHash, flowHash);
+            } else {
+                lastHash = flowHash;
+            }
         }
     }
 }

@@ -16,12 +16,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.M
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 8.4.2015.
  */
-public class FlowHashDto implements FlowHash {
+public class FlowHashFactory {
 
-    private long hashCode;
 
-    public FlowHashDto(Flow flow) {
-        calculateHash(flow);
+    public FlowHashFactory() {
+    }
+
+    public FlowHash create(Flow flow) {
+        long hash = calculateHash(flow);
+        return new FlowHashDto(hash);
     }
 
     private long calculateHash(Flow flow) {
@@ -35,19 +38,30 @@ public class FlowHashDto implements FlowHash {
     }
 
 
-    @Override
-    public boolean equals(final Object obj) {
-        if (!(obj instanceof FlowHash)) {
+    private final class FlowHashDto implements FlowHash {
+
+        private long hashCode;
+
+        public FlowHashDto(final long hashCode) {
+            this.hashCode = hashCode;
+        }
+
+        @Override
+        public long getHash() {
+            return hashCode;
+        }
+
+        @Override
+        public boolean equals(final Object obj) {
+            if (!(obj instanceof FlowHash)) {
+                return false;
+            }
+            if (this.hashCode == ((FlowHash) obj).getHash()) {
+                return true;
+            }
             return false;
         }
-        if (this.hashCode == ((FlowHash) obj).getHash()) {
-            return true;
-        }
-        return false;
-    }
 
-    @Override
-    public long getHash() {
-        return hashCode;
+
     }
 }
