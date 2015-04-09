@@ -7,6 +7,21 @@
  */
 package org.opendaylight.openflowplugin.impl.device;
 
+import org.opendaylight.openflowplugin.impl.flow.registry.DeviceFlowRegistry;
+
+import org.opendaylight.openflowplugin.api.openflow.flow.registry.FlowRegistry;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnectorBuilder;
+import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
+import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
+import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortReason;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.SettableFuture;
@@ -34,10 +49,8 @@ import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.device.exception.DeviceDataException;
 import org.opendaylight.openflowplugin.api.openflow.device.listener.OpenflowMessageListenerFacade;
-import org.opendaylight.openflowplugin.api.openflow.flow.registry.FlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
-import org.opendaylight.openflowplugin.impl.flow.registry.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.impl.translator.PacketReceivedTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SwitchConnectionCookieOFImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
@@ -277,8 +290,38 @@ public class DeviceContextImpl implements DeviceContext {
     public void processPortStatusMessage(final PortStatusMessage portStatus) {
         final TranslatorKey translatorKey = new TranslatorKey(portStatus.getVersion(), PortStatusMessage.class.getName());
         final MessageTranslator<PortStatusMessage, FlowCapableNodeConnector> messageTranslator = translatorLibrary.lookupTranslator(translatorKey);
-        final FlowCapableNodeConnector nodeConnector = messageTranslator.translate(portStatus, this, null);
-        //TODO write into datastore
+        FlowCapableNodeConnector flowCapableNodeConnector = messageTranslator.translate(portStatus, this, null);
+
+        final KeyedInstanceIdentifier<NodeConnector, NodeConnectorKey> iiToNodeConnector =
+                provideIIToNodeConnector(portStatus.getPortNo(), portStatus.getVersion());
+        if (portStatus.getReason().equals(PortReason.Add) ) {
+            // because of ADD status node connector has to be created
+            createNodeConnectorInDS(iiToNodeConnector);
+        } else if (portStatus.getReason().equals(PortReason.Delete) ) {
+            //only put operation over datastore is available. therefore delete is
+            //inserting of empty FlowCapableNodeConnector
+            flowCapableNodeConnector = new FlowCapableNodeConnectorBuilder().build();
+        }
+
+        InstanceIdentifier<FlowCapableNodeConnector> iiToFlowCapableNodeConnector = iiToNodeConnector.augmentation(FlowCapableNodeConnector.class);
+        writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToFlowCapableNodeConnector, flowCapableNodeConnector);
+    }
+
+    private void createNodeConnectorInDS(final KeyedInstanceIdentifier<NodeConnector, NodeConnectorKey> iiToNodeConnector) {
+        writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector, new NodeConnectorBuilder().setKey(iiToNodeConnector.getKey()).build());
+    }
+
+    private KeyedInstanceIdentifier<Node, NodeKey> provideIIToNodes() {
+        return InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(deviceState.getNodeId()));
+    }
+
+    private KeyedInstanceIdentifier<NodeConnector, NodeConnectorKey> provideIIToNodeConnector(final Long portNo, final Short version) {
+        final KeyedInstanceIdentifier<Node, NodeKey> iiToNodes = provideIIToNodes();
+        final NodeConnectorId nodeConnectorId = InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(
+                deviceState.getFeatures().getDatapathId(), portNo, OpenflowVersion.get(version));
+        final NodeConnectorKey nodeConnectorKey = new NodeConnectorKey(new NodeConnectorId(nodeConnectorId));
+        return iiToNodes.child(NodeConnector.class, nodeConnectorKey);
+
     }
 
     @Override
