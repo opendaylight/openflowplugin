@@ -35,12 +35,12 @@ public class FlowDescriptorFactory {
 
         @Override
         public FlowId getFlowId() {
-            return null;
+            return flowId;
         }
 
         @Override
         public TableKey getTableKey() {
-            return null;
+            return tableKey;
         }
     }
 }
