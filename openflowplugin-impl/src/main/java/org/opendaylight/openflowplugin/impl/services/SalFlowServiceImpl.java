@@ -22,7 +22,9 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.device.exception.DeviceDataException;
+import org.opendaylight.openflowplugin.api.openflow.flow.registry.FlowDescriptor;
 import org.opendaylight.openflowplugin.api.openflow.flow.registry.FlowHash;
+import org.opendaylight.openflowplugin.impl.flow.registry.FlowDescriptorFactory;
 import org.opendaylight.openflowplugin.impl.flow.registry.FlowHashFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.FlowConvertor;
 import org.opendaylight.openflowplugin.openflow.md.util.FlowCreatorUtil;
@@ -85,7 +87,8 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
             @Override
             public void onSuccess(final Object o) {
                 FlowHash flowHash = FlowHashFactory.create(input);
-                deviceContext.getDeviceFlowRegistry().store(flowHash, flowId);
+                FlowDescriptor flowDescriptor = FlowDescriptorFactory.create(input.getTableId(), flowId);
+                deviceContext.getDeviceFlowRegistry().store(flowHash, flowDescriptor);
                 LOG.debug("flow add finished without error, id={}", flowId.getValue());
             }
 
@@ -159,7 +162,8 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
 
                 flowHash = FlowHashFactory.create(updated);
                 FlowId flowId = input.getFlowRef().getValue().firstKeyOf(Flow.class, FlowKey.class).getId();
-                deviceContext.getDeviceFlowRegistry().store(flowHash, flowId);
+                FlowDescriptor flowDescriptor = FlowDescriptorFactory.create(updated.getTableId(), flowId);
+                deviceContext.getDeviceFlowRegistry().store(flowHash, flowDescriptor);
 
             }
 
@@ -197,6 +201,7 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
                 }
                 finalFuture.setException(new DeviceDataException("positive confirmation of flow occurred"));
             }
+
             @Override
             public void onFailure(Throwable t) {
                 LOG.trace("Flow mods chained future failed.");

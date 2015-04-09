@@ -8,16 +8,15 @@
 
 package org.opendaylight.openflowplugin.api.openflow.flow.registry;
 
-
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
 
 /**
- * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 8.4.2015.
+ * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 9.4.2015.
  */
-public interface DeviceFlowRegistry {
+public interface FlowDescriptor {
 
-    FlowDescriptor retrieveIdForFlow(FlowHash flowHash) throws FlowRegistryException;
+    FlowId getFlowId();
 
-    void store(FlowHash flowHash, FlowDescriptor flowDescriptor);
-
-    void remove(FlowHash flowHash);
+    TableKey getTableKey();
 }

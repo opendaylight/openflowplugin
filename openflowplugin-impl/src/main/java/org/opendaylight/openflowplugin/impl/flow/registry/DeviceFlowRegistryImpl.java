@@ -11,9 +11,9 @@ package org.opendaylight.openflowplugin.impl.flow.registry;
 import java.util.HashMap;
 import java.util.Map;
 import org.opendaylight.openflowplugin.api.openflow.flow.registry.DeviceFlowRegistry;
+import org.opendaylight.openflowplugin.api.openflow.flow.registry.FlowDescriptor;
 import org.opendaylight.openflowplugin.api.openflow.flow.registry.FlowHash;
 import org.opendaylight.openflowplugin.api.openflow.flow.registry.FlowRegistryException;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 
 
 /**
@@ -21,10 +21,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.Fl
  */
 public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
 
-    private static final Map<FlowHash, FlowId> flowRegistry = new HashMap<>();
+    private static final Map<FlowHash, FlowDescriptor> flowRegistry = new HashMap<>();
 
     @Override
-    public FlowId retrieveIdForFlow(final FlowHash flowHash) throws FlowRegistryException {
+    public FlowDescriptor retrieveIdForFlow(final FlowHash flowHash) throws FlowRegistryException {
         if (flowRegistry.containsKey(flowHash)) {
             return flowRegistry.get(flowHash);
         }
@@ -33,8 +33,8 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
 
 
     @Override
-    public void store(final FlowHash flowHash, final FlowId flowId) {
-        flowRegistry.put(flowHash, flowId);
+    public void store(final FlowHash flowHash, final FlowDescriptor flowDescriptor) {
+        flowRegistry.put(flowHash, flowDescriptor);
     }
 
     @Override

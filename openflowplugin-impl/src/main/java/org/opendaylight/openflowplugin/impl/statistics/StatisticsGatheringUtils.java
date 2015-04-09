@@ -16,8 +16,10 @@ import java.util.List;
 import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.flow.registry.FlowDescriptor;
 import org.opendaylight.openflowplugin.api.openflow.flow.registry.FlowHash;
 import org.opendaylight.openflowplugin.api.openflow.flow.registry.FlowRegistryException;
+import org.opendaylight.openflowplugin.impl.flow.registry.FlowDescriptorFactory;
 import org.opendaylight.openflowplugin.impl.flow.registry.FlowHashFactory;
 import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.StatisticsGatheringService;
 import org.opendaylight.openflowplugin.impl.util.FlowUtil;
@@ -224,15 +226,17 @@ public final class StatisticsGatheringUtils {
                                     final FlowBuilder flowBuilder = new FlowBuilder(flowStat);
                                     FlowId flowId = null;
                                     FlowHash flowHash = FlowHashFactory.create(flowBuilder.build());
+                                    short tableId = flowStat.getTableId();
                                     try {
-                                        flowId = deviceContext.getDeviceFlowRegistry().retrieveIdForFlow(flowHash);
+                                        flowId = deviceContext.getDeviceFlowRegistry().retrieveIdForFlow(flowHash).getFlowId();
                                     } catch (FlowRegistryException e) {
-                                        flowId = FlowUtil.createAlienFlowId(flowStat.getTableId());
-                                        deviceContext.getDeviceFlowRegistry().store(flowHash, flowId);
+                                        flowId = FlowUtil.createAlienFlowId(tableId);
+                                        FlowDescriptor flowDescriptor = FlowDescriptorFactory.create(tableId, flowId);
+                                        deviceContext.getDeviceFlowRegistry().store(flowHash, flowDescriptor);
                                     }
                                     FlowKey flowKey = new FlowKey(flowId);
                                     flowBuilder.setKey(flowKey);
-                                    final TableKey tableKey = new TableKey(flowStat.getTableId());
+                                    final TableKey tableKey = new TableKey(tableId);
                                     final InstanceIdentifier<FlowCapableNode> fNodeIdent = nodeIdent.augmentation(FlowCapableNode.class);
                                     final InstanceIdentifier<Flow> flowIdent = fNodeIdent.child(Table.class, tableKey).child(Flow.class, flowKey);
                                     if (logFirstTime) {
