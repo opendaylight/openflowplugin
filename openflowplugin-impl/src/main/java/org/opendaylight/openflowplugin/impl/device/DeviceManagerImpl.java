@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.device;
 
+import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -94,6 +96,7 @@ public class DeviceManagerImpl implements DeviceManager {
     private RequestContextStack dummyRequestContextStack;
     private TranslatorLibrary translatorLibrary;
     private DeviceInitializationPhaseHandler deviceInitPhaseHandler;
+    private NotificationProviderService notificationService;
 
 
     public DeviceManagerImpl(@Nonnull final DataBroker dataBroker) {
@@ -302,11 +305,17 @@ public class DeviceManagerImpl implements DeviceManager {
                         final NodeConnector connector = new NodeConnectorBuilder(portUpd).addAugmentation(FlowCapableNodeConnectorStatisticsData.class,
                                 new FlowCapableNodeConnectorStatisticsDataBuilder().build()).build();
                         dContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, connectorII, connector);
+                        //FlowCapableNodeConnectorBuilder
                     }
 
                 default:
                     throw new IllegalArgumentException("Unnexpected MultipartType " + type);
             }
         }
+    }
+
+    @Override
+    public void setNotificationService(final NotificationProviderService notificationServiceParam) {
+        notificationService = notificationServiceParam;
     }
 }

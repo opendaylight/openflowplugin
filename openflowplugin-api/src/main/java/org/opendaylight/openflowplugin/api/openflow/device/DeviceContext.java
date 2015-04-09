@@ -8,6 +8,8 @@
 
 package org.opendaylight.openflowplugin.api.openflow.device;
 
+import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+
 import io.netty.util.Timeout;
 import java.math.BigInteger;
 import java.util.Map;
@@ -137,5 +139,12 @@ public interface DeviceContext extends OpenflowPluginTimer, MessageHandler, Tran
      * @return cancellable timeout handle of currently running barrier task
      */
     Timeout getBarrierTaskTimeout();
+
+    /**
+     * Sets notification service
+     * @param notificationService
+     */
+    void setNotificationService(NotificationProviderService notificationService);
+
 }
 

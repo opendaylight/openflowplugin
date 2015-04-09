@@ -8,6 +8,7 @@
 package org.opendaylight.openflowplugin.impl.device;
 
 import org.opendaylight.openflowplugin.impl.flow.registry.DeviceFlowRegistry;
+import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 
 import org.opendaylight.openflowplugin.api.openflow.flow.registry.FlowRegistry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnectorBuilder;
@@ -49,8 +50,10 @@ import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.device.exception.DeviceDataException;
 import org.opendaylight.openflowplugin.api.openflow.device.listener.OpenflowMessageListenerFacade;
+import org.opendaylight.openflowplugin.api.openflow.flow.registry.FlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
+import org.opendaylight.openflowplugin.impl.flow.registry.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.impl.translator.PacketReceivedTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SwitchConnectionCookieOFImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
@@ -91,6 +94,7 @@ public class DeviceContextImpl implements DeviceContext {
     private OpenflowMessageListenerFacade openflowMessageListenerFacade;
     private FlowRegistry flowRegistry;
     private Timeout barrierTaskTimeout;
+    private NotificationProviderService notificationService;
 
     @VisibleForTesting
     DeviceContextImpl(@Nonnull final ConnectionContext primaryConnectionContext,
@@ -378,5 +382,10 @@ public class DeviceContextImpl implements DeviceContext {
     @Override
     public Timeout getBarrierTaskTimeout() {
         return barrierTaskTimeout;
+    }
+
+    @Override
+    public void setNotificationService(final NotificationProviderService notificationServiceParam) {
+        notificationService = notificationServiceParam;
     }
 }
