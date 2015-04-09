@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.device;
 
+import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.SettableFuture;
@@ -78,6 +80,7 @@ public class DeviceContextImpl implements DeviceContext {
     private OpenflowMessageListenerFacade openflowMessageListenerFacade;
     private FlowRegistry flowRegistry;
     private Timeout barrierTaskTimeout;
+    private NotificationProviderService notificationService;
 
     @VisibleForTesting
     DeviceContextImpl(@Nonnull final ConnectionContext primaryConnectionContext,
@@ -335,5 +338,10 @@ public class DeviceContextImpl implements DeviceContext {
     @Override
     public Timeout getBarrierTaskTimeout() {
         return barrierTaskTimeout;
+    }
+
+    @Override
+    public void setNotificationService(final NotificationProviderService notificationServiceParam) {
+        notificationService = notificationServiceParam;
     }
 }
