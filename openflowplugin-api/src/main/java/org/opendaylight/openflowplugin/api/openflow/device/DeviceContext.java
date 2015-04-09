@@ -19,7 +19,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceReplyP
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MessageHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.OutstandingMessageExtractor;
 import org.opendaylight.openflowplugin.api.openflow.device.listener.OpenflowMessageListenerFacade;
-import org.opendaylight.openflowplugin.api.openflow.flow.registry.FlowRegistry;
+import org.opendaylight.openflowplugin.api.openflow.flow.registry.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.translator.TranslatorLibrarian;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableFeatures;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -143,7 +143,7 @@ public interface DeviceContext extends OpenflowPluginTimer, MessageHandler, Tran
      * Method exposes flow registry used for storing flow ids identified by calculated flow hash.
      * @return
      */
-    FlowRegistry getFlowRegistry();
+    DeviceFlowRegistry getDeviceFlowRegistry();
 
     /**
      * store cancellable timeout handler of currently running barrier task

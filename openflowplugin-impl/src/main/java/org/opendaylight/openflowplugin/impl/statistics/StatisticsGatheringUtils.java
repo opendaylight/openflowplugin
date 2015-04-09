@@ -225,10 +225,10 @@ public final class StatisticsGatheringUtils {
                                     FlowId flowId = null;
                                     FlowHash flowHash = FlowHashFactory.create(flowBuilder.build());
                                     try {
-                                        flowId = deviceContext.getFlowRegistry().retrieveIdForFlow(flowHash);
+                                        flowId = deviceContext.getDeviceFlowRegistry().retrieveIdForFlow(flowHash);
                                     } catch (FlowRegistryException e) {
                                         flowId = FlowUtil.createAlienFlowId(flowStat.getTableId());
-                                        deviceContext.getFlowRegistry().store(flowHash, flowId);
+                                        deviceContext.getDeviceFlowRegistry().store(flowHash, flowId);
                                     }
                                     FlowKey flowKey = new FlowKey(flowId);
                                     flowBuilder.setKey(flowKey);

@@ -14,7 +14,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.Fl
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 8.4.2015.
  */
-public interface FlowRegistry {
+public interface DeviceFlowRegistry {
 
     FlowId retrieveIdForFlow(FlowHash flowHash) throws FlowRegistryException;
 

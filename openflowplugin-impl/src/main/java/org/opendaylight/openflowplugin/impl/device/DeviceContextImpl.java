@@ -34,10 +34,10 @@ import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.device.exception.DeviceDataException;
 import org.opendaylight.openflowplugin.api.openflow.device.listener.OpenflowMessageListenerFacade;
-import org.opendaylight.openflowplugin.api.openflow.flow.registry.FlowRegistry;
+import org.opendaylight.openflowplugin.api.openflow.flow.registry.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
-import org.opendaylight.openflowplugin.impl.flow.registry.DeviceFlowRegistry;
+import org.opendaylight.openflowplugin.impl.flow.registry.DeviceFlowRegistryImpl;
 import org.opendaylight.openflowplugin.impl.translator.PacketReceivedTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SwitchConnectionCookieOFImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
@@ -76,7 +76,7 @@ public class DeviceContextImpl implements DeviceContext {
     private final TransactionChainManager txChainManager;
     private TranslatorLibrary translatorLibrary;
     private OpenflowMessageListenerFacade openflowMessageListenerFacade;
-    private FlowRegistry flowRegistry;
+    private DeviceFlowRegistry deviceFlowRegistry;
     private Timeout barrierTaskTimeout;
 
     @VisibleForTesting
@@ -91,7 +91,7 @@ public class DeviceContextImpl implements DeviceContext {
         txChainManager = new TransactionChainManager(dataBroker, 500L);
         auxiliaryConnectionContexts = new HashMap<>();
         requests = new HashMap<>();
-        flowRegistry = new DeviceFlowRegistry();
+        deviceFlowRegistry = new DeviceFlowRegistryImpl();
     }
 
     /**
@@ -191,8 +191,8 @@ public class DeviceContextImpl implements DeviceContext {
     }
 
     @Override
-    public FlowRegistry getFlowRegistry() {
-        return flowRegistry;
+    public DeviceFlowRegistry getDeviceFlowRegistry() {
+        return deviceFlowRegistry;
     }
 
     @Override

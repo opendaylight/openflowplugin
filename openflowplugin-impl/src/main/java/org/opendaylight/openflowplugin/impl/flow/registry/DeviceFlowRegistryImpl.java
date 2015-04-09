@@ -10,8 +10,8 @@ package org.opendaylight.openflowplugin.impl.flow.registry;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.opendaylight.openflowplugin.api.openflow.flow.registry.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.flow.registry.FlowHash;
-import org.opendaylight.openflowplugin.api.openflow.flow.registry.FlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.flow.registry.FlowRegistryException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 
@@ -19,7 +19,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.Fl
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 8.4.2015.
  */
-public class DeviceFlowRegistry implements FlowRegistry {
+public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
 
     private static final Map<FlowHash, FlowId> flowRegistry = new HashMap<>();
 

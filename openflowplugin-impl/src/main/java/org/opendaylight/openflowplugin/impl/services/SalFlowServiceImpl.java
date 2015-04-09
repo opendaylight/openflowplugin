@@ -85,7 +85,7 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
             @Override
             public void onSuccess(final Object o) {
                 FlowHash flowHash = FlowHashFactory.create(input);
-                deviceContext.getFlowRegistry().store(flowHash, flowId);
+                deviceContext.getDeviceFlowRegistry().store(flowHash, flowId);
                 LOG.debug("flow add finished without error, id={}", flowId.getValue());
             }
 
@@ -112,7 +112,7 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
                             @Override
                             public void onSuccess(final Object o) {
                                 FlowHash flowHash = FlowHashFactory.create(input);
-                                deviceContext.getFlowRegistry().remove(flowHash);
+                                deviceContext.getDeviceFlowRegistry().remove(flowHash);
                             }
 
                             @Override
@@ -155,11 +155,11 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
             @Override
             public void onSuccess(final Object o) {
                 FlowHash flowHash = FlowHashFactory.create(original);
-                deviceContext.getFlowRegistry().remove(flowHash);
+                deviceContext.getDeviceFlowRegistry().remove(flowHash);
 
                 flowHash = FlowHashFactory.create(updated);
                 FlowId flowId = input.getFlowRef().getValue().firstKeyOf(Flow.class, FlowKey.class).getId();
-                deviceContext.getFlowRegistry().store(flowHash, flowId);
+                deviceContext.getDeviceFlowRegistry().store(flowHash, flowId);
 
             }
 
