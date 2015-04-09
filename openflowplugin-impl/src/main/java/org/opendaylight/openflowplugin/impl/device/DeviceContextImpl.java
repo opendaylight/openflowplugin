@@ -20,7 +20,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.No
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortReason;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortReason;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.SettableFuture;
@@ -301,10 +301,10 @@ public class DeviceContextImpl implements DeviceContext {
 
         final KeyedInstanceIdentifier<NodeConnector, NodeConnectorKey> iiToNodeConnector =
                 provideIIToNodeConnector(portStatus.getPortNo(), portStatus.getVersion());
-        if (portStatus.getReason().equals(PortReason.Add) ) {
+        if (portStatus.getReason().equals(PortReason.OFPPRADD) ) {
             // because of ADD status node connector has to be created
             createNodeConnectorInDS(iiToNodeConnector);
-        } else if (portStatus.getReason().equals(PortReason.Delete) ) {
+        } else if (portStatus.getReason().equals(PortReason.OFPPRDELETE) ) {
             //only put operation over datastore is available. therefore delete is
             //inserting of empty FlowCapableNodeConnector
             flowCapableNodeConnector = new FlowCapableNodeConnectorBuilder().build();
@@ -336,7 +336,7 @@ public class DeviceContextImpl implements DeviceContext {
         final TranslatorKey translatorKey = new TranslatorKey(packetInMessage.getVersion(), PacketReceivedTranslator.class.getName());
         final MessageTranslator<PacketInMessage, PacketReceived> messageTranslator = translatorLibrary.lookupTranslator(translatorKey);
         final PacketReceived packetReceived = messageTranslator.translate(packetInMessage, this, null);
-        //TODO publish to MD-SAL
+        notificationService.publish(packetReceived);
     }
 
     @Override

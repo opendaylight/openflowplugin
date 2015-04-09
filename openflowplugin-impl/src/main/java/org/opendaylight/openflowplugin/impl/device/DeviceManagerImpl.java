@@ -146,6 +146,7 @@ public class DeviceManagerImpl implements DeviceManager {
 
         final DeviceContextImpl deviceContext = new DeviceContextImpl(connectionContext, deviceState, dataBroker, hashedWheelTimer);
 
+        deviceContext.setNotificationService(notificationService);
         deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, deviceState.getNodeInstanceIdentifier(), new NodeBuilder().setId(deviceState.getNodeId()).build());
 
         deviceContext.setTranslatorLibrary(translatorLibrary);

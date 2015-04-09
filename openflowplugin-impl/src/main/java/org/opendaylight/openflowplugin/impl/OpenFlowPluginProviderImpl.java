@@ -9,6 +9,8 @@
 package org.opendaylight.openflowplugin.impl;
 
 
+import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -57,15 +59,18 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider {
 
     @Override
     public void onSessionInitiated(final ProviderContext providerContextArg) {
+        final NotificationProviderService notificationService = providerContext.getSALService(NotificationProviderService.class);
+        final DataBroker dataBroker = providerContext.getSALService(DataBroker.class);
         providerContext = providerContextArg;
 
         connectionManager = new ConnectionManagerImpl();
-        deviceManager = new DeviceManagerImpl(providerContext.getSALService(DataBroker.class));
+        deviceManager = new DeviceManagerImpl(dataBroker);
         statisticsManager = new StatisticsManagerImpl();
         rpcManager = new RpcManagerImpl(providerContext, rpcRequestsQuota);
 
         connectionManager.setDeviceConnectedHandler(deviceManager);
         deviceManager.setDeviceInitializationPhaseHandler(statisticsManager);
+        deviceManager.setNotificationService(notificationService);
         statisticsManager.setDeviceInitializationPhaseHandler(rpcManager);
         rpcManager.setDeviceInitializationPhaseHandler(deviceManager);
 
