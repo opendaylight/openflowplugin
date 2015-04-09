@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.api.openflow.flow.registry;
 
 
+import java.util.Map;
 
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 8.4.2015.
@@ -20,4 +21,6 @@ public interface DeviceFlowRegistry {
     void store(FlowHash flowHash, FlowDescriptor flowDescriptor);
 
     void remove(FlowHash flowHash);
+
+    Map<FlowHash, FlowDescriptor> getAllFlowDescriptors();
 }
