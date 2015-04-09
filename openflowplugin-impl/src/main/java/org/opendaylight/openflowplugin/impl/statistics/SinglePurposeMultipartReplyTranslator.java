@@ -7,6 +7,10 @@
  */
 package org.opendaylight.openflowplugin.impl.statistics;
 
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.FlowStatsResponseConvertor;
@@ -89,10 +93,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Table
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Class converts multipart reply messages to the notification objects defined
@@ -124,7 +124,6 @@ public class SinglePurposeMultipartReplyTranslator {
             NodeId node = this.nodeIdFromDatapathId(features.getDatapathId());
             switch (mpReply.getType()) {
                 case OFPMPFLOW: {
-                    logger.debug("Received flow statistics reponse from openflow {} switch", msg.getVersion() == 1 ? "1.0" : "1.3+");
                     FlowsStatisticsUpdateBuilder message = new FlowsStatisticsUpdateBuilder();
                     message.setId(node);
                     message.setMoreReplies(mpReply.getFlags().isOFPMPFREQMORE());
@@ -133,12 +132,10 @@ public class SinglePurposeMultipartReplyTranslator {
                     MultipartReplyFlow replyBody = caseBody.getMultipartReplyFlow();
                     message.setFlowAndStatisticsMapList(flowStatsConvertor.toSALFlowStatsList(replyBody.getFlowStats(), features.getDatapathId(), ofVersion));
 
-                    logger.debug("Converted flow statistics : {}", message.build().toString());
                     listDataObject.add(message.build());
                     return listDataObject;
                 }
                 case OFPMPAGGREGATE: {
-                    logger.debug("Received aggregate flow statistics reponse from openflow {} switch", msg.getVersion() == 1 ? "1.0" : "1.3+");
                     AggregateFlowStatisticsUpdateBuilder message = new AggregateFlowStatisticsUpdateBuilder();
                     message.setId(node);
                     message.setMoreReplies(mpReply.getFlags().isOFPMPFREQMORE());
@@ -150,13 +147,11 @@ public class SinglePurposeMultipartReplyTranslator {
                     message.setPacketCount(new Counter64(replyBody.getPacketCount()));
                     message.setFlowCount(new Counter32(replyBody.getFlowCount()));
 
-                    logger.debug("Converted aggregate flow statistics : {}", message.build().toString());
                     listDataObject.add(message.build());
                     return listDataObject;
                 }
                 case OFPMPPORTSTATS: {
 
-                    logger.debug("Received port statistics multipart response");
 
                     NodeConnectorStatisticsUpdateBuilder message = new NodeConnectorStatisticsUpdateBuilder();
                     message.setId(node);
@@ -206,13 +201,11 @@ public class SinglePurposeMultipartReplyTranslator {
                     }
                     message.setNodeConnectorStatisticsAndPortNumberMap(statsMap);
 
-                    logger.debug("Converted ports statistics : {}", message.build().toString());
 
                     listDataObject.add(message.build());
                     return listDataObject;
                 }
                 case OFPMPGROUP: {
-                    logger.debug("Received group statistics multipart reponse");
                     GroupStatisticsUpdatedBuilder message = new GroupStatisticsUpdatedBuilder();
                     message.setId(node);
                     message.setMoreReplies(mpReply.getFlags().isOFPMPFREQMORE());
@@ -221,12 +214,10 @@ public class SinglePurposeMultipartReplyTranslator {
                     MultipartReplyGroup replyBody = caseBody.getMultipartReplyGroup();
                     message.setGroupStats(groupStatsConvertor.toSALGroupStatsList(replyBody.getGroupStats()));
 
-                    logger.debug("Converted group statistics : {}", message.toString());
                     listDataObject.add(message.build());
                     return listDataObject;
                 }
                 case OFPMPGROUPDESC: {
-                    logger.debug("Received group description statistics multipart reponse");
 
                     GroupDescStatsUpdatedBuilder message = new GroupDescStatsUpdatedBuilder();
                     message.setId(node);
@@ -237,12 +228,10 @@ public class SinglePurposeMultipartReplyTranslator {
 
                     message.setGroupDescStats(groupStatsConvertor.toSALGroupDescStatsList(replyBody.getGroupDesc(), ofVersion));
 
-                    logger.debug("Converted group statistics : {}", message.toString());
                     listDataObject.add(message.build());
                     return listDataObject;
                 }
                 case OFPMPGROUPFEATURES: {
-                    logger.debug("Received group features multipart reponse");
                     GroupFeaturesUpdatedBuilder message = new GroupFeaturesUpdatedBuilder();
                     message.setId(node);
                     message.setMoreReplies(mpReply.getFlags().isOFPMPFREQMORE());
@@ -291,7 +280,6 @@ public class SinglePurposeMultipartReplyTranslator {
                     return listDataObject;
                 }
                 case OFPMPMETER: {
-                    logger.debug("Received meter statistics multipart reponse");
                     MeterStatisticsUpdatedBuilder message = new MeterStatisticsUpdatedBuilder();
                     message.setId(node);
                     message.setMoreReplies(mpReply.getFlags().isOFPMPFREQMORE());
@@ -305,7 +293,6 @@ public class SinglePurposeMultipartReplyTranslator {
                     return listDataObject;
                 }
                 case OFPMPMETERCONFIG: {
-                    logger.debug("Received meter config statistics multipart reponse");
 
                     MeterConfigStatsUpdatedBuilder message = new MeterConfigStatsUpdatedBuilder();
                     message.setId(node);
@@ -320,7 +307,6 @@ public class SinglePurposeMultipartReplyTranslator {
                     return listDataObject;
                 }
                 case OFPMPMETERFEATURES: {
-                    logger.debug("Received meter features multipart reponse");
                     //Convert OF message and send it to SAL listener
                     MeterFeaturesUpdatedBuilder message = new MeterFeaturesUpdatedBuilder();
                     message.setId(node);
@@ -366,7 +352,6 @@ public class SinglePurposeMultipartReplyTranslator {
                     return listDataObject;
                 }
                 case OFPMPTABLE: {
-                    logger.debug("Received flow table statistics reponse from openflow {} switch", msg.getVersion() == 1 ? "1.0" : "1.3+");
 
                     FlowTableStatisticsUpdateBuilder message = new FlowTableStatisticsUpdateBuilder();
                     message.setId(node);
@@ -389,13 +374,10 @@ public class SinglePurposeMultipartReplyTranslator {
                     }
 
                     message.setFlowTableAndStatisticsMap(salFlowStats);
-
-                    logger.debug("Converted flow table statistics : {}", message.build().toString());
                     listDataObject.add(message.build());
                     return listDataObject;
                 }
                 case OFPMPQUEUE: {
-                    logger.debug("Received queue statistics multipart response");
 
                     QueueStatisticsUpdateBuilder message = new QueueStatisticsUpdateBuilder();
                     message.setId(node);
@@ -432,7 +414,6 @@ public class SinglePurposeMultipartReplyTranslator {
                     }
                     message.setQueueIdAndStatisticsMap(statsMap);
 
-                    logger.debug("Converted queue statistics : {}", message.build().toString());
                     listDataObject.add(message.build());
                     return listDataObject;
                 }
