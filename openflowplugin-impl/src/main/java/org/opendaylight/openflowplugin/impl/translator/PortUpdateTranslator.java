@@ -14,28 +14,27 @@ import org.opendaylight.openflowplugin.openflow.md.util.PortTranslatorUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnectorBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortNumberUni;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
 
 /**
  * @author tkubas
  *
  */
-public class PortUpdateTranslator implements MessageTranslator<PortStatusMessage, FlowCapableNodeConnector> {
+public class PortUpdateTranslator implements MessageTranslator<PortGrouping, FlowCapableNodeConnector> {
 
     @Override
-    public FlowCapableNodeConnector translate(PortStatusMessage input,
-            DeviceContext deviceContext, Object connectionDistinguisher) {
-        // TODO Auto-generated method stub
-        FlowCapableNodeConnectorBuilder builder = new FlowCapableNodeConnectorBuilder();
+    public FlowCapableNodeConnector translate(final PortGrouping input,
+            final DeviceContext deviceContext, final Object connectionDistinguisher) {
+        final FlowCapableNodeConnectorBuilder builder = new FlowCapableNodeConnectorBuilder();
         //OF1.0
-        if(input.getVersion() == OFConstants.OFP_VERSION_1_0) {
+        if(deviceContext.getDeviceState().getVersion() == OFConstants.OFP_VERSION_1_0) {
             builder.setAdvertisedFeatures(PortTranslatorUtil.translatePortFeatures(input.getAdvertisedFeaturesV10()));
             builder.setConfiguration(PortTranslatorUtil.translatePortConfig(input.getConfigV10()));
             builder.setCurrentFeature(PortTranslatorUtil.translatePortFeatures(input.getCurrentFeaturesV10()));
             builder.setPeerFeatures(PortTranslatorUtil.translatePortFeatures(input.getPeerFeaturesV10()));
             builder.setState(PortTranslatorUtil.translatePortState(input.getStateV10()));
             builder.setSupported(PortTranslatorUtil.translatePortFeatures(input.getSupportedFeaturesV10()));
-        } else if (input.getVersion() == OFConstants.OFP_VERSION_1_3) {
+        } else if (deviceContext.getDeviceState().getVersion() == OFConstants.OFP_VERSION_1_3) {
             builder.setAdvertisedFeatures(PortTranslatorUtil.translatePortFeatures(input.getAdvertisedFeatures()));
             builder.setConfiguration(PortTranslatorUtil.translatePortConfig(input.getConfig()));
             builder.setCurrentFeature(PortTranslatorUtil.translatePortFeatures(input.getCurrentFeatures()));
