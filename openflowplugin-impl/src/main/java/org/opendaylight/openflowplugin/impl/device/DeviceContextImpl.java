@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.device;
 
+import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnectorBuilder;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
@@ -91,6 +92,7 @@ public class DeviceContextImpl implements DeviceContext {
     private OpenflowMessageListenerFacade openflowMessageListenerFacade;
     private DeviceFlowRegistry deviceFlowRegistry;
     private Timeout barrierTaskTimeout;
+    private NotificationProviderService notificationService;
 
     @VisibleForTesting
     DeviceContextImpl(@Nonnull final ConnectionContext primaryConnectionContext,
@@ -383,5 +385,10 @@ public class DeviceContextImpl implements DeviceContext {
     @Override
     public Timeout getBarrierTaskTimeout() {
         return barrierTaskTimeout;
+    }
+
+    @Override
+    public void setNotificationService(final NotificationProviderService notificationServiceParam) {
+        notificationService = notificationServiceParam;
     }
 }
