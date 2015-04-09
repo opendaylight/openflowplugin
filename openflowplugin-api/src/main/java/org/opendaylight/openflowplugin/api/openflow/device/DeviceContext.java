@@ -70,12 +70,18 @@ public interface DeviceContext extends OpenflowPluginTimer, MessageHandler, Tran
     <T extends DataObject> void writeToTransaction(final LogicalDatastoreType store, final InstanceIdentifier<T> path, final T data);
 
     /**
+     * Method creates delete operation for provided path in underlying transaction chain.
+     */
+    <T extends DataObject> void addDeleteToTxChain(final LogicalDatastoreType store, final InstanceIdentifier<T> path);
+
+    /**
      * Method exposes transaction created for device
      * represented by this context. This read only transaction has a fresh dataStore snapshot.
      * There is a possibility to get different data set from  DataStore
      * as write transaction in this context.
      */
     ReadTransaction getReadTransaction();
+
 
     /**
      * Method provides capabilities of connected device.
