@@ -143,6 +143,11 @@ public class DeviceContextImpl implements DeviceContext {
     }
 
     @Override
+    public <T extends DataObject> void addDeleteToTxChain(final LogicalDatastoreType store, final InstanceIdentifier<T> path) {
+        txChainManager.addDeleteOperationTotTxChain(store, path);
+    }
+
+    @Override
     public TableFeatures getCapabilities() {
         // TODO Auto-generated method stub
         return null;

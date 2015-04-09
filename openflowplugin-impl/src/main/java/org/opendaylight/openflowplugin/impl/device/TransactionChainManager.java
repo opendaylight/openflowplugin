@@ -71,6 +71,21 @@ class TransactionChainManager implements TransactionChainListener {
         }
     }
 
+    synchronized <T extends DataObject> void addDeleteOperationTotTxChain(final LogicalDatastoreType store,
+                                                                final InstanceIdentifier<T> path) {
+        if (wTx == null) {
+            wTx = txChainFactory.newWriteOnlyTransaction();
+        }
+        wTx.delete(store, path);
+        if ( ! counterIsEnabled) {
+            return;
+        }
+        nrOfActualTx += 1L;
+        if (nrOfActualTx == maxTx) {
+            submitTransaction();
+        }
+    }
+
     synchronized void submitTransaction() {
         if (wTx != null) {
             LOG.trace("submitting transaction, counter: {}", nrOfActualTx);
