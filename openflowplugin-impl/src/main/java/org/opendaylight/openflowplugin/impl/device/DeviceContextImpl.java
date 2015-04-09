@@ -7,22 +7,6 @@
  */
 package org.opendaylight.openflowplugin.impl.device;
 
-import org.opendaylight.openflowplugin.impl.flow.registry.DeviceFlowRegistry;
-import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
-
-import org.opendaylight.openflowplugin.api.openflow.flow.registry.FlowRegistry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnectorBuilder;
-import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
-import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
-import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortReason;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.SettableFuture;
@@ -41,6 +25,7 @@ import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
@@ -53,21 +38,31 @@ import org.opendaylight.openflowplugin.api.openflow.device.listener.OpenflowMess
 import org.opendaylight.openflowplugin.api.openflow.flow.registry.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
+import org.opendaylight.openflowplugin.impl.common.NodeStaticReplyTranslatorUtil;
 import org.opendaylight.openflowplugin.impl.flow.registry.DeviceFlowRegistryImpl;
 import org.opendaylight.openflowplugin.impl.translator.PacketReceivedTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SwitchConnectionCookieOFImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnectorBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortReason;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.Error;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableFeatures;
 import org.opendaylight.yangtools.yang.binding.ChildOf;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -92,7 +87,7 @@ public class DeviceContextImpl implements DeviceContext {
     private final TransactionChainManager txChainManager;
     private TranslatorLibrary translatorLibrary;
     private OpenflowMessageListenerFacade openflowMessageListenerFacade;
-    private DeviceFlowRegistry deviceFlowRegistry;
+    private final DeviceFlowRegistry deviceFlowRegistry;
     private Timeout barrierTaskTimeout;
     private NotificationProviderService notificationService;
 
@@ -297,12 +292,11 @@ public class DeviceContextImpl implements DeviceContext {
 
     @Override
     public void processPortStatusMessage(final PortStatusMessage portStatus) {
-        final TranslatorKey translatorKey = new TranslatorKey(portStatus.getVersion(), PortStatusMessage.class.getName());
-        final MessageTranslator<PortStatusMessage, FlowCapableNodeConnector> messageTranslator = translatorLibrary.lookupTranslator(translatorKey);
+        final TranslatorKey translatorKey = new TranslatorKey(portStatus.getVersion(), PortGrouping.class.getName());
+        final MessageTranslator<PortGrouping, FlowCapableNodeConnector> messageTranslator = translatorLibrary.lookupTranslator(translatorKey);
         FlowCapableNodeConnector flowCapableNodeConnector = messageTranslator.translate(portStatus, this, null);
 
-        final KeyedInstanceIdentifier<NodeConnector, NodeConnectorKey> iiToNodeConnector =
-                provideIIToNodeConnector(portStatus.getPortNo(), portStatus.getVersion());
+        final KeyedInstanceIdentifier<NodeConnector, NodeConnectorKey> iiToNodeConnector = provideIIToNodeConnector(portStatus.getPortNo(), portStatus.getVersion());
         if (portStatus.getReason().equals(PortReason.OFPPRADD) ) {
             // because of ADD status node connector has to be created
             createNodeConnectorInDS(iiToNodeConnector);
@@ -312,7 +306,7 @@ public class DeviceContextImpl implements DeviceContext {
             flowCapableNodeConnector = new FlowCapableNodeConnectorBuilder().build();
         }
 
-        InstanceIdentifier<FlowCapableNodeConnector> iiToFlowCapableNodeConnector = iiToNodeConnector.augmentation(FlowCapableNodeConnector.class);
+        final InstanceIdentifier<FlowCapableNodeConnector> iiToFlowCapableNodeConnector = iiToNodeConnector.augmentation(FlowCapableNodeConnector.class);
         writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToFlowCapableNodeConnector, flowCapableNodeConnector);
     }
 
@@ -320,16 +314,11 @@ public class DeviceContextImpl implements DeviceContext {
         writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector, new NodeConnectorBuilder().setKey(iiToNodeConnector.getKey()).build());
     }
 
-    private KeyedInstanceIdentifier<Node, NodeKey> provideIIToNodes() {
-        return InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(deviceState.getNodeId()));
-    }
-
-    private KeyedInstanceIdentifier<NodeConnector, NodeConnectorKey> provideIIToNodeConnector(final Long portNo, final Short version) {
-        final KeyedInstanceIdentifier<Node, NodeKey> iiToNodes = provideIIToNodes();
-        final NodeConnectorId nodeConnectorId = InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(
-                deviceState.getFeatures().getDatapathId(), portNo, OpenflowVersion.get(version));
-        final NodeConnectorKey nodeConnectorKey = new NodeConnectorKey(new NodeConnectorId(nodeConnectorId));
-        return iiToNodes.child(NodeConnector.class, nodeConnectorKey);
+    private KeyedInstanceIdentifier<NodeConnector, NodeConnectorKey> provideIIToNodeConnector(final long portNo, final short version) {
+        final InstanceIdentifier<Node> iiToNodes = deviceState.getNodeInstanceIdentifier();
+        final BigInteger dataPathId = deviceState.getFeatures().getDatapathId();
+        final NodeConnectorId nodeConnectorId = NodeStaticReplyTranslatorUtil.nodeConnectorId(dataPathId.toString(), portNo, version);
+        return iiToNodes.child(NodeConnector.class, new NodeConnectorKey(nodeConnectorId));
 
     }
 
@@ -380,7 +369,7 @@ public class DeviceContextImpl implements DeviceContext {
     }
 
     @Override
-    public void setCurrentBarrierTimeout(Timeout timeout) {
+    public void setCurrentBarrierTimeout(final Timeout timeout) {
         barrierTaskTimeout = timeout;
     }
 
