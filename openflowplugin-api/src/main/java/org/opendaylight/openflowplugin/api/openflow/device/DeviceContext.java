@@ -67,16 +67,15 @@ public interface DeviceContext extends OpenflowPluginTimer, MessageHandler, Tran
     DeviceState getDeviceState();
 
     /**
-     * Method exposes possibility for write a child of {@link DataObject} to transaction for DataStore.
+     * Method creates put operation using provided data in underlying transaction chain.
      */
     <T extends DataObject> void writeToTransaction(final LogicalDatastoreType store, final InstanceIdentifier<T> path, final T data);
 
     /**
      * Method exposes transaction created for device
-     * represented by this context. This should be used as read only.
-     * This read only transaction has a fresh dataStore snapshot and
-     * here is a possibility to get different data set from  DataStore
-     * as have a write transaction in this context.
+     * represented by this context. This read only transaction has a fresh dataStore snapshot.
+     * There is a possibility to get different data set from  DataStore
+     * as write transaction in this context.
      */
     ReadTransaction getReadTransaction();
 
@@ -101,6 +100,10 @@ public interface DeviceContext extends OpenflowPluginTimer, MessageHandler, Tran
      */
     ConnectionContext getAuxiliaryConnectiobContexts(BigInteger cookie);
 
+    /**
+     * Method generates unique XID value.
+     * @return
+     */
     Xid getNextXid();
 
     /**
@@ -124,8 +127,16 @@ public interface DeviceContext extends OpenflowPluginTimer, MessageHandler, Tran
      */
     void attachOpenflowMessageListener(OpenflowMessageListenerFacade openflowMessageListenerFacade);
 
+    /**
+     * Method returns registered {@link org.opendaylight.openflowplugin.api.openflow.device.listener.OpenflowMessageListenerFacade}
+     * @return
+     */
     OpenflowMessageListenerFacade getOpenflowMessageListenerFacade();
 
+    /**
+     * Method exposes flow registry used for storing flow ids identified by calculated flow hash.
+     * @return
+     */
     FlowRegistry getFlowRegistry();
 
     /**
