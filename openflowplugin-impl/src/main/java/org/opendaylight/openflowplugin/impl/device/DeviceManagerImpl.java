@@ -318,6 +318,7 @@ public class DeviceManagerImpl implements DeviceManager {
                         dContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, connectorII, connector);
                         //FlowCapableNodeConnectorBuilder
                     }
+                    break;
 
                 default:
                     throw new IllegalArgumentException("Unnexpected MultipartType " + type);
