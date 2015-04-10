@@ -42,6 +42,8 @@ class DeviceStateImpl implements DeviceState {
     private boolean valid;
     private boolean meterIsAvailable;
     private boolean groupIsAvailable;
+    private boolean deviceSynchronized;
+
 
     public DeviceStateImpl(@CheckForNull final FeaturesReply featuresReply, @Nonnull final NodeId nodeId) {
         Preconditions.checkArgument(featuresReply != null);
@@ -99,6 +101,16 @@ class DeviceStateImpl implements DeviceState {
     @Override
     public void groupIsAvailable() {
         groupIsAvailable = true;
+    }
+
+    @Override
+    public boolean deviceSynchronized() {
+        return deviceSynchronized;
+    }
+
+    @Override
+    public void setDeviceSynchronized(final boolean _deviceSynchronized) {
+        deviceSynchronized = _deviceSynchronized;
     }
 
 }

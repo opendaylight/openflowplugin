@@ -75,4 +75,12 @@ public interface DeviceState {
      */
     void groupIsAvailable();
 
+    /**
+     * Method returns true if initial statistics data were collected and written to DS.
+     * @return
+     */
+    boolean deviceSynchronized();
+
+    void setDeviceSynchronized(boolean deviceSynchronized);
+
 }
