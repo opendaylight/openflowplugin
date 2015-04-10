@@ -58,6 +58,7 @@ public class StatisticsManagerImpl implements StatisticsManager {
                 // wake up RPC registration
                 LOG.trace("Device dynamic info collected. Going to announce raise to next level.");
                 contexts.put(deviceContext, statisticsContext);
+                deviceContext.getDeviceState().setDeviceSynchronized(true);
                 deviceInitPhaseHandler.onDeviceContextLevelUp(deviceContext);
             }
 
