@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.impl.device;
 
+import io.netty.util.HashedWheelTimer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,6 +45,8 @@ public class TransactionChainManagerTest {
     private WriteTransaction writeTx;
     @Mock
     private TransactionChain<?, ?> transactionChain;
+    @Mock
+    HashedWheelTimer timer;
 
     private TransactionChainManager txChainManager;
     private InstanceIdentifier<Node> path;
@@ -53,7 +56,7 @@ public class TransactionChainManagerTest {
     public void setUp() throws Exception {
         Mockito.when(dataBroker.createTransactionChain(Matchers.any(TransactionChainListener.class)))
                 .thenReturn(txChain);
-        txChainManager = new TransactionChainManager(dataBroker, 2);
+        txChainManager = new TransactionChainManager(dataBroker, timer, 2);
         Mockito.when(txChain.newWriteOnlyTransaction()).thenReturn(writeTx);
 
         nodeId = new NodeId("h2g2:42");
@@ -67,7 +70,7 @@ public class TransactionChainManagerTest {
 
     @Test
     public void testWriteToTransaction() throws Exception {
-        Node data = new NodeBuilder().setId(nodeId).build();
+        final Node data = new NodeBuilder().setId(nodeId).build();
         txChainManager.writeToTransaction(LogicalDatastoreType.CONFIGURATION, path, data);
 
         Mockito.verify(txChain).newWriteOnlyTransaction();
@@ -76,7 +79,7 @@ public class TransactionChainManagerTest {
 
     @Test
     public void testSubmitTransaction() throws Exception {
-        Node data = new NodeBuilder().setId(nodeId).build();
+        final Node data = new NodeBuilder().setId(nodeId).build();
         txChainManager.writeToTransaction(LogicalDatastoreType.CONFIGURATION, path, data);
         txChainManager.submitTransaction();
 
@@ -91,7 +94,7 @@ public class TransactionChainManagerTest {
      */
     @Test
     public void testEnableCounter1() throws Exception {
-        Node data = new NodeBuilder().setId(nodeId).build();
+        final Node data = new NodeBuilder().setId(nodeId).build();
         txChainManager.writeToTransaction(LogicalDatastoreType.CONFIGURATION, path, data);
         txChainManager.writeToTransaction(LogicalDatastoreType.CONFIGURATION, path, data);
 
@@ -107,7 +110,7 @@ public class TransactionChainManagerTest {
     public void testEnableCounter2() throws Exception {
         txChainManager.enableCounter();
 
-        Node data = new NodeBuilder().setId(nodeId).build();
+        final Node data = new NodeBuilder().setId(nodeId).build();
         txChainManager.writeToTransaction(LogicalDatastoreType.CONFIGURATION, path, data);
         txChainManager.writeToTransaction(LogicalDatastoreType.CONFIGURATION, path, data);
 
