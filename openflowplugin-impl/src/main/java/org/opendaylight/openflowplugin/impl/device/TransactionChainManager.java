@@ -10,6 +10,10 @@ package org.opendaylight.openflowplugin.impl.device;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
+import io.netty.util.HashedWheelTimer;
+import io.netty.util.Timeout;
+import io.netty.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.BindingTransactionChain;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
@@ -41,15 +45,18 @@ class TransactionChainManager implements TransactionChainListener {
 
     private static Logger LOG = LoggerFactory.getLogger(TransactionChainManager.class);
 
+    private final HashedWheelTimer hashedWheelTimer;
     private final DataBroker dataBroker;
     private final long maxTx;
     private BindingTransactionChain txChainFactory;
     private WriteTransaction wTx;
+    private Timeout submitTaskTime;
     private long nrOfActualTx;
     private boolean counterIsEnabled;
 
-    TransactionChainManager(@Nonnull final DataBroker dataBroker, final long maxTx) {
+    TransactionChainManager(@Nonnull final DataBroker dataBroker, @Nonnull final HashedWheelTimer hashedWheelTimer, final long maxTx) {
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
+        this.hashedWheelTimer = Preconditions.checkNotNull(hashedWheelTimer);
         this.maxTx = maxTx;
         txChainFactory = dataBroker.createTransactionChain(TransactionChainManager.this);
         nrOfActualTx = 0L;
@@ -66,7 +73,7 @@ class TransactionChainManager implements TransactionChainListener {
             return;
         }
         nrOfActualTx += 1L;
-        if (nrOfActualTx == maxTx) {
+        if (nrOfActualTx >= maxTx) {
             submitTransaction();
         }
     }
@@ -93,6 +100,15 @@ class TransactionChainManager implements TransactionChainListener {
             wTx = null;
             nrOfActualTx = 0L;
         }
+        if (submitTaskTime != null && ! submitTaskTime.isExpired()) {
+            submitTaskTime.cancel();
+        }
+        submitTaskTime = hashedWheelTimer.newTimeout(new TimerTask() {
+            @Override
+            public void run(final Timeout timeout) throws Exception {
+                submitTransaction();
+            }
+        }, 500L, TimeUnit.MILLISECONDS);
     }
 
     synchronized void enableCounter() {

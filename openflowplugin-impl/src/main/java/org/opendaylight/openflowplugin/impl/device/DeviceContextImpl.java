@@ -26,14 +26,12 @@ import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.SettableFuture;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
-import io.netty.util.TimerTask;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
@@ -103,7 +101,7 @@ public class DeviceContextImpl implements DeviceContext {
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
         this.hashedWheelTimer = Preconditions.checkNotNull(hashedWheelTimer);
         xidGenerator = new XidGenerator();
-        txChainManager = new TransactionChainManager(dataBroker, 500L);
+        txChainManager = new TransactionChainManager(dataBroker, hashedWheelTimer, 500L);
         auxiliaryConnectionContexts = new HashMap<>();
         requests = new HashMap<>();
         deviceFlowRegistry = new DeviceFlowRegistryImpl();
@@ -116,12 +114,6 @@ public class DeviceContextImpl implements DeviceContext {
     void submitTransaction() {
         txChainManager.submitTransaction();
         txChainManager.enableCounter();
-        hashedWheelTimer.newTimeout(new TimerTask() {
-            @Override
-            public void run(final Timeout timeout) throws Exception {
-                submitTransaction();
-            }
-        }, 0, TimeUnit.MILLISECONDS);
     }
 
     @Override
