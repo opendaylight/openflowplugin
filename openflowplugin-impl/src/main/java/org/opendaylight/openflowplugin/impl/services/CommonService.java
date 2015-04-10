@@ -11,6 +11,8 @@ import com.google.common.base.Function;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
+import java.math.BigInteger;
+import java.util.concurrent.Future;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -21,8 +23,6 @@ import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
-import java.math.BigInteger;
-import java.util.concurrent.Future;
 
 public abstract class CommonService {
     private static final Logger LOG = org.slf4j.LoggerFactory.getLogger(CommonService.class);
@@ -38,6 +38,10 @@ public abstract class CommonService {
     public DeviceContext deviceContext;
     public ConnectionAdapter primaryConnectionAdapter;
 
+    /**
+     * @deprecated use {@link #CommonService(RequestContextStack, DeviceContext)}
+     */
+    @Deprecated
     public CommonService() {
     }
 

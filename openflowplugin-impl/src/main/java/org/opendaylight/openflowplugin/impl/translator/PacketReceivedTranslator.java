@@ -7,13 +7,12 @@
  */
 package org.opendaylight.openflowplugin.impl.translator;
 
+import java.math.BigInteger;
+import java.util.List;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
-import org.opendaylight.openflowplugin.extension.api.AugmentTuple;
-import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
-import org.opendaylight.openflowplugin.openflow.md.core.extension.MatchExtensionHelper;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchConvertorImpl;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.PacketInUtil;
@@ -25,9 +24,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceivedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.MatchBuilder;
-
-import java.math.BigInteger;
-import java.util.List;
 
 /**
  * Created by tkubas on 4/1/15.
@@ -79,12 +75,13 @@ public class PacketReceivedTranslator implements MessageTranslator<PacketInMessa
                 OpenflowVersion.get(input.getVersion().shortValue())).build();
         MatchBuilder matchBuilder = new MatchBuilder(match);
 
-        AugmentTuple<org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match> matchExtensionWrap =
-                MatchExtensionHelper.processAllExtensions(
-                        input.getMatch().getMatchEntry(), OpenflowVersion.get(input.getVersion().shortValue()), MatchPath.PACKETRECEIVED_MATCH);
-        if (matchExtensionWrap != null) {
-            matchBuilder.addAugmentation(matchExtensionWrap.getAugmentationClass(), matchExtensionWrap.getAugmentationObject());
-        }
+        // FIXME: need to solve extension translator wiring and initializing
+//        AugmentTuple<org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match> matchExtensionWrap =
+//                MatchExtensionHelper.processAllExtensions(
+//                        input.getMatch().getMatchEntry(), OpenflowVersion.get(input.getVersion().shortValue()), MatchPath.PACKETRECEIVED_MATCH);
+//        if (matchExtensionWrap != null) {
+//            matchBuilder.addAugmentation(matchExtensionWrap.getAugmentationClass(), matchExtensionWrap.getAugmentationObject());
+//        }
         return matchBuilder.build();
     }
 
