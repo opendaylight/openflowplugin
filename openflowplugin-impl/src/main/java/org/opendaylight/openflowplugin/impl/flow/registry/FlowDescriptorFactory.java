@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.impl.flow.registry;
 
+import com.google.common.base.Preconditions;
 import org.opendaylight.openflowplugin.api.openflow.flow.registry.FlowDescriptor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
@@ -29,6 +30,8 @@ public class FlowDescriptorFactory {
         private final TableKey tableKey;
 
         public FlowDescriptorDto(final TableKey tableKey, final FlowId flowId) {
+            Preconditions.checkNotNull(tableKey);
+            Preconditions.checkNotNull(flowId);
             this.flowId = flowId;
             this.tableKey = tableKey;
         }
