@@ -48,6 +48,8 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     @Override
     public void markToBeremoved(final FlowHash flowHash) {
         marks.add(flowHash);
+        LOG.trace("Flow hash {} was marked for removal.", flowHash.hashCode());
+
     }
 
     @Override
