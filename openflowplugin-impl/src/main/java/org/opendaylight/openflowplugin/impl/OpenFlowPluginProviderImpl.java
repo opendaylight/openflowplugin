@@ -9,8 +9,9 @@
 package org.opendaylight.openflowplugin.impl;
 
 
-import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.api.types.rev150327.OfpRole;
 
+import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -32,7 +33,6 @@ import org.opendaylight.openflowplugin.impl.device.DeviceManagerImpl;
 import org.opendaylight.openflowplugin.impl.rpc.RpcManagerImpl;
 import org.opendaylight.openflowplugin.impl.statistics.StatisticsManagerImpl;
 import org.opendaylight.openflowplugin.impl.util.TranslatorLibraryUtil;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.api.types.rev150327.OfpRole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,9 +59,9 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider {
 
     @Override
     public void onSessionInitiated(final ProviderContext providerContextArg) {
-        final NotificationProviderService notificationService = providerContext.getSALService(NotificationProviderService.class);
-        final DataBroker dataBroker = providerContext.getSALService(DataBroker.class);
         providerContext = providerContextArg;
+        final DataBroker dataBroker = providerContext.getSALService(DataBroker.class);
+        final NotificationProviderService notificationService = providerContext.getSALService(NotificationProviderService.class);
 
         connectionManager = new ConnectionManagerImpl();
         deviceManager = new DeviceManagerImpl(dataBroker);
