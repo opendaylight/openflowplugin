@@ -7,6 +7,9 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
+
 import com.google.common.base.Function;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -21,6 +24,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.Tr
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
 public class PacketProcessingServiceImpl extends CommonService implements PacketProcessingService {
+
+    public PacketProcessingServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
+        super(requestContextStack, deviceContext);
+    }
 
     @Override
     public Future<RpcResult<Void>> transmitPacket(final TransmitPacketInput input) {
