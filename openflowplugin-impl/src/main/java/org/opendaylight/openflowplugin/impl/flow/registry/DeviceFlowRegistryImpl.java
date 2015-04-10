@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.impl.flow.registry;
 
+import com.google.common.collect.ImmutableMap;
 import java.util.HashMap;
 import java.util.Map;
 import org.opendaylight.openflowplugin.api.openflow.flow.registry.DeviceFlowRegistry;
@@ -41,6 +42,11 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     public void remove(final FlowHash flowHash) {
         flowRegistry.remove(flowHash);
 
+    }
+
+    @Override
+    public Map<FlowHash, FlowDescriptor> getAllFlowDescriptors() {
+        return ImmutableMap.copyOf(flowRegistry);
     }
 
 }
