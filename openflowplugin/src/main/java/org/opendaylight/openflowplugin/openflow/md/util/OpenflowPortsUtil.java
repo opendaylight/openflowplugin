@@ -1,13 +1,12 @@
 package org.opendaylight.openflowplugin.openflow.md.util;
 
+import com.google.common.collect.ImmutableBiMap;
 import org.opendaylight.openflowjava.protocol.api.util.BinContent;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortNumberUni;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.OutputPortValues;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumberValues;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumberValuesV10;
-
-import com.google.common.collect.ImmutableBiMap;
 
 /**
  * Class which integrates the port constants defined and used by MDSAL and the ports defined in openflow java
@@ -28,7 +27,7 @@ public class OpenflowPortsUtil {
     public static void init() {
 
         // v1.0 ports
-        ImmutableBiMap<String, Long> OFv10 = new ImmutableBiMap.Builder<String, Long>()
+        final ImmutableBiMap<String, Long> OFv10 = new ImmutableBiMap.Builder<String, Long>()
                 .put(OutputPortValues.MAX.toString(), new Long(PortNumberValuesV10.MAX.getIntValue())) //0xff00
                 .put(OutputPortValues.INPORT.toString(), new Long(PortNumberValuesV10.INPORT.getIntValue())) //0xfff8
                 .put(OutputPortValues.TABLE.toString(), new Long(PortNumberValuesV10.TABLE.getIntValue())) //0xfff9
@@ -43,7 +42,7 @@ public class OpenflowPortsUtil {
         // openflow 1.3 reserved ports.
         // PortNumberValues are defined in OFJava yang. And yang maps an int to all enums. Hence we need to create longs from (-ve) ints
         // TODO: do we need to define these ports in yang?
-        ImmutableBiMap<String, Long> OFv13 = new ImmutableBiMap.Builder<String, Long>()
+        final ImmutableBiMap<String, Long> OFv13 = new ImmutableBiMap.Builder<String, Long>()
                 .put(OutputPortValues.MAX.toString(), BinContent.intToUnsignedLong(PortNumberValues.MAX.getIntValue())) //0xffffff00
                 .put(OutputPortValues.INPORT.toString(), BinContent.intToUnsignedLong(PortNumberValues.INPORT.getIntValue())) //0xfffffff8
                 .put(OutputPortValues.TABLE.toString(), BinContent.intToUnsignedLong(PortNumberValues.TABLE.getIntValue())) //0xfffffff9
@@ -66,33 +65,37 @@ public class OpenflowPortsUtil {
         versionPortMap = null;
     }
 
-    public static String getPortLogicalName(OpenflowVersion ofVersion, Long portNumber) {
+    public static String getPortLogicalName(final short ofVersion, final long portNumber) {
+        return versionPortMap.get(OpenflowVersion.get(ofVersion)).inverse().get(portNumber);
+    }
+
+    public static String getPortLogicalName(final OpenflowVersion ofVersion, final Long portNumber) {
        if (ofVersion.equals(OpenflowVersion.UNSUPPORTED)){
            return null;
        }
        return versionPortMap.get(ofVersion).inverse().get(portNumber);
     }
 
-    public static Long getPortFromLogicalName(OpenflowVersion ofVersion, String logicalNameOrPort) {
+    public static Long getPortFromLogicalName(final OpenflowVersion ofVersion, final String logicalNameOrPort) {
         Long port = versionPortMap.get(ofVersion).get(logicalNameOrPort);
         if (port == null) {
             try {
                 port = Long.decode(logicalNameOrPort);
-            } catch(NumberFormatException ne) {
+            } catch(final NumberFormatException ne) {
                 //ignore, sent null back.
             }
         }
         return port;
     }
 
-    public static PortNumberUni getProtocolAgnosticPort(OpenflowVersion ofVersion, Long portNumber) {
-        String reservedPortLogicalName = getPortLogicalName(ofVersion, portNumber);
+    public static PortNumberUni getProtocolAgnosticPort(final OpenflowVersion ofVersion, final Long portNumber) {
+        final String reservedPortLogicalName = getPortLogicalName(ofVersion, portNumber);
         return (reservedPortLogicalName == null ? new PortNumberUni(portNumber) :
                 new PortNumberUni(reservedPortLogicalName));
     }
 
-    public static Long getProtocolPortNumber(OpenflowVersion ofVersion, PortNumberUni port) {
-        String portLogicalName = port.getString();
+    public static Long getProtocolPortNumber(final OpenflowVersion ofVersion, final PortNumberUni port) {
+        final String portLogicalName = port.getString();
 
         if (portLogicalName != null) {
             return versionPortMap.get(ofVersion).get(portLogicalName);
@@ -101,11 +104,11 @@ public class OpenflowPortsUtil {
         }
     }
 
-    public static Long getMaxPortForVersion(OpenflowVersion ofVersion) {
+    public static Long getMaxPortForVersion(final OpenflowVersion ofVersion) {
         return getPortFromLogicalName (ofVersion, MAX);
     }
 
-    public static boolean isPortReserved(OpenflowVersion ofVersion, Long portNumber) {
+    public static boolean isPortReserved(final OpenflowVersion ofVersion, final Long portNumber) {
         return versionPortMap.get(ofVersion).inverse().containsKey(portNumber);
     }
 
@@ -114,7 +117,7 @@ public class OpenflowPortsUtil {
      * @param portNumber
      * @return true if port number is valid for given protocol version
      */
-    public static boolean checkPortValidity(OpenflowVersion ofVersion, Long portNumber) {
+    public static boolean checkPortValidity(final OpenflowVersion ofVersion, final Long portNumber) {
         boolean portIsValid = true;
         if (portNumber == null) {
             portIsValid = false;
@@ -132,7 +135,7 @@ public class OpenflowPortsUtil {
      * @param portNumber
      * @return string containing number or logical name
      */
-    public static String portNumberToString(PortNumberUni portNumber) {
+    public static String portNumberToString(final PortNumberUni portNumber) {
         String result = null;
         if (portNumber.getUint32() != null) {
             result = String.valueOf(portNumber.getUint32());

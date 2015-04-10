@@ -15,7 +15,7 @@ import org.opendaylight.openflowplugin.impl.translator.PacketReceivedTranslator;
 import org.opendaylight.openflowplugin.impl.translator.PortUpdateTranslator;
 import org.opendaylight.openflowplugin.impl.translator.TranslatorKeyFactory;
 import org.opendaylight.openflowplugin.impl.translator.TranslatorLibraryBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
 
 /**
@@ -35,14 +35,14 @@ public final class TranslatorLibraryUtil {
     static {
         basicTranslatorLibrary = new TranslatorLibraryBuilder().
                 addTranslator(of13TranslatorKeyFactory.createTranslatorKey(PacketReceived.class), new PacketReceivedTranslator()).
-                addTranslator(of13TranslatorKeyFactory.createTranslatorKey(PortStatusMessage.class), new PortUpdateTranslator()).
+                addTranslator(of13TranslatorKeyFactory.createTranslatorKey(PortGrouping.class), new PortUpdateTranslator()).
                 addTranslator(of10TranslatorKeyFactory.createTranslatorKey(PacketReceived.class), new PacketReceivedTranslator()).
-                addTranslator(of10TranslatorKeyFactory.createTranslatorKey(PortStatusMessage.class), new PortUpdateTranslator()).
+                addTranslator(of10TranslatorKeyFactory.createTranslatorKey(PortGrouping.class), new PortUpdateTranslator()).
                 build();
 
     }
 
-    public static void setBasicTranslatorLibrary(TranslatorLibrarian librarian) {
+    public static void setBasicTranslatorLibrary(final TranslatorLibrarian librarian) {
         librarian.setTranslatorLibrary(basicTranslatorLibrary);
     }
 }
