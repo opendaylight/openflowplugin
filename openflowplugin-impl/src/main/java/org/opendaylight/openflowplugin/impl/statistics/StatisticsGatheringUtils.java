@@ -13,6 +13,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -105,7 +106,8 @@ public final class StatisticsGatheringUtils {
         return transformAndStoreStatisticsData(statisticsDataInFuture, deviceContext);
     }
 
-    private static ListenableFuture<Boolean> transformAndStoreStatisticsData(final ListenableFuture<RpcResult<List<MultipartReply>>> statisticsDataInFuture, final DeviceContext deviceContext) {
+    private static ListenableFuture<Boolean> transformAndStoreStatisticsData(final ListenableFuture<RpcResult<List<MultipartReply>>> statisticsDataInFuture,
+                                                                             final DeviceContext deviceContext) {
         return Futures.transform(statisticsDataInFuture, new Function<RpcResult<List<MultipartReply>>, Boolean>() {
             @Nullable
             @Override
@@ -128,10 +130,6 @@ public final class StatisticsGatheringUtils {
                                     final NodeGroupDescStatsBuilder groupDesc = new NodeGroupDescStatsBuilder();
                                     groupDesc.setGroupDesc(new GroupDescBuilder(groupDescStats).build());
                                     groupBuilder.addAugmentation(NodeGroupDescStats.class, groupDesc.build());
-                                    if (logFirstTime) {
-                                        logFirstTime = false;
-                                        LOG.info("Writing group statistics to operational DS.");
-                                    }
                                     deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, groupRef, groupBuilder.build());
                                 }
                             }
@@ -149,10 +147,6 @@ public final class StatisticsGatheringUtils {
                                     final InstanceIdentifier<NodeMeterStatistics> nodeMeterStatIdent = meterIdent
                                             .augmentation(NodeMeterStatistics.class);
                                     final InstanceIdentifier<MeterStatistics> msIdent = nodeMeterStatIdent.child(MeterStatistics.class);
-                                    if (logFirstTime) {
-                                        logFirstTime = false;
-                                        LOG.info("Writing meter statistics to operational DS.");
-                                    }
                                     deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, msIdent, stats);
                                 }
                             }
@@ -168,10 +162,6 @@ public final class StatisticsGatheringUtils {
                                             .augmentation(FlowCapableNodeConnectorStatisticsData.class);
                                     final InstanceIdentifier<FlowCapableNodeConnectorStatistics> flowCapNodeConnStatIdent =
                                             nodeConnStatIdent.child(FlowCapableNodeConnectorStatistics.class);
-                                    if (logFirstTime) {
-                                        logFirstTime = false;
-                                        LOG.info("Writing port statistics to operational DS.");
-                                    }
                                     deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, flowCapNodeConnStatIdent, stats);
                                 }
                             }
@@ -185,10 +175,6 @@ public final class StatisticsGatheringUtils {
                                     final InstanceIdentifier<FlowTableStatistics> tStatIdent = fNodeIdent.child(Table.class, new TableKey(tableStat.getTableId().getValue()))
                                             .augmentation(FlowTableStatisticsData.class).child(FlowTableStatistics.class);
                                     final FlowTableStatistics stats = new FlowTableStatisticsBuilder(tableStat).build();
-                                    if (logFirstTime) {
-                                        logFirstTime = false;
-                                        LOG.info("Writing flowTable statistics to operational DS.");
-                                    }
                                     deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, tStatIdent, stats);
                                 }
                             }
@@ -209,10 +195,6 @@ public final class StatisticsGatheringUtils {
                                                 .augmentation(FlowCapableNodeConnector.class)
                                                 .child(Queue.class, qKey);
                                         final InstanceIdentifier<FlowCapableNodeConnectorQueueStatisticsData> queueStatIdent = queueIdent.augmentation(FlowCapableNodeConnectorQueueStatisticsData.class);
-                                        if (logFirstTime) {
-                                            logFirstTime = false;
-                                            LOG.info("Writing queue statistics to operational DS.");
-                                        }
                                         deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, queueStatIdent, statBuild.build());
                                     }
                                 }
@@ -222,14 +204,32 @@ public final class StatisticsGatheringUtils {
                                 final InstanceIdentifier<Node> nodeIdent = InstanceIdentifier.create(Nodes.class)
                                         .child(Node.class, new NodeKey(flowsStatistics.getId()));
 
+                                if (deviceContext.getDeviceState().deviceSynchronized()) {
+                                    for (Map.Entry<FlowHash, FlowDescriptor> registryEntry : deviceContext.getDeviceFlowRegistry().getAllFlowDescriptors().entrySet()) {
+                                        FlowDescriptor flowDescriptor = registryEntry.getValue();
+
+                                        FlowId flowId = flowDescriptor.getFlowId();
+                                        FlowKey flowKey = new FlowKey(flowId);
+                                        final InstanceIdentifier<Flow> flowInstanceIdentifier = nodeIdent
+                                                .augmentation(FlowCapableNode.class)
+                                                .child(Table.class, flowDescriptor.getTableKey())
+                                                .child(Flow.class, flowKey);
+
+                                        LOG.trace("Deleting flow with id {}", flowInstanceIdentifier);
+                                        deviceContext.addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, flowInstanceIdentifier);
+                                    }
+                                }
+                                deviceContext.getDeviceFlowRegistry().removeMarked();
                                 for (final FlowAndStatisticsMapList flowStat : flowsStatistics.getFlowAndStatisticsMapList()) {
                                     final FlowBuilder flowBuilder = new FlowBuilder(flowStat);
                                     FlowId flowId = null;
                                     FlowHash flowHash = FlowHashFactory.create(flowBuilder.build());
                                     short tableId = flowStat.getTableId();
                                     try {
-                                        flowId = deviceContext.getDeviceFlowRegistry().retrieveIdForFlow(flowHash).getFlowId();
+                                        FlowDescriptor flowDescriptor = deviceContext.getDeviceFlowRegistry().retrieveIdForFlow(flowHash);
+                                        flowId = flowDescriptor.getFlowId();
                                     } catch (FlowRegistryException e) {
+                                        LOG.trace("Flow descriptor for flow hash {} wasn't found.", flowHash.hashCode());
                                         flowId = FlowUtil.createAlienFlowId(tableId);
                                         FlowDescriptor flowDescriptor = FlowDescriptorFactory.create(tableId, flowId);
                                         deviceContext.getDeviceFlowRegistry().store(flowHash, flowDescriptor);
@@ -239,10 +239,6 @@ public final class StatisticsGatheringUtils {
                                     final TableKey tableKey = new TableKey(tableId);
                                     final InstanceIdentifier<FlowCapableNode> fNodeIdent = nodeIdent.augmentation(FlowCapableNode.class);
                                     final InstanceIdentifier<Flow> flowIdent = fNodeIdent.child(Table.class, tableKey).child(Flow.class, flowKey);
-                                    if (logFirstTime) {
-                                        logFirstTime = false;
-                                        LOG.info("Writing flow statistics to operational DS.");
-                                    }
                                     deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, flowIdent, flowBuilder.build());
                                 }
                             }
