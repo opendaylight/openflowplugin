@@ -15,7 +15,9 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
@@ -43,6 +45,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.Upda
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.OriginalFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.UpdatedFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
+import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -110,17 +113,29 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
                     public ListenableFuture<RpcResult<Void>> apply(final DataCrate<RemoveFlowOutput> data) {
                         final FlowModInputBuilder ofFlowModInput = FlowConvertor.toFlowModInput(input, version,
                                 datapathId);
-                        ListenableFuture future = createResultForFlowMod(data, ofFlowModInput);
+                        final ListenableFuture<RpcResult<Void>> future = createResultForFlowMod(data, ofFlowModInput);
                         Futures.addCallback(future, new FutureCallback() {
                             @Override
                             public void onSuccess(final Object o) {
                                 FlowHash flowHash = FlowHashFactory.create(input);
-                                deviceContext.getDeviceFlowRegistry().remove(flowHash);
+                                deviceContext.getDeviceFlowRegistry().markToBeremoved(flowHash);
                             }
 
                             @Override
                             public void onFailure(final Throwable throwable) {
-                                //NOOP
+                                StringBuffer errors = new StringBuffer();
+                                try {
+                                    RpcResult<Void> result = future.get();
+                                    Collection<RpcError> rpcErrors = result.getErrors();
+                                    if (null != rpcErrors && rpcErrors.size() > 0) {
+                                        for (RpcError rpcError : rpcErrors) {
+                                            errors.append(rpcError.getMessage());
+                                        }
+                                    }
+                                } catch (InterruptedException | ExecutionException e) {
+                                    LOG.trace("Flow modification failed. Can't read errors from RpcResult.");
+                                }
+                                LOG.trace("Flow modification failed. Errors : {}", errors.toString());
                             }
                         });
                         return future;
@@ -158,7 +173,7 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
             @Override
             public void onSuccess(final Object o) {
                 FlowHash flowHash = FlowHashFactory.create(original);
-                deviceContext.getDeviceFlowRegistry().remove(flowHash);
+                deviceContext.getDeviceFlowRegistry().markToBeremoved(flowHash);
 
                 flowHash = FlowHashFactory.create(updated);
                 FlowId flowId = input.getFlowRef().getValue().firstKeyOf(Flow.class, FlowKey.class).getId();

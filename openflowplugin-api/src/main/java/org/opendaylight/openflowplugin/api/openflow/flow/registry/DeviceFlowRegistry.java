@@ -20,7 +20,9 @@ public interface DeviceFlowRegistry {
 
     void store(FlowHash flowHash, FlowDescriptor flowDescriptor);
 
-    void remove(FlowHash flowHash);
+    void markToBeremoved(FlowHash flowHash);
+
+    void removeMarked();
 
     Map<FlowHash, FlowDescriptor> getAllFlowDescriptors();
 }
