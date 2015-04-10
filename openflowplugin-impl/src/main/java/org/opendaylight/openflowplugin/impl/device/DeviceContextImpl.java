@@ -43,7 +43,6 @@ import org.opendaylight.openflowplugin.impl.flow.registry.DeviceFlowRegistryImpl
 import org.opendaylight.openflowplugin.impl.translator.PacketReceivedTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SwitchConnectionCookieOFImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnectorBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorBuilder;
@@ -297,17 +296,14 @@ public class DeviceContextImpl implements DeviceContext {
         FlowCapableNodeConnector flowCapableNodeConnector = messageTranslator.translate(portStatus, this, null);
 
         final KeyedInstanceIdentifier<NodeConnector, NodeConnectorKey> iiToNodeConnector = provideIIToNodeConnector(portStatus.getPortNo(), portStatus.getVersion());
-        if (portStatus.getReason().equals(PortReason.OFPPRADD) ) {
+        if (portStatus.getReason().equals(PortReason.OFPPRADD) || portStatus.getReason().equals(PortReason.OFPPRMODIFY)) {
             // because of ADD status node connector has to be created
             createNodeConnectorInDS(iiToNodeConnector);
+            final InstanceIdentifier<FlowCapableNodeConnector> iiToFlowCapableNodeConnector = iiToNodeConnector.augmentation(FlowCapableNodeConnector.class);
+            writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToFlowCapableNodeConnector, flowCapableNodeConnector);
         } else if (portStatus.getReason().equals(PortReason.OFPPRDELETE) ) {
-            //only put operation over datastore is available. therefore delete is
-            //inserting of empty FlowCapableNodeConnector
-            flowCapableNodeConnector = new FlowCapableNodeConnectorBuilder().build();
+            addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector);
         }
-
-        final InstanceIdentifier<FlowCapableNodeConnector> iiToFlowCapableNodeConnector = iiToNodeConnector.augmentation(FlowCapableNodeConnector.class);
-        writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToFlowCapableNodeConnector, flowCapableNodeConnector);
     }
 
     private void createNodeConnectorInDS(final KeyedInstanceIdentifier<NodeConnector, NodeConnectorKey> iiToNodeConnector) {
