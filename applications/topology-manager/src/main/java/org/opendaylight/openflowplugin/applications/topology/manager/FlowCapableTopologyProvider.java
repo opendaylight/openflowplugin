@@ -53,8 +53,8 @@ public class FlowCapableTopologyProvider extends AbstractBindingAwareProvider im
         final OperationProcessor processor = new OperationProcessor(dataBroker);
         final FlowCapableTopologyExporter listener = new FlowCapableTopologyExporter(processor, path);
         this.listenerRegistration = notificationService.registerNotificationListener(listener);
-        linkChangeListener = new LinkChangeListenerImpl(dataBroker);
-        nodeChangeListener = new NodeChangeListenerImpl(dataBroker);
+        linkChangeListener = new LinkChangeListenerImpl(dataBroker, processor);
+        nodeChangeListener = new NodeChangeListenerImpl(dataBroker, processor);
 
         final ReadWriteTransaction tx = dataBroker.newReadWriteTransaction();
         tx.put(LogicalDatastoreType.OPERATIONAL, path, new TopologyBuilder().setKey(key).build(), true);
