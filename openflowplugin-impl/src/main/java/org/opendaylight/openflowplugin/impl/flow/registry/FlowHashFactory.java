@@ -11,7 +11,6 @@ package org.opendaylight.openflowplugin.impl.flow.registry;
 import org.opendaylight.openflowplugin.api.openflow.flow.registry.FlowHash;
 import org.opendaylight.openflowplugin.impl.util.HashUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 8.4.2015.
@@ -28,9 +27,7 @@ public class FlowHashFactory {
     }
 
     private static int calculateHash(Flow flow) {
-        int hash = 0;
-        Match match = flow.getMatch();
-        hash = HashUtil.calculateMatchHash(match);
+        int hash = HashUtil.calculateMatchHash(flow.getMatch());
         hash += flow.getPriority();
         hash += flow.getTableId();
         hash += flow.getCookie().hashCode();
