@@ -31,6 +31,8 @@ public class FlowCapableTopologyProvider extends AbstractBindingAwareProvider im
     private final static Logger LOG = LoggerFactory.getLogger(FlowCapableTopologyProvider.class);
     private ListenerRegistration<NotificationListener> listenerRegistration;
     private Thread thread;
+    private LinkChangeListenerImpl linkChangeListener;
+    private NodeChangeListenerImpl nodeChangeListener;
 
     /**
      * Gets called on start of a bundle.
@@ -51,6 +53,8 @@ public class FlowCapableTopologyProvider extends AbstractBindingAwareProvider im
         final OperationProcessor processor = new OperationProcessor(dataBroker);
         final FlowCapableTopologyExporter listener = new FlowCapableTopologyExporter(processor, path);
         this.listenerRegistration = notificationService.registerNotificationListener(listener);
+        linkChangeListener = new LinkChangeListenerImpl(dataBroker);
+        nodeChangeListener = new NodeChangeListenerImpl(dataBroker);
 
         final ReadWriteTransaction tx = dataBroker.newReadWriteTransaction();
         tx.put(LogicalDatastoreType.OPERATIONAL, path, new TopologyBuilder().setKey(key).build(), true);
@@ -77,10 +81,22 @@ public class FlowCapableTopologyProvider extends AbstractBindingAwareProvider im
             }
             listenerRegistration = null;
         }
+        unregisterListener(linkChangeListener);
+        unregisterListener(nodeChangeListener);
         if (thread != null) {
             thread.interrupt();
             thread.join();
             thread = null;
+        }
+    }
+
+    private void unregisterListener(final AutoCloseable listenerToClose) {
+        if (listenerToClose != null) {
+            try {
+                listenerToClose.close();
+            } catch (Exception e) {
+                LOG.error("Failed to close listener registration", e);
+            }
         }
     }
 
