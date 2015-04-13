@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.Set;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.yangtools.yang.binding.DataObject;
-
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker;
@@ -25,8 +24,9 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 public class LinkChangeListenerImpl implements DataChangeListener, AutoCloseable {
     private final ListenerRegistration<DataChangeListener> dataChangeListenerRegistration;
+    private OperationProcessor operationProcessor;
 
-    public LinkChangeListenerImpl(final DataBroker dataBroker) {
+    public LinkChangeListenerImpl(final DataBroker dataBroker, final OperationProcessor operationProcessor) {
         dataChangeListenerRegistration = dataBroker.registerDataChangeListener(
                 LogicalDatastoreType.OPERATIONAL,
                 InstanceIdentifier.builder(Nodes.class)
@@ -35,6 +35,7 @@ public class LinkChangeListenerImpl implements DataChangeListener, AutoCloseable
                         .augmentation(FlowCapableNodeConnector.class)
                         .build(),
                 this, AsyncDataBroker.DataChangeScope.BASE);
+        this.operationProcessor = operationProcessor;
     }
 
     @Override
