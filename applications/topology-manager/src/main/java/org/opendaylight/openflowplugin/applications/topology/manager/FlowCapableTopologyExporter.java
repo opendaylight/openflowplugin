@@ -40,9 +40,6 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collections;
-import java.util.List;
-
 import static org.opendaylight.openflowplugin.applications.topology.manager.FlowCapableNodeMapping.getNodeConnectorKey;
 import static org.opendaylight.openflowplugin.applications.topology.manager.FlowCapableNodeMapping.getNodeKey;
 import static org.opendaylight.openflowplugin.applications.topology.manager.FlowCapableNodeMapping.toTerminationPoint;
@@ -72,7 +69,7 @@ class FlowCapableTopologyExporter implements FlowTopologyDiscoveryListener, Open
         processor.enqueueOperation(new TopologyOperation() {
             @Override
             public void applyOperation(ReadWriteTransaction transaction) {
-                    removeAffectedLinks(nodeId, transaction);
+                    TopologyManagerUtil.removeAffectedLinks(nodeId, transaction, topology);
                     transaction.delete(LogicalDatastoreType.OPERATIONAL, nodeInstance);
             }
 
@@ -124,7 +121,7 @@ class FlowCapableTopologyExporter implements FlowTopologyDiscoveryListener, Open
                     LOG.error("Error occured when trying to read NodeConnector ", e);
                 }
                 if (nodeOptional.isPresent()) {
-                    removeAffectedLinks(tpId, transaction);
+                    TopologyManagerUtil.removeAffectedLinks(tpId, transaction, topology);
                     transaction.delete(LogicalDatastoreType.OPERATIONAL, tpInstance);
                 }
             }
@@ -151,7 +148,7 @@ class FlowCapableTopologyExporter implements FlowTopologyDiscoveryListener, Open
                     transaction.merge(LogicalDatastoreType.OPERATIONAL, path, point, true);
                     if ((fcncu.getState() != null && fcncu.getState().isLinkDown())
                             || (fcncu.getConfiguration() != null && fcncu.getConfiguration().isPORTDOWN())) {
-                        removeAffectedLinks(point.getTpId(), transaction);
+                        TopologyManagerUtil.removeAffectedLinks(point.getTpId(), transaction, topology);
                     }
                 }
 
@@ -169,7 +166,7 @@ class FlowCapableTopologyExporter implements FlowTopologyDiscoveryListener, Open
             @Override
             public void applyOperation(final ReadWriteTransaction transaction) {
                 final Link link = toTopologyLink(notification);
-                final InstanceIdentifier<Link> path = linkPath(link);
+                final InstanceIdentifier<Link> path = TopologyManagerUtil.linkPath(link, topology);
                 transaction.merge(LogicalDatastoreType.OPERATIONAL, path, link, true);
             }
 
@@ -194,12 +191,12 @@ class FlowCapableTopologyExporter implements FlowTopologyDiscoveryListener, Open
                 try {
                     // read that checks if link exists (if we do not do this we might get an exception on delete)
                     linkOptional = transaction.read(LogicalDatastoreType.OPERATIONAL,
-                            linkPath(toTopologyLink(notification))).checkedGet();
+                            TopologyManagerUtil.linkPath(toTopologyLink(notification), topology)).checkedGet();
                 } catch (ReadFailedException e) {
                     LOG.error("Error occured when trying to read Link ", e);
                 }
                 if (linkOptional.isPresent()) {
-                    transaction.delete(LogicalDatastoreType.OPERATIONAL, linkPath(toTopologyLink(notification)));
+                    transaction.delete(LogicalDatastoreType.OPERATIONAL, TopologyManagerUtil.linkPath(toTopologyLink(notification), topology));
                 }
             }
 
@@ -227,59 +224,7 @@ class FlowCapableTopologyExporter implements FlowTopologyDiscoveryListener, Open
         return tpPath(toTopologyNodeId(invNodeKey.getId()), toTerminationPointId(invNodeConnectorKey.getId()));
     }
 
-    private void removeAffectedLinks(final NodeId id, final ReadWriteTransaction transaction) {
-        Optional<Topology> topologyOptional = Optional.absent();
-        try {
-            topologyOptional = transaction.read(LogicalDatastoreType.OPERATIONAL, topology).checkedGet();
-        } catch (ReadFailedException e) {
-            LOG.error("Error reading topology data for topology {}", topology, e);
-        }
-        if (topologyOptional.isPresent()) {
-            removeAffectedLinks(id, topologyOptional, transaction);
-        }
-    }
 
-    private void removeAffectedLinks(final NodeId id, Optional<Topology> topologyOptional, ReadWriteTransaction transaction) {
-        if (!topologyOptional.isPresent()) {
-            return;
-        }
-
-        List<Link> linkList = topologyOptional.get().getLink() != null ?
-                topologyOptional.get().getLink() : Collections.<Link> emptyList();
-        for (Link link : linkList) {
-            if (id.equals(link.getSource().getSourceNode()) ||
-                    id.equals(link.getDestination().getDestNode())) {
-                transaction.delete(LogicalDatastoreType.OPERATIONAL, linkPath(link));
-            }
-        }
-    }
-
-    private void removeAffectedLinks(final TpId id, final ReadWriteTransaction transaction) {
-        Optional<Topology> topologyOptional = Optional.absent();
-        try {
-            topologyOptional = transaction.read(LogicalDatastoreType.OPERATIONAL, topology).checkedGet();
-        } catch (ReadFailedException e) {
-            LOG.error("Error reading topology data for topology {}", topology, e);
-        }
-        if (topologyOptional.isPresent()) {
-            removeAffectedLinks(id, topologyOptional, transaction);
-        }
-    }
-
-    private void removeAffectedLinks(final TpId id, Optional<Topology> topologyOptional, ReadWriteTransaction transaction) {
-        if (!topologyOptional.isPresent()) {
-            return;
-        }
-
-        List<Link> linkList = topologyOptional.get().getLink() != null
-                ? topologyOptional.get().getLink() : Collections.<Link> emptyList();
-        for (Link link : linkList) {
-            if (id.equals(link.getSource().getSourceTp()) ||
-                    id.equals(link.getDestination().getDestTp())) {
-                transaction.delete(LogicalDatastoreType.OPERATIONAL, linkPath(link));
-            }
-        }
-    }
 
     private InstanceIdentifier<Node> getNodePath(final NodeId nodeId) {
         return topology.child(Node.class, new NodeKey(nodeId));
@@ -291,7 +236,4 @@ class FlowCapableTopologyExporter implements FlowTopologyDiscoveryListener, Open
         return topology.child(Node.class, nodeKey).child(TerminationPoint.class, tpKey);
     }
 
-    private InstanceIdentifier<Link> linkPath(final Link link) {
-        return topology.child(Link.class, link.getKey());
-    }
 }
