@@ -228,7 +228,8 @@ public class DeviceContextImpl implements DeviceContext {
                 LOG.error("Closing RequestContext failed: ", e);
             }
         } else {
-            LOG.error("Can't find request context registered for xid : {}", ofHeader.getXid());
+            LOG.error("Can't find request context registered for xid : {}. Type of reply: {}. From address: {}", ofHeader.getXid(), ofHeader.getClass().getName(),
+                    getPrimaryConnectionContext().getConnectionAdapter().getRemoteAddress());
         }
     }
 
@@ -249,7 +250,8 @@ public class DeviceContextImpl implements DeviceContext {
                 LOG.error("Closing RequestContext failed: ", e);
             }
         } else {
-            LOG.error("Can't find request context registered for xid : {}", xid.getValue());
+            LOG.error("Can't find request context registered for xid : {}. Type of reply: MULTIPART. From address: {}", xid.getValue(),
+                    getPrimaryConnectionContext().getConnectionAdapter().getRemoteAddress());
         }
     }
 

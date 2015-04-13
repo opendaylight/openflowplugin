@@ -9,6 +9,8 @@ package org.opendaylight.openflowplugin.impl.services;
 
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 
 import com.google.common.base.Function;
@@ -27,6 +29,10 @@ import org.slf4j.Logger;
 import java.util.concurrent.Future;
 
 public class SalGroupServiceImpl extends CommonService implements SalGroupService {
+
+    public SalGroupServiceImpl(RequestContextStack requestContextStack, DeviceContext deviceContext) {
+        super(requestContextStack, deviceContext);
+    }
 
     private static final Logger LOG = org.slf4j.LoggerFactory.getLogger(SalGroupServiceImpl.class);
 
