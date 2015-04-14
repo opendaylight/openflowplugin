@@ -26,9 +26,9 @@ import org.slf4j.LoggerFactory;
  */
 public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
 
-    private static final Map<FlowHash, FlowDescriptor> flowRegistry = new HashMap<>();
-    private static final List<FlowHash> marks = new ArrayList();
-    private static final Logger LOG = LoggerFactory.getLogger(DeviceFlowRegistryImpl.class);
+    private final Map<FlowHash, FlowDescriptor> flowRegistry = new HashMap<>();
+    private final List<FlowHash> marks = new ArrayList();
+    private final Logger LOG = LoggerFactory.getLogger(DeviceFlowRegistryImpl.class);
 
     @Override
     public FlowDescriptor retrieveIdForFlow(final FlowHash flowHash) throws FlowRegistryException {
