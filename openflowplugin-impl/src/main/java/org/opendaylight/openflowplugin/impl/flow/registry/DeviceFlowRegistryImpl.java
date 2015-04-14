@@ -13,10 +13,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.opendaylight.openflowplugin.api.openflow.flow.registry.DeviceFlowRegistry;
-import org.opendaylight.openflowplugin.api.openflow.flow.registry.FlowDescriptor;
-import org.opendaylight.openflowplugin.api.openflow.flow.registry.FlowHash;
-import org.opendaylight.openflowplugin.api.openflow.flow.registry.FlowRegistryException;
+import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
+import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
+import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowHash;
+import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

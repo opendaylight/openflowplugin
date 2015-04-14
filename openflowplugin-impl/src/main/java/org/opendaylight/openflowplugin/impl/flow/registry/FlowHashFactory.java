@@ -8,7 +8,7 @@
 
 package org.opendaylight.openflowplugin.impl.flow.registry;
 
-import org.opendaylight.openflowplugin.api.openflow.flow.registry.FlowHash;
+import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowHash;
 import org.opendaylight.openflowplugin.impl.util.HashUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow;
 

@@ -9,12 +9,12 @@
 package org.opendaylight.openflowplugin.impl.flow.registry;
 
 import com.google.common.base.Preconditions;
-import org.opendaylight.openflowplugin.api.openflow.flow.registry.FlowDescriptor;
+import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
 
 /**
- * This class serves as factory for creating {@link org.opendaylight.openflowplugin.api.openflow.flow.registry.FlowDescriptor}
+ * This class serves as factory for creating {@link org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor}
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 9.4.2015.
  */
 public class FlowDescriptorFactory {

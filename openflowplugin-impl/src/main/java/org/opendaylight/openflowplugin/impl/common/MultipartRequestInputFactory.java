@@ -13,6 +13,7 @@ import java.math.BigInteger;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartRequestFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
@@ -52,6 +53,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestTableFeaturesCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestTableFeaturesCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.flow._case.MultipartRequestFlowBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.group._case.MultipartRequestGroupBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.meter._case.MultipartRequestMeterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.port.stats._case.MultipartRequestPortStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.queue._case.MultipartRequestQueueBuilder;
@@ -195,7 +197,12 @@ public final class MultipartRequestInputFactory {
                 multipartRequestQueueCaseBuilder.setMultipartRequestQueue(multipartRequestQueueBuilder.build());
                 return multipartRequestQueueCaseBuilder.build();
             case OFPMPGROUP:
-                return new MultipartRequestGroupCaseBuilder().build();
+                MultipartRequestGroupCaseBuilder multipartRequestGroupCaseBuilder = new MultipartRequestGroupCaseBuilder();
+                MultipartRequestGroupBuilder multipartRequestGroupBuilder = new MultipartRequestGroupBuilder();
+                GroupId groupId = new GroupId(OFConstants.OFPG_ANY);
+                multipartRequestGroupBuilder.setGroupId(groupId);
+                multipartRequestGroupCaseBuilder.setMultipartRequestGroup(multipartRequestGroupBuilder.build());
+                return multipartRequestGroupCaseBuilder.build();
             case OFPMPGROUPDESC:
                 return new MultipartRequestGroupDescCaseBuilder().build();
             case OFPMPGROUPFEATURES:
