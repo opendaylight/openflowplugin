@@ -9,6 +9,8 @@ package org.opendaylight.openflowplugin.impl.services;
 
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import com.google.common.base.Function;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.MeterConvertor;
@@ -28,6 +30,10 @@ import java.util.concurrent.Future;
 public class SalMeterServiceImpl extends CommonService implements SalMeterService {
 
     private static final Logger LOG = org.slf4j.LoggerFactory.getLogger(SalMeterServiceImpl.class);
+
+    public SalMeterServiceImpl(RequestContextStack requestContextStack, DeviceContext deviceContext) {
+        super(requestContextStack, deviceContext);
+    }
 
     @Override
     public Future<RpcResult<AddMeterOutput>> addMeter(final AddMeterInput input) {
