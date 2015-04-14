@@ -7,10 +7,12 @@
  */
 package org.opendaylight.openflowplugin.applications.topology.manager;
 
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.topology.inventory.rev131030.InventoryNodeConnector;
 
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.topology.inventory.rev131030.InventoryNodeConnectorBuilder;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPointBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
@@ -35,12 +37,8 @@ public class TerminationPointChangeListenerImpl extends DataChangeListenerImpl {
     private final static Logger LOG = LoggerFactory.getLogger(TerminationPointChangeListenerImpl.class);
 
     public TerminationPointChangeListenerImpl(final DataBroker dataBroker, final OperationProcessor operationProcessor) {
-        super(operationProcessor, dataBroker,
-                InstanceIdentifier.builder(Nodes.class)
-                .child(Node.class)
-                .child(NodeConnector.class)
-                .augmentation(FlowCapableNodeConnector.class)
-                .build());
+        super(operationProcessor, dataBroker, InstanceIdentifier.builder(Nodes.class).child(Node.class)
+                .child(NodeConnector.class).augmentation(FlowCapableNodeConnector.class).build());
         this.operationProcessor = operationProcessor;
     }
 
@@ -56,7 +54,8 @@ public class TerminationPointChangeListenerImpl extends DataChangeListenerImpl {
      */
     private void processRemovedTerminationPoints(Set<InstanceIdentifier<?>> removedNodes) {
         for (final InstanceIdentifier<?> removedNode : removedNodes) {
-            InstanceIdentifier<TerminationPoint> iiToTopologyTerminationPoint = provideIIToTopologyTerminationPoint(provideTopologyTerminationPointId(removedNode), removedNode);
+            InstanceIdentifier<TerminationPoint> iiToTopologyTerminationPoint = provideIIToTopologyTerminationPoint(
+                    provideTopologyTerminationPointId(removedNode), removedNode);
             if (iiToTopologyTerminationPoint != null) {
                 operationProcessor.enqueueOperation(new TopologyOperation() {
 
@@ -86,26 +85,39 @@ public class TerminationPointChangeListenerImpl extends DataChangeListenerImpl {
     }
 
     protected void createData(InstanceIdentifier<?> iiToNodeInInventory, final DataObject data) {
-        final TerminationPointBuilder terminationPointBuilder = new TerminationPointBuilder();
-
         TpId terminationPointIdInTopology = provideTopologyTerminationPointId(iiToNodeInInventory);
         if (terminationPointIdInTopology != null) {
-            terminationPointBuilder.setTpId(terminationPointIdInTopology);
-            InstanceIdentifier<TerminationPoint> iiToTopologyTerminationPoint = provideIIToTopologyTerminationPoint(terminationPointIdInTopology, iiToNodeInInventory);
-            sendToTransactionChain(terminationPointBuilder.build(), iiToTopologyTerminationPoint);
+            InstanceIdentifier<TerminationPoint> iiToTopologyTerminationPoint = provideIIToTopologyTerminationPoint(
+                    terminationPointIdInTopology, iiToNodeInInventory);
+            sendToTransactionChain(prepareTopologyTerminationPoint(terminationPointIdInTopology, iiToNodeInInventory),
+                    iiToTopologyTerminationPoint);
         } else {
             LOG.debug("Inventory node connector key is null. Data can't be written to topology termination point");
         }
+    }
+
+    private TerminationPoint prepareTopologyTerminationPoint(final TpId terminationPointIdInTopology,
+            final InstanceIdentifier<?> iiToNodeInInventory) {
+        final InventoryNodeConnector inventoryNodeConnector = new InventoryNodeConnectorBuilder()
+                .setInventoryNodeConnectorRef(
+                        new NodeConnectorRef(iiToNodeInInventory.firstIdentifierOf(NodeConnector.class))).build();
+
+        final TerminationPointBuilder terminationPointBuilder = new TerminationPointBuilder();
+        terminationPointBuilder.setTpId(terminationPointIdInTopology);
+        terminationPointBuilder.addAugmentation(InventoryNodeConnector.class, inventoryNodeConnector);
+        return terminationPointBuilder.build();
     }
 
     /**
      * @param terminationPointIdInTopology
      * @return
      */
-    private InstanceIdentifier<TerminationPoint> provideIIToTopologyTerminationPoint(TpId terminationPointIdInTopology, InstanceIdentifier<?> iiToNodeInInventory) {
+    private InstanceIdentifier<TerminationPoint> provideIIToTopologyTerminationPoint(TpId terminationPointIdInTopology,
+            InstanceIdentifier<?> iiToNodeInInventory) {
         NodeId nodeIdInTopology = provideTopologyNodeId(iiToNodeInInventory);
         InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node> iiToTopologyNode = provideIIToTopologyNode(nodeIdInTopology);
-        return iiToTopologyNode.builder().child(TerminationPoint.class, new TerminationPointKey(terminationPointIdInTopology)).build();
+        return iiToTopologyNode.builder()
+                .child(TerminationPoint.class, new TerminationPointKey(terminationPointIdInTopology)).build();
     }
 
     /**
@@ -113,7 +125,8 @@ public class TerminationPointChangeListenerImpl extends DataChangeListenerImpl {
      * @return
      */
     private TpId provideTopologyTerminationPointId(InstanceIdentifier<?> iiToNodeInInventory) {
-        NodeConnectorKey inventoryNodeConnectorKey = iiToNodeInInventory.firstKeyOf(NodeConnector.class, NodeConnectorKey.class);
+        NodeConnectorKey inventoryNodeConnectorKey = iiToNodeInInventory.firstKeyOf(NodeConnector.class,
+                NodeConnectorKey.class);
         if (inventoryNodeConnectorKey != null) {
             return new TpId(inventoryNodeConnectorKey.getId().getValue());
         }

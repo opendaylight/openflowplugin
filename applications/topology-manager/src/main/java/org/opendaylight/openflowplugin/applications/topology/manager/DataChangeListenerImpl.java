@@ -63,7 +63,7 @@ public abstract class DataChangeListenerImpl implements DataChangeListener, Auto
 
             @Override
             public void applyOperation(ReadWriteTransaction transaction) {
-                transaction.put(LogicalDatastoreType.OPERATIONAL, iiToTopologyNode, node);
+                transaction.merge(LogicalDatastoreType.OPERATIONAL, iiToTopologyNode, node, true);
             }
         });
     }
