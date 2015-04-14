@@ -17,7 +17,7 @@ import java.util.HashSet;
 import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
-import org.opendaylight.openflowplugin.api.openflow.flow.registry.FlowHash;
+import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowHash;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowsStatisticsUpdate;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowsStatisticsUpdateBuilder;

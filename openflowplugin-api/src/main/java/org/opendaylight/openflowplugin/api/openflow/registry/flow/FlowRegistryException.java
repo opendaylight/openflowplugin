@@ -6,12 +6,18 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.openflowplugin.api.openflow.flow.registry;
+package org.opendaylight.openflowplugin.api.openflow.registry.flow;
 
 /**
- * Marker interface identifying flow stored in OFP local flow registry.
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 8.4.2015.
  */
-public interface FlowHash {
+public class FlowRegistryException extends Exception {
 
+    public FlowRegistryException(final String message) {
+        super(message);
+    }
+
+    public FlowRegistryException(final String message, final Throwable cause) {
+        super(message, cause);
+    }
 }
