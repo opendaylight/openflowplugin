@@ -43,13 +43,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.flow.table.statistics.FlowTableStatisticsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.queues.Queue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.queues.QueueKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GroupDescStatsUpdated;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.NodeGroupDescStats;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.NodeGroupDescStatsBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.group.desc.GroupDescBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.desc.stats.reply.GroupDescStats;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GroupStatisticsUpdated;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.NodeGroupStatistics;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.group.statistics.GroupStatistics;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.group.statistics.GroupStatisticsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply.GroupStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
@@ -118,19 +117,19 @@ public final class StatisticsGatheringUtils {
                         final List<? extends DataObject> multipartDataList = MULTIPART_REPLY_TRANSLATOR.translate(deviceContext, singleReply);
                         for (final DataObject singleMultipartData : multipartDataList) {
                             boolean logFirstTime = true;
-                            if (singleMultipartData instanceof GroupDescStatsUpdated) {
-                                final GroupDescStatsUpdated groupDescStatsUpdated = (GroupDescStatsUpdated) singleMultipartData;
-                                for (final GroupDescStats groupDescStats : groupDescStatsUpdated.getGroupDescStats()) {
-                                    final InstanceIdentifier<Node> nodeIdent = InstanceIdentifier
-                                            .create(Nodes.class).child(Node.class, new NodeKey(groupDescStatsUpdated.getId()));
-                                    final InstanceIdentifier<FlowCapableNode> fNodeIdent = nodeIdent.augmentation(FlowCapableNode.class);
-                                    final GroupKey groupKey = new GroupKey(groupDescStats.getGroupId());
-                                    final InstanceIdentifier<Group> groupRef = fNodeIdent.child(Group.class, groupKey);
-                                    final GroupBuilder groupBuilder = new GroupBuilder(groupDescStats);
-                                    final NodeGroupDescStatsBuilder groupDesc = new NodeGroupDescStatsBuilder();
-                                    groupDesc.setGroupDesc(new GroupDescBuilder(groupDescStats).build());
-                                    groupBuilder.addAugmentation(NodeGroupDescStats.class, groupDesc.build());
-                                    deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, groupRef, groupBuilder.build());
+                            if (singleMultipartData instanceof GroupStatisticsUpdated) {
+                                final GroupStatisticsUpdated groupStatistics = (GroupStatisticsUpdated) singleMultipartData;
+                                final InstanceIdentifier<Node> nodeIdent = InstanceIdentifier
+                                        .create(Nodes.class).child(Node.class, new NodeKey(groupStatistics.getId()));
+                                final InstanceIdentifier<FlowCapableNode> fNodeIdent = nodeIdent.augmentation(FlowCapableNode.class);
+
+                                for (final GroupStats groupStats : groupStatistics.getGroupStats()) {
+                                    final InstanceIdentifier<Group> groupIdent = fNodeIdent.child(Group.class, new GroupKey(groupStats.getGroupId()));
+                                    final InstanceIdentifier<NodeGroupStatistics> nGroupStatIdent = groupIdent
+                                            .augmentation(NodeGroupStatistics.class);
+                                    final InstanceIdentifier<GroupStatistics> gsIdent = nGroupStatIdent.child(GroupStatistics.class);
+                                    final GroupStatistics stats = new GroupStatisticsBuilder(groupStats).build();
+                                    deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, gsIdent, stats);
                                 }
                             }
 
