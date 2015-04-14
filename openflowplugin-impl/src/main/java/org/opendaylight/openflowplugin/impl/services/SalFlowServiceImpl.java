@@ -82,21 +82,25 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
 
     @Override
     public Future<RpcResult<AddFlowOutput>> addFlow(final AddFlowInput input) {
+
+        final FlowId flowId = input.getFlowRef().getValue().firstKeyOf(Flow.class, FlowKey.class).getId();
+
+        final FlowHash flowHash = FlowHashFactory.create(input);
+        final FlowDescriptor flowDescriptor = FlowDescriptorFactory.create(input.getTableId(), flowId);
+        deviceContext.getDeviceFlowRegistry().store(flowHash, flowDescriptor);
+
         final List<FlowModInputBuilder> ofFlowModInputs = FlowConvertor.toFlowModInputs(input, version, datapathId);
         final ListenableFuture future = processFlowModInputBuilders(ofFlowModInputs);
-        final FlowId flowId = input.getFlowRef().getValue().firstKeyOf(Flow.class, FlowKey.class).getId();
 
         Futures.addCallback(future, new FutureCallback() {
             @Override
             public void onSuccess(final Object o) {
-                FlowHash flowHash = FlowHashFactory.create(input);
-                FlowDescriptor flowDescriptor = FlowDescriptorFactory.create(input.getTableId(), flowId);
-                deviceContext.getDeviceFlowRegistry().store(flowHash, flowDescriptor);
                 LOG.debug("flow add finished without error, id={}", flowId.getValue());
             }
 
             @Override
             public void onFailure(final Throwable throwable) {
+                deviceContext.getDeviceFlowRegistry().markToBeremoved(flowHash);
                 LOG.trace("Service call for adding flows failed, id={}.", flowId.getValue(), throwable);
             }
         });
@@ -106,7 +110,7 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
 
     @Override
     public Future<RpcResult<RemoveFlowOutput>> removeFlow(final RemoveFlowInput input) {
-
+        LOG.trace("Calling remove flow for flow with ID ={}.", input.getFlowRef());
         return this.<RemoveFlowOutput, Void>handleServiceCall(PRIMARY_CONNECTION,
                 new Function<DataCrate<RemoveFlowOutput>, ListenableFuture<RpcResult<Void>>>() {
                     @Override
