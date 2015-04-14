@@ -33,6 +33,7 @@ public class FlowCapableTopologyProvider extends AbstractBindingAwareProvider im
     private Thread thread;
     private LinkChangeListenerImpl linkChangeListener;
     private NodeChangeListenerImpl nodeChangeListener;
+    static final String TOPOLOGY_ID = "flow:1";
 
     /**
      * Gets called on start of a bundle.
@@ -44,8 +45,7 @@ public class FlowCapableTopologyProvider extends AbstractBindingAwareProvider im
         final DataBroker dataBroker = session.getSALService(DataBroker.class);
         final NotificationProviderService notificationService = session.getSALService(NotificationProviderService.class);
 
-        final String name = "flow:1";
-        final TopologyKey key = new TopologyKey(new TopologyId(name));
+        final TopologyKey key = new TopologyKey(new TopologyId(TOPOLOGY_ID));
         final InstanceIdentifier<Topology> path = InstanceIdentifier
                 .create(NetworkTopology.class)
                 .child(Topology.class, key);
@@ -66,7 +66,7 @@ public class FlowCapableTopologyProvider extends AbstractBindingAwareProvider im
 
         thread = new Thread(processor);
         thread.setDaemon(true);
-        thread.setName("FlowCapableTopologyExporter-" + name);
+        thread.setName("FlowCapableTopologyExporter-" + TOPOLOGY_ID);
         thread.start();
     }
 

@@ -36,7 +36,6 @@ import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker;
 public class NodeChangeListenerImpl implements DataChangeListener, AutoCloseable {
     private final static Logger LOG = LoggerFactory.getLogger(NodeChangeListenerImpl.class);
 
-    private final static String topologyId = "topology id";
 
     /**
      * instance identifier to Node in network topology model (yangtools)
@@ -44,7 +43,7 @@ public class NodeChangeListenerImpl implements DataChangeListener, AutoCloseable
     private static final InstanceIdentifier<Topology> II_TO_TOPOLOGY =
             InstanceIdentifier
             .builder(NetworkTopology.class)
-            .child(Topology.class, new TopologyKey(new TopologyId(topologyId)))
+            .child(Topology.class, new TopologyKey(new TopologyId(FlowCapableTopologyProvider.TOPOLOGY_ID)))
             .build();
 
     private final ListenerRegistration<DataChangeListener> dataChangeListenerRegistration;
