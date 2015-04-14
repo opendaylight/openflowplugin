@@ -7,15 +7,14 @@
  */
 package org.opendaylight.openflowplugin.applications.topology.manager;
 
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 
-import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.topology.inventory.rev131030.InventoryNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.topology.inventory.rev131030.InventoryNodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TopologyId;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeBuilder;
+import java.util.Set;
+import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.Map.Entry;
@@ -23,44 +22,26 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.Fl
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import java.util.Map;
-import java.util.Set;
-import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker;
 
-public class NodeChangeListenerImpl implements DataChangeListener, AutoCloseable {
+public class NodeChangeListenerImpl extends DataChangeListenerImpl {
     private final static Logger LOG = LoggerFactory.getLogger(NodeChangeListenerImpl.class);
 
-
-    /**
-     * instance identifier to Node in network topology model (yangtools)
-     */
-    private static final InstanceIdentifier<Topology> II_TO_TOPOLOGY =
-            InstanceIdentifier
-            .builder(NetworkTopology.class)
-            .child(Topology.class, new TopologyKey(new TopologyId(FlowCapableTopologyProvider.TOPOLOGY_ID)))
-            .build();
-
-    private final ListenerRegistration<DataChangeListener> dataChangeListenerRegistration;
-    private OperationProcessor operationProcessor;
-
     public NodeChangeListenerImpl(final DataBroker dataBroker, final OperationProcessor operationProcessor) {
-        //TODO: listener on FlowCapableNode. what if node id in Node.class is changed (it won't be caught by this listener)
-        dataChangeListenerRegistration = dataBroker.registerDataChangeListener(LogicalDatastoreType.OPERATIONAL,
-                InstanceIdentifier.builder(Nodes.class).child(Node.class).augmentation(FlowCapableNode.class).build(),
-                this, AsyncDataBroker.DataChangeScope.BASE);
-        this.operationProcessor = operationProcessor;
+        // TODO: listener on FlowCapableNode. what if node id in Node.class is changed (it won't be caught by this
+        // listener)
+        super(operationProcessor, dataBroker, InstanceIdentifier.builder(Nodes.class).child(Node.class)
+                .augmentation(FlowCapableNode.class).build());
     }
 
     @Override
     public void onDataChanged(AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
         processAddedNode(change.getCreatedData());
-        processUpdatedNode(change.getUpdatedData());
+        // processUpdatedNode(change.getUpdatedData());
         processRemovedNode(change.getRemovedPaths());
     }
 
@@ -68,73 +49,64 @@ public class NodeChangeListenerImpl implements DataChangeListener, AutoCloseable
      * @param removedPaths
      */
     private void processRemovedNode(Set<InstanceIdentifier<?>> removedNodes) {
-        for (final InstanceIdentifier<?> removedNode : removedNodes) {
-            operationProcessor.enqueueOperation(new TopologyOperation() {
+        for (InstanceIdentifier<?> removedNode : removedNodes) {
+            final InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node> iiToTopologyRemovedNode = provideIIToTopologyNode(provideTopologyNodeId(removedNode));
+            if (iiToTopologyRemovedNode != null) {
+                operationProcessor.enqueueOperation(new TopologyOperation() {
 
-                @Override
-                public void applyOperation(ReadWriteTransaction transaction) {
-                    transaction.delete(LogicalDatastoreType.OPERATIONAL, removedNode);
-                }
-            });
+                    @Override
+                    public void applyOperation(ReadWriteTransaction transaction) {
+                        transaction.delete(LogicalDatastoreType.OPERATIONAL, iiToTopologyRemovedNode);
+                    }
+                });
+            } else {
+                LOG.debug("Instance identifier to inventory wasn't translated to topology while deleting node.");
+            }
         }
     }
 
     /**
      * @param updatedData
      */
-    private void processUpdatedNode(Map<InstanceIdentifier<?>, DataObject> updatedData) {
-        //TODO: only node id is used from incomming data object.
-        //if it is changed what should happen? Listener is on FlocCapableNode so change
-        //of node id (only data which are used) isn't caught.
-    }
+    // private void processUpdatedNode(Map<InstanceIdentifier<?>, DataObject> updatedData) {
+    // //TODO: only node id is used from incomming data object.
+    // //if it is changed what should happen? Listener is on FlocCapableNode so change
+    // //of node id (only data which are used) isn't caught.
+    // }
 
     /**
      * @param createdData
      */
     private void processAddedNode(Map<InstanceIdentifier<?>, DataObject> addedDatas) {
         for (Entry<InstanceIdentifier<?>, DataObject> addedData : addedDatas.entrySet()) {
-            if (addedData.getValue() instanceof FlowCapableNode) {
-                createNewNodeInTopology(addedData.getKey(), (FlowCapableNode) (addedData.getValue()));
-            } else {
-                LOG.debug("Expected data of type FlowCapableNode but {} was obtainedl", addedData.getClass().getName());
-            }
+            createData(addedData.getKey());
         }
-
     }
 
-    /**
-     * @param iiToNodeInInventory
-     * @param addedData
-     */
-    private void createNewNodeInTopology(InstanceIdentifier<?> iiToNodeInInventory, final FlowCapableNode addedData) {
-        final NodeBuilder topologyNodeBuilder = new NodeBuilder();
-        final NodeKey inventoryNodeKey = iiToNodeInInventory.firstKeyOf(Node.class, NodeKey.class);
-        if (inventoryNodeKey != null) {
-            NodeId nodeIdInTopology = new NodeId(inventoryNodeKey.getId().getValue());
-            org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeKey nodeKeyInTopology = new org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeKey(nodeIdInTopology);
-            topologyNodeBuilder.setNodeId(nodeIdInTopology);
-
-            final InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node> iiToTopologyNode = II_TO_TOPOLOGY
-            .builder()
-            .child(org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node.class, nodeKeyInTopology)
-            .build();
-
-            operationProcessor.enqueueOperation(new TopologyOperation() {
-
-                @Override
-                public void applyOperation(ReadWriteTransaction transaction) {
-                    transaction.put(LogicalDatastoreType.OPERATIONAL, iiToTopologyNode, topologyNodeBuilder.build());
-                }
-            });
+    protected void createData(InstanceIdentifier<?> iiToNodeInInventory) {
+        final NodeId nodeIdInTopology = provideTopologyNodeId(iiToNodeInInventory);
+        if (nodeIdInTopology != null) {
+            final InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node> iiToTopologyNode = provideIIToTopologyNode(nodeIdInTopology);
+            sendToTransactionChain(prepareTopologyNode(nodeIdInTopology, iiToNodeInInventory), iiToTopologyNode);
         } else {
             LOG.debug("Inventory node key is null. Data can't be written to topology");
         }
-
     }
 
-    @Override
-    public void close() throws Exception {
-        dataChangeListenerRegistration.close();
-    }
+    /**
+     * @param nodeIdInTopology
+     * @param iiToNodeInInventory
+     * @return
+     */
+    private org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node prepareTopologyNode(NodeId nodeIdInTopology, InstanceIdentifier<?> iiToNodeInInventory) {
+        final InventoryNode inventoryNode = new InventoryNodeBuilder()
+        .setInventoryNodeRef(new NodeRef(iiToNodeInInventory.firstIdentifierOf(Node.class)))
+        .build();
 
+        final NodeBuilder topologyNodeBuilder = new NodeBuilder();
+        topologyNodeBuilder.setNodeId(nodeIdInTopology);
+        topologyNodeBuilder.addAugmentation(InventoryNode.class, inventoryNode);
+
+        return topologyNodeBuilder.build();
+    }
 }
