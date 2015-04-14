@@ -42,6 +42,8 @@ public final class OFConstants {
     /** enum ofp_group: For OFPFC_DELETE* commands, require matching entries to include this as an
      *  output group. A value of OFPG_ANY indicates no restriction. */
     public static final Long OFPG_ANY = ANY;
+    /** enum ofp_group: Represents all groups for group delete commands. */
+    public static final Long OFPG_ALL = 0xfffffffcL;
     /** Refers to all queues conﬁgured at the speciﬁed port. */
     public static final Long OFPQ_ALL = ANY;
     public static final BigInteger DEFAULT_COOKIE = BigInteger.ZERO;

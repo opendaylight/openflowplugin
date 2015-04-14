@@ -12,6 +12,7 @@ import com.google.common.base.Preconditions;
 import java.math.BigInteger;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+import org.opendaylight.openflowjava.protocol.api.util.BinContent;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterId;
@@ -199,7 +200,7 @@ public final class MultipartRequestInputFactory {
             case OFPMPGROUP:
                 MultipartRequestGroupCaseBuilder multipartRequestGroupCaseBuilder = new MultipartRequestGroupCaseBuilder();
                 MultipartRequestGroupBuilder multipartRequestGroupBuilder = new MultipartRequestGroupBuilder();
-                GroupId groupId = new GroupId(OFConstants.OFPG_ANY);
+                GroupId groupId = new GroupId(OFConstants.OFPG_ALL);
                 multipartRequestGroupBuilder.setGroupId(groupId);
                 multipartRequestGroupCaseBuilder.setMultipartRequestGroup(multipartRequestGroupBuilder.build());
                 return multipartRequestGroupCaseBuilder.build();
