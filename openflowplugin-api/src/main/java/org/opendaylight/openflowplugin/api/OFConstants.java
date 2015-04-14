@@ -37,6 +37,7 @@ public final class OFConstants {
     public static final Long ANY = Long.parseLong("ffffffff", 16);
     public static final Long OFPP_ANY = ANY;
     public static final Long OFPG_ANY = ANY;
+    public static final Long OFPG_ALL = 0xfffffffcL;
     public static final Long OFPQ_ANY = ANY;
     public static final BigInteger DEFAULT_COOKIE = BigInteger.ZERO;
     public static final BigInteger DEFAULT_COOKIE_MASK = BigInteger.ZERO;
