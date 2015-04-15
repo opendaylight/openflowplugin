@@ -76,10 +76,11 @@ public class StatisticsContextImpl implements StatisticsContext {
         final ListenableFuture<Boolean> groupDescStatistics = devState.isGroupAvailable() ? wrapLoggingOnStatisticsRequestCall(MultipartType.OFPMPGROUPDESC) : Futures.<Boolean>immediateFuture(null);
         final ListenableFuture<Boolean> groupStatistics = devState.isGroupAvailable() ? wrapLoggingOnStatisticsRequestCall(MultipartType.OFPMPGROUP) : Futures.<Boolean>immediateFuture(null);
 
+        final ListenableFuture<Boolean> meterConfigStatistics = devState.isMetersAvailable() ? wrapLoggingOnStatisticsRequestCall(MultipartType.OFPMPMETERCONFIG) : Futures.<Boolean>immediateFuture(null);
         final ListenableFuture<Boolean> meterStatistics = devState.isMetersAvailable() ? wrapLoggingOnStatisticsRequestCall(MultipartType.OFPMPMETER) : Futures.<Boolean>immediateFuture(null);
 
 
-        final ListenableFuture<List<Boolean>> allFutures = Futures.allAsList(Arrays.asList(flowStatistics, tableStatistics, groupDescStatistics, groupStatistics, meterStatistics, portStatistics, queueStatistics));
+        final ListenableFuture<List<Boolean>> allFutures = Futures.allAsList(Arrays.asList(flowStatistics, tableStatistics, groupDescStatistics, groupStatistics, meterConfigStatistics, meterStatistics, portStatistics, queueStatistics));
         final SettableFuture<Void> resultingFuture = SettableFuture.create();
         Futures.addCallback(allFutures, new FutureCallback<List<Boolean>>() {
             @Override

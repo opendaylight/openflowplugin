@@ -28,6 +28,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.Fl
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.MeterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.MeterKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
@@ -60,11 +61,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.No
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.MeterConfigStatsUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.MeterStatisticsUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.NodeMeterStatistics;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.nodes.node.meter.MeterStatistics;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.nodes.node.meter.MeterStatisticsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.config.stats.reply.MeterConfigStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.statistics.reply.MeterStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
@@ -126,7 +129,7 @@ public final class StatisticsGatheringUtils {
                             }
 
                             if (singleMultipartData instanceof MeterStatisticsUpdated) {
-                                processMetersStatistics((MeterStatisticsUpdated) singleMultipartData, deviceContext);
+//                                processMetersStatistics((MeterStatisticsUpdated) singleMultipartData, deviceContext);
                             }
                             if (singleMultipartData instanceof NodeConnectorStatisticsUpdate) {
                                 processNodeConnectorStatistics((NodeConnectorStatisticsUpdate) singleMultipartData, deviceContext);
@@ -143,6 +146,9 @@ public final class StatisticsGatheringUtils {
                             if (singleMultipartData instanceof GroupDescStatsUpdated) {
                                 processGroupDescStats((GroupDescStatsUpdated) singleMultipartData, deviceContext);
                             }
+                            if (singleMultipartData instanceof MeterConfigStatsUpdated) {
+                                processMeterConfigStatsUpdated((MeterConfigStatsUpdated) singleMultipartData, deviceContext);
+                            }
 
                             //TODO : implement experimenter
                         }
@@ -152,6 +158,20 @@ public final class StatisticsGatheringUtils {
                 return Boolean.FALSE;
             }
         });
+    }
+
+    private static void processMeterConfigStatsUpdated(final MeterConfigStatsUpdated meterConfigStatsUpdated, final DeviceContext deviceContext) {
+        NodeId nodeId = meterConfigStatsUpdated.getId();
+        final InstanceIdentifier<FlowCapableNode> fNodeIdent = getFlowCapableNodeInstanceIdentifier(nodeId);
+        deleteAllKnownMeters(deviceContext, fNodeIdent);
+        for (MeterConfigStats meterConfigStats : meterConfigStatsUpdated.getMeterConfigStats()) {
+            final MeterBuilder meterBuilder = new MeterBuilder(meterConfigStats);
+            final MeterId meterId = meterConfigStats.getMeterId();
+            final InstanceIdentifier<Meter> meterInstanceIdentifier = fNodeIdent.child(Meter.class, new MeterKey(meterId));
+            deviceContext.getDeviceMeterRegistry().store(meterId);
+            deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, meterInstanceIdentifier, meterBuilder.build());
+        }
+
     }
 
     private static void processFlowStatistics(final FlowsStatisticsUpdate singleMultipartData, final DeviceContext deviceContext) {
@@ -257,12 +277,11 @@ public final class StatisticsGatheringUtils {
         final MeterStatisticsUpdated meterStatisticsUpdated = singleMultipartData;
         final InstanceIdentifier<FlowCapableNode> fNodeIdent = getFlowCapableNodeInstanceIdentifier(meterStatisticsUpdated.getId());
 
-        deleteAllKnownMeters(deviceContext, fNodeIdent);
 
         for (final MeterStats mStat : meterStatisticsUpdated.getMeterStats()) {
             final MeterStatistics stats = new MeterStatisticsBuilder(mStat).build();
-
-            final InstanceIdentifier<Meter> meterIdent = fNodeIdent.child(Meter.class, new MeterKey(mStat.getMeterId()));
+            final MeterId meterId = mStat.getMeterId();
+            final InstanceIdentifier<Meter> meterIdent = fNodeIdent.child(Meter.class, new MeterKey(meterId));
             final InstanceIdentifier<NodeMeterStatistics> nodeMeterStatIdent = meterIdent
                     .augmentation(NodeMeterStatistics.class);
             final InstanceIdentifier<MeterStatistics> msIdent = nodeMeterStatIdent.child(MeterStatistics.class);
@@ -284,8 +303,9 @@ public final class StatisticsGatheringUtils {
         deleteAllKnownGroups(deviceContext, fNodeIdent);
         for (GroupDescStats groupDescStats : groupDescStatsUpdated.getGroupDescStats()) {
             final GroupBuilder groupBuilder = new GroupBuilder(groupDescStats);
-            final InstanceIdentifier<Group> groupIdent = fNodeIdent.child(Group.class, new GroupKey(groupDescStats.getGroupId()));
-
+            final GroupId groupId = groupDescStats.getGroupId();
+            final InstanceIdentifier<Group> groupIdent = fNodeIdent.child(Group.class, new GroupKey(groupId));
+            deviceContext.getDeviceGroupRegistry().store(groupId);
             deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, groupIdent, groupBuilder.build());
         }
     }
