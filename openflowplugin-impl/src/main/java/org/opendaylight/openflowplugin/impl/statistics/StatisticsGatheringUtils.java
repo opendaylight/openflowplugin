@@ -64,6 +64,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.NodeMeterStatistics;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.nodes.node.meter.MeterStatistics;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.nodes.node.meter.MeterStatisticsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.statistics.reply.MeterStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
@@ -158,22 +159,8 @@ public final class StatisticsGatheringUtils {
         final InstanceIdentifier<Node> nodeIdent = InstanceIdentifier.create(Nodes.class)
                 .child(Node.class, new NodeKey(flowsStatistics.getId()));
 
-        if (deviceContext.getDeviceState().deviceSynchronized()) {
-            for (Map.Entry<FlowHash, FlowDescriptor> registryEntry : deviceContext.getDeviceFlowRegistry().getAllFlowDescriptors().entrySet()) {
-                FlowDescriptor flowDescriptor = registryEntry.getValue();
+        deleteAllKnownFlows(deviceContext, nodeIdent);
 
-                FlowId flowId = flowDescriptor.getFlowId();
-                FlowKey flowKey = new FlowKey(flowId);
-                final InstanceIdentifier<Flow> flowInstanceIdentifier = nodeIdent
-                        .augmentation(FlowCapableNode.class)
-                        .child(Table.class, flowDescriptor.getTableKey())
-                        .child(Flow.class, flowKey);
-
-                LOG.trace("Deleting flow with id {}", flowInstanceIdentifier);
-                deviceContext.addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, flowInstanceIdentifier);
-            }
-        }
-        deviceContext.getDeviceFlowRegistry().removeMarked();
         for (final FlowAndStatisticsMapList flowStat : flowsStatistics.getFlowAndStatisticsMapList()) {
             final FlowBuilder flowBuilder = new FlowBuilder(flowStat);
             FlowId flowId = null;
@@ -195,6 +182,25 @@ public final class StatisticsGatheringUtils {
             final InstanceIdentifier<Flow> flowIdent = fNodeIdent.child(Table.class, tableKey).child(Flow.class, flowKey);
             deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, flowIdent, flowBuilder.build());
         }
+    }
+
+    private static void deleteAllKnownFlows(final DeviceContext deviceContext, final InstanceIdentifier<Node> nodeIdent) {
+        if (deviceContext.getDeviceState().deviceSynchronized()) {
+            for (Map.Entry<FlowHash, FlowDescriptor> registryEntry : deviceContext.getDeviceFlowRegistry().getAllFlowDescriptors().entrySet()) {
+                FlowDescriptor flowDescriptor = registryEntry.getValue();
+
+                FlowId flowId = flowDescriptor.getFlowId();
+                FlowKey flowKey = new FlowKey(flowId);
+                final InstanceIdentifier<Flow> flowInstanceIdentifier = nodeIdent
+                        .augmentation(FlowCapableNode.class)
+                        .child(Table.class, flowDescriptor.getTableKey())
+                        .child(Flow.class, flowKey);
+
+                LOG.trace("Deleting flow with id {}", flowInstanceIdentifier);
+                deviceContext.addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, flowInstanceIdentifier);
+            }
+        }
+        deviceContext.getDeviceFlowRegistry().removeMarked();
     }
 
     private static void processQueueStatistics(final QueueStatisticsUpdate singleMultipartData, final DeviceContext deviceContext) {
@@ -251,6 +257,8 @@ public final class StatisticsGatheringUtils {
         final MeterStatisticsUpdated meterStatisticsUpdated = singleMultipartData;
         final InstanceIdentifier<FlowCapableNode> fNodeIdent = getFlowCapableNodeInstanceIdentifier(meterStatisticsUpdated.getId());
 
+        deleteAllKnownMeters(deviceContext, fNodeIdent);
+
         for (final MeterStats mStat : meterStatisticsUpdated.getMeterStats()) {
             final MeterStatistics stats = new MeterStatisticsBuilder(mStat).build();
 
@@ -262,20 +270,32 @@ public final class StatisticsGatheringUtils {
         }
     }
 
+    private static void deleteAllKnownMeters(final DeviceContext deviceContext, final InstanceIdentifier<FlowCapableNode> fNodeIdent) {
+        for (MeterId meterId : deviceContext.getDeviceMeterRegistry().getAllMeterIds()) {
+            final InstanceIdentifier<Meter> meterIdent = fNodeIdent.child(Meter.class, new MeterKey(meterId));
+            deviceContext.addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, meterIdent);
+        }
+        deviceContext.getDeviceMeterRegistry().removeMarked();
+    }
+
     private static void processGroupDescStats(GroupDescStatsUpdated groupDescStatsUpdated, final DeviceContext deviceContext) {
         NodeId nodeId = groupDescStatsUpdated.getId();
         final InstanceIdentifier<FlowCapableNode> fNodeIdent = getFlowCapableNodeInstanceIdentifier(nodeId);
-        for (GroupId groupId : deviceContext.getDeviceGroupRegistry().getAllGroupIds()) {
-            final InstanceIdentifier<Group> groupIdent = fNodeIdent.child(Group.class, new GroupKey(groupId));
-            deviceContext.addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, groupIdent);
-        }
-        deviceContext.getDeviceGroupRegistry().removeMarked();
+        deleteAllKnownGroups(deviceContext, fNodeIdent);
         for (GroupDescStats groupDescStats : groupDescStatsUpdated.getGroupDescStats()) {
             final GroupBuilder groupBuilder = new GroupBuilder(groupDescStats);
             final InstanceIdentifier<Group> groupIdent = fNodeIdent.child(Group.class, new GroupKey(groupDescStats.getGroupId()));
 
             deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, groupIdent, groupBuilder.build());
         }
+    }
+
+    private static void deleteAllKnownGroups(final DeviceContext deviceContext, final InstanceIdentifier<FlowCapableNode> fNodeIdent) {
+        for (GroupId groupId : deviceContext.getDeviceGroupRegistry().getAllGroupIds()) {
+            final InstanceIdentifier<Group> groupIdent = fNodeIdent.child(Group.class, new GroupKey(groupId));
+            deviceContext.addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, groupIdent);
+        }
+        deviceContext.getDeviceGroupRegistry().removeMarked();
     }
 
     private static void processGroupStatistics(final GroupStatisticsUpdated singleMultipartData, final DeviceContext deviceContext) {
