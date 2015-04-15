@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.applications.topology.manager;
 
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.topology.inventory.rev131030.InventoryNodeConnector;
-
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.topology.inventory.rev131030.InventoryNodeConnectorBuilder;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
@@ -54,14 +53,17 @@ public class TerminationPointChangeListenerImpl extends DataChangeListenerImpl {
      */
     private void processRemovedTerminationPoints(Set<InstanceIdentifier<?>> removedNodes) {
         for (final InstanceIdentifier<?> removedNode : removedNodes) {
-            InstanceIdentifier<TerminationPoint> iiToTopologyTerminationPoint = provideIIToTopologyTerminationPoint(
-                    provideTopologyTerminationPointId(removedNode), removedNode);
+            final TpId topologyTerminationPointId = provideTopologyTerminationPointId(removedNode);
+            final InstanceIdentifier<TerminationPoint> iiToTopologyTerminationPoint =
+                    provideIIToTopologyTerminationPoint(topologyTerminationPointId, removedNode);
+
             if (iiToTopologyTerminationPoint != null) {
                 operationProcessor.enqueueOperation(new TopologyOperation() {
 
                     @Override
                     public void applyOperation(ReadWriteTransaction transaction) {
-                        transaction.delete(LogicalDatastoreType.OPERATIONAL, removedNode);
+                        TopologyManagerUtil.removeAffectedLinks(topologyTerminationPointId, transaction, II_TO_TOPOLOGY);
+                        transaction.delete(LogicalDatastoreType.OPERATIONAL, iiToTopologyTerminationPoint);
                     }
                 });
 
@@ -89,11 +91,31 @@ public class TerminationPointChangeListenerImpl extends DataChangeListenerImpl {
         if (terminationPointIdInTopology != null) {
             InstanceIdentifier<TerminationPoint> iiToTopologyTerminationPoint = provideIIToTopologyTerminationPoint(
                     terminationPointIdInTopology, iiToNodeInInventory);
-            sendToTransactionChain(prepareTopologyTerminationPoint(terminationPointIdInTopology, iiToNodeInInventory),
-                    iiToTopologyTerminationPoint);
+            TerminationPoint point = prepareTopologyTerminationPoint(terminationPointIdInTopology, iiToNodeInInventory);
+            sendToTransactionChain(point, iiToTopologyTerminationPoint);
+            if (data instanceof FlowCapableNodeConnector) {
+                removeLinks((FlowCapableNodeConnector) data, point);
+            }
+
         } else {
             LOG.debug("Inventory node connector key is null. Data can't be written to topology termination point");
         }
+    }
+
+    /**
+     * @param data
+     */
+    private void removeLinks(final FlowCapableNodeConnector flowCapNodeConnector, final TerminationPoint point) {
+        operationProcessor.enqueueOperation(new TopologyOperation() {
+
+            @Override
+            public void applyOperation(ReadWriteTransaction transaction) {
+                if ((flowCapNodeConnector.getState() != null && flowCapNodeConnector.getState().isLinkDown())
+                        || (flowCapNodeConnector.getConfiguration() != null && flowCapNodeConnector.getConfiguration().isPORTDOWN())) {
+                    TopologyManagerUtil.removeAffectedLinks(point.getTpId(), transaction, II_TO_TOPOLOGY);
+                }
+            }
+        });
     }
 
     private TerminationPoint prepareTopologyTerminationPoint(final TpId terminationPointIdInTopology,
@@ -114,10 +136,14 @@ public class TerminationPointChangeListenerImpl extends DataChangeListenerImpl {
      */
     private InstanceIdentifier<TerminationPoint> provideIIToTopologyTerminationPoint(TpId terminationPointIdInTopology,
             InstanceIdentifier<?> iiToNodeInInventory) {
+        if (terminationPointIdInTopology != null) {
         NodeId nodeIdInTopology = provideTopologyNodeId(iiToNodeInInventory);
         InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node> iiToTopologyNode = provideIIToTopologyNode(nodeIdInTopology);
-        return iiToTopologyNode.builder()
-                .child(TerminationPoint.class, new TerminationPointKey(terminationPointIdInTopology)).build();
+        return iiToTopologyNode.builder().child(TerminationPoint.class, new TerminationPointKey(terminationPointIdInTopology)).build();
+        } else {
+            LOG.debug("Value of termination point ID in topology is null. Instance identifier to topology can't be built");
+            return null;
+        }
     }
 
     /**
