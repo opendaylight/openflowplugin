@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.openflowplugin.impl.flow.registry;
+package org.opendaylight.openflowplugin.impl.registry.flow;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
