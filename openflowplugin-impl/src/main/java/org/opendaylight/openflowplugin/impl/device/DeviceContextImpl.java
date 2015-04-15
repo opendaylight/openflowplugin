@@ -33,11 +33,13 @@ import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.device.exception.DeviceDataException;
 import org.opendaylight.openflowplugin.api.openflow.device.listener.OpenflowMessageListenerFacade;
-import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
+import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
+import org.opendaylight.openflowplugin.api.openflow.registry.group.DeviceGroupRegistry;
 import org.opendaylight.openflowplugin.impl.common.NodeStaticReplyTranslatorUtil;
 import org.opendaylight.openflowplugin.impl.flow.registry.DeviceFlowRegistryImpl;
+import org.opendaylight.openflowplugin.impl.registry.group.DeviceGroupRegistryImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SwitchConnectionCookieOFImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
@@ -87,6 +89,7 @@ public class DeviceContextImpl implements DeviceContext {
     private TranslatorLibrary translatorLibrary;
     private OpenflowMessageListenerFacade openflowMessageListenerFacade;
     private final DeviceFlowRegistry deviceFlowRegistry;
+    private final DeviceGroupRegistry deviceGroupRegistry;
     private Timeout barrierTaskTimeout;
     private NotificationProviderService notificationService;
 
@@ -103,6 +106,7 @@ public class DeviceContextImpl implements DeviceContext {
         auxiliaryConnectionContexts = new HashMap<>();
         requests = new HashMap<>();
         deviceFlowRegistry = new DeviceFlowRegistryImpl();
+        deviceGroupRegistry = new DeviceGroupRegistryImpl();
     }
 
     /**
@@ -198,6 +202,11 @@ public class DeviceContextImpl implements DeviceContext {
     @Override
     public DeviceFlowRegistry getDeviceFlowRegistry() {
         return deviceFlowRegistry;
+    }
+
+    @Override
+    public DeviceGroupRegistry getDeviceGroupRegistry() {
+        return deviceGroupRegistry;
     }
 
     @Override
@@ -298,7 +307,7 @@ public class DeviceContextImpl implements DeviceContext {
             nConnectorBuilder.addAugmentation(FlowCapableNodeConnectorStatisticsData.class, new FlowCapableNodeConnectorStatisticsDataBuilder().build());
             nConnectorBuilder.addAugmentation(FlowCapableNodeConnector.class, flowCapableNodeConnector);
             writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector, nConnectorBuilder.build());
-        } else if (portStatus.getReason().equals(PortReason.OFPPRDELETE) ) {
+        } else if (portStatus.getReason().equals(PortReason.OFPPRDELETE)) {
             addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector);
         }
     }
