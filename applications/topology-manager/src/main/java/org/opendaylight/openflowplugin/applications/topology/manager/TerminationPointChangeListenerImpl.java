@@ -7,8 +7,9 @@
  */
 package org.opendaylight.openflowplugin.applications.topology.manager;
 
+import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
+import com.google.common.base.Optional;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.topology.inventory.rev131030.InventoryNodeConnector;
-
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.topology.inventory.rev131030.InventoryNodeConnectorBuilder;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
@@ -54,14 +55,27 @@ public class TerminationPointChangeListenerImpl extends DataChangeListenerImpl {
      */
     private void processRemovedTerminationPoints(Set<InstanceIdentifier<?>> removedNodes) {
         for (final InstanceIdentifier<?> removedNode : removedNodes) {
-            InstanceIdentifier<TerminationPoint> iiToTopologyTerminationPoint = provideIIToTopologyTerminationPoint(
-                    provideTopologyTerminationPointId(removedNode), removedNode);
+            final TpId terminationPointId = provideTopologyTerminationPointId(removedNode);
+            final InstanceIdentifier<TerminationPoint> iiToTopologyTerminationPoint = provideIIToTopologyTerminationPoint(
+                    terminationPointId, removedNode);
+            final InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node> node = iiToTopologyTerminationPoint.firstIdentifierOf(org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node.class);
+
+
             if (iiToTopologyTerminationPoint != null) {
                 operationProcessor.enqueueOperation(new TopologyOperation() {
 
                     @Override
                     public void applyOperation(ReadWriteTransaction transaction) {
-                        transaction.delete(LogicalDatastoreType.OPERATIONAL, removedNode);
+                        Optional<org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node> nodeOptional = Optional.absent();
+                        try {
+                            nodeOptional = transaction.read(LogicalDatastoreType.OPERATIONAL, node).checkedGet();
+                        } catch (ReadFailedException e) {
+                            LOG.error("Error occured when trying to read NodeConnector ", e);
+                        }
+                        if (nodeOptional.isPresent()) {
+                            TopologyManagerUtil.removeAffectedLinks(terminationPointId, transaction, II_TO_TOPOLOGY);
+                            transaction.delete(LogicalDatastoreType.OPERATIONAL, iiToTopologyTerminationPoint);
+                        }
                     }
                 });
 
@@ -89,11 +103,31 @@ public class TerminationPointChangeListenerImpl extends DataChangeListenerImpl {
         if (terminationPointIdInTopology != null) {
             InstanceIdentifier<TerminationPoint> iiToTopologyTerminationPoint = provideIIToTopologyTerminationPoint(
                     terminationPointIdInTopology, iiToNodeInInventory);
-            sendToTransactionChain(prepareTopologyTerminationPoint(terminationPointIdInTopology, iiToNodeInInventory),
-                    iiToTopologyTerminationPoint);
+            TerminationPoint point = prepareTopologyTerminationPoint(terminationPointIdInTopology, iiToNodeInInventory);
+            sendToTransactionChain(point, iiToTopologyTerminationPoint);
+            if (data instanceof FlowCapableNodeConnector) {
+                removeLinks((FlowCapableNodeConnector) data, point);
+            }
+
         } else {
             LOG.debug("Inventory node connector key is null. Data can't be written to topology termination point");
         }
+    }
+
+    /**
+     * @param data
+     */
+    private void removeLinks(final FlowCapableNodeConnector flowCapNodeConnector, final TerminationPoint point) {
+        operationProcessor.enqueueOperation(new TopologyOperation() {
+
+            @Override
+            public void applyOperation(ReadWriteTransaction transaction) {
+                if ((flowCapNodeConnector.getState() != null && flowCapNodeConnector.getState().isLinkDown())
+                        || (flowCapNodeConnector.getConfiguration() != null && flowCapNodeConnector.getConfiguration().isPORTDOWN())) {
+                    TopologyManagerUtil.removeAffectedLinks(point.getTpId(), transaction, II_TO_TOPOLOGY);
+                }
+            }
+        });
     }
 
     private TerminationPoint prepareTopologyTerminationPoint(final TpId terminationPointIdInTopology,
@@ -115,9 +149,13 @@ public class TerminationPointChangeListenerImpl extends DataChangeListenerImpl {
     private InstanceIdentifier<TerminationPoint> provideIIToTopologyTerminationPoint(TpId terminationPointIdInTopology,
             InstanceIdentifier<?> iiToNodeInInventory) {
         NodeId nodeIdInTopology = provideTopologyNodeId(iiToNodeInInventory);
-        InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node> iiToTopologyNode = provideIIToTopologyNode(nodeIdInTopology);
-        return iiToTopologyNode.builder()
-                .child(TerminationPoint.class, new TerminationPointKey(terminationPointIdInTopology)).build();
+        if (terminationPointIdInTopology != null && nodeIdInTopology != null) {
+            InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node> iiToTopologyNode = provideIIToTopologyNode(nodeIdInTopology);
+            return iiToTopologyNode.builder().child(TerminationPoint.class, new TerminationPointKey(terminationPointIdInTopology)).build();
+        } else {
+            LOG.debug("Value of termination point ID in topology is null. Instance identifier to topology can't be built");
+            return null;
+        }
     }
 
     /**
