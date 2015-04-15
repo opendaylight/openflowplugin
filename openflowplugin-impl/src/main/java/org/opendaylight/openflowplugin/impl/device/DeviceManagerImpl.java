@@ -179,7 +179,6 @@ public class DeviceManagerImpl implements DeviceManager {
         Futures.addCallback(deviceFeaturesFuture, new FutureCallback<List<RpcResult<List<MultipartReply>>>>() {
             @Override
             public void onSuccess(final List<RpcResult<List<MultipartReply>>> result) {
-                // wake up statistics
                 deviceInitPhaseHandler.onDeviceContextLevelUp(deviceContext);
             }
 
@@ -285,7 +284,7 @@ public class DeviceManagerImpl implements DeviceManager {
                     final InstanceIdentifier<NodeMeterFeatures> mFeatureII = nodeII.augmentation(NodeMeterFeatures.class);
                     dContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, mFeatureII, mFeature);
                     if (0L < mFeature.getMeterFeatures().getMaxMeter().getValue()) {
-                        dContext.getDeviceState().isMetersAvailable();
+                        dContext.getDeviceState().meterIsAvailable();
                     }
                     break;
 
