@@ -63,6 +63,8 @@ public class StatisticsContextImpl implements StatisticsContext {
     @Override
     public ListenableFuture<Void> gatherDynamicData() {
 
+        final DeviceState devState = deviceContext.getDeviceState();
+
         final ListenableFuture<Boolean> flowStatistics = wrapLoggingOnStatisticsRequestCall(MultipartType.OFPMPFLOW);
 
         final ListenableFuture<Boolean> tableStatistics = wrapLoggingOnStatisticsRequestCall(MultipartType.OFPMPTABLE);
@@ -71,13 +73,13 @@ public class StatisticsContextImpl implements StatisticsContext {
 
         final ListenableFuture<Boolean> queueStatistics = wrapLoggingOnStatisticsRequestCall(MultipartType.OFPMPQUEUE);
 
-        final DeviceState devState = deviceContext.getDeviceState();
-
-        final ListenableFuture<Boolean> groupStatistics = devState.isGroupAvailable() ? wrapLoggingOnStatisticsRequestCall(MultipartType.OFPMPGROUPDESC) : Futures.<Boolean>immediateFuture(null);
+        final ListenableFuture<Boolean> groupDescStatistics = devState.isGroupAvailable() ? wrapLoggingOnStatisticsRequestCall(MultipartType.OFPMPGROUPDESC) : Futures.<Boolean>immediateFuture(null);
+        final ListenableFuture<Boolean> groupStatistics = devState.isGroupAvailable() ? wrapLoggingOnStatisticsRequestCall(MultipartType.OFPMPGROUP) : Futures.<Boolean>immediateFuture(null);
 
         final ListenableFuture<Boolean> meterStatistics = devState.isMetersAvailable() ? wrapLoggingOnStatisticsRequestCall(MultipartType.OFPMPMETER) : Futures.<Boolean>immediateFuture(null);
 
-        final ListenableFuture<List<Boolean>> allFutures = Futures.allAsList(Arrays.asList(flowStatistics, tableStatistics, groupStatistics, meterStatistics, portStatistics, queueStatistics));
+
+        final ListenableFuture<List<Boolean>> allFutures = Futures.allAsList(Arrays.asList(flowStatistics, tableStatistics, groupDescStatistics, groupStatistics, meterStatistics, portStatistics, queueStatistics));
         final SettableFuture<Void> resultingFuture = SettableFuture.create();
         Futures.addCallback(allFutures, new FutureCallback<List<Boolean>>() {
             @Override
