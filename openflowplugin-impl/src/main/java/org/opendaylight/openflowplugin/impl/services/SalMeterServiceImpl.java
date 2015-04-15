@@ -37,6 +37,7 @@ public class SalMeterServiceImpl extends CommonService implements SalMeterServic
 
     @Override
     public Future<RpcResult<AddMeterOutput>> addMeter(final AddMeterInput input) {
+        deviceContext.getDeviceMeterRegistry().store(input.getMeterId());
         return this.<AddMeterOutput, Void>handleServiceCall( PRIMARY_CONNECTION,
                  new Function<DataCrate<AddMeterOutput>,ListenableFuture<RpcResult<Void>>>() {
                     @Override
@@ -59,6 +60,7 @@ public class SalMeterServiceImpl extends CommonService implements SalMeterServic
 
     @Override
     public Future<RpcResult<RemoveMeterOutput>> removeMeter(final RemoveMeterInput input) {
+        deviceContext.getDeviceMeterRegistry().markToBeremoved(input.getMeterId());
         return this.<RemoveMeterOutput, Void>handleServiceCall( PRIMARY_CONNECTION,
                  new Function<DataCrate<RemoveMeterOutput>,ListenableFuture<RpcResult<Void>>>() {
                     @Override
