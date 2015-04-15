@@ -23,6 +23,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.OutstandingM
 import org.opendaylight.openflowplugin.api.openflow.device.listener.OpenflowMessageListenerFacade;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.group.DeviceGroupRegistry;
+import org.opendaylight.openflowplugin.api.openflow.registry.meter.DeviceMeterRegistry;
 import org.opendaylight.openflowplugin.api.openflow.translator.TranslatorLibrarian;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableFeatures;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -152,6 +153,12 @@ public interface DeviceContext extends OpenflowPluginTimer, MessageHandler, Tran
      * @return
      */
     DeviceGroupRegistry getDeviceGroupRegistry();
+    /**
+     * Method exposes device meter registry used for storing meter ids.
+     * @return
+     */
+    DeviceMeterRegistry getDeviceMeterRegistry();
+
 
 
     /**
