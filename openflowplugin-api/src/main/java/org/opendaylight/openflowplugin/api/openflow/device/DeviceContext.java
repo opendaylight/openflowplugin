@@ -22,6 +22,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.MessageHandl
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.OutstandingMessageExtractor;
 import org.opendaylight.openflowplugin.api.openflow.device.listener.OpenflowMessageListenerFacade;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
+import org.opendaylight.openflowplugin.api.openflow.registry.group.DeviceGroupRegistry;
 import org.opendaylight.openflowplugin.api.openflow.translator.TranslatorLibrarian;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableFeatures;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -146,6 +147,12 @@ public interface DeviceContext extends OpenflowPluginTimer, MessageHandler, Tran
      * @return
      */
     DeviceFlowRegistry getDeviceFlowRegistry();
+    /**
+     * Method exposes device group registry used for storing group ids.
+     * @return
+     */
+    DeviceGroupRegistry getDeviceGroupRegistry();
+
 
     /**
      * store cancellable timeout handler of currently running barrier task
