@@ -25,6 +25,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalF
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.SalGroupService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.SalMeterService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.SalTableService;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,10 +57,12 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     private final SalFlowService salFlowService;
     private final SalGroupService salGroupService;
     private final SalMeterService salMeterService;
+    private final SalTableService salTableService;
 
     private ForwardingRulesCommiter<Flow> flowListener;
     private ForwardingRulesCommiter<Group> groupListener;
     private ForwardingRulesCommiter<Meter> meterListener;
+    private ForwardingRulesCommiter<Table> tableListener;
     private FlowNodeReconciliation nodeListener;
 
     public ForwardingRulesManagerImpl(final DataBroker dataBroker,
@@ -73,15 +77,22 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
                 "RPC SalGroupService not found.");
         this.salMeterService = Preconditions.checkNotNull(rpcRegistry.getRpcService(SalMeterService.class),
                 "RPC SalMeterService not found.");
+        this.salTableService = Preconditions.checkNotNull(rpcRegistry.getRpcService(SalTableService.class),
+                "RPC SalTableService not found.");
     }
 
     @Override
     public void start() {
+
         this.flowListener = new FlowForwarder(this, dataService);
+        
         this.groupListener = new GroupForwarder(this, dataService);
         this.meterListener = new MeterForwarder(this, dataService);
+        
+        this.tableListener = new TableForwarder(this, dataService);
         this.nodeListener = new FlowNodeReconciliationImpl(this, dataService);
         LOG.info("ForwardingRulesManager has started successfull.");
+
     }
 
     @Override
@@ -97,6 +108,10 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
         if (this.meterListener != null) {
             this.meterListener.close();
             this.meterListener = null;
+        }
+        if (this.tableListener != null) {
+            this.tableListener.close();
+            this.tableListener = null;
         }
         if (this.nodeListener != null) {
             this.nodeListener.close();
@@ -163,6 +178,11 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     }
 
     @Override
+    public SalTableService getSalTableService() {
+        return salTableService;
+    }
+
+    @Override
     public ForwardingRulesCommiter<Flow> getFlowCommiter() {
         return flowListener;
     }
@@ -175,6 +195,11 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     @Override
     public ForwardingRulesCommiter<Meter> getMeterCommiter() {
         return meterListener;
+    }
+
+    @Override
+    public ForwardingRulesCommiter<Table> getTableCommiter() {
+        return tableListener;
     }
 
     @Override
