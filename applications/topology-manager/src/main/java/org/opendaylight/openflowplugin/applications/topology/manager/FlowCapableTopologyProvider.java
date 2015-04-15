@@ -31,7 +31,7 @@ public class FlowCapableTopologyProvider extends AbstractBindingAwareProvider im
     private final static Logger LOG = LoggerFactory.getLogger(FlowCapableTopologyProvider.class);
     private ListenerRegistration<NotificationListener> listenerRegistration;
     private Thread thread;
-    private TerminationPointChangeListenerImpl terminationChangeListener;
+    private TerminationPointChangeListenerImpl terminationPointChangeListener;
     private NodeChangeListenerImpl nodeChangeListener;
     static final String TOPOLOGY_ID = "flow:1";
 
@@ -53,7 +53,7 @@ public class FlowCapableTopologyProvider extends AbstractBindingAwareProvider im
         final OperationProcessor processor = new OperationProcessor(dataBroker);
         final FlowCapableTopologyExporter listener = new FlowCapableTopologyExporter(processor, path);
         this.listenerRegistration = notificationService.registerNotificationListener(listener);
-        this.terminationChangeListener = new TerminationPointChangeListenerImpl(dataBroker, processor);
+        this.terminationPointChangeListener = new TerminationPointChangeListenerImpl(dataBroker, processor);
         nodeChangeListener = new NodeChangeListenerImpl(dataBroker, processor);
 
         final ReadWriteTransaction tx = dataBroker.newReadWriteTransaction();
@@ -81,7 +81,7 @@ public class FlowCapableTopologyProvider extends AbstractBindingAwareProvider im
             }
             listenerRegistration = null;
         }
-        unregisterListener(terminationChangeListener);
+        unregisterListener(terminationPointChangeListener);
         unregisterListener(nodeChangeListener);
         if (thread != null) {
             thread.interrupt();

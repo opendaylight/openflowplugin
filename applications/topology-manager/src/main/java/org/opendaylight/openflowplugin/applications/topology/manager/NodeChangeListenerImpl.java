@@ -7,9 +7,12 @@
  */
 package org.opendaylight.openflowplugin.applications.topology.manager;
 
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
+
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.topology.inventory.rev131030.InventoryNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.topology.inventory.rev131030.InventoryNodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeBuilder;
-
 import java.util.Set;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.slf4j.Logger;
@@ -46,9 +49,8 @@ public class NodeChangeListenerImpl extends DataChangeListenerImpl {
      * @param removedPaths
      */
     private void processRemovedNode(Set<InstanceIdentifier<?>> removedNodes) {
-        for ( InstanceIdentifier<?> removedNode : removedNodes) {
-            final InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node> iiToTopologyRemovedNode
-                = provideIIToTopologyNode(provideTopologyNodeId(removedNode));
+        for (InstanceIdentifier<?> removedNode : removedNodes) {
+            final InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node> iiToTopologyRemovedNode = provideIIToTopologyNode(provideTopologyNodeId(removedNode));
             if (iiToTopologyRemovedNode != null) {
                 operationProcessor.enqueueOperation(new TopologyOperation() {
 
@@ -77,21 +79,34 @@ public class NodeChangeListenerImpl extends DataChangeListenerImpl {
      */
     private void processAddedNode(Map<InstanceIdentifier<?>, DataObject> addedDatas) {
         for (Entry<InstanceIdentifier<?>, DataObject> addedData : addedDatas.entrySet()) {
-            createData(addedData.getKey(), addedData.getValue());
+            createData(addedData.getKey());
         }
     }
 
-    protected void createData(InstanceIdentifier<?> iiToNodeInInventory, final DataObject data) {
-        final NodeBuilder topologyNodeBuilder = new NodeBuilder();
-
+    protected void createData(InstanceIdentifier<?> iiToNodeInInventory) {
         final NodeId nodeIdInTopology = provideTopologyNodeId(iiToNodeInInventory);
         if (nodeIdInTopology != null) {
-            topologyNodeBuilder.setNodeId(nodeIdInTopology);
             final InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node> iiToTopologyNode = provideIIToTopologyNode(nodeIdInTopology);
-            sendToTransactionChain(topologyNodeBuilder.build(), iiToTopologyNode);
+            sendToTransactionChain(prepareTopologyNode(nodeIdInTopology, iiToNodeInInventory), iiToTopologyNode);
         } else {
             LOG.debug("Inventory node key is null. Data can't be written to topology");
         }
     }
 
+    /**
+     * @param nodeIdInTopology
+     * @param iiToNodeInInventory
+     * @return
+     */
+    private org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node prepareTopologyNode(NodeId nodeIdInTopology, InstanceIdentifier<?> iiToNodeInInventory) {
+        final InventoryNode inventoryNode = new InventoryNodeBuilder()
+        .setInventoryNodeRef(new NodeRef(iiToNodeInInventory.firstIdentifierOf(Node.class)))
+        .build();
+
+        final NodeBuilder topologyNodeBuilder = new NodeBuilder();
+        topologyNodeBuilder.setNodeId(nodeIdInTopology);
+        topologyNodeBuilder.addAugmentation(InventoryNode.class, inventoryNode);
+
+        return topologyNodeBuilder.build();
+    }
 }
