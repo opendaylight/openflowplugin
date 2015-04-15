@@ -48,6 +48,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.NodeGroupStatistics;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.group.statistics.GroupStatistics;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.group.statistics.GroupStatisticsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.desc.stats.reply.GroupDescStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply.GroupStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
@@ -263,10 +264,16 @@ public final class StatisticsGatheringUtils {
 
     private static void processGroupDescStats(GroupDescStatsUpdated groupDescStatsUpdated, final DeviceContext deviceContext) {
         NodeId nodeId = groupDescStatsUpdated.getId();
+        final InstanceIdentifier<FlowCapableNode> fNodeIdent = getFlowCapableNodeInstanceIdentifier(nodeId);
+        for (GroupId groupId : deviceContext.getDeviceGroupRegistry().getAllGroupIds()) {
+            final InstanceIdentifier<Group> groupIdent = fNodeIdent.child(Group.class, new GroupKey(groupId));
+            deviceContext.addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, groupIdent);
+        }
+        deviceContext.getDeviceGroupRegistry().removeMarked();
         for (GroupDescStats groupDescStats : groupDescStatsUpdated.getGroupDescStats()) {
             final GroupBuilder groupBuilder = new GroupBuilder(groupDescStats);
-            final InstanceIdentifier<FlowCapableNode> fNodeIdent = getFlowCapableNodeInstanceIdentifier(nodeId);
             final InstanceIdentifier<Group> groupIdent = fNodeIdent.child(Group.class, new GroupKey(groupDescStats.getGroupId()));
+
             deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, groupIdent, groupBuilder.build());
         }
     }
