@@ -38,6 +38,7 @@ public class SalGroupServiceImpl extends CommonService implements SalGroupServic
 
     @Override
     public Future<RpcResult<AddGroupOutput>> addGroup(final AddGroupInput input) {
+        deviceContext.getDeviceGroupRegistry().store(input.getGroupId());
         return this.<AddGroupOutput, Void> handleServiceCall( PRIMARY_CONNECTION,
                  new Function<DataCrate<AddGroupOutput>,ListenableFuture<RpcResult<Void>>>() {
 
@@ -62,6 +63,7 @@ public class SalGroupServiceImpl extends CommonService implements SalGroupServic
 
     @Override
     public Future<RpcResult<RemoveGroupOutput>> removeGroup(final RemoveGroupInput input) {
+        deviceContext.getDeviceGroupRegistry().markToBeremoved(input.getGroupId());
         return this.<RemoveGroupOutput, Void> handleServiceCall(PRIMARY_CONNECTION,
                 new Function<DataCrate<RemoveGroupOutput>, ListenableFuture<RpcResult<Void>>>() {
 
