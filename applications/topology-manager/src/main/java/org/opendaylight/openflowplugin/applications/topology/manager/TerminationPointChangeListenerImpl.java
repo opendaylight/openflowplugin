@@ -54,14 +54,13 @@ public class TerminationPointChangeListenerImpl extends DataChangeListenerImpl {
      */
     private void processRemovedTerminationPoints(Set<InstanceIdentifier<?>> removedNodes) {
         for (final InstanceIdentifier<?> removedNode : removedNodes) {
-            InstanceIdentifier<TerminationPoint> iiToTopologyTerminationPoint = provideIIToTopologyTerminationPoint(
-                    provideTopologyTerminationPointId(removedNode), removedNode);
+            final InstanceIdentifier<TerminationPoint> iiToTopologyTerminationPoint = provideIIToTopologyTerminationPoint(provideTopologyTerminationPointId(removedNode), removedNode);
             if (iiToTopologyTerminationPoint != null) {
                 operationProcessor.enqueueOperation(new TopologyOperation() {
 
                     @Override
                     public void applyOperation(ReadWriteTransaction transaction) {
-                        transaction.delete(LogicalDatastoreType.OPERATIONAL, removedNode);
+                        transaction.delete(LogicalDatastoreType.OPERATIONAL, iiToTopologyTerminationPoint);
                     }
                 });
 
@@ -114,10 +113,14 @@ public class TerminationPointChangeListenerImpl extends DataChangeListenerImpl {
      */
     private InstanceIdentifier<TerminationPoint> provideIIToTopologyTerminationPoint(TpId terminationPointIdInTopology,
             InstanceIdentifier<?> iiToNodeInInventory) {
+        if (terminationPointIdInTopology != null) {
         NodeId nodeIdInTopology = provideTopologyNodeId(iiToNodeInInventory);
         InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node> iiToTopologyNode = provideIIToTopologyNode(nodeIdInTopology);
-        return iiToTopologyNode.builder()
-                .child(TerminationPoint.class, new TerminationPointKey(terminationPointIdInTopology)).build();
+        return iiToTopologyNode.builder().child(TerminationPoint.class, new TerminationPointKey(terminationPointIdInTopology)).build();
+        } else {
+            LOG.debug("Value of termination point ID in topology is null. Instance identifier to topology can't be built");
+            return null;
+        }
     }
 
     /**
