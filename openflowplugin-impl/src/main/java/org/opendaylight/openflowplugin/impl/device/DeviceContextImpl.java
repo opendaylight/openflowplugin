@@ -351,6 +351,13 @@ public class DeviceContextImpl implements DeviceContext {
         return hashedWheelTimer;
     }
 
+    @Override
+    public void close() throws Exception {
+        for (Map.Entry<Long, RequestContext> entry : requests.entrySet()){
+            entry.getValue().close();
+        }
+    }
+
 
     private class XidGenerator {
 
