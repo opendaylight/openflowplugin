@@ -28,6 +28,7 @@ import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowHash;
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowDescriptorFactory;
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowHashFactory;
+import org.opendaylight.openflowplugin.impl.util.FlowUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.FlowConvertor;
 import org.opendaylight.openflowplugin.openflow.md.util.FlowCreatorUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
@@ -82,8 +83,13 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
 
     @Override
     public Future<RpcResult<AddFlowOutput>> addFlow(final AddFlowInput input) {
+        final FlowId flowId;
+        if(null != input.getFlowRef()) {
+            flowId = input.getFlowRef().getValue().firstKeyOf(Flow.class, FlowKey.class).getId();
+        } else {
+            flowId = FlowUtil.createAlienFlowId(input.getTableId());
+        }
 
-        final FlowId flowId = input.getFlowRef().getValue().firstKeyOf(Flow.class, FlowKey.class).getId();
 
         final FlowHash flowHash = FlowHashFactory.create(input);
         final FlowDescriptor flowDescriptor = FlowDescriptorFactory.create(input.getTableId(), flowId);
