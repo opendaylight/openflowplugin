@@ -24,6 +24,7 @@ public final class FlowComparator {
         FLOW_COMPARATORS.add(FlowComparatorFactory.createPriority());
         FLOW_COMPARATORS.add(FlowComparatorFactory.createTableId());
         FLOW_COMPARATORS.add(FlowComparatorFactory.createContainerName());
+        FLOW_COMPARATORS.add(FlowComparatorFactory.createCookie());
         FLOW_COMPARATORS.add(FlowComparatorFactory.createMatch());
     }
 

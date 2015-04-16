@@ -91,6 +91,25 @@ public final class FlowComparatorFactory {
         };
     }
 
+    public static SimpleComparator<Flow> createCookie() {
+        return new SimpleComparator<Flow>() {
+            /**
+             * Compares flows by table ID
+             */
+            @Override
+            public boolean areObjectsEqual(final Flow statsFlow, final Flow storedFlow) {
+                if (statsFlow.getCookie() == null) {
+                    if (storedFlow.getCookie() != null) {
+                        return false;
+                    }
+                } else if (!statsFlow.getCookie().equals(storedFlow.getCookie())) {
+                    return false;
+                }
+                return true;
+            }
+        };
+    }
+
     public static SimpleComparator<Flow> createMatch() {
         return new SimpleComparator<Flow>() {
             /**
