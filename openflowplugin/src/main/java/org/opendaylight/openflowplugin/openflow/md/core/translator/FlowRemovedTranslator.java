@@ -238,14 +238,14 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
                     EthernetDestinationBuilder ethDst = new EthernetDestinationBuilder();
                     ethDst.setAddress(entry.getAugmentation(MacAddressMatchEntry.class).getMacAddress());
                     if (entry.isHasMask()) {
-                        ethDst.setMask(new MacAddress(ByteUtil.bytesToHexstring(entry.getAugmentation(MaskMatchEntry.class).getMask(), ":")));
+                        ethDst.setMask(new MacAddress(entry.getAugmentation(MaskMatchEntry.class).getMask()));
                     }
                     ethernetMatch.setEthernetDestination(ethDst.build());
                 } else if (field.equals(EthSrc.class)) {
                     EthernetSourceBuilder ethSrc = new EthernetSourceBuilder();
                     ethSrc.setAddress(entry.getAugmentation(MacAddressMatchEntry.class).getMacAddress());
                     if (entry.isHasMask()) {
-                        ethSrc.setMask(new MacAddress(ByteUtil.bytesToHexstring(entry.getAugmentation(MaskMatchEntry.class).getMask(), ":")));
+                        ethSrc.setMask(new MacAddress(entry.getAugmentation(MaskMatchEntry.class).getMask()));
                     }
                     ethernetMatch.setEthernetSource(ethSrc.build());
                 } else if (field.equals(EthType.class)) {
@@ -362,14 +362,14 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
                     ArpSourceHardwareAddressBuilder arpSha = new ArpSourceHardwareAddressBuilder();
                     arpSha.setAddress(entry.getAugmentation(MacAddressMatchEntry.class).getMacAddress());
                     if (entry.isHasMask()) {
-                        arpSha.setMask(new MacAddress(ByteUtil.bytesToHexstring(entry.getAugmentation(MaskMatchEntry.class).getMask(), ":")));
+                        arpSha.setMask(new MacAddress(entry.getAugmentation(MaskMatchEntry.class).getMask()));
                     }
                     arpMatch.setArpSourceHardwareAddress(arpSha.build());
                 } else if (field.equals(ArpTha.class)) {
                     ArpTargetHardwareAddressBuilder arpTha = new ArpTargetHardwareAddressBuilder();
                     arpTha.setAddress(entry.getAugmentation(MacAddressMatchEntry.class).getMacAddress());
                     if (entry.isHasMask()) {
-                        arpTha.setMask(new MacAddress(ByteUtil.bytesToHexstring(entry.getAugmentation(MaskMatchEntry.class).getMask(), ":")));
+                        arpTha.setMask(new MacAddress(entry.getAugmentation(MaskMatchEntry.class).getMask()));
                     }
                     arpMatch.setArpTargetHardwareAddress(arpTha.build());
                 }

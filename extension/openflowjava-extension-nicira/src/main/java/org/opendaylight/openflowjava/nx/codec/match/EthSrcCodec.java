@@ -30,8 +30,8 @@ public class EthSrcCodec extends AbstractMatchCodec {
     @Override
     public void serialize(MatchEntries input, ByteBuf outBuffer) {
         serializeHeader(input, outBuffer);
-        String value = input.getAugmentation(OfjAugNxMatch.class).getEthSrcValues().getMacAddress().getValue();
-        outBuffer.writeBytes(ByteBufUtils.macAddressToBytes(value));
+        byte [] value = input.getAugmentation(OfjAugNxMatch.class).getEthSrcValues().getMacAddress().getBinaryForm();
+        outBuffer.writeBytes(value);
     }
 
     @Override
@@ -40,8 +40,7 @@ public class EthSrcCodec extends AbstractMatchCodec {
         OfjAugNxMatchBuilder augNxMatchBuilder = new OfjAugNxMatchBuilder();
         byte[] address = new byte[VALUE_LENGTH];
         message.readBytes(address);
-        augNxMatchBuilder.setEthSrcValues(new EthSrcValuesBuilder().setMacAddress(
-                new MacAddress(ByteBufUtils.macAddressToString(address))).build());
+        augNxMatchBuilder.setEthSrcValues(new EthSrcValuesBuilder().setMacAddress(new MacAddress(address)).build());
         matchEntriesBuilder.addAugmentation(OfjAugNxMatch.class, augNxMatchBuilder.build());
         return matchEntriesBuilder.build();
     }

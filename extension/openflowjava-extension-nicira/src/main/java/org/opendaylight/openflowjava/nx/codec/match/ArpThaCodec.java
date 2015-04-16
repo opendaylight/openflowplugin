@@ -30,8 +30,8 @@ public class ArpThaCodec extends AbstractMatchCodec {
     @Override
     public void serialize(MatchEntries input, ByteBuf outBuffer) {
         serializeHeader(input, outBuffer);
-        String value = input.getAugmentation(OfjAugNxMatch.class).getArpThaValues().getMacAddress().getValue();
-        outBuffer.writeBytes(ByteBufUtils.macAddressToBytes(value));
+        byte [] value = input.getAugmentation(OfjAugNxMatch.class).getArpThaValues().getMacAddress().getBinaryForm();
+        outBuffer.writeBytes(value);
     }
 
     @Override
@@ -40,8 +40,7 @@ public class ArpThaCodec extends AbstractMatchCodec {
         OfjAugNxMatchBuilder augNxMatchBuilder = new OfjAugNxMatchBuilder();
         byte[] address = new byte[VALUE_LENGTH];
         message.readBytes(address);
-        augNxMatchBuilder.setArpThaValues(new ArpThaValuesBuilder().setMacAddress(
-                new MacAddress(ByteBufUtils.macAddressToString(address))).build());
+        augNxMatchBuilder.setArpThaValues(new ArpThaValuesBuilder().setMacAddress(new MacAddress(address)).build());
         matchEntriesBuilder.addAugmentation(OfjAugNxMatch.class, augNxMatchBuilder.build());
         return matchEntriesBuilder.build();
     }
