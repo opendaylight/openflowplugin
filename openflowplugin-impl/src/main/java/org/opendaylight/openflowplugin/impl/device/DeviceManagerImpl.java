@@ -27,6 +27,7 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
@@ -63,6 +64,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.features.reply.PhyPort;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.MultipartReplyBody;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyDescCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyGroupFeaturesCase;
@@ -158,23 +160,30 @@ public class DeviceManagerImpl implements DeviceManager {
 
         deviceContext.attachOpenflowMessageListener(messageListener);
 
-        final ListenableFuture<RpcResult<List<MultipartReply>>> replyDesc = getNodeStaticInfo(messageListener,
-                MultipartType.OFPMPDESC, deviceContext, deviceState.getNodeInstanceIdentifier(), deviceState.getVersion());
+        ListenableFuture<List<RpcResult<List<MultipartReply>>>> deviceFeaturesFuture = null;
 
-        final ListenableFuture<RpcResult<List<MultipartReply>>> replyMeterFeature = getNodeStaticInfo(messageListener,
-                MultipartType.OFPMPMETERFEATURES, deviceContext, deviceState.getNodeInstanceIdentifier(), deviceState.getVersion());
+        if(connectionContext.getFeatures().getVersion() == OFConstants.OFP_VERSION_1_0) {
+            deviceFeaturesFuture = Futures.immediateFuture(null);//createDeviceFeaturesForOF10(messageListener, deviceContext, deviceState);
 
-        final ListenableFuture<RpcResult<List<MultipartReply>>> replyGroupFeatures = getNodeStaticInfo(messageListener,
-                MultipartType.OFPMPGROUPFEATURES, deviceContext, deviceState.getNodeInstanceIdentifier(), deviceState.getVersion());
+            for (final PortGrouping port : connectionContext.getFeatures().getPhyPort()) {
+                final short ofVersion = deviceContext.getDeviceState().getVersion();
+                final TranslatorKey translatorKey = new TranslatorKey(ofVersion, PortGrouping.class.getName());
+                final MessageTranslator<PortGrouping, FlowCapableNodeConnector> translator = deviceContext.oook().lookupTranslator(translatorKey);
+                final FlowCapableNodeConnector fcNodeConnector = translator.translate(port, deviceContext, null);
 
-        final ListenableFuture<RpcResult<List<MultipartReply>>> replyTableFeatures = getNodeStaticInfo(messageListener,
-                MultipartType.OFPMPTABLEFEATURES, deviceContext, deviceState.getNodeInstanceIdentifier(), deviceState.getVersion());
-
-        final ListenableFuture<RpcResult<List<MultipartReply>>> replyPortDescription = getNodeStaticInfo(messageListener,
-                MultipartType.OFPMPPORTDESC, deviceContext, deviceState.getNodeInstanceIdentifier(), deviceState.getVersion());
-
-        final ListenableFuture<List<RpcResult<List<MultipartReply>>>> deviceFeaturesFuture =
-                Futures.allAsList(Arrays.asList(replyDesc, replyMeterFeature, replyGroupFeatures, replyTableFeatures, replyPortDescription));
+                final BigInteger dataPathId = deviceContext.getPrimaryConnectionContext().getFeatures().getDatapathId();
+                final NodeConnectorId nodeConnectorId = NodeStaticReplyTranslatorUtil.nodeConnectorId(dataPathId.toString(), port.getPortNo(), ofVersion);
+                final NodeConnectorBuilder ncBuilder = new NodeConnectorBuilder().setId(nodeConnectorId);
+                ncBuilder.addAugmentation(FlowCapableNodeConnector.class, fcNodeConnector);
+                ncBuilder.addAugmentation(FlowCapableNodeConnectorStatisticsData.class, new FlowCapableNodeConnectorStatisticsDataBuilder().build());
+                final NodeConnector connector = ncBuilder.build();
+                final InstanceIdentifier<NodeConnector> connectorII = deviceState.getNodeInstanceIdentifier().child(NodeConnector.class, connector.getKey());
+                deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, connectorII, connector);
+                //FlowCapableNodeConnectorBuilder
+            }
+        } else if(connectionContext.getFeatures().getVersion() == OFConstants.OFP_VERSION_1_3) {
+            deviceFeaturesFuture = createDeviceFeaturesForOF13(messageListener, deviceContext, deviceState);
+        }
 
         Futures.addCallback(deviceFeaturesFuture, new FutureCallback<List<RpcResult<List<MultipartReply>>>>() {
             @Override
@@ -187,6 +196,40 @@ public class DeviceManagerImpl implements DeviceManager {
                 // FIXME : remove session
             }
         });
+    }
+
+    private ListenableFuture<RpcResult<List<MultipartReply>>> processReplyDesc(OpenflowProtocolListenerFullImpl messageListener,
+                                                                                      DeviceContextImpl deviceContext,
+                                                                                      DeviceState deviceState) {
+        final ListenableFuture<RpcResult<List<MultipartReply>>> replyDesc = getNodeStaticInfo(messageListener,
+                MultipartType.OFPMPDESC, deviceContext, deviceState.getNodeInstanceIdentifier(), deviceState.getVersion());
+        return replyDesc;
+    }
+
+    private ListenableFuture<List<RpcResult<List<MultipartReply>>>>  createDeviceFeaturesForOF10(OpenflowProtocolListenerFullImpl messageListener,
+                                                                                                 DeviceContextImpl deviceContext,
+                                                                                                 DeviceState deviceState) {
+        return Futures.allAsList(Arrays.asList(processReplyDesc(messageListener, deviceContext, deviceState)));
+    }
+
+    private ListenableFuture<List<RpcResult<List<MultipartReply>>>>  createDeviceFeaturesForOF13(OpenflowProtocolListenerFullImpl messageListener,
+                                                                                                 DeviceContextImpl deviceContext,
+                                                                                                 DeviceState deviceState) {
+        final ListenableFuture<RpcResult<List<MultipartReply>>> replyDesc = processReplyDesc(messageListener, deviceContext, deviceState);
+
+        final ListenableFuture<RpcResult<List<MultipartReply>>> replyMeterFeature = getNodeStaticInfo(messageListener,
+                MultipartType.OFPMPMETERFEATURES, deviceContext, deviceState.getNodeInstanceIdentifier(), deviceState.getVersion());
+
+        final ListenableFuture<RpcResult<List<MultipartReply>>> replyGroupFeatures = getNodeStaticInfo(messageListener,
+                MultipartType.OFPMPGROUPFEATURES, deviceContext, deviceState.getNodeInstanceIdentifier(), deviceState.getVersion());
+
+//        final ListenableFuture<RpcResult<List<MultipartReply>>> replyTableFeatures = getNodeStaticInfo(messageListener,
+//                MultipartType.OFPMPTABLEFEATURES, deviceContext, deviceState.getNodeInstanceIdentifier(), deviceState.getVersion());
+
+        final ListenableFuture<RpcResult<List<MultipartReply>>> replyPortDescription = getNodeStaticInfo(messageListener,
+                MultipartType.OFPMPPORTDESC, deviceContext, deviceState.getNodeInstanceIdentifier(), deviceState.getVersion());
+
+        return Futures.allAsList(Arrays.asList(replyDesc, replyMeterFeature, replyGroupFeatures, /*replyTableFeatures,*/ replyPortDescription));
     }
 
     @Override
@@ -300,7 +343,7 @@ public class DeviceManagerImpl implements DeviceManager {
                 case OFPMPPORTDESC:
                     Preconditions.checkArgument(body instanceof MultipartReplyPortDescCase);
                     final MultipartReplyPortDesc portDesc = ((MultipartReplyPortDescCase) body).getMultipartReplyPortDesc();
-                    for (final Ports port : portDesc.getPorts()) {
+                    for (final PortGrouping port : portDesc.getPorts()) {
                         final short ofVersion = dContext.getDeviceState().getVersion();
                         final TranslatorKey translatorKey = new TranslatorKey(ofVersion, PortGrouping.class.getName());
                         final MessageTranslator<PortGrouping, FlowCapableNodeConnector> translator = dContext.oook().lookupTranslator(translatorKey);
@@ -317,6 +360,7 @@ public class DeviceManagerImpl implements DeviceManager {
                         dContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, connectorII, connector);
                         //FlowCapableNodeConnectorBuilder
                     }
+
                     break;
 
                 default:
