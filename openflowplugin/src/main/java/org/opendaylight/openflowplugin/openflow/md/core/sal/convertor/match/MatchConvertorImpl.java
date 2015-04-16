@@ -862,8 +862,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
                         arpSourceHardwareAddressBuilder.setAddress(macAddressMatchEntry.getMacAddress());
                         MaskMatchEntry maskMatchEntry = ofMatch.getAugmentation(MaskMatchEntry.class);
                         if (maskMatchEntry != null) {
-                            arpSourceHardwareAddressBuilder.setMask(new MacAddress(ByteBufUtils
-                                    .macAddressToString(maskMatchEntry.getMask())));
+                            arpSourceHardwareAddressBuilder.setMask(new MacAddress(maskMatchEntry.getMask()));
                         }
                         arpMatchBuilder.setArpSourceHardwareAddress(arpSourceHardwareAddressBuilder.build());
                         matchBuilder.setLayer3Match(arpMatchBuilder.build());
@@ -873,8 +872,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
                         arpTargetHardwareAddressBuilder.setAddress(macAddressMatchEntry.getMacAddress());
                         MaskMatchEntry maskMatchEntry = ofMatch.getAugmentation(MaskMatchEntry.class);
                         if (maskMatchEntry != null) {
-                            arpTargetHardwareAddressBuilder.setMask(new MacAddress(ByteBufUtils
-                                    .macAddressToString(maskMatchEntry.getMask())));
+                            arpTargetHardwareAddressBuilder.setMask(new MacAddress(maskMatchEntry.getMask()));
                         }
                         arpMatchBuilder.setArpTargetHardwareAddress(arpTargetHardwareAddressBuilder.build());
                         matchBuilder.setLayer3Match(arpMatchBuilder.build());
@@ -1133,7 +1131,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
         addMacAddressAugmentation(matchEntriesBuilder, macAddress);
         if (mask != null) {
             hasmask = true;
-            addMaskAugmentation(matchEntriesBuilder, ByteBufUtils.macAddressToBytes(mask.getValue()));
+            addMaskAugmentation(matchEntriesBuilder, mask.getBinaryForm());
         }
         matchEntriesBuilder.setHasMask(hasmask);
         return matchEntriesBuilder.build();

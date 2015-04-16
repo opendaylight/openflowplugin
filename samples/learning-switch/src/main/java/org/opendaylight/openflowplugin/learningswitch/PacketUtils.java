@@ -87,15 +87,7 @@ public abstract class PacketUtils {
      *         address
      */
     public static MacAddress rawMacToMac(byte[] rawMac) {
-        MacAddress mac = null;
-        if (rawMac != null && rawMac.length == 6) {
-            StringBuffer sb = new StringBuffer();
-            for (byte octet : rawMac) {
-                sb.append(String.format(":%02X", octet));
-            }
-            mac = new MacAddress(sb.substring(1));
-        }
-        return mac;
+        return new MacAddress(rawMac);
     }
 
     /**
