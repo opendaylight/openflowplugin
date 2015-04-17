@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
- *
+ * <p/>
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
@@ -16,6 +16,7 @@ import com.google.common.util.concurrent.SettableFuture;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -23,7 +24,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
-import org.opendaylight.openflowplugin.api.openflow.device.exception.DeviceDataException;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowHash;
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowDescriptorFactory;
@@ -212,13 +212,23 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
         final SettableFuture<RpcResult<T>> finalFuture = SettableFuture.create();
         Futures.addCallback(allFutures, new FutureCallback<List<RpcResult<T>>>() {
             @Override
-            public void onSuccess(List<RpcResult<T>> result) {
-                LOG.warn("Positive confirmation of flow push is not supported by OF-spec");
-                for (FlowModInputBuilder ofFlowModInput : ofFlowModInputs) {
-                    LOG.warn("flow future result was successful [{}] = this should have never happen",
-                            ofFlowModInput.getXid());
+            public void onSuccess(List<RpcResult<T>> results) {
+                Iterator<FlowModInputBuilder> flowModInputBldIterator = ofFlowModInputs.iterator();
+                List<RpcError> rpcErrorLot = new ArrayList<>();
+                for (RpcResult<T> rpcResult : results) {
+                    FlowModInputBuilder flowModInputBld = flowModInputBldIterator.next();
+                    if (rpcResult.isSuccessful()) {
+                        Long xid = flowModInputBld.getXid();
+                        LOG.warn("Positive confirmation of flow push is not supported by OF-spec");
+                        LOG.warn("flow future result was successful [{}] = this should have never happen",
+                                xid);
+                        rpcErrorLot.add(RpcResultBuilder.newError(ErrorType.APPLICATION, "",
+                                "flow future result was successful ["+xid+"] = this should have never happen"));
+                    } else {
+                        rpcErrorLot.addAll(rpcResult.getErrors());
+                    }
                 }
-                finalFuture.setException(new DeviceDataException("positive confirmation of flow occurred"));
+                finalFuture.set(RpcResultBuilder.<T>failed().withRpcErrors(rpcErrorLot).build());
             }
 
             @Override
