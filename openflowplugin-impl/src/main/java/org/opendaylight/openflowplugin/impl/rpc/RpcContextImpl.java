@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.rpc;
 
+import org.slf4j.Logger;
+
 import com.google.common.util.concurrent.SettableFuture;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,7 +19,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeContext;
-import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.RpcService;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -25,10 +26,10 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
 public class RpcContextImpl implements RpcContext {
 
+    private static final Logger LOG = org.slf4j.LoggerFactory.getLogger(RpcContextImpl.class);
     final ProviderContext providerContext;
 
     // TODO: add private Sal salBroker
-    private final List<RequestContext<? extends DataObject>> requestContexts = new ArrayList<>();
     private final DeviceContext deviceContext;
     private final List<RoutedRpcRegistration> rpcRegistrations = new ArrayList<>();
     private final List<RequestContext<?>> synchronizedRequestsList = Collections
@@ -90,7 +91,9 @@ public class RpcContextImpl implements RpcContext {
 
     @Override
     public <T> void forgetRequestContext(final RequestContext<T> requestContext) {
-        requestContexts.remove(requestContext);
+        synchronizedRequestsList.remove(requestContext);
+        LOG.trace("Removed request context with xid {}. Context request in list {}.",
+                requestContext.getXid(), synchronizedRequestsList.size());
     }
 
     @Override
@@ -104,7 +107,7 @@ public class RpcContextImpl implements RpcContext {
     }
 
     public boolean isRequestContextCapacityEmpty() {
-        return requestContexts.size() <= maxRequestsPerDevice;
+        return synchronizedRequestsList.size() <= maxRequestsPerDevice;
     }
 
 }
