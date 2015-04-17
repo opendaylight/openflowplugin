@@ -64,6 +64,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.MeterConfigStatsUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.MeterStatisticsUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.NodeMeterStatistics;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.NodeMeterStatisticsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.nodes.node.meter.MeterStatistics;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.nodes.node.meter.MeterStatisticsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
@@ -165,13 +166,16 @@ public final class StatisticsGatheringUtils {
         final InstanceIdentifier<FlowCapableNode> fNodeIdent = getFlowCapableNodeInstanceIdentifier(nodeId);
         deleteAllKnownMeters(deviceContext, fNodeIdent);
         for (MeterConfigStats meterConfigStats : meterConfigStatsUpdated.getMeterConfigStats()) {
-            final MeterBuilder meterBuilder = new MeterBuilder(meterConfigStats);
             final MeterId meterId = meterConfigStats.getMeterId();
             final InstanceIdentifier<Meter> meterInstanceIdentifier = fNodeIdent.child(Meter.class, new MeterKey(meterId));
+
+            final MeterBuilder meterBuilder = new MeterBuilder(meterConfigStats);
+            meterBuilder.setKey(new MeterKey(meterId));
+            meterBuilder.addAugmentation(NodeMeterStatistics.class, new NodeMeterStatisticsBuilder().build());
+            
             deviceContext.getDeviceMeterRegistry().store(meterId);
             deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, meterInstanceIdentifier, meterBuilder.build());
         }
-
     }
 
     private static void processFlowStatistics(final FlowsStatisticsUpdate singleMultipartData, final DeviceContext deviceContext) {
