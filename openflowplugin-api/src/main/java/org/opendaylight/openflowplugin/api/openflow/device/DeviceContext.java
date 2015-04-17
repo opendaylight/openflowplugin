@@ -45,7 +45,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  * <p/>
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 25.2.2015.
  */
-public interface DeviceContext extends OpenflowPluginTimer, MessageHandler, TranslatorLibrarian, OutstandingMessageExtractor, DeviceReplyProcessor {
+public interface DeviceContext extends AutoCloseable,OpenflowPluginTimer, MessageHandler, TranslatorLibrarian, OutstandingMessageExtractor, DeviceReplyProcessor {
 
 
     /**
