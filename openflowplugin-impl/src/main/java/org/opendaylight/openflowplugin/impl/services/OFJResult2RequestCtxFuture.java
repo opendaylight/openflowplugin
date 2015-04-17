@@ -56,11 +56,17 @@ public class OFJResult2RequestCtxFuture<T> {
 
             @Override
             public void onFailure(final Throwable throwable) {
-                LOG.trace("Exception occured while processing OF Java response for XID {}.", requestContext.getXid().getValue(), throwable);
-                requestContext.getFuture().set(
-                        RpcResultBuilder.<T>failed()
-                                .withError(RpcError.ErrorType.APPLICATION, "", "Flow translation to OF JAVA failed.")
-                                .build());
+                if (futureResultFromOfLib.isCancelled()) {
+                    LOG.trace("Asymmetric message - no response from OF Java expected for XID {}. Closing as successful.", requestContext.getXid().getValue());
+                    requestContext.getFuture().set(RpcResultBuilder.<T>success().build());
+                } else {
+                    LOG.trace("Exception occured while processing OF Java response for XID {}.", requestContext.getXid().getValue(), throwable);
+                    requestContext.getFuture().set(
+                            RpcResultBuilder.<T>failed()
+                                    .withError(RpcError.ErrorType.APPLICATION, "", "Flow translation to OF JAVA failed.")
+                                    .build());
+                }
+
                 RequestContextUtil.closeRequstContext(requestContext);
             }
         });

@@ -8,6 +8,8 @@
 package org.opendaylight.openflowplugin.impl.services;
 
 import com.google.common.base.Function;
+import com.google.common.util.concurrent.AsyncFunction;
+import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.math.BigInteger;
@@ -46,7 +48,17 @@ public class PacketProcessingServiceImpl extends CommonService implements Packet
                     connectionID = BigInteger.valueOf(connectionCookie.getValue());
                 }
 
-                return JdkFutureAdapters.listenInPoolThread(provideConnectionAdapter(connectionID).packetOut(message));
+                ListenableFuture<RpcResult<Void>> rpcResultListenableFuture = JdkFutureAdapters.listenInPoolThread(provideConnectionAdapter(connectionID).packetOut(message));
+                return Futures.transform(rpcResultListenableFuture, new AsyncFunction<RpcResult<Void>, RpcResult<Void>>() {
+                    @Override
+                    public ListenableFuture<RpcResult<Void>> apply(RpcResult<Void> rpcResult) throws Exception {
+                        if (! rpcResult.isSuccessful()) {
+                            return Futures.immediateFuture(rpcResult);
+                        } else {
+                            return Futures.immediateCancelledFuture();
+                        }
+                    }
+                });
             }
         });
 
