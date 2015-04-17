@@ -47,6 +47,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.q
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GroupDescStatsUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GroupStatisticsUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.NodeGroupStatistics;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.NodeGroupStatisticsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.group.statistics.GroupStatistics;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.group.statistics.GroupStatisticsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
@@ -172,7 +173,7 @@ public final class StatisticsGatheringUtils {
             final MeterBuilder meterBuilder = new MeterBuilder(meterConfigStats);
             meterBuilder.setKey(new MeterKey(meterId));
             meterBuilder.addAugmentation(NodeMeterStatistics.class, new NodeMeterStatisticsBuilder().build());
-            
+
             deviceContext.getDeviceMeterRegistry().store(meterId);
             deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, meterInstanceIdentifier, meterBuilder.build());
         }
@@ -306,8 +307,12 @@ public final class StatisticsGatheringUtils {
         final InstanceIdentifier<FlowCapableNode> fNodeIdent = getFlowCapableNodeInstanceIdentifier(nodeId);
         deleteAllKnownGroups(deviceContext, fNodeIdent);
         for (GroupDescStats groupDescStats : groupDescStatsUpdated.getGroupDescStats()) {
-            final GroupBuilder groupBuilder = new GroupBuilder(groupDescStats);
             final GroupId groupId = groupDescStats.getGroupId();
+
+            final GroupBuilder groupBuilder = new GroupBuilder(groupDescStats);
+            groupBuilder.setKey(new GroupKey(groupId));
+            groupBuilder.addAugmentation(NodeGroupStatistics.class, new NodeGroupStatisticsBuilder().build());
+
             final InstanceIdentifier<Group> groupIdent = fNodeIdent.child(Group.class, new GroupKey(groupId));
             deviceContext.getDeviceGroupRegistry().store(groupId);
             deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, groupIdent, groupBuilder.build());
