@@ -72,10 +72,7 @@ class TransactionChainManager implements TransactionChainListener {
         if ( ! counterIsEnabled) {
             return;
         }
-        nrOfActualTx += 1L;
-        if (nrOfActualTx >= maxTx) {
-            submitTransaction();
-        }
+        countTxInAndCommit();
     }
 
     synchronized <T extends DataObject> void addDeleteOperationTotTxChain(final LogicalDatastoreType store,
@@ -87,8 +84,12 @@ class TransactionChainManager implements TransactionChainListener {
         if ( ! counterIsEnabled) {
             return;
         }
+        countTxInAndCommit();
+    }
+
+    private void countTxInAndCommit() {
         nrOfActualTx += 1L;
-        if (nrOfActualTx == maxTx) {
+        if (nrOfActualTx >= maxTx) {
             submitTransaction();
         }
     }
