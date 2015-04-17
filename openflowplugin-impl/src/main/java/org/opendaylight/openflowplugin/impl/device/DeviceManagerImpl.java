@@ -15,6 +15,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import io.netty.util.HashedWheelTimer;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -87,7 +88,7 @@ import org.slf4j.LoggerFactory;
 /**
  *
  */
-public class DeviceManagerImpl implements DeviceManager {
+public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceManagerImpl.class);
 
@@ -99,7 +100,8 @@ public class DeviceManagerImpl implements DeviceManager {
     private TranslatorLibrary translatorLibrary;
     private DeviceInitializationPhaseHandler deviceInitPhaseHandler;
     private NotificationProviderService notificationService;
-
+    private final List<DeviceContext> synchronizedDeviceContextsList = Collections
+            .<DeviceContext>synchronizedList(new ArrayList<DeviceContext>());
 
     public DeviceManagerImpl(@Nonnull final DataBroker dataBroker) {
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
@@ -328,5 +330,12 @@ public class DeviceManagerImpl implements DeviceManager {
     @Override
     public void setNotificationService(final NotificationProviderService notificationServiceParam) {
         notificationService = notificationServiceParam;
+    }
+
+    @Override
+    public void close() throws Exception {
+        for (DeviceContext deviceContext : synchronizedDeviceContextsList) {
+            deviceContext.close();
+        }
     }
 }
