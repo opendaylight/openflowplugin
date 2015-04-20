@@ -38,6 +38,7 @@ import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.group.DeviceGroupRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.meter.DeviceMeterRegistry;
+import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.impl.common.NodeStaticReplyTranslatorUtil;
 import org.opendaylight.openflowplugin.impl.registry.flow.DeviceFlowRegistryImpl;
 import org.opendaylight.openflowplugin.impl.registry.group.DeviceGroupRegistryImpl;
@@ -95,11 +96,15 @@ public class DeviceContextImpl implements DeviceContext {
     private final DeviceMeterRegistry deviceMeterRegistry;
     private Timeout barrierTaskTimeout;
     private NotificationProviderService notificationService;
+    private final MessageSpy messageSpy;
+
 
     @VisibleForTesting
     DeviceContextImpl(@Nonnull final ConnectionContext primaryConnectionContext,
-                      @Nonnull final DeviceState deviceState, @Nonnull final DataBroker dataBroker,
-                      @Nonnull final HashedWheelTimer hashedWheelTimer) {
+                      @Nonnull final DeviceState deviceState,
+                      @Nonnull final DataBroker dataBroker,
+                      @Nonnull final HashedWheelTimer hashedWheelTimer,
+                      @Nonnull final MessageSpy _messageSpy) {
         this.primaryConnectionContext = Preconditions.checkNotNull(primaryConnectionContext);
         this.deviceState = Preconditions.checkNotNull(deviceState);
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
@@ -111,6 +116,7 @@ public class DeviceContextImpl implements DeviceContext {
         deviceFlowRegistry = new DeviceFlowRegistryImpl();
         deviceGroupRegistry = new DeviceGroupRegistryImpl();
         deviceMeterRegistry = new DeviceMeterRegistryImpl();
+        messageSpy = _messageSpy;
     }
 
     /**
