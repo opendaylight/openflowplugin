@@ -48,6 +48,7 @@ import org.opendaylight.openflowplugin.impl.rpc.RequestContextImpl;
 import org.opendaylight.openflowplugin.impl.services.OFJResult2RequestCtxFuture;
 import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableBuilder;
@@ -169,6 +170,9 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
             final CapabilitiesV10 capabilitiesV10 = connectionContext.getFeatures().getCapabilitiesV10();
 
             DeviceStateUtil.setDeviceStateBasedOnV10Capabilities(deviceState, capabilitiesV10);
+            //FIXME: next two lines are hack to make OF10 + cbench working (they don't send reply for description request)
+            createEmptyFlowCapableNodeInDs(deviceContext);
+            makeEmptyTables(deviceContext, deviceContext.getDeviceState().getNodeInstanceIdentifier(), connectionContext.getFeatures().getTables());
 
             deviceFeaturesFuture = Futures.immediateFuture(null);//createDeviceFeaturesForOF10(messageListener, deviceContext, deviceState);
 
@@ -310,6 +314,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
 
     // FIXME : remove after ovs tableFeatures fix
     private static void makeEmptyTables(final DeviceContext dContext, final InstanceIdentifier<Node> nodeII, final Short nrOfTables) {
+        LOG.debug("About to create {} empty tables.", nrOfTables);
         for (int i = 0; i < nrOfTables; i++) {
             final short tId = (short) i;
             final InstanceIdentifier<Table> tableII = nodeII.augmentation(FlowCapableNode.class).child(Table.class, new TableKey(tId));
@@ -401,5 +406,11 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         for (DeviceContext deviceContext : synchronizedDeviceContextsList) {
             deviceContext.close();
         }
+    }
+
+    private static void createEmptyFlowCapableNodeInDs(final DeviceContext deviceContext) {
+        FlowCapableNodeBuilder flowCapableNodeBuilder = new FlowCapableNodeBuilder();
+        final InstanceIdentifier<FlowCapableNode> fNodeII = deviceContext.getDeviceState().getNodeInstanceIdentifier().augmentation(FlowCapableNode.class);
+        deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, fNodeII, flowCapableNodeBuilder.build());
     }
 }
