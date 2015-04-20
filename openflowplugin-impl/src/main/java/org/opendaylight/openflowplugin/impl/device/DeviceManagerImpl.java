@@ -46,6 +46,7 @@ import org.opendaylight.openflowplugin.impl.common.NodeStaticReplyTranslatorUtil
 import org.opendaylight.openflowplugin.impl.device.listener.OpenflowProtocolListenerFullImpl;
 import org.opendaylight.openflowplugin.impl.rpc.RequestContextImpl;
 import org.opendaylight.openflowplugin.impl.services.OFJResult2RequestCtxFuture;
+import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
@@ -62,10 +63,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.No
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.NodeMeterFeatures;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Capabilities;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.CapabilitiesV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.features.reply.PhyPort;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.MultipartReplyBody;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyDescCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyGroupFeaturesCase;
@@ -76,7 +78,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group.features._case.MultipartReplyGroupFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.meter.features._case.MultipartReplyMeterFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.port.desc._case.MultipartReplyPortDesc;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.port.desc._case.multipart.reply.port.desc.Ports;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.table.features._case.MultipartReplyTableFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.FlowCapableNodeConnectorStatisticsData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.FlowCapableNodeConnectorStatisticsDataBuilder;
@@ -164,7 +165,11 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
 
         ListenableFuture<List<RpcResult<List<MultipartReply>>>> deviceFeaturesFuture = null;
 
-        if(connectionContext.getFeatures().getVersion() == OFConstants.OFP_VERSION_1_0) {
+        if (connectionContext.getFeatures().getVersion() == OFConstants.OFP_VERSION_1_0) {
+            final CapabilitiesV10 capabilitiesV10 = connectionContext.getFeatures().getCapabilitiesV10();
+
+            DeviceStateUtil.setDeviceStateBasedOnV10Capabilities(deviceState, capabilitiesV10);
+
             deviceFeaturesFuture = Futures.immediateFuture(null);//createDeviceFeaturesForOF10(messageListener, deviceContext, deviceState);
 
             for (final PortGrouping port : connectionContext.getFeatures().getPhyPort()) {
@@ -183,7 +188,9 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
                 deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, connectorII, connector);
                 //FlowCapableNodeConnectorBuilder
             }
-        } else if(connectionContext.getFeatures().getVersion() == OFConstants.OFP_VERSION_1_3) {
+        } else if (connectionContext.getFeatures().getVersion() == OFConstants.OFP_VERSION_1_3) {
+            final Capabilities capabilities = connectionContext.getFeatures().getCapabilities();
+            DeviceStateUtil.setDeviceStateBasedOnV13Capabilities(deviceState, capabilities);
             deviceFeaturesFuture = createDeviceFeaturesForOF13(messageListener, deviceContext, deviceState);
         }
 
@@ -200,23 +207,24 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         });
     }
 
+
     private ListenableFuture<RpcResult<List<MultipartReply>>> processReplyDesc(OpenflowProtocolListenerFullImpl messageListener,
-                                                                                      DeviceContextImpl deviceContext,
-                                                                                      DeviceState deviceState) {
+                                                                               DeviceContextImpl deviceContext,
+                                                                               DeviceState deviceState) {
         final ListenableFuture<RpcResult<List<MultipartReply>>> replyDesc = getNodeStaticInfo(messageListener,
                 MultipartType.OFPMPDESC, deviceContext, deviceState.getNodeInstanceIdentifier(), deviceState.getVersion());
         return replyDesc;
     }
 
-    private ListenableFuture<List<RpcResult<List<MultipartReply>>>>  createDeviceFeaturesForOF10(OpenflowProtocolListenerFullImpl messageListener,
-                                                                                                 DeviceContextImpl deviceContext,
-                                                                                                 DeviceState deviceState) {
+    private ListenableFuture<List<RpcResult<List<MultipartReply>>>> createDeviceFeaturesForOF10(OpenflowProtocolListenerFullImpl messageListener,
+                                                                                                DeviceContextImpl deviceContext,
+                                                                                                DeviceState deviceState) {
         return Futures.allAsList(Arrays.asList(processReplyDesc(messageListener, deviceContext, deviceState)));
     }
 
-    private ListenableFuture<List<RpcResult<List<MultipartReply>>>>  createDeviceFeaturesForOF13(OpenflowProtocolListenerFullImpl messageListener,
-                                                                                                 final DeviceContextImpl deviceContext,
-                                                                                                 final DeviceState deviceState) {
+    private ListenableFuture<List<RpcResult<List<MultipartReply>>>> createDeviceFeaturesForOF13(OpenflowProtocolListenerFullImpl messageListener,
+                                                                                                final DeviceContextImpl deviceContext,
+                                                                                                final DeviceState deviceState) {
         final ListenableFuture<RpcResult<List<MultipartReply>>> replyDesc = processReplyDesc(messageListener, deviceContext, deviceState);
 
         final ListenableFuture<RpcResult<List<MultipartReply>>> replyMeterFeature = getNodeStaticInfo(messageListener,
@@ -353,7 +361,6 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
                     final NodeGroupFeatures gFeature = NodeStaticReplyTranslatorUtil.nodeGroupFeatureTranslator(groupFeatures);
                     final InstanceIdentifier<NodeGroupFeatures> gFeatureII = nodeII.augmentation(NodeGroupFeatures.class);
                     dContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, gFeatureII, gFeature);
-                    dContext.getDeviceState().setGroupAvailable(true);
                     break;
 
                 case OFPMPPORTDESC:
@@ -374,7 +381,6 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
 
                         final InstanceIdentifier<NodeConnector> connectorII = nodeII.child(NodeConnector.class, connector.getKey());
                         dContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, connectorII, connector);
-                        //FlowCapableNodeConnectorBuilder
                     }
 
                     break;
