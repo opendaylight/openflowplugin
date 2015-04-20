@@ -8,13 +8,12 @@
 
 package org.opendaylight.openflowplugin.api.openflow.device;
 
-import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
-
 import io.netty.util.Timeout;
 import java.math.BigInteger;
 import java.util.Map;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.openflowplugin.api.openflow.OpenflowPluginTimer;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceReplyProcessor;
@@ -24,6 +23,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.listener.OpenflowMess
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.group.DeviceGroupRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.meter.DeviceMeterRegistry;
+import org.opendaylight.openflowplugin.api.openflow.statistics.MessageSpy;
 import org.opendaylight.openflowplugin.api.openflow.translator.TranslatorLibrarian;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableFeatures;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -45,7 +45,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  * <p/>
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 25.2.2015.
  */
-public interface DeviceContext extends AutoCloseable,OpenflowPluginTimer, MessageHandler, TranslatorLibrarian, OutstandingMessageExtractor, DeviceReplyProcessor {
+public interface DeviceContext extends AutoCloseable, OpenflowPluginTimer, MessageHandler, TranslatorLibrarian, OutstandingMessageExtractor, DeviceReplyProcessor {
 
 
     /**
@@ -112,6 +112,7 @@ public interface DeviceContext extends AutoCloseable,OpenflowPluginTimer, Messag
 
     /**
      * Method generates unique XID value.
+     *
      * @return
      */
     Xid getNextXid();
@@ -139,26 +140,31 @@ public interface DeviceContext extends AutoCloseable,OpenflowPluginTimer, Messag
 
     /**
      * Method returns registered {@link org.opendaylight.openflowplugin.api.openflow.device.listener.OpenflowMessageListenerFacade}
+     *
      * @return
      */
     OpenflowMessageListenerFacade getOpenflowMessageListenerFacade();
 
     /**
      * Method exposes flow registry used for storing flow ids identified by calculated flow hash.
+     *
      * @return
      */
     DeviceFlowRegistry getDeviceFlowRegistry();
+
     /**
      * Method exposes device group registry used for storing group ids.
+     *
      * @return
      */
     DeviceGroupRegistry getDeviceGroupRegistry();
+
     /**
      * Method exposes device meter registry used for storing meter ids.
+     *
      * @return
      */
     DeviceMeterRegistry getDeviceMeterRegistry();
-
 
 
     /**
@@ -173,6 +179,7 @@ public interface DeviceContext extends AutoCloseable,OpenflowPluginTimer, Messag
 
     /**
      * Sets notification service
+     *
      * @param notificationService
      */
     void setNotificationService(NotificationProviderService notificationService);
