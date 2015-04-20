@@ -80,14 +80,12 @@ public class PacketInTranslator implements IMDMessageTranslator<OfHeader, List<D
                 if (message.getMatch() != null && message.getMatch().getMatchEntry() != null) {
                     List<MatchEntry> entries = message.getMatch().getMatchEntry();
                     for (MatchEntry entry : entries) {
-                        InPortCase inPortCase = ((InPortCase) entry.getMatchEntryValue());
-                        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.in.port._case.InPort inPort = inPortCase.getInPort();
-                        if (inPort != null) {
-                            if (port == null) {
+                        if(InPortCase.class.equals(entry.getMatchEntryValue().getImplementedInterface())) {
+                            InPortCase inPortCase = ((InPortCase) entry.getMatchEntryValue());
+                            org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.in.port._case.InPort inPort = inPortCase.getInPort();
+                            if (inPort != null) {
                                 port = inPort.getPortNumber().getValue();
-                            } else {
-                                LOG.warn("Multiple input ports discovered when walking through match entries (at least {} and {})",
-                                        port, inPort.getPortNumber().getValue());
+                                break;
                             }
                         }
                     }
