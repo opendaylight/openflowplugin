@@ -2,6 +2,7 @@ package org.opendaylight.openflowplugin.impl.device;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
+
 import com.google.common.util.concurrent.SettableFuture;
 import io.netty.util.HashedWheelTimer;
 import java.util.ArrayList;
@@ -28,6 +29,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.device.exception.DeviceDataException;
+import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartRequestFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.Error;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessageBuilder;
@@ -76,6 +78,8 @@ public class DeviceContextImplTest {
     BindingTransactionChain txChainFactory;
     @Mock
     HashedWheelTimer timer;
+    @Mock
+    MessageIntelligenceAgency messageIntelligenceAgency;
 
     @Before
     public void setUp() {
@@ -88,29 +92,29 @@ public class DeviceContextImplTest {
         Mockito.when(txChainFactory.newWriteOnlyTransaction()).thenReturn(wTx);
         Mockito.when(dataBroker.newReadOnlyTransaction()).thenReturn(rTx);
 
-        deviceContext = new DeviceContextImpl(connectionContext, deviceState, dataBroker, timer);
+        deviceContext = new DeviceContextImpl(connectionContext, deviceState, dataBroker, timer, messageIntelligenceAgency);
         xid = deviceContext.getNextXid();
         xidMulti = deviceContext.getNextXid();
     }
 
     @Test(expected = NullPointerException.class)
     public void testDeviceContextImplConstructorNullConnectionContext() {
-        new DeviceContextImpl(null, deviceState, dataBroker, timer);
+        new DeviceContextImpl(null, deviceState, dataBroker, timer, messageIntelligenceAgency);
     }
 
     @Test(expected = NullPointerException.class)
     public void testDeviceContextImplConstructorNullDataBroker() {
-        new DeviceContextImpl(connectionContext, deviceState, null, timer);
+        new DeviceContextImpl(connectionContext, deviceState, null, timer, messageIntelligenceAgency);
     }
 
     @Test(expected = NullPointerException.class)
     public void testDeviceContextImplConstructorNullDeviceState() {
-        new DeviceContextImpl(connectionContext, null, dataBroker, timer);
+        new DeviceContextImpl(connectionContext, null, dataBroker, timer, messageIntelligenceAgency);
     }
 
     @Test(expected = NullPointerException.class)
     public void testDeviceContextImplConstructorNullTimer() {
-        new DeviceContextImpl(null, deviceState, dataBroker, null);
+        new DeviceContextImpl(null, deviceState, dataBroker, null, messageIntelligenceAgency);
     }
 
     @Test
@@ -129,9 +133,9 @@ public class DeviceContextImplTest {
 
     private static GetAsyncOutput createAsyncOutput(final Xid xid) {
         final GetAsyncOutputBuilder asyncOutputBuilder = new GetAsyncOutputBuilder();
-        asyncOutputBuilder.setFlowRemovedMask(Collections.<FlowRemovedMask> emptyList());
-        asyncOutputBuilder.setPacketInMask(Collections.<PacketInMask> emptyList());
-        asyncOutputBuilder.setPortStatusMask(Collections.<PortStatusMask> emptyList());
+        asyncOutputBuilder.setFlowRemovedMask(Collections.<FlowRemovedMask>emptyList());
+        asyncOutputBuilder.setPacketInMask(Collections.<PacketInMask>emptyList());
+        asyncOutputBuilder.setPortStatusMask(Collections.<PortStatusMask>emptyList());
         asyncOutputBuilder.setVersion(OFConstants.OFP_VERSION_1_3);
         asyncOutputBuilder.setXid(xid.getValue());
         return asyncOutputBuilder.build();
@@ -226,7 +230,7 @@ public class DeviceContextImplTest {
     private static List<MultipartReply> createMultipartReplyList(final Xid xid) {
         final MultipartReplyDesc descValue = new MultipartReplyDescBuilder().setHwDesc("hw-test-value").build();
         final MultipartReplyDescCase replyBody = new MultipartReplyDescCaseBuilder()
-                                                        .setMultipartReplyDesc(descValue).build();
+                .setMultipartReplyDesc(descValue).build();
         final List<MultipartReply> multipartReplies = new ArrayList<>();
         multipartReplies.add(new MultipartReplyMessageBuilder()
                 .setMultipartReplyBody(replyBody)
@@ -255,13 +259,13 @@ public class DeviceContextImplTest {
 
         LOG.info("Checking RequestContext.future");
         try {
-                final Object object = requestContext.getFuture().get(1L, TimeUnit.SECONDS);
-                final RpcResult<OfHeader> rpcResult = (RpcResult<OfHeader>) object;
-                Assert.assertFalse(rpcResult.isSuccessful());
-                final List<RpcError> errors = (List<RpcError>) rpcResult.getErrors();
-                Assert.assertTrue(errors.get(0).getCause() instanceof DeviceDataException);
-                final DeviceDataException cause = (DeviceDataException) errors.get(0).getCause();
-                Assert.assertTrue(cause.getCause() instanceof NullPointerException);
+            final Object object = requestContext.getFuture().get(1L, TimeUnit.SECONDS);
+            final RpcResult<OfHeader> rpcResult = (RpcResult<OfHeader>) object;
+            Assert.assertFalse(rpcResult.isSuccessful());
+            final List<RpcError> errors = (List<RpcError>) rpcResult.getErrors();
+            Assert.assertTrue(errors.get(0).getCause() instanceof DeviceDataException);
+            final DeviceDataException cause = (DeviceDataException) errors.get(0).getCause();
+            Assert.assertTrue(cause.getCause() instanceof NullPointerException);
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             LOG.error("Test failed when checking RequestContext.future", e);
             fail("fail");
