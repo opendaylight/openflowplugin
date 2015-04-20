@@ -13,6 +13,7 @@ package org.opendaylight.openflowplugin.api.openflow.statistics;
  * ticket spy - aimed on collecting intel about tickets 
  * @param <M> type of watched message
  */
+@Deprecated
 public interface MessageSpy<M> extends Runnable {
 
     /**
