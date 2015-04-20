@@ -286,7 +286,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
                     final InstanceIdentifier<NodeMeterFeatures> mFeatureII = nodeII.augmentation(NodeMeterFeatures.class);
                     dContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, mFeatureII, mFeature);
                     if (0L < mFeature.getMeterFeatures().getMaxMeter().getValue()) {
-                        dContext.getDeviceState().meterIsAvailable();
+                        dContext.getDeviceState().setMeterAvailable(true);
                     }
                     break;
 
@@ -296,7 +296,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
                     final NodeGroupFeatures gFeature = NodeStaticReplyTranslatorUtil.nodeGroupFeatureTranslator(groupFeatures);
                     final InstanceIdentifier<NodeGroupFeatures> gFeatureII = nodeII.augmentation(NodeGroupFeatures.class);
                     dContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, gFeatureII, gFeature);
-                    dContext.getDeviceState().groupIsAvailable();
+                    dContext.getDeviceState().setGroupAvailable(true);
                     break;
 
                 case OFPMPPORTDESC:

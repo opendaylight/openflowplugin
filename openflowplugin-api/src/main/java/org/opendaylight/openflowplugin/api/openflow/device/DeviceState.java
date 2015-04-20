@@ -54,33 +54,73 @@ public interface DeviceState {
     /**
      * Return true if we have relevant meter information
      * from device
+     *
      * @return
      */
     boolean isMetersAvailable();
 
     /**
-     * We already have information about meters
+     * Set information about meter statistics availability.
      */
-    void meterIsAvailable();
+    void setMeterAvailable(boolean available);
 
     /**
      * Return true if we have relevant group information
      * from device
+     *
      * @return
      */
     boolean isGroupAvailable();
 
     /**
-     * We already have information about groups
+     * Set information about group statistics availability.
      */
-    void groupIsAvailable();
+    void setGroupAvailable(boolean available);
 
     /**
      * Method returns true if initial statistics data were collected and written to DS.
+     *
      * @return
      */
     boolean deviceSynchronized();
 
+    /**
+     * Method returns true, if device capabilities provides flow statistics.
+     *
+     * @return
+     */
+    boolean isFlowStatisticsAvailable();
+
+    void setFlowStatisticsAvailable(boolean available);
+
+    /**
+     * Method returns true, if device capabilities provides table statistics.
+     *
+     * @return
+     */
+    boolean isTableStatisticsAvailable();
+
+    void setTableStatisticsAvailable(boolean available);
+
+    /**
+     * Method returns true, if device capabilities provides flow statistics.
+     *
+     * @return
+     */
+    boolean isPortStatisticsAvailable();
+
+    void setPortStatisticsAvailable(boolean available);
+
+    /**
+     * Method returns true, if device capabilities provides queue statistics.
+     *
+     * @return
+     */
+    boolean isQueueStatisticsAvailable();
+
+    void setQueueStatisticsAvailable(boolean available);
+
     void setDeviceSynchronized(boolean deviceSynchronized);
+
 
 }
