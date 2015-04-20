@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
- *
+ * <p/>
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
@@ -37,7 +37,7 @@ public class PacketReceivedTranslator implements MessageTranslator<PacketInMessa
 
         // extract the port number
         Long port = null;
-        if(input.getVersion() == OFConstants.OFP_VERSION_1_0 && input.getInPort() != null) {
+        if (input.getVersion() == OFConstants.OFP_VERSION_1_0 && input.getInPort() != null) {
             port = input.getInPort().longValue();
         } else if (input.getVersion() == OFConstants.OFP_VERSION_1_3) {
             if (input.getMatch() != null && input.getMatch().getMatchEntry() != null) {
@@ -52,16 +52,16 @@ public class PacketReceivedTranslator implements MessageTranslator<PacketInMessa
         if (input.getCookie() != null) {
             packetReceivedBuilder.setFlowCookie(new FlowCookie(input.getCookie()));
         }
-        if(port != null) {
+        if (port != null) {
             packetReceivedBuilder.setIngress(InventoryDataServiceUtil.nodeConnectorRefFromDatapathIdPortno(datapathId, port, OpenflowVersion.get(input.getVersion())));
         }
         packetReceivedBuilder.setPacketInReason(PacketInUtil.getMdSalPacketInReason(input.getReason()));
 
-        if(input.getTableId() != null) {
+        if (input.getTableId() != null) {
             packetReceivedBuilder.setTableId(new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableId(input.getTableId().getValue().shortValue()));
         }
 
-        if(input.getMatch() != null) {
+        if (input.getMatch() != null) {
             org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match packetInMatch = getPacketInMatch(input, datapathId);
             packetReceivedBuilder.setMatch(packetInMatch);
         }
@@ -88,15 +88,12 @@ public class PacketReceivedTranslator implements MessageTranslator<PacketInMessa
     private Long getPortNumberFromMatch(List<MatchEntry> entries) {
         Long port = null;
         for (MatchEntry entry : entries) {
-            InPortCase inPortCase = ((InPortCase) entry.getMatchEntryValue());
-            org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.in.port._case.InPort inPort = inPortCase.getInPort();
-            if (inPort != null) {
-
-                if (port == null) {
+            if (InPortCase.class.equals(entry.getMatchEntryValue().getImplementedInterface())) {
+                InPortCase inPortCase = ((InPortCase) entry.getMatchEntryValue());
+                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.in.port._case.InPort inPort = inPortCase.getInPort();
+                if (inPort != null) {
                     port = inPort.getPortNumber().getValue();
-                } else {
-//                        LOG.warn("Multiple input ports discovered when walking through match entries (at least {} and {})",
-//                                port, inPort.getPortNumber().getValue());
+                    break;
                 }
             }
         }

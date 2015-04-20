@@ -7,11 +7,11 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.queue;
 
+import com.google.common.collect.ImmutableMap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-
 import org.opendaylight.openflowplugin.api.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.api.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
@@ -22,8 +22,6 @@ import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.ImmutableMap;
 
 /**
  * OfHeader to DataObject implementation
@@ -61,7 +59,7 @@ public class TicketProcessorFactoryImpl implements TicketProcessorFactory<OfHead
     public void setTicketFinisher(TicketFinisher<DataObject> ticketFinisher) {
         this.ticketFinisher = ticketFinisher;
     }
-    
+
     /**
      * @param ticket
      * @return runnable ticket processor
@@ -86,7 +84,7 @@ public class TicketProcessorFactoryImpl implements TicketProcessorFactory<OfHead
                         }
                     }
                 } catch (Exception e) {
-                    LOG.error("translation problem: {}", e.getMessage());
+                    LOG.warn("translation problem: {}", e.getMessage());
                     ticket.getResult().setException(e);
                 }
                 LOG.debug("message processing done (type: {}, ticket: {})",
@@ -98,7 +96,7 @@ public class TicketProcessorFactoryImpl implements TicketProcessorFactory<OfHead
 
         return ticketProcessor;
     }
-    
+
     /**
      * @param ticket
      * @return runnable ticket processor
@@ -130,10 +128,10 @@ public class TicketProcessorFactoryImpl implements TicketProcessorFactory<OfHead
 
         return ticketProcessor;
     }
-    
-    
+
+
     /**
-     * @param ticket 
+     * @param ticket
      *
      */
     @Override
@@ -173,7 +171,7 @@ public class TicketProcessorFactoryImpl implements TicketProcessorFactory<OfHead
         } else {
             LOG.warn("No translators for this message Type: {}", messageType);
         }
-        
+
         return result;
     }
 }
