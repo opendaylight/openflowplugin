@@ -66,10 +66,17 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
 
         final RequestContext<T> requestContext = requestContextStack.createRequestContext();
         final SettableFuture<RpcResult<T>> result = requestContextStack.storeOrFail(requestContext);
-        final DataCrate<T> dataCrate = DataCrateBuilder.<T>builder().setiDConnection(connectionID)
-                .setRequestContext(requestContext).setFlowModInputBuilder(flowModInputBuilder).build();
 
         if (!result.isDone()) {
+
+            final DataCrate<T> dataCrate = DataCrateBuilder.<T>builder().setiDConnection(connectionID)
+                    .setRequestContext(requestContext).setFlowModInputBuilder(flowModInputBuilder).build();
+
+            requestContext.setXid(deviceContext.getNextXid());
+
+            LOG.trace("Hooking xid {} to device context - precaution.", requestContext.getXid().getValue());
+            deviceContext.hookRequestCtx(requestContext.getXid(), requestContext);
+
             final ListenableFuture<RpcResult<F>> resultFromOFLib = function.apply(dataCrate);
 
             final OFJResult2RequestCtxFuture<T> OFJResult2RequestCtxFuture = new OFJResult2RequestCtxFuture<>(requestContext, deviceContext);
@@ -84,7 +91,7 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
     @Override
     public Future<RpcResult<AddFlowOutput>> addFlow(final AddFlowInput input) {
         final FlowId flowId;
-        if(null != input.getFlowRef()) {
+        if (null != input.getFlowRef()) {
             flowId = input.getFlowRef().getValue().firstKeyOf(Flow.class, FlowKey.class).getId();
         } else {
             flowId = FlowUtil.createAlienFlowId(input.getTableId());
@@ -258,7 +265,49 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
         flowModInput.setXid(xid.getValue());
         Future<RpcResult<Void>> flowModResult = provideConnectionAdapter(data.getiDConnection()).flowMod(
                 flowModInput.build());
-        return JdkFutureAdapters.listenInPoolThread(flowModResult);
+
+        final ListenableFuture<RpcResult<Void>> result = JdkFutureAdapters.listenInPoolThread(flowModResult);
+        final RequestContext requestContext = data.getRequestContext();
+
+        Futures.addCallback(result, new FutureCallback<RpcResult<Void>>() {
+            @Override
+            public void onSuccess(final RpcResult<Void> voidRpcResult) {
+                if (!voidRpcResult.isSuccessful()) {
+                    // remove current request from request cache in deviceContext
+                    deviceContext.getRequests().remove(requestContext.getXid().getValue());
+                    // handle requestContext failure
+                    StringBuilder rpcErrors = new StringBuilder();
+                    if (null != voidRpcResult.getErrors() && voidRpcResult.getErrors().size() > 0) {
+                        for (RpcError error : voidRpcResult.getErrors()) {
+                            rpcErrors.append(error.getMessage());
+                        }
+                    }
+                    LOG.trace("OF Java result for XID {} was not successful. Errors : {}", requestContext.getXid().getValue(), rpcErrors.toString());
+                    requestContext.getFuture().set(
+                            RpcResultBuilder.<T>failed().withRpcErrors(voidRpcResult.getErrors()).build());
+                    RequestContextUtil.closeRequstContext(requestContext);
+                }
+
+            }
+
+            @Override
+            public void onFailure(final Throwable throwable) {
+                if (result.isCancelled()) {
+                    LOG.trace("Asymmetric message - no response from OF Java expected for XID {}. Closing as successful.", requestContext.getXid().getValue());
+                    requestContext.getFuture().set(RpcResultBuilder.<T>success().build());
+                } else {
+                    LOG.trace("Exception occured while processing OF Java response for XID {}.", requestContext.getXid().getValue(), throwable);
+                    requestContext.getFuture().set(
+                            RpcResultBuilder.<T>failed()
+                                    .withError(RpcError.ErrorType.APPLICATION, "", "Flow translation to OF JAVA failed.")
+                                    .build());
+                }
+
+                RequestContextUtil.closeRequstContext(requestContext);
+
+            }
+        });
+        return result;
     }
 
 }
