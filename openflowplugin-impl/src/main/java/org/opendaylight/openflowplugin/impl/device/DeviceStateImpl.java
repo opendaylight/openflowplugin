@@ -43,7 +43,10 @@ class DeviceStateImpl implements DeviceState {
     private boolean meterIsAvailable;
     private boolean groupIsAvailable;
     private boolean deviceSynchronized;
-
+    private boolean flowStatisticsAvailable;
+    private boolean tableStatisticsAvailable;
+    private boolean portStatisticsAvailable;
+    private boolean queueStatisticsAvailable;
 
     public DeviceStateImpl(@CheckForNull final FeaturesReply featuresReply, @Nonnull final NodeId nodeId) {
         Preconditions.checkArgument(featuresReply != null);
@@ -89,8 +92,8 @@ class DeviceStateImpl implements DeviceState {
     }
 
     @Override
-    public void meterIsAvailable() {
-        meterIsAvailable = true;
+    public void setMeterAvailable(boolean available) {
+        meterIsAvailable = available;
     }
 
     @Override
@@ -99,13 +102,54 @@ class DeviceStateImpl implements DeviceState {
     }
 
     @Override
-    public void groupIsAvailable() {
-        groupIsAvailable = true;
+    public void setGroupAvailable(boolean available) {
+        groupIsAvailable = available;
     }
 
     @Override
     public boolean deviceSynchronized() {
         return deviceSynchronized;
+    }
+
+    @Override
+    public boolean isFlowStatisticsAvailable() {
+        return flowStatisticsAvailable;
+    }
+
+    @Override
+    public void setFlowStatisticsAvailable(final boolean available) {
+        flowStatisticsAvailable = available;
+    }
+
+    @Override
+    public boolean isTableStatisticsAvailable() {
+        return tableStatisticsAvailable;
+    }
+
+    @Override
+    public void setTableStatisticsAvailable(final boolean available) {
+        tableStatisticsAvailable = available;
+    }
+
+    @Override
+    public boolean isPortStatisticsAvailable() {
+        return portStatisticsAvailable;
+    }
+
+    @Override
+    public void setPortStatisticsAvailable(final boolean available) {
+        portStatisticsAvailable = available;
+    }
+
+    @Override
+    public boolean isQueueStatisticsAvailable() {
+        return queueStatisticsAvailable;
+    }
+
+    @Override
+    public void setQueueStatisticsAvailable(final boolean available) {
+        queueStatisticsAvailable = available;
+
     }
 
     @Override
