@@ -96,11 +96,15 @@ public class DeviceContextImpl implements DeviceContext {
     private final DeviceMeterRegistry deviceMeterRegistry;
     private Timeout barrierTaskTimeout;
     private NotificationProviderService notificationService;
+    private final MessageSpy messageSpy;
+
 
     @VisibleForTesting
     DeviceContextImpl(@Nonnull final ConnectionContext primaryConnectionContext,
-                      @Nonnull final DeviceState deviceState, @Nonnull final DataBroker dataBroker,
-                      @Nonnull final HashedWheelTimer hashedWheelTimer) {
+                      @Nonnull final DeviceState deviceState,
+                      @Nonnull final DataBroker dataBroker,
+                      @Nonnull final HashedWheelTimer hashedWheelTimer,
+                      @Nonnull final MessageSpy _messageSpy) {
         this.primaryConnectionContext = Preconditions.checkNotNull(primaryConnectionContext);
         this.deviceState = Preconditions.checkNotNull(deviceState);
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
@@ -112,6 +116,7 @@ public class DeviceContextImpl implements DeviceContext {
         deviceFlowRegistry = new DeviceFlowRegistryImpl();
         deviceGroupRegistry = new DeviceGroupRegistryImpl();
         deviceMeterRegistry = new DeviceMeterRegistryImpl();
+        messageSpy = _messageSpy;
     }
 
     /**
