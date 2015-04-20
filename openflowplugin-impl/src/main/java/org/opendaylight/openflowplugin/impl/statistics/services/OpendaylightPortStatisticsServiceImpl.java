@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.impl.statistics.services;
 import com.google.common.base.Function;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
+import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
@@ -29,7 +30,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.G
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.GetNodeConnectorStatisticsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.OpendaylightPortStatisticsService;
 import org.opendaylight.yangtools.yang.common.RpcResult;
-import java.util.concurrent.Future;
 
 /**
  * @author joe
@@ -58,8 +58,7 @@ public class OpendaylightPortStatisticsServiceImpl extends CommonService impleme
                                 mprPortStatsBuilder.setPortNo(OFConstants.OFPP_ANY);
                                 caseBuilder.setMultipartRequestPortStats(mprPortStatsBuilder.build());
 
-                                final Xid xid = deviceContext.getNextXid();
-                                data.getRequestContext().setXid(xid);
+                                final Xid xid = data.getRequestContext().getXid();
                                 MultipartRequestInputBuilder mprInput = RequestInputUtils
                                         .createMultipartHeader(MultipartType.OFPMPPORTSTATS, xid.getValue(), version);
                                 mprInput.setMultipartRequestBody(caseBuilder.build());
@@ -91,8 +90,7 @@ public class OpendaylightPortStatisticsServiceImpl extends CommonService impleme
                                                 input.getNodeConnectorId()));
                                 caseBuilder.setMultipartRequestPortStats(mprPortStatsBuilder.build());
 
-                                final Xid xid = deviceContext.getNextXid();
-                                data.getRequestContext().setXid(xid);
+                                final Xid xid = data.getRequestContext().getXid();
                                 MultipartRequestInputBuilder mprInput = RequestInputUtils
                                         .createMultipartHeader(MultipartType.OFPMPPORTSTATS, xid.getValue(), version);
                                 mprInput.setMultipartRequestBody(caseBuilder.build());
