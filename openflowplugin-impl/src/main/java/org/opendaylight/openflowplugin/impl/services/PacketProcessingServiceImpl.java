@@ -37,8 +37,7 @@ public class PacketProcessingServiceImpl extends CommonService implements Packet
 
             @Override
             public ListenableFuture<RpcResult<Void>> apply(DataCrate<Void> data) {
-                final Xid xid = deviceContext.getNextXid();
-                data.getRequestContext().setXid(xid);
+                final Xid xid = data.getRequestContext().getXid();
                 final PacketOutInput message = PacketOutConvertor.toPacketOutInput(input, version, xid.getValue(),
                         datapathId);
 

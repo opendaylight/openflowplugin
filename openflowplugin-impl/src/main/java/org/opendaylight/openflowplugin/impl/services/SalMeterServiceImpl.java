@@ -7,12 +7,13 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
+import com.google.common.base.Function;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
+import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
-import com.google.common.base.Function;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.MeterConvertor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterOutput;
@@ -25,7 +26,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MeterModInputBuilder;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
-import java.util.concurrent.Future;
 
 public class SalMeterServiceImpl extends CommonService implements SalMeterService {
 
@@ -72,9 +72,8 @@ public class SalMeterServiceImpl extends CommonService implements SalMeterServic
 
     <T> ListenableFuture<RpcResult<Void>> convertAndSend(final Meter iputMeter, final DataCrate<T> data) {
         final MeterModInputBuilder ofMeterModInput = MeterConvertor.toMeterModInput(iputMeter, version);
-        Xid xid = deviceContext.getNextXid();
+        final Xid xid = data.getRequestContext().getXid();
         ofMeterModInput.setXid(xid.getValue());
-        data.getRequestContext().setXid(xid);
         return JdkFutureAdapters.listenInPoolThread(provideConnectionAdapter(data.getiDConnection()).meterMod(ofMeterModInput.build()));
     }
 }

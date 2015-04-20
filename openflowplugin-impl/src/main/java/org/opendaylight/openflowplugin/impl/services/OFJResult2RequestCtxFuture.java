@@ -38,6 +38,9 @@ public class OFJResult2RequestCtxFuture<T> {
             @Override
             public void onSuccess(final RpcResult<F> fRpcResult) {
                 if (!fRpcResult.isSuccessful()) {
+                    // remove current request from request cache in deviceContext
+                    deviceContext.getRequests().remove(requestContext.getXid().getValue());
+                    // handle requestContext failure
                     StringBuilder rpcErrors = new StringBuilder();
                     if (null != fRpcResult.getErrors() && fRpcResult.getErrors().size() > 0) {
                         for (RpcError error : fRpcResult.getErrors()) {
@@ -48,9 +51,6 @@ public class OFJResult2RequestCtxFuture<T> {
                     requestContext.getFuture().set(
                             RpcResultBuilder.<T>failed().withRpcErrors(fRpcResult.getErrors()).build());
                     RequestContextUtil.closeRequstContext(requestContext);
-                } else {
-                    LOG.trace("Hooking xid {} to device context.", requestContext.getXid().getValue());
-                    deviceContext.hookRequestCtx(requestContext.getXid(), requestContext);
                 }
             }
 

@@ -7,15 +7,17 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
-import org.opendaylight.openflowplugin.api.openflow.device.Xid;
-
 import com.google.common.base.Function;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
+import java.math.BigInteger;
+import java.util.List;
+import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.TableFeaturesConvertor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.TransactionId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartRequestFlags;
@@ -32,9 +34,6 @@ import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
-import java.math.BigInteger;
-import java.util.List;
-import java.util.concurrent.Future;
 
 /**
  * @author joe
@@ -61,8 +60,7 @@ public class SalTableServiceImpl extends CommonService implements SalTableServic
                 caseBuilder.setMultipartRequestTableFeatures(requestBuilder.build());
 
                 // Set request body to main multipart request
-                final Xid xid = deviceContext.getNextXid();
-                data.getRequestContext().setXid(xid);
+                final Xid xid = data.getRequestContext().getXid();
                 final MultipartRequestInputBuilder mprInput = createMultipartHeader(MultipartType.OFPMPTABLEFEATURES,
                         xid.getValue());
                 mprInput.setMultipartRequestBody(caseBuilder.build());
