@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.impl.statistics.services;
 import com.google.common.base.Function;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
+import java.util.concurrent.Future;
 import org.opendaylight.openflowjava.protocol.api.util.BinContent;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
@@ -34,7 +35,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestGroupFeaturesCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.group._case.MultipartRequestGroupBuilder;
 import org.opendaylight.yangtools.yang.common.RpcResult;
-import java.util.concurrent.Future;
 
 /**
  * @author joe
@@ -65,8 +65,7 @@ public class OpendaylightGroupStatisticsServiceImpl extends CommonService implem
                         caseBuilder.setMultipartRequestGroup(mprGroupBuild.build());
 
                         // Create multipart request header
-                        final Xid xid = deviceContext.getNextXid();
-                        data.getRequestContext().setXid(xid);
+                        final Xid xid = data.getRequestContext().getXid();
                         final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
                                 MultipartType.OFPMPGROUP, xid.getValue(), version);
 
@@ -92,8 +91,7 @@ public class OpendaylightGroupStatisticsServiceImpl extends CommonService implem
                     public ListenableFuture<RpcResult<Void>> apply(final DataCrate<GetGroupDescriptionOutput> data) {
                         final MultipartRequestGroupDescCaseBuilder mprGroupDescCaseBuild = new MultipartRequestGroupDescCaseBuilder();
 
-                        final Xid xid = deviceContext.getNextXid();
-                        data.getRequestContext().setXid(xid);
+                        final Xid xid = data.getRequestContext().getXid();
                         final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
                                 MultipartType.OFPMPGROUPDESC, xid.getValue(), version);
                         mprInput.setMultipartRequestBody(mprGroupDescCaseBuild.build());
@@ -114,8 +112,7 @@ public class OpendaylightGroupStatisticsServiceImpl extends CommonService implem
                     public ListenableFuture<RpcResult<Void>> apply(final DataCrate<GetGroupFeaturesOutput> data) {
                         final MultipartRequestGroupFeaturesCaseBuilder mprGroupFeaturesBuild = new MultipartRequestGroupFeaturesCaseBuilder();
 
-                        final Xid xid = deviceContext.getNextXid();
-                        data.getRequestContext().setXid(xid);
+                        final Xid xid = data.getRequestContext().getXid();
                         final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
                                 MultipartType.OFPMPGROUPFEATURES, xid.getValue(), version);
                         mprInput.setMultipartRequestBody(mprGroupFeaturesBuild.build());
@@ -140,8 +137,7 @@ public class OpendaylightGroupStatisticsServiceImpl extends CommonService implem
                         mprGroupBuild.setGroupId(new GroupId(input.getGroupId().getValue()));
                         caseBuilder.setMultipartRequestGroup(mprGroupBuild.build());
 
-                        final Xid xid = deviceContext.getNextXid();
-                        data.getRequestContext().setXid(xid);
+                        final Xid xid = data.getRequestContext().getXid();
                         final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
                                 MultipartType.OFPMPGROUP, xid.getValue(), version);
 

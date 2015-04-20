@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.impl.statistics.services;
 import com.google.common.base.Function;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
+import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
@@ -17,8 +18,8 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.services.CommonService;
 import org.opendaylight.openflowplugin.impl.services.DataCrate;
-import org.opendaylight.openflowplugin.impl.services.RequestInputUtils;
 import org.opendaylight.openflowplugin.impl.services.OFJResult2RequestCtxFuture;
+import org.opendaylight.openflowplugin.impl.services.RequestInputUtils;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchReactor;
 import org.opendaylight.openflowplugin.openflow.md.util.FlowCreatorUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForAllFlowsInput;
@@ -41,7 +42,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.util.concurrent.Future;
 
 /**
  * @author joe
@@ -80,8 +80,7 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
                         // Set request body to main multipart request
                         multipartRequestAggregateCaseBuilder.setMultipartRequestAggregate(mprAggregateRequestBuilder
                                 .build());
-                        final Xid xid = deviceContext.getNextXid();
-                        data.getRequestContext().setXid(xid);
+                        final Xid xid = data.getRequestContext().getXid();
                         final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
                                 MultipartType.OFPMPAGGREGATE, xid.getValue(), version);
 
@@ -131,8 +130,7 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
                         multipartRequestAggregateCaseBuilder.setMultipartRequestAggregate(mprAggregateRequestBuilder
                                 .build());
 
-                        final Xid xid = deviceContext.getNextXid();
-                        data.getRequestContext().setXid(xid);
+                        final Xid xid = data.getRequestContext().getXid();
                         final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
                                 MultipartType.OFPMPAGGREGATE, xid.getValue(), version);
 
@@ -166,8 +164,7 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
                         final MultipartRequestFlowCaseBuilder multipartRequestFlowCaseBuilder = new MultipartRequestFlowCaseBuilder();
                         multipartRequestFlowCaseBuilder.setMultipartRequestFlow(mprFlowRequestBuilder.build());
 
-                        final Xid xid = deviceContext.getNextXid();
-                        data.getRequestContext().setXid(xid);
+                        final Xid xid = data.getRequestContext().getXid();
                         final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
                                 MultipartType.OFPMPFLOW, xid.getValue(), version);
 
@@ -199,8 +196,7 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
                         mprFlowRequestBuilder.setCookieMask(OFConstants.DEFAULT_COOKIE_MASK);
                         FlowCreatorUtil.setWildcardedFlowMatch(version, mprFlowRequestBuilder);
 
-                        final Xid xid = deviceContext.getNextXid();
-                        data.getRequestContext().setXid(xid);
+                        final Xid xid = data.getRequestContext().getXid();
                         final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
                                 MultipartType.OFPMPFLOW, xid.getValue(), version);
 
@@ -257,9 +253,8 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
                                 deviceContext.getPrimaryConnectionContext().getFeatures().getDatapathId());
 
                         // Set request body to main multipart request
+                        final Xid xid = data.getRequestContext().getXid();
                         multipartRequestFlowCaseBuilder.setMultipartRequestFlow(mprFlowRequestBuilder.build());
-                        final Xid xid = deviceContext.getNextXid();
-                        data.getRequestContext().setXid(xid);
                         final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
                                 MultipartType.OFPMPFLOW, xid.getValue(), version);
                         mprInput.setMultipartRequestBody(multipartRequestFlowCaseBuilder.build());

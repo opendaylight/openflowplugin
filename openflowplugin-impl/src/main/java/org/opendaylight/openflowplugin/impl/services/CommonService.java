@@ -82,9 +82,11 @@ public abstract class CommonService {
 
         final RequestContext<T> requestContext = requestContextStack.createRequestContext();
         final SettableFuture<RpcResult<T>> result = requestContextStack.storeOrFail(requestContext);
-        final DataCrate<T> dataCrate = DataCrateBuilder.<T>builder().setiDConnection(connectionID)
-                .setRequestContext(requestContext).build();
         if (!result.isDone()) {
+            final DataCrate<T> dataCrate = DataCrateBuilder.<T>builder().setiDConnection(connectionID)
+                    .setRequestContext(requestContext).build();
+            requestContext.setXid(deviceContext.getNextXid());
+
             LOG.trace("Hooking xid {} to device context - precaution.", requestContext.getXid().getValue());
             deviceContext.hookRequestCtx(requestContext.getXid(), requestContext);
 

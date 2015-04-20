@@ -7,13 +7,13 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
+import com.google.common.base.Function;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
+import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
-
-import com.google.common.base.Function;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.GroupConvertor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
@@ -26,7 +26,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GroupModInputBuilder;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
-import java.util.concurrent.Future;
 
 public class SalGroupServiceImpl extends CommonService implements SalGroupService {
 
@@ -76,9 +75,8 @@ public class SalGroupServiceImpl extends CommonService implements SalGroupServic
 
     <T> ListenableFuture<RpcResult<Void>> convertAndSend(final Group iputGroup, final DataCrate<T> data) {
         final GroupModInputBuilder ofGroupModInput = GroupConvertor.toGroupModInput(iputGroup, version, datapathId);
-        final Xid xid = deviceContext.getNextXid();
+        final Xid xid = data.getRequestContext().getXid();
         ofGroupModInput.setXid(xid.getValue());
-        data.getRequestContext().setXid(xid);
         return JdkFutureAdapters.listenInPoolThread(provideConnectionAdapter(data.getiDConnection()).groupMod(ofGroupModInput.build()));
     }
 }

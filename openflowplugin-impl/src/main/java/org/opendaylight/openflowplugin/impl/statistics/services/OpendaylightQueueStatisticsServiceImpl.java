@@ -61,8 +61,7 @@ public class OpendaylightQueueStatisticsServiceImpl extends CommonService implem
                         caseBuilder.setMultipartRequestQueue(mprQueueBuilder.build());
 
                         // Set request body to main multipart request
-                        final Xid xid = deviceContext.getNextXid();
-                        data.getRequestContext().setXid(xid);
+                        final Xid xid = data.getRequestContext().getXid();
                         MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
                                 MultipartType.OFPMPQUEUE, xid.getValue(), version);
                         mprInput.setMultipartRequestBody(caseBuilder.build());
@@ -93,8 +92,7 @@ public class OpendaylightQueueStatisticsServiceImpl extends CommonService implem
                         caseBuilder.setMultipartRequestQueue(mprQueueBuilder.build());
 
                         // Set request body to main multipart request
-                        final Xid xid = deviceContext.getNextXid();
-                        data.getRequestContext().setXid(xid);
+                        final Xid xid = data.getRequestContext().getXid();
                         MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
                                 MultipartType.OFPMPQUEUE, xid.getValue(), version);
                         mprInput.setMultipartRequestBody(caseBuilder.build());
@@ -125,8 +123,7 @@ public class OpendaylightQueueStatisticsServiceImpl extends CommonService implem
                         caseBuilder.setMultipartRequestQueue(mprQueueBuilder.build());
 
                         // Set request body to main multipart request
-                        final Xid xid = deviceContext.getNextXid();
-                        data.getRequestContext().setXid(xid);
+                        final Xid xid = data.getRequestContext().getXid();
                         MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
                                 MultipartType.OFPMPQUEUE, xid.getValue(), version);
                         mprInput.setMultipartRequestBody(caseBuilder.build());

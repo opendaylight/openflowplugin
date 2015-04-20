@@ -248,9 +248,8 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
     }
 
     protected <T> ListenableFuture<RpcResult<Void>> createResultForFlowMod(final DataCrate<T> data, final FlowModInputBuilder flowModInput) {
-        final Xid xId = deviceContext.getNextXid();
-        flowModInput.setXid(xId.getValue());
-        data.getRequestContext().setXid(xId);
+        final Xid xid = data.getRequestContext().getXid();
+        flowModInput.setXid(xid.getValue());
         Future<RpcResult<Void>> flowModResult = provideConnectionAdapter(data.getiDConnection()).flowMod(
                 flowModInput.build());
         return JdkFutureAdapters.listenInPoolThread(flowModResult);
