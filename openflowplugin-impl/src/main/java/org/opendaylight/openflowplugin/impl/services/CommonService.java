@@ -85,6 +85,9 @@ public abstract class CommonService {
         final DataCrate<T> dataCrate = DataCrateBuilder.<T>builder().setiDConnection(connectionID)
                 .setRequestContext(requestContext).build();
         if (!result.isDone()) {
+            LOG.trace("Hooking xid {} to device context - precaution.", requestContext.getXid().getValue());
+            deviceContext.hookRequestCtx(requestContext.getXid(), requestContext);
+
             final ListenableFuture<RpcResult<F>> resultFromOFLib = function.apply(dataCrate);
 
             final OFJResult2RequestCtxFuture<T> OFJResult2RequestCtxFuture = new OFJResult2RequestCtxFuture<>(requestContext, deviceContext);
