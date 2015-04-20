@@ -65,13 +65,14 @@ public class StatisticsContextImpl implements StatisticsContext {
 
         final DeviceState devState = deviceContext.getDeviceState();
 
-        final ListenableFuture<Boolean> flowStatistics = wrapLoggingOnStatisticsRequestCall(MultipartType.OFPMPFLOW);
+        ListenableFuture<Boolean> emptyFuture = Futures.<Boolean>immediateFuture(null);
+        final ListenableFuture<Boolean> flowStatistics = devState.isFlowStatisticsAvailable() ? wrapLoggingOnStatisticsRequestCall(MultipartType.OFPMPFLOW) : emptyFuture;
 
-        final ListenableFuture<Boolean> tableStatistics = wrapLoggingOnStatisticsRequestCall(MultipartType.OFPMPTABLE);
+        final ListenableFuture<Boolean> tableStatistics = devState.isTableStatisticsAvailable() ? wrapLoggingOnStatisticsRequestCall(MultipartType.OFPMPTABLE) : emptyFuture;
 
-        final ListenableFuture<Boolean> portStatistics = wrapLoggingOnStatisticsRequestCall(MultipartType.OFPMPPORTSTATS);
+        final ListenableFuture<Boolean> portStatistics = devState.isPortStatisticsAvailable() ? wrapLoggingOnStatisticsRequestCall(MultipartType.OFPMPPORTSTATS) : emptyFuture;
 
-        final ListenableFuture<Boolean> queueStatistics = wrapLoggingOnStatisticsRequestCall(MultipartType.OFPMPQUEUE);
+        final ListenableFuture<Boolean> queueStatistics = devState.isQueueStatisticsAvailable() ? wrapLoggingOnStatisticsRequestCall(MultipartType.OFPMPQUEUE) : emptyFuture;
 
         final ListenableFuture<Boolean> groupDescStatistics = devState.isGroupAvailable() ? wrapLoggingOnStatisticsRequestCall(MultipartType.OFPMPGROUPDESC) : Futures.<Boolean>immediateFuture(null);
         final ListenableFuture<Boolean> groupStatistics = devState.isGroupAvailable() ? wrapLoggingOnStatisticsRequestCall(MultipartType.OFPMPGROUP) : Futures.<Boolean>immediateFuture(null);
