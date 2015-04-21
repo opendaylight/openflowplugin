@@ -23,7 +23,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.listener.OpenflowMess
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.group.DeviceGroupRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.meter.DeviceMeterRegistry;
-import org.opendaylight.openflowplugin.api.openflow.statistics.MessageSpy;
+import org.opendaylight.openflowplugin.api.openflow.statistics.internal.MessageSpy;
 import org.opendaylight.openflowplugin.api.openflow.translator.TranslatorLibrarian;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableFeatures;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -183,6 +183,12 @@ public interface DeviceContext extends AutoCloseable, OpenflowPluginTimer, Messa
      * @param notificationService
      */
     void setNotificationService(NotificationProviderService notificationService);
+
+    /**
+     * Method provides reference to registered message spying service.
+     * @return
+     */
+    MessageSpy getMessageSpy();
 
 }
 

@@ -401,4 +401,9 @@ public class DeviceContextImpl implements DeviceContext {
     public void setNotificationService(final NotificationProviderService notificationServiceParam) {
         notificationService = notificationServiceParam;
     }
+
+    @Override
+    public MessageSpy getMessageSpy() {
+        return messageSpy;
+    }
 }
