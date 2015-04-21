@@ -210,6 +210,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
             @Override
             public void onFailure(final Throwable t) {
                 // FIXME : remove session
+                LOG.trace("Device capabilities gathering future failed.");
             }
         });
     }
@@ -270,6 +271,10 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         final Xid xid = deviceContext.getNextXid();
         final RequestContext<List<MultipartReply>> requestContext = dummyRequestContextStack.createRequestContext();
         requestContext.setXid(xid);
+
+        LOG.trace("Hooking xid {} to device context - precaution.", requestContext.getXid().getValue());
+        deviceContext.hookRequestCtx(requestContext.getXid(), requestContext);
+
         multiMsgCollector.registerMultipartXid(xid.getValue());
         Futures.addCallback(requestContext.getFuture(), new FutureCallback<RpcResult<List<MultipartReply>>>() {
             @Override
