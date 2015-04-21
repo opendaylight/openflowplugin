@@ -15,14 +15,14 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicLongFieldUpdater;
-import org.opendaylight.openflowplugin.api.openflow.statistics.internal.MessageIntelligenceAgency;
+import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Implementation of {@link org.opendaylight.openflowplugin.api.openflow.statistics.internal.MessageIntelligenceAgency}.
- * Class counts message of {@link org.opendaylight.openflowplugin.api.openflow.statistics.internal.MessageSpy.STATISTIC_GROUP} type
+ * Implementation of {@link org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency}.
+ * Class counts message of {@link org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy.STATISTIC_GROUP} type
  * and provides info as debug log.
  */
 public class MessageIntelligenceAgencyImpl implements MessageIntelligenceAgency<DataContainer> {

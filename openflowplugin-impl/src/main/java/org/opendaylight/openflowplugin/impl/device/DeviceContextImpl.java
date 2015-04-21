@@ -38,7 +38,7 @@ import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.group.DeviceGroupRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.meter.DeviceMeterRegistry;
-import org.opendaylight.openflowplugin.api.openflow.statistics.internal.MessageSpy;
+import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.impl.common.NodeStaticReplyTranslatorUtil;
 import org.opendaylight.openflowplugin.impl.registry.flow.DeviceFlowRegistryImpl;
 import org.opendaylight.openflowplugin.impl.registry.group.DeviceGroupRegistryImpl;
@@ -359,7 +359,7 @@ public class DeviceContextImpl implements DeviceContext {
 
     @Override
     public void close() throws Exception {
-        for (Map.Entry<Long, RequestContext> entry : requests.entrySet()){
+        for (Map.Entry<Long, RequestContext> entry : requests.entrySet()) {
             entry.getValue().close();
         }
     }
