@@ -30,12 +30,12 @@ import org.slf4j.LoggerFactory;
 /**
  * openflowplugin-api
  * org.opendaylight.openflowplugin.impl.openflow.device
- * <p/>
+ * <p>
  * Implementation for {@link MultiMsgCollector} interface
  *
  * @author <a href="mailto:vdemcak@cisco.com">Vaclav Demcak</a>
  * @author <a href="mailto:tkubas@cisco.com">Timotej Kubas</a>
- *         <p/>
+ *         <p>
  *         Created: Mar 23, 2015
  */
 @VisibleForTesting

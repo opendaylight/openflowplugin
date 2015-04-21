@@ -359,7 +359,6 @@ public class HandshakeManagerImpl implements HandshakeManager {
      * after handshake set features, register to session
      * @param proposedVersion
      * @param xid
-     * @throws Exception
      */
     protected void postHandshake(final Short proposedVersion, final Long xid) {
         // set version
