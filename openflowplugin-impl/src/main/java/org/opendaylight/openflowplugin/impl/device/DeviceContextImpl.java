@@ -96,7 +96,7 @@ public class DeviceContextImpl implements DeviceContext {
     private final DeviceMeterRegistry deviceMeterRegistry;
     private Timeout barrierTaskTimeout;
     private NotificationProviderService notificationService;
-    private final MessageSpy messageSpy;
+    private final MessageSpy<Class> messageSpy;
 
 
     @VisibleForTesting
@@ -238,11 +238,13 @@ public class DeviceContextImpl implements DeviceContext {
                         .<OfHeader>failed()
                         .withError(RpcError.ErrorType.APPLICATION, message, new DeviceDataException(message, error))
                         .build();
+                messageSpy.spyMessage(ofHeader.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE);
             } else {
                 rpcResult = RpcResultBuilder
                         .<OfHeader>success()
                         .withResult(ofHeader)
                         .build();
+                messageSpy.spyMessage(ofHeader.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS);
             }
 
             replyFuture.set(rpcResult);
@@ -268,6 +270,10 @@ public class DeviceContextImpl implements DeviceContext {
                     .withResult(ofHeaderList)
                     .build();
             replyFuture.set(rpcResult);
+            for (MultipartReply multipartReply : ofHeaderList) {
+                messageSpy.spyMessage(multipartReply.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE);
+            }
+
             try {
                 requestContext.close();
             } catch (final Exception e) {
@@ -294,6 +300,7 @@ public class DeviceContextImpl implements DeviceContext {
                     .withError(RpcError.ErrorType.APPLICATION, String.format("Message processing failed : %s", deviceDataException.getError()), deviceDataException)
                     .build();
             replyFuture.set(rpcResult);
+            messageSpy.spyMessage(deviceDataException.getClass(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE);
             try {
                 requestContext.close();
             } catch (final Exception e) {
@@ -311,6 +318,7 @@ public class DeviceContextImpl implements DeviceContext {
 
     @Override
     public void processPortStatusMessage(final PortStatusMessage portStatus) {
+        messageSpy.spyMessage(portStatus.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS);
         final TranslatorKey translatorKey = new TranslatorKey(portStatus.getVersion(), PortGrouping.class.getName());
         final MessageTranslator<PortGrouping, FlowCapableNodeConnector> messageTranslator = translatorLibrary.lookupTranslator(translatorKey);
         final FlowCapableNodeConnector flowCapableNodeConnector = messageTranslator.translate(portStatus, this, null);
@@ -336,6 +344,7 @@ public class DeviceContextImpl implements DeviceContext {
 
     @Override
     public void processPacketInMessage(final PacketInMessage packetInMessage) {
+        messageSpy.spyMessage(packetInMessage.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS);
         final TranslatorKey translatorKey = new TranslatorKey(packetInMessage.getVersion(), PacketIn.class.getName());
         final MessageTranslator<PacketInMessage, PacketReceived> messageTranslator = translatorLibrary.lookupTranslator(translatorKey);
         final PacketReceived packetReceived = messageTranslator.translate(packetInMessage, this, null);
