@@ -57,11 +57,8 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
 
     private static final Logger LOG = org.slf4j.LoggerFactory.getLogger(SalFlowServiceImpl.class);
 
-    private final MessageSpy messageSpy;
     public SalFlowServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
         super(requestContextStack, deviceContext);
-        this.messageSpy = deviceContext.getMessageSpy();
-
     }
 
     <T, F> ListenableFuture<RpcResult<T>> handleServiceCall(final BigInteger connectionID,

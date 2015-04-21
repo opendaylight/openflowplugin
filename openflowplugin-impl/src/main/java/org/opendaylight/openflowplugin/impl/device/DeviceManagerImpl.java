@@ -260,7 +260,11 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
                 // FIXME : remove session
             }
         });
-        return Futures.allAsList(Arrays.asList(replyDesc, replyMeterFeature, replyGroupFeatures, replyTableFeatures, replyPortDescription));
+        return Futures.allAsList(Arrays.asList(replyDesc,
+                replyMeterFeature,
+                replyGroupFeatures,
+//                replyTableFeatures,
+                replyPortDescription));
     }
 
     @Override
