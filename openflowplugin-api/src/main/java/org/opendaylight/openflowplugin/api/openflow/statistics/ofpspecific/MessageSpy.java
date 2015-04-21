@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.openflowplugin.api.openflow.statistics.internal;
+package org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific;
 
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 20.4.2015.
@@ -57,11 +57,11 @@ public interface MessageSpy<M> extends Runnable {
          */
         TO_SWITCH_SUCCESS,
         /**
-         * message from MD-SAL to switch via RPC NOT
+         * message from MD-SAL to switch via RPC failed to be sent to device.
          */
         TO_SWITCH_FAILED,
         /**
-         * message from MD-SAL to switch - sent to OFJava successfully
+         * message from MD-SAL to switch - sent to OFJava successfully and classified in DeviceContext
          */
         TO_SWITCH_SUBMITTED_SUCCESS,
         /**
