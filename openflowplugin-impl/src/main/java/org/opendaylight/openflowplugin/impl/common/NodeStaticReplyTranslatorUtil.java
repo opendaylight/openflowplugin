@@ -69,7 +69,7 @@ public class NodeStaticReplyTranslatorUtil {
 
     /**
      * Method transforms OFjava multipart reply model {@link MultipartReplyDesc} object
-     * to inventory data model {@link FlowCapable} object.
+     * to inventory data model {@link FlowCapableNode} object.
      *
      * @param reply
      * @return
@@ -214,9 +214,9 @@ public class NodeStaticReplyTranslatorUtil {
     /**
      * Method build a ID Node Connector from version and port number.
      *
-     * @param datapathid
+     * @param datapathId
      * @param portNo
-     * @param ofVersion
+     * @param version
      * @return
      */
     public static NodeConnectorId nodeConnectorId(@CheckForNull final String datapathId, final long portNo, final short version) {
