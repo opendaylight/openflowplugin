@@ -246,29 +246,12 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         final ListenableFuture<RpcResult<List<MultipartReply>>> replyPortDescription = getNodeStaticInfo(messageListener,
                 MultipartType.OFPMPPORTDESC, deviceContext, deviceState.getNodeInstanceIdentifier(), deviceState.getVersion());
 
-        final ListenableFuture<List<RpcResult<List<MultipartReply>>>> deviceFeaturesFuture =
-                Futures.allAsList(Arrays.asList(replyDesc,
-                        replyMeterFeature,
-                        replyGroupFeatures,
-//                        replyTableFeatures,
-                        replyPortDescription));
-
-        Futures.addCallback(deviceFeaturesFuture, new FutureCallback<List<RpcResult<List<MultipartReply>>>>() {
-            @Override
-            public void onSuccess(final List<RpcResult<List<MultipartReply>>> result) {
-                deviceInitPhaseHandler.onDeviceContextLevelUp(deviceContext);
-            }
-
-            @Override
-            public void onFailure(final Throwable t) {
-                // FIXME : remove session
-            }
-        });
         return Futures.allAsList(Arrays.asList(replyDesc,
                 replyMeterFeature,
                 replyGroupFeatures,
-//                replyTableFeatures,
+//                        replyTableFeatures,
                 replyPortDescription));
+
     }
 
     @Override
