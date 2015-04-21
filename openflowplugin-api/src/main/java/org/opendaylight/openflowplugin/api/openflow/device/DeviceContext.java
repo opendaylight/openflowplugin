@@ -42,7 +42,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  * which is enforced by keeping a cap on the number of outstanding requests a particular Request
  * Context can have at any point in time. Should this quota be exceeded, any further attempt to make
  * a request to the switch will fail immediately, with proper error indication.
- * <p/>
+ * <p>
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 25.2.2015.
  */
 public interface DeviceContext extends AutoCloseable,OpenflowPluginTimer, MessageHandler, TranslatorLibrarian, OutstandingMessageExtractor, DeviceReplyProcessor {
@@ -123,7 +123,7 @@ public interface DeviceContext extends AutoCloseable,OpenflowPluginTimer, Messag
 
     /**
      * Method writes request context into request context map. This method
-     * is ment to be used by {@link org.opendaylight.openflowplugin.impl.services.OFJResult2RequestCtxFuture#processResultFromOfJava}
+     * is ment to be used by org.opendaylight.openflowplugin.impl.services.OFJResult2RequestCtxFuture#processResultFromOfJava.
      *
      * @param xid
      * @param requestFutureContext

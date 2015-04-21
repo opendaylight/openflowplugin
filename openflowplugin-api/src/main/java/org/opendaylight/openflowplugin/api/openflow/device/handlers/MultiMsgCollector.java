@@ -14,13 +14,13 @@ import javax.annotation.Nonnull;
 /**
  * openflowplugin-api
  * org.opendaylight.openflowplugin.api.openflow.device
- * <p/>
+ * <p>
  * Collects multipart msgs from device by provided XID and returns them
  * to the caller as request/collection response one-to-one contract.
  *
  * @author <a href="mailto:vdemcak@cisco.com">Vaclav Demcak</a>
  * @author <a href="mailto:tkubas@cisco.com">Timotej Kubas</a>
- *         <p/>
+ *         <p>
  *         Created: Mar 23, 2015
  */
 public interface MultiMsgCollector {
@@ -36,7 +36,6 @@ public interface MultiMsgCollector {
      * send a request to the device, otherwise there is a small possibility to miss a first msg.
      *
      * @param xid
-     * @return
      */
     void registerMultipartXid(long xid);
 

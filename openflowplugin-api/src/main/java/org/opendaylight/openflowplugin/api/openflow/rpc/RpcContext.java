@@ -15,7 +15,7 @@ import org.opendaylight.yangtools.yang.binding.RpcService;
  * This context is registered with MD-SAL as a routed RPC provider for the inventory node backed by this switch and
  * tracks the state of any user requests and how they map onto protocol requests. It uses
  * {@link org.opendaylight.openflowplugin.api.openflow.device.RequestContext} to perform requests.
- * <p/>
+ * <p>
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 25.2.2015.
  */
 public interface RpcContext extends RequestContextStack, AutoCloseable {

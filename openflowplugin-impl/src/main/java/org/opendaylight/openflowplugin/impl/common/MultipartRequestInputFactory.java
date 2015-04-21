@@ -65,14 +65,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 /**
  * openflowplugin-impl
  * org.opendaylight.openflowplugin.impl.common
- * <p/>
+ * <p>
  * Factory class is designed for easy producing a MultipartRequestInput. Class should help
  * to understand a relationship between {@link MultipartType} and {@link MultipartRequestInput}
  * without touch OF specification 1.3.2  - a section 7.3.5. Multipart Messages
- * {@see https://www.opennetworking.org/images/stories/downloads/sdn-resources/onf-specifications/openflow/openflow-spec-v1.3.2.pdf}
+ * see also <a href="https://www.opennetworking.org/images/stories/downloads/sdn-resources/onf-specifications/openflow/openflow-spec-v1.3.2.pdf">OpenFlow 1.3.2</a>
  *
  * @author <a href="mailto:vdemcak@cisco.com">Vaclav Demcak</a>
- *         <p/>
+ *         <p>
  *         Created: Mar 27, 2015
  */
 public final class MultipartRequestInputFactory {
