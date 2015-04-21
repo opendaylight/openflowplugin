@@ -10,7 +10,7 @@ package org.opendaylight.openflowplugin.openflow.md.util;
 import com.google.common.util.concurrent.SettableFuture;
 import java.util.ArrayList;
 import java.util.List;
-import org.opendaylight.openflowplugin.ConnectionException;
+import org.opendaylight.openflowplugin.api.ConnectionException;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.IMessageDispatchService;
 import org.opendaylight.yangtools.yang.common.RpcError;
