@@ -247,7 +247,11 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
                 MultipartType.OFPMPPORTDESC, deviceContext, deviceState.getNodeInstanceIdentifier(), deviceState.getVersion());
 
         final ListenableFuture<List<RpcResult<List<MultipartReply>>>> deviceFeaturesFuture =
-                Futures.allAsList(Arrays.asList(replyDesc, replyMeterFeature, replyGroupFeatures, replyTableFeatures, replyPortDescription));
+                Futures.allAsList(Arrays.asList(replyDesc,
+                        replyMeterFeature,
+                        replyGroupFeatures,
+//                        replyTableFeatures,
+                        replyPortDescription));
 
         Futures.addCallback(deviceFeaturesFuture, new FutureCallback<List<RpcResult<List<MultipartReply>>>>() {
             @Override
@@ -260,7 +264,11 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
                 // FIXME : remove session
             }
         });
-        return Futures.allAsList(Arrays.asList(replyDesc, replyMeterFeature, replyGroupFeatures, replyTableFeatures, replyPortDescription));
+        return Futures.allAsList(Arrays.asList(replyDesc,
+                replyMeterFeature,
+                replyGroupFeatures,
+//                replyTableFeatures,
+                replyPortDescription));
     }
 
     @Override
