@@ -13,12 +13,14 @@ import java.math.BigInteger;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.impl.util.MatchUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartRequestFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmMatchType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.MatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.v10.grouping.MatchV10Builder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.MultipartRequestBody;
@@ -91,7 +93,7 @@ public final class MultipartRequestInputFactory {
      */
     public static MultipartRequestInput makeMultipartRequestInput(final long xid, final short ofVersion,
                                                                   @Nonnull final MultipartType type) {
-        return maker(xid, type, ofVersion, false, makeDefaultEmptyRequestBody(type));
+        return maker(xid, type, ofVersion, false, makeDefaultEmptyRequestBody(type, ofVersion));
     }
 
     /**
@@ -122,7 +124,7 @@ public final class MultipartRequestInputFactory {
      */
     public static MultipartRequestInput makeMultipartRequestInput(final long xid, final short ofVersion,
                                                                   @Nonnull final MultipartType type, final boolean moreRequests) {
-        return maker(xid, type, ofVersion, moreRequests, makeDefaultEmptyRequestBody(type));
+        return maker(xid, type, ofVersion, moreRequests, makeDefaultEmptyRequestBody(type, ofVersion));
     }
 
     /**
@@ -164,7 +166,7 @@ public final class MultipartRequestInputFactory {
         return builder.build();
     }
 
-    private static MultipartRequestBody makeDefaultEmptyRequestBody(@CheckForNull final MultipartType type) {
+    private static MultipartRequestBody makeDefaultEmptyRequestBody(@CheckForNull final MultipartType type, @CheckForNull final short version) {
         Preconditions.checkArgument(type != null, "Multipart Request can not by build without type!");
         switch (type) {
             case OFPMPDESC:
@@ -177,7 +179,15 @@ public final class MultipartRequestInputFactory {
                 multipartRequestFlowBuilder.setOutGroup(OFConstants.OFPG_ANY);
                 multipartRequestFlowBuilder.setCookie(BigInteger.ZERO);
                 multipartRequestFlowBuilder.setCookieMask(BigInteger.ZERO);
-                multipartRequestFlowBuilder.setMatch(new MatchBuilder().setType(OxmMatchType.class).build());
+                switch (version) {
+                    case OFConstants.OFP_VERSION_1_0:
+                        MatchV10Builder matchV10Builder = MatchUtil.createEmptyV10Match();
+                        multipartRequestFlowBuilder.setMatchV10(matchV10Builder.build());
+                        break;
+                    case OFConstants.OFP_VERSION_1_3:
+                        multipartRequestFlowBuilder.setMatch(new MatchBuilder().setType(OxmMatchType.class).build());
+                        break;
+                }
                 multipartRequestFlowCaseBuilder.setMultipartRequestFlow(multipartRequestFlowBuilder.build());
                 return multipartRequestFlowCaseBuilder.build();
             case OFPMPAGGREGATE:
