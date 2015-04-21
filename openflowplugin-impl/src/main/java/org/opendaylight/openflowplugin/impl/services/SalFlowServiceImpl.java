@@ -26,6 +26,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowHash;
+import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowDescriptorFactory;
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowHashFactory;
 import org.opendaylight.openflowplugin.impl.util.FlowUtil;
@@ -108,11 +109,13 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
         Futures.addCallback(future, new FutureCallback() {
             @Override
             public void onSuccess(final Object o) {
+                messageSpy.spyMessage(input, MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_SUCCESS);
                 LOG.debug("flow add finished without error, id={}", flowId.getValue());
             }
 
             @Override
             public void onFailure(final Throwable throwable) {
+                messageSpy.spyMessage(input, MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_FAILURE);
                 deviceContext.getDeviceFlowRegistry().markToBeremoved(flowHash);
                 LOG.trace("Service call for adding flows failed, id={}.", flowId.getValue(), throwable);
             }
@@ -134,12 +137,14 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
                         Futures.addCallback(future, new FutureCallback() {
                             @Override
                             public void onSuccess(final Object o) {
+                                messageSpy.spyMessage(input, MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_SUCCESS);
                                 FlowHash flowHash = FlowHashFactory.create(input);
                                 deviceContext.getDeviceFlowRegistry().markToBeremoved(flowHash);
                             }
 
                             @Override
                             public void onFailure(final Throwable throwable) {
+                                messageSpy.spyMessage(input, MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_FAILURE);
                                 StringBuffer errors = new StringBuffer();
                                 try {
                                     RpcResult<Void> result = future.get();
@@ -189,6 +194,7 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
         Futures.addCallback(future, new FutureCallback() {
             @Override
             public void onSuccess(final Object o) {
+                messageSpy.spyMessage(input, MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_SUCCESS);
                 FlowHash flowHash = FlowHashFactory.create(original);
                 deviceContext.getDeviceFlowRegistry().markToBeremoved(flowHash);
 
@@ -201,7 +207,7 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
 
             @Override
             public void onFailure(final Throwable throwable) {
-
+                messageSpy.spyMessage(input, MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_FAILURE);
             }
         });
         return future;
@@ -284,6 +290,7 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
             public void onSuccess(final RpcResult<Void> voidRpcResult) {
                 if (!voidRpcResult.isSuccessful()) {
                     // remove current request from request cache in deviceContext
+                    messageSpy.spyMessage(data, MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE);
                     deviceContext.getRequests().remove(requestContext.getXid().getValue());
                     // handle requestContext failure
                     StringBuilder rpcErrors = new StringBuilder();
@@ -303,9 +310,11 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
             @Override
             public void onFailure(final Throwable throwable) {
                 if (result.isCancelled()) {
+                    messageSpy.spyMessage(data, MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS);
                     LOG.trace("Asymmetric message - no response from OF Java expected for XID {}. Closing as successful.", requestContext.getXid().getValue());
                     requestContext.getFuture().set(RpcResultBuilder.<T>success().build());
                 } else {
+                    messageSpy.spyMessage(data, MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE);
                     LOG.trace("Exception occured while processing OF Java response for XID {}.", requestContext.getXid().getValue(), throwable);
                     requestContext.getFuture().set(
                             RpcResultBuilder.<T>failed()

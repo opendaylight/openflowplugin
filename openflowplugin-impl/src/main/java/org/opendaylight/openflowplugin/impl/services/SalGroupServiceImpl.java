@@ -14,6 +14,7 @@ import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
+import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.GroupConvertor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
@@ -29,6 +30,7 @@ import org.slf4j.Logger;
 
 public class SalGroupServiceImpl extends CommonService implements SalGroupService {
 
+
     public SalGroupServiceImpl(RequestContextStack requestContextStack, DeviceContext deviceContext) {
         super(requestContextStack, deviceContext);
     }
@@ -38,8 +40,8 @@ public class SalGroupServiceImpl extends CommonService implements SalGroupServic
     @Override
     public Future<RpcResult<AddGroupOutput>> addGroup(final AddGroupInput input) {
         deviceContext.getDeviceGroupRegistry().store(input.getGroupId());
-        return this.<AddGroupOutput, Void> handleServiceCall( PRIMARY_CONNECTION,
-                 new Function<DataCrate<AddGroupOutput>,ListenableFuture<RpcResult<Void>>>() {
+        return this.<AddGroupOutput, Void>handleServiceCall(PRIMARY_CONNECTION,
+                new Function<DataCrate<AddGroupOutput>, ListenableFuture<RpcResult<Void>>>() {
 
                     @Override
                     public ListenableFuture<RpcResult<Void>> apply(final DataCrate<AddGroupOutput> data) {
@@ -50,7 +52,7 @@ public class SalGroupServiceImpl extends CommonService implements SalGroupServic
 
     @Override
     public Future<RpcResult<UpdateGroupOutput>> updateGroup(final UpdateGroupInput input) {
-        return this.<UpdateGroupOutput, Void> handleServiceCall(PRIMARY_CONNECTION,
+        return this.<UpdateGroupOutput, Void>handleServiceCall(PRIMARY_CONNECTION,
                 new Function<DataCrate<UpdateGroupOutput>, ListenableFuture<RpcResult<Void>>>() {
 
                     @Override
@@ -63,7 +65,7 @@ public class SalGroupServiceImpl extends CommonService implements SalGroupServic
     @Override
     public Future<RpcResult<RemoveGroupOutput>> removeGroup(final RemoveGroupInput input) {
         deviceContext.getDeviceGroupRegistry().markToBeremoved(input.getGroupId());
-        return this.<RemoveGroupOutput, Void> handleServiceCall(PRIMARY_CONNECTION,
+        return this.<RemoveGroupOutput, Void>handleServiceCall(PRIMARY_CONNECTION,
                 new Function<DataCrate<RemoveGroupOutput>, ListenableFuture<RpcResult<Void>>>() {
 
                     @Override
@@ -74,6 +76,7 @@ public class SalGroupServiceImpl extends CommonService implements SalGroupServic
     }
 
     <T> ListenableFuture<RpcResult<Void>> convertAndSend(final Group iputGroup, final DataCrate<T> data) {
+        messageSpy.spyMessage(iputGroup, MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_SUCCESS);
         final GroupModInputBuilder ofGroupModInput = GroupConvertor.toGroupModInput(iputGroup, version, datapathId);
         final Xid xid = data.getRequestContext().getXid();
         ofGroupModInput.setXid(xid.getValue());

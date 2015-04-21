@@ -18,6 +18,7 @@ import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
+import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -37,6 +38,8 @@ public abstract class CommonService {
     public RequestContextStack requestContextStack;
     public DeviceContext deviceContext;
     public ConnectionAdapter primaryConnectionAdapter;
+    public MessageSpy messageSpy;
+
 
     /**
      * @deprecated use {@link #CommonService(RequestContextStack, DeviceContext)}
@@ -53,6 +56,7 @@ public abstract class CommonService {
         this.datapathId = features.getDatapathId();
         this.version = features.getVersion();
         this.primaryConnectionAdapter = deviceContext.getPrimaryConnectionContext().getConnectionAdapter();
+        this.messageSpy = deviceContext.getMessageSpy();
     }
 
     protected long provideWaitTime() {
@@ -68,7 +72,7 @@ public abstract class CommonService {
         }
 
         final ConnectionContext auxiliaryConnectionContext =
-        deviceContext.getAuxiliaryConnectiobContexts(connectionID);
+                deviceContext.getAuxiliaryConnectiobContexts(connectionID);
         if (auxiliaryConnectionContext != null) {
             return auxiliaryConnectionContext.getConnectionAdapter();
         }
@@ -77,7 +81,7 @@ public abstract class CommonService {
     }
 
     public <T, F> Future<RpcResult<T>> handleServiceCall(final BigInteger connectionID,
-                                                                            final Function<DataCrate<T>, ListenableFuture<RpcResult<F>>> function) {
+                                                         final Function<DataCrate<T>, ListenableFuture<RpcResult<F>>> function) {
         LOG.debug("Calling the FlowMod RPC method on MessageDispatchService");
 
         final RequestContext<T> requestContext = requestContextStack.createRequestContext();
@@ -96,6 +100,7 @@ public abstract class CommonService {
             OFJResult2RequestCtxFuture.processResultFromOfJava(resultFromOFLib);
 
         } else {
+            messageSpy.spyMessage(requestContext, MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_FAILURE);
             RequestContextUtil.closeRequstContext(requestContext);
         }
         return result;
