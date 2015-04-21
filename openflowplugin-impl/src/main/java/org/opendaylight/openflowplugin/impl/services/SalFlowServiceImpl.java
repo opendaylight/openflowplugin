@@ -26,6 +26,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowHash;
+import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowDescriptorFactory;
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowHashFactory;
 import org.opendaylight.openflowplugin.impl.util.FlowUtil;
@@ -45,6 +46,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.Upda
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.OriginalFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.UpdatedFlow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
@@ -108,11 +110,13 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
         Futures.addCallback(future, new FutureCallback() {
             @Override
             public void onSuccess(final Object o) {
+                messageSpy.spyMessage(input, MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_SUCCESS);
                 LOG.debug("flow add finished without error, id={}", flowId.getValue());
             }
 
             @Override
             public void onFailure(final Throwable throwable) {
+                messageSpy.spyMessage(input, MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_FAILURE);
                 deviceContext.getDeviceFlowRegistry().markToBeremoved(flowHash);
                 LOG.trace("Service call for adding flows failed, id={}.", flowId.getValue(), throwable);
             }
@@ -134,12 +138,14 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
                         Futures.addCallback(future, new FutureCallback() {
                             @Override
                             public void onSuccess(final Object o) {
+                                messageSpy.spyMessage(input, MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_SUCCESS);
                                 FlowHash flowHash = FlowHashFactory.create(input);
                                 deviceContext.getDeviceFlowRegistry().markToBeremoved(flowHash);
                             }
 
                             @Override
                             public void onFailure(final Throwable throwable) {
+                                messageSpy.spyMessage(input, MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_FAILURE);
                                 StringBuffer errors = new StringBuffer();
                                 try {
                                     RpcResult<Void> result = future.get();
@@ -189,6 +195,7 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
         Futures.addCallback(future, new FutureCallback() {
             @Override
             public void onSuccess(final Object o) {
+                messageSpy.spyMessage(input, MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_SUCCESS);
                 FlowHash flowHash = FlowHashFactory.create(original);
                 deviceContext.getDeviceFlowRegistry().markToBeremoved(flowHash);
 
@@ -201,7 +208,7 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
 
             @Override
             public void onFailure(final Throwable throwable) {
-
+                messageSpy.spyMessage(input, MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_FAILURE);
             }
         });
         return future;
@@ -270,11 +277,12 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
         return createResultForFlowMod(data, data.getFlowModInputBuilder());
     }
 
-    protected <T> ListenableFuture<RpcResult<Void>> createResultForFlowMod(final DataCrate<T> data, final FlowModInputBuilder flowModInput) {
+    protected <T> ListenableFuture<RpcResult<Void>> createResultForFlowMod(final DataCrate<T> data, final FlowModInputBuilder flowModInputBuilder) {
         final Xid xid = data.getRequestContext().getXid();
-        flowModInput.setXid(xid.getValue());
+        flowModInputBuilder.setXid(xid.getValue());
+        final FlowModInput flowModInput = flowModInputBuilder.build();
         Future<RpcResult<Void>> flowModResult = provideConnectionAdapter(data.getiDConnection()).flowMod(
-                flowModInput.build());
+                flowModInput);
 
         final ListenableFuture<RpcResult<Void>> result = JdkFutureAdapters.listenInPoolThread(flowModResult);
         final RequestContext requestContext = data.getRequestContext();
@@ -284,6 +292,7 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
             public void onSuccess(final RpcResult<Void> voidRpcResult) {
                 if (!voidRpcResult.isSuccessful()) {
                     // remove current request from request cache in deviceContext
+                    messageSpy.spyMessage(flowModInput, MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE);
                     deviceContext.getRequests().remove(requestContext.getXid().getValue());
                     // handle requestContext failure
                     StringBuilder rpcErrors = new StringBuilder();
@@ -303,9 +312,11 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
             @Override
             public void onFailure(final Throwable throwable) {
                 if (result.isCancelled()) {
+                    messageSpy.spyMessage(flowModInput, MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS);
                     LOG.trace("Asymmetric message - no response from OF Java expected for XID {}. Closing as successful.", requestContext.getXid().getValue());
                     requestContext.getFuture().set(RpcResultBuilder.<T>success().build());
                 } else {
+                    messageSpy.spyMessage(flowModInput, MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE);
                     LOG.trace("Exception occured while processing OF Java response for XID {}.", requestContext.getXid().getValue(), throwable);
                     requestContext.getFuture().set(
                             RpcResultBuilder.<T>failed()

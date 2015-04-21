@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
+import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.TableFeaturesConvertor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.TransactionId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartRequestFlags;
@@ -48,6 +49,7 @@ public class SalTableServiceImpl extends CommonService implements SalTableServic
 
             @Override
             public ListenableFuture<RpcResult<UpdateTableOutput>> apply(final DataCrate<UpdateTableOutput> data) {
+                messageSpy.spyMessage(input, MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_SUCCESS);
 
                 final SettableFuture<RpcResult<UpdateTableOutput>> result = SettableFuture.create();
 

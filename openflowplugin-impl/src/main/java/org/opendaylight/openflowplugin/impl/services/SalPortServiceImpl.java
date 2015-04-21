@@ -12,6 +12,7 @@ import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
+import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.PortConvertor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.port.mod.port.Port;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortModInput;
@@ -31,6 +32,8 @@ public class SalPortServiceImpl extends CommonService implements SalPortService 
                 new Function<DataCrate<UpdatePortOutput>, ListenableFuture<RpcResult<Void>>>() {
                     @Override
                     public ListenableFuture<RpcResult<Void>> apply(final DataCrate<UpdatePortOutput> data) {
+                        messageSpy.spyMessage(input, MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_SUCCESS);
+
                         final Port inputPort = input.getUpdatedPort().getPort().getPort().get(0);
                         final PortModInput ofPortModInput = PortConvertor.toPortModInput(inputPort, version);
                         final PortModInputBuilder mdInput = new PortModInputBuilder(ofPortModInput);
