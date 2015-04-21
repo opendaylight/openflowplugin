@@ -10,7 +10,7 @@ package org.opendaylight.openflowplugin.openflow.md.core;
 
 import java.util.Arrays;
 
-import org.opendaylight.openflowplugin.ConnectionException;
+import org.opendaylight.openflowplugin.api.ConnectionException;
 import org.opendaylight.openflowplugin.api.openflow.md.core.ErrorHandler;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
 import org.slf4j.Logger;
