@@ -42,7 +42,7 @@ public class OFJResult2RequestCtxFuture<T> {
                     deviceContext.getMessageSpy().spyMessage(requestContext, MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE);
 
                     // remove current request from request cache in deviceContext
-                    deviceContext.getRequests().remove(requestContext.getXid().getValue());
+                    deviceContext.unhookRequestCtx(requestContext.getXid());
                     // handle requestContext failure
                     StringBuilder rpcErrors = new StringBuilder();
                     if (null != fRpcResult.getErrors() && fRpcResult.getErrors().size() > 0) {
