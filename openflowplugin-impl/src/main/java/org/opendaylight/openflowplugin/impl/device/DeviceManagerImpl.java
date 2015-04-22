@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -99,6 +100,8 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(DeviceManagerImpl.class);
 
     private static final long TICK_DURATION = 500; // 0.5 sec.
+    private ScheduledThreadPoolExecutor spyPool;
+    private int spyRate = 10;
 
     private final DataBroker dataBroker;
     private final HashedWheelTimer hashedWheelTimer;
@@ -134,6 +137,8 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
                 return new RequestContextImpl<>(this);
             }
         };
+        spyPool = new ScheduledThreadPoolExecutor(1);
+        spyPool.scheduleAtFixedRate(messageIntelligenceAgency, spyRate, spyRate, TimeUnit.SECONDS);
     }
 
     @Override
