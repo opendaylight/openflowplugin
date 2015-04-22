@@ -47,7 +47,7 @@ public class StatisticsGatheringService extends CommonService {
 
                         LOG.info("Calling multipart request for type {}", type);
                         final Xid xid = data.getRequestContext().getXid();
-
+                        deviceContext.hookRequestCtx(xid, data.getRequestContext());
                         deviceContext.getOpenflowMessageListenerFacade().registerMultipartXid(xid.getValue());
                         MultipartRequestInput multipartRequestInput = MultipartRequestInputFactory.
                                 makeMultipartRequestInput(xid.getValue(),
