@@ -105,7 +105,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
 
     private final DataBroker dataBroker;
     private final HashedWheelTimer hashedWheelTimer;
-    private RequestContextStack dummyRequestContextStack;
+    private RequestContextStack emptyRequestContextStack;
     private TranslatorLibrary translatorLibrary;
     private DeviceInitializationPhaseHandler deviceInitPhaseHandler;
     private NotificationProviderService notificationService;
@@ -121,7 +121,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         tx.merge(LogicalDatastoreType.OPERATIONAL, InstanceIdentifier.create(Nodes.class), new NodesBuilder().build());
         tx.submit();
 
-        dummyRequestContextStack = new RequestContextStack() {
+        emptyRequestContextStack = new RequestContextStack() {
             @Override
             public <T> void forgetRequestContext(final RequestContext<T> requestContext) {
                 //NOOP
@@ -275,7 +275,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
                                                                                 final InstanceIdentifier<Node> nodeII, final short version) {
 
         final Xid xid = deviceContext.getNextXid();
-        final RequestContext<List<MultipartReply>> requestContext = dummyRequestContextStack.createRequestContext();
+        final RequestContext<List<MultipartReply>> requestContext = emptyRequestContextStack.createRequestContext();
         requestContext.setXid(xid);
 
         LOG.trace("Hooking xid {} to device context - precaution.", requestContext.getXid().getValue());
