@@ -39,7 +39,7 @@ public class OFJResult2RequestCtxFuture<T> {
             @Override
             public void onSuccess(final RpcResult<F> fRpcResult) {
                 if (!fRpcResult.isSuccessful()) {
-                    deviceContext.getMessageSpy().spyMessage(requestContext, MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE);
+                    deviceContext.getMessageSpy().spyMessage(requestContext.getClass(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE);
 
                     // remove current request from request cache in deviceContext
                     deviceContext.unhookRequestCtx(requestContext.getXid());
@@ -61,12 +61,12 @@ public class OFJResult2RequestCtxFuture<T> {
             @Override
             public void onFailure(final Throwable throwable) {
                 if (futureResultFromOfLib.isCancelled()) {
-                    deviceContext.getMessageSpy().spyMessage(requestContext, MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS);
+                    deviceContext.getMessageSpy().spyMessage(requestContext.getClass(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS);
 
                     LOG.trace("Asymmetric message - no response from OF Java expected for XID {}. Closing as successful.", requestContext.getXid().getValue());
                     requestContext.getFuture().set(RpcResultBuilder.<T>success().build());
                 } else {
-                    deviceContext.getMessageSpy().spyMessage(requestContext, MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE);
+                    deviceContext.getMessageSpy().spyMessage(requestContext.getClass(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE);
                     deviceContext.unhookRequestCtx(requestContext.getXid());
                     LOG.trace("Exception occured while processing OF Java response for XID {}.", requestContext.getXid().getValue(), throwable);
                     requestContext.getFuture().set(
