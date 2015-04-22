@@ -418,4 +418,9 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         final InstanceIdentifier<FlowCapableNode> fNodeII = deviceContext.getDeviceState().getNodeInstanceIdentifier().augmentation(FlowCapableNode.class);
         deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, fNodeII, flowCapableNodeBuilder.build());
     }
+
+    @Override
+    public void onDeviceContextClosed(final DeviceContext deviceContext) {
+        synchronizedDeviceContextsList.remove(deviceContext);
+    }
 }

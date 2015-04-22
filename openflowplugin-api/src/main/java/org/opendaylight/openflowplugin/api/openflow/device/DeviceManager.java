@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.api.openflow.device;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceConnectedHandler;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceContextClosedHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializator;
 import org.opendaylight.openflowplugin.api.openflow.translator.TranslatorLibrarian;
@@ -22,7 +23,10 @@ import org.opendaylight.openflowplugin.api.openflow.translator.TranslatorLibrari
  * <p>
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 25.2.2015.
  */
-public interface DeviceManager extends DeviceConnectedHandler, TranslatorLibrarian, DeviceInitializator, DeviceInitializationPhaseHandler {
+public interface DeviceManager extends DeviceConnectedHandler,
+        TranslatorLibrarian,
+        DeviceInitializator,
+        DeviceInitializationPhaseHandler, DeviceContextClosedHandler {
 
     /**
      * Sets notification service
