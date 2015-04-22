@@ -12,6 +12,8 @@ import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceDisconnectedHandler;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -23,6 +25,7 @@ public class ConnectionContextImpl implements ConnectionContext {
     private FeaturesReply featuresReply;
     private NodeId nodeId;
     private DeviceDisconnectedHandler deviceDisconnectedHandler;
+    private static final Logger LOG = LoggerFactory.getLogger(ConnectionContextImpl.class);
 
     /**
      * @param connectionAdapter
@@ -69,6 +72,7 @@ public class ConnectionContextImpl implements ConnectionContext {
     @Override
     public void propagateClosingConnection() {
         if (null != deviceDisconnectedHandler) {
+            LOG.trace("Populating connection closed event.");
             this.deviceDisconnectedHandler.onDeviceDisconnected(this);
         }
     }
