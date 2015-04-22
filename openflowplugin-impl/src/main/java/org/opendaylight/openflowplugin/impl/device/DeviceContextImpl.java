@@ -45,6 +45,7 @@ import org.opendaylight.openflowplugin.impl.common.NodeStaticReplyTranslatorUtil
 import org.opendaylight.openflowplugin.impl.registry.flow.DeviceFlowRegistryImpl;
 import org.opendaylight.openflowplugin.impl.registry.group.DeviceGroupRegistryImpl;
 import org.opendaylight.openflowplugin.impl.registry.meter.DeviceMeterRegistryImpl;
+import org.opendaylight.openflowplugin.impl.services.RequestContextUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SwitchConnectionCookieOFImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
@@ -81,6 +82,7 @@ import org.slf4j.LoggerFactory;
 public class DeviceContextImpl implements DeviceContext {
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceContextImpl.class);
+    public static final String DEVICE_DISCONNECTED = "Device disconnected.";
 
     private final ConnectionContext primaryConnectionContext;
     private final DeviceState deviceState;
@@ -382,7 +384,7 @@ public class DeviceContextImpl implements DeviceContext {
     @Override
     public void close() throws Exception {
         for (Map.Entry<Long, RequestContext> entry : requests.entrySet()) {
-            entry.getValue().close();
+            RequestContextUtil.closeRequestContextWithRpcError(entry.getValue(), DEVICE_DISCONNECTED);
         }
         if (primaryConnectionContext.getConnectionAdapter().isAlive()) {
             primaryConnectionContext.getConnectionAdapter().disconnect();

@@ -8,7 +8,8 @@
 package org.opendaylight.openflowplugin.impl.services;
 
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
-
+import org.opendaylight.yangtools.yang.common.RpcError;
+import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 
 public final class RequestContextUtil {
@@ -20,11 +21,18 @@ public final class RequestContextUtil {
     }
 
 
+    public static void closeRequestContextWithRpcError(final RequestContext<?> requestContext, String errorMessage) {
+
+        RpcResultBuilder rpcResultBuilder = RpcResultBuilder.failed().withRpcError(RpcResultBuilder.newError(RpcError.ErrorType.APPLICATION, "", errorMessage));
+        requestContext.getFuture().set(rpcResultBuilder.build());
+        closeRequstContext(requestContext);
+    }
+
     public static void closeRequstContext(final RequestContext<?> requestContext) {
         try {
             requestContext.close();
         } catch (Exception e) {
-            LOG.debug("Request context wasn't closed. Exception message: {}",e.getMessage());
+            LOG.debug("Request context wasn't closed. Exception message: {}", e.getMessage());
         }
     }
 }
