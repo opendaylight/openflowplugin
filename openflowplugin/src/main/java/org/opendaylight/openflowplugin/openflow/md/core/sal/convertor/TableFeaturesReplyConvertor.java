@@ -360,6 +360,7 @@ public class TableFeaturesReplyConvertor {
         }
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeatureProperties> salTablePropertiesList = new ArrayList<>();
         TableFeaturePropertiesBuilder propBuilder = new TableFeaturePropertiesBuilder();
+        int index = 0;
         for (TableFeatureProperties property : ofTablePropertiesList) {
             TableFeaturesPropType propType = property.getType();
 
@@ -369,8 +370,10 @@ public class TableFeaturesReplyConvertor {
             } else {
                 LOG.error("Unsupported table feature property : " + propType);
             }
+            propBuilder.setOrder(index);
 
             salTablePropertiesList.add(propBuilder.build());
+            index += 1;
         }
 
         return new TablePropertiesBuilder().setTableFeatureProperties(salTablePropertiesList).build();
@@ -379,6 +382,8 @@ public class TableFeaturesReplyConvertor {
     private static List<Instruction> setInstructionTableFeatureProperty(final TableFeatureProperties properties) {
         List<Instruction> instructionList = new ArrayList<>();
         org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder builder = new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder();
+
+        int index = 0;
         for (org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731
                 .instructions.grouping.Instruction currInstruction : properties
                 .getAugmentation(InstructionRelatedTableFeatureProperty.class).getInstruction()) {
@@ -405,6 +410,10 @@ public class TableFeaturesReplyConvertor {
             } else if (currInstructionType instanceof ExperimenterIdCase) {
                 // TODO: Experimenter instructions are unhandled
             }
+
+            builder.setOrder(index);
+            index += 1;
+            
             instructionList.add(builder.build());
         }
         return instructionList;
