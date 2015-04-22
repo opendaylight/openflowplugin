@@ -81,7 +81,7 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
         Futures.addCallback(future, new FutureCallback<RpcResult<AddFlowOutput>>() {
             @Override
             public void onSuccess(final RpcResult<AddFlowOutput> rpcResult) {
-                messageSpy.spyMessage(input, MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_SUCCESS);
+                messageSpy.spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_SUCCESS);
                 if (rpcResult.isSuccessful()) {
                     LOG.debug("flow add finished without error, id={}", flowId.getValue());
                 } else {
@@ -91,7 +91,7 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
 
             @Override
             public void onFailure(final Throwable throwable) {
-                messageSpy.spyMessage(input, MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_FAILURE);
+                messageSpy.spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_FAILURE);
                 deviceContext.getDeviceFlowRegistry().markToBeremoved(flowHash);
                 LOG.trace("Service call for adding flows failed, id={}.", flowId.getValue(), throwable);
             }
@@ -113,14 +113,14 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
                         Futures.addCallback(future, new FutureCallback() {
                             @Override
                             public void onSuccess(final Object o) {
-                                messageSpy.spyMessage(input, MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_SUCCESS);
+                                messageSpy.spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_SUCCESS);
                                 FlowHash flowHash = FlowHashFactory.create(input);
                                 deviceContext.getDeviceFlowRegistry().markToBeremoved(flowHash);
                             }
 
                             @Override
                             public void onFailure(final Throwable throwable) {
-                                messageSpy.spyMessage(input, MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_FAILURE);
+                                messageSpy.spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_FAILURE);
                                 StringBuffer errors = new StringBuffer();
                                 try {
                                     RpcResult<Void> result = future.get();
@@ -170,7 +170,7 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
         Futures.addCallback(future, new FutureCallback() {
             @Override
             public void onSuccess(final Object o) {
-                messageSpy.spyMessage(input, MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_SUCCESS);
+                messageSpy.spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_SUCCESS);
                 FlowHash flowHash = FlowHashFactory.create(original);
                 deviceContext.getDeviceFlowRegistry().markToBeremoved(flowHash);
 
@@ -183,7 +183,7 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
 
             @Override
             public void onFailure(final Throwable throwable) {
-                messageSpy.spyMessage(input, MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_FAILURE);
+                messageSpy.spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_FAILURE);
             }
         });
         return future;
