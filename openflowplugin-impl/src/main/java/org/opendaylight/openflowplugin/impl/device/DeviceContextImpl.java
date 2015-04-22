@@ -383,11 +383,12 @@ public class DeviceContextImpl implements DeviceContext {
 
     @Override
     public void close() throws Exception {
-        for (Map.Entry<Long, RequestContext> entry : requests.entrySet()) {
-            RequestContextUtil.closeRequestContextWithRpcError(entry.getValue(), DEVICE_DISCONNECTED);
-        }
         if (primaryConnectionContext.getConnectionAdapter().isAlive()) {
             primaryConnectionContext.getConnectionAdapter().disconnect();
+            primaryConnectionContext.setConnectionState(ConnectionContext.CONNECTION_STATE.RIP);
+        }
+        for (Map.Entry<Long, RequestContext> entry : requests.entrySet()) {
+            RequestContextUtil.closeRequestContextWithRpcError(entry.getValue(), DEVICE_DISCONNECTED);
         }
         for (ConnectionContext connectionContext : auxiliaryConnectionContexts.values()) {
             if (connectionContext.getConnectionAdapter().isAlive()) {
