@@ -15,6 +15,7 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.openflowplugin.api.openflow.OpenflowPluginTimer;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceDisconnectedHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceReplyProcessor;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MessageHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.OutstandingMessageExtractor;
@@ -41,10 +42,16 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  * which is enforced by keeping a cap on the number of outstanding requests a particular Request
  * Context can have at any point in time. Should this quota be exceeded, any further attempt to make
  * a request to the switch will fail immediately, with proper error indication.
- * <p>
+ * <p/>
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 25.2.2015.
  */
-public interface DeviceContext extends AutoCloseable, OpenflowPluginTimer, MessageHandler, TranslatorLibrarian, OutstandingMessageExtractor, DeviceReplyProcessor {
+public interface DeviceContext extends AutoCloseable,
+        OpenflowPluginTimer,
+        MessageHandler,
+        TranslatorLibrarian,
+        OutstandingMessageExtractor,
+        DeviceReplyProcessor,
+        DeviceDisconnectedHandler {
 
 
     /**
