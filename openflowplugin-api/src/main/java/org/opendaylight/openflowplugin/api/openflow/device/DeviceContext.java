@@ -15,6 +15,7 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.openflowplugin.api.openflow.OpenflowPluginTimer;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceContextClosedHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceDisconnectedHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceReplyProcessor;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MessageHandler;
@@ -207,5 +208,11 @@ public interface DeviceContext extends AutoCloseable,
     MessageSpy getMessageSpy();
 
     void setDeviceDisconnectedHandler(DeviceDisconnectedHandler deviceDisconnectedHandler);
+
+    /**
+     * Method sets reference to handler used for cleanup after device context about to be closed.
+     */
+    void setDeviceContextClosedHandler(DeviceContextClosedHandler deviceContextClosedHandler);
+
 }
 

@@ -32,6 +32,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.device.exception.DeviceDataException;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceContextClosedHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceDisconnectedHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.listener.OpenflowMessageListenerFacade;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
@@ -99,6 +100,7 @@ public class DeviceContextImpl implements DeviceContext {
     private NotificationProviderService notificationService;
     private final MessageSpy<Class> messageSpy;
     private DeviceDisconnectedHandler deviceDisconnectedHandler;
+    private DeviceContextClosedHandler deviceContextClosedHandler;
 
 
     @VisibleForTesting
@@ -382,19 +384,16 @@ public class DeviceContextImpl implements DeviceContext {
         for (Map.Entry<Long, RequestContext> entry : requests.entrySet()) {
             entry.getValue().close();
         }
+        deviceContextClosedHandler.onDeviceContextClosed(this);
     }
 
     @Override
     public void onDeviceDisconnected(final ConnectionContext connectionContext) {
         if (this.getPrimaryConnectionContext().equals(connectionContext)) {
-            for (Map.Entry<Long, RequestContext> entry : requests.entrySet()) {
-                RequestContext rqCtx = entry.getValue();
-                Long xid = entry.getKey();
-                try {
-                    rqCtx.close();
-                } catch (Exception e) {
-                    LOG.debug("Exception occured when closing request context for XID {}.", xid);
-                }
+            try {
+                close();
+            } catch (Exception e) {
+                LOG.trace("Error closing device context.");
             }
             if (null != deviceDisconnectedHandler) {
                 deviceDisconnectedHandler.onDeviceDisconnected(connectionContext);
@@ -450,5 +449,10 @@ public class DeviceContextImpl implements DeviceContext {
     @Override
     public void setDeviceDisconnectedHandler(final DeviceDisconnectedHandler deviceDisconnectedHandler) {
         this.deviceDisconnectedHandler = deviceDisconnectedHandler;
+    }
+
+    @Override
+    public void setDeviceContextClosedHandler(final DeviceContextClosedHandler deviceContextClosedHandler) {
+        this.deviceContextClosedHandler = deviceContextClosedHandler;
     }
 }
