@@ -15,6 +15,7 @@ import com.google.common.util.concurrent.SettableFuture;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
@@ -67,35 +68,37 @@ public class StatisticsContextImpl implements StatisticsContext {
 
         final DeviceState devState = deviceContext.getDeviceState();
 
-        ListenableFuture<Boolean> emptyFuture = Futures.immediateFuture(null);
-        final ListenableFuture<Boolean> flowStatistics = devState.isFlowStatisticsAvailable() ? wrapLoggingOnStatisticsRequestCall(MultipartType.OFPMPFLOW) : emptyFuture;
-
-        final ListenableFuture<Boolean> tableStatistics = devState.isTableStatisticsAvailable() ? wrapLoggingOnStatisticsRequestCall(MultipartType.OFPMPTABLE) : emptyFuture;
-
-        final ListenableFuture<Boolean> portStatistics = devState.isPortStatisticsAvailable() ? wrapLoggingOnStatisticsRequestCall(MultipartType.OFPMPPORTSTATS) : emptyFuture;
-
-        final ListenableFuture<Boolean> queueStatistics = devState.isQueueStatisticsAvailable() ? wrapLoggingOnStatisticsRequestCall(MultipartType.OFPMPQUEUE) : emptyFuture;
-
-        final ListenableFuture<Boolean> groupDescStatistics = devState.isGroupAvailable() ? wrapLoggingOnStatisticsRequestCall(MultipartType.OFPMPGROUPDESC) : emptyFuture;
-        final ListenableFuture<Boolean> groupStatistics = devState.isGroupAvailable() ? wrapLoggingOnStatisticsRequestCall(MultipartType.OFPMPGROUP) : emptyFuture;
-
-        final ListenableFuture<Boolean> meterConfigStatistics = devState.isMetersAvailable() ? wrapLoggingOnStatisticsRequestCall(MultipartType.OFPMPMETERCONFIG) : emptyFuture;
-        final ListenableFuture<Boolean> meterStatistics = devState.isMetersAvailable() ? wrapLoggingOnStatisticsRequestCall(MultipartType.OFPMPMETER) : emptyFuture;
-
-
-        final ListenableFuture<List<Boolean>> allFutures = Futures.allAsList(Arrays.asList(flowStatistics, tableStatistics, groupDescStatistics, groupStatistics, meterConfigStatistics, meterStatistics, portStatistics, queueStatistics));
         final SettableFuture<Void> resultingFuture = SettableFuture.create();
-        Futures.addCallback(allFutures, new FutureCallback<List<Boolean>>() {
-            @Override
-            public void onSuccess(final List<Boolean> booleans) {
-                resultingFuture.set(null);
-            }
+        if (ConnectionContext.CONNECTION_STATE.WORKING.equals(deviceContext.getPrimaryConnectionContext().getConnectionState())) {
+            ListenableFuture<Boolean> emptyFuture = Futures.immediateFuture(null);
+            final ListenableFuture<Boolean> flowStatistics = devState.isFlowStatisticsAvailable() ? wrapLoggingOnStatisticsRequestCall(MultipartType.OFPMPFLOW) : emptyFuture;
 
-            @Override
-            public void onFailure(final Throwable throwable) {
-                resultingFuture.setException(throwable);
-            }
-        });
+            final ListenableFuture<Boolean> tableStatistics = devState.isTableStatisticsAvailable() ? wrapLoggingOnStatisticsRequestCall(MultipartType.OFPMPTABLE) : emptyFuture;
+
+            final ListenableFuture<Boolean> portStatistics = devState.isPortStatisticsAvailable() ? wrapLoggingOnStatisticsRequestCall(MultipartType.OFPMPPORTSTATS) : emptyFuture;
+
+            final ListenableFuture<Boolean> queueStatistics = devState.isQueueStatisticsAvailable() ? wrapLoggingOnStatisticsRequestCall(MultipartType.OFPMPQUEUE) : emptyFuture;
+
+            final ListenableFuture<Boolean> groupDescStatistics = devState.isGroupAvailable() ? wrapLoggingOnStatisticsRequestCall(MultipartType.OFPMPGROUPDESC) : emptyFuture;
+            final ListenableFuture<Boolean> groupStatistics = devState.isGroupAvailable() ? wrapLoggingOnStatisticsRequestCall(MultipartType.OFPMPGROUP) : emptyFuture;
+
+            final ListenableFuture<Boolean> meterConfigStatistics = devState.isMetersAvailable() ? wrapLoggingOnStatisticsRequestCall(MultipartType.OFPMPMETERCONFIG) : emptyFuture;
+            final ListenableFuture<Boolean> meterStatistics = devState.isMetersAvailable() ? wrapLoggingOnStatisticsRequestCall(MultipartType.OFPMPMETER) : emptyFuture;
+
+
+            final ListenableFuture<List<Boolean>> allFutures = Futures.allAsList(Arrays.asList(flowStatistics, tableStatistics, groupDescStatistics, groupStatistics, meterConfigStatistics, meterStatistics, portStatistics, queueStatistics));
+            Futures.addCallback(allFutures, new FutureCallback<List<Boolean>>() {
+                @Override
+                public void onSuccess(final List<Boolean> booleans) {
+                    resultingFuture.set(null);
+                }
+
+                @Override
+                public void onFailure(final Throwable throwable) {
+                    resultingFuture.setException(throwable);
+                }
+            });
+        }
         return resultingFuture;
     }
 
@@ -133,7 +136,7 @@ public class StatisticsContextImpl implements StatisticsContext {
 
     @Override
     public void close() throws Exception {
-        for (RequestContext requestContext : requestContexts){
+        for (RequestContext requestContext : requestContexts) {
             RequestContextUtil.closeRequestContextWithRpcError(requestContext, CONNECTION_CLOSED);
         }
     }
