@@ -384,6 +384,14 @@ public class DeviceContextImpl implements DeviceContext {
         for (Map.Entry<Long, RequestContext> entry : requests.entrySet()) {
             entry.getValue().close();
         }
+        if (primaryConnectionContext.getConnectionAdapter().isAlive()) {
+            primaryConnectionContext.getConnectionAdapter().disconnect();
+        }
+        for (ConnectionContext connectionContext : auxiliaryConnectionContexts.values()) {
+            if (connectionContext.getConnectionAdapter().isAlive()) {
+                primaryConnectionContext.getConnectionAdapter().disconnect();
+            }
+        }
         deviceContextClosedHandler.onDeviceContextClosed(this);
     }
 
