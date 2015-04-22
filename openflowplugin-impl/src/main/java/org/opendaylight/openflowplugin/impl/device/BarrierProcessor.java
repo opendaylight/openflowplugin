@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.impl.device;
 
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.OutstandingMessageExtractor;
+import org.opendaylight.openflowplugin.impl.services.RequestContextUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,8 +42,9 @@ public class BarrierProcessor {
         LOG.trace("processing barrier response [{}]", barrierXid);
         RequestContext nextRequestContext;
         while ((nextRequestContext = messageExtractor.extractNextOutstandingMessage(barrierXid)) != null ) {
-            LOG.trace("flushing outstanding request [{}]", nextRequestContext.getXid().getValue());
+            LOG.trace("flushing outstanding request [{}], closing", nextRequestContext.getXid().getValue());
             nextRequestContext.getFuture().cancel(false);
+            RequestContextUtil.closeRequstContext(nextRequestContext);
         }
     }
 }

@@ -13,15 +13,14 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
-import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
@@ -62,34 +61,6 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
         super(requestContextStack, deviceContext);
     }
 
-    <T, F> ListenableFuture<RpcResult<T>> handleServiceCall(final BigInteger connectionID,
-                                                            final FlowModInputBuilder flowModInputBuilder, final Function<DataCrate<T>, ListenableFuture<RpcResult<F>>> function) {
-        LOG.debug("Calling the FlowMod RPC method on MessageDispatchService");
-
-        final RequestContext<T> requestContext = requestContextStack.createRequestContext();
-        final SettableFuture<RpcResult<T>> result = requestContextStack.storeOrFail(requestContext);
-
-        if (!result.isDone()) {
-
-            final DataCrate<T> dataCrate = DataCrateBuilder.<T>builder().setiDConnection(connectionID)
-                    .setRequestContext(requestContext).setFlowModInputBuilder(flowModInputBuilder).build();
-
-            requestContext.setXid(deviceContext.getNextXid());
-
-            LOG.trace("Hooking xid {} to device context - precaution.", requestContext.getXid().getValue());
-            deviceContext.hookRequestCtx(requestContext.getXid(), requestContext);
-
-            final ListenableFuture<RpcResult<F>> resultFromOFLib = function.apply(dataCrate);
-
-            final OFJResult2RequestCtxFuture<T> OFJResult2RequestCtxFuture = new OFJResult2RequestCtxFuture<>(requestContext, deviceContext);
-            OFJResult2RequestCtxFuture.processResultFromOfJava(resultFromOFLib);
-
-        } else {
-            RequestContextUtil.closeRequstContext(requestContext);
-        }
-        return result;
-    }
-
     @Override
     public Future<RpcResult<AddFlowOutput>> addFlow(final AddFlowInput input) {
         final FlowId flowId;
@@ -105,13 +76,17 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
         deviceContext.getDeviceFlowRegistry().store(flowHash, flowDescriptor);
 
         final List<FlowModInputBuilder> ofFlowModInputs = FlowConvertor.toFlowModInputs(input, version, datapathId);
-        final ListenableFuture future = processFlowModInputBuilders(ofFlowModInputs);
+        final ListenableFuture<RpcResult<AddFlowOutput>> future = processFlowModInputBuilders(ofFlowModInputs);
 
-        Futures.addCallback(future, new FutureCallback() {
+        Futures.addCallback(future, new FutureCallback<RpcResult<AddFlowOutput>>() {
             @Override
-            public void onSuccess(final Object o) {
+            public void onSuccess(final RpcResult<AddFlowOutput> rpcResult) {
                 messageSpy.spyMessage(input, MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_SUCCESS);
-                LOG.debug("flow add finished without error, id={}", flowId.getValue());
+                if (rpcResult.isSuccessful()) {
+                    LOG.debug("flow add finished without error, id={}", flowId.getValue());
+                } else {
+                    LOG.debug("flow add failed with error, id={}", flowId.getValue());
+                }
             }
 
             @Override
@@ -217,55 +192,93 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
     private <T> ListenableFuture<RpcResult<T>> processFlowModInputBuilders(
             final List<FlowModInputBuilder> ofFlowModInputs) {
         final List<ListenableFuture<RpcResult<T>>> partialFutures = new ArrayList<>();
+
         for (FlowModInputBuilder flowModInputBuilder : ofFlowModInputs) {
-            ListenableFuture<RpcResult<T>> partialFuture = handleServiceCall(PRIMARY_CONNECTION, flowModInputBuilder,
+            DataCrateBuilder<T> dataCrateBuilder = DataCrateBuilder.<T>builder().setFlowModInputBuilder(flowModInputBuilder);
+            ListenableFuture<RpcResult<T>> partialFuture = handleServiceCall(
+                    PRIMARY_CONNECTION,
                     new Function<DataCrate<T>, ListenableFuture<RpcResult<Void>>>() {
                         @Override
                         public ListenableFuture<RpcResult<Void>> apply(final DataCrate<T> data) {
                             return createResultForFlowMod(data);
                         }
-                    });
+                    },
+                    dataCrateBuilder
+            );
             partialFutures.add(partialFuture);
         }
 
-        final ListenableFuture<List<RpcResult<T>>> allFutures = Futures.allAsList(partialFutures);
+        // processing of final (optionally composite future)
+        final ListenableFuture<List<RpcResult<T>>> allFutures = Futures.successfulAsList(partialFutures);
         final SettableFuture<RpcResult<T>> finalFuture = SettableFuture.create();
         Futures.addCallback(allFutures, new FutureCallback<List<RpcResult<T>>>() {
             @Override
             public void onSuccess(List<RpcResult<T>> results) {
-                Iterator<FlowModInputBuilder> flowModInputBldIterator = ofFlowModInputs.iterator();
                 List<RpcError> rpcErrorLot = new ArrayList<>();
-                for (RpcResult<T> rpcResult : results) {
+                RpcResultBuilder<T> resultBuilder;
+
+                Iterator<FlowModInputBuilder> flowModInputBldIterator = ofFlowModInputs.iterator();
+                Iterator<RpcResult<T>> resultIterator = results.iterator();
+
+                for (ListenableFuture<RpcResult<T>> partFutureFromRqCtx : partialFutures) {
                     FlowModInputBuilder flowModInputBld = flowModInputBldIterator.next();
-                    if (rpcResult.isSuccessful()) {
-                        Long xid = flowModInputBld.getXid();
-                        LOG.warn("Positive confirmation of flow push is not supported by OF-spec");
-                        LOG.warn("flow future result was successful [{}] = this should have never happen",
-                                xid);
-                        rpcErrorLot.add(RpcResultBuilder.newError(ErrorType.APPLICATION, "",
-                                "flow future result was successful ["+xid+"] = this should have never happen"));
-                    } else {
-                        rpcErrorLot.addAll(rpcResult.getErrors());
+                    RpcResult<T> result = resultIterator.next();
+                    Long xid = flowModInputBld.getXid();
+
+
+                    LOG.trace("flowMod future processing [{}], result={}", xid, result);
+                    if (partFutureFromRqCtx.isCancelled()) { // one and only positive case
+                        if (LOG.isTraceEnabled()) {
+                            LOG.trace("flow future result was cancelled [{}] = barrier passed it without error", xid);
+                        }
+                    } else { // all negative cases
+                        if (result == null) { // there is exception or null value set
+                            try {
+                                partFutureFromRqCtx.get();
+                            } catch (Exception e) {
+                                rpcErrorLot.add(RpcResultBuilder.newError(ErrorType.APPLICATION, "",
+                                        "flow future result [" + xid + "] failed with exception",
+                                        OFConstants.APPLICATION_TAG, e.getMessage(), e));
+
+                                // xid might be not available in case requestContext not even stored
+                                if (xid != null) {
+                                    deviceContext.unhookRequestCtx(new Xid(xid));
+                                }
+                            }
+                        } else {
+                            if (result.isSuccessful()) {  // positive confirmation - never happens
+                                LOG.warn("Positive confirmation of flow push is not supported by OF-spec");
+                                LOG.warn("flow future result was successful [{}] = this should have never happen",
+                                        xid);
+                                rpcErrorLot.add(RpcResultBuilder.newError(ErrorType.APPLICATION, "",
+                                        "flow future result was successful [" + xid + "] = this should have never happen"));
+                            } else { // standard error occurred
+                                LOG.trace("passing original rpcErrors [{}]", xid);
+                                if (LOG.isTraceEnabled()) {
+                                    for (RpcError rpcError : result.getErrors()) {
+                                        LOG.trace("passed rpcError [{}]: {}", xid, rpcError);
+                                    }
+                                }
+                                rpcErrorLot.addAll(result.getErrors());
+                            }
+                        }
                     }
                 }
-                finalFuture.set(RpcResultBuilder.<T>failed().withRpcErrors(rpcErrorLot).build());
+
+                if (rpcErrorLot.isEmpty()) {
+                    resultBuilder = RpcResultBuilder.<T>success();
+                } else {
+                    resultBuilder = RpcResultBuilder.<T>failed().withRpcErrors(rpcErrorLot);
+                }
+
+                finalFuture.set(resultBuilder.build());
             }
 
             @Override
             public void onFailure(Throwable t) {
                 LOG.trace("Flow mods chained future failed.");
-                RpcResultBuilder<T> resultBuilder;
-                if (allFutures.isCancelled()) {
-                    if (LOG.isTraceEnabled()) {
-                        for (FlowModInputBuilder ofFlowModInput : ofFlowModInputs) {
-                            LOG.trace("flow future result was cancelled [{}] = barrier passed it without error",
-                                    ofFlowModInput.getXid());
-                        }
-                    }
-                    resultBuilder = RpcResultBuilder.<T>success();
-                } else {
-                    resultBuilder = RpcResultBuilder.<T>failed().withError(ErrorType.APPLICATION, "", t.getMessage());
-                }
+                RpcResultBuilder<T> resultBuilder = RpcResultBuilder.<T>failed()
+                        .withError(ErrorType.APPLICATION, "", t.getMessage());
                 finalFuture.set(resultBuilder.build());
             }
         });
@@ -285,49 +298,6 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
                 flowModInput);
 
         final ListenableFuture<RpcResult<Void>> result = JdkFutureAdapters.listenInPoolThread(flowModResult);
-        final RequestContext requestContext = data.getRequestContext();
-
-        Futures.addCallback(result, new FutureCallback<RpcResult<Void>>() {
-            @Override
-            public void onSuccess(final RpcResult<Void> voidRpcResult) {
-                if (!voidRpcResult.isSuccessful()) {
-                    // remove current request from request cache in deviceContext
-                    messageSpy.spyMessage(flowModInput, MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE);
-                    deviceContext.unhookRequestCtx(requestContext.getXid());
-                    // handle requestContext failure
-                    StringBuilder rpcErrors = new StringBuilder();
-                    if (null != voidRpcResult.getErrors() && voidRpcResult.getErrors().size() > 0) {
-                        for (RpcError error : voidRpcResult.getErrors()) {
-                            rpcErrors.append(error.getMessage());
-                        }
-                    }
-                    LOG.trace("OF Java result for XID {} was not successful. Errors : {}", requestContext.getXid().getValue(), rpcErrors.toString());
-                    requestContext.getFuture().set(
-                            RpcResultBuilder.<T>failed().withRpcErrors(voidRpcResult.getErrors()).build());
-                    RequestContextUtil.closeRequstContext(requestContext);
-                }
-
-            }
-
-            @Override
-            public void onFailure(final Throwable throwable) {
-                if (result.isCancelled()) {
-                    messageSpy.spyMessage(flowModInput, MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS);
-                    LOG.trace("Asymmetric message - no response from OF Java expected for XID {}. Closing as successful.", requestContext.getXid().getValue());
-                    requestContext.getFuture().set(RpcResultBuilder.<T>success().build());
-                } else {
-                    messageSpy.spyMessage(flowModInput, MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE);
-                    LOG.trace("Exception occured while processing OF Java response for XID {}.", requestContext.getXid().getValue(), throwable);
-                    requestContext.getFuture().set(
-                            RpcResultBuilder.<T>failed()
-                                    .withError(RpcError.ErrorType.APPLICATION, "", "Flow translation to OF JAVA failed.")
-                                    .build());
-                }
-
-                RequestContextUtil.closeRequstContext(requestContext);
-
-            }
-        });
         return result;
     }
 
