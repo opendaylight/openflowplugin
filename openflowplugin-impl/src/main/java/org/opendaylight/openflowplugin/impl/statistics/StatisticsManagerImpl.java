@@ -16,7 +16,6 @@ import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
-import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
@@ -52,7 +51,8 @@ public class StatisticsManagerImpl implements StatisticsManager {
         }
 
         final StatisticsContext statisticsContext = new StatisticsContextImpl(deviceContext);
-        /*final*/ ListenableFuture<Void> weHaveDynamicData = statisticsContext.gatherDynamicData();
+        /*final*/
+        ListenableFuture<Void> weHaveDynamicData = statisticsContext.gatherDynamicData();
         weHaveDynamicData = Futures.immediateFuture(null);
         Futures.addCallback(weHaveDynamicData, new FutureCallback<Void>() {
             @Override
@@ -97,7 +97,10 @@ public class StatisticsManagerImpl implements StatisticsManager {
     }
 
     @Override
-    public void onDeviceDisconnected(final ConnectionContext connectionContext) {
-        
+    public void onDeviceContextClosed(final DeviceContext deviceContext) {
+        if (contexts.containsKey(deviceContext)) {
+            LOG.trace("Removing device context from stack. No more statistics gathering for node {}", deviceContext.getDeviceState().getNodeId());
+            contexts.remove(deviceContext);
+        }
     }
 }

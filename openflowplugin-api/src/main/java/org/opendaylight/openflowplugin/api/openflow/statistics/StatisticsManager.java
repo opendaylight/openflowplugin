@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.api.openflow.statistics;
 
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceContextClosedHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceDisconnectedHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializator;
@@ -15,6 +16,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitia
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 26.2.2015.
  */
-public interface StatisticsManager extends DeviceInitializator, DeviceInitializationPhaseHandler, DeviceDisconnectedHandler {
+public interface StatisticsManager extends DeviceInitializator, DeviceInitializationPhaseHandler, DeviceContextClosedHandler {
 
 }
