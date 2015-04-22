@@ -7,8 +7,6 @@
  */
 package org.opendaylight.openflowplugin.impl.rpc;
 
-import org.slf4j.Logger;
-
 import com.google.common.util.concurrent.SettableFuture;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,6 +21,7 @@ import org.opendaylight.yangtools.yang.binding.RpcService;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.slf4j.Logger;
 
 public class RpcContextImpl implements RpcContext {
 
@@ -93,7 +92,7 @@ public class RpcContextImpl implements RpcContext {
     public <T> void forgetRequestContext(final RequestContext<T> requestContext) {
         synchronizedRequestsList.remove(requestContext);
         LOG.trace("Removed request context with xid {}. Context request in list {}.",
-                requestContext.getXid(), synchronizedRequestsList.size());
+                requestContext.getXid().getValue(), synchronizedRequestsList.size());
     }
 
     @Override
