@@ -160,6 +160,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         deviceContext.setNotificationService(notificationService);
         deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, deviceState.getNodeInstanceIdentifier(), new NodeBuilder().setId(deviceState.getNodeId()).build());
 
+        connectionContext.setDeviceDisconnectedHandler(deviceContext);
         deviceContext.setTranslatorLibrary(translatorLibrary);
 
         final OpenflowProtocolListenerFullImpl messageListener = new OpenflowProtocolListenerFullImpl(
