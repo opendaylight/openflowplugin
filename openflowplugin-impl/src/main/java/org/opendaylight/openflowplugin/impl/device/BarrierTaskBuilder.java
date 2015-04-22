@@ -47,7 +47,7 @@ public class BarrierTaskBuilder {
     }
 
     public void buildAndFireBarrierTask() {
-        Timeout timeout = deviceCtx.getTimer().newTimeout(makeTimerTask(), 1000L, TimeUnit.MILLISECONDS);
+        Timeout timeout = deviceCtx.getTimer().newTimeout(makeTimerTask(), 500L, TimeUnit.MILLISECONDS);
         deviceCtx.setCurrentBarrierTimeout(timeout);
     }
 
