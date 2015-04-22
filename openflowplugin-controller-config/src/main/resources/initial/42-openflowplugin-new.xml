@@ -71,6 +71,8 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
                         </type>
                         <name>binding-osgi-broker</name>
                     </binding-aware-broker>
+
+                    <rpc-requests-quota>20000</rpc-requests-quota>
                 </module>
             </modules>
 
