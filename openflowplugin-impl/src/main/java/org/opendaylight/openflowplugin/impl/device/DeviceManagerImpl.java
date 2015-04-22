@@ -179,12 +179,11 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         if (connectionContext.getFeatures().getVersion() == OFConstants.OFP_VERSION_1_0) {
             final CapabilitiesV10 capabilitiesV10 = connectionContext.getFeatures().getCapabilitiesV10();
 
-            DeviceStateUtil.setDeviceStateBasedOnV10Capabilities(deviceState, capabilitiesV10);
-            //FIXME: next two lines are hack to make OF10 + cbench working (they don't send reply for description request)
             createEmptyFlowCapableNodeInDs(deviceContext);
             makeEmptyTables(deviceContext, deviceContext.getDeviceState().getNodeInstanceIdentifier(), connectionContext.getFeatures().getTables());
+            DeviceStateUtil.setDeviceStateBasedOnV10Capabilities(deviceState, capabilitiesV10);
 
-            deviceFeaturesFuture = Futures.immediateFuture(null);//createDeviceFeaturesForOF10(messageListener, deviceContext, deviceState);
+            deviceFeaturesFuture = createDeviceFeaturesForOF10(messageListener, deviceContext, deviceState);
 
             for (final PortGrouping port : connectionContext.getFeatures().getPhyPort()) {
                 final short ofVersion = deviceContext.getDeviceState().getVersion();
@@ -200,7 +199,6 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
                 final NodeConnector connector = ncBuilder.build();
                 final InstanceIdentifier<NodeConnector> connectorII = deviceState.getNodeInstanceIdentifier().child(NodeConnector.class, connector.getKey());
                 deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, connectorII, connector);
-                //FlowCapableNodeConnectorBuilder
             }
         } else if (connectionContext.getFeatures().getVersion() == OFConstants.OFP_VERSION_1_3) {
             final Capabilities capabilities = connectionContext.getFeatures().getCapabilities();
@@ -218,6 +216,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
             public void onFailure(final Throwable t) {
                 // FIXME : remove session
                 LOG.trace("Device capabilities gathering future failed.");
+                LOG.trace("more info in exploration failure..", t);
             }
         });
     }
