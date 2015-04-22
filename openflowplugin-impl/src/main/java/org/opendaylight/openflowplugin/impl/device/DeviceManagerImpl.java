@@ -155,7 +155,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
 
         final DeviceState deviceState = new DeviceStateImpl(connectionContext.getFeatures(), connectionContext.getNodeId());
 
-        final DeviceContextImpl deviceContext = new DeviceContextImpl(connectionContext, deviceState, dataBroker, hashedWheelTimer, messageIntelligenceAgency);
+        final DeviceContext deviceContext = new DeviceContextImpl(connectionContext, deviceState, dataBroker, hashedWheelTimer, messageIntelligenceAgency);
 
         deviceContext.setNotificationService(notificationService);
         deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, deviceState.getNodeInstanceIdentifier(), new NodeBuilder().setId(deviceState.getNodeId()).build());
@@ -217,7 +217,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
 
 
     private ListenableFuture<RpcResult<List<MultipartReply>>> processReplyDesc(OpenflowProtocolListenerFullImpl messageListener,
-                                                                               DeviceContextImpl deviceContext,
+                                                                               DeviceContext deviceContext,
                                                                                DeviceState deviceState) {
         final ListenableFuture<RpcResult<List<MultipartReply>>> replyDesc = getNodeStaticInfo(messageListener,
                 MultipartType.OFPMPDESC, deviceContext, deviceState.getNodeInstanceIdentifier(), deviceState.getVersion());
@@ -225,13 +225,13 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
     }
 
     private ListenableFuture<List<RpcResult<List<MultipartReply>>>> createDeviceFeaturesForOF10(OpenflowProtocolListenerFullImpl messageListener,
-                                                                                                DeviceContextImpl deviceContext,
+                                                                                                DeviceContext deviceContext,
                                                                                                 DeviceState deviceState) {
         return Futures.allAsList(Arrays.asList(processReplyDesc(messageListener, deviceContext, deviceState)));
     }
 
     private ListenableFuture<List<RpcResult<List<MultipartReply>>>> createDeviceFeaturesForOF13(OpenflowProtocolListenerFullImpl messageListener,
-                                                                                                final DeviceContextImpl deviceContext,
+                                                                                                final DeviceContext deviceContext,
                                                                                                 final DeviceState deviceState) {
         final ListenableFuture<RpcResult<List<MultipartReply>>> replyDesc = processReplyDesc(messageListener, deviceContext, deviceState);
 
