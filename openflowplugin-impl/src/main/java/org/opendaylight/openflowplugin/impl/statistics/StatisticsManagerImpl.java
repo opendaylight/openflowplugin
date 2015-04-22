@@ -16,6 +16,7 @@ import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
@@ -102,6 +103,8 @@ public class StatisticsManagerImpl implements StatisticsManager {
         if (contexts.containsKey(deviceContext)) {
             LOG.trace("Removing device context from stack. No more statistics gathering for node {}", deviceContext.getDeviceState().getNodeId());
             contexts.remove(deviceContext);
+            LOG.trace("Removing node {} from operational DS.", deviceContext.getDeviceState().getNodeId());
+            deviceContext.addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, deviceContext.getDeviceState().getNodeInstanceIdentifier());
         }
     }
 }
