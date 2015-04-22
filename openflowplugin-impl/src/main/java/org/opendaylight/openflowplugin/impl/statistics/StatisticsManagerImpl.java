@@ -105,6 +105,12 @@ public class StatisticsManagerImpl implements StatisticsManager {
             contexts.remove(deviceContext);
             LOG.trace("Removing node {} from operational DS.", deviceContext.getDeviceState().getNodeId());
             deviceContext.addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, deviceContext.getDeviceState().getNodeInstanceIdentifier());
+            StatisticsContext statisticsContext = contexts.get(deviceContext);
+            try {
+                statisticsContext.close();
+            } catch (Exception e) {
+                LOG.debug("Error closing statistic context for node {}.", deviceContext.getDeviceState().getNodeId());
+            }
         }
     }
 }
