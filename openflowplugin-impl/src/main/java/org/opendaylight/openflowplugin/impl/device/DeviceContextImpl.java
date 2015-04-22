@@ -188,14 +188,23 @@ public class DeviceContextImpl implements DeviceContext {
     }
 
     @Override
-    public Map<Long, RequestContext> getRequests() {
-        return requests;
+    public RequestContext lookupRequest(Xid xid) {
+        return requests.get(xid.getValue());
+    }
+
+    @Override
+    public int getNumberOfOutstandingRequests() {
+        return requests.size();
     }
 
     @Override
     public void hookRequestCtx(final Xid xid, final RequestContext requestFutureContext) {
-        // TODO Auto-generated method stub
         requests.put(xid.getValue(), requestFutureContext);
+    }
+
+    @Override
+    public RequestContext unhookRequestCtx(Xid xid) {
+        return requests.remove(xid.getValue());
     }
 
     @Override
@@ -226,10 +235,10 @@ public class DeviceContextImpl implements DeviceContext {
 
     @Override
     public void processReply(final OfHeader ofHeader) {
-        final RequestContext requestContext = getRequests().get(ofHeader.getXid());
+        final RequestContext requestContext = requests.get(ofHeader.getXid());
         if (null != requestContext) {
             final SettableFuture replyFuture = requestContext.getFuture();
-            getRequests().remove(ofHeader.getXid());
+            requests.remove(ofHeader.getXid());
             RpcResult<OfHeader> rpcResult;
             if (ofHeader instanceof Error) {
                 final Error error = (Error) ofHeader;
@@ -261,10 +270,10 @@ public class DeviceContextImpl implements DeviceContext {
 
     @Override
     public void processReply(final Xid xid, final List<MultipartReply> ofHeaderList) {
-        final RequestContext requestContext = getRequests().get(xid.getValue());
+        final RequestContext requestContext = requests.get(xid.getValue());
         if (null != requestContext) {
             final SettableFuture replyFuture = requestContext.getFuture();
-            getRequests().remove(xid.getValue());
+            requests.remove(xid.getValue());
             final RpcResult<List<MultipartReply>> rpcResult = RpcResultBuilder
                     .<List<MultipartReply>>success()
                     .withResult(ofHeaderList)
@@ -290,11 +299,11 @@ public class DeviceContextImpl implements DeviceContext {
 
         LOG.trace("Processing exception for xid : {}", xid.getValue());
 
-        final RequestContext requestContext = getRequests().get(xid.getValue());
+        final RequestContext requestContext = requests.get(xid.getValue());
 
         if (null != requestContext) {
             final SettableFuture replyFuture = requestContext.getFuture();
-            getRequests().remove(xid.getValue());
+            requests.remove(xid.getValue());
             final RpcResult<List<OfHeader>> rpcResult = RpcResultBuilder
                     .<List<OfHeader>>failed()
                     .withError(RpcError.ErrorType.APPLICATION, String.format("Message processing failed : %s", deviceDataException.getError()), deviceDataException)

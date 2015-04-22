@@ -56,7 +56,7 @@ public class BarrierTaskBuilder {
             @Override
             public void run(final Timeout timeout) throws Exception {
                 // check outstanding requests first
-                if (! deviceCtx.getRequests().isEmpty()) {
+                if (deviceCtx.getNumberOfOutstandingRequests() > 0) {
                     BarrierInput barrierInput = makeBarrier();
                     LOG.trace("sending out barrier [{}]", barrierInput.getXid());
                     final Future<RpcResult<BarrierOutput>> future = deviceCtx.getPrimaryConnectionContext()

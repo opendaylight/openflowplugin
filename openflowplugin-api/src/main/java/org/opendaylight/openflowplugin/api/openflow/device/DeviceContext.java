@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.api.openflow.device;
 
 import io.netty.util.Timeout;
 import java.math.BigInteger;
-import java.util.Map;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
@@ -118,9 +117,15 @@ public interface DeviceContext extends AutoCloseable, OpenflowPluginTimer, Messa
     Xid getNextXid();
 
     /**
-     * @return readonly map of outstanding requests
+     * @param xid key
+     * @return request by xid
      */
-    Map<Long, RequestContext> getRequests();
+    RequestContext lookupRequest(Xid xid);
+
+    /**
+     * @return number of outstanding requests in map
+     */
+    int getNumberOfOutstandingRequests();
 
     /**
      * Method writes request context into request context map. This method
@@ -130,6 +135,13 @@ public interface DeviceContext extends AutoCloseable, OpenflowPluginTimer, Messa
      * @param requestFutureContext
      */
     void hookRequestCtx(Xid xid, RequestContext requestFutureContext);
+
+    /**
+     * Method removes request context from request context map.
+     *
+     * @param xid
+     */
+    RequestContext unhookRequestCtx(Xid xid);
 
     /**
      * Method that attaches anyMessageTypeListener to connection adapters as message listener.

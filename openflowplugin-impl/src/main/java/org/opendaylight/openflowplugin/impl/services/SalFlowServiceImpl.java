@@ -293,7 +293,7 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
                 if (!voidRpcResult.isSuccessful()) {
                     // remove current request from request cache in deviceContext
                     messageSpy.spyMessage(flowModInput, MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE);
-                    deviceContext.getRequests().remove(requestContext.getXid().getValue());
+                    deviceContext.unhookRequestCtx(requestContext.getXid());
                     // handle requestContext failure
                     StringBuilder rpcErrors = new StringBuilder();
                     if (null != voidRpcResult.getErrors() && voidRpcResult.getErrors().size() > 0) {
