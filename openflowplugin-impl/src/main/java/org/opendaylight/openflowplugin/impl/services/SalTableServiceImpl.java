@@ -49,7 +49,7 @@ public class SalTableServiceImpl extends CommonService implements SalTableServic
 
             @Override
             public ListenableFuture<RpcResult<UpdateTableOutput>> apply(final DataCrate<UpdateTableOutput> data) {
-                messageSpy.spyMessage(input, MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_SUCCESS);
+                messageSpy.spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_SUCCESS);
 
                 final SettableFuture<RpcResult<UpdateTableOutput>> result = SettableFuture.create();
 

@@ -32,7 +32,7 @@ public class SalPortServiceImpl extends CommonService implements SalPortService 
                 new Function<DataCrate<UpdatePortOutput>, ListenableFuture<RpcResult<Void>>>() {
                     @Override
                     public ListenableFuture<RpcResult<Void>> apply(final DataCrate<UpdatePortOutput> data) {
-                        messageSpy.spyMessage(input, MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_SUCCESS);
+                        messageSpy.spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_SUCCESS);
 
                         final Port inputPort = input.getUpdatedPort().getPort().getPort().get(0);
                         final PortModInput ofPortModInput = PortConvertor.toPortModInput(inputPort, version);

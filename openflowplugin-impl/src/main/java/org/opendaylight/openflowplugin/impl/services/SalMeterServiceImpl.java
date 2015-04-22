@@ -72,7 +72,7 @@ public class SalMeterServiceImpl extends CommonService implements SalMeterServic
     }
 
     <T> ListenableFuture<RpcResult<Void>> convertAndSend(final Meter iputMeter, final DataCrate<T> data) {
-        messageSpy.spyMessage(iputMeter, MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_SUCCESS);
+        messageSpy.spyMessage(iputMeter.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_SUCCESS);
 
         final MeterModInputBuilder ofMeterModInput = MeterConvertor.toMeterModInput(iputMeter, version);
         final Xid xid = data.getRequestContext().getXid();
