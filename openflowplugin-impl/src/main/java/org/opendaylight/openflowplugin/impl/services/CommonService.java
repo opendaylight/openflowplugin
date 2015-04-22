@@ -80,15 +80,37 @@ public abstract class CommonService {
         return primaryConnectionAdapter;
     }
 
-    public <T, F> Future<RpcResult<T>> handleServiceCall(final BigInteger connectionID,
-                                                         final Function<DataCrate<T>, ListenableFuture<RpcResult<F>>> function) {
-        LOG.debug("Calling the FlowMod RPC method on MessageDispatchService");
+    /**
+     * @param connectionID connection identifier
+     * @param function     data sender
+     * @param <T>          rpc result backend type
+     * @param <F>          final rpc backend type
+     * @return
+     */
+    public <T, F> ListenableFuture<RpcResult<T>> handleServiceCall(final BigInteger connectionID,
+                                                                            final Function<DataCrate<T>, ListenableFuture<RpcResult<F>>> function) {
+        DataCrateBuilder<T> dataCrateBuilder = DataCrateBuilder.<T>builder();
+        return handleServiceCall(connectionID, function, dataCrateBuilder);
+    }
+
+    /**
+     * @param <T>
+     * @param <F>
+     * @param connectionID
+     * @param function
+     * @param dataCrateBuilder predefined data
+     * @return
+     */
+    public <T, F> ListenableFuture<RpcResult<T>> handleServiceCall(final BigInteger connectionID,
+                                                                   final Function<DataCrate<T>, ListenableFuture<RpcResult<F>>> function,
+                                                                   final DataCrateBuilder<T> dataCrateBuilder) {
+        LOG.debug("Handling general service call");
 
         final RequestContext<T> requestContext = requestContextStack.createRequestContext();
         final SettableFuture<RpcResult<T>> result = requestContextStack.storeOrFail(requestContext);
         if (!result.isDone()) {
-            final DataCrate<T> dataCrate = DataCrateBuilder.<T>builder().setiDConnection(connectionID)
-                    .setRequestContext(requestContext).build();
+            DataCrate<T> dataCrate = dataCrateBuilder.setiDConnection(connectionID).setRequestContext(requestContext)
+                    .build();
             requestContext.setXid(deviceContext.getNextXid());
 
             LOG.trace("Hooking xid {} to device context - precaution.", requestContext.getXid().getValue());
@@ -101,7 +123,6 @@ public abstract class CommonService {
 
         } else {
             messageSpy.spyMessage(requestContext, MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_FAILURE);
-            RequestContextUtil.closeRequstContext(requestContext);
         }
         return result;
     }

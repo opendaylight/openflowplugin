@@ -55,6 +55,7 @@ public class OFJResult2RequestCtxFuture<T> {
                             RpcResultBuilder.<T>failed().withRpcErrors(fRpcResult.getErrors()).build());
                     RequestContextUtil.closeRequstContext(requestContext);
                 }
+                // else: message was successfully sent - waiting for callback on requestContext.future to get invoked
             }
 
             @Override
@@ -66,6 +67,7 @@ public class OFJResult2RequestCtxFuture<T> {
                     requestContext.getFuture().set(RpcResultBuilder.<T>success().build());
                 } else {
                     deviceContext.getMessageSpy().spyMessage(requestContext, MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE);
+                    deviceContext.unhookRequestCtx(requestContext.getXid());
                     LOG.trace("Exception occured while processing OF Java response for XID {}.", requestContext.getXid().getValue(), throwable);
                     requestContext.getFuture().set(
                             RpcResultBuilder.<T>failed()
