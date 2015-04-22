@@ -382,6 +382,12 @@ public class DeviceContextImpl implements DeviceContext {
         }
     }
 
+    @Override
+    public void onDeviceDisconnected(final ConnectionContext connectionContext) {
+        //TODO : close all connetions if connectionContext is primary
+        //TODO : cleanup all RPC registrations
+    }
+
 
     private class XidGenerator {
 
