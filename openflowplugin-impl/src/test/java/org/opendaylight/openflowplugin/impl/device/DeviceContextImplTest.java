@@ -146,7 +146,7 @@ public class DeviceContextImplTest {
         final GetAsyncOutput asyncOutput = createAsyncOutput(xid);
         LOG.info("Hooking RequestContext");
         deviceContext.hookRequestCtx(xid, requestContext);
-        Assert.assertEquals(requestContext, deviceContext.getRequests().get(xid.getValue()));
+        Assert.assertEquals(requestContext, deviceContext.lookupRequest(xid));
 
         Assert.assertFalse(requestContext.getFuture().isDone());
         LOG.info("Sending reply from device");
@@ -163,7 +163,7 @@ public class DeviceContextImplTest {
             LOG.error("Test failed when checking RequestContext.future", e);
             fail("fail");
         }
-        Assert.assertTrue(deviceContext.getRequests().isEmpty());
+        Assert.assertTrue(deviceContext.getNumberOfOutstandingRequests() == 0);
     }
 
     private static Error createError(final Xid xid) {
@@ -178,7 +178,7 @@ public class DeviceContextImplTest {
     public void testProcessReplyError() {
         LOG.info("Hooking RequestContext");
         deviceContext.hookRequestCtx(xid, requestContext);
-        Assert.assertEquals(requestContext, deviceContext.getRequests().get(xid.getValue()));
+        Assert.assertEquals(requestContext, deviceContext.lookupRequest(xid));
 
         Assert.assertFalse(requestContext.getFuture().isDone());
         LOG.info("Sending error reply from device");
@@ -199,14 +199,14 @@ public class DeviceContextImplTest {
             LOG.error("Test failed when checking RequestContext.future", e);
             fail("fail");
         }
-        Assert.assertTrue(deviceContext.getRequests().isEmpty());
+        Assert.assertTrue(deviceContext.getNumberOfOutstandingRequests() == 0);
     }
 
     @Test
     public void testProcessReplyList() {
         LOG.info("Hooking RequestContext");
         deviceContext.hookRequestCtx(xidMulti, requestContextMultiReply);
-        Assert.assertEquals(requestContextMultiReply, deviceContext.getRequests().get(xidMulti.getValue()));
+        Assert.assertEquals(requestContextMultiReply, deviceContext.lookupRequest(xidMulti));
 
         Assert.assertFalse(requestContextMultiReply.getFuture().isDone());
         LOG.info("Sending reply from device");
@@ -224,7 +224,7 @@ public class DeviceContextImplTest {
             LOG.error("Test failed when checking RequestContext.future", e);
             fail("fail");
         }
-        Assert.assertTrue(deviceContext.getRequests().isEmpty());
+        Assert.assertTrue(deviceContext.getNumberOfOutstandingRequests() == 0);
     }
 
     private static List<MultipartReply> createMultipartReplyList(final Xid xid) {
@@ -249,7 +249,7 @@ public class DeviceContextImplTest {
     public void testProcessException() {
         LOG.info("Hooking RequestContext");
         deviceContext.hookRequestCtx(xid, requestContext);
-        Assert.assertEquals(requestContext, deviceContext.getRequests().get(xid.getValue()));
+        Assert.assertEquals(requestContext, deviceContext.lookupRequest(xid));
 
         Assert.assertFalse(requestContext.getFuture().isDone());
 
@@ -270,7 +270,7 @@ public class DeviceContextImplTest {
             LOG.error("Test failed when checking RequestContext.future", e);
             fail("fail");
         }
-        Assert.assertTrue(deviceContext.getRequests().isEmpty());
+        Assert.assertTrue(deviceContext.getNumberOfOutstandingRequests() == 0);
     }
 
 }
