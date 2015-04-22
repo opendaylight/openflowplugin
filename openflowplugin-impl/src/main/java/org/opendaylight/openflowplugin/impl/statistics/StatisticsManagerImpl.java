@@ -51,6 +51,7 @@ public class StatisticsManagerImpl implements StatisticsManager {
         }
 
         final StatisticsContext statisticsContext = new StatisticsContextImpl(deviceContext);
+        deviceContext.setDeviceContextClosedHandler(this);
         /*final*/
         ListenableFuture<Void> weHaveDynamicData = statisticsContext.gatherDynamicData();
         weHaveDynamicData = Futures.immediateFuture(null);
