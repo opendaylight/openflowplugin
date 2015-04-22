@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.List;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
+import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
@@ -43,11 +44,11 @@ public class RpcContextImpl implements RpcContext {
 
     /**
      * @see org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext#registerRpcServiceImplementation(java.lang.Class,
-     *      org.opendaylight.yangtools.yang.binding.RpcService)
+     * org.opendaylight.yangtools.yang.binding.RpcService)
      */
     @Override
     public <S extends RpcService> void registerRpcServiceImplementation(final Class<S> serviceClass,
-            final S serviceInstance) {
+                                                                        final S serviceInstance) {
         final RoutedRpcRegistration<S> routedRpcReg = providerContext.addRoutedRpcImplementation(serviceClass, serviceInstance);
         routedRpcReg.registerPath(NodeContext.class, deviceContext.getDeviceState().getNodeInstanceIdentifier());
         rpcRegistrations.add(routedRpcReg);
@@ -109,4 +110,12 @@ public class RpcContextImpl implements RpcContext {
         return synchronizedRequestsList.size() <= maxRequestsPerDevice;
     }
 
+    @Override
+    public void onDeviceDisconnected(final ConnectionContext connectionContext) {
+        for (RoutedRpcRegistration registration : rpcRegistrations) {
+            registration.close();
+        }
+
+        synchronizedRequestsList.clear();
+    }
 }
