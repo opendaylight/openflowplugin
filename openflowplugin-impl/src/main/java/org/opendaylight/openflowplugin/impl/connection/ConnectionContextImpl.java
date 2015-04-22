@@ -68,7 +68,9 @@ public class ConnectionContextImpl implements ConnectionContext {
 
     @Override
     public void propagateClosingConnection() {
-        this.deviceDisconnectedHandler.onDeviceDisconnected(this);
+        if (null != deviceDisconnectedHandler) {
+            this.deviceDisconnectedHandler.onDeviceDisconnected(this);
+        }
     }
 
     @Override
