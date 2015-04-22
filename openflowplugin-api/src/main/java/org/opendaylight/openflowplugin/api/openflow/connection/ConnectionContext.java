@@ -9,13 +9,14 @@
 package org.opendaylight.openflowplugin.api.openflow.connection;
 
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceDisconnectedHandler;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 
 /**
  * Each OpenFlow session is tracked by a Connection Context. These attach to a particular Device Context in such a way,
  * that there is at most one primary session associated with a Device Context.
- * <p>
+ * <p/>
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 25.2.2015.
  */
 public interface ConnectionContext {
@@ -44,6 +45,7 @@ public interface ConnectionContext {
 
     /**
      * setter for nodeId
+     *
      * @param nodeId
      */
     void setNodeId(NodeId nodeId);
@@ -84,4 +86,16 @@ public interface ConnectionContext {
      * @return featureReply as received from device during handshake
      */
     FeaturesReply getFeatures();
+
+    /**
+     * Method sets handler for handling closing connections.
+     *
+     * @param deviceDisconnectedHandler
+     */
+    void setDeviceDisconnectedHandler(DeviceDisconnectedHandler deviceDisconnectedHandler);
+
+    /**
+     * Method provides propagates info about closed connection to handler for handling closing connections.
+     */
+    void propagateClosingConnection();
 }
