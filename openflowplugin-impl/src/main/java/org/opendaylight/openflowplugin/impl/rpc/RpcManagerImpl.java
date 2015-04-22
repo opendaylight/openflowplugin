@@ -35,6 +35,7 @@ public class RpcManagerImpl implements RpcManager {
     public void onDeviceContextLevelUp(final DeviceContext deviceContext) {
         final RpcContext rpcContext = new RpcContextImpl(providerContext, deviceContext);
         rpcContext.setRequestContextQuota(maxRequestsQuota.intValue());
+        deviceContext.setDeviceDisconnectedHandler(rpcContext);
         MdSalRegistratorUtils.registerServices(rpcContext, deviceContext);
         // finish device initialization cycle back to DeviceManager
         deviceInitPhaseHandler.onDeviceContextLevelUp(deviceContext);
