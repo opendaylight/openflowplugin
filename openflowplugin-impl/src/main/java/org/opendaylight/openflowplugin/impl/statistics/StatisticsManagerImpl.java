@@ -16,6 +16,7 @@ import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
@@ -93,5 +94,10 @@ public class StatisticsManagerImpl implements StatisticsManager {
                 }
             }, 3000, TimeUnit.MILLISECONDS);
         }
+    }
+
+    @Override
+    public void onDeviceDisconnected(final ConnectionContext connectionContext) {
+        
     }
 }

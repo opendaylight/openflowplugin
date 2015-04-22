@@ -8,12 +8,13 @@
 
 package org.opendaylight.openflowplugin.api.openflow.statistics;
 
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceDisconnectedHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializator;
 
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 26.2.2015.
  */
-public interface StatisticsManager extends DeviceInitializator, DeviceInitializationPhaseHandler {
+public interface StatisticsManager extends DeviceInitializator, DeviceInitializationPhaseHandler, DeviceDisconnectedHandler {
 
 }
