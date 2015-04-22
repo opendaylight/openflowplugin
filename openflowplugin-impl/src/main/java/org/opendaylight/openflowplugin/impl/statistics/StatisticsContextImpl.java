@@ -20,6 +20,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.impl.rpc.RequestContextImpl;
+import org.opendaylight.openflowplugin.impl.services.RequestContextUtil;
 import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.StatisticsGatheringService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAllFlowsStatisticsFromAllFlowTablesInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
@@ -39,6 +40,7 @@ import org.slf4j.LoggerFactory;
 public class StatisticsContextImpl implements StatisticsContext {
 
     private static final Logger LOG = LoggerFactory.getLogger(StatisticsContextImpl.class);
+    public static final String CONNECTION_CLOSED = "Connection closed.";
     private final List<RequestContext> requestContexts = new ArrayList();
     private final DeviceContext deviceContext;
 
@@ -127,5 +129,12 @@ public class StatisticsContextImpl implements StatisticsContext {
     @Override
     public <T> RequestContext<T> createRequestContext() {
         return new RequestContextImpl<>(this);
+    }
+
+    @Override
+    public void close() throws Exception {
+        for (RequestContext requestContext : requestContexts){
+            RequestContextUtil.closeRequestContextWithRpcError(requestContext, CONNECTION_CLOSED);
+        }
     }
 }

@@ -15,7 +15,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgColl
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 27.2.2015.
  */
-public interface StatisticsContext extends RequestContextStack {
+public interface StatisticsContext extends RequestContextStack, AutoCloseable {
 
     public ListenableFuture<Void> gatherDynamicData();
 }
