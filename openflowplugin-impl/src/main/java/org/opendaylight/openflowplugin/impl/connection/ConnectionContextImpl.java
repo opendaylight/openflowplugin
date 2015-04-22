@@ -9,6 +9,7 @@ package org.opendaylight.openflowplugin.impl.connection;
 
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceDisconnectedHandler;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 
@@ -21,6 +22,7 @@ public class ConnectionContextImpl implements ConnectionContext {
     private CONNECTION_STATE connectionState;
     private FeaturesReply featuresReply;
     private NodeId nodeId;
+    private DeviceDisconnectedHandler deviceDisconnectedHandler;
 
     /**
      * @param connectionAdapter
@@ -57,6 +59,16 @@ public class ConnectionContextImpl implements ConnectionContext {
     @Override
     public FeaturesReply getFeatures() {
         return featuresReply;
+    }
+
+    @Override
+    public void setDeviceDisconnectedHandler(final DeviceDisconnectedHandler deviceDisconnectedHandler) {
+        this.deviceDisconnectedHandler = deviceDisconnectedHandler;
+    }
+
+    @Override
+    public void propagateClosingConnection() {
+        this.deviceDisconnectedHandler.onDeviceDisconnected(this);
     }
 
     @Override
