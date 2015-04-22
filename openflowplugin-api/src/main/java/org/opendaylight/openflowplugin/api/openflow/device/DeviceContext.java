@@ -205,5 +205,6 @@ public interface DeviceContext extends AutoCloseable,
 
     MessageSpy getMessageSpy();
 
+    void setDeviceDisconnectedHandler(DeviceDisconnectedHandler deviceDisconnectedHandler);
 }
 

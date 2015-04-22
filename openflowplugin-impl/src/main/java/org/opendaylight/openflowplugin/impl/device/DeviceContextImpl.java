@@ -32,6 +32,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.device.exception.DeviceDataException;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceDisconnectedHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.listener.OpenflowMessageListenerFacade;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
@@ -97,6 +98,7 @@ public class DeviceContextImpl implements DeviceContext {
     private Timeout barrierTaskTimeout;
     private NotificationProviderService notificationService;
     private final MessageSpy<Class> messageSpy;
+    private DeviceDisconnectedHandler deviceDisconnectedHandler;
 
 
     @VisibleForTesting
@@ -377,15 +379,29 @@ public class DeviceContextImpl implements DeviceContext {
 
     @Override
     public void close() throws Exception {
-        for (Map.Entry<Long, RequestContext> entry : requests.entrySet()){
+        for (Map.Entry<Long, RequestContext> entry : requests.entrySet()) {
             entry.getValue().close();
         }
     }
 
     @Override
     public void onDeviceDisconnected(final ConnectionContext connectionContext) {
-        //TODO : close all connetions if connectionContext is primary
-        //TODO : cleanup all RPC registrations
+        if (this.getPrimaryConnectionContext().equals(connectionContext)) {
+            for (Map.Entry<Long, RequestContext> entry : requests.entrySet()) {
+                RequestContext rqCtx = entry.getValue();
+                Long xid = entry.getKey();
+                try {
+                    rqCtx.close();
+                } catch (Exception e) {
+                    LOG.debug("Exception occured when closing request context for XID {}.", xid);
+                }
+            }
+            if (null != deviceDisconnectedHandler) {
+                deviceDisconnectedHandler.onDeviceDisconnected(connectionContext);
+            }
+        } else {
+            auxiliaryConnectionContexts.remove(connectionContext);
+        }
     }
 
 
@@ -429,5 +445,10 @@ public class DeviceContextImpl implements DeviceContext {
     @Override
     public MessageSpy getMessageSpy() {
         return messageSpy;
+    }
+
+    @Override
+    public void setDeviceDisconnectedHandler(final DeviceDisconnectedHandler deviceDisconnectedHandler) {
+        this.deviceDisconnectedHandler = deviceDisconnectedHandler;
     }
 }
