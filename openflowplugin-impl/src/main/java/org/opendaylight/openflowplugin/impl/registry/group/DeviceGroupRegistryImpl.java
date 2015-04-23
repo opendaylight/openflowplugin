@@ -42,4 +42,10 @@ public class DeviceGroupRegistryImpl implements DeviceGroupRegistry {
     public List<GroupId> getAllGroupIds() {
         return ImmutableList.copyOf(groupIdList);
     }
+
+    @Override
+    public void close() throws Exception {
+        groupIdList.clear();
+        marks.clear();
+    }
 }

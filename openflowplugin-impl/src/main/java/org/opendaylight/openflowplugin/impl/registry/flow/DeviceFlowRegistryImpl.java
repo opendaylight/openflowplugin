@@ -67,4 +67,9 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
         return ImmutableMap.copyOf(flowRegistry);
     }
 
+    @Override
+    public void close() throws Exception {
+        flowRegistry.clear();
+        marks.clear();
+    }
 }
