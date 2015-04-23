@@ -42,4 +42,10 @@ public class DeviceMeterRegistryImpl implements DeviceMeterRegistry {
     public List<MeterId> getAllMeterIds() {
         return ImmutableList.copyOf(meterIds);
     }
+
+    @Override
+    public void close() throws Exception {
+        meterIds.clear();
+        marks.clear();
+    }
 }

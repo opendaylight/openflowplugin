@@ -14,7 +14,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 15.4.2015.
  */
-public interface DeviceMeterRegistry {
+public interface DeviceMeterRegistry extends AutoCloseable {
 
     void store(MeterId meterId);
 
@@ -23,5 +23,7 @@ public interface DeviceMeterRegistry {
     void removeMarked();
 
     List<MeterId> getAllMeterIds();
+
+
 
 }
