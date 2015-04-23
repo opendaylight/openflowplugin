@@ -389,7 +389,7 @@ public class DeviceContextImpl implements DeviceContext {
         }
         for (ConnectionContext connectionContext : auxiliaryConnectionContexts.values()) {
             if (connectionContext.getConnectionAdapter().isAlive()) {
-                primaryConnectionContext.getConnectionAdapter().disconnect();
+                connectionContext.getConnectionAdapter().disconnect();
             }
         }
         for (DeviceContextClosedHandler deviceContextClosedHandler : closeHandlers) {
