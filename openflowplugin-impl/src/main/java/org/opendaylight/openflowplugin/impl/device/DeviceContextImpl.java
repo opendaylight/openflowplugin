@@ -380,6 +380,11 @@ public class DeviceContextImpl implements DeviceContext {
 
     @Override
     public void close() throws Exception {
+
+        deviceGroupRegistry.close();
+        deviceFlowRegistry.close();
+        deviceMeterRegistry.close();
+
         if (primaryConnectionContext.getConnectionAdapter().isAlive()) {
             primaryConnectionContext.setConnectionState(ConnectionContext.CONNECTION_STATE.RIP);
             primaryConnectionContext.getConnectionAdapter().disconnect();
