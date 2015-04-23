@@ -14,7 +14,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 15.4.2015.
  */
-public interface DeviceGroupRegistry {
+public interface DeviceGroupRegistry extends AutoCloseable {
 
     void store(GroupId groupId);
 
@@ -23,4 +23,5 @@ public interface DeviceGroupRegistry {
     void removeMarked();
 
     List<GroupId> getAllGroupIds();
+
 }

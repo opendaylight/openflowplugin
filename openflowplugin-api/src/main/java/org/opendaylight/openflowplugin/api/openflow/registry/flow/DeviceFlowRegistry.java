@@ -14,7 +14,7 @@ import java.util.Map;
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 8.4.2015.
  */
-public interface DeviceFlowRegistry {
+public interface DeviceFlowRegistry extends AutoCloseable {
 
     FlowDescriptor retrieveIdForFlow(FlowHash flowHash) throws FlowRegistryException;
 
