@@ -102,11 +102,11 @@ public abstract class CommonService {
      * @return
      */
     public final <T, F> ListenableFuture<RpcResult<T>> handleServiceCall(final BigInteger connectionID,
-                                                                   final Function<DataCrate<T>, ListenableFuture<RpcResult<F>>> function,
-                                                                   final DataCrateBuilder<T> dataCrateBuilder) {
-        LOG.debug("Handling general service call");
+                                                                         final Function<DataCrate<T>, ListenableFuture<RpcResult<F>>> function,
+                                                                         final DataCrateBuilder<T> dataCrateBuilder) {
 
         synchronized (deviceContext) {
+            LOG.debug("Handling general service call");
             final RequestContext<T> requestContext = requestContextStack.createRequestContext();
             final SettableFuture<RpcResult<T>> result = requestContextStack.storeOrFail(requestContext);
             if (!result.isDone()) {

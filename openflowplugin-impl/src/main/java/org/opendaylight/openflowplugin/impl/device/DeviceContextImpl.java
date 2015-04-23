@@ -66,7 +66,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.FlowCapableNodeConnectorStatisticsData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.FlowCapableNodeConnectorStatisticsDataBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableFeatures;
 import org.opendaylight.yangtools.yang.binding.ChildOf;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -90,6 +89,7 @@ public class DeviceContextImpl implements DeviceContext {
     private final DataBroker dataBroker;
     private final XidGenerator xidGenerator;
     private final HashedWheelTimer hashedWheelTimer;
+    //FIXME : this seems to be candidate for Collections.synchronizedMap()
     private Map<Long, RequestContext> requests = new TreeMap<>();
 
     private final Map<SwitchConnectionDistinguisher, ConnectionContext> auxiliaryConnectionContexts;
@@ -242,6 +242,8 @@ public class DeviceContextImpl implements DeviceContext {
             requests.remove(ofHeader.getXid());
             RpcResult<OfHeader> rpcResult;
             if (ofHeader instanceof Error) {
+                //TODO : this is the point, where we can discover that add flow operation failed and where we should
+                //TODO : remove this flow from deviceFlowRegistry
                 final Error error = (Error) ofHeader;
                 final String message = "Operation on device failed";
                 rpcResult = RpcResultBuilder
@@ -327,7 +329,7 @@ public class DeviceContextImpl implements DeviceContext {
     }
 
     @Override
-    public void processPortStatusMessage(final PortStatusMessage portStatus) {
+    public synchronized void processPortStatusMessage(final PortStatusMessage portStatus) {
         messageSpy.spyMessage(portStatus.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS);
         final TranslatorKey translatorKey = new TranslatorKey(portStatus.getVersion(), PortGrouping.class.getName());
         final MessageTranslator<PortGrouping, FlowCapableNodeConnector> messageTranslator = translatorLibrary.lookupTranslator(translatorKey);
@@ -379,8 +381,8 @@ public class DeviceContextImpl implements DeviceContext {
     @Override
     public void close() throws Exception {
         if (primaryConnectionContext.getConnectionAdapter().isAlive()) {
-            primaryConnectionContext.getConnectionAdapter().disconnect();
             primaryConnectionContext.setConnectionState(ConnectionContext.CONNECTION_STATE.RIP);
+            primaryConnectionContext.getConnectionAdapter().disconnect();
         }
         for (Map.Entry<Long, RequestContext> entry : requests.entrySet()) {
             RequestContextUtil.closeRequestContextWithRpcError(entry.getValue(), DEVICE_DISCONNECTED);
@@ -393,10 +395,11 @@ public class DeviceContextImpl implements DeviceContext {
         for (DeviceContextClosedHandler deviceContextClosedHandler : closeHandlers) {
             deviceContextClosedHandler.onDeviceContextClosed(this);
         }
+
     }
 
     @Override
-    public void onDeviceDisconnected(final ConnectionContext connectionContext) {
+    public synchronized void onDeviceDisconnected(final ConnectionContext connectionContext) {
         if (this.getPrimaryConnectionContext().equals(connectionContext)) {
             try {
                 close();
