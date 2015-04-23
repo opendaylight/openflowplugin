@@ -88,7 +88,7 @@ public abstract class CommonService {
      * @return
      */
     public <T, F> ListenableFuture<RpcResult<T>> handleServiceCall(final BigInteger connectionID,
-                                                                            final Function<DataCrate<T>, ListenableFuture<RpcResult<F>>> function) {
+                                                                   final Function<DataCrate<T>, ListenableFuture<RpcResult<F>>> function) {
         DataCrateBuilder<T> dataCrateBuilder = DataCrateBuilder.<T>builder();
         return handleServiceCall(connectionID, function, dataCrateBuilder);
     }
@@ -101,30 +101,32 @@ public abstract class CommonService {
      * @param dataCrateBuilder predefined data
      * @return
      */
-    public <T, F> ListenableFuture<RpcResult<T>> handleServiceCall(final BigInteger connectionID,
+    public final <T, F> ListenableFuture<RpcResult<T>> handleServiceCall(final BigInteger connectionID,
                                                                    final Function<DataCrate<T>, ListenableFuture<RpcResult<F>>> function,
                                                                    final DataCrateBuilder<T> dataCrateBuilder) {
         LOG.debug("Handling general service call");
 
-        final RequestContext<T> requestContext = requestContextStack.createRequestContext();
-        final SettableFuture<RpcResult<T>> result = requestContextStack.storeOrFail(requestContext);
-        if (!result.isDone()) {
-            DataCrate<T> dataCrate = dataCrateBuilder.setiDConnection(connectionID).setRequestContext(requestContext)
-                    .build();
-            requestContext.setXid(deviceContext.getNextXid());
+        synchronized (deviceContext) {
+            final RequestContext<T> requestContext = requestContextStack.createRequestContext();
+            final SettableFuture<RpcResult<T>> result = requestContextStack.storeOrFail(requestContext);
+            if (!result.isDone()) {
+                DataCrate<T> dataCrate = dataCrateBuilder.setiDConnection(connectionID).setRequestContext(requestContext)
+                        .build();
+                requestContext.setXid(deviceContext.getNextXid());
 
-            LOG.trace("Hooking xid {} to device context - precaution.", requestContext.getXid().getValue());
-            deviceContext.hookRequestCtx(requestContext.getXid(), requestContext);
+                LOG.trace("Hooking xid {} to device context - precaution.", requestContext.getXid().getValue());
+                deviceContext.hookRequestCtx(requestContext.getXid(), requestContext);
 
-            final ListenableFuture<RpcResult<F>> resultFromOFLib = function.apply(dataCrate);
+                final ListenableFuture<RpcResult<F>> resultFromOFLib = function.apply(dataCrate);
 
-            final OFJResult2RequestCtxFuture<T> OFJResult2RequestCtxFuture = new OFJResult2RequestCtxFuture<>(requestContext, deviceContext);
-            OFJResult2RequestCtxFuture.processResultFromOfJava(resultFromOFLib);
+                final OFJResult2RequestCtxFuture<T> OFJResult2RequestCtxFuture = new OFJResult2RequestCtxFuture<>(requestContext, deviceContext);
+                OFJResult2RequestCtxFuture.processResultFromOfJava(resultFromOFLib);
 
-        } else {
-            messageSpy.spyMessage(requestContext, MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_FAILURE);
+            } else {
+                messageSpy.spyMessage(requestContext, MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_FAILURE);
+            }
+            return result;
         }
-        return result;
     }
 
 }
