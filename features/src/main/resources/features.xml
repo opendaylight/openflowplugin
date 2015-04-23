@@ -25,7 +25,9 @@
         <bundle>mvn:org.opendaylight.openflowplugin/openflowplugin-api/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.openflowplugin/openflowplugin-extension-api/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.controller/liblldp/${sal.api.version}</bundle>
-        <configfile finalname="etc/opendaylight/karaf/42-openflowplugin.xml">mvn:org.opendaylight.openflowplugin/openflowplugin-controller-config/${project.version}/xml/config</configfile>
+        <bundle>mvn:org.opendaylight.openflowplugin.applications/inventory-manager/${project.version}</bundle>
+        <bundle>mvn:org.opendaylight.openflowplugin.applications/statistics-manager/${project.version}</bundle>
+        <configfile finalname="etc/opendaylight/karaf/42-openflowplugin-He.xml">mvn:org.opendaylight.openflowplugin/openflowplugin-controller-config/${project.version}/xml/config-He</configfile>
         <configfile finalname="etc/opendaylight/karaf/43-msg-spy.xml">mvn:org.opendaylight.openflowplugin/openflowplugin-controller-config/${project.version}/xml/configmsgspy</configfile>
     </feature>
 
@@ -43,7 +45,7 @@
         <bundle>mvn:org.opendaylight.openflowplugin/openflowplugin-api/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.openflowplugin/openflowplugin-extension-api/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.controller/liblldp/${sal.api.version}</bundle>
-        <configfile finalname="etc/opendaylight/karaf/42-openflowplugin-new.xml">mvn:org.opendaylight.openflowplugin/openflowplugin-controller-config/${project.version}/xml/ofplugin-config</configfile>
+        <configfile finalname="etc/opendaylight/karaf/42-openflowplugin-Li.xml">mvn:org.opendaylight.openflowplugin/openflowplugin-controller-config/${project.version}/xml/config-Li</configfile>
     </feature>
 
     <feature name='odl-openflowplugin-flow-services' description="OpenDaylight :: Openflow Plugin :: Flow Services" version='${project.version}'>

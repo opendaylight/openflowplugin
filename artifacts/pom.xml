@@ -158,14 +158,14 @@
                 <artifactId>openflowplugin-controller-config</artifactId>
                 <version>${project.version}</version>
                 <type>xml</type>
-                <classifier>config</classifier>
+                <classifier>config-He</classifier>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>openflowplugin-controller-config</artifactId>
                 <version>${project.version}</version>
                 <type>xml</type>
-                <classifier>ofplugin-config</classifier>
+                <classifier>config-Li</classifier>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>

@@ -192,13 +192,13 @@
       <groupId>org.opendaylight.openflowplugin</groupId>
       <artifactId>openflowplugin-controller-config</artifactId>
       <type>xml</type>
-      <classifier>config</classifier>
+      <classifier>config-Li</classifier>
     </dependency>
     <dependency>
       <groupId>org.opendaylight.openflowplugin</groupId>
       <artifactId>openflowplugin-controller-config</artifactId>
       <type>xml</type>
-      <classifier>ofplugin-config</classifier>
+      <classifier>config-He</classifier>
     </dependency>
     <dependency>
       <groupId>org.opendaylight.openflowplugin</groupId>
