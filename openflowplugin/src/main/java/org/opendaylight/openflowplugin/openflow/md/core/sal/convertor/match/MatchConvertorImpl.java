@@ -889,6 +889,8 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntries>> {
                     if (maskMatchEntry != null) {
                         ipv6PrefixStr += PREFIX_SEPARATOR
                                 + MatchConvertorUtil.ipv6NetmaskArrayToCIDRValue(maskMatchEntry.getMask());
+                    } else {
+                        ipv6PrefixStr += PREFIX_SEPARATOR + "128";
                     }
 
                     if (ofMatch.getOxmMatchField().equals(Ipv6Src.class)) {
