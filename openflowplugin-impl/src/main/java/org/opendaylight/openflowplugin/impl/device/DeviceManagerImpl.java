@@ -167,6 +167,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
 
         connectionContext.setDeviceDisconnectedHandler(deviceContext);
         deviceContext.setTranslatorLibrary(translatorLibrary);
+        deviceContext.addDeviceContextClosedHandler(this);
 
         final OpenflowProtocolListenerFullImpl messageListener = new OpenflowProtocolListenerFullImpl(
                 connectionContext.getConnectionAdapter(), deviceContext);
@@ -280,6 +281,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
 
         LOG.trace("Hooking xid {} to device context - precaution.", requestContext.getXid().getValue());
         deviceContext.hookRequestCtx(requestContext.getXid(), requestContext);
+
 
         multiMsgCollector.registerMultipartXid(xid.getValue());
         Futures.addCallback(requestContext.getFuture(), new FutureCallback<RpcResult<List<MultipartReply>>>() {

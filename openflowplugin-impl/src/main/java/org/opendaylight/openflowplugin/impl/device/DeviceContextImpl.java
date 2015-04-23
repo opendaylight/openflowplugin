@@ -13,6 +13,7 @@ import com.google.common.util.concurrent.SettableFuture;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -102,7 +103,8 @@ public class DeviceContextImpl implements DeviceContext {
     private NotificationProviderService notificationService;
     private final MessageSpy<Class> messageSpy;
     private DeviceDisconnectedHandler deviceDisconnectedHandler;
-    private DeviceContextClosedHandler deviceContextClosedHandler;
+    private List<DeviceContextClosedHandler> closeHandlers =  new ArrayList<>();
+
 
 
     @VisibleForTesting
@@ -395,7 +397,9 @@ public class DeviceContextImpl implements DeviceContext {
                 primaryConnectionContext.getConnectionAdapter().disconnect();
             }
         }
-        deviceContextClosedHandler.onDeviceContextClosed(this);
+        for (DeviceContextClosedHandler deviceContextClosedHandler : closeHandlers) {
+            deviceContextClosedHandler.onDeviceContextClosed(this);
+        }
     }
 
     @Override
@@ -463,7 +467,7 @@ public class DeviceContextImpl implements DeviceContext {
     }
 
     @Override
-    public void setDeviceContextClosedHandler(final DeviceContextClosedHandler deviceContextClosedHandler) {
-        this.deviceContextClosedHandler = deviceContextClosedHandler;
+    public void addDeviceContextClosedHandler(final DeviceContextClosedHandler deviceContextClosedHandler) {
+        this.closeHandlers.add(deviceContextClosedHandler);
     }
 }
