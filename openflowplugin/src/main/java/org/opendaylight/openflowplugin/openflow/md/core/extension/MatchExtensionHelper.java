@@ -7,6 +7,9 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.extension;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntrySerializerKey;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.extension.api.AugmentTuple;
@@ -32,9 +35,6 @@ import org.opendaylight.yangtools.yang.binding.Augmentable;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 /**
  *
@@ -112,19 +112,19 @@ public final class MatchExtensionHelper {
         /** TODO: EXTENSION PROPOSAL (match, OFJava to MD-SAL) */
         MatchEntrySerializerKey<? extends OxmClassBase, ? extends MatchField> key = new MatchEntrySerializerKey<>(
                 ofVersion.getVersion(), matchEntry.getOxmClass(), matchEntry.getOxmMatchField());
-        ConvertorFromOFJava<MatchEntry, MatchPath> convertor = OFSessionUtil.getExtensionConvertorProvider().getConverter(key);
-        if (convertor != null) {
-            ExtensionAugment<? extends Augmentation<Extension>> extensionMatch =
-                    convertor.convert(matchEntry, matchPath);
-            ExtensionBuilder extBld = new ExtensionBuilder();
-            extBld.addAugmentation(extensionMatch.getAugmentationClass(), extensionMatch.getAugmentationObject());
+        if (null != OFSessionUtil.getExtensionConvertorProvider()) {
+            ConvertorFromOFJava<MatchEntry, MatchPath> convertor = OFSessionUtil.getExtensionConvertorProvider().getConverter(key);
+            if (convertor != null) {
+                ExtensionAugment<? extends Augmentation<Extension>> extensionMatch =
+                        convertor.convert(matchEntry, matchPath);
+                ExtensionBuilder extBld = new ExtensionBuilder();
+                extBld.addAugmentation(extensionMatch.getAugmentationClass(), extensionMatch.getAugmentationObject());
 
-            extListBld = new ExtensionListBuilder();
-            extListBld.setExtension(extBld.build());
-            extListBld.setExtensionKey(extensionMatch.getKey());
+                extListBld = new ExtensionListBuilder();
+                extListBld.setExtension(extBld.build());
+                extListBld.setExtensionKey(extensionMatch.getKey());
+            }
         }
-
-
         return extListBld;
     }
 
