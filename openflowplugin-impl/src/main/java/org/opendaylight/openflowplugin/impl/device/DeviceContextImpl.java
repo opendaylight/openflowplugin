@@ -103,8 +103,7 @@ public class DeviceContextImpl implements DeviceContext {
     private NotificationProviderService notificationService;
     private final MessageSpy<Class> messageSpy;
     private DeviceDisconnectedHandler deviceDisconnectedHandler;
-    private List<DeviceContextClosedHandler> closeHandlers =  new ArrayList<>();
-
+    private List<DeviceContextClosedHandler> closeHandlers = new ArrayList<>();
 
 
     @VisibleForTesting
@@ -172,12 +171,6 @@ public class DeviceContextImpl implements DeviceContext {
     @Override
     public <T extends DataObject> void addDeleteToTxChain(final LogicalDatastoreType store, final InstanceIdentifier<T> path) {
         txChainManager.addDeleteOperationTotTxChain(store, path);
-    }
-
-    @Override
-    public TableFeatures getCapabilities() {
-        // TODO Auto-generated method stub
-        return null;
     }
 
     @Override

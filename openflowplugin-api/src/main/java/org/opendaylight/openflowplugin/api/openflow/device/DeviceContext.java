@@ -98,13 +98,6 @@ public interface DeviceContext extends AutoCloseable,
 
 
     /**
-     * Method provides capabilities of connected device.
-     *
-     * @return
-     */
-    TableFeatures getCapabilities();
-
-    /**
      * Method provides current devices connection context.
      *
      * @return
