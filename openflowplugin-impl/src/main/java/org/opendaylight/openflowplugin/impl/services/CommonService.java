@@ -35,8 +35,8 @@ public abstract class CommonService {
     // protected OFRpcTaskContext rpcTaskContext;
     public short version;
     public BigInteger datapathId;
-    public RequestContextStack requestContextStack;
-    public DeviceContext deviceContext;
+    protected RequestContextStack requestContextStack;
+    protected DeviceContext deviceContext;
     public ConnectionAdapter primaryConnectionAdapter;
     public MessageSpy messageSpy;
 
