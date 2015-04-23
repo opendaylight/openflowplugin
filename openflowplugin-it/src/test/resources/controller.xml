@@ -31,13 +31,14 @@
                 <capability>
                     urn:opendaylight:params:xml:ns:yang:controller:md:sal:common?module=opendaylight-md-sal-common&amp;revision=2013-10-28
                 </capability>
-                
+
                 <!-- openflowjava -->
                 <capability>urn:opendaylight:params:xml:ns:yang:openflow:switch:connection:provider:impl?module=openflow-switch-connection-provider-impl&amp;revision=2014-03-28</capability>
                 <capability>urn:opendaylight:params:xml:ns:yang:openflow:switch:connection:provider?module=openflow-switch-connection-provider&amp;revision=2014-03-28</capability>
                 <!-- openflowplugin -->
                 <capability>urn:opendaylight:params:xml:ns:yang:openflow:common:config:impl?module=openflow-provider-impl&amp;revision=2014-03-26</capability>
                 <capability>urn:opendaylight:params:xml:ns:yang:openflow:common:config?module=openflow-provider&amp;revision=2014-03-26</capability>
+                <capability>urn:opendaylight:params:xml:ns:yang:openflowplugin:app:forwardingrules-manager?module=forwardingrules-manager&amp;revision=2014-09-25</capability>
             </required-capabilities>
             <configuration>
 
@@ -209,7 +210,7 @@
                                 </binding-mapping-service>
                             </binding-forwarded-data-broker>
                         </module>
-                        
+
                         <!-- default OF-switch-connection-provider (port 6633) -->
                         <module>
                           <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:openflow:switch:connection:provider:impl">prefix:openflow-switch-connection-provider-impl</type>
@@ -226,13 +227,13 @@
                           <transport-protocol>TCP</transport-protocol>
                           <switch-idle-timeout>15000</switch-idle-timeout>
                         </module>
-                
+
                         <!-- default OF-plugin openflow-provider -->
                         <module>
                           <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:openflow:common:config:impl">prefix:openflow-provider-impl</type>
                           <name>openflow-provider-impl</name>
-                          
-                          <openflow-switch-connection-provider>
+
+                            <openflow-switch-connection-provider>
                             <type xmlns:ofSwitch="urn:opendaylight:params:xml:ns:yang:openflow:switch:connection:provider">ofSwitch:openflow-switch-connection-provider</type>
                             <name>openflow-switch-connection-provider-default</name>
                           </openflow-switch-connection-provider>
@@ -240,11 +241,33 @@
                             <type xmlns:ofSwitch="urn:opendaylight:params:xml:ns:yang:openflow:switch:connection:provider">ofSwitch:openflow-switch-connection-provider</type>
                             <name>openflow-switch-connection-provider-legacy</name>
                           </openflow-switch-connection-provider>
-                
-                          <binding-aware-broker>
+
+                            <binding-aware-broker>
                             <type xmlns:binding="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding">binding:binding-broker-osgi-registry</type>
                             <name>binding-osgi-broker</name>
                           </binding-aware-broker>
+                        </module>
+
+
+                        <module>
+                            <type xmlns:frm="urn:opendaylight:params:xml:ns:yang:openflowplugin:app:forwardingrules-manager">
+                                frm:forwardingrules-manager
+                            </type>
+                            <name>forwardingrules-manager</name>
+
+                            <data-broker>
+                                <type xmlns:binding="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding">
+                                    binding:binding-async-data-broker
+                                </type>
+                                <name>binding-data-broker</name>
+                            </data-broker>
+
+                            <rpc-registry>
+                                <type xmlns:binding="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding">
+                                    binding:binding-rpc-registry
+                                </type>
+                                <name>binding-rpc-broker</name>
+                            </rpc-registry>
                         </module>
                     </modules>
 
