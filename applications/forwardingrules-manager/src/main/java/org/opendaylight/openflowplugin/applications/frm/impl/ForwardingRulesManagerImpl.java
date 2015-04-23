@@ -8,10 +8,11 @@
 
 package org.opendaylight.openflowplugin.applications.frm.impl;
 
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Sets;
 import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
-
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.sal.binding.api.RpcConsumerRegistry;
@@ -28,9 +29,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.Sal
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Sets;
 
 /**
  * forwardingrules-manager
@@ -81,7 +79,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
         this.groupListener = new GroupForwarder(this, dataService);
         this.meterListener = new MeterForwarder(this, dataService);
         this.nodeListener = new FlowNodeReconciliationImpl(this, dataService);
-        LOG.info("ForwardingRulesManager has started successfull.");
+        LOG.info("ForwardingRulesManager has started successfully.");
     }
 
     @Override
