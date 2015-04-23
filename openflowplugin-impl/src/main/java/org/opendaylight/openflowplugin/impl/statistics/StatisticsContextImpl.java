@@ -68,8 +68,11 @@ public class StatisticsContextImpl implements StatisticsContext {
 
         final DeviceState devState = deviceContext.getDeviceState();
 
-        final SettableFuture<Void> resultingFuture = SettableFuture.create();
+        final ListenableFuture<Void> resultingFuture;
+
         if (ConnectionContext.CONNECTION_STATE.WORKING.equals(deviceContext.getPrimaryConnectionContext().getConnectionState())) {
+            final SettableFuture settableResultingFuture = SettableFuture.create();
+            resultingFuture = settableResultingFuture;
             ListenableFuture<Boolean> emptyFuture = Futures.immediateFuture(null);
             final ListenableFuture<Boolean> flowStatistics = devState.isFlowStatisticsAvailable() ? wrapLoggingOnStatisticsRequestCall(MultipartType.OFPMPFLOW) : emptyFuture;
 
@@ -90,14 +93,16 @@ public class StatisticsContextImpl implements StatisticsContext {
             Futures.addCallback(allFutures, new FutureCallback<List<Boolean>>() {
                 @Override
                 public void onSuccess(final List<Boolean> booleans) {
-                    resultingFuture.set(null);
+                    settableResultingFuture.set(null);
                 }
 
                 @Override
                 public void onFailure(final Throwable throwable) {
-                    resultingFuture.setException(throwable);
+                    settableResultingFuture.setException(throwable);
                 }
             });
+        } else {
+            resultingFuture = Futures.immediateCancelledFuture();
         }
         return resultingFuture;
     }
