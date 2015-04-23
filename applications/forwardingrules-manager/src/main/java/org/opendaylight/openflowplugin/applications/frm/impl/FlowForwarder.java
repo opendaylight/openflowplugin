@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.applications.frm.impl;
 
+import com.google.common.base.Preconditions;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker.DataChangeScope;
@@ -32,8 +33,6 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
-
 /**
  * GroupForwarder
  * It implements {@link org.opendaylight.controller.md.sal.binding.api.DataChangeListener}}
@@ -53,26 +52,17 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
     public FlowForwarder (final ForwardingRulesManager manager, final DataBroker db) {
         super(manager, Flow.class);
         Preconditions.checkNotNull(db, "DataBroker can not be null!");
-        registrationListener(db, 5);
+        registrationListener(db);
     }
 
-    private void registrationListener(final DataBroker db, int i) {
+    private void registrationListener(final DataBroker db) {
         try {
             listenerRegistration = db.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION,
                     getWildCardPath(), FlowForwarder.this, DataChangeScope.SUBTREE);
         } catch (final Exception e) {
-            if (i >= 1) {
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e1) {
-                    LOG.error("Thread interrupted '{}'", e1);
-                    Thread.currentThread().interrupt();
-                }
-                registrationListener(db, --i);
-            } else {
-                LOG.error("FRM Flow DataChange listener registration fail!", e);
-                throw new IllegalStateException("FlowForwarder registration Listener fail! System needs restart.", e);
-            }
+            LOG.warn("FRM Flow DataChange listener registration fail!");
+            LOG.debug("FRM Flow DataChange listener registration fail ..", e);
+            throw new IllegalStateException("FlowForwarder registration Listener fail! System needs restart.", e);
         }
     }
 

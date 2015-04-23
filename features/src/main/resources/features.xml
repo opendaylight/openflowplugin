@@ -60,6 +60,9 @@
         <bundle>mvn:org.opendaylight.openflowplugin.applications/topology-lldp-discovery/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.openflowplugin.applications/forwardingrules-manager/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.controller/liblldp/${sal.api.version}</bundle>
+        <configfile finalname="etc/opendaylight/karaf/30-forwardingrules-manager.xml">
+            mvn:org.opendaylight.openflowplugin.applications/forwardingrules-manager-config/${project.version}/xml/config
+        </configfile>
     </feature>
 
     <feature name='odl-openflowplugin-nsf-model' version='${project.version}'
