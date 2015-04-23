@@ -35,7 +35,7 @@
                         <configuration>
                             <artifacts>
                                 <artifact>
-                                    <file>${project.build.directory}/classes/initial/42-openflowplugin.xml</file>
+                                    <file>${project.build.directory}/classes/initial/42-openflowplugin-He.xml</file>
                                     <type>xml</type>
                                     <classifier>config</classifier>
                                 </artifact>
@@ -51,7 +51,7 @@
                         <configuration>
                             <artifacts>
                                 <artifact>
-                                    <file>${project.build.directory}/classes/initial/42-openflowplugin-new.xml</file>
+                                    <file>${project.build.directory}/classes/initial/42-openflowplugin-Li.xml</file>
                                     <type>xml</type>
                                     <classifier>ofplugin-config</classifier>
                                 </artifact>
