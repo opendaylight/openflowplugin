@@ -47,10 +47,10 @@ public class SalFlowServiceImpl implements SalFlowService {
     private static final Logger LOG = LoggerFactory.getLogger(SalFlowServiceImpl.class);
     private final FlowService<UpdateFlowOutput> flowUpdate;
     private final FlowService<AddFlowOutput> flowAdd;
-    private final FlowRemoveService flowRemove;
+    private final FlowService<RemoveFlowOutput> flowRemove;
 
     public SalFlowServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
-        flowRemove = new FlowRemoveService(requestContextStack, deviceContext);
+        flowRemove = new FlowService(requestContextStack, deviceContext, RemoveFlowOutput.class);
         flowAdd = new FlowService<>(requestContextStack, deviceContext, AddFlowOutput.class);
         flowUpdate = new FlowService<>(requestContextStack, deviceContext, UpdateFlowOutput.class);
     }
@@ -93,7 +93,7 @@ public class SalFlowServiceImpl implements SalFlowService {
     public Future<RpcResult<RemoveFlowOutput>> removeFlow(final RemoveFlowInput input) {
         LOG.trace("Calling remove flow for flow with ID ={}.", input.getFlowRef());
 
-        final ListenableFuture<RpcResult<RemoveFlowOutput>> future = flowRemove.handleServiceCall(input);
+        final ListenableFuture<RpcResult<RemoveFlowOutput>> future = flowRemove.processFlowModInputBuilders(flowRemove.toFlowModInputs(input));
         Futures.addCallback(future, new FutureCallback<RpcResult<RemoveFlowOutput>>() {
             @Override
             public void onSuccess(final RpcResult<RemoveFlowOutput> result) {
