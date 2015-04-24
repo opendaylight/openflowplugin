@@ -7,6 +7,9 @@
  */
 package org.opendaylight.openflowplugin.impl.util;
 
+import org.opendaylight.openflowplugin.impl.services.FlowCapableTransactionServiceImpl;
+
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.FlowCapableTransactionService;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.impl.services.NodeConfigServiceImpl;
@@ -22,9 +25,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.Nod
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.SalTableService;
 
-/**
- * @author joe
- */
 public class MdSalRegistratorUtils {
 
     private MdSalRegistratorUtils() {
@@ -34,6 +34,7 @@ public class MdSalRegistratorUtils {
     public static void registerServices(final RpcContext rpcContext, final DeviceContext deviceContext) {
         rpcContext.registerRpcServiceImplementation(SalFlowService.class, new SalFlowServiceImpl(rpcContext, deviceContext));
         //TODO: add constructors with rcpContext and deviceContext to meter, group, table constructors
+        rpcContext.registerRpcServiceImplementation(FlowCapableTransactionService.class, new FlowCapableTransactionServiceImpl(rpcContext, deviceContext));
         rpcContext.registerRpcServiceImplementation(SalMeterService.class, new SalMeterServiceImpl(rpcContext, deviceContext));
         rpcContext.registerRpcServiceImplementation(SalGroupService.class, new SalGroupServiceImpl(rpcContext, deviceContext));
         rpcContext.registerRpcServiceImplementation(SalTableService.class, new SalTableServiceImpl(rpcContext, deviceContext));
