@@ -107,15 +107,21 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
                 new Function<DataCrate<RemoveFlowOutput>, ListenableFuture<RpcResult<Void>>>() {
                     @Override
                     public ListenableFuture<RpcResult<Void>> apply(final DataCrate<RemoveFlowOutput> data) {
-                        final FlowModInputBuilder ofFlowModInput = FlowConvertor.toFlowModInput(input, version,
+                        final List<FlowModInputBuilder> ofFlowModInputs = FlowConvertor.toFlowModInputs(input, version,
                                 datapathId);
-                        final ListenableFuture<RpcResult<Void>> future = createResultForFlowMod(data, ofFlowModInput);
-                        Futures.addCallback(future, new FutureCallback() {
+                        final ListenableFuture<RpcResult<RemoveFlowOutput>> future = processFlowModInputBuilders(ofFlowModInputs);
+
+                        Futures.addCallback(future, new FutureCallback<RpcResult<RemoveFlowOutput>> {
                             @Override
-                            public void onSuccess(final Object o) {
-                                messageSpy.spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_SUCCESS);
-                                FlowHash flowHash = FlowHashFactory.create(input);
-                                deviceContext.getDeviceFlowRegistry().markToBeremoved(flowHash);
+                            public void onSuccess(final RpcResult<RemoveFlowOutput> rpcResult) {
+                                if (rpcResult.isSuccessful()) {
+                                    messageSpy.spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_SUCCESS);
+                                    FlowHash flowHash = FlowHashFactory.create(input);
+                                    deviceContext.getDeviceFlowRegistry().markToBeremoved(flowHash);
+                                    LOG.debug("flow remove finished without error");
+                                } else {
+                                    LOG.debug("flow remove failed with error");
+                                }
                             }
 
                             @Override
@@ -123,7 +129,7 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
                                 messageSpy.spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_FAILURE);
                                 StringBuffer errors = new StringBuffer();
                                 try {
-                                    RpcResult<Void> result = future.get();
+                                    RpcResult<RemoveFlowOutput> result = future.get();
                                     Collection<RpcError> rpcErrors = result.getErrors();
                                     if (null != rpcErrors && rpcErrors.size() > 0) {
                                         for (RpcError rpcError : rpcErrors) {
