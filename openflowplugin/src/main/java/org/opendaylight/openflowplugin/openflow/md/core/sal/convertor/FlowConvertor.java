@@ -156,7 +156,7 @@ public class FlowConvertor {
         return list;
     }
 
-    public static FlowModInputBuilder toFlowModInput(Flow flow, short version, BigInteger datapathid) {
+    private static FlowModInputBuilder toFlowModInput(Flow flow, short version, BigInteger datapathid) {
 
         FlowModInputBuilder flowMod = new FlowModInputBuilder();
         salToOFFlowCookie(flow, flowMod);
@@ -524,10 +524,8 @@ public class FlowConvertor {
 
                         pushVlanActionBuilder.setCfi(new VlanCfi(1))
                                 .setVlanId(setVlanIdActionCase.getSetVlanIdAction().getVlanId())
-                                .setEthernetType(sourceFlow.getMatch().getEthernetMatch()
-                                        .getEthernetType().getType().getValue().intValue())
-                                .setTag(sourceFlow.getMatch().getEthernetMatch()
-                                        .getEthernetType().getType().getValue().intValue());
+                                .setEthernetType(0x8100)
+                                .setTag(0x8100);
                         pushVlanActionCaseBuilder.setPushVlanAction(pushVlanActionBuilder.build());
                         PushVlanActionCase injectedAction = pushVlanActionCaseBuilder.build();
 
