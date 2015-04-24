@@ -1,23 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.opendaylight.openflowplugin</groupId>
-    <artifactId>openflowplugin-parent</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
-    <relativePath>../parent</relativePath>
-  </parent>
-  <artifactId>features-openflowplugin</artifactId>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.opendaylight.openflowplugin</groupId>
+        <artifactId>openflowplugin-parent</artifactId>
+        <version>0.1.0-SNAPSHOT</version>
+        <relativePath>../parent</relativePath>
+    </parent>
+    <artifactId>features-openflowplugin</artifactId>
 
     <packaging>jar</packaging>
 
-  <properties>
-    <features.file>features.xml</features.file>
-    <karaf.empty.distro.version>1.5.0-SNAPSHOT</karaf.empty.distro.version>
-    <config.configfile.directory>etc/opendaylight/karaf</config.configfile.directory>
-    <config.statistics.manager.configfile>30-statistics-manager.xml</config.statistics.manager.configfile>
-    <controller.model.version>1.2.0-SNAPSHOT</controller.model.version>
-  </properties>
+    <properties>
+        <karaf.empty.distro.version>1.5.0-SNAPSHOT</karaf.empty.distro.version>
+        <config.configfile.directory>etc/opendaylight/karaf</config.configfile.directory>
+        <config.statistics.manager.configfile>30-statistics-manager.xml</config.statistics.manager.configfile>
+        <controller.model.version>1.2.0-SNAPSHOT</controller.model.version>
+        <target.features.file>features.xml</target.features.file>
+    </properties>
+    <profiles>
+        <profile>
+            <id>He</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <features.file>features-He.xml</features.file>
+            </properties>
+        </profile>
+        <profile>
+            <id>Li</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <properties>
+                <features.file>features-Li.xml</features.file>
+            </properties>
+        </profile>
+    </profiles>
 
     <dependencies>
         <!-- feature dependencies -->
@@ -72,34 +93,34 @@
             <artifactId>model-topology</artifactId>
         </dependency>
 
-    <dependency>
-      <groupId>org.opendaylight.openflowplugin.applications</groupId>
-      <artifactId>forwardingrules-manager</artifactId>
-    </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin.applications</groupId>
+            <artifactId>forwardingrules-manager</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.opendaylight.openflowplugin.applications</groupId>
             <artifactId>forwardingrules-manager-config</artifactId>
             <classifier>config</classifier>
             <type>xml</type>
         </dependency>
-    <dependency>
-      <groupId>org.opendaylight.openflowplugin.applications</groupId>
-      <artifactId>inventory-manager</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opendaylight.openflowplugin.applications</groupId>
-      <artifactId>lldp-speaker</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opendaylight.openflowplugin.applications</groupId>
-      <artifactId>statistics-manager</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opendaylight.openflowplugin.applications</groupId>
-      <artifactId>statistics-manager-config</artifactId>
-      <classifier>config</classifier>
-      <type>xml</type>
-    </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin.applications</groupId>
+            <artifactId>inventory-manager</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin.applications</groupId>
+            <artifactId>lldp-speaker</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin.applications</groupId>
+            <artifactId>statistics-manager</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin.applications</groupId>
+            <artifactId>statistics-manager-config</artifactId>
+            <classifier>config</classifier>
+            <type>xml</type>
+        </dependency>
 
         <dependency>
             <groupId>org.opendaylight.dlux</groupId>
@@ -116,107 +137,107 @@
             <type>xml</type>
         </dependency>
 
-    <dependency>
-      <groupId>org.opendaylight.dlux</groupId>
-      <artifactId>features-dlux</artifactId>
-      <version>${dlux.version}</version>
-      <classifier>features</classifier>
-      <type>xml</type>
-    </dependency>
-    <dependency>
-      <groupId>org.opendaylight.controller</groupId>
-      <artifactId>features-netconf-connector</artifactId>
-      <version>${mdsal.version}</version>
-      <classifier>features</classifier>
-      <type>xml</type>
-    </dependency>
+        <dependency>
+            <groupId>org.opendaylight.dlux</groupId>
+            <artifactId>features-dlux</artifactId>
+            <version>${dlux.version}</version>
+            <classifier>features</classifier>
+            <type>xml</type>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.controller</groupId>
+            <artifactId>features-netconf-connector</artifactId>
+            <version>${mdsal.version}</version>
+            <classifier>features</classifier>
+            <type>xml</type>
+        </dependency>
 
         <!-- bundle dependencies -->
-    <dependency>
-      <groupId>org.opendaylight.openflowplugin</groupId>
-      <artifactId>openflowplugin-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opendaylight.openflowplugin</groupId>
-      <artifactId>openflowplugin-extension-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opendaylight.openflowplugin</groupId>
-      <artifactId>openflowplugin</artifactId>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin</groupId>
+            <artifactId>openflowplugin-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin</groupId>
+            <artifactId>openflowplugin-extension-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin</groupId>
+            <artifactId>openflowplugin</artifactId>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.openflowplugin</groupId>
             <artifactId>openflowplugin-impl</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opendaylight.openflowplugin.applications</groupId>
-      <artifactId>table-miss-enforcer</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opendaylight.openflowplugin.applications</groupId>
-      <artifactId>table-miss-enforcer</artifactId>
-      <type>xml</type>
-      <classifier>config</classifier>
-    </dependency>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin.applications</groupId>
+            <artifactId>table-miss-enforcer</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin.applications</groupId>
+            <artifactId>table-miss-enforcer</artifactId>
+            <type>xml</type>
+            <classifier>config</classifier>
+        </dependency>
 
         <dependency>
-      <groupId>org.opendaylight.openflowplugin.applications</groupId>
-      <artifactId>topology-lldp-discovery</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opendaylight.openflowplugin.applications</groupId>
-      <artifactId>topology-manager</artifactId>
-    </dependency>
+            <groupId>org.opendaylight.openflowplugin.applications</groupId>
+            <artifactId>topology-lldp-discovery</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin.applications</groupId>
+            <artifactId>topology-manager</artifactId>
+        </dependency>
 
-    <dependency>
-      <groupId>org.opendaylight.openflowplugin.applications</groupId>
-      <artifactId>of-switch-config-pusher</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opendaylight.openflowplugin.applications</groupId>
-      <artifactId>of-switch-config-pusher</artifactId>
-      <type>xml</type>
-      <classifier>config</classifier>
-    </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin.applications</groupId>
+            <artifactId>of-switch-config-pusher</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin.applications</groupId>
+            <artifactId>of-switch-config-pusher</artifactId>
+            <type>xml</type>
+            <classifier>config</classifier>
+        </dependency>
 
-    <dependency>
-      <groupId>org.opendaylight.openflowplugin.applications</groupId>
-      <artifactId>lldp-speaker</artifactId>
-      <type>xml</type>
-      <classifier>config</classifier>
-    </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin.applications</groupId>
+            <artifactId>lldp-speaker</artifactId>
+            <type>xml</type>
+            <classifier>config</classifier>
+        </dependency>
 
-    <dependency>
-      <groupId>org.opendaylight.openflowplugin</groupId>
-      <artifactId>drop-test-karaf</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opendaylight.openflowplugin</groupId>
-      <artifactId>test-common</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opendaylight.openflowplugin</groupId>
-      <artifactId>openflowplugin-controller-config</artifactId>
-      <type>xml</type>
-      <classifier>config-Li</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.opendaylight.openflowplugin</groupId>
-      <artifactId>openflowplugin-controller-config</artifactId>
-      <type>xml</type>
-      <classifier>config-He</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.opendaylight.openflowplugin</groupId>
-      <artifactId>openflowplugin-controller-config</artifactId>
-      <type>xml</type>
-      <classifier>configmsgspy</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.opendaylight.controller</groupId>
-      <artifactId>liblldp</artifactId>
-      <version>${sal.api.version}</version>
-    </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin</groupId>
+            <artifactId>drop-test-karaf</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin</groupId>
+            <artifactId>test-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin</groupId>
+            <artifactId>openflowplugin-controller-config</artifactId>
+            <type>xml</type>
+            <classifier>config-Li</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin</groupId>
+            <artifactId>openflowplugin-controller-config</artifactId>
+            <type>xml</type>
+            <classifier>config-He</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin</groupId>
+            <artifactId>openflowplugin-controller-config</artifactId>
+            <type>xml</type>
+            <classifier>configmsgspy</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.controller</groupId>
+            <artifactId>liblldp</artifactId>
+            <version>${sal.api.version}</version>
+        </dependency>
 
         <!-- test the features.xml -->
         <dependency>
@@ -239,7 +260,28 @@
                 <directory>src/main/resources</directory>
             </resource>
         </resources>
+
         <plugins>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <configuration>
+                            <target>
+                                <!-- single feature test looks for features.xml we need to provide that -->
+                                <delete>
+                                    <fileset dir="src/main/resources/" includes="${target.features.file}" />
+                                </delete>
+                                <copy file="src/main/resources/${features.file}" tofile="src/main/resources/${target.features.file}"/>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>

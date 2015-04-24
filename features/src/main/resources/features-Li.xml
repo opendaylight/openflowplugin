@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!--
+  ~ Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
+  ~
+  ~ This program and the accompanying materials are made available under the
+  ~ terms of the Eclipse Public License v1.0 which accompanies this distribution,
+  ~ and is available at http://www.eclipse.org/legal/epl-v10.html
+  -->
+
 <features name="openflowplugin-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.2.0"
    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
    xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.2.0 http://karaf.apache.org/xmlns/features/v1.2.0">
@@ -17,18 +25,17 @@
         <feature version="${project.version}">odl-openflowplugin-flow-services-ui</feature>
     </feature>
 
-    <feature name='odl-openflowplugin-southbound' description="OpenDaylight :: Openflow Plugin :: SouthBound" version='${project.version}'>
+    <feature name='odl-openflowplugin-southbound' description="OpenDaylight :: Openflow Plugin :: Li southBound API implementation " version='${project.version}'>
         <feature version="${mdsal.version}">odl-mdsal-broker</feature>
-        <feature version="${project.version}">odl-openflowplugin-nsf-model</feature>
+        <feature version="${project.version}">odl-openflowplugin-nsf-services</feature>
         <feature version="${openflowjava.version}">odl-openflowjava-protocol</feature>
+        <!-- TODO : remove dependency on openflowplugin in the future -->
         <bundle>mvn:org.opendaylight.openflowplugin/openflowplugin/${project.version}</bundle>
+        <bundle>mvn:org.opendaylight.openflowplugin/openflowplugin-impl/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.openflowplugin/openflowplugin-api/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.openflowplugin/openflowplugin-extension-api/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.controller/liblldp/${sal.api.version}</bundle>
-        <bundle>mvn:org.opendaylight.openflowplugin.applications/inventory-manager/${project.version}</bundle>
-        <bundle>mvn:org.opendaylight.openflowplugin.applications/statistics-manager/${project.version}</bundle>
-        <configfile finalname="etc/opendaylight/karaf/42-openflowplugin-He.xml">mvn:org.opendaylight.openflowplugin/openflowplugin-controller-config/${project.version}/xml/config-He</configfile>
-        <configfile finalname="etc/opendaylight/karaf/43-msg-spy.xml">mvn:org.opendaylight.openflowplugin/openflowplugin-controller-config/${project.version}/xml/configmsgspy</configfile>
+        <configfile finalname="etc/opendaylight/karaf/42-openflowplugin-Li.xml">mvn:org.opendaylight.openflowplugin/openflowplugin-controller-config/${project.version}/xml/config-Li</configfile>
     </feature>
 
     <feature name='odl-openflowplugin-flow-services' description="OpenDaylight :: Openflow Plugin :: Flow Services" version='${project.version}'>
@@ -44,8 +51,6 @@
         <feature version='${project.version}'>odl-openflowplugin-nsf-model</feature>
         <bundle>mvn:org.opendaylight.openflowplugin.applications/topology-manager/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.openflowplugin.applications/topology-lldp-discovery/${project.version}</bundle>
-        <bundle>mvn:org.opendaylight.openflowplugin.applications/statistics-manager/${project.version}</bundle>
-        <bundle>mvn:org.opendaylight.openflowplugin.applications/inventory-manager/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.openflowplugin.applications/forwardingrules-manager/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.controller/liblldp/${sal.api.version}</bundle>
         <configfile finalname="etc/opendaylight/karaf/30-forwardingrules-manager.xml">
