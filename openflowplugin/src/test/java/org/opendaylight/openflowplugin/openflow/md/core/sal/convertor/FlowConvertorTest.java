@@ -48,6 +48,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowModCommand;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowModFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
 
 /**
  * @author michal.polkorab
@@ -76,24 +77,24 @@ public class FlowConvertorTest {
         flowBuilder.setMatch(null);
         RemoveFlowInput flow = flowBuilder.build();
 
-        FlowModInput flowMod = FlowConvertor
-                .toFlowModInput(flow, EncodeConstants.OF13_VERSION_ID, new BigInteger("42")).build();
+        List<FlowModInputBuilder> flowMod = FlowConvertor
+                .toFlowModInputs(flow, EncodeConstants.OF13_VERSION_ID, new BigInteger("42"));
 
-        Assert.assertEquals("Wrong version", 4, flowMod.getVersion().intValue());
-        Assert.assertEquals("Wrong cookie", 4, flowMod.getCookie().intValue());
-        Assert.assertEquals("Wrong cookie mask", 5, flowMod.getCookieMask().intValue());
-        Assert.assertEquals("Wrong table id", 6, flowMod.getTableId().getValue().intValue());
-        Assert.assertEquals("Wrong command", FlowModCommand.OFPFCDELETESTRICT, flowMod.getCommand());
-        Assert.assertEquals("Wrong idle timeout", 50, flowMod.getIdleTimeout().intValue());
-        Assert.assertEquals("Wrong hard timeout", 500, flowMod.getHardTimeout().intValue());
-        Assert.assertEquals("Wrong priority", 40, flowMod.getPriority().intValue());
-        Assert.assertEquals("Wrong buffer id", 18, flowMod.getBufferId().intValue());
-        Assert.assertEquals("Wrong out port", 65535, flowMod.getOutPort().getValue().intValue());
-        Assert.assertEquals("Wrong out group", 5000, flowMod.getOutGroup().intValue());
-        Assert.assertEquals("Wrong flags", new FlowModFlags(false, false, false, false, false), flowMod.getFlags());
+        Assert.assertEquals("Wrong version", 4, flowMod.get(0).getVersion().intValue());
+        Assert.assertEquals("Wrong cookie", 4, flowMod.get(0).getCookie().intValue());
+        Assert.assertEquals("Wrong cookie mask", 5, flowMod.get(0).getCookieMask().intValue());
+        Assert.assertEquals("Wrong table id", 6, flowMod.get(0).getTableId().getValue().intValue());
+        Assert.assertEquals("Wrong command", FlowModCommand.OFPFCDELETESTRICT, flowMod.get(0).getCommand());
+        Assert.assertEquals("Wrong idle timeout", 50, flowMod.get(0).getIdleTimeout().intValue());
+        Assert.assertEquals("Wrong hard timeout", 500, flowMod.get(0).getHardTimeout().intValue());
+        Assert.assertEquals("Wrong priority", 40, flowMod.get(0).getPriority().intValue());
+        Assert.assertEquals("Wrong buffer id", 18, flowMod.get(0).getBufferId().intValue());
+        Assert.assertEquals("Wrong out port", 65535, flowMod.get(0).getOutPort().getValue().intValue());
+        Assert.assertEquals("Wrong out group", 5000, flowMod.get(0).getOutGroup().intValue());
+        Assert.assertEquals("Wrong flags", new FlowModFlags(false, false, false, false, false), flowMod.get(0).getFlags());
         Assert.assertEquals("Wrong match", "org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmMatchType",
-                flowMod.getMatch().getType().getName());
-        Assert.assertEquals("Wrong match entries size", 0, flowMod.getMatch().getMatchEntry().size());
+                flowMod.get(0).getMatch().getType().getName());
+        Assert.assertEquals("Wrong match entries size", 0, flowMod.get(0).getMatch().getMatchEntry().size());
     }
 
     /**
@@ -105,11 +106,11 @@ public class FlowConvertorTest {
         flowBuilder.setStrict(true);
         UpdatedFlow flow = flowBuilder.build();
 
-        FlowModInput flowMod = FlowConvertor
-                .toFlowModInput(flow, EncodeConstants.OF10_VERSION_ID, new BigInteger("42")).build();
+        List<FlowModInputBuilder> flowMod = FlowConvertor
+                .toFlowModInputs(flow, EncodeConstants.OF10_VERSION_ID, new BigInteger("42"));
 
-        Assert.assertEquals("Wrong version", 1, flowMod.getVersion().intValue());
-        Assert.assertEquals("Wrong command", FlowModCommand.OFPFCMODIFYSTRICT, flowMod.getCommand());
+        Assert.assertEquals("Wrong version", 1, flowMod.get(0).getVersion().intValue());
+        Assert.assertEquals("Wrong command", FlowModCommand.OFPFCMODIFYSTRICT, flowMod.get(0).getCommand());
     }
 
     /**
@@ -176,19 +177,19 @@ public class FlowConvertorTest {
         flowBuilder.setInstructions(instructionsBuilder.build());
         AddFlowInput flow = flowBuilder.build();
 
-        FlowModInput flowMod = FlowConvertor
-                .toFlowModInput(flow, EncodeConstants.OF10_VERSION_ID, new BigInteger("42")).build();
+        List<FlowModInputBuilder> flowMod = FlowConvertor
+                .toFlowModInputs(flow, EncodeConstants.OF10_VERSION_ID, new BigInteger("42"));
 
-        Assert.assertEquals("Wrong version", 1, flowMod.getVersion().intValue());
-        Assert.assertEquals("Wrong command", FlowModCommand.OFPFCADD, flowMod.getCommand());
-        Assert.assertEquals("Wrong instructions size", 6, flowMod.getInstruction().size());
+        Assert.assertEquals("Wrong version", 1, flowMod.get(0).getVersion().intValue());
+        Assert.assertEquals("Wrong command", FlowModCommand.OFPFCADD, flowMod.get(0).getCommand());
+        Assert.assertEquals("Wrong instructions size", 6, flowMod.get(0).getInstruction().size());
         org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions
-        .grouping.Instruction instruction = flowMod.getInstruction().get(0);
+        .grouping.Instruction instruction = flowMod.get(0).getInstruction().get(0);
         Assert.assertEquals("Wrong type", "org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common"
                 + ".instruction.rev130731.instruction.grouping.instruction.choice.GotoTableCase", instruction.getInstructionChoice().getImplementedInterface().getName());
         GotoTableCase gotoTableCase = (GotoTableCase) instruction.getInstructionChoice();
         Assert.assertEquals("Wrong table id", 1, gotoTableCase.getGotoTable().getTableId().intValue());
-        instruction = flowMod.getInstruction().get(1);
+        instruction = flowMod.get(0).getInstruction().get(1);
         Assert.assertEquals("Wrong type", "org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common"
                 + ".instruction.rev130731.instruction.grouping.instruction.choice.WriteMetadataCase", instruction.getInstructionChoice().getImplementedInterface().getName());
         WriteMetadataCase writeMetadataCase = (WriteMetadataCase) instruction.getInstructionChoice();
@@ -197,20 +198,20 @@ public class FlowConvertorTest {
         Assert.assertArrayEquals("Wrong metadata mask", new byte[]{0, 0, 0, 0, 0, 0, 0, 3},
                 writeMetadataCase.getWriteMetadata().getMetadataMask());
         
-        instruction = flowMod.getInstruction().get(2);
+        instruction = flowMod.get(0).getInstruction().get(2);
         Assert.assertEquals("Wrong type", "org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common"
                 + ".instruction.rev130731.instruction.grouping.instruction.choice.WriteActionsCase", instruction.getInstructionChoice().getImplementedInterface().getName());
         WriteActionsCase writeActionsCase = (WriteActionsCase) instruction.getInstructionChoice();
         Assert.assertEquals("Wrong actions size", 0, writeActionsCase.getWriteActions().getAction().size());
-        instruction = flowMod.getInstruction().get(3);
+        instruction = flowMod.get(0).getInstruction().get(3);
         Assert.assertEquals("Wrong type", "org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common"
                 + ".instruction.rev130731.instruction.grouping.instruction.choice.ApplyActionsCase", instruction.getInstructionChoice().getImplementedInterface().getName());
         ApplyActionsCase applyActionsCase =  (ApplyActionsCase) instruction.getInstructionChoice();
         Assert.assertEquals("Wrong actions size", 0, applyActionsCase.getApplyActions().getAction().size());
-        instruction = flowMod.getInstruction().get(4);
+        instruction = flowMod.get(0).getInstruction().get(4);
         Assert.assertEquals("Wrong type", "org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common"
                 + ".instruction.rev130731.instruction.grouping.instruction.choice.ClearActionsCase", instruction.getInstructionChoice().getImplementedInterface().getName());
-        instruction = flowMod.getInstruction().get(5);
+        instruction = flowMod.get(0).getInstruction().get(5);
         Assert.assertEquals("Wrong type", "org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common"
                 + ".instruction.rev130731.instruction.grouping.instruction.choice.MeterCase", instruction.getInstructionChoice().getImplementedInterface().getName());
         MeterCase meterCase = (MeterCase) instruction.getInstructionChoice();

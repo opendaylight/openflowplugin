@@ -634,20 +634,21 @@ public abstract class OFRpcTaskFactory {
                 ListenableFuture<RpcResult<UpdateFlowOutput>> result = SettableFuture.create();
 
                 // Convert the AddFlowInput to FlowModInput
-                FlowModInputBuilder ofFlowModInput = FlowConvertor.toFlowModInput(getInput(),
+                List<FlowModInputBuilder> ofFlowModInputs = FlowConvertor.toFlowModInputs(getInput(),
                         getVersion(), getSession().getFeatures().getDatapathId());
-                final Long xId = getSession().getNextXid();
-                ofFlowModInput.setXid(xId);
 
-                Future<RpcResult<UpdateFlowOutput>> resultFromOFLib =
-                        getMessageService().flowMod(ofFlowModInput.build(), getCookie());
-                result = JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
-
+                result = chainFlowMods(ofFlowModInputs, 0, getTaskContext(), getCookie());
                 result = OFRpcTaskUtil.chainFutureBarrier(this, result);
-                OFRpcTaskUtil.hookFutureNotification(this, result,
-                        getRpcNotificationProviderService(), createFlowRemovedNotification(getInput()));
 
+                OFRpcTaskUtil.hookFutureNotification(this, result,
+                        getRpcNotificationProviderService(),
+                        createFlowRemovedNotification(getInput()));
                 return result;
+            }
+
+            @Override
+            public Boolean isBarrier() {
+                return getInput().isBarrier();
             }
         }
 
