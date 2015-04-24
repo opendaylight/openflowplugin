@@ -8,17 +8,18 @@
 
 package org.opendaylight.openflowplugin.api.openflow;
 
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
-
 import java.util.Collection;
-import org.opendaylight.controller.sal.binding.api.BindingAwareProvider;
+import org.opendaylight.controller.md.sal.binding.api.BindingService;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.api.types.rev150327.OfpRole;
 
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 27.3.2015.
  */
-public interface OpenFlowPluginProvider extends AutoCloseable, BindingAwareProvider {
+public interface OpenFlowPluginProvider extends AutoCloseable, BindingService {
 
     /**
      * Method sets openflow java's connection providers.
@@ -27,9 +28,14 @@ public interface OpenFlowPluginProvider extends AutoCloseable, BindingAwareProvi
 
     /**
      * setter
-     * @param bindingAwareBroker
+     *
+     * @param dataBroker
      */
-    void setBindingAwareBroker(BindingAwareBroker bindingAwareBroker);
+    void setDataBroker(DataBroker dataBroker);
+
+    void setRpcProviderRegistry(RpcProviderRegistry rpcProviderRegistry);
+
+    void setNotificationProviderService(NotificationProviderService notificationProviderService);
 
     /**
      * Method sets role of this application in clustered environment.

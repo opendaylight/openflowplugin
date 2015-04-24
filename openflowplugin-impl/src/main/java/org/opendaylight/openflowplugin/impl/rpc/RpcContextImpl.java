@@ -11,8 +11,8 @@ import com.google.common.util.concurrent.SettableFuture;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
+import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
@@ -27,7 +27,7 @@ import org.slf4j.Logger;
 public class RpcContextImpl implements RpcContext {
 
     private static final Logger LOG = org.slf4j.LoggerFactory.getLogger(RpcContextImpl.class);
-    final ProviderContext providerContext;
+    final RpcProviderRegistry rpcProviderRegistry;
 
     // TODO: add private Sal salBroker
     private final DeviceContext deviceContext;
@@ -37,8 +37,8 @@ public class RpcContextImpl implements RpcContext {
 
     private int maxRequestsPerDevice;
 
-    public RpcContextImpl(final ProviderContext providerContext, final DeviceContext deviceContext) {
-        this.providerContext = providerContext;
+    public RpcContextImpl(final RpcProviderRegistry rpcProviderRegistry, final DeviceContext deviceContext) {
+        this.rpcProviderRegistry = rpcProviderRegistry;
         this.deviceContext = deviceContext;
     }
 
@@ -49,7 +49,7 @@ public class RpcContextImpl implements RpcContext {
     @Override
     public <S extends RpcService> void registerRpcServiceImplementation(final Class<S> serviceClass,
                                                                         final S serviceInstance) {
-        final RoutedRpcRegistration<S> routedRpcReg = providerContext.addRoutedRpcImplementation(serviceClass, serviceInstance);
+        final RoutedRpcRegistration<S> routedRpcReg = rpcProviderRegistry.addRoutedRpcImplementation(serviceClass, serviceInstance);
         routedRpcReg.registerPath(NodeContext.class, deviceContext.getDeviceState().getNodeInstanceIdentifier());
         rpcRegistrations.add(routedRpcReg);
     }
