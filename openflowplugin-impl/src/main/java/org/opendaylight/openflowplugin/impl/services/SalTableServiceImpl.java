@@ -17,6 +17,8 @@ import java.math.BigInteger;
 import java.util.List;
 import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.TableFeaturesConvertor;
@@ -42,6 +44,10 @@ import org.slf4j.Logger;
 public class SalTableServiceImpl extends CommonService implements SalTableService {
 
     private static final Logger LOG = org.slf4j.LoggerFactory.getLogger(SalTableServiceImpl.class);
+
+    public SalTableServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
+        super(requestContextStack, deviceContext);
+    }
 
     @Override
     public Future<RpcResult<UpdateTableOutput>> updateTable(final UpdateTableInput input) {

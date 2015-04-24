@@ -36,8 +36,8 @@ public class MdSalRegistratorUtils {
         //TODO: add constructors with rcpContext and deviceContext to meter, group, table constructors
         rpcContext.registerRpcServiceImplementation(SalMeterService.class, new SalMeterServiceImpl(rpcContext, deviceContext));
         rpcContext.registerRpcServiceImplementation(SalGroupService.class, new SalGroupServiceImpl(rpcContext, deviceContext));
-        rpcContext.registerRpcServiceImplementation(SalTableService.class, new SalTableServiceImpl());
+        rpcContext.registerRpcServiceImplementation(SalTableService.class, new SalTableServiceImpl(rpcContext, deviceContext));
         rpcContext.registerRpcServiceImplementation(PacketProcessingService.class, new PacketProcessingServiceImpl(rpcContext, deviceContext));
-        rpcContext.registerRpcServiceImplementation(NodeConfigService.class, new NodeConfigServiceImpl());
+        rpcContext.registerRpcServiceImplementation(NodeConfigService.class, new NodeConfigServiceImpl(rpcContext, deviceContext));
     }
 }

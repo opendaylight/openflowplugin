@@ -10,7 +10,10 @@ package org.opendaylight.openflowplugin.impl.services;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
+import java.util.concurrent.Future;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
+import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.NodeConfigService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.SetConfigInput;
@@ -18,12 +21,20 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.Set
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.SwitchConfigFlag;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetConfigInputBuilder;
 import org.opendaylight.yangtools.yang.common.RpcResult;
-import java.util.concurrent.Future;
 
 /**
  * @author joe
  */
 public class NodeConfigServiceImpl extends CommonService implements NodeConfigService {
+
+    private final RequestContextStack requestContextStack;
+    private final DeviceContext deviceContext;
+
+    public NodeConfigServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
+        super(requestContextStack, deviceContext);
+        this.requestContextStack = requestContextStack;
+        this.deviceContext = deviceContext;
+    }
 
 
     @Override
