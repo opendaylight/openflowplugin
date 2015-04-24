@@ -1,16 +1,21 @@
 package test.mock.util;
 
-import org.opendaylight.controller.sal.binding.codegen.impl.SingletonHolder;
-import org.opendaylight.controller.sal.binding.impl.NotificationBrokerImpl;
-import org.opendaylight.yangtools.yang.binding.Notification;
-
+import com.google.common.collect.LinkedHashMultimap;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ExecutorService;
+import org.opendaylight.controller.sal.binding.api.NotificationListener;
+import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+import org.opendaylight.yangtools.concepts.ListenerRegistration;
+import org.opendaylight.yangtools.yang.binding.Notification;
 
 public class NotificationProviderServiceHelper {
-    private NotificationBrokerImpl notifBroker = new NotificationBrokerImpl(SingletonHolder.getDefaultNotificationExecutor());
+    private NotificationProviderService notifBroker = new NotificationProviderServiceDummyImpl();
 
-    public NotificationBrokerImpl getNotifBroker() {
+    public NotificationProviderService getNotifBroker() {
         return notifBroker;
     }
 
@@ -25,5 +30,74 @@ public class NotificationProviderServiceHelper {
 
     public void pushNotification(final Notification notification) {
         notifBroker.publish(notification);
+    }
+
+    private static class NotificationListenerExecTuple {
+        Method m;
+        org.opendaylight.yangtools.yang.binding.NotificationListener listenerInst;
+
+        void propagateNotification(Notification notification) {
+            try {
+                m.invoke(listenerInst, new Object[]{notification});
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public int hashCode() {
+            return listenerInst.hashCode();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return listenerInst.equals(obj);
+        }
+
+    }
+
+    private static class NotificationProviderServiceDummyImpl implements NotificationProviderService {
+        private LinkedHashMultimap<Class, NotificationListenerExecTuple> listenerRegistry = LinkedHashMultimap.create();
+
+        @Override
+
+        public void publish(Notification notification) {
+            Set<NotificationListenerExecTuple> execPack = listenerRegistry.get(notification.getImplementedInterface());
+            for (NotificationListenerExecTuple notificationListenerExecTuple : execPack) {
+                notificationListenerExecTuple.propagateNotification(notification);
+            }
+        }
+
+        @Override
+        public void publish(Notification notification, ExecutorService executorService) {
+            throw new IllegalAccessError("publish with executorService not supported");
+        }
+
+        @Override
+        public ListenerRegistration<NotificationInterestListener> registerInterestListener(NotificationInterestListener notificationInterestListener) {
+            throw new IllegalAccessError("registering of interest listener not supported");
+        }
+
+        @Override
+        public <T extends Notification> ListenerRegistration<NotificationListener<T>> registerNotificationListener(Class<T> aClass, NotificationListener<T> notificationListener) {
+            throw new IllegalAccessError("registering with class not supported");
+        }
+
+        @Override
+        public ListenerRegistration<org.opendaylight.yangtools.yang.binding.NotificationListener> registerNotificationListener(org.opendaylight.yangtools.yang.binding.NotificationListener notificationListener) {
+            for (Method m : notificationListener.getClass().getMethods()) {
+                if (m.getName().startsWith("on") && m.getParameterTypes().length == 1) {
+                    Class<?> key = m.getParameterTypes()[0];
+                    Set<NotificationListenerExecTuple> listeners = listenerRegistry.get(key);
+                    NotificationListenerExecTuple execPack = new NotificationListenerExecTuple();
+                    execPack.listenerInst = notificationListener;
+                    execPack.m = m;
+                    listeners.add(execPack);
+                }
+            }
+            return null;
+        }
     }
 }
