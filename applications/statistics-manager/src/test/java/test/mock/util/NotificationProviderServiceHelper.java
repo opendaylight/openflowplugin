@@ -1,16 +1,16 @@
 package test.mock.util;
 
 import org.opendaylight.controller.sal.binding.codegen.impl.SingletonHolder;
-import org.opendaylight.controller.sal.binding.impl.NotificationBrokerImpl;
+import org.opendaylight.controller.md.sal.binding.compat.HydrogenNotificationBrokerImpl;
 import org.opendaylight.yangtools.yang.binding.Notification;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
 public class NotificationProviderServiceHelper {
-    private NotificationBrokerImpl notifBroker = new NotificationBrokerImpl(SingletonHolder.getDefaultNotificationExecutor());
+    private HydrogenNotificationBrokerImpl notifBroker = new HydrogenNotificationBrokerImpl(SingletonHolder.getDefaultNotificationExecutor());
 
-    public NotificationBrokerImpl getNotifBroker() {
+    public HydrogenNotificationBrokerImpl getNotifBroker() {
         return notifBroker;
     }
 
