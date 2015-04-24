@@ -103,13 +103,14 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
     @Override
     public Future<RpcResult<RemoveFlowOutput>> removeFlow(final RemoveFlowInput input) {
         LOG.trace("Calling remove flow for flow with ID ={}.", input.getFlowRef());
-        return this.<RemoveFlowOutput, Void>handleServiceCall(PRIMARY_CONNECTION,
-                new Function<DataCrate<RemoveFlowOutput>, ListenableFuture<RpcResult<Void>>>() {
+        return this.<RemoveFlowOutput, AddFlowOutput>handleServiceCall(PRIMARY_CONNECTION,
+                new Function<DataCrate<RemoveFlowOutput>, ListenableFuture<RpcResult<AddFlowOutput>>>() {
                     @Override
-                    public ListenableFuture<RpcResult<Void>> apply(final DataCrate<RemoveFlowOutput> data) {
-                        final FlowModInputBuilder ofFlowModInput = FlowConvertor.toFlowModInput(input, version,
+                    public ListenableFuture<RpcResult<AddFlowOutput>> apply(final DataCrate<RemoveFlowOutput> data) {
+                        final List<FlowModInputBuilder> ofFlowModInputs = FlowConvertor.toFlowModInputs(input, version,
                                 datapathId);
-                        final ListenableFuture<RpcResult<Void>> future = createResultForFlowMod(data, ofFlowModInput);
+                        final ListenableFuture<RpcResult<AddFlowOutput>> future = processFlowModInputBuilders(ofFlowModInputs);
+
                         Futures.addCallback(future, new FutureCallback() {
                             @Override
                             public void onSuccess(final Object o) {
@@ -123,7 +124,7 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
                                 messageSpy.spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_FAILURE);
                                 StringBuffer errors = new StringBuffer();
                                 try {
-                                    RpcResult<Void> result = future.get();
+                                    RpcResult<AddFlowOutput> result = future.get();
                                     Collection<RpcError> rpcErrors = result.getErrors();
                                     if (null != rpcErrors && rpcErrors.size() > 0) {
                                         for (RpcError rpcError : rpcErrors) {
