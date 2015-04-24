@@ -8,6 +8,7 @@
 package org.opendaylight.openflowplugin.impl.rpc;
 
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
+import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
@@ -16,13 +17,13 @@ import org.opendaylight.openflowplugin.impl.util.MdSalRegistratorUtils;
 
 public class RpcManagerImpl implements RpcManager {
 
-    private final ProviderContext providerContext;
+    private final RpcProviderRegistry rpcProviderRegistry;
     private DeviceInitializationPhaseHandler deviceInitPhaseHandler;
     private final Long maxRequestsQuota;
 
-    public RpcManagerImpl(final ProviderContext providerContext,
+    public RpcManagerImpl(final RpcProviderRegistry rpcProviderRegistry,
                           final Long quotaValue) {
-        this.providerContext = providerContext;
+        this.rpcProviderRegistry = rpcProviderRegistry;
         maxRequestsQuota = quotaValue;
     }
 
@@ -33,7 +34,7 @@ public class RpcManagerImpl implements RpcManager {
 
     @Override
     public void onDeviceContextLevelUp(final DeviceContext deviceContext) {
-        final RpcContext rpcContext = new RpcContextImpl(providerContext, deviceContext);
+        final RpcContext rpcContext = new RpcContextImpl(rpcProviderRegistry, deviceContext);
         rpcContext.setRequestContextQuota(maxRequestsQuota.intValue());
         deviceContext.setDeviceDisconnectedHandler(rpcContext);
         MdSalRegistratorUtils.registerServices(rpcContext, deviceContext);
