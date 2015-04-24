@@ -52,6 +52,7 @@ public class RpcContextImpl implements RpcContext {
         final RoutedRpcRegistration<S> routedRpcReg = providerContext.addRoutedRpcImplementation(serviceClass, serviceInstance);
         routedRpcReg.registerPath(NodeContext.class, deviceContext.getDeviceState().getNodeInstanceIdentifier());
         rpcRegistrations.add(routedRpcReg);
+        LOG.debug("Registration of service {} for device {}.",serviceClass, deviceContext.getDeviceState().getNodeInstanceIdentifier());
     }
 
     @Override
