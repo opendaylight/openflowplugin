@@ -208,6 +208,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         Futures.addCallback(deviceFeaturesFuture, new FutureCallback<List<RpcResult<List<MultipartReply>>>>() {
             @Override
             public void onSuccess(final List<RpcResult<List<MultipartReply>>> result) {
+                deviceContext.getDeviceState().setValid(true);
                 deviceInitPhaseHandler.onDeviceContextLevelUp(deviceContext);
             }
 
