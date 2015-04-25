@@ -28,62 +28,28 @@ import org.slf4j.LoggerFactory;
 /**
  * openflowplugin-impl
  * org.opendaylight.openflowplugin.impl.device
- *
+ * <p/>
  * Barrier message self restarting builder.
  *
  * @author <a href="mailto:vdemcak@cisco.com">Vaclav Demcak</a>
- *
- * Created: Apr 3, 2015
+ *         <p/>
+ *         Created: Apr 3, 2015
  */
 public class BarrierTaskBuilder {
 
     private static final Logger LOG = LoggerFactory.getLogger(BarrierTaskBuilder.class);
+    public static final long DELAY = 500L;
 
     private final DeviceContext deviceCtx;
 
-    public BarrierTaskBuilder (final DeviceContext deviceCtx) {
+    public BarrierTaskBuilder(final DeviceContext deviceCtx) {
         this.deviceCtx = Preconditions.checkNotNull(deviceCtx);
         Preconditions.checkNotNull(deviceCtx.getTimer());
     }
 
     public void buildAndFireBarrierTask() {
-        Timeout timeout = deviceCtx.getTimer().newTimeout(makeTimerTask(), 500L, TimeUnit.MILLISECONDS);
+        Timeout timeout = deviceCtx.getTimer().newTimeout(new BarrierTask(), DELAY, TimeUnit.MILLISECONDS);
         deviceCtx.setCurrentBarrierTimeout(timeout);
-    }
-
-    private TimerTask makeTimerTask() {
-        return new TimerTask() {
-            @Override
-            public void run(final Timeout timeout) throws Exception {
-                // check outstanding requests first
-                if (deviceCtx.getNumberOfOutstandingRequests() > 0) {
-                    BarrierInput barrierInput = makeBarrier();
-                    LOG.trace("sending out barrier [{}]", barrierInput.getXid());
-                    final Future<RpcResult<BarrierOutput>> future = deviceCtx.getPrimaryConnectionContext()
-                            .getConnectionAdapter().barrier(barrierInput);
-                    final ListenableFuture<RpcResult<BarrierOutput>> lsFuture = JdkFutureAdapters.listenInPoolThread(future);
-                    Futures.addCallback(lsFuture, makeCallBack());
-                } else {
-                    // if no requests
-                    buildAndFireBarrierTask();
-                }
-            }
-        };
-    }
-
-    private FutureCallback<RpcResult<BarrierOutput>> makeCallBack() {
-        return new FutureCallback<RpcResult<BarrierOutput>>() {
-            @Override
-            public void onSuccess(final RpcResult<BarrierOutput> result) {
-                BarrierProcessor.processOutstandingRequests(result.getResult().getXid(), deviceCtx);
-                buildAndFireBarrierTask();
-            }
-            @Override
-            public void onFailure(final Throwable t) {
-                LOG.info("Barrier has failed {} ", t.getMessage());
-                LOG.trace("Barrier has failed", t);
-            }
-        };
     }
 
     /**
@@ -95,4 +61,45 @@ public class BarrierTaskBuilder {
         biBuilder.setXid(deviceCtx.getNextXid().getValue());
         return biBuilder.build();
     }
+
+    private final class BarrierTask implements TimerTask {
+
+        @Override
+        public void run(final Timeout timeout) throws Exception {
+            // check outstanding requests first
+            if (deviceCtx.getDeviceState().isValid()) {
+                if (deviceCtx.getNumberOfOutstandingRequests() > 0) {
+                    BarrierInput barrierInput = makeBarrier();
+                    LOG.trace("sending out barrier [{}]", barrierInput.getXid());
+                    final Future<RpcResult<BarrierOutput>> future = deviceCtx.getPrimaryConnectionContext()
+                            .getConnectionAdapter().barrier(barrierInput);
+                    final ListenableFuture<RpcResult<BarrierOutput>> lsFuture = JdkFutureAdapters.listenInPoolThread(future);
+                    Futures.addCallback(lsFuture, makeCallBack());
+                } else {
+                    // if no requests
+                    buildAndFireBarrierTask();
+                }
+            } else {
+                LOG.trace("DeviceContext is not valid, will not create next barrier task.");
+            }
+        }
+
+        private FutureCallback<RpcResult<BarrierOutput>> makeCallBack() {
+            return new FutureCallback<RpcResult<BarrierOutput>>() {
+                @Override
+                public void onSuccess(final RpcResult<BarrierOutput> result) {
+                    BarrierProcessor.processOutstandingRequests(result.getResult().getXid(), deviceCtx);
+                    buildAndFireBarrierTask();
+                }
+
+                @Override
+                public void onFailure(final Throwable t) {
+                    LOG.info("Barrier has failed {} ", t.getMessage());
+                    LOG.trace("Barrier has failed", t);
+                }
+            };
+        }
+
+    }
+
 }
