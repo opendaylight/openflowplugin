@@ -9,8 +9,7 @@ package org.opendaylight.openflowplugin.applications.frm.impl;
 
 import com.google.common.base.Preconditions;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker.DataChangeScope;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
@@ -47,7 +46,7 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
 
     private static final Logger LOG = LoggerFactory.getLogger(FlowForwarder.class);
 
-    private ListenerRegistration<DataChangeListener> listenerRegistration;
+    private ListenerRegistration<FlowForwarder> listenerRegistration;
 
     public FlowForwarder (final ForwardingRulesManager manager, final DataBroker db) {
         super(manager, Flow.class);
@@ -56,9 +55,9 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
     }
 
     private void registrationListener(final DataBroker db) {
+        final DataTreeIdentifier<Flow> treeId = new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION, getWildCardPath());
         try {
-            listenerRegistration = db.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION,
-                    getWildCardPath(), FlowForwarder.this, DataChangeScope.SUBTREE);
+            listenerRegistration = db.registerDataTreeChangeListener(treeId, FlowForwarder.this);
         } catch (final Exception e) {
             LOG.warn("FRM Flow DataChange listener registration fail!");
             LOG.debug("FRM Flow DataChange listener registration fail ..", e);
@@ -147,7 +146,7 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
                 .augmentation(FlowCapableNode.class).child(Table.class).child(Flow.class);
     }
 
-    private boolean tableIdValidationPrecondition (final TableKey tableKey, final Flow flow) {
+    private static boolean tableIdValidationPrecondition (final TableKey tableKey, final Flow flow) {
         Preconditions.checkNotNull(tableKey, "TableKey can not be null or empty!");
         Preconditions.checkNotNull(flow, "Flow can not be null or empty!");
         if (! tableKey.getId().equals(flow.getTableId())) {
