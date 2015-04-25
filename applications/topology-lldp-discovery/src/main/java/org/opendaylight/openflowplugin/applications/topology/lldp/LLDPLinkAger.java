@@ -9,43 +9,45 @@ package org.opendaylight.openflowplugin.applications.topology.lldp;
 
 import java.util.Date;
 import java.util.Map;
-import java.util.Timer;
 import java.util.Map.Entry;
+import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
-
-import org.opendaylight.openflowplugin.applications.topology.lldp.utils.LLDPDiscoveryUtils;
+import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkDiscovered;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkRemovedBuilder;
 
 
-public class LLDPLinkAger {
-    private static final LLDPLinkAger instance = new LLDPLinkAger();
-    private Map<LinkDiscovered,Date> linkToDate = new ConcurrentHashMap<LinkDiscovered,Date>();
-    private LLDPDiscoveryProvider manager;
-    private Timer timer = new Timer();
+public class LLDPLinkAger implements AutoCloseable {
+    private final long linkExpirationTime;
+    private Map<LinkDiscovered, Date> linkToDate;
+    private Timer timer;
+    private NotificationProviderService notificationService;
 
-    public LLDPDiscoveryProvider getManager() {
-        return manager;
-    }
-    public void setManager(LLDPDiscoveryProvider manager) {
-        this.manager = manager;
-    }
-    private LLDPLinkAger() {
-        timer.schedule(new LLDPAgingTask(), 0,LLDPDiscoveryUtils.LLDP_INTERVAL);
-    }
-    public static LLDPLinkAger getInstance() {
-        return instance;
+    /**
+     * default ctor - start timer
+     */
+    public LLDPLinkAger(final long lldpInterval, final long linkExpirationTime) {
+        this.linkExpirationTime = linkExpirationTime;
+        linkToDate = new ConcurrentHashMap<>();
+        timer = new Timer();
+        timer.schedule(new LLDPAgingTask(), 0, lldpInterval);
     }
 
     public void put(LinkDiscovered link) {
         Date expires = new Date();
-        expires.setTime(expires.getTime() + LLDPDiscoveryUtils.LLDP_EXPIRATION_TIME);
+        expires.setTime(expires.getTime() + linkExpirationTime);
         linkToDate.put(link, expires);
     }
 
+    @Override
     public void close() {
         timer.cancel();
+        linkToDate.clear();
+    }
+
+    public void setNotificationService(NotificationProviderService notificationService) {
+        this.notificationService = notificationService;
     }
 
     private class LLDPAgingTask extends TimerTask {
@@ -57,9 +59,9 @@ public class LLDPLinkAger {
                 Date expires = entry.getValue();
                 Date now = new Date();
                 if(now.after(expires)) {
-                    if(getInstance().getManager() != null) {
+                    if (notificationService != null) {
                         LinkRemovedBuilder lrb = new LinkRemovedBuilder(link);
-                        getInstance().getManager().getNotificationService().publish(lrb.build());
+                        notificationService.publish(lrb.build());
                         linkToDate.remove(link);
                     }
                 }

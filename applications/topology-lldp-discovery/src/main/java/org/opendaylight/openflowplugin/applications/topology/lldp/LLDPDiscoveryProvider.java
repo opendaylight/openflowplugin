@@ -9,6 +9,7 @@ package org.opendaylight.openflowplugin.applications.topology.lldp;
 
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.controller.sal.binding.api.data.DataProviderService;
+import org.opendaylight.openflowplugin.applications.topology.lldp.utils.LLDPDiscoveryUtils;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.NotificationListener;
 import org.slf4j.Logger;
@@ -18,8 +19,9 @@ public class LLDPDiscoveryProvider implements AutoCloseable {
     private final static Logger LOG =  LoggerFactory.getLogger(LLDPDiscoveryProvider.class);
     private DataProviderService dataService;
     private NotificationProviderService notificationService;
-    private final LLDPDiscoveryListener commiter = new LLDPDiscoveryListener(LLDPDiscoveryProvider.this);
+
     private ListenerRegistration<NotificationListener> listenerRegistration;
+    private LLDPLinkAger lldpLinkAger;
 
     public DataProviderService getDataService() {
         return this.dataService;
@@ -38,9 +40,15 @@ public class LLDPDiscoveryProvider implements AutoCloseable {
     }
 
     public void start() {
-        ListenerRegistration<NotificationListener> registerNotificationListener = this.getNotificationService().registerNotificationListener(this.commiter);
+        lldpLinkAger = new LLDPLinkAger(LLDPDiscoveryUtils.LLDP_INTERVAL, LLDPDiscoveryUtils.LLDP_EXPIRATION_TIME);
+        lldpLinkAger.setNotificationService(notificationService);
+
+        LLDPDiscoveryListener committer = new LLDPDiscoveryListener(notificationService);
+        committer.setLldpLinkAger(lldpLinkAger);
+
+        ListenerRegistration<NotificationListener> registerNotificationListener =
+                notificationService.registerNotificationListener(committer);
         this.listenerRegistration = registerNotificationListener;
-        LLDPLinkAger.getInstance().setManager(this);
         LOG.info("LLDPDiscoveryListener Started.");
     }
 
@@ -50,7 +58,7 @@ public class LLDPDiscoveryProvider implements AutoCloseable {
             if (this.listenerRegistration!=null) {
                 this.listenerRegistration.close();
             }
-            LLDPLinkAger.getInstance().close();
+            lldpLinkAger.close();
         } catch (Exception e) {
             throw new Error(e);
         }

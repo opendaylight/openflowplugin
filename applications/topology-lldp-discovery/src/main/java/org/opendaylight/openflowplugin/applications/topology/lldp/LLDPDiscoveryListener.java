@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.applications.topology.lldp;
 
+import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.openflowplugin.applications.topology.lldp.utils.LLDPDiscoveryUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkDiscovered;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkDiscoveredBuilder;
@@ -19,10 +20,11 @@ import org.slf4j.LoggerFactory;
 class LLDPDiscoveryListener implements PacketProcessingListener {
     static Logger LOG = LoggerFactory.getLogger(LLDPDiscoveryListener.class);
 
-    private LLDPDiscoveryProvider manager;
+    private LLDPLinkAger lldpLinkAger;
+    private NotificationProviderService notificationService;
 
-    LLDPDiscoveryListener(LLDPDiscoveryProvider manager) {
-        this.manager = manager;
+    LLDPDiscoveryListener(NotificationProviderService notificationService) {
+        this.notificationService = notificationService;
     }
 
     public void onPacketReceived(PacketReceived lldp) {
@@ -33,9 +35,12 @@ class LLDPDiscoveryListener implements PacketProcessingListener {
             ldb.setSource(new NodeConnectorRef(src));
             LinkDiscovered ld = ldb.build();
 
-            manager.getNotificationService().publish(ld);
-            LLDPLinkAger.getInstance().put(ld);
+            notificationService.publish(ld);
+            lldpLinkAger.put(ld);
         }
     }
 
+    public void setLldpLinkAger(LLDPLinkAger lldpLinkAger) {
+        this.lldpLinkAger = lldpLinkAger;
+    }
 }
