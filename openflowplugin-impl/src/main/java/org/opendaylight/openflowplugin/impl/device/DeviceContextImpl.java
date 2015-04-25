@@ -374,13 +374,13 @@ public class DeviceContextImpl implements DeviceContext {
     }
 
     @Override
-    public HashedWheelTimer getTimer() {
+    public synchronized HashedWheelTimer getTimer() {
         return hashedWheelTimer;
     }
 
     @Override
     public void close() throws Exception {
-
+        deviceState.setValid(false);
         deviceGroupRegistry.close();
         deviceFlowRegistry.close();
         deviceMeterRegistry.close();
