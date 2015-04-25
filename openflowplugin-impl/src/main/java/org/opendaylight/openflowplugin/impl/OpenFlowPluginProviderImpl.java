@@ -34,6 +34,7 @@ import org.opendaylight.openflowplugin.impl.statistics.StatisticsManagerImpl;
 import org.opendaylight.openflowplugin.impl.util.TranslatorLibraryUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionConverterManager;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionConverterManagerImpl;
+import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.api.types.rev150327.OfpRole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -116,6 +117,9 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         Preconditions.checkNotNull(notificationProviderService, "missing notification provider service");
 
         extensionConverterManager = new ExtensionConverterManagerImpl();
+        // TODO: copied from OpenFlowPluginProvider (Helium) misusesing the old way of distributing extension converters
+        // TODO: rewrite later!
+        OFSessionUtil.getSessionManager().setExtensionConverterProvider(extensionConverterManager);
 
         connectionManager = new ConnectionManagerImpl();
         deviceManager = new DeviceManagerImpl(dataBroker);
