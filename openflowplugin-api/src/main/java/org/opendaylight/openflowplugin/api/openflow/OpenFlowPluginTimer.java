@@ -13,7 +13,7 @@ import io.netty.util.HashedWheelTimer;
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 4.4.2015.
  */
-public interface OpenflowPluginTimer {
+public interface OpenFlowPluginTimer {
 
     HashedWheelTimer getTimer();
 }
