@@ -109,8 +109,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
     private TranslatorLibrary translatorLibrary;
     private DeviceInitializationPhaseHandler deviceInitPhaseHandler;
     private NotificationProviderService notificationService;
-    private final List<DeviceContext> synchronizedDeviceContextsList = Collections
-            .<DeviceContext>synchronizedList(new ArrayList<DeviceContext>());
+    private final List<DeviceContext> synchronizedDeviceContextsList = new ArrayList<DeviceContext>();
     private final MessageIntelligenceAgency messageIntelligenceAgency = new MessageIntelligenceAgencyImpl();
 
     public DeviceManagerImpl(@Nonnull final DataBroker dataBroker) {
