@@ -1,0 +1,20 @@
+module openflowplugin-extension-registry {
+	yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:openflowplugin:extension:api";
+    prefix "ofplugin-ext-registry";
+
+    import config {prefix config; revision-date 2013-04-05; }
+
+    description
+        "openflow-plugin extension registry provider point";
+
+    revision "2015-04-25" {
+        description
+            "Initial revision";
+    }
+
+    identity openflow-extension-registry-provider {
+        base config:service-type;
+        config:java-class "org.opendaylight.openflowplugin.extension.api.OpenFlowPluginExtensionRegistratorProvider";
+    }
+}

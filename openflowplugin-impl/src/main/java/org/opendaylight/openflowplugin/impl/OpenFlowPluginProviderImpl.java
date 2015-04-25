@@ -25,11 +25,15 @@ import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionManager
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
+import org.opendaylight.openflowplugin.extension.api.ExtensionConverterRegistrator;
+import org.opendaylight.openflowplugin.extension.api.OpenFlowPluginExtensionRegistratorProvider;
 import org.opendaylight.openflowplugin.impl.connection.ConnectionManagerImpl;
 import org.opendaylight.openflowplugin.impl.device.DeviceManagerImpl;
 import org.opendaylight.openflowplugin.impl.rpc.RpcManagerImpl;
 import org.opendaylight.openflowplugin.impl.statistics.StatisticsManagerImpl;
 import org.opendaylight.openflowplugin.impl.util.TranslatorLibraryUtil;
+import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionConverterManager;
+import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionConverterManagerImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.api.types.rev150327.OfpRole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +41,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 27.3.2015.
  */
-public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider {
+public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenFlowPluginExtensionRegistratorProvider {
 
     protected static final Logger LOG = LoggerFactory.getLogger(OpenFlowPluginProviderImpl.class);
 
@@ -47,6 +51,8 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider {
     private StatisticsManager statisticsManager;
     private ConnectionManager connectionManager;
     private NotificationProviderService notificationProviderService;
+
+    private ExtensionConverterManager extensionConverterManager;
 
     private DataBroker dataBroker;
     private OfpRole role;
@@ -109,6 +115,8 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider {
         Preconditions.checkNotNull(rpcProviderRegistry, "missing RPC provider registry");
         Preconditions.checkNotNull(notificationProviderService, "missing notification provider service");
 
+        extensionConverterManager = new ExtensionConverterManagerImpl();
+
         connectionManager = new ConnectionManagerImpl();
         deviceManager = new DeviceManagerImpl(dataBroker);
         statisticsManager = new StatisticsManagerImpl();
@@ -122,12 +130,16 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider {
 
         TranslatorLibraryUtil.setBasicTranslatorLibrary(deviceManager);
         startSwitchConnections();
-
     }
 
     @Override
     public void setNotificationProviderService(final NotificationProviderService notificationProviderService) {
         this.notificationProviderService = notificationProviderService;
+    }
+
+    @Override
+    public ExtensionConverterRegistrator getExtensionConverterRegistrator() {
+        return extensionConverterManager;
     }
 
     @Override

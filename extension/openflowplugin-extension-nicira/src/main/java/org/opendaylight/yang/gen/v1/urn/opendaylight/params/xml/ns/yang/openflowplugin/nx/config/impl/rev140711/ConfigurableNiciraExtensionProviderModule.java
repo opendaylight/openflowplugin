@@ -20,7 +20,7 @@ public class ConfigurableNiciraExtensionProviderModule extends org.opendaylight.
     @Override
     public java.lang.AutoCloseable createInstance() {
         NiciraExtensionProvider provider = new NiciraExtensionProvider();
-        ExtensionConverterRegistrator registrator = getOpenflowPluginProviderDependency().getExtensionConverterRegistrator();
+        ExtensionConverterRegistrator registrator = getOpenflowPluginExtensionRegistryDependency().getExtensionConverterRegistrator();
         provider.setExtensionConverterRegistrator(registrator);
         provider.registerConverters();
         return provider;

@@ -15,6 +15,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     <!-- openflowplugin -->
     <capability>urn:opendaylight:params:xml:ns:yang:openflow:common:config:impl?module=openflow-provider-impl&amp;revision=2014-03-26</capability>
     <capability>urn:opendaylight:params:xml:ns:yang:openflow:common:config?module=openflow-provider&amp;revision=2014-03-26</capability>
+      <capability>urn:opendaylight:params:xml:ns:yang:openflowplugin:extension:api?module=openflowplugin-extension-registry&amp;revision=2015-04-25</capability>
     <!-- binding-broker-impl - provided -->
   </required-capabilities>
 
@@ -93,7 +94,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
         <module>
           <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:openflow:common:config:impl">prefix:openflow-provider-impl</type>
           <name>openflow-provider-impl</name>
-          
+
           <openflow-switch-connection-provider>
             <type xmlns:ofSwitch="urn:opendaylight:params:xml:ns:yang:openflow:switch:connection:provider">ofSwitch:openflow-switch-connection-provider</type>
             <name>openflow-switch-connection-provider-default</name>
@@ -131,6 +132,14 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
             <provider>/modules/module[type='openflow-provider-impl'][name='openflow-provider-impl']</provider>
           </instance>
         </service>
+
+          <service>
+              <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:openflowplugin:extension:api">prefix:openflow-extension-registry-provider</type>
+              <instance>
+                  <name>openflow-ext-provider</name>
+                  <provider>/modules/module[type='openflow-provider-impl'][name='openflow-provider-impl']</provider>
+              </instance>
+          </service>
       </services>
     </data>
 

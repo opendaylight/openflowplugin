@@ -12,14 +12,15 @@ import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.BindingAwareProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
+import org.opendaylight.openflowplugin.api.openflow.statistics.MessageCountDumper;
+import org.opendaylight.openflowplugin.api.openflow.statistics.MessageObservatory;
 import org.opendaylight.openflowplugin.extension.api.ExtensionConverterRegistrator;
+import org.opendaylight.openflowplugin.extension.api.OpenFlowPluginExtensionRegistratorProvider;
 import org.opendaylight.openflowplugin.openflow.md.core.MDController;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionConverterManager;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionConverterManagerImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFRoleManager;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
-import org.opendaylight.openflowplugin.api.openflow.statistics.MessageCountDumper;
-import org.opendaylight.openflowplugin.api.openflow.statistics.MessageObservatory;
 import org.opendaylight.openflowplugin.statistics.MessageSpyCounterImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.common.config.impl.rev140326.OfpRole;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
@@ -30,7 +31,7 @@ import org.slf4j.LoggerFactory;
 /**
  * OFPlugin provider implementation
  */
-public class OpenflowPluginProvider implements BindingAwareProvider, AutoCloseable {
+public class OpenflowPluginProvider implements BindingAwareProvider, AutoCloseable, OpenFlowPluginExtensionRegistratorProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(OpenflowPluginProvider.class);
 
@@ -146,6 +147,7 @@ public class OpenflowPluginProvider implements BindingAwareProvider, AutoCloseab
     /**
      * @return the extensionConverterRegistry
      */
+    @Override
     public ExtensionConverterRegistrator getExtensionConverterRegistrator() {
         return extensionConverterManager;
     }

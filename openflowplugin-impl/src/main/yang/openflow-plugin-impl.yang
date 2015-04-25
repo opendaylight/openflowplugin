@@ -9,6 +9,7 @@ module openflow-plugin-provider-impl {
     import openflow-switch-connection-provider {prefix openflow-switch-connection-provider;revision-date 2014-03-28;}
     import opendaylight-md-sal-binding { prefix md-sal-binding; revision-date 2013-10-28;}
     import openflow-plugin-types { prefix ofp-types; revision-date 2015-03-27;}
+    import openflowplugin-extension-registry {prefix ofp-ext-reg; revision-date 2015-04-25;}
 
     description
         "openflow-plugin-impl";
@@ -21,6 +22,7 @@ module openflow-plugin-provider-impl {
     identity openflow-plugin-provider-impl {
         base config:module-type;
         config:provided-service openflow-provider:openflow-provider;
+        config:provided-service ofp-ext-reg:openflow-extension-registry-provider;
         config:java-name-prefix OpenFlowProvider;
     }
 

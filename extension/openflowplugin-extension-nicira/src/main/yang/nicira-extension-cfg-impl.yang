@@ -4,7 +4,7 @@ module nicira-extension-impl {
     prefix "niciraExt-cfg-impl";
 
     import config {prefix config; revision-date 2013-04-05;}
-    import openflow-provider {prefix openflow-provider; revision-date 2014-03-26;}
+    import openflowplugin-extension-registry {prefix ofp-ext-reg; revision-date 2015-04-25;}
     import nicira-extension {prefix niciraExt-provider;}
 
     description
@@ -25,11 +25,11 @@ module nicira-extension-impl {
         case nicira-extension-provider-impl {
             when "/config:modules/config:module/config:type = 'nicira-extension-provider-impl'";
 
-            container openflow-plugin-provider {
+            container openflow-plugin-extension-registry {
                 uses config:service-ref {
                     refine type {
                         mandatory true;
-                        config:required-identity openflow-provider:openflow-provider;
+                        config:required-identity ofp-ext-reg:openflow-extension-registry-provider;
                     }
                 }
             }
