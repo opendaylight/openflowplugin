@@ -44,15 +44,14 @@ public class StatisticsManagerImpl implements StatisticsManager {
 
     @Override
     public void onDeviceContextLevelUp(final DeviceContext deviceContext) {
+        final StatisticsContext statisticsContext = new StatisticsContextImpl(deviceContext);
+        deviceContext.addDeviceContextClosedHandler(this);
 
         if (null == hashedWheelTimer) {
             LOG.trace("This is first device that delivered timer. Starting statistics polling immediately.");
             hashedWheelTimer = deviceContext.getTimer();
-            pollStatistics();
         }
 
-        final StatisticsContext statisticsContext = new StatisticsContextImpl(deviceContext);
-        deviceContext.addDeviceContextClosedHandler(this);
         /*final*/
         ListenableFuture<Void> weHaveDynamicData = statisticsContext.gatherDynamicData();
         weHaveDynamicData = Futures.immediateFuture(null);
@@ -64,6 +63,7 @@ public class StatisticsManagerImpl implements StatisticsManager {
                 contexts.put(deviceContext, statisticsContext);
                 deviceContext.getDeviceState().setDeviceSynchronized(true);
                 deviceInitPhaseHandler.onDeviceContextLevelUp(deviceContext);
+                pollStatistics(statisticsContext);
             }
 
             @Override
@@ -73,8 +73,8 @@ public class StatisticsManagerImpl implements StatisticsManager {
         });
     }
 
-    private void pollStatistics() {
-        for (final StatisticsContext statisticsContext : contexts.values()) {
+    private void pollStatistics(final StatisticsContext statisticsContext) {
+        if (contexts.containsValue(statisticsContext)) {
             ListenableFuture deviceStatisticsCollectionFuture = statisticsContext.gatherDynamicData();
             Futures.addCallback(deviceStatisticsCollectionFuture, new FutureCallback() {
                 @Override
@@ -87,14 +87,14 @@ public class StatisticsManagerImpl implements StatisticsManager {
                     LOG.info("Statistics gathering for single node was not successful.");
                 }
             });
-        }
-        if (null != hashedWheelTimer) {
-            hashedWheelTimer.newTimeout(new TimerTask() {
-                @Override
-                public void run(final Timeout timeout) throws Exception {
-                    pollStatistics();
-                }
-            }, 3000, TimeUnit.MILLISECONDS);
+            if (null != hashedWheelTimer) {
+                hashedWheelTimer.newTimeout(new TimerTask() {
+                    @Override
+                    public void run(final Timeout timeout) throws Exception {
+                        pollStatistics(statisticsContext);
+                    }
+                }, 3000, TimeUnit.MILLISECONDS);
+            }
         }
     }
 
@@ -105,7 +105,7 @@ public class StatisticsManagerImpl implements StatisticsManager {
             contexts.remove(deviceContext);
             LOG.trace("Removing node {} from operational DS.", deviceContext.getDeviceState().getNodeId());
             deviceContext.addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, deviceContext.getDeviceState().getNodeInstanceIdentifier());
-            StatisticsContext statisticsContext = contexts.get(deviceContext);
+            StatisticsContext statisticsContext = contexts.remove(deviceContext);
             try {
                 statisticsContext.close();
             } catch (Exception e) {
