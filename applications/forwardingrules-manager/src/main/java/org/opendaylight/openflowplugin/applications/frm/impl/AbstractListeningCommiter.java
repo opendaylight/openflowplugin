@@ -7,19 +7,16 @@
  */
 package org.opendaylight.openflowplugin.applications.frm.impl;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-
+import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesCommiter;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
+import java.util.Collection;
 
 /**
  * AbstractChangeListner implemented basic {@link AsyncDataChangeEvent} processing for
@@ -40,25 +37,35 @@ public abstract class AbstractListeningCommiter <T extends DataObject> implement
     }
 
     @Override
-    public void onDataChanged(final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> changeEvent) {
-        Preconditions.checkNotNull(changeEvent,"Async ChangeEvent can not be null!");
+    public void onDataTreeChanged(Collection<DataTreeModification<T>> changes) {
+        Preconditions.checkNotNull(changes, "Changes may not be null!");
 
-        /* All DataObjects for create */
-        final Map<InstanceIdentifier<?>, DataObject> createdData = changeEvent.getCreatedData() != null
-                ? changeEvent.getCreatedData() : Collections.<InstanceIdentifier<?>, DataObject> emptyMap();
-        /* All DataObjects for remove */
-        final Set<InstanceIdentifier<?>> removeData = changeEvent.getRemovedPaths() != null
-                ? changeEvent.getRemovedPaths() : Collections.<InstanceIdentifier<?>> emptySet();
-        /* All DataObjects for updates */
-        final Map<InstanceIdentifier<?>, DataObject> updateData = changeEvent.getUpdatedData() != null
-                ? changeEvent.getUpdatedData() : Collections.<InstanceIdentifier<?>, DataObject> emptyMap();
-        /* All Original DataObjects */
-        final Map<InstanceIdentifier<?>, DataObject> originalData = changeEvent.getOriginalData() != null
-                ? changeEvent.getOriginalData() : Collections.<InstanceIdentifier<?>, DataObject> emptyMap();
+        for (DataTreeModification<T> change : changes) {
+            final InstanceIdentifier<T> key = change.getRootPath().getRootIdentifier();
+            final DataObjectModification<T> mod = change.getRootNode();
+            final InstanceIdentifier<FlowCapableNode> nodeIdent =
+                    key.firstIdentifierOf(FlowCapableNode.class);
 
-        this.createData(createdData);
-        this.updateData(updateData, originalData);
-        this.removeData(removeData, originalData);
+            if (preConfigurationCheck(nodeIdent)) {
+                switch (mod.getModificationType()) {
+                case DELETE:
+                    remove(key, mod.getDataBefore(), nodeIdent);
+                    break;
+                case SUBTREE_MODIFIED:
+                    update(key, mod.getDataBefore(), mod.getDataAfter(), nodeIdent);
+                    break;
+                case WRITE:
+                    if (mod.getDataBefore() == null) {
+                        add(key, mod.getDataAfter(), nodeIdent);
+                    } else {
+                        update(key, mod.getDataBefore(), mod.getDataAfter(), nodeIdent);
+                    }
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unhandled modification type " + mod.getModificationType());
+                }
+            }
+        }
     }
 
     /**
@@ -66,66 +73,6 @@ public abstract class AbstractListeningCommiter <T extends DataObject> implement
      * and for identify the correct KeyInstanceIdentifier from data;
      */
     protected abstract InstanceIdentifier<T> getWildCardPath();
-
-
-
-    @SuppressWarnings("unchecked")
-    private void createData(final Map<InstanceIdentifier<?>, DataObject> createdData) {
-        final Set<InstanceIdentifier<?>> keys = createdData.keySet() != null
-                ? createdData.keySet() : Collections.<InstanceIdentifier<?>> emptySet();
-        for (InstanceIdentifier<?> key : keys) {
-            if (clazz.equals(key.getTargetType())) {
-                final InstanceIdentifier<FlowCapableNode> nodeIdent =
-                        key.firstIdentifierOf(FlowCapableNode.class);
-                if (preConfigurationCheck(nodeIdent)) {
-                    InstanceIdentifier<T> createKeyIdent = key.firstIdentifierOf(clazz);
-                    final Optional<DataObject> value = Optional.of(createdData.get(key));
-                    if (value.isPresent()) {
-                        this.add(createKeyIdent, (T)value.get(), nodeIdent);
-                    }
-                }
-            }
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    private void updateData(final Map<InstanceIdentifier<?>, DataObject> updateData,
-            final Map<InstanceIdentifier<?>, DataObject> originalData) {
-
-        final Set<InstanceIdentifier<?>> keys = updateData.keySet() != null
-                ? updateData.keySet() : Collections.<InstanceIdentifier<?>> emptySet();
-        for (InstanceIdentifier<?> key : keys) {
-            if (clazz.equals(key.getTargetType())) {
-                final InstanceIdentifier<FlowCapableNode> nodeIdent =
-                        key.firstIdentifierOf(FlowCapableNode.class);
-                if (preConfigurationCheck(nodeIdent)) {
-                    InstanceIdentifier<T> updateKeyIdent = key.firstIdentifierOf(clazz);
-                    final Optional<DataObject> value = Optional.of(updateData.get(key));
-                    final Optional<DataObject> original = Optional.of(originalData.get(key));
-                    if (value.isPresent() && original.isPresent()) {
-                        this.update(updateKeyIdent, (T)original.get(), (T)value.get(), nodeIdent);
-                    }
-                }
-            }
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    private void removeData(final Set<InstanceIdentifier<?>> removeData,
-            final Map<InstanceIdentifier<?>, DataObject> originalData) {
-
-        for (InstanceIdentifier<?> key : removeData) {
-            if (clazz.equals(key.getTargetType())) {
-                final InstanceIdentifier<FlowCapableNode> nodeIdent =
-                        key.firstIdentifierOf(FlowCapableNode.class);
-                if (preConfigurationCheck(nodeIdent)) {
-                    final InstanceIdentifier<T> ident = key.firstIdentifierOf(clazz);
-                    final DataObject removeValue = originalData.get(key);
-                    this.remove(ident, (T)removeValue, nodeIdent);
-                }
-            }
-        }
-    }
 
     private boolean preConfigurationCheck(final InstanceIdentifier<FlowCapableNode> nodeIdent) {
         Preconditions.checkNotNull(nodeIdent, "FlowCapableNode ident can not be null!");

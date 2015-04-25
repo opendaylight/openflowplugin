@@ -8,10 +8,8 @@
 package org.opendaylight.openflowplugin.applications.frm.impl;
 
 import com.google.common.base.Preconditions;
-
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker.DataChangeScope;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
@@ -45,13 +43,14 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
 
     private static final Logger LOG = LoggerFactory.getLogger(GroupForwarder.class);
 
-    private ListenerRegistration<DataChangeListener> listenerRegistration;
+    private ListenerRegistration<GroupForwarder> listenerRegistration;
 
     public GroupForwarder (final ForwardingRulesManager manager, final DataBroker db) {
         super(manager, Group.class);
         Preconditions.checkNotNull(db, "DataBroker can not be null!");
-        this.listenerRegistration = db.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION,
-                getWildCardPath(), GroupForwarder.this, DataChangeScope.SUBTREE);
+        final DataTreeIdentifier<Group> treeId = new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION, getWildCardPath());
+
+        this.listenerRegistration = db.registerDataTreeChangeListener(treeId, GroupForwarder.this);
     }
 
     @Override
