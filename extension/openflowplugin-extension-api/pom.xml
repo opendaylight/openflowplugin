@@ -31,6 +31,17 @@
                             <codeGenerators>
                                 <generator>
                                     <codeGeneratorClass>
+                                        org.opendaylight.controller.config.yangjmxgenerator.plugin.JMXGenerator
+                                    </codeGeneratorClass>
+                                    <outputBaseDir>${project.build.directory}/generated-sources/config</outputBaseDir>
+                                    <additionalConfiguration>
+                                        <namespaceToPackage1>
+                                            urn:opendaylight:params:xml:ns:yang:controller:config==org.opendaylight.controller.config.yang
+                                        </namespaceToPackage1>
+                                    </additionalConfiguration>
+                                </generator>
+                                <generator>
+                                    <codeGeneratorClass>
                                         org.opendaylight.yangtools.maven.sal.api.gen.plugin.CodeGeneratorImpl
                                     </codeGeneratorClass>
                                     <outputBaseDir>${project.build.directory}/generated-sources/sal</outputBaseDir>
@@ -89,6 +100,10 @@
         <dependency>
             <groupId>org.opendaylight.controller.model</groupId>
             <artifactId>model-inventory</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.controller</groupId>
+            <artifactId>config-api</artifactId>
         </dependency>
 
         <!-- junit -->
