@@ -9,11 +9,9 @@
 */
 package org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.common.config.impl.rev140326;
 
-import javax.management.ObjectName;
-
-import org.opendaylight.openflowplugin.openflow.md.core.sal.OpenflowPluginProvider;
-
 import com.google.common.base.MoreObjects;
+import javax.management.ObjectName;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.OpenflowPluginProvider;
 
 /**
 *
@@ -50,7 +48,9 @@ public final class ConfigurableOpenFlowProviderModule extends org.opendaylight.y
     @Override
     public java.lang.AutoCloseable createInstance() {
         pluginProvider =  new OpenflowPluginProvider();
-        pluginProvider.setBroker(getBindingAwareBrokerDependency());
+        pluginProvider.setDataBroker(getDataBrokerDependency());
+        pluginProvider.setNotificationService(getNotificationServiceDependency());
+        pluginProvider.setRpcRegistry(getRpcRegistryDependency());
         pluginProvider.setSwitchConnectionProviders(getOpenflowSwitchConnectionProviderDependency());
         pluginProvider.setRole(getRole());
         pluginProvider.initialization();
@@ -63,10 +63,15 @@ public final class ConfigurableOpenFlowProviderModule extends org.opendaylight.y
         // we can reuse if only the role field changed
         boolean noChangeExceptRole = true;
         noChangeExceptRole &= dependencyResolver.canReuseDependency(
-                getBindingAwareBroker(), bindingAwareBrokerJmxAttribute);
+                getDataBroker(), dataBrokerJmxAttribute);
+        noChangeExceptRole &= dependencyResolver.canReuseDependency(
+                getNotificationService(), notificationServiceJmxAttribute);
+        noChangeExceptRole &= dependencyResolver.canReuseDependency(
+                getRpcRegistry(), rpcRegistryJmxAttribute);
+
         for (ObjectName ofSwitchProvider : getOpenflowSwitchConnectionProvider()) {
             noChangeExceptRole &= dependencyResolver.canReuseDependency(
-                    ofSwitchProvider, openflowSwitchConnectionProviderJmxAttribute); 
+                    ofSwitchProvider, openflowSwitchConnectionProviderJmxAttribute);
         }
         return noChangeExceptRole;
     }

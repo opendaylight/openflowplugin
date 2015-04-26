@@ -7,10 +7,11 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal;
 
+import com.google.common.annotations.VisibleForTesting;
 import java.util.Collection;
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
-import org.opendaylight.controller.sal.binding.api.BindingAwareProvider;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.openflowplugin.api.openflow.statistics.MessageCountDumper;
 import org.opendaylight.openflowplugin.api.openflow.statistics.MessageObservatory;
@@ -24,20 +25,15 @@ import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.statistics.MessageSpyCounterImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.common.config.impl.rev140326.OfpRole;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
-import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * OFPlugin provider implementation
  */
-public class OpenflowPluginProvider implements BindingAwareProvider, AutoCloseable, OpenFlowPluginExtensionRegistratorProvider {
+public class OpenflowPluginProvider implements AutoCloseable, OpenFlowPluginExtensionRegistratorProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(OpenflowPluginProvider.class);
-
-    private BindingAwareBroker broker;
-
-    private BundleContext context;
 
     private Collection<SwitchConnectionProvider> switchConnectionProviders;
 
@@ -52,6 +48,9 @@ public class OpenflowPluginProvider implements BindingAwareProvider, AutoCloseab
     private OfpRole role;
 
     private OFRoleManager roleManager;
+    private DataBroker dataBroker;
+    private NotificationProviderService notificationService;
+    private RpcProviderRegistry rpcRegistry;
 
     /**
      * Initialization of services and msgSpy counter
@@ -60,7 +59,20 @@ public class OpenflowPluginProvider implements BindingAwareProvider, AutoCloseab
         messageCountProvider = new MessageSpyCounterImpl();
         extensionConverterManager = new ExtensionConverterManagerImpl();
         roleManager = new OFRoleManager(OFSessionUtil.getSessionManager());
-        this.registerProvider();
+
+        LOG.debug("dependencies gathered..");
+        registrationManager = new SalRegistrationManager();
+        registrationManager.setDataService(dataBroker);
+        registrationManager.setPublishService(notificationService);
+        registrationManager.setRpcProviderRegistry(rpcRegistry);
+        registrationManager.init();
+
+        mdController = new MDController();
+        mdController.setSwitchConnectionProviders(switchConnectionProviders);
+        mdController.setMessageSpyCounter(messageCountProvider);
+        mdController.setExtensionConverterProvider(extensionConverterManager);
+        mdController.init();
+        mdController.start();
     }
 
     /**
@@ -70,26 +82,6 @@ public class OpenflowPluginProvider implements BindingAwareProvider, AutoCloseab
         this.switchConnectionProviders = switchConnectionProvider;
     }
 
-    /**
-     * @return osgi context
-     */
-    public BundleContext getContext() {
-        return context;
-    }
-
-    @Override
-    public void onSessionInitiated(ProviderContext session) {
-        LOG.debug("onSessionInitiated");
-        registrationManager = new SalRegistrationManager();
-        registrationManager.onSessionInitiated(session);
-        mdController = new MDController();
-        mdController.setSwitchConnectionProviders(switchConnectionProviders);
-        mdController.setMessageSpyCounter(messageCountProvider);
-        mdController.setExtensionConverterProvider(extensionConverterManager);
-        mdController.init();
-        mdController.start();
-    }
-
     @Override
     public void close() {
         LOG.debug("close");
@@ -97,47 +89,6 @@ public class OpenflowPluginProvider implements BindingAwareProvider, AutoCloseab
         mdController = null;
         registrationManager.close();
         registrationManager = null;
-    }
-
-    /**
-     * @return BA default broker
-     */
-    public BindingAwareBroker getBroker() {
-        return broker;
-    }
-
-    /**
-     * dependencymanager requirement
-     *
-     * @param broker
-     */
-    public void setBroker(BindingAwareBroker broker) {
-        this.broker = broker;
-    }
-
-    /**
-     * dependencymanager requirement
-     *
-     * @param brokerArg
-     */
-    public void unsetBroker(BindingAwareBroker brokerArg) {
-        this.broker = null;
-    }
-
-    private boolean hasAllDependencies() {
-        if (this.broker != null && this.switchConnectionProviders != null) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * register providers for md-sal
-     */
-    private void registerProvider() {
-        if (hasAllDependencies()) {
-            this.broker.registerProvider(this, context);
-        }
     }
 
     public MessageCountDumper getMessageCountDumper() {
@@ -184,5 +135,32 @@ public class OpenflowPluginProvider implements BindingAwareProvider, AutoCloseab
                 break;
             }
         }
+    }
+
+    public void setDataBroker(DataBroker dataBroker) {
+        this.dataBroker = dataBroker;
+    }
+
+    public void setNotificationService(NotificationProviderService notificationService) {
+        this.notificationService = notificationService;
+    }
+
+    public void setRpcRegistry(RpcProviderRegistry rpcRegistry) {
+        this.rpcRegistry = rpcRegistry;
+    }
+
+    @VisibleForTesting
+    protected RpcProviderRegistry getRpcRegistry() {
+        return rpcRegistry;
+    }
+
+    @VisibleForTesting
+    protected NotificationProviderService getNotificationService() {
+        return notificationService;
+    }
+
+    @VisibleForTesting
+    protected DataBroker getDataBroker() {
+        return dataBroker;
     }
 }

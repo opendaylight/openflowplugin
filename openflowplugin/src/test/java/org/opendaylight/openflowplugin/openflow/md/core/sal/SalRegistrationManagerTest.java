@@ -25,8 +25,10 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.controller.sal.common.util.Rpcs;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.ModelDrivenSwitch;
@@ -76,6 +78,10 @@ public class SalRegistrationManagerTest {
     private ListeningExecutorService rpcPool;
     @Mock
     private NotificationProviderService notificationProviderService;
+    @Mock
+    private RpcProviderRegistry rpcProviderRegistry;
+    @Mock
+    private DataBroker dataBroker;
 
     private ModelDrivenSwitch mdSwitchOF13;
 
@@ -108,8 +114,11 @@ public class SalRegistrationManagerTest {
                         Matchers.any(SwitchConnectionDistinguisher.class))).thenReturn(Futures.immediateFuture(result));
 
         salRegistrationManager = new SalRegistrationManager();
-        salRegistrationManager.onSessionInitiated(providerContext);
         salRegistrationManager.setPublishService(notificationProviderService);
+        salRegistrationManager.setDataService(dataBroker);
+        salRegistrationManager.setRpcProviderRegistry(rpcProviderRegistry);
+
+        salRegistrationManager.init();
 
     }
 
