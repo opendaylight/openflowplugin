@@ -43,12 +43,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.UdpMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.protocol.match.fields.Pbb;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 8.4.2015.
  */
 public final class HashUtil {
 
+    private static final Logger LOG = LoggerFactory.getLogger(HashUtil.class);
     private static final int BASE_16 = 16;
     private static final int BASE_10 = 10;
 
@@ -91,11 +94,13 @@ public final class HashUtil {
     }
 
     public static int calculateMacAddressHash(MacAddress macAddress) {
+
         int hash = 0;
         if (null != macAddress) {
             StringTokenizer stringTokenizer = new StringTokenizer(macAddress.getValue(), ":");
             hash = parseTokens(stringTokenizer, BASE_16);
         }
+        LOG.trace("Calculated hash {} for mac {}", hash, macAddress);
         return hash;
     }
 
@@ -351,7 +356,11 @@ public final class HashUtil {
             int step = 0;
             while (stringTokenizer.hasMoreTokens()) {
                 step++;
-                hash = hash ^ ((Integer.parseInt(stringTokenizer.nextToken(), base) * step) + step);
+                try {
+                    hash = hash ^ ((Integer.parseInt(stringTokenizer.nextToken(), base) * step) + step);
+                } catch (NumberFormatException nfe) {
+                    LOG.trace("Skipping empty token.");
+                }
                 if (stopper > 0 && step == stopper) {
                     break;
                 }
