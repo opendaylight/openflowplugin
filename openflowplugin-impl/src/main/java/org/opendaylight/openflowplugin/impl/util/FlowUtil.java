@@ -10,6 +10,8 @@ package org.opendaylight.openflowplugin.impl.util;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 8.4.2015.
@@ -18,6 +20,7 @@ public final class FlowUtil {
 
     private static final String ALIEN_SYSTEM_FLOW_ID = "#UF$TABLE*";
     private static final AtomicInteger unaccountedFlowsCounter = new AtomicInteger(0);
+    private static final Logger LOG = LoggerFactory.getLogger(FlowUtil.class);
 
 
     private FlowUtil() {
@@ -27,7 +30,8 @@ public final class FlowUtil {
     public static FlowId createAlienFlowId(final Short tableId) {
         final StringBuilder sBuilder = new StringBuilder(ALIEN_SYSTEM_FLOW_ID)
                 .append(tableId).append("-").append(unaccountedFlowsCounter.incrementAndGet());
-        return new FlowId(sBuilder.toString());
+        String alienId =  sBuilder.toString();
+        return new FlowId(alienId);
 
     }
 }
