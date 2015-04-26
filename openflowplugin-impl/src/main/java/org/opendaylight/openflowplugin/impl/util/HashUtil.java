@@ -12,6 +12,7 @@ import java.math.BigInteger;
 import java.util.StringTokenizer;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpVersion;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
@@ -54,6 +55,8 @@ public final class HashUtil {
     private static final Logger LOG = LoggerFactory.getLogger(HashUtil.class);
     private static final int BASE_16 = 16;
     private static final int BASE_10 = 10;
+    private static final int IPV6_TOKENS_COUNT = 8;
+    public static final String IPV6_TOKEN = ":0000";
 
     private HashUtil() {
 
@@ -336,14 +339,65 @@ public final class HashUtil {
         if (null != ipv6Destination) {
             hash += calculateIpv6PrefixHash(ipv6Destination);
         }
+
+        if (null != layer3Match.getIpv6Source()) {
+            hash += calculateIpv6PrefixHash(layer3Match.getIpv6Source());
+        }
+
+        if (null != layer3Match.getIpv6ExtHeader()) {
+            hash += layer3Match.getIpv6ExtHeader().getIpv6Exthdr();
+            hash += layer3Match.getIpv6ExtHeader().getIpv6ExthdrMask();
+        }
+
+        if (null != layer3Match.getIpv6NdSll()) {
+            hash += calculateMacAddressHash(layer3Match.getIpv6NdSll());
+        }
+        if (null != layer3Match.getIpv6NdTll()) {
+            hash += calculateMacAddressHash(layer3Match.getIpv6NdTll());
+        }
+        if (null != layer3Match.getIpv6NdTarget()){
+            hash += calculateIpv6AddressHash(layer3Match.getIpv6NdTarget());
+        }
         return hash;
     }
 
 
     public static int calculateIpv6PrefixHash(final Ipv6Prefix ipv6Prefix) {
-        StringTokenizer stringTokenizer = new StringTokenizer(ipv6Prefix.getValue(), ":");
+
+        StringTokenizer stringTokenizer = getStringTokenizerWithFullAddressString(ipv6Prefix.getValue());
+
         int hash = parseTokens(stringTokenizer, BASE_16);
         return hash;
+    }
+    public static int calculateIpv6AddressHash(final Ipv6Address ipv6Address) {
+
+        StringTokenizer stringTokenizer = getStringTokenizerWithFullAddressString(ipv6Address.getValue());
+
+        int hash = parseTokens(stringTokenizer, BASE_16);
+        return hash;
+    }
+
+    private static StringTokenizer getStringTokenizerWithFullAddressString(String value) {
+        String ipv6Value = value.replace("::", ":0000:");
+        StringTokenizer stringTokenizer = new StringTokenizer(ipv6Value, ":");
+
+        int delta = IPV6_TOKENS_COUNT - stringTokenizer.countTokens();
+
+        StringBuffer additions = new StringBuffer();
+
+        if (delta > 0) {
+            while (delta > 0) {
+                additions.append(IPV6_TOKEN);
+                delta--;
+            }
+            if (ipv6Value.contains("/")) {
+                ipv6Value = ipv6Value.replace("/", additions.toString() + "/");
+            } else {
+                ipv6Value += additions.toString();
+            }
+            stringTokenizer = new StringTokenizer(ipv6Value, ":");
+        }
+        return stringTokenizer;
     }
 
     private static int parseTokens(final StringTokenizer stringTokenizer, int base) {
@@ -355,14 +409,21 @@ public final class HashUtil {
         if (stringTokenizer.countTokens() > 0) {
             int step = 0;
             while (stringTokenizer.hasMoreTokens()) {
+                String token = stringTokenizer.nextToken();
                 step++;
-                try {
-                    hash = hash ^ ((Integer.parseInt(stringTokenizer.nextToken(), base) * step) + step);
-                } catch (NumberFormatException nfe) {
-                    LOG.trace("Skipping empty token.");
+
+                if (token.equals("")) {
+                    token = "0";
                 }
-                if (stopper > 0 && step == stopper) {
-                    break;
+
+                if (token.contains("/")) {
+                    StringTokenizer tokenizer = new StringTokenizer(token, "/");
+                    hash = hash ^ parseTokens(tokenizer, stopper, base);
+                } else {
+                    hash = hash ^ ((Integer.parseInt(token, base) * step) + step);
+                    if (stopper > 0 && step == stopper) {
+                        break;
+                    }
                 }
             }
         }
