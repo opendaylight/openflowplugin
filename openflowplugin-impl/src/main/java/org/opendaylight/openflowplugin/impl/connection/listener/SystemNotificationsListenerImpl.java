@@ -105,7 +105,11 @@ public class SystemNotificationsListenerImpl implements SystemNotificationsListe
 
     private void disconnect() {
         final ConnectionAdapter connectionAdapter = connectionContext.getConnectionAdapter();
-        final Short auxiliaryId = connectionContext.getFeatures().getAuxiliaryId();
+        short auxId = -1;
+        if (null != connectionContext.getFeatures()) {
+            auxId = connectionContext.getFeatures().getAuxiliaryId();
+        }
+        final Short auxiliaryId = auxId;
         final InetSocketAddress remoteAddress = connectionAdapter.getRemoteAddress();
 
         LOG.trace("disconnecting: node={}|auxId={}|connection state = {}",
