@@ -31,7 +31,7 @@ public class DropAllPacketsCommandProvider extends OsgiCommandSupport {
     @Override
     protected Object doExecute() throws Exception {
         PrintStream out = session.getConsole();
-        final DropTestDsProvider provider = DropTestActivator.getDropDsProvider();
+        final DropTestDsProvider provider = DropTestProviderImpl.getDropDsProvider();
 
         if ("on".equalsIgnoreCase(targetStateArg)) {
             if (! provider.isActive()) {

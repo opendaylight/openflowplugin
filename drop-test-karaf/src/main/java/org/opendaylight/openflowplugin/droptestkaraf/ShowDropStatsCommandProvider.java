@@ -20,8 +20,8 @@ public class ShowDropStatsCommandProvider extends OsgiCommandSupport {
     @Override
     protected Object doExecute() throws Exception {
         PrintStream out = session.getConsole();
-        final DropTestRpcProvider rpcProvider = DropTestActivator.getDropRpcProvider();
-        final DropTestDsProvider provider = DropTestActivator.getDropDsProvider();
+        final DropTestRpcProvider rpcProvider = DropTestProviderImpl.getDropRpcProvider();
+        final DropTestDsProvider provider = DropTestProviderImpl.getDropDsProvider();
 
         out.format("RPC Test Statistics: %s%n", rpcProvider.getStats().toString());
         out.format("FRM Test Statistics: %s%n", provider.getStats().toString());
