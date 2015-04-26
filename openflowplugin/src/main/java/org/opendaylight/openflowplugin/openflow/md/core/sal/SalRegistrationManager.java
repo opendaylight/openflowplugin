@@ -14,15 +14,15 @@ import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowplugin.api.openflow.md.ModelDrivenSwitch;
 import org.opendaylight.openflowplugin.api.openflow.md.core.NotificationQueueWrapper;
-import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionListener;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionManager;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SwitchSessionKeyOF;
+import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Address;
@@ -52,11 +52,11 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(SalRegistrationManager.class);
 
-    private ProviderContext providerContext;
-
     private NotificationProviderService publishService;
 
     private DataBroker dataService;
+
+    private RpcProviderRegistry rpcProviderRegistry;
 
     private SwitchFeaturesUtil swFeaturesUtil;
 
@@ -74,16 +74,16 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
         this.publishService = publishService;
     }
 
-    public ProviderContext getProviderContext() {
-        return providerContext;
+    public void setDataService(DataBroker dataService) {
+        this.dataService = dataService;
     }
 
-    public void onSessionInitiated(ProviderContext session) {
-        LOG.debug("onSessionInitiated");
-        this.providerContext = session;
-        this.publishService = session.getSALService(NotificationProviderService.class);
-        this.dataService = session.getSALService(DataBroker.class);
-        // We register as listener for Session Manager
+    public void setRpcProviderRegistry(RpcProviderRegistry rpcProviderRegistry) {
+        this.rpcProviderRegistry = rpcProviderRegistry;
+    }
+
+    public void init() {
+        LOG.debug("init..");
         sessionListenerRegistration = getSessionManager().registerSessionListener(this);
         getSessionManager().setNotificationProviderService(publishService);
         getSessionManager().setDataBroker(dataService);
@@ -98,10 +98,11 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
         NodeRef nodeRef = new NodeRef(identifier);
         NodeId nodeId = nodeIdFromDatapathId(datapathId);
         ModelDrivenSwitchImpl ofSwitch = new ModelDrivenSwitchImpl(nodeId, identifier, context);
-        CompositeObjectRegistration<ModelDrivenSwitch> registration = ofSwitch.register(providerContext);
+        CompositeObjectRegistration<ModelDrivenSwitch> registration =
+                ofSwitch.register(rpcProviderRegistry);
         context.setProviderRegistration(registration);
 
-        LOG.debug("ModelDrivenSwitch for {} registered to MD-SAL.", datapathId.toString());
+        LOG.debug("ModelDrivenSwitch for {} registered to MD-SAL.", datapathId);
 
         NotificationQueueWrapper wrappedNotification = new NotificationQueueWrapper(
                 nodeAdded(ofSwitch, features, nodeRef),
@@ -122,7 +123,7 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
             registration.close();
             context.setProviderRegistration(null);
         }
-        LOG.debug("ModelDrivenSwitch for {} unregistered from MD-SAL.", datapathId.toString());
+        LOG.debug("ModelDrivenSwitch for {} unregistered from MD-SAL.", datapathId);
 
         NotificationQueueWrapper wrappedNotification = new NotificationQueueWrapper(
                 nodeRemoved, context.getFeatures().getVersion());
@@ -190,7 +191,7 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
 
     public static NodeId nodeIdFromDatapathId(BigInteger datapathId) {
         // FIXME: Convert to textual representation of datapathID
-        String current = datapathId.toString();
+        String current = String.valueOf(datapathId);
         return new NodeId("openflow:" + current);
     }
 
@@ -202,17 +203,10 @@ public class SalRegistrationManager implements SessionListener, AutoCloseable {
     public void close() {
         LOG.debug("close");
         dataService = null;
-        providerContext = null;
+        rpcProviderRegistry = null;
         publishService = null;
         if (sessionListenerRegistration != null) {
             sessionListenerRegistration.close();
         }
-    }
-
-    /**
-     * @param providerContext the providerContext to set
-     */
-    public void setProviderContext(ProviderContext providerContext) {
-        this.providerContext = providerContext;
     }
 }

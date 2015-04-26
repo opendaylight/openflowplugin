@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal;
 
+import com.google.common.util.concurrent.ListeningExecutorService;
 import java.math.BigInteger;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
@@ -20,7 +21,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -32,25 +32,24 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.core.ConnectionConductor;
 import org.opendaylight.openflowplugin.api.openflow.md.core.NotificationEnqueuer;
-import org.opendaylight.openflowplugin.openflow.md.core.ThreadPoolLoggingExecutor;
-import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SwitchSessionKeyOF;
+import org.opendaylight.openflowplugin.openflow.md.core.ThreadPoolLoggingExecutor;
+import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Capabilities;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutputBuilder;
 import org.opendaylight.yangtools.yang.binding.RpcService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.util.concurrent.ListeningExecutorService;
 
 /**
  * Created by Martin Bobak mbobak@cisco.com on 9/22/14.
@@ -76,11 +75,13 @@ public class ConcurrentSalRegistrationManagerTest {
     @Mock
     private ConnectionConductor connectionConductor;
     @Mock
-    private ListeningExecutorService rpcPool; 
+    private ListeningExecutorService rpcPool;
     @Mock
-    private NotificationProviderService notificationProviderService; 
+    private NotificationProviderService notificationProviderService;
     @Mock
-    private ProviderContext providerContext;
+    private RpcProviderRegistry rpcProviderRegistry;
+    @Mock
+    private DataBroker dataBroker;
     @Mock
     private NotificationEnqueuer notificationEnqueuer;
     @Mock
@@ -94,9 +95,8 @@ public class ConcurrentSalRegistrationManagerTest {
     @Before
     public void setUp() {
         SWITCH_SESSION_KEY_OF.setDatapathId(BigInteger.ONE);
-        Mockito.when(providerContext.getSALService(NotificationProviderService.class)).thenReturn(notificationProviderService);
         Mockito.when(context.getNotificationEnqueuer()).thenReturn(notificationEnqueuer);
-        
+
         // features mockery
         features = new GetFeaturesOutputBuilder()
         .setVersion(OFConstants.OFP_VERSION_1_3)
@@ -104,13 +104,13 @@ public class ConcurrentSalRegistrationManagerTest {
         .setCapabilities(new Capabilities(true, true, true, true, true, true, true))
         .build();
         Mockito.when(context.getFeatures()).thenReturn(features);
-        
+
         Mockito.when(context.getPrimaryConductor()).thenReturn(connectionConductor);
         Mockito.when(context.getSessionKey()).thenReturn(SWITCH_SESSION_KEY_OF);
         Mockito.when(connectionConductor.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
-        
+
         // provider context - registration responder
-        Mockito.when(providerContext.addRoutedRpcImplementation(Matchers.any(Class.class), Matchers.any(RpcService.class)))
+        Mockito.when(rpcProviderRegistry.addRoutedRpcImplementation(Matchers.any(Class.class), Matchers.any(RpcService.class)))
         .then(new Answer<RoutedRpcRegistration<?>>() {
             @Override
             public RoutedRpcRegistration<?> answer(InvocationOnMock invocation) {
@@ -122,44 +122,47 @@ public class ConcurrentSalRegistrationManagerTest {
                         LOG.error("delaying of worker thread [{}] failed.", Thread.currentThread().getName(), e);
                     }
                 }
-                
+
                 Object[] args = invocation.getArguments();
                 RoutedRpcRegistration<RpcService> registration = Mockito.mock(RoutedRpcRegistration.class);
                 Mockito.when(registration.getInstance()).thenReturn((RpcService) args[1]);
-                
+
                 return registration;
             }
         });
-        
+
         Mockito.when(connectionConductor.getConnectionAdapter()).thenReturn(connectionAdapter);
         Mockito.when(connectionAdapter.getRemoteAddress()).thenReturn(new InetSocketAddress("10.1.2.3", 4242));
-        
+
         taskExecutor = new ThreadPoolCollectingExecutor(
                 2, 2, 0, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<Runnable>(2), "junit");
-        
-        registrationManager.onSessionInitiated(providerContext);
+
+        registrationManager.setRpcProviderRegistry(rpcProviderRegistry);
+        registrationManager.setDataService(dataBroker);
+        registrationManager.setPublishService(notificationProviderService);
+        registrationManager.init();
         OFSessionUtil.getSessionManager().setRpcPool(rpcPool);
     }
-    
+
     /**
      * clean up
-     * @throws InterruptedException 
+     * @throws InterruptedException
      */
     @After
     public void tearDown() throws InterruptedException {
         taskExecutor.shutdown();
         taskExecutor.awaitTermination(1, TimeUnit.SECONDS);
         if (!taskExecutor.isTerminated()) {
-           taskExecutor.shutdownNow(); 
+            taskExecutor.shutdownNow();
         }
         LOG.info("All tasks have finished.");
-        
-        LOG.info("amount of scheduled threads: {}, exited threads: {}, failed threads: {}", 
+
+        LOG.info("amount of scheduled threads: {}, exited threads: {}, failed threads: {}",
                 taskExecutor.getTaskCount(), taskExecutor.getThreadExitCounter(), taskExecutor.getFailLogbook().size());
         for (String exitStatus : taskExecutor.getFailLogbook()) {
             LOG.debug(exitStatus);
         }
-        
+
         OFSessionUtil.releaseSessionManager();
         Assert.assertTrue("there should not be any failed threads in the pool", taskExecutor.getFailLogbook().isEmpty());
         Assert.assertTrue("there should not be any living thread in the pool", taskExecutor.getActiveCount() == 0);
@@ -167,9 +170,9 @@ public class ConcurrentSalRegistrationManagerTest {
 
     /**
      * Test method which verifies that session could not be invalidated while in creation.
-     * @throws InterruptedException 
-     * @throws TimeoutException 
-     * @throws ExecutionException 
+     * @throws InterruptedException
+     * @throws TimeoutException
+     * @throws ExecutionException
      */
     @Test
     public void testConcurrentRemoveSessionContext() throws InterruptedException, ExecutionException, TimeoutException {
@@ -195,16 +198,16 @@ public class ConcurrentSalRegistrationManagerTest {
                 return null;
             }
         };
-        
+
         Future<Void> addSessionResult = taskExecutor.submit(delayedThread);
         Future<Void> removeSessionResult = taskExecutor.submit(noDelayThread);
-        
+
         addSessionResult.get(REGISTRATION_ACTION_TIMEOUT, TimeUnit.SECONDS);
         removeSessionResult.get(REGISTRATION_ACTION_TIMEOUT, TimeUnit.SECONDS);
     }
 
     private static class ThreadPoolCollectingExecutor extends ThreadPoolLoggingExecutor {
-        
+
         private List<String> failLogbook;
         private int threadExitCounter = 0;
 
@@ -220,27 +223,27 @@ public class ConcurrentSalRegistrationManagerTest {
                 int maximumPoolSize, long keepAliveTime, TimeUnit unit,
                 BlockingQueue<Runnable> workQueue, String poolName) {
             super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, poolName);
-            
+
             failLogbook = Collections.synchronizedList(new ArrayList<String>());
         }
-        
+
         @Override
         protected void afterExecute(Runnable r, Throwable t) {
             super.afterExecute(r, t);
             threadExitCounter ++;
-            
+
             if (t != null) {
                 failLogbook.add("job ["+r+"] exited with throwable:" + t.getMessage());
             }
         }
-        
+
         /**
          * @return the chronicles
          */
         public List<String> getFailLogbook() {
             return failLogbook;
         }
-        
+
         /**
          * @return the threadExitCounter
          */

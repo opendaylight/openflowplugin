@@ -59,14 +59,31 @@ module openflow-provider-impl {
         case openflow-provider-impl {
             when "/config:modules/config:module/config:type = 'openflow-provider-impl'";
 
-            container binding-aware-broker {
+            container data-broker {
                 uses config:service-ref {
                     refine type {
                         mandatory true;
-                        config:required-identity md-sal-binding:binding-broker-osgi-registry;
+                        config:required-identity md-sal-binding:binding-async-data-broker;
                     }
                 }
             }
+            container rpc-registry {
+                uses config:service-ref {
+                    refine type {
+                        mandatory true;
+                        config:required-identity md-sal-binding:binding-rpc-registry;
+                    }
+                }
+            }
+            container notification-service {
+                uses config:service-ref {
+                    refine type {
+                        mandatory true;
+                        config:required-identity md-sal-binding:binding-notification-service;
+                    }
+                }
+            }
+
             list openflow-switch-connection-provider {
                 uses config:service-ref {
                     refine type {
