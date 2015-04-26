@@ -46,7 +46,7 @@ public class BarrierTaskBuilder {
     }
 
     public void buildAndFireBarrierTask() {
-        Timeout timeout = deviceCtx.getTimer().newTimeout(new BarrierTask(), DELAY, TimeUnit.MILLISECONDS);
+        Timeout timeout = deviceCtx.getTimer().newTimeout(new BarrierTask(deviceCtx), DELAY, TimeUnit.MILLISECONDS);
         deviceCtx.setCurrentBarrierTimeout(timeout);
     }
 
@@ -61,6 +61,12 @@ public class BarrierTaskBuilder {
     }
 
     private final class BarrierTask implements TimerTask {
+
+        private final DeviceContext deviceCtx;
+
+        public BarrierTask(final DeviceContext deviceCtx) {
+            this.deviceCtx = deviceCtx;
+        }
 
         @Override
         public void run(final Timeout timeout) throws Exception {
