@@ -17,6 +17,13 @@ import java.util.HashSet;
 import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
+import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowHash;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowsStatisticsUpdate;
@@ -30,13 +37,17 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatchBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+@RunWith(MockitoJUnitRunner.class)
 public class FlowHashFactoryTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(FlowHashFactoryTest.class);
 
 
     private static final FlowsStatisticsUpdateBuilder FLOWS_STATISTICS_UPDATE_BUILDER = new FlowsStatisticsUpdateBuilder();
+    @Mock
+    private DeviceContext deviceContext;
+    @Mock
+    private DeviceState deviceState;
 
 
     @Before
@@ -67,6 +78,8 @@ public class FlowHashFactoryTest {
             flowAndStatisticsMapListList.add(flowAndStatisticsMapListBuilder.build());
         }
         FLOWS_STATISTICS_UPDATE_BUILDER.setFlowAndStatisticsMapList(flowAndStatisticsMapListList);
+        Mockito.when(deviceContext.getDeviceState()).thenReturn(deviceState);
+        Mockito.when(deviceState.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
     }
 
     @Test
@@ -75,7 +88,7 @@ public class FlowHashFactoryTest {
 
         HashSet<FlowHash> flowHashs = new HashSet();
         for (FlowAndStatisticsMapList item : flowStats.getFlowAndStatisticsMapList()) {
-            FlowHash flowHash = FlowHashFactory.create(item);
+            FlowHash flowHash = FlowHashFactory.create(item, deviceContext);
             flowHashs.add(flowHash);
             flowHashs.add(flowHash);
         }
@@ -87,7 +100,7 @@ public class FlowHashFactoryTest {
         FlowsStatisticsUpdate flowStats = FLOWS_STATISTICS_UPDATE_BUILDER.build();
 
         for (FlowAndStatisticsMapList item : flowStats.getFlowAndStatisticsMapList()) {
-            FlowHash flowHash = FlowHashFactory.create(item);
+            FlowHash flowHash = FlowHashFactory.create(item, deviceContext);
             FlowHash lastHash = null;
             if (null != lastHash) {
                 assertNotEquals(lastHash, flowHash);

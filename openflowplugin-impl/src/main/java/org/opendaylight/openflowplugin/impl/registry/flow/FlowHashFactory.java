@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.impl.registry.flow;
 
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowHash;
 import org.opendaylight.openflowplugin.impl.util.HashUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow;
@@ -21,13 +22,13 @@ public class FlowHashFactory {
     public FlowHashFactory() {
     }
 
-    public static FlowHash create(Flow flow) {
-        int hash = calculateHash(flow);
+    public static FlowHash create(Flow flow, DeviceContext deviceContext) {
+        int hash = calculateHash(flow, deviceContext);
         return new FlowHashDto(hash);
     }
 
-    private static int calculateHash(Flow flow) {
-        int hash = HashUtil.calculateMatchHash(flow.getMatch());
+    private static int calculateHash(Flow flow, DeviceContext deviceContext) {
+        int hash = HashUtil.calculateMatchHash(flow.getMatch(), deviceContext);
         hash += flow.getPriority();
         hash += flow.getTableId();
         hash += flow.getCookie().hashCode();

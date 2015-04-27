@@ -10,6 +10,10 @@ package org.opendaylight.openflowplugin.impl.util;
 
 import java.math.BigInteger;
 import java.util.StringTokenizer;
+
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
+import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpVersion;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Prefix;
@@ -104,7 +108,7 @@ public final class HashUtil {
         return hash;
     }
 
-    public static int calculateMatchHash(final Match match) {
+    public static int calculateMatchHash(final Match match, DeviceContext deviceContext) {
         int hash = 0;
         int subHash = 0;
         int base = 0;
@@ -126,12 +130,12 @@ public final class HashUtil {
             base++;
             if (null != match.getInPhyPort()) {
                 hash = 1 << base;
-                subHash += calculateNodeConnectorIdHash(match.getInPhyPort());
+                subHash += calculateNodeConnectorIdHash(match.getInPhyPort(), deviceContext);
             }
             base++;
             if (null != match.getInPort()) {
                 hash = 1 << base;
-                subHash += calculateNodeConnectorIdHash(match.getInPort());
+                subHash += calculateNodeConnectorIdHash(match.getInPort(), deviceContext);
             }
             base++;
             if (null != match.getIpMatch()) {
@@ -460,9 +464,11 @@ public final class HashUtil {
         return hash;
     }
 
-    private static int calculateNodeConnectorIdHash(final NodeConnectorId inPhyPort) {
+    private static int calculateNodeConnectorIdHash(final NodeConnectorId inPhyPort, DeviceContext deviceContext) {
         int hash = 0;
-        hash += Integer.valueOf(inPhyPort.getValue());
+        short version = deviceContext.getDeviceState().getVersion();
+        Long portFromLogicalName = OpenflowPortsUtil.getPortFromLogicalName(OpenflowVersion.get(version), inPhyPort.getValue());
+        hash += portFromLogicalName.intValue();
         return hash;
     }
 
