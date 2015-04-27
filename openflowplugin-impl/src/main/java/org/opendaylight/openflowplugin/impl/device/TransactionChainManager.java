@@ -48,18 +48,23 @@ class TransactionChainManager implements TransactionChainListener {
     private final HashedWheelTimer hashedWheelTimer;
     private final DataBroker dataBroker;
     private final long maxTx;
+    private final long timerValue;
     private BindingTransactionChain txChainFactory;
     private WriteTransaction wTx;
     private Timeout submitTaskTime;
     private long nrOfActualTx;
     private boolean counterIsEnabled;
 
-    TransactionChainManager(@Nonnull final DataBroker dataBroker, @Nonnull final HashedWheelTimer hashedWheelTimer, final long maxTx) {
+    TransactionChainManager(@Nonnull final DataBroker dataBroker,
+                            @Nonnull final HashedWheelTimer hashedWheelTimer,
+                            final long maxTx,
+                            final long timerValue) {
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
         this.hashedWheelTimer = Preconditions.checkNotNull(hashedWheelTimer);
         this.maxTx = maxTx;
         txChainFactory = dataBroker.createTransactionChain(TransactionChainManager.this);
         nrOfActualTx = 0L;
+        this.timerValue = timerValue;
         LOG.debug("created txChainManager with operation limit {}", maxTx);
     }
 
@@ -109,7 +114,7 @@ class TransactionChainManager implements TransactionChainListener {
             public void run(final Timeout timeout) throws Exception {
                 submitTransaction();
             }
-        }, 500L, TimeUnit.MILLISECONDS);
+        }, timerValue, TimeUnit.MILLISECONDS);
     }
 
     synchronized void enableCounter() {
