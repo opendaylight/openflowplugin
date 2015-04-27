@@ -109,7 +109,7 @@ class TransactionChainManager implements TransactionChainListener {
             public void run(final Timeout timeout) throws Exception {
                 submitTransaction();
             }
-        }, 500L, TimeUnit.MILLISECONDS);
+        }, maxTx, TimeUnit.MILLISECONDS);
     }
 
     synchronized void enableCounter() {
