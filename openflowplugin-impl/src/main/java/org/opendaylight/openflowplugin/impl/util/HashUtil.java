@@ -346,8 +346,22 @@ public final class HashUtil {
 
     public static int calculateIpv6PrefixHash(final Ipv6Prefix ipv6Prefix) {
         StringTokenizer stringTokenizer = new StringTokenizer(ipv6Prefix.getValue(), ":");
-        int hash = parseTokens(stringTokenizer, BASE_16);
+        int stopper = calculateStopperBasedOnMaskValue(ipv6Prefix, 16);
+        int hash = parseTokens(stringTokenizer, stopper, BASE_16);
         return hash;
+    }
+
+    private static int calculateStopperBasedOnMaskValue(final Ipv6Prefix ipv6Prefix, int bitsBase) {
+        double maskValue = extractMask(ipv6Prefix);
+        double bitCount = maskValue / bitsBase;
+        return (int) Math.ceil(bitCount);
+    }
+
+    private static int extractMask(final Ipv6Prefix ipv6Prefix) {
+        StringTokenizer maskTokenizer = new StringTokenizer(ipv6Prefix.getValue(), "/");
+        maskTokenizer.nextToken();
+        int mask = Integer.parseInt(maskTokenizer.nextToken());
+        return mask;
     }
 
     private static int parseTokens(final StringTokenizer stringTokenizer, int base) {

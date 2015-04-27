@@ -45,6 +45,13 @@ public class HashUtilTest {
             new Ipv6Prefix("2001:0DB8:0000:0000:0000:0000:57ab:1428")
     };
 
+    private static final Ipv6Prefix[] IPV_6_PREFIXES_WITH_MASK = {
+            new Ipv6Prefix("FFFF:0DB8:0000:0000:0000:0000:1428:57ab/72"),
+            new Ipv6Prefix("2001:0DB8:0000:0000:0000:0000:1428:57ab/94"),
+            new Ipv6Prefix("0DB8:2001:0000:0000:0000:0000:1428:57ab/32"),
+            new Ipv6Prefix("2001:0DB8:0000:0000:0000:0000:57ab:1428/64")
+    };
+
 
     @Test
     public void testCalculateMatchHash() throws Exception {
@@ -83,4 +90,15 @@ public class HashUtilTest {
             Assert.assertNotEquals(hash_n, hash_n1);
         }
     }
+    @Test
+    public void testCalculateIpv6PrefixHashWithMask() {
+        for (int i = 0; i < IPV_6_PREFIXES.length - 1; i++) {
+            int hash_n = HashUtil.calculateIpv6PrefixHash(IPV_6_PREFIXES_WITH_MASK[i]);
+            int hash_n1 = HashUtil.calculateIpv6PrefixHash(IPV_6_PREFIXES_WITH_MASK[i + 1]);
+            Assert.assertNotNull(hash_n);
+            Assert.assertNotNull(hash_n1);
+            Assert.assertNotEquals(hash_n, hash_n1);
+        }
+    }
+
 }
