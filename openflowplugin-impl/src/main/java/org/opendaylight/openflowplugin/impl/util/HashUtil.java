@@ -360,8 +360,11 @@ public final class HashUtil {
 
     private static int extractMask(final Ipv6Prefix ipv6Prefix) {
         StringTokenizer maskTokenizer = new StringTokenizer(ipv6Prefix.getValue(), "/");
-        maskTokenizer.nextToken();
-        int mask = Integer.parseInt(maskTokenizer.nextToken());
+        int mask = 0;
+        if (maskTokenizer.countTokens() > 1) {
+            maskTokenizer.nextToken();
+            mask = Integer.parseInt(maskTokenizer.nextToken());
+        }
         return mask;
     }
 
