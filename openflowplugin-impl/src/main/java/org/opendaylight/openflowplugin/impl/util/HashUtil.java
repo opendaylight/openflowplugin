@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.impl.util;
 
 import java.math.BigInteger;
 import java.util.StringTokenizer;
-
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
@@ -249,7 +248,9 @@ public final class HashUtil {
 
     private static int calculateMetadataHash(final Metadata metadata) {
         int hash = metadata.getMetadata().intValue();
-        hash += metadata.getMetadataMask().intValue();
+        if (null != metadata.getMetadataMask()) {
+            hash += metadata.getMetadataMask().intValue();
+        }
         return hash;
     }
 
