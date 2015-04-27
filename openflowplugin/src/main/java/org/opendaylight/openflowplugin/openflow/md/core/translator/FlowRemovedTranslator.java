@@ -518,6 +518,8 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
         if (entry.isHasMask()) {
             byte[] mask = entry.getAugmentation(MaskMatchEntry.class).getMask();
             ipv6Prefix = ipv6Prefix + PREFIX_SEPARATOR + countBits(mask);
+        } else {
+            ipv6Prefix = ipv6Prefix + PREFIX_SEPARATOR + "128";
         }
         return new Ipv6Prefix(ipv6Prefix);
     }
