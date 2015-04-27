@@ -56,7 +56,7 @@ public class TransactionChainManagerTest {
     public void setUp() throws Exception {
         Mockito.when(dataBroker.createTransactionChain(Matchers.any(TransactionChainListener.class)))
                 .thenReturn(txChain);
-        txChainManager = new TransactionChainManager(dataBroker, timer, 2);
+        txChainManager = new TransactionChainManager(dataBroker, timer, 2, 2);
         Mockito.when(txChain.newWriteOnlyTransaction()).thenReturn(writeTx);
 
         nodeId = new NodeId("h2g2:42");

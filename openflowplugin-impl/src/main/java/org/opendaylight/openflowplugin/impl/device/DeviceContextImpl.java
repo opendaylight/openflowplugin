@@ -117,7 +117,7 @@ public class DeviceContextImpl implements DeviceContext {
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
         this.hashedWheelTimer = Preconditions.checkNotNull(hashedWheelTimer);
         xidGenerator = new XidGenerator();
-        txChainManager = new TransactionChainManager(dataBroker, hashedWheelTimer, 500L);
+        txChainManager = new TransactionChainManager(dataBroker, hashedWheelTimer, 500L, 500L);
         auxiliaryConnectionContexts = new HashMap<>();
         requests = new HashMap<>();
         deviceFlowRegistry = new DeviceFlowRegistryImpl();
