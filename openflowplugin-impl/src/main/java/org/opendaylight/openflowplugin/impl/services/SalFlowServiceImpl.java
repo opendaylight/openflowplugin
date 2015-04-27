@@ -71,7 +71,7 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
         }
 
 
-        final FlowHash flowHash = FlowHashFactory.create(input);
+        final FlowHash flowHash = FlowHashFactory.create(input, deviceContext);
         final FlowDescriptor flowDescriptor = FlowDescriptorFactory.create(input.getTableId(), flowId);
         deviceContext.getDeviceFlowRegistry().store(flowHash, flowDescriptor);
 
@@ -114,7 +114,7 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
                             @Override
                             public void onSuccess(final Object o) {
                                 messageSpy.spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_SUCCESS);
-                                FlowHash flowHash = FlowHashFactory.create(input);
+                                FlowHash flowHash = FlowHashFactory.create(input, deviceContext);
                                 deviceContext.getDeviceFlowRegistry().markToBeremoved(flowHash);
                             }
 
@@ -171,10 +171,10 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
             @Override
             public void onSuccess(final Object o) {
                 messageSpy.spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_SUCCESS);
-                FlowHash flowHash = FlowHashFactory.create(original);
+                FlowHash flowHash = FlowHashFactory.create(original, deviceContext);
                 deviceContext.getDeviceFlowRegistry().markToBeremoved(flowHash);
 
-                flowHash = FlowHashFactory.create(updated);
+                flowHash = FlowHashFactory.create(updated, deviceContext);
                 FlowId flowId = input.getFlowRef().getValue().firstKeyOf(Flow.class, FlowKey.class).getId();
                 FlowDescriptor flowDescriptor = FlowDescriptorFactory.create(updated.getTableId(), flowId);
                 deviceContext.getDeviceFlowRegistry().store(flowHash, flowDescriptor);
