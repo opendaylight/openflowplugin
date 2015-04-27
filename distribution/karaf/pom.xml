@@ -61,6 +61,13 @@
       <type>xml</type>
       <scope>runtime</scope>
     </dependency>
+    <dependency>
+      <artifactId>features-openflowplugin-li</artifactId>
+      <groupId>org.opendaylight.openflowplugin</groupId>
+      <classifier>features</classifier>
+      <type>xml</type>
+      <scope>runtime</scope>
+    </dependency>
     <!-- MD-SAL Related Features -->
     <dependency>
       <groupId>org.opendaylight.controller</groupId>

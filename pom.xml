@@ -36,6 +36,7 @@
       <module>drop-test-karaf</module>
       <module>test-common</module>
       <module>features</module>
+        <module>features-li</module>
       <module>samples/sample-consumer</module>
       <module>samples/learning-switch</module>
       <module>applications</module>
