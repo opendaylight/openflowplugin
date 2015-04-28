@@ -119,7 +119,6 @@ public class DeviceContextImpl implements DeviceContext {
         xidGenerator = new XidGenerator();
         txChainManager = new TransactionChainManager(dataBroker, hashedWheelTimer, 500L, 500L);
         auxiliaryConnectionContexts = new HashMap<>();
-        requests = new HashMap<>();
         deviceFlowRegistry = new DeviceFlowRegistryImpl();
         deviceGroupRegistry = new DeviceGroupRegistryImpl();
         deviceMeterRegistry = new DeviceMeterRegistryImpl();
