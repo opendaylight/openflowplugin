@@ -14,7 +14,7 @@
         <connection>scm:git:ssh://git.opendaylight.org:29418/openflowplugin.git</connection>
         <developerConnection>scm:git:ssh://git.opendaylight.org:29418/openflowplugin.git</developerConnection>
     </scm>
-    
+
     <dependencies>
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -39,6 +39,10 @@
         <dependency>
             <groupId>org.opendaylight.openflowjava</groupId>
             <artifactId>util</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin</groupId>
+            <artifactId>openflowplugin-common</artifactId>
         </dependency>
     </dependencies>
 

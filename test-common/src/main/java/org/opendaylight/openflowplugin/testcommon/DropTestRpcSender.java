@@ -7,14 +7,10 @@
  */
 package org.opendaylight.openflowplugin.testcommon;
 
-import static org.opendaylight.openflowplugin.testcommon.AbstractDropTest.BUFFER_ID;
-import static org.opendaylight.openflowplugin.testcommon.AbstractDropTest.HARD_TIMEOUT;
-import static org.opendaylight.openflowplugin.testcommon.AbstractDropTest.IDLE_TIMEOUT;
-import static org.opendaylight.openflowplugin.testcommon.AbstractDropTest.PRIORITY;
-import static org.opendaylight.openflowplugin.testcommon.AbstractDropTest.TABLE_ID;
-
 import java.math.BigInteger;
+import java.util.concurrent.Callable;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
@@ -76,7 +72,20 @@ public class DropTestRpcSender extends AbstractDropTest {
      * start listening on packetIn
      */
     public void start() {
-        notificationRegistration = notificationService.registerNotificationListener(this);
+        SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(STARTUP_LOOP_TICK,
+                STARTUP_LOOP_MAX_RETRIES);
+        try {
+            notificationRegistration = looper.loopUntilNoException(new Callable<ListenerRegistration<NotificationListener>>() {
+                @Override
+                public ListenerRegistration<NotificationListener> call() throws Exception {
+                    return notificationService.registerNotificationListener(DropTestRpcSender.this);
+                }
+            });
+        } catch (Exception e) {
+            LOG.warn("DropTest sender notification listener registration fail!");
+            LOG.debug("DropTest sender notification listener registration fail! ..", e);
+            throw new IllegalStateException("DropTest startup fail! Try again later.", e);
+        }
     }
 
     @Override
