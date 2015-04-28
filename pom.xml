@@ -27,6 +27,7 @@
       <module>openflowplugin-api</module>
       <module>openflowplugin</module>
       <module>openflowplugin-impl</module>
+      <module>openflowplugin-common</module>
       <module>extension</module>
       <module>distribution/karaf</module>
       <module>openflowplugin-controller-config</module>
@@ -36,7 +37,7 @@
       <module>drop-test-karaf</module>
       <module>test-common</module>
       <module>features</module>
-        <module>features-li</module>
+      <module>features-li</module>
       <module>samples/sample-consumer</module>
       <module>samples/learning-switch</module>
       <module>applications</module>

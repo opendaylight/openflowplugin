@@ -9,12 +9,12 @@
 package org.opendaylight.openflowplugin.openflow.md.it;
 
 
+import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
+
 import org.opendaylight.controller.test.sal.binding.it.TestHelper;
 import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.options.DefaultCompositeOption;
-
-import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 
 /**
  * The main wiring is assembled in {@link #ofPluginBundles()}
@@ -88,6 +88,7 @@ public abstract class OFPaxOptionsAssistant {
                 mavenBundle(OFPLUGIN_MODEL, "model-flow-statistics").versionAsInProject(),
                 mavenBundle(OFPLUGIN_MODEL, "model-flow-base").versionAsInProject(),
                 mavenBundle(OFPLUGIN_MODEL, "model-flow-service").versionAsInProject(),
+                mavenBundle(OFPLUGIN, "openflowplugin-common").versionAsInProject(),
                 mavenBundle(OFPLUGIN, "openflowplugin-api").versionAsInProject(),
                 mavenBundle(OFPLUGIN, "openflowplugin-extension-api").versionAsInProject(),
                 mavenBundle(OFPLUGIN, "openflowplugin").versionAsInProject(),
