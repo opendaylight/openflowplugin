@@ -102,7 +102,7 @@ public class StatisticsContextImpl implements StatisticsContext {
                 }
             });
         } else {
-            resultingFuture = Futures.immediateCancelledFuture();
+            resultingFuture = Futures.immediateFailedFuture(new Throwable("There are no statistics on this device."));
         }
         return resultingFuture;
     }
