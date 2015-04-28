@@ -51,6 +51,7 @@
         description="OpenDaylight :: OpenflowPlugin :: NSF :: Services">
         <feature version='${mdsal.version}'>odl-mdsal-broker</feature>
         <feature version='${project.version}'>odl-openflowplugin-nsf-model</feature>
+        <bundle>mvn:org.opendaylight.openflowplugin/openflowplugin-common/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.openflowplugin.applications/topology-manager/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.openflowplugin.applications/topology-lldp-discovery/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.openflowplugin.applications/forwardingrules-manager/${project.version}</bundle>

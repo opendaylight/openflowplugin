@@ -8,10 +8,12 @@
 
 package org.opendaylight.openflowplugin.applications.frm.impl;
 
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-
+import java.util.concurrent.Callable;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
@@ -20,6 +22,7 @@ import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.frm.FlowNodeReconciliation;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
+import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.MeterKey;
@@ -37,9 +40,6 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 
 /**
  * forwardingrules-manager
@@ -64,10 +64,24 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         this.provider = Preconditions.checkNotNull(manager, "ForwardingRulesManager can not be null!");
         Preconditions.checkNotNull(db, "DataBroker can not be null!");
         /* Build Path */
-        InstanceIdentifier<FlowCapableNode> flowNodeWildCardIdentifier = InstanceIdentifier.create(Nodes.class)
+        final InstanceIdentifier<FlowCapableNode> flowNodeWildCardIdentifier = InstanceIdentifier.create(Nodes.class)
                 .child(Node.class).augmentation(FlowCapableNode.class);
-        this.listenerRegistration = db.registerDataChangeListener(LogicalDatastoreType.OPERATIONAL,
-                flowNodeWildCardIdentifier, FlowNodeReconciliationImpl.this, DataChangeScope.BASE);
+
+        SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(ForwardingRulesManagerImpl.STARTUP_LOOP_TICK,
+                ForwardingRulesManagerImpl.STARTUP_LOOP_MAX_RETRIES);
+        try {
+            listenerRegistration = looper.loopUntilNoException(new Callable<ListenerRegistration<DataChangeListener>>() {
+                @Override
+                public ListenerRegistration<DataChangeListener> call() throws Exception {
+                    return db.registerDataChangeListener(LogicalDatastoreType.OPERATIONAL,
+                            flowNodeWildCardIdentifier, FlowNodeReconciliationImpl.this, DataChangeScope.BASE);
+                }
+            });
+        } catch (Exception e) {
+            LOG.warn("data listener registration failed: {}", e.getMessage());
+            LOG.debug("data listener registration failed.. ", e);
+            throw new IllegalStateException("FlowNodeReconciliation startup fail! System needs restart.", e);
+        }
     }
 
     @Override

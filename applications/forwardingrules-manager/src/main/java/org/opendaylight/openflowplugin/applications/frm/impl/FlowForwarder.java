@@ -8,10 +8,12 @@
 package org.opendaylight.openflowplugin.applications.frm.impl;
 
 import com.google.common.base.Preconditions;
+import java.util.concurrent.Callable;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
+import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
@@ -57,11 +59,18 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
     private void registrationListener(final DataBroker db) {
         final DataTreeIdentifier<Flow> treeId = new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION, getWildCardPath());
         try {
-            listenerRegistration = db.registerDataTreeChangeListener(treeId, FlowForwarder.this);
+            SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(ForwardingRulesManagerImpl.STARTUP_LOOP_TICK,
+                    ForwardingRulesManagerImpl.STARTUP_LOOP_MAX_RETRIES);
+            listenerRegistration = looper.loopUntilNoException(new Callable<ListenerRegistration<FlowForwarder>>() {
+                @Override
+                public ListenerRegistration<FlowForwarder> call() throws Exception {
+                    return db.registerDataTreeChangeListener(treeId, FlowForwarder.this);
+                }
+            });
         } catch (final Exception e) {
             LOG.warn("FRM Flow DataChange listener registration fail!");
             LOG.debug("FRM Flow DataChange listener registration fail ..", e);
-            throw new IllegalStateException("FlowForwarder registration Listener fail! System needs restart.", e);
+            throw new IllegalStateException("FlowForwarder startup fail! System needs restart.", e);
         }
     }
 

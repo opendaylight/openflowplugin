@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
- *
+ * <p/>
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
@@ -44,6 +44,8 @@ import org.slf4j.LoggerFactory;
 public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(ForwardingRulesManagerImpl.class);
+    public static final int STARTUP_LOOP_TICK = 500;
+    public static final int STARTUP_LOOP_MAX_RETRIES = 8;
 
     private final AtomicLong txNum = new AtomicLong();
     private final Object lockObj = new Object();
@@ -60,7 +62,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     private FlowNodeReconciliation nodeListener;
 
     public ForwardingRulesManagerImpl(final DataBroker dataBroker,
-            final RpcConsumerRegistry rpcRegistry) {
+                                      final RpcConsumerRegistry rpcRegistry) {
         this.dataService = Preconditions.checkNotNull(dataBroker, "DataBroker can not be null!");
 
         Preconditions.checkArgument(rpcRegistry != null, "RpcConsumerRegistry can not be null !");
@@ -84,7 +86,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
 
     @Override
     public void close() throws Exception {
-        if(this.flowListener != null) {
+        if (this.flowListener != null) {
             this.flowListener.close();
             this.flowListener = null;
         }
@@ -119,9 +121,9 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
 
     @Override
     public void registrateNewNode(InstanceIdentifier<FlowCapableNode> ident) {
-        if ( ! activeNodes.contains(ident)) {
+        if (!activeNodes.contains(ident)) {
             synchronized (lockObj) {
-                if ( ! activeNodes.contains(ident)) {
+                if (!activeNodes.contains(ident)) {
                     Set<InstanceIdentifier<FlowCapableNode>> set =
                             Sets.newHashSet(activeNodes);
                     set.add(ident);
