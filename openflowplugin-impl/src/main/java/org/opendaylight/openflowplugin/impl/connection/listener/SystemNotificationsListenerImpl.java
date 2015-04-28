@@ -106,7 +106,7 @@ public class SystemNotificationsListenerImpl implements SystemNotificationsListe
     private void disconnect() {
         final ConnectionAdapter connectionAdapter = connectionContext.getConnectionAdapter();
         short auxId = -1;
-        if (null != connectionContext.getFeatures()) {
+        if (null != connectionContext.getFeatures() && null != connectionContext.getFeatures().getAuxiliaryId()) {
             auxId = connectionContext.getFeatures().getAuxiliaryId();
         }
         final Short auxiliaryId = auxId;
