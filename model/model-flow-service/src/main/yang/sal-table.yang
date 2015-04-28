@@ -28,6 +28,10 @@ module sal-table {
         description "Configuring openflow table.";
         
         input {
+            uses tr:transaction-metadata;
+            leaf table-ref {
+                    type table-type:table-ref;
+            }
             uses table-update;
             uses tr:transaction-aware;
         }

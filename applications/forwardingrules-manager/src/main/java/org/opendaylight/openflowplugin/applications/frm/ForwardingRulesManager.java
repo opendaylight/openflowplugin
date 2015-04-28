@@ -11,11 +11,13 @@ package org.opendaylight.openflowplugin.applications.frm;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.SalGroupService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.SalMeterService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.SalTableService;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 /**
@@ -99,6 +101,13 @@ public interface ForwardingRulesManager extends AutoCloseable {
     public SalMeterService getSalMeterService();
 
     /**
+     * Table RPC service
+     *
+     * @return
+     */
+    public SalTableService getSalTableService();
+    
+    /**
      * Content definition method and prevent code duplicity in Reconcil
      * @return ForwardingRulesCommiter&lt;Flow&gt;
      */
@@ -115,6 +124,12 @@ public interface ForwardingRulesManager extends AutoCloseable {
      * @return ForwardingRulesCommiter&lt;Meter&gt;
      */
     public ForwardingRulesCommiter<Meter> getMeterCommiter();
+    
+    /**
+     * Content definition method and prevent code duplicity
+     * @return ForwardingRulesCommiter<Table>
+     */
+    public ForwardingRulesCommiter<Table> getTableCommiter();
 
     /**
      * Content definition method

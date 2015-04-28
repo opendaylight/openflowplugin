@@ -1,5 +1,7 @@
 package test.mock.util;
 
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.SalTableService;
+
 import org.opendaylight.controller.md.sal.common.api.routing.RouteChangeListener;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
@@ -35,6 +37,8 @@ public class RpcProviderRegistryMock implements RpcProviderRegistry {
             return (T) new SalGroupServiceMock();
         } else if (serviceInterface.equals(SalMeterService.class)) {
             return (T) new SalMeterServiceMock();
+        } else if (serviceInterface.equals(SalTableService.class)) {
+            return (T) new SalTableServiceMock();
         } else {
             return null;
         }
