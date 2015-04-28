@@ -15,6 +15,7 @@
     <feature name='odl-flow-services' version='${project.version}' description="OpenDaylight :: Flow :: Services">
         <feature version='${project.version}'>odl-mdsal-broker</feature>
         <feature version='${project.version}'>odl-flow-model</feature>
+        <bundle>mvn:org.opendaylight.openflowplugin/openflowplugin-common/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.openflowplugin.applications/topology-manager/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.openflowplugin.applications/topology-lldp-discovery/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.openflowplugin.applications/statistics-manager/${project.version}</bundle>

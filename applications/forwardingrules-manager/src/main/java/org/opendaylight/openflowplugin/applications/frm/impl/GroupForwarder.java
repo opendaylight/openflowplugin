@@ -8,10 +8,12 @@
 package org.opendaylight.openflowplugin.applications.frm.impl;
 
 import com.google.common.base.Preconditions;
+import java.util.concurrent.Callable;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
+import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInputBuilder;
@@ -50,7 +52,20 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
         Preconditions.checkNotNull(db, "DataBroker can not be null!");
         final DataTreeIdentifier<Group> treeId = new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION, getWildCardPath());
 
-        this.listenerRegistration = db.registerDataTreeChangeListener(treeId, GroupForwarder.this);
+        try {
+            SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(ForwardingRulesManagerImpl.STARTUP_LOOP_TICK,
+                    ForwardingRulesManagerImpl.STARTUP_LOOP_MAX_RETRIES);
+            listenerRegistration = looper.loopUntilNoException(new Callable<ListenerRegistration<GroupForwarder>>() {
+                @Override
+                public ListenerRegistration<GroupForwarder> call() throws Exception {
+                    return db.registerDataTreeChangeListener(treeId, GroupForwarder.this);
+                }
+            });
+        } catch (final Exception e) {
+            LOG.warn("FRM Group DataChange listener registration fail!");
+            LOG.debug("FRM Group DataChange listener registration fail ..", e);
+            throw new IllegalStateException("FlowForwarder startup fail! System needs restart.", e);
+        }
     }
 
     @Override
