@@ -52,9 +52,7 @@ public class StatisticsManagerImpl implements StatisticsManager {
 
         final StatisticsContext statisticsContext = new StatisticsContextImpl(deviceContext);
         deviceContext.addDeviceContextClosedHandler(this);
-        /*final*/
-        ListenableFuture<Boolean> weHaveDynamicData = statisticsContext.gatherDynamicData();
-        weHaveDynamicData = Futures.immediateFuture(null);
+        final ListenableFuture<Boolean> weHaveDynamicData = statisticsContext.gatherDynamicData();
         Futures.addCallback(weHaveDynamicData, new FutureCallback<Boolean>() {
             @Override
             public void onSuccess(final Boolean statisticsGathered) {
