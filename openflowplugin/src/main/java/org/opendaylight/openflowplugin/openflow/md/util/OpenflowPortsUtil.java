@@ -10,9 +10,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 
 /**
  * Class which integrates the port constants defined and used by MDSAL and the ports defined in openflow java
- *
  * This class is responsible for converting MDSAL given logical names to port numbers and back.
- *
  * Any newer version of openflow can have a similar mapping or can/should be extended.
  *
  * @author Kamal Rameshan on 5/2/14.
@@ -21,7 +19,7 @@ public class OpenflowPortsUtil {
 
     static ImmutableBiMap<OpenflowVersion, ImmutableBiMap<String, Long>> versionPortMap;
 
-    static final String MAX  = "MAX";
+    static final String MAX = "MAX";
 
     // the init gets called from MDController at the start
     public static void init() {
@@ -54,7 +52,7 @@ public class OpenflowPortsUtil {
                 .put(OutputPortValues.ANY.toString(), BinContent.intToUnsignedLong(PortNumberValues.ANY.getIntValue())) //0xffffffff
                 .build();
 
-        versionPortMap =  new ImmutableBiMap.Builder<OpenflowVersion, ImmutableBiMap<String, Long>>()
+        versionPortMap = new ImmutableBiMap.Builder<OpenflowVersion, ImmutableBiMap<String, Long>>()
                 .put(OpenflowVersion.OF10, OFv10)
                 .put(OpenflowVersion.OF13, OFv13)
                 .build();
@@ -70,10 +68,10 @@ public class OpenflowPortsUtil {
     }
 
     public static String getPortLogicalName(final OpenflowVersion ofVersion, final Long portNumber) {
-       if (ofVersion.equals(OpenflowVersion.UNSUPPORTED)){
-           return null;
-       }
-       return versionPortMap.get(ofVersion).inverse().get(portNumber);
+        if (ofVersion.equals(OpenflowVersion.UNSUPPORTED)) {
+            return null;
+        }
+        return versionPortMap.get(ofVersion).inverse().get(portNumber);
     }
 
     public static Long getPortFromLogicalName(final OpenflowVersion ofVersion, final String logicalNameOrPort) {
@@ -81,8 +79,11 @@ public class OpenflowPortsUtil {
         if (port == null) {
             try {
                 port = Long.decode(logicalNameOrPort);
-            } catch(final NumberFormatException ne) {
+            } catch (final NumberFormatException ne) {
                 //ignore, sent null back.
+                if (logicalNameOrPort.contains(":")) {
+                    port = Long.parseLong(logicalNameOrPort.substring(logicalNameOrPort.lastIndexOf(":") + 1));
+                }
             }
         }
         return port;
@@ -105,7 +106,7 @@ public class OpenflowPortsUtil {
     }
 
     public static Long getMaxPortForVersion(final OpenflowVersion ofVersion) {
-        return getPortFromLogicalName (ofVersion, MAX);
+        return getPortFromLogicalName(ofVersion, MAX);
     }
 
     public static boolean isPortReserved(final OpenflowVersion ofVersion, final Long portNumber) {
