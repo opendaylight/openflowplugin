@@ -16,6 +16,11 @@
           <artifactId>openflowplugin-api</artifactId>
       </dependency>
       <dependency>
+          <groupId>org.opendaylight.openflowplugin</groupId>
+          <artifactId>openflowplugin-common</artifactId>
+      </dependency>
+
+      <dependency>
           <groupId>org.opendaylight.controller</groupId>
           <artifactId>sal-binding-api</artifactId>
       </dependency>
@@ -53,8 +58,8 @@
              <groupId>org.opendaylight.yangtools</groupId>
              <artifactId>yang-maven-plugin</artifactId>
          </plugin>
-         
-          <plugin>
+
+         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>build-helper-maven-plugin</artifactId>
           <executions>
