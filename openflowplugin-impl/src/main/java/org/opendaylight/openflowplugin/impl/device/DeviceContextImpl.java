@@ -14,6 +14,7 @@ import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -89,8 +90,7 @@ public class DeviceContextImpl implements DeviceContext {
     private final DataBroker dataBroker;
     private final XidGenerator xidGenerator;
     private final HashedWheelTimer hashedWheelTimer;
-    //FIXME : this seems to be candidate for Collections.synchronizedMap()
-    private Map<Long, RequestContext> requests = new TreeMap<>();
+    private Map<Long, RequestContext> requests = Collections.synchronizedMap(new TreeMap());
 
     private final Map<SwitchConnectionDistinguisher, ConnectionContext> auxiliaryConnectionContexts;
     private final TransactionChainManager txChainManager;
