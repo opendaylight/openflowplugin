@@ -90,7 +90,7 @@ public class DeviceContextImpl implements DeviceContext {
     private final XidGenerator xidGenerator;
     private final HashedWheelTimer hashedWheelTimer;
     //FIXME : this seems to be candidate for Collections.synchronizedMap()
-    private Map<Long, RequestContext> requests = new TreeMap<>();
+    private final Map<Long, RequestContext> requests = new TreeMap<>();
 
     private final Map<SwitchConnectionDistinguisher, ConnectionContext> auxiliaryConnectionContexts;
     private final TransactionChainManager txChainManager;
@@ -119,7 +119,6 @@ public class DeviceContextImpl implements DeviceContext {
         xidGenerator = new XidGenerator();
         txChainManager = new TransactionChainManager(dataBroker, hashedWheelTimer, 500L, 500L);
         auxiliaryConnectionContexts = new HashMap<>();
-        requests = new HashMap<>();
         deviceFlowRegistry = new DeviceFlowRegistryImpl();
         deviceGroupRegistry = new DeviceGroupRegistryImpl();
         deviceMeterRegistry = new DeviceMeterRegistryImpl();
