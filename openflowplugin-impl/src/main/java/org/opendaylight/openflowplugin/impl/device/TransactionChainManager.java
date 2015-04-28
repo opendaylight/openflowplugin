@@ -30,20 +30,20 @@ import org.slf4j.LoggerFactory;
 /**
  * openflowplugin-impl
  * org.opendaylight.openflowplugin.impl.device
- *
+ * <p/>
  * Package protected class for controlling {@link WriteTransaction} life cycle. It is
  * a {@link TransactionChainListener} and provide package protected methods for writeToTransaction
  * method (wrapped {@link WriteTransaction#put(LogicalDatastoreType, InstanceIdentifier, DataObject)})
  * and submitTransaction method (wrapped {@link WriteTransaction#submit()})
  *
  * @author <a href="mailto:vdemcak@cisco.com">Vaclav Demcak</a>
- *
- * Created: Apr 2, 2015
+ *         <p/>
+ *         Created: Apr 2, 2015
  */
 @VisibleForTesting
 class TransactionChainManager implements TransactionChainListener {
 
-    private static Logger LOG = LoggerFactory.getLogger(TransactionChainManager.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TransactionChainManager.class);
 
     private final HashedWheelTimer hashedWheelTimer;
     private final DataBroker dataBroker;
@@ -69,24 +69,24 @@ class TransactionChainManager implements TransactionChainListener {
     }
 
     synchronized <T extends DataObject> void writeToTransaction(final LogicalDatastoreType store,
-            final InstanceIdentifier<T> path, final T data) {
+                                                                final InstanceIdentifier<T> path, final T data) {
         if (wTx == null) {
             wTx = txChainFactory.newWriteOnlyTransaction();
         }
         wTx.put(store, path, data);
-        if ( ! counterIsEnabled) {
+        if (!counterIsEnabled) {
             return;
         }
         countTxInAndCommit();
     }
 
     synchronized <T extends DataObject> void addDeleteOperationTotTxChain(final LogicalDatastoreType store,
-                                                                final InstanceIdentifier<T> path) {
+                                                                          final InstanceIdentifier<T> path) {
         if (wTx == null) {
             wTx = txChainFactory.newWriteOnlyTransaction();
         }
         wTx.delete(store, path);
-        if ( ! counterIsEnabled) {
+        if (!counterIsEnabled) {
             return;
         }
         countTxInAndCommit();
@@ -106,7 +106,7 @@ class TransactionChainManager implements TransactionChainListener {
             wTx = null;
             nrOfActualTx = 0L;
         }
-        if (submitTaskTime != null && ! submitTaskTime.isExpired()) {
+        if (submitTaskTime != null && !submitTaskTime.isExpired()) {
             submitTaskTime.cancel();
         }
         submitTaskTime = hashedWheelTimer.newTimeout(new TimerTask() {
@@ -123,9 +123,8 @@ class TransactionChainManager implements TransactionChainListener {
 
     @Override
     public void onTransactionChainFailed(final TransactionChain<?, ?> chain,
-            final AsyncTransaction<?, ?> transaction, final Throwable cause) {
-        LOG.debug("txChain failed -> recreating");
-        LOG.trace("reason", cause);
+                                         final AsyncTransaction<?, ?> transaction, final Throwable cause) {
+        LOG.warn("txChain failed -> recreating", cause);
         txChainFactory.close();
         txChainFactory = dataBroker.createTransactionChain(TransactionChainManager.this);
     }
