@@ -29,6 +29,7 @@
         <feature version="${mdsal.version}">odl-mdsal-broker</feature>
         <feature version="${project.version}">odl-openflowplugin-nsf-services-li</feature>
         <feature version="${openflowjava.version}">odl-openflowjava-protocol</feature>
+        <bundle>mvn:org.opendaylight.openflowplugin/openflowplugin-common/${project.version}</bundle>
         <!-- TODO : remove dependency on openflowplugin in the future -->
         <bundle>mvn:org.opendaylight.openflowplugin/openflowplugin/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.openflowplugin/openflowplugin-impl/${project.version}</bundle>
