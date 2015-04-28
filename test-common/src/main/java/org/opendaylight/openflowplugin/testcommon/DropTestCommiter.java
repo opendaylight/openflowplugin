@@ -8,11 +8,13 @@
 package org.opendaylight.openflowplugin.testcommon;
 
 import java.math.BigInteger;
+import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicLong;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
@@ -71,7 +73,20 @@ public class DropTestCommiter extends AbstractDropTest {
      * start listening on packetIn
      */
     public void start() {
-        notificationRegistration = notificationService.registerNotificationListener(this);
+        SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(STARTUP_LOOP_TICK,
+                STARTUP_LOOP_MAX_RETRIES);
+        try {
+            notificationRegistration = looper.loopUntilNoException(new Callable<ListenerRegistration<NotificationListener>>() {
+                @Override
+                public ListenerRegistration<NotificationListener> call() throws Exception {
+                    return notificationService.registerNotificationListener(DropTestCommiter.this);
+                }
+            });
+        } catch (Exception e) {
+            LOG.warn("DropTest committer notification listener registration fail!");
+            LOG.debug("DropTest committer notification listener registration fail! ..", e);
+            throw new IllegalStateException("DropTest startup fail! Try again later.", e);
+        }
     }
 
     /**
