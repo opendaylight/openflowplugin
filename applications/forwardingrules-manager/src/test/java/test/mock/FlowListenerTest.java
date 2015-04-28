@@ -82,7 +82,6 @@ public class FlowListenerTest extends FRMTest {
         salFlowService = (SalFlowServiceMock) forwardingRulesManager.getSalFlowService();
         addFlowCalls = salFlowService.getAddFlowCalls();
         assertEquals(2, addFlowCalls.size());
-        assertEquals("DOM-1", addFlowCalls.get(1).getTransactionUri().getValue());
         assertEquals(2, addFlowCalls.get(1).getTableId().intValue());
         assertEquals(flowII, addFlowCalls.get(1).getFlowRef().getValue());
 
@@ -123,7 +122,6 @@ public class FlowListenerTest extends FRMTest {
         salFlowService = (SalFlowServiceMock) forwardingRulesManager.getSalFlowService();
         List<UpdateFlowInput> updateFlowCalls = salFlowService.getUpdateFlowCalls();
         assertEquals(1, updateFlowCalls.size());
-        assertEquals("DOM-1", updateFlowCalls.get(0).getTransactionUri().getValue());
         assertEquals(flowII, updateFlowCalls.get(0).getFlowRef().getValue());
         assertEquals(Boolean.TRUE, updateFlowCalls.get(0).getOriginalFlow().isStrict());
         assertEquals(Boolean.TRUE, updateFlowCalls.get(0).getUpdatedFlow().isStrict());
@@ -169,7 +167,6 @@ public class FlowListenerTest extends FRMTest {
         salFlowService = (SalFlowServiceMock) forwardingRulesManager.getSalFlowService();
         List<UpdateFlowInput> updateFlowCalls = salFlowService.getUpdateFlowCalls();
         assertEquals(1, updateFlowCalls.size());
-        assertEquals("DOM-1", updateFlowCalls.get(0).getTransactionUri().getValue());
         assertEquals(flowII, updateFlowCalls.get(0).getFlowRef().getValue());
         assertEquals(ipMatch, updateFlowCalls.get(0).getUpdatedFlow().getMatch().getIpMatch());
         forwardingRulesManager.close();
@@ -205,7 +202,6 @@ public class FlowListenerTest extends FRMTest {
         salFlowService = (SalFlowServiceMock) forwardingRulesManager.getSalFlowService();
         List<RemoveFlowInput> removeFlowCalls = salFlowService.getRemoveFlowCalls();
         assertEquals(1, removeFlowCalls.size());
-        assertEquals("DOM-1", removeFlowCalls.get(0).getTransactionUri().getValue());
         assertEquals(flowII, removeFlowCalls.get(0).getFlowRef().getValue());
         assertEquals(Boolean.TRUE, removeFlowCalls.get(0).isStrict());
 
