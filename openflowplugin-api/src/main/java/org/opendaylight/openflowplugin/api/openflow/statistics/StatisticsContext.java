@@ -17,5 +17,5 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgColl
  */
 public interface StatisticsContext extends RequestContextStack, AutoCloseable {
 
-    public ListenableFuture<Void> gatherDynamicData();
+    public ListenableFuture<Boolean> gatherDynamicData();
 }

@@ -381,6 +381,10 @@ public class DeviceContextImpl implements DeviceContext {
     @Override
     public void close() throws Exception {
         deviceState.setValid(false);
+
+        LOG.trace("Removing node {} from operational DS.", getDeviceState().getNodeId());
+        addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, getDeviceState().getNodeInstanceIdentifier());
+
         deviceGroupRegistry.close();
         deviceFlowRegistry.close();
         deviceMeterRegistry.close();
