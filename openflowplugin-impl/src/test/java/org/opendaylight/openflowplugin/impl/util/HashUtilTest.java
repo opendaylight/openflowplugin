@@ -45,10 +45,14 @@ public class HashUtilTest {
             new Ipv6Prefix("2001:0DB8:0000:0000:0000:0000:57ab:1428")
     };
 
+    private static final Ipv6Prefix shortIpv6 = new Ipv6Prefix("fe80::2acf:e9ff:fe21:6431/128");
+    private static final Ipv6Prefix fullIpv6 = new Ipv6Prefix("fe80:0000:2acf:e9ff:fe21:6431:0000:0000/128");
 
     @Test
     public void testCalculateMatchHash() throws Exception {
-
+        int hashShort = HashUtil.calculateIpv6PrefixHash(shortIpv6);
+        int hashLong = HashUtil.calculateIpv6PrefixHash(fullIpv6);
+        Assert.assertEquals(hashShort, hashLong);
     }
 
     @Test

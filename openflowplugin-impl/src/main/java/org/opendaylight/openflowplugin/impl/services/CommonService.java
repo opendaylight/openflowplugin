@@ -123,7 +123,7 @@ public abstract class CommonService {
                 OFJResult2RequestCtxFuture.processResultFromOfJava(resultFromOFLib);
 
             } else {
-                messageSpy.spyMessage(requestContext, MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_FAILURE);
+                messageSpy.spyMessage(requestContext.getClass(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_FAILURE);
             }
             return result;
         }
