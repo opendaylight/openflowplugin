@@ -16,7 +16,6 @@ import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
@@ -54,21 +53,24 @@ public class StatisticsManagerImpl implements StatisticsManager {
         final StatisticsContext statisticsContext = new StatisticsContextImpl(deviceContext);
         deviceContext.addDeviceContextClosedHandler(this);
         /*final*/
-        ListenableFuture<Void> weHaveDynamicData = statisticsContext.gatherDynamicData();
+        ListenableFuture<Boolean> weHaveDynamicData = statisticsContext.gatherDynamicData();
         weHaveDynamicData = Futures.immediateFuture(null);
-        Futures.addCallback(weHaveDynamicData, new FutureCallback<Void>() {
+        Futures.addCallback(weHaveDynamicData, new FutureCallback<Boolean>() {
             @Override
-            public void onSuccess(final Void aVoid) {
-                // wake up RPC registration
-                LOG.trace("Device dynamic info collected. Going to announce raise to next level.");
-                contexts.put(deviceContext, statisticsContext);
-                deviceContext.getDeviceState().setDeviceSynchronized(true);
+            public void onSuccess(final Boolean statisticsGathered) {
+                if (statisticsGathered.booleanValue()) {
+                    //there are some statistics on device worth gathering
+                    contexts.put(deviceContext, statisticsContext);
+                }
+                LOG.trace("Device dynamic info collecting done. Going to announce raise to next level.");
                 deviceInitPhaseHandler.onDeviceContextLevelUp(deviceContext);
+                deviceContext.getDeviceState().setDeviceSynchronized(true);
             }
 
             @Override
             public void onFailure(final Throwable throwable) {
                 LOG.warn("Statistics manager was not able to collect dynamic info for device {}", deviceContext.getDeviceState().getNodeId(), throwable);
+
             }
         });
     }
@@ -103,8 +105,6 @@ public class StatisticsManagerImpl implements StatisticsManager {
         if (contexts.containsKey(deviceContext)) {
             LOG.trace("Removing device context from stack. No more statistics gathering for node {}", deviceContext.getDeviceState().getNodeId());
             contexts.remove(deviceContext);
-            LOG.trace("Removing node {} from operational DS.", deviceContext.getDeviceState().getNodeId());
-            deviceContext.addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, deviceContext.getDeviceState().getNodeInstanceIdentifier());
             StatisticsContext statisticsContext = contexts.get(deviceContext);
             try {
                 statisticsContext.close();

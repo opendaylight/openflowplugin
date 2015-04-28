@@ -12,6 +12,7 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -64,16 +65,16 @@ public class StatisticsContextImpl implements StatisticsContext {
     }
 
     @Override
-    public ListenableFuture<Void> gatherDynamicData() {
+    public ListenableFuture<Boolean> gatherDynamicData() {
 
         final DeviceState devState = deviceContext.getDeviceState();
 
-        final ListenableFuture<Void> resultingFuture;
+        final ListenableFuture<Boolean> resultingFuture;
 
         if (ConnectionContext.CONNECTION_STATE.WORKING.equals(deviceContext.getPrimaryConnectionContext().getConnectionState())) {
             final SettableFuture settableResultingFuture = SettableFuture.create();
             resultingFuture = settableResultingFuture;
-            ListenableFuture<Boolean> emptyFuture = Futures.immediateFuture(null);
+            ListenableFuture<Boolean> emptyFuture = Futures.immediateFuture(new Boolean(false));
             final ListenableFuture<Boolean> flowStatistics = devState.isFlowStatisticsAvailable() ? wrapLoggingOnStatisticsRequestCall(MultipartType.OFPMPFLOW) : emptyFuture;
 
             final ListenableFuture<Boolean> tableStatistics = devState.isTableStatisticsAvailable() ? wrapLoggingOnStatisticsRequestCall(MultipartType.OFPMPTABLE) : emptyFuture;
@@ -93,7 +94,11 @@ public class StatisticsContextImpl implements StatisticsContext {
             Futures.addCallback(allFutures, new FutureCallback<List<Boolean>>() {
                 @Override
                 public void onSuccess(final List<Boolean> booleans) {
-                    settableResultingFuture.set(null);
+                    boolean atLeastOneSuccess = false;
+                    for (Boolean bool : booleans){
+                        atLeastOneSuccess |= bool.booleanValue();
+                    }
+                    settableResultingFuture.set(new Boolean(atLeastOneSuccess));
                 }
 
                 @Override
@@ -102,7 +107,7 @@ public class StatisticsContextImpl implements StatisticsContext {
                 }
             });
         } else {
-            resultingFuture = Futures.immediateFailedFuture(new Throwable("There are no statistics on this device."));
+            resultingFuture = Futures.immediateFailedFuture(new Throwable("Device connection doesn't exist anymore."));
         }
         return resultingFuture;
     }
