@@ -56,6 +56,7 @@ public class SimpleTaskRetryLooper {
             throw taskException;
         }
 
+        LOG.debug("looper step succeeded: {}", output);
         return output;
     }
 }
