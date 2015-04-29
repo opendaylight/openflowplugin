@@ -14,10 +14,12 @@ import java.util.List;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeContext;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.RpcService;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -30,16 +32,16 @@ public class RpcContextImpl implements RpcContext {
     final RpcProviderRegistry rpcProviderRegistry;
 
     // TODO: add private Sal salBroker
-    private final DeviceContext deviceContext;
+    private final KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier;
     private final List<RoutedRpcRegistration> rpcRegistrations = new ArrayList<>();
     private final List<RequestContext<?>> synchronizedRequestsList = Collections
             .<RequestContext<?>>synchronizedList(new ArrayList<RequestContext<?>>());
 
     private int maxRequestsPerDevice;
 
-    public RpcContextImpl(final RpcProviderRegistry rpcProviderRegistry, final DeviceContext deviceContext) {
+    public RpcContextImpl(final RpcProviderRegistry rpcProviderRegistry, final KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier) {
         this.rpcProviderRegistry = rpcProviderRegistry;
-        this.deviceContext = deviceContext;
+        this.nodeInstanceIdentifier = nodeInstanceIdentifier;
     }
 
     /**
@@ -50,9 +52,9 @@ public class RpcContextImpl implements RpcContext {
     public <S extends RpcService> void registerRpcServiceImplementation(final Class<S> serviceClass,
                                                                         final S serviceInstance) {
         final RoutedRpcRegistration<S> routedRpcReg = rpcProviderRegistry.addRoutedRpcImplementation(serviceClass, serviceInstance);
-        routedRpcReg.registerPath(NodeContext.class, deviceContext.getDeviceState().getNodeInstanceIdentifier());
+        routedRpcReg.registerPath(NodeContext.class, nodeInstanceIdentifier);
         rpcRegistrations.add(routedRpcReg);
-        LOG.debug("Registration of service {} for device {}.",serviceClass, deviceContext.getDeviceState().getNodeInstanceIdentifier());
+        LOG.debug("Registration of service {} for device {}.",serviceClass, nodeInstanceIdentifier);
     }
 
     @Override
@@ -77,7 +79,7 @@ public class RpcContextImpl implements RpcContext {
     @Override
     public void close() throws Exception {
         for (final RoutedRpcRegistration<?> rpcRegistration : rpcRegistrations) {
-            rpcRegistration.unregisterPath(NodeContext.class, deviceContext.getDeviceState().getNodeInstanceIdentifier());
+            rpcRegistration.unregisterPath(NodeContext.class, nodeInstanceIdentifier);
             rpcRegistration.close();
         }
     }
