@@ -101,7 +101,7 @@ public class TableForwarder extends AbstractListeningCommiter<Table> {
         LOG.debug( "Invoking SalTableService " ) ;
 
         if( this.provider.getSalTableService() != null )
-        	System.out.println( " Handle to SalTableServices" + this.provider.getSalTableService()) ;
+        	LOG.debug( " Handle to SalTableServices" + this.provider.getSalTableService()) ;
         this.provider.getSalTableService().updateTable(builder.build());
 
     }
