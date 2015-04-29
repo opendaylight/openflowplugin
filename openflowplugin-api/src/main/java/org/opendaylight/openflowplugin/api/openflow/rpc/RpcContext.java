@@ -32,13 +32,4 @@ public interface RpcContext extends RequestContextStack, AutoCloseable, DeviceDi
      */
     void setRequestContextQuota(int maxRequestsPerDevice);
 
-    /**
-     * Method provides device context.
-     *
-     * @return
-     */
-    DeviceContext getDeviceContext();
-
-
-
 }
