@@ -97,10 +97,6 @@ public class RpcContextImpl implements RpcContext {
                 requestContext.getXid().getValue(), synchronizedRequestsList.size());
     }
 
-    @Override
-    public DeviceContext getDeviceContext() {
-        return deviceContext;
-    }
 
     @Override
     public <T> RequestContext<T> createRequestContext() {
