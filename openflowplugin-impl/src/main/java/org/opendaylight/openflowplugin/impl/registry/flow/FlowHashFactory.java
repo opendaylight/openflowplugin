@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.impl.registry.flow;
 
+import com.google.common.primitives.Longs;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowHash;
 import org.opendaylight.openflowplugin.impl.util.HashUtil;
@@ -23,12 +24,12 @@ public class FlowHashFactory {
     }
 
     public static FlowHash create(Flow flow, DeviceContext deviceContext) {
-        int hash = calculateHash(flow, deviceContext);
+        long hash = calculateHash(flow, deviceContext);
         return new FlowHashDto(hash);
     }
 
-    private static int calculateHash(Flow flow, DeviceContext deviceContext) {
-        int hash = HashUtil.calculateMatchHash(flow.getMatch(), deviceContext);
+    private static long calculateHash(Flow flow, DeviceContext deviceContext) {
+        long hash = HashUtil.calculateMatchHash(flow.getMatch(), deviceContext);
         hash += flow.getPriority();
         hash += flow.getTableId();
         hash += flow.getCookie().hashCode();
@@ -38,15 +39,19 @@ public class FlowHashFactory {
 
     private static final class FlowHashDto implements FlowHash {
 
-        private final int hashCode;
+        private final long flowHash;
+        private final int intHashCode;
 
-        public FlowHashDto(final int hashCode) {
-            this.hashCode = hashCode;
+        public FlowHashDto(final long flowHash) {
+
+            this.flowHash = flowHash;
+            this.intHashCode = Longs.hashCode(flowHash);
         }
 
+
         @Override
-        public int hashCode() {
-            return hashCode;
+        public int hashCode(){
+            return intHashCode;
         }
 
         @Override
@@ -57,12 +62,15 @@ public class FlowHashFactory {
             if (!(obj instanceof FlowHash)) {
                 return false;
             }
-            if (this.hashCode == obj.hashCode()) {
+            if (this.flowHash == ((FlowHash) obj).getFlowHash()) {
                 return true;
             }
             return false;
         }
 
-
+        @Override
+        public long getFlowHash() {
+            return flowHash;
+        }
     }
 }
