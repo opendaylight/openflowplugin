@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
- *
+ * <p/>
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
@@ -47,6 +47,9 @@ abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseab
     protected static final Integer IDLE_TIMEOUT = 240;
     protected static final short TABLE_ID = 0;
 
+    static final long STARTUP_LOOP_TICK = 500L;
+    static final int STARTUP_LOOP_MAX_RETRIES = 8;
+
     private static final AtomicIntegerFieldUpdater<AbstractDropTest> SENT_UPDATER = AtomicIntegerFieldUpdater.newUpdater(AbstractDropTest.class, "sent");
     private volatile int sent;
 
@@ -60,7 +63,7 @@ abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseab
         return new DropTestStats(this.sent, this.rcvd, this.excs);
     }
 
-    public final void clearStats(){
+    public final void clearStats() {
         this.sent = 0;
         this.rcvd = 0;
         this.excs = 0;
