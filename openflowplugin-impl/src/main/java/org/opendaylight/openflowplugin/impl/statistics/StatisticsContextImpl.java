@@ -67,11 +67,11 @@ public class StatisticsContextImpl implements StatisticsContext {
     @Override
     public ListenableFuture<Boolean> gatherDynamicData() {
 
-        final DeviceState devState = deviceContext.getDeviceState();
 
         final ListenableFuture<Boolean> resultingFuture;
 
         if (ConnectionContext.CONNECTION_STATE.WORKING.equals(deviceContext.getPrimaryConnectionContext().getConnectionState())) {
+            final DeviceState devState = deviceContext.getDeviceState();
             final SettableFuture settableResultingFuture = SettableFuture.create();
             resultingFuture = settableResultingFuture;
             ListenableFuture<Boolean> emptyFuture = Futures.immediateFuture(new Boolean(false));

@@ -75,10 +75,12 @@ public class BarrierTaskBuilder {
                 if (deviceCtx.getNumberOfOutstandingRequests() > 0) {
                     BarrierInput barrierInput = makeBarrier();
                     LOG.trace("sending out barrier [{}]", barrierInput.getXid());
-                    final Future<RpcResult<BarrierOutput>> future = deviceCtx.getPrimaryConnectionContext()
-                            .getConnectionAdapter().barrier(barrierInput);
-                    final ListenableFuture<RpcResult<BarrierOutput>> lsFuture = JdkFutureAdapters.listenInPoolThread(future);
-                    Futures.addCallback(lsFuture, makeCallBack());
+                    synchronized (deviceCtx) {
+                        final Future<RpcResult<BarrierOutput>> future = deviceCtx.getPrimaryConnectionContext()
+                                .getConnectionAdapter().barrier(barrierInput);
+                        final ListenableFuture<RpcResult<BarrierOutput>> lsFuture = JdkFutureAdapters.listenInPoolThread(future);
+                        Futures.addCallback(lsFuture, makeCallBack());
+                    }
                 } else {
                     // if no requests
                     buildAndFireBarrierTask();
@@ -92,8 +94,10 @@ public class BarrierTaskBuilder {
             return new FutureCallback<RpcResult<BarrierOutput>>() {
                 @Override
                 public void onSuccess(final RpcResult<BarrierOutput> result) {
-                    BarrierProcessor.processOutstandingRequests(result.getResult().getXid(), deviceCtx);
-                    buildAndFireBarrierTask();
+                    synchronized (deviceCtx) {
+                        BarrierProcessor.processOutstandingRequests(result.getResult().getXid(), deviceCtx);
+                        buildAndFireBarrierTask();
+                    }
                 }
 
                 @Override

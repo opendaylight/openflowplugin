@@ -121,7 +121,6 @@ public abstract class CommonService {
 
                 final OFJResult2RequestCtxFuture<T> OFJResult2RequestCtxFuture = new OFJResult2RequestCtxFuture<>(requestContext, deviceContext);
                 OFJResult2RequestCtxFuture.processResultFromOfJava(resultFromOFLib);
-
             } else {
                 messageSpy.spyMessage(requestContext.getClass(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_FAILURE);
             }

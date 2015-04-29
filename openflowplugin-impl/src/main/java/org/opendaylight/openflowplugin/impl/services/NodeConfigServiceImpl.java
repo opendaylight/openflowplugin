@@ -42,16 +42,18 @@ public class NodeConfigServiceImpl extends CommonService implements NodeConfigSe
         final RequestContext requestContext = requestContextStack.createRequestContext();
         final SettableFuture<RpcResult<SetConfigOutput>> result = requestContextStack.storeOrFail(requestContext);
         if (!result.isDone()) {
-            SetConfigInputBuilder builder = new SetConfigInputBuilder();
-            SwitchConfigFlag flag = SwitchConfigFlag.valueOf(input.getFlag());
-            final Xid xid = deviceContext.getNextXid();
-            builder.setXid(xid.getValue());
-            builder.setFlags(flag);
-            builder.setMissSendLen(input.getMissSearchLength());
-            builder.setVersion(version);
-            ListenableFuture<RpcResult<Void>> futureResultFromOfLib = JdkFutureAdapters.listenInPoolThread(deviceContext.getPrimaryConnectionContext().getConnectionAdapter().setConfig(builder.build()));
-            OFJResult2RequestCtxFuture<SetConfigOutput> OFJResult2RequestCtxFuture = new OFJResult2RequestCtxFuture<>(requestContext, deviceContext);
-            OFJResult2RequestCtxFuture.processResultFromOfJava(futureResultFromOfLib);
+            synchronized (deviceContext) {
+                SetConfigInputBuilder builder = new SetConfigInputBuilder();
+                SwitchConfigFlag flag = SwitchConfigFlag.valueOf(input.getFlag());
+                final Xid xid = deviceContext.getNextXid();
+                builder.setXid(xid.getValue());
+                builder.setFlags(flag);
+                builder.setMissSendLen(input.getMissSearchLength());
+                builder.setVersion(version);
+                ListenableFuture<RpcResult<Void>> futureResultFromOfLib = JdkFutureAdapters.listenInPoolThread(deviceContext.getPrimaryConnectionContext().getConnectionAdapter().setConfig(builder.build()));
+                OFJResult2RequestCtxFuture<SetConfigOutput> OFJResult2RequestCtxFuture = new OFJResult2RequestCtxFuture<>(requestContext, deviceContext);
+                OFJResult2RequestCtxFuture.processResultFromOfJava(futureResultFromOfLib);
+            }
         } else {
             RequestContextUtil.closeRequstContext(requestContext);
         }

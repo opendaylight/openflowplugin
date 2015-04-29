@@ -178,8 +178,10 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         if (connectionContext.getFeatures().getVersion() == OFConstants.OFP_VERSION_1_0) {
             final CapabilitiesV10 capabilitiesV10 = connectionContext.getFeatures().getCapabilitiesV10();
 
-            createEmptyFlowCapableNodeInDs(deviceContext);
-            makeEmptyTables(deviceContext, deviceContext.getDeviceState().getNodeInstanceIdentifier(), connectionContext.getFeatures().getTables());
+            synchronized (deviceContext) {
+                createEmptyFlowCapableNodeInDs(deviceContext);
+                makeEmptyTables(deviceContext, deviceContext.getDeviceState().getNodeInstanceIdentifier(), connectionContext.getFeatures().getTables());
+            }
             DeviceStateUtil.setDeviceStateBasedOnV10Capabilities(deviceState, capabilitiesV10);
 
             deviceFeaturesFuture = createDeviceFeaturesForOF10(messageListener, deviceContext, deviceState);
