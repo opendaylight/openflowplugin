@@ -106,7 +106,7 @@ public abstract class CommonService {
                                                                          final DataCrateBuilder<T> dataCrateBuilder) {
 
         synchronized (deviceContext) {
-            LOG.debug("Handling general service call");
+            LOG.trace("Handling general service call");
             final RequestContext<T> requestContext = requestContextStack.createRequestContext();
             final SettableFuture<RpcResult<T>> result = requestContextStack.storeOrFail(requestContext);
             if (!result.isDone()) {
