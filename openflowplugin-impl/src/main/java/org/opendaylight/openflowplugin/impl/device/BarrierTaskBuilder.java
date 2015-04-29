@@ -21,6 +21,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierOutput;
+import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,7 +97,13 @@ public class BarrierTaskBuilder {
                 @Override
                 public void onSuccess(final RpcResult<BarrierOutput> result) {
                     synchronized (deviceCtx) {
-                        BarrierProcessor.processOutstandingRequests(result.getResult().getXid(), deviceCtx);
+                        if (!result.isSuccessful()) {
+                            for (RpcError rpcError : result.getErrors()) {
+                                LOG.trace("Barrier response with error {}", rpcError, rpcError.getCause());
+                            }
+                        } else if (null != result.getResult().getXid()) {
+                            BarrierProcessor.processOutstandingRequests(result.getResult().getXid(), deviceCtx);
+                        }
                         buildAndFireBarrierTask();
                     }
                 }
