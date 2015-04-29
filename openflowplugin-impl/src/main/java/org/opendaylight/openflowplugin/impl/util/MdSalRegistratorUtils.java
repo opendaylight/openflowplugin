@@ -8,8 +8,10 @@
 package org.opendaylight.openflowplugin.impl.util;
 
 import org.opendaylight.yang.gen.v1.urn.opendaylight.echo.service.rev150305.SalEchoService;
+import org.opendaylight.openflowplugin.impl.services.FlowCapableTransactionServiceImpl;
 
 import org.opendaylight.openflowplugin.impl.services.SalEchoServiceImpl;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.FlowCapableTransactionService;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.impl.services.NodeConfigServiceImpl;
@@ -27,9 +29,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.Nod
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.SalTableService;
 
-/**
- * @author joe
- */
 public class MdSalRegistratorUtils {
 
     private MdSalRegistratorUtils() {
@@ -40,6 +39,7 @@ public class MdSalRegistratorUtils {
         rpcContext.registerRpcServiceImplementation(SalFlowService.class, new SalFlowServiceImpl(rpcContext, deviceContext));
         rpcContext.registerRpcServiceImplementation(SalEchoService.class, new SalEchoServiceImpl(rpcContext, deviceContext));
         //TODO: add constructors with rcpContext and deviceContext to meter, group, table constructors
+        rpcContext.registerRpcServiceImplementation(FlowCapableTransactionService.class, new FlowCapableTransactionServiceImpl(rpcContext, deviceContext));
         rpcContext.registerRpcServiceImplementation(SalMeterService.class, new SalMeterServiceImpl(rpcContext, deviceContext));
         rpcContext.registerRpcServiceImplementation(SalGroupService.class, new SalGroupServiceImpl(rpcContext, deviceContext));
         rpcContext.registerRpcServiceImplementation(SalTableService.class, new SalTableServiceImpl(rpcContext, deviceContext));
