@@ -8,10 +8,20 @@
 
 package org.opendaylight.openflowplugin.api.openflow.registry.flow;
 
+import java.math.BigInteger;
+
 /**
  * Marker interface identifying flow stored in OFP local flow registry.
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 8.4.2015.
  */
 public interface FlowHash {
+
+    long getFlowHash();
+
+    short getTableId();
+
+    int getPriority();
+
+    BigInteger getCookie();
 
 }

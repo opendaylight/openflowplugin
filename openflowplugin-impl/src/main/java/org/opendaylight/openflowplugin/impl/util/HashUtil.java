@@ -58,7 +58,7 @@ public final class HashUtil {
     private static final Logger LOG = LoggerFactory.getLogger(HashUtil.class);
     private static final int BASE_16 = 16;
     private static final int BASE_10 = 10;
-    private static final int IPV6_TOKENS_COUNT = 8;
+    private static final long IPV6_TOKENS_COUNT = 8;
     public static final String IPV6_TOKEN = ":0000";
 
     private HashUtil() {
@@ -66,8 +66,8 @@ public final class HashUtil {
         throw new IllegalStateException("This class should not be instantiated.");
     }
 
-    public static int calculateEthernetMatchHash(EthernetMatch ethernetMatch) {
-        int hash = 0;
+    public static long calculateEthernetMatchHash(EthernetMatch ethernetMatch) {
+        long hash = 0;
 
         EthernetType ethernetType = ethernetMatch.getEthernetType();
         if (null != ethernetType) {
@@ -87,33 +87,32 @@ public final class HashUtil {
         return hash;
     }
 
-    public static int calculateEthenetSourceHash(EthernetSource ethernetSource) {
-        int hash = calculateMacAddressHash(ethernetSource.getAddress());
+    public static long calculateEthenetSourceHash(EthernetSource ethernetSource) {
+        long hash = calculateMacAddressHash(ethernetSource.getAddress());
         hash += calculateMacAddressHash(ethernetSource.getMask());
         return hash;
     }
 
-    public static int calculateEthernetDestinationHash(EthernetDestination ethernetDestination) {
-        int hash = calculateMacAddressHash(ethernetDestination.getAddress());
+    public static long calculateEthernetDestinationHash(EthernetDestination ethernetDestination) {
+        long hash = calculateMacAddressHash(ethernetDestination.getAddress());
         hash += calculateMacAddressHash(ethernetDestination.getMask());
         return hash;
     }
 
-    public static int calculateMacAddressHash(MacAddress macAddress) {
+    public static long calculateMacAddressHash(MacAddress macAddress) {
 
-        int hash = 0;
+        long hash = 0;
         if (null != macAddress) {
             StringTokenizer stringTokenizer = new StringTokenizer(macAddress.getValue(), ":");
-            hash = parseTokens(stringTokenizer, BASE_16);
+            hash = parseTokens(stringTokenizer, BASE_16, 8);
         }
-        LOG.trace("Calculated hash {} for mac {}", hash, macAddress);
         return hash;
     }
 
-    public static int calculateMatchHash(final Match match, DeviceContext deviceContext) {
-        int hash = 0;
-        int subHash = 0;
-        int base = 0;
+    public static long calculateMatchHash(final Match match, DeviceContext deviceContext) {
+        long hash = 0;
+        long subHash = 0;
+        long base = 0;
         if (null != match) {
             if (null != match.getEthernetMatch()) {
                 hash = 1 << base;
@@ -188,8 +187,8 @@ public final class HashUtil {
         return hash + subHash;
     }
 
-    private static int calculateTunnelHash(final Tunnel tunnel) {
-        int hash = 0;
+    private static long calculateTunnelHash(final Tunnel tunnel) {
+        long hash = 0;
         BigInteger tunnelId = tunnel.getTunnelId();
         if (null != tunnelId) {
             hash += tunnelId.intValue();
@@ -202,8 +201,8 @@ public final class HashUtil {
         return hash;
     }
 
-    private static int calculateVlanMatchHash(final VlanMatch vlanMatch) {
-        int hash = 0;
+    private static long calculateVlanMatchHash(final VlanMatch vlanMatch) {
+        long hash = 0;
 
         VlanId vlanId = vlanMatch.getVlanId();
         if (null != vlanId) {
@@ -218,13 +217,13 @@ public final class HashUtil {
         return hash;
     }
 
-    private static int calculateTcpFlagMatch(final TcpFlagMatch tcpFlagMatch) {
-        int hash = tcpFlagMatch.getTcpFlag().intValue();
+    private static long calculateTcpFlagMatch(final TcpFlagMatch tcpFlagMatch) {
+        long hash = tcpFlagMatch.getTcpFlag().intValue();
         return hash;
     }
 
-    private static int calculateProtocolMatchFieldsHash(final ProtocolMatchFields protocolMatchFields) {
-        int hash = 0;
+    private static long calculateProtocolMatchFieldsHash(final ProtocolMatchFields protocolMatchFields) {
+        long hash = 0;
         Short mplsBos = protocolMatchFields.getMplsBos();
         if (null != mplsBos) {
             hash += mplsBos.intValue();
@@ -249,22 +248,22 @@ public final class HashUtil {
         return hash;
     }
 
-    private static int calculateMetadataHash(final Metadata metadata) {
-        int hash = metadata.getMetadata().intValue();
+    private static long calculateMetadataHash(final Metadata metadata) {
+        long hash = metadata.getMetadata().intValue();
         if (null != metadata.getMetadataMask()) {
             hash += metadata.getMetadataMask().intValue();
         }
         return hash;
     }
 
-    private static int calculateIcmpv6MatchHash(final Icmpv6Match icmpv6Match) {
-        int hash = icmpv6Match.getIcmpv6Code().intValue();
+    private static long calculateIcmpv6MatchHash(final Icmpv6Match icmpv6Match) {
+        long hash = icmpv6Match.getIcmpv6Code().intValue();
         hash += icmpv6Match.getIcmpv6Type().intValue();
         return hash;
     }
 
-    private static int calculateLayer4MatchHash(final Layer4Match layer4Match) {
-        int hash = 0;
+    private static long calculateLayer4MatchHash(final Layer4Match layer4Match) {
+        long hash = 0;
         if (layer4Match instanceof SctpMatch) {
             hash += calculateSctpMatchHash((SctpMatch) layer4Match);
         }
@@ -278,13 +277,13 @@ public final class HashUtil {
         return hash;
     }
 
-    private static int calculateUdpMatchHash(final UdpMatch layer4Match) {
-        int hash = 0;
+    private static long calculateUdpMatchHash(final UdpMatch layer4Match) {
+        long hash = 0;
         return hash;
     }
 
-    private static int calculateTcpMatchHash(final TcpMatch layer4Match) {
-        int hash = 0;
+    private static long calculateTcpMatchHash(final TcpMatch layer4Match) {
+        long hash = 0;
         PortNumber sourcePort = layer4Match.getTcpSourcePort();
         if (null != sourcePort) {
             hash += sourcePort.getValue().intValue();
@@ -297,8 +296,8 @@ public final class HashUtil {
         return hash;
     }
 
-    private static int calculateSctpMatchHash(final SctpMatch layer4Match) {
-        int hash = 0;
+    private static long calculateSctpMatchHash(final SctpMatch layer4Match) {
+        long hash = 0;
 
         PortNumber portNumber = layer4Match.getSctpDestinationPort();
         if (null != portNumber) {
@@ -312,8 +311,8 @@ public final class HashUtil {
         return hash;
     }
 
-    private static int calculateLayer3MatchHash(final Layer3Match layer3Match) {
-        int hash = 0;
+    private static long calculateLayer3MatchHash(final Layer3Match layer3Match) {
+        long hash = 0;
         if (layer3Match instanceof ArpMatch) {
             hash += calculateArpMatchHash((ArpMatch) layer3Match);
         }
@@ -330,16 +329,16 @@ public final class HashUtil {
         return hash;
     }
 
-    private static int calculateTunnelIpv4Hash(final TunnelIpv4Match layer3Match) {
+    private static long calculateTunnelIpv4Hash(final TunnelIpv4Match layer3Match) {
         Ipv4Prefix tunnelIpv4Destination = layer3Match.getTunnelIpv4Destination();
-        int hash = calculateIpv4PrefixHash(tunnelIpv4Destination);
+        long hash = calculateIpv4PrefixHash(tunnelIpv4Destination);
         Ipv4Prefix tunnelIpv4Source = layer3Match.getTunnelIpv4Source();
         hash += calculateIpv4PrefixHash(tunnelIpv4Source);
         return hash;
     }
 
-    private static int calculateIpv6MatchHash(final Ipv6Match layer3Match) {
-        int hash = 0;
+    private static long calculateIpv6MatchHash(final Ipv6Match layer3Match) {
+        long hash = 0;
         Ipv6Prefix ipv6Destination = layer3Match.getIpv6Destination();
         if (null != ipv6Destination) {
             hash += calculateIpv6PrefixHash(ipv6Destination);
@@ -360,25 +359,26 @@ public final class HashUtil {
         if (null != layer3Match.getIpv6NdTll()) {
             hash += calculateMacAddressHash(layer3Match.getIpv6NdTll());
         }
-        if (null != layer3Match.getIpv6NdTarget()){
+        if (null != layer3Match.getIpv6NdTarget()) {
             hash += calculateIpv6AddressHash(layer3Match.getIpv6NdTarget());
         }
         return hash;
     }
 
 
-    public static int calculateIpv6PrefixHash(final Ipv6Prefix ipv6Prefix) {
+    public static long calculateIpv6PrefixHash(final Ipv6Prefix ipv6Prefix) {
 
         StringTokenizer stringTokenizer = getStringTokenizerWithFullAddressString(ipv6Prefix.getValue());
 
-        int hash = parseTokens(stringTokenizer, BASE_16);
+        long hash = parseTokens(stringTokenizer, BASE_16, 16);
         return hash;
     }
-    public static int calculateIpv6AddressHash(final Ipv6Address ipv6Address) {
+
+    public static long calculateIpv6AddressHash(final Ipv6Address ipv6Address) {
 
         StringTokenizer stringTokenizer = getStringTokenizerWithFullAddressString(ipv6Address.getValue());
 
-        int hash = parseTokens(stringTokenizer, BASE_16);
+        long hash = parseTokens(stringTokenizer, BASE_16, 16);
         return hash;
     }
 
@@ -386,7 +386,7 @@ public final class HashUtil {
         String ipv6Value = value.replace("::", ":0000:");
         StringTokenizer stringTokenizer = new StringTokenizer(ipv6Value, ":");
 
-        int delta = IPV6_TOKENS_COUNT - stringTokenizer.countTokens();
+        long delta = IPV6_TOKENS_COUNT - stringTokenizer.countTokens();
 
         StringBuffer additions = new StringBuffer();
 
@@ -405,15 +405,15 @@ public final class HashUtil {
         return stringTokenizer;
     }
 
-    private static int calculateStopperBasedOnMaskValue(final Ipv6Prefix ipv6Prefix, int bitsBase) {
+    private static long calculateStopperBasedOnMaskValue(final Ipv6Prefix ipv6Prefix, long bitsBase) {
         double maskValue = extractMask(ipv6Prefix);
         double bitCount = maskValue / bitsBase;
         return (int) Math.ceil(bitCount);
     }
 
-    private static int extractMask(final Ipv6Prefix ipv6Prefix) {
+    private static long extractMask(final Ipv6Prefix ipv6Prefix) {
         StringTokenizer maskTokenizer = new StringTokenizer(ipv6Prefix.getValue(), "/");
-        int mask = 0;
+        long mask = 0;
         if (maskTokenizer.countTokens() > 1) {
             maskTokenizer.nextToken();
             mask = Integer.parseInt(maskTokenizer.nextToken());
@@ -421,14 +421,14 @@ public final class HashUtil {
         return mask;
     }
 
-    private static int parseTokens(final StringTokenizer stringTokenizer, int base) {
-        return parseTokens(stringTokenizer, 0, base);
+    private static long parseTokens(final StringTokenizer stringTokenizer, int base, int bitShift) {
+        return parseTokens(stringTokenizer, 0, base, bitShift);
     }
 
-    private static int parseTokens(final StringTokenizer stringTokenizer, int stopper, int base) {
-        int hash = 0;
+    private static long parseTokens(final StringTokenizer stringTokenizer, long stopper, int base, int bitShift) {
+        long hash = 0;
         if (stringTokenizer.countTokens() > 0) {
-            int step = 0;
+            long step = 0;
             while (stringTokenizer.hasMoreTokens()) {
                 String token = stringTokenizer.nextToken();
                 step++;
@@ -439,9 +439,9 @@ public final class HashUtil {
 
                 if (token.contains("/")) {
                     StringTokenizer tokenizer = new StringTokenizer(token, "/");
-                    hash = hash ^ parseTokens(tokenizer, stopper, base);
+                    hash += parseTokens(tokenizer, stopper, base, bitShift);
                 } else {
-                    hash = hash ^ ((Integer.parseInt(token, base) * step) + step);
+                    hash += Long.parseLong(token, base) << (bitShift * step);
                     if (stopper > 0 && step == stopper) {
                         break;
                     }
@@ -451,8 +451,8 @@ public final class HashUtil {
         return hash;
     }
 
-    private static int calculateIpv4MatchHash(final Ipv4Match layer3Match) {
-        int hash = 0;
+    private static long calculateIpv4MatchHash(final Ipv4Match layer3Match) {
+        long hash = 0;
         Ipv4Prefix ipv4Destination = layer3Match.getIpv4Destination();
         if (null != ipv4Destination) {
             hash += calculateIpv4PrefixHash(ipv4Destination);
@@ -468,8 +468,8 @@ public final class HashUtil {
         return hash;
     }
 
-    private static int calculateArpMatchHash(final ArpMatch layer3Match) {
-        int hash = 0;
+    private static long calculateArpMatchHash(final ArpMatch layer3Match) {
+        long hash = 0;
         Integer arpOp = layer3Match.getArpOp();
         if (null != arpOp) {
             hash += arpOp.intValue();
@@ -499,13 +499,13 @@ public final class HashUtil {
         return hash;
     }
 
-    public static int calculateIpv4PrefixHash(final Ipv4Prefix ipv4Prefix) {
-        int hash = 0;
+    public static long calculateIpv4PrefixHash(final Ipv4Prefix ipv4Prefix) {
+        long hash = 0;
         StringTokenizer prefixAsArray = new StringTokenizer(ipv4Prefix.getValue(), "/");
         if (prefixAsArray.countTokens() == 2) {
             String address = prefixAsArray.nextToken();
-            Integer mask = Integer.parseInt(prefixAsArray.nextToken());
-            int numberOfAddressPartsToUse = (int) Math.ceil(mask.doubleValue() / 8);
+            Long mask = Long.parseLong(prefixAsArray.nextToken());
+            long numberOfAddressPartsToUse = (int) Math.ceil(mask.doubleValue() / 8);
             hash += calculateIpAdressHash(address, numberOfAddressPartsToUse, BASE_10);
             hash += mask.shortValue();
         }
@@ -513,14 +513,14 @@ public final class HashUtil {
     }
 
 
-    private static int calculateIpAdressHash(final String address, int numberOfParts, int base) {
+    private static long calculateIpAdressHash(final String address, long numberOfParts, int base) {
         StringTokenizer stringTokenizer = new StringTokenizer(address, ".");
-        int hash = parseTokens(stringTokenizer, numberOfParts, base);
+        long hash = parseTokens(stringTokenizer, numberOfParts, base, 8);
         return hash;
     }
 
-    private static int calculateIpMatchHash(final IpMatch ipMatch) {
-        int hash = 0;
+    private static long calculateIpMatchHash(final IpMatch ipMatch) {
+        long hash = 0;
         Short ipEcn = ipMatch.getIpEcn();
         if (null != ipEcn) {
             hash += ipEcn.shortValue();
@@ -542,16 +542,16 @@ public final class HashUtil {
         return hash;
     }
 
-    private static int calculateNodeConnectorIdHash(final NodeConnectorId inPhyPort, DeviceContext deviceContext) {
-        int hash = 0;
+    private static long calculateNodeConnectorIdHash(final NodeConnectorId inPhyPort, DeviceContext deviceContext) {
+        long hash = 0;
         short version = deviceContext.getDeviceState().getVersion();
         Long portFromLogicalName = OpenflowPortsUtil.getPortFromLogicalName(OpenflowVersion.get(version), inPhyPort.getValue());
         hash += portFromLogicalName.intValue();
         return hash;
     }
 
-    private static int calculateIcmpV6MatchHash(final Icmpv6Match icmpv6Match) {
-        int hash = 0;
+    private static long calculateIcmpV6MatchHash(final Icmpv6Match icmpv6Match) {
+        long hash = 0;
         if (null != icmpv6Match.getIcmpv6Code()) {
             hash += icmpv6Match.getIcmpv6Code();
         }
@@ -561,8 +561,8 @@ public final class HashUtil {
         return hash;
     }
 
-    public static int calculateIcmpV4MatchHash(final Icmpv4Match icmpv4Match) {
-        int hash = 0;
+    public static long calculateIcmpV4MatchHash(final Icmpv4Match icmpv4Match) {
+        long hash = 0;
         if (null != icmpv4Match.getIcmpv4Code()) {
             hash += icmpv4Match.getIcmpv4Code();
         }

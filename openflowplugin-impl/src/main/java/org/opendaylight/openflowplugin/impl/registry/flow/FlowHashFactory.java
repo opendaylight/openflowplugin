@@ -8,6 +8,9 @@
 
 package org.opendaylight.openflowplugin.impl.registry.flow;
 
+import com.google.common.primitives.Longs;
+import java.math.BigInteger;
+import java.util.Objects;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowHash;
 import org.opendaylight.openflowplugin.impl.util.HashUtil;
@@ -23,30 +26,36 @@ public class FlowHashFactory {
     }
 
     public static FlowHash create(Flow flow, DeviceContext deviceContext) {
-        int hash = calculateHash(flow, deviceContext);
-        return new FlowHashDto(hash);
+        long hash = calculateHash(flow, deviceContext);
+        return new FlowHashDto(hash, flow);
     }
 
-    private static int calculateHash(Flow flow, DeviceContext deviceContext) {
-        int hash = HashUtil.calculateMatchHash(flow.getMatch(), deviceContext);
-        hash += flow.getPriority();
-        hash += flow.getTableId();
-        hash += flow.getCookie().hashCode();
-        return hash;
+    private static long calculateHash(Flow flow, DeviceContext deviceContext) {
+        return HashUtil.calculateMatchHash(flow.getMatch(), deviceContext);
     }
 
 
     private static final class FlowHashDto implements FlowHash {
 
-        private final int hashCode;
+        private final long flowHash;
+        private final int intHashCode;
 
-        public FlowHashDto(final int hashCode) {
-            this.hashCode = hashCode;
+        private final short tableId;
+        private final int priority;
+        private final BigInteger cookie;
+
+        public FlowHashDto(final long flowHash, final Flow flow) {
+            this.flowHash = flowHash;
+            this.intHashCode = Longs.hashCode(flowHash);
+            tableId = flow.getTableId();
+            priority = flow.getPriority();
+            cookie = flow.getCookie().getValue();
         }
+
 
         @Override
         public int hashCode() {
-            return hashCode;
+            return intHashCode;
         }
 
         @Override
@@ -57,12 +66,34 @@ public class FlowHashFactory {
             if (!(obj instanceof FlowHash)) {
                 return false;
             }
-            if (this.hashCode == obj.hashCode()) {
+            FlowHash that = (FlowHash) obj;
+            if (this.flowHash == that.getFlowHash()
+                    && this.tableId == that.getTableId()
+                    && this.priority == that.getPriority()
+                    && Objects.equals(this.cookie, that.getCookie())) {
                 return true;
             }
             return false;
         }
 
+        @Override
+        public long getFlowHash() {
+            return flowHash;
+        }
 
+        @Override
+        public short getTableId() {
+            return 0;
+        }
+
+        @Override
+        public int getPriority() {
+            return 0;
+        }
+
+        @Override
+        public BigInteger getCookie() {
+            return null;
+        }
     }
 }
