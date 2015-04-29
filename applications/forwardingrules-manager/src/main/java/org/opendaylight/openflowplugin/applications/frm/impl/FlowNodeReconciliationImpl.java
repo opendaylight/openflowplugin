@@ -148,6 +148,16 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         }
 
         if (flowNode.isPresent()) {
+        	/* Tables - have to be pushed before groups */
+        	// CHECK if while pusing the update, updateTableInput can be null to emulate a table add
+        	List<Table> tableList = flowNode.get().getTable() != null 
+        			? flowNode.get().getTable() : Collections.<Table> emptyList() ;
+        	for (Table table : tableList) {
+        		final KeyedInstanceIdentifier<Table, TableKey> tableIdent = 
+        				nodeIdent.child(Table.class, table.getKey());
+        		this.provider.getTableCommiter().update(tableIdent, table, null ,nodeIdent) ;
+        	}
+        	
             /* Groups - have to be first */
             List<Group> groups = flowNode.get().getGroup() != null
                     ? flowNode.get().getGroup() : Collections.<Group> emptyList();
