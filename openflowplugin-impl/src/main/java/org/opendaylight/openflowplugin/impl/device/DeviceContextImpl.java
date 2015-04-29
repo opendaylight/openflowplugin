@@ -318,7 +318,8 @@ public class DeviceContextImpl implements DeviceContext {
                 LOG.error("Closing RequestContext failed: ", e);
             }
         } else {
-            LOG.error("Can't find request context registered for xid : {}", xid.getValue());
+            LOG.error("Can't find request context registered for xid : {}. Exception message {}",
+                    xid.getValue(), deviceDataException.getMessage());
         }
     }
 

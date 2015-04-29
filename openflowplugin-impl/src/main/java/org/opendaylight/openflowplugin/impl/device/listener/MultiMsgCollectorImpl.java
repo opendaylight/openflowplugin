@@ -88,8 +88,10 @@ public class MultiMsgCollectorImpl implements MultiMsgCollector {
         final long xid = reply.getXid();
         final MultiCollectorObject cachedRef = cache.getIfPresent(xid);
         if (cachedRef == null) {
-            LOG.trace("Orphaned multipart msg with XID : {}", xid);
-            deviceReplyProcessor.processException(new Xid(xid), new DeviceDataException("unknown xid received"));
+            MultipartType multipartType = reply.getType();
+            LOG.trace("Orphaned multipart msg with XID : {} of type {}", xid, multipartType);
+            deviceReplyProcessor.processException(new Xid(xid),
+                    new DeviceDataException("unknown xid received for multipart of type "+multipartType));
             return;
         }
 
