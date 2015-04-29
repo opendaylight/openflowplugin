@@ -7,28 +7,31 @@
  */
 package org.opendaylight.openflowplugin.applications.topology.manager;
 
+import java.util.concurrent.Callable;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
+import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
+import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.opendaylight.yangtools.yang.binding.DataObject;
-import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TopologyId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
+import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class DataChangeListenerImpl implements DataChangeListener, AutoCloseable {
 
     private final static Logger LOG = LoggerFactory.getLogger(DataChangeListenerImpl.class);
+    private static final long STARTUP_LOOP_TICK = 500L;
+    private static final int STARTUP_LOOP_MAX_RETRIES = 8;
     protected final ListenerRegistration<DataChangeListener> dataChangeListenerRegistration;
     protected OperationProcessor operationProcessor;
 
@@ -47,8 +50,22 @@ public abstract class DataChangeListenerImpl implements DataChangeListener, Auto
      */
     public DataChangeListenerImpl(final OperationProcessor operationProcessor, final DataBroker dataBroker,
             final InstanceIdentifier<?> ii) {
-        dataChangeListenerRegistration = dataBroker.registerDataChangeListener(LogicalDatastoreType.OPERATIONAL, ii,
-                this, AsyncDataBroker.DataChangeScope.BASE);
+        SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(STARTUP_LOOP_TICK, STARTUP_LOOP_MAX_RETRIES);
+        try {
+            dataChangeListenerRegistration = looper.loopUntilNoException(new Callable<ListenerRegistration<DataChangeListener>>() {
+                @Override
+                public ListenerRegistration<DataChangeListener> call() throws Exception {
+                    return dataBroker.registerDataChangeListener(LogicalDatastoreType.OPERATIONAL, ii,
+                            DataChangeListenerImpl.this, AsyncDataBroker.DataChangeScope.BASE);
+
+                }
+            });
+        } catch (Exception e) {
+            LOG.warn("data listener registration failed: {}", e.getMessage());
+            LOG.debug("data listener registration failed.. ", e);
+            throw new IllegalStateException("TopologyManager startup fail! TM bundle needs restart.", e);
+        }
+
         this.operationProcessor = operationProcessor;
     }
 
