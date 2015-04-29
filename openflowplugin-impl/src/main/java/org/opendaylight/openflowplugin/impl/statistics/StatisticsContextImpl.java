@@ -12,7 +12,6 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -95,7 +94,7 @@ public class StatisticsContextImpl implements StatisticsContext {
                 @Override
                 public void onSuccess(final List<Boolean> booleans) {
                     boolean atLeastOneSuccess = false;
-                    for (Boolean bool : booleans){
+                    for (Boolean bool : booleans) {
                         atLeastOneSuccess |= bool.booleanValue();
                     }
                     settableResultingFuture.set(new Boolean(atLeastOneSuccess));
@@ -107,7 +106,7 @@ public class StatisticsContextImpl implements StatisticsContext {
                 }
             });
         } else {
-            resultingFuture = Futures.immediateFailedFuture(new Throwable("Device connection doesn't exist anymore."));
+            resultingFuture = Futures.immediateFailedFuture(new Throwable(String.format("Device connection doesn't exist anymore. Primary connection status : %s", deviceContext.getPrimaryConnectionContext().getConnectionState())));
         }
         return resultingFuture;
     }
