@@ -12,6 +12,7 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -67,12 +68,11 @@ public class StatisticsContextImpl implements StatisticsContext {
     public ListenableFuture<Boolean> gatherDynamicData() {
 
 
-        final ListenableFuture<Boolean> resultingFuture;
+        final SettableFuture settableResultingFuture = SettableFuture.create();
+        ListenableFuture<Boolean> resultingFuture = settableResultingFuture ;
 
         if (ConnectionContext.CONNECTION_STATE.WORKING.equals(deviceContext.getPrimaryConnectionContext().getConnectionState())) {
             final DeviceState devState = deviceContext.getDeviceState();
-            final SettableFuture settableResultingFuture = SettableFuture.create();
-            resultingFuture = settableResultingFuture;
             ListenableFuture<Boolean> emptyFuture = Futures.immediateFuture(new Boolean(false));
             final ListenableFuture<Boolean> flowStatistics = devState.isFlowStatisticsAvailable() ? wrapLoggingOnStatisticsRequestCall(MultipartType.OFPMPFLOW) : emptyFuture;
 
@@ -99,14 +99,22 @@ public class StatisticsContextImpl implements StatisticsContext {
                     }
                     settableResultingFuture.set(new Boolean(atLeastOneSuccess));
                 }
-
                 @Override
                 public void onFailure(final Throwable throwable) {
                     settableResultingFuture.setException(throwable);
                 }
             });
         } else {
-            resultingFuture = Futures.immediateFailedFuture(new Throwable(String.format("Device connection doesn't exist anymore. Primary connection status : %s", deviceContext.getPrimaryConnectionContext().getConnectionState())));
+            switch (deviceContext.getPrimaryConnectionContext().getConnectionState()) {
+                case RIP:
+                    resultingFuture = Futures.immediateFailedFuture(new Throwable(String.format("Device connection doesn't exist anymore. Primary connection status : %s", deviceContext.getPrimaryConnectionContext().getConnectionState())));
+                    break;
+                default:
+                    resultingFuture = Futures.immediateCheckedFuture(Boolean.TRUE);
+                    break;
+            }
+
+
         }
         return resultingFuture;
     }
