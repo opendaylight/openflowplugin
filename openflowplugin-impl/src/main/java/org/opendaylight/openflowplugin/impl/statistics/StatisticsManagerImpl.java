@@ -107,7 +107,7 @@ public class StatisticsManagerImpl implements StatisticsManager {
         if (contexts.containsKey(deviceContext)) {
             LOG.trace("Removing device context from stack. No more statistics gathering for node {}", deviceContext.getDeviceState().getNodeId());
             contexts.remove(deviceContext);
-            StatisticsContext statisticsContext = contexts.get(deviceContext);
+            StatisticsContext statisticsContext = contexts.remove(deviceContext);
             try {
                 statisticsContext.close();
             } catch (Exception e) {
