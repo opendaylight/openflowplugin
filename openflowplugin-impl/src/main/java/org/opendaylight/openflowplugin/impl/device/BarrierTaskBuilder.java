@@ -50,15 +50,6 @@ public class BarrierTaskBuilder {
         deviceCtx.setCurrentBarrierTimeout(timeout);
     }
 
-    /**
-     * @return OF-message, ready to send
-     */
-    private BarrierInput makeBarrier() {
-        final BarrierInputBuilder biBuilder = new BarrierInputBuilder();
-        biBuilder.setVersion(deviceCtx.getDeviceState().getVersion());
-        biBuilder.setXid(deviceCtx.getNextXid().getValue());
-        return biBuilder.build();
-    }
 
     private final class BarrierTask implements TimerTask {
 
@@ -66,6 +57,16 @@ public class BarrierTaskBuilder {
 
         public BarrierTask(final DeviceContext deviceCtx) {
             this.deviceCtx = deviceCtx;
+        }
+
+        /**
+         * @return OF-message, ready to send
+         */
+        private BarrierInput makeBarrier() {
+            final BarrierInputBuilder biBuilder = new BarrierInputBuilder();
+            biBuilder.setVersion(deviceCtx.getDeviceState().getVersion());
+            biBuilder.setXid(deviceCtx.getNextXid().getValue());
+            return biBuilder.build();
         }
 
         @Override
