@@ -8,22 +8,20 @@
 package org.opendaylight.openflowplugin.impl.callback;
 
 
-import org.opendaylight.openflowplugin.impl.services.RequestContextUtil;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import com.google.common.util.concurrent.ListenableFuture;
-import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.ListenableFuture;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
+import org.opendaylight.openflowplugin.impl.services.RequestContextUtil;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author joe
- *
  */
 public class BaseCallback<I, O> implements FutureCallback<RpcResult<I>> {
 
@@ -42,21 +40,23 @@ public class BaseCallback<I, O> implements FutureCallback<RpcResult<I>> {
     @Override
     public void onSuccess(final RpcResult<I> fRpcResult) {
         if (!fRpcResult.isSuccessful()) {
-            deviceContext.getMessageSpy().spyMessage(requestContext.getClass(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE);
+            synchronized (deviceContext) {
+                deviceContext.getMessageSpy().spyMessage(requestContext.getClass(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE);
 
-            // remove current request from request cache in deviceContext
-            deviceContext.unhookRequestCtx(requestContext.getXid());
-            // handle requestContext failure
-            StringBuilder rpcErrors = new StringBuilder();
-            if (null != fRpcResult.getErrors() && fRpcResult.getErrors().size() > 0) {
-                for (RpcError error : fRpcResult.getErrors()) {
-                    rpcErrors.append(error.getMessage());
+                // remove current request from request cache in deviceContext
+                deviceContext.unhookRequestCtx(requestContext.getXid());
+                // handle requestContext failure
+                StringBuilder rpcErrors = new StringBuilder();
+                if (null != fRpcResult.getErrors() && fRpcResult.getErrors().size() > 0) {
+                    for (RpcError error : fRpcResult.getErrors()) {
+                        rpcErrors.append(error.getMessage());
+                    }
                 }
+                LOG.trace("OF Java result for XID {} was not successful. Errors : {}", requestContext.getXid().getValue(), rpcErrors.toString());
+                requestContext.getFuture().set(
+                        RpcResultBuilder.<O>failed().withRpcErrors(fRpcResult.getErrors()).build());
+                RequestContextUtil.closeRequstContext(requestContext);
             }
-            LOG.trace("OF Java result for XID {} was not successful. Errors : {}", requestContext.getXid().getValue(), rpcErrors.toString());
-            requestContext.getFuture().set(
-                    RpcResultBuilder.<O>failed().withRpcErrors(fRpcResult.getErrors()).build());
-            RequestContextUtil.closeRequstContext(requestContext);
         } else {
             // else: message was successfully sent - waiting for callback on requestContext.future to get invoked
             // or can be implemented specific processing via processSuccess() method

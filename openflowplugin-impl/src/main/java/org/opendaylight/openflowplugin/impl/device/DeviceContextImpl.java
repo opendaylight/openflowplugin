@@ -90,7 +90,7 @@ public class DeviceContextImpl implements DeviceContext {
     private final DataBroker dataBroker;
     private final XidGenerator xidGenerator;
     private final HashedWheelTimer hashedWheelTimer;
-    private Map<Long, RequestContext> requests = Collections.synchronizedMap(new TreeMap());
+    private Map<Long, RequestContext> requests = new TreeMap();
 
     private final Map<SwitchConnectionDistinguisher, ConnectionContext> auxiliaryConnectionContexts;
     private final TransactionChainManager txChainManager;
@@ -328,7 +328,7 @@ public class DeviceContextImpl implements DeviceContext {
     }
 
     @Override
-    public synchronized void processPortStatusMessage(final PortStatusMessage portStatus) {
+    public void processPortStatusMessage(final PortStatusMessage portStatus) {
         messageSpy.spyMessage(portStatus.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS);
         final TranslatorKey translatorKey = new TranslatorKey(portStatus.getVersion(), PortGrouping.class.getName());
         final MessageTranslator<PortGrouping, FlowCapableNodeConnector> messageTranslator = translatorLibrary.lookupTranslator(translatorKey);
@@ -373,7 +373,7 @@ public class DeviceContextImpl implements DeviceContext {
     }
 
     @Override
-    public synchronized HashedWheelTimer getTimer() {
+    public HashedWheelTimer getTimer() {
         return hashedWheelTimer;
     }
 
@@ -407,7 +407,7 @@ public class DeviceContextImpl implements DeviceContext {
     }
 
     @Override
-    public synchronized void onDeviceDisconnected(final ConnectionContext connectionContext) {
+    public void onDeviceDisconnected(final ConnectionContext connectionContext) {
         if (this.getPrimaryConnectionContext().equals(connectionContext)) {
             try {
                 close();
