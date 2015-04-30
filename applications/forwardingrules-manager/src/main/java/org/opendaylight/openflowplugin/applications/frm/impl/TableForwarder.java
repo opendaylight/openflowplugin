@@ -1,38 +1,40 @@
 package org.opendaylight.openflowplugin.applications.frm.impl;
 
-import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
+import java.util.Collections;
 
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.table.update.OriginalTableBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.table.update.UpdatedTableBuilder;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableRef;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
+import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import java.util.concurrent.Callable;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.table.update.OriginalTableBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.table.update.UpdatedTableBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableRef;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.google.common.base.Preconditions;
 
-public class TableForwarder extends AbstractListeningCommiter<Table> {
+public class TableForwarder extends AbstractListeningCommiter<TableFeatures> {
 
     private static final Logger LOG = LoggerFactory.getLogger(TableForwarder.class);
 
     private ListenerRegistration<TableForwarder> listenerRegistration;
 
     public TableForwarder (final ForwardingRulesManager manager, final DataBroker db) {
-        super(manager, Table.class);
+        super(manager, TableFeatures.class);
         Preconditions.checkNotNull(db, "DataBroker can not be null!");
-        final DataTreeIdentifier<Table> treeId = new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION, getWildCardPath());
+        final DataTreeIdentifier<TableFeatures> treeId = new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION, getWildCardPath());
 
         try {
             SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(ForwardingRulesManagerImpl.STARTUP_LOOP_TICK,
@@ -63,41 +65,45 @@ public class TableForwarder extends AbstractListeningCommiter<Table> {
     }
 
     @Override
-    protected InstanceIdentifier<Table> getWildCardPath() {
+    protected InstanceIdentifier<TableFeatures> getWildCardPath() {
         return InstanceIdentifier.create(Nodes.class).child(Node.class)
-                .augmentation(FlowCapableNode.class).child(Table.class);
+                .augmentation(FlowCapableNode.class).child(Table.class).child(TableFeatures.class);
     }
 
     @Override
-    public void remove(final InstanceIdentifier<Table> identifier, final Table removeDataObj,
+    public void remove(final InstanceIdentifier<TableFeatures> identifier, final TableFeatures removeDataObj,
                        final InstanceIdentifier<FlowCapableNode> nodeIdent) {
       // DO Nothing
     }
 
     @Override
-    public void update(final InstanceIdentifier<Table> identifier,
-                       final Table original, final Table update,
+    public void update(final InstanceIdentifier<TableFeatures> identifier,
+                       final TableFeatures original, final TableFeatures update,
                        final InstanceIdentifier<FlowCapableNode> nodeIdent) {
         LOG.debug( "Received the Table Update request [Tbl id, node Id, original, upd" +
                        " " + identifier + " " + nodeIdent + " " + original + " " + update );
 
-        final Table originalTable = (original);
-        Table updatedTable ;
+        final TableFeatures originalTableFeatures = original;
+        TableFeatures updatedTableFeatures ;
         if( null == update)
-          updatedTable = (original);
+          updatedTableFeatures = original;
         else
-          updatedTable = (update);
+          updatedTableFeatures = update;
 
         final UpdateTableInputBuilder builder = new UpdateTableInputBuilder();
 
         builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
-        builder.setTableRef(new TableRef(identifier));
+
+        InstanceIdentifier<Table> iiToTable = identifier.firstIdentifierOf(Table.class);
+        builder.setTableRef(new TableRef(iiToTable));
 
         builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
 
-        builder.setUpdatedTable((new UpdatedTableBuilder(updatedTable)).build());
+        builder.setUpdatedTable(new UpdatedTableBuilder().setTableFeatures(
+                Collections.singletonList(updatedTableFeatures)).build());
 
-        builder.setOriginalTable((new OriginalTableBuilder(originalTable)).build());
+        builder.setOriginalTable(new OriginalTableBuilder().setTableFeatures(
+                Collections.singletonList(originalTableFeatures)).build());
         LOG.debug( "Invoking SalTableService " ) ;
 
         if( this.provider.getSalTableService() != null )
@@ -107,7 +113,7 @@ public class TableForwarder extends AbstractListeningCommiter<Table> {
     }
 
     @Override
-    public void add(final InstanceIdentifier<Table> identifier, final Table addDataObj,
+    public void add(final InstanceIdentifier<TableFeatures> identifier, final TableFeatures addDataObj,
                     final InstanceIdentifier<FlowCapableNode> nodeIdent) {
        //DO NOthing
     }

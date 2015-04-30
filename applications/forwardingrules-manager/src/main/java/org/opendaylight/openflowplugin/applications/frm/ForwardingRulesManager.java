@@ -8,10 +8,11 @@
 
 package org.opendaylight.openflowplugin.applications.frm;
 
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
+
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.SalGroupService;
@@ -129,7 +130,7 @@ public interface ForwardingRulesManager extends AutoCloseable {
      * Content definition method and prevent code duplicity
      * @return ForwardingRulesCommiter&lt;Table&gt;
      */
-    public ForwardingRulesCommiter<Table> getTableCommiter();
+    public ForwardingRulesCommiter<TableFeatures> getTableFeaturesCommiter();
 
     /**
      * Content definition method

@@ -26,7 +26,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalF
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.SalGroupService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.SalMeterService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.SalTableService;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
@@ -62,7 +62,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     private ForwardingRulesCommiter<Flow> flowListener;
     private ForwardingRulesCommiter<Group> groupListener;
     private ForwardingRulesCommiter<Meter> meterListener;
-    private ForwardingRulesCommiter<Table> tableListener;
+    private ForwardingRulesCommiter<TableFeatures> tableListener;
     private FlowNodeReconciliation nodeListener;
 
     public ForwardingRulesManagerImpl(final DataBroker dataBroker,
@@ -85,10 +85,10 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     public void start() {
 
         this.flowListener = new FlowForwarder(this, dataService);
-        
+
         this.groupListener = new GroupForwarder(this, dataService);
         this.meterListener = new MeterForwarder(this, dataService);
-        
+
         this.tableListener = new TableForwarder(this, dataService);
         this.nodeListener = new FlowNodeReconciliationImpl(this, dataService);
         LOG.info("ForwardingRulesManager has started successfully.");
@@ -198,7 +198,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     }
 
     @Override
-    public ForwardingRulesCommiter<Table> getTableCommiter() {
+    public ForwardingRulesCommiter<TableFeatures> getTableFeaturesCommiter() {
         return tableListener;
     }
 

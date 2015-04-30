@@ -8,6 +8,9 @@
 
 package org.opendaylight.openflowplugin.applications.frm.impl;
 
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
+
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeaturesKey;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import java.util.Collections;
@@ -148,16 +151,19 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         }
 
         if (flowNode.isPresent()) {
-        	/* Tables - have to be pushed before groups */
-        	// CHECK if while pusing the update, updateTableInput can be null to emulate a table add
-        	List<Table> tableList = flowNode.get().getTable() != null 
-        			? flowNode.get().getTable() : Collections.<Table> emptyList() ;
-        	for (Table table : tableList) {
-        		final KeyedInstanceIdentifier<Table, TableKey> tableIdent = 
-        				nodeIdent.child(Table.class, table.getKey());
-        		this.provider.getTableCommiter().update(tableIdent, table, null ,nodeIdent) ;
-        	}
-        	
+            /* Tables - have to be pushed before groups */
+            // CHECK if while pusing the update, updateTableInput can be null to emulate a table add
+            List<Table> tableList = flowNode.get().getTable() != null
+                    ? flowNode.get().getTable() : Collections.<Table> emptyList() ;
+            for (Table table : tableList) {
+                TableKey tableKey = table.getKey();
+                KeyedInstanceIdentifier<TableFeatures, TableFeaturesKey> tableFeaturesII
+                    = nodeIdent.child(Table.class, tableKey).child(TableFeatures.class, new TableFeaturesKey(tableKey.getId()));
+                for (TableFeatures tableFeatures : table.getTableFeatures()) {
+                    provider.getTableFeaturesCommiter().update(tableFeaturesII, tableFeatures, null, nodeIdent);
+                }
+            }
+
             /* Groups - have to be first */
             List<Group> groups = flowNode.get().getGroup() != null
                     ? flowNode.get().getGroup() : Collections.<Group> emptyList();
