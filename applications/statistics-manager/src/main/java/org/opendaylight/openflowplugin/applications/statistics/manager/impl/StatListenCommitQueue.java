@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import java.util.UUID;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -139,6 +140,11 @@ public class StatListenCommitQueue extends StatAbstractListenCommit<Queue, Opend
                 deleteAllNotPresentedNodes(nodeIdent, tx, Collections.unmodifiableMap(existQueueKeys));
                 /* Notification for continue collecting statistics */
                 notifyToCollectNextStatistics(nodeIdent, transId);
+            }
+
+            @Override
+            public UUID generatedUUIDForNode() {
+                return manager.getGeneratedUUIDForNode(getNodeIdentifier());
             }
         });
     }

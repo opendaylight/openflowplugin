@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import java.util.UUID;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -140,6 +141,10 @@ public class StatListenCommitMeter extends StatAbstractListenCommit<Meter, Opend
                 /* Notification for continue collecting statistics */
                 notifyToCollectNextStatistics(nodeIdent, transId);
             }
+
+            public UUID generatedUUIDForNode() {
+                return manager.getGeneratedUUIDForNode(getNodeIdentifier());
+            }
         });
     }
 
@@ -193,6 +198,11 @@ public class StatListenCommitMeter extends StatAbstractListenCommit<Meter, Opend
                         manager.registerAdditionalNodeFeature(nodeIdent, StatCapabTypes.METER_STATS);
                     }
                 }
+            }
+
+            @Override
+            public UUID generatedUUIDForNode() {
+                return manager.getGeneratedUUIDForNode(getNodeIdentifier());
             }
         });
     }
@@ -251,6 +261,11 @@ public class StatListenCommitMeter extends StatAbstractListenCommit<Meter, Opend
                 if ( ! notifMeter.isPresent()) {
                     notifyToCollectNextStatistics(nodeIdent, transId);
                 }
+            }
+
+            @Override
+            public UUID generatedUUIDForNode() {
+                return manager.getGeneratedUUIDForNode(getNodeIdentifier());
             }
         });
     }

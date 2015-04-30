@@ -18,6 +18,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
@@ -156,6 +157,11 @@ public class StatListenCommitFlow extends StatAbstractListenCommit<Flow, Openday
                     }
                 }
             }
+
+            @Override
+            public UUID generatedUUIDForNode() {
+                return manager.getGeneratedUUIDForNode(getNodeIdentifier());
+            }
         });
     }
 
@@ -216,6 +222,11 @@ public class StatListenCommitFlow extends StatAbstractListenCommit<Flow, Openday
                 }
                 /* Notification for continue collecting statistics */
                 notifyToCollectNextStatistics(nodeIdent, transId);
+            }
+
+            @Override
+            public UUID generatedUUIDForNode() {
+                return manager.getGeneratedUUIDForNode(getNodeIdentifier());
             }
 
         });

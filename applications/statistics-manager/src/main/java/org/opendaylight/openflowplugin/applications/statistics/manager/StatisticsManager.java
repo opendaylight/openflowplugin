@@ -9,7 +9,7 @@
 package org.opendaylight.openflowplugin.applications.statistics.manager;
 
 import java.util.List;
-
+import java.util.UUID;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
@@ -25,7 +25,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.q
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.OpendaylightGroupStatisticsListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.OpendaylightMeterStatisticsListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.OpendaylightPortStatisticsListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.OpendaylightQueueStatisticsListener;
@@ -73,12 +75,14 @@ public interface StatisticsManager extends AutoCloseable, TransactionChainListen
 
         private NodeId nodeId;
         private StatsManagerOperationType operationType = StatsManagerOperationType.DATA_COMMIT_OPER_DS;
+        private UUID nodeUUID;
 
         public StatDataStoreOperation(final StatsManagerOperationType operType, final NodeId id){
             if(operType != null){
                 operationType = operType;
             }
             nodeId = id;
+            nodeUUID = generatedUUIDForNode();
         }
 
         public final StatsManagerOperationType getType() {
@@ -89,12 +93,51 @@ public interface StatisticsManager extends AutoCloseable, TransactionChainListen
             return nodeId;
         }
 
+        public UUID getNodeUUID() {
+            return nodeUUID;
+        }
+
         /**
          * Apply all read / write (put|merge) operation for DataStore
          *
          * @param tx {@link ReadWriteTransaction}
          */
         public abstract void applyOperation(ReadWriteTransaction tx);
+
+        protected abstract UUID generatedUUIDForNode();
+
+        public InstanceIdentifier<Node> getNodeIdentifier() {
+            final InstanceIdentifier<Node> nodeIdent = InstanceIdentifier.create(Nodes.class)
+                    .child(Node.class, new NodeKey(nodeId));
+            return nodeIdent;
+        }
+
+    }
+
+
+    class Pair<L,R> {
+
+        private final L left;
+        private final R right;
+
+        public Pair(L left, R right) {
+            this.left = left;
+            this.right = right;
+        }
+
+        public L getLeft() { return left; }
+        public R getRight() { return right; }
+
+        @Override
+        public int hashCode() { return left.hashCode() ^ right.hashCode(); }
+
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof Pair)) return false;
+            Pair pairo = (Pair) o;
+            return this.left.equals(pairo.getLeft()) &&
+                    this.right.equals(pairo.getRight());
+        }
 
     }
 
@@ -221,6 +264,13 @@ public interface StatisticsManager extends AutoCloseable, TransactionChainListen
     StatNotifyCommiter<OpendaylightPortStatisticsListener> getPortNotifyCommit();
 
     StatisticsManagerConfig getConfiguration();
+
+    /**
+     * A unique UUID is generated with each node added by the statistics manager implementation in order to uniquely
+     * identify a session.
+     * @param nodeInstanceIdentifier
+     */
+    UUID getGeneratedUUIDForNode(InstanceIdentifier<Node> nodeInstanceIdentifier);
 
 }
 
