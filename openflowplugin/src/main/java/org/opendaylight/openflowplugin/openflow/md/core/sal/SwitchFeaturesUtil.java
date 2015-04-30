@@ -12,7 +12,6 @@ import static org.opendaylight.openflowplugin.api.OFConstants.OFP_VERSION_1_3;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import org.opendaylight.openflowplugin.api.openflow.md.core.sal.BuildSwitchFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.flow.node.SwitchFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
@@ -26,25 +25,25 @@ import org.slf4j.LoggerFactory;
 public final class SwitchFeaturesUtil {
 
     private static final Logger LOG = LoggerFactory.getLogger(SwitchFeaturesUtil.class);
-    
+
     private static SwitchFeaturesUtil instance = new SwitchFeaturesUtil();
     private Map<Short, BuildSwitchFeatures> swFeaturesBuilders;
-    
+
     private SwitchFeaturesUtil() {
         swFeaturesBuilders = new HashMap<>();
         swFeaturesBuilders.put(OFP_VERSION_1_0, BuildSwitchCapabilitiesOF10.getInstance());
         swFeaturesBuilders.put(OFP_VERSION_1_3, BuildSwitchCapabilitiesOF13.getInstance());
     }
-    
+
     /**
      * Get singleton instance
-     * 
+     *
      * @return instance
      */
     public static SwitchFeaturesUtil getInstance() {
         return instance;
     }
-    
+
     /**
      * @param features {@link org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput}
      * @return switch features
@@ -56,14 +55,15 @@ public final class SwitchFeaturesUtil {
             try {
                 return swFeaturesBuilders.get(features.getVersion()).build(features);
             } catch (NullPointerException e) {
-                LOG.error("error while building switch features {}", e);
+                LOG.warn("error while building switch features: {}", e.getMessage());
+                LOG.debug("error while building switch features.. ", e);
             }
         }
         else {
-            LOG.warn("unknown version: {}", features.getVersion());            
-        }                
-        
+            LOG.warn("unknown version: {}", features.getVersion());
+        }
+
         return null;
     }
-    
+
 }

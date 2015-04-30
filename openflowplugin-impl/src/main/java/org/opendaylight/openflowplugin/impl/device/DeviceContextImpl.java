@@ -261,10 +261,11 @@ public class DeviceContextImpl implements DeviceContext {
             try {
                 requestContext.close();
             } catch (final Exception e) {
-                LOG.error("Closing RequestContext failed: ", e);
+                LOG.warn("Closing RequestContext failed: {}", e.getMessage());
+                LOG.debug("Closing RequestContext failed.. ", e);
             }
         } else {
-            LOG.error("Can't find request context registered for xid : {}. Type of reply: {}. From address: {}", ofHeader.getXid(), ofHeader.getClass().getName(),
+            LOG.warn("Can't find request context registered for xid : {}. Type of reply: {}. From address: {}", ofHeader.getXid(), ofHeader.getClass().getName(),
                     getPrimaryConnectionContext().getConnectionAdapter().getRemoteAddress());
         }
     }
@@ -287,10 +288,11 @@ public class DeviceContextImpl implements DeviceContext {
             try {
                 requestContext.close();
             } catch (final Exception e) {
-                LOG.error("Closing RequestContext failed: ", e);
+                LOG.warn("Closing RequestContext failed: {}", e.getMessage());
+                LOG.debug("Closing RequestContext failed.. ", e);
             }
         } else {
-            LOG.error("Can't find request context registered for xid : {}. Type of reply: MULTIPART. From address: {}", xid.getValue(),
+            LOG.warn("Can't find request context registered for xid : {}. Type of reply: MULTIPART. From address: {}", xid.getValue(),
                     getPrimaryConnectionContext().getConnectionAdapter().getRemoteAddress());
         }
     }
@@ -315,6 +317,7 @@ public class DeviceContextImpl implements DeviceContext {
                 requestContext.close();
             } catch (final Exception e) {
                 LOG.warn("Closing RequestContext failed: ", e);
+                LOG.debug("Closing RequestContext failed..", e);
             }
         } else {
             LOG.warn("Can't find request context registered for xid : {}. Exception message {}",

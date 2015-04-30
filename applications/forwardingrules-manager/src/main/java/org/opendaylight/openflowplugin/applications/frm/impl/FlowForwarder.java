@@ -80,7 +80,8 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
             try {
                 listenerRegistration.close();
             } catch (final Exception e) {
-                LOG.error("Error by stop FRM FlowChangeListener.", e);
+                LOG.warn("Error by stop FRM FlowChangeListener: {}", e.getMessage());
+                LOG.debug("Error by stop FRM FlowChangeListener..", e);
             }
             listenerRegistration = null;
         }
@@ -159,7 +160,7 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
         Preconditions.checkNotNull(tableKey, "TableKey can not be null or empty!");
         Preconditions.checkNotNull(flow, "Flow can not be null or empty!");
         if (! tableKey.getId().equals(flow.getTableId())) {
-            LOG.error("TableID in URI tableId={} and in palyload tableId={} is not same.",
+            LOG.warn("TableID in URI tableId={} and in palyload tableId={} is not same.",
                     flow.getTableId(), tableKey.getId());
             return false;
         }

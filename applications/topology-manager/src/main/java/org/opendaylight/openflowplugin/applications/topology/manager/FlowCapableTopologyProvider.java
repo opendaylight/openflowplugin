@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.applications.topology.manager;
 
 import java.util.concurrent.ExecutionException;
-
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -77,7 +76,8 @@ public class FlowCapableTopologyProvider extends AbstractBindingAwareProvider im
             try {
                 this.listenerRegistration.close();
             } catch (Exception e) {
-                LOG.error("Failed to close listener registration", e);
+                LOG.warn("Failed to close listener registration: {}", e.getMessage());
+                LOG.debug("Failed to close listener registration.. ", e);
             }
             listenerRegistration = null;
         }
@@ -95,7 +95,8 @@ public class FlowCapableTopologyProvider extends AbstractBindingAwareProvider im
             try {
                 listenerToClose.close();
             } catch (Exception e) {
-                LOG.error("Failed to close listener registration", e);
+                LOG.warn("Failed to close listener registration: {}", e.getMessage());
+                LOG.debug("Failed to close listener registration.. ", e);
             }
         }
     }
@@ -110,7 +111,8 @@ public class FlowCapableTopologyProvider extends AbstractBindingAwareProvider im
         try {
             this.close();
         } catch (InterruptedException e) {
-            LOG.error("Failed to stop provider", e);
+            LOG.warn("Failed to stop provider: {}", e.getMessage());
+            LOG.debug("Failed to stop provider.. ", e);
         }
     }
 }

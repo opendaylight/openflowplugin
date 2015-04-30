@@ -113,12 +113,14 @@ public class LearningSwitchManagerMultiImpl implements DataChangeListenerRegistr
         try {
             packetInRegistration.close();
         } catch (Exception e) {
-            LOG.error("Error unregistering packet in listener. Exception:", e);
+            LOG.warn("Error unregistering packet in listener: {}", e.getMessage());
+            LOG.debug("Error unregistering packet in listener.. ", e);
         }
         try {
             dataChangeListenerRegistration.close();
         } catch (Exception e) {
-            LOG.error("Error unregistering data change listener. Exception:", e);
+            LOG.warn("Error unregistering data change listener: {}", e.getMessage());
+            LOG.debug("Error unregistering data change listener.. ", e);
         }
         LOG.debug("stop() <--");
     }

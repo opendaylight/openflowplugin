@@ -11,7 +11,6 @@ package org.opendaylight.openflowplugin.applications.lldpspeaker;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.opendaylight.controller.liblldp.EtherTypes;
 import org.opendaylight.controller.liblldp.Ethernet;
@@ -97,7 +96,8 @@ public final class LLDPUtil {
         try {
             return ethPkt.serialize();
         } catch (PacketException e) {
-            LOG.error("Error creating LLDP packet", e);
+            LOG.warn("Error creating LLDP packet: {}", e.getMessage());
+            LOG.debug("Error creating LLDP packet.. ", e);
         }
         return null;
     }
