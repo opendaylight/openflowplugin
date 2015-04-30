@@ -25,7 +25,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.q
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.OpendaylightGroupStatisticsListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.OpendaylightMeterStatisticsListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.OpendaylightPortStatisticsListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.OpendaylightQueueStatisticsListener;
@@ -95,6 +97,12 @@ public interface StatisticsManager extends AutoCloseable, TransactionChainListen
          * @param tx {@link ReadWriteTransaction}
          */
         public abstract void applyOperation(ReadWriteTransaction tx);
+
+        public InstanceIdentifier<Node> getNodeIdentifier() {
+            final InstanceIdentifier<Node> nodeIdent = InstanceIdentifier.create(Nodes.class)
+                    .child(Node.class, new NodeKey(nodeId));
+            return nodeIdent;
+        }
 
     }
 
