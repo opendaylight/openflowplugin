@@ -165,6 +165,8 @@ public final class StatisticsGatheringUtils {
     private static void processMeterConfigStatsUpdated(final MeterConfigStatsUpdated meterConfigStatsUpdated, final DeviceContext deviceContext) {
         NodeId nodeId = meterConfigStatsUpdated.getId();
         final InstanceIdentifier<FlowCapableNode> fNodeIdent = getFlowCapableNodeInstanceIdentifier(nodeId);
+
+
         deleteAllKnownMeters(deviceContext, fNodeIdent);
         for (MeterConfigStats meterConfigStats : meterConfigStatsUpdated.getMeterConfigStats()) {
             final MeterId meterId = meterConfigStats.getMeterId();
@@ -184,7 +186,9 @@ public final class StatisticsGatheringUtils {
         final InstanceIdentifier<Node> nodeIdent = InstanceIdentifier.create(Nodes.class)
                 .child(Node.class, new NodeKey(flowsStatistics.getId()));
 
+        deviceContext.startGatheringOperationsToOneTransaction();
         deleteAllKnownFlows(deviceContext, nodeIdent);
+
 
         for (final FlowAndStatisticsMapList flowStat : flowsStatistics.getFlowAndStatisticsMapList()) {
             final FlowBuilder flowBuilder = new FlowBuilder(flowStat);
@@ -207,6 +211,8 @@ public final class StatisticsGatheringUtils {
             final InstanceIdentifier<Flow> flowIdent = fNodeIdent.child(Table.class, tableKey).child(Flow.class, flowKey);
             deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, flowIdent, flowBuilder.build());
         }
+
+        deviceContext.commitOperationsGatheredInOneTransaction();
     }
 
     private static void deleteAllKnownFlows(final DeviceContext deviceContext, final InstanceIdentifier<Node> nodeIdent) {
@@ -305,6 +311,7 @@ public final class StatisticsGatheringUtils {
     private static void processGroupDescStats(GroupDescStatsUpdated groupDescStatsUpdated, final DeviceContext deviceContext) {
         NodeId nodeId = groupDescStatsUpdated.getId();
         final InstanceIdentifier<FlowCapableNode> fNodeIdent = getFlowCapableNodeInstanceIdentifier(nodeId);
+
         deleteAllKnownGroups(deviceContext, fNodeIdent);
         for (GroupDescStats groupDescStats : groupDescStatsUpdated.getGroupDescStats()) {
             final GroupId groupId = groupDescStats.getGroupId();

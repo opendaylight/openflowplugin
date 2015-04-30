@@ -206,5 +206,9 @@ public interface DeviceContext extends AutoCloseable,
      */
     void addDeviceContextClosedHandler(DeviceContextClosedHandler deviceContextClosedHandler);
 
+    void startGatheringOperationsToOneTransaction();
+
+    void commitOperationsGatheredInOneTransaction();
+
 }
 
