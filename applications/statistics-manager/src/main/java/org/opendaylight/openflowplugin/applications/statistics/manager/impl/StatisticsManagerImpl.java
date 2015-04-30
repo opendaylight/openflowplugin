@@ -8,15 +8,20 @@
 
 package org.opendaylight.openflowplugin.applications.statistics.manager.impl;
 
+import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadFactory;
-
+import java.util.concurrent.atomic.AtomicInteger;
 import org.opendaylight.controller.md.sal.binding.api.BindingTransactionChain;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
@@ -31,7 +36,6 @@ import org.opendaylight.openflowplugin.applications.statistics.manager.StatPermC
 import org.opendaylight.openflowplugin.applications.statistics.manager.StatPermCollector.StatCapabTypes;
 import org.opendaylight.openflowplugin.applications.statistics.manager.StatRpcMsgManager;
 import org.opendaylight.openflowplugin.applications.statistics.manager.StatisticsManager;
-import org.opendaylight.openflowplugin.applications.statistics.manager.StatisticsManager.StatDataStoreOperation.StatsManagerOperationType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.OpendaylightFlowStatisticsListener;
@@ -47,9 +51,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Preconditions;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 /**
 * statistics-manager
@@ -73,8 +74,11 @@ public class StatisticsManagerImpl implements StatisticsManager, Runnable {
    private static final int MAX_BATCH = 100;
 
    private final BlockingQueue<StatDataStoreOperation> dataStoreOperQueue = new LinkedBlockingDeque<>(QUEUE_DEPTH);
+    private final Map<InstanceIdentifier<Node>, Pair<StatPermCollector, UUID>> nodeCollectorMap = new ConcurrentHashMap<>();
+    private AtomicInteger numNodesBeingCollected = new AtomicInteger(0);
 
-   private final DataBroker dataBroker;
+
+    private final DataBroker dataBroker;
    private final ExecutorService statRpcMsgManagerExecutor;
    private final ExecutorService statDataStoreOperationServ;
    private StatRpcMsgManager rpcMsgManager;
@@ -173,9 +177,18 @@ public class StatisticsManagerImpl implements StatisticsManager, Runnable {
 
                int ops = 0;
                do {
-                   op.applyOperation(tx);
+                   Pair<StatPermCollector, UUID> statPermCollectorUUIDPair = nodeCollectorMap.get(op.getNodeIdentifier());
+                   if (statPermCollectorUUIDPair != null && statPermCollectorUUIDPair.getRight().equals(op.getNodeUUID())) {
+                       // dont apply operations for nodes which have been disconnected or if there uuids do not match
+                       // this can happen if operations are queued and node is removed.
+                       // if the uuids dont match, it means that the stat operation are stale and belong to the same node
+                       // which got disconnected and connected again.
+                       op.applyOperation(tx);
+                       ops++;
+                   } else {
+                       LOG.debug("{} not found or UUID mismatch for statistics datastore operation", op.getNodeIdentifier());
+                   }
 
-                   ops++;
                    if (ops < MAX_BATCH) {
                        op = dataStoreOperQueue.poll();
                    } else {
@@ -185,7 +198,7 @@ public class StatisticsManagerImpl implements StatisticsManager, Runnable {
 
                LOG.trace("Processed {} operations, submitting transaction {}", ops, tx.getIdentifier());
 
-                   tx.submit().checkedGet();
+               tx.submit().checkedGet();
            } catch (final InterruptedException e) {
                LOG.warn("Stat Manager DS Operation thread interupted!", e);
                finishing = true;
@@ -203,19 +216,7 @@ public class StatisticsManagerImpl implements StatisticsManager, Runnable {
    private synchronized void cleanDataStoreOperQueue() {
        // Drain all events, making sure any blocked threads are unblocked
        while (! dataStoreOperQueue.isEmpty()) {
-           StatDataStoreOperation op = dataStoreOperQueue.poll();
-
-           // Execute the node removal clean up operation if queued in the
-           // operational queue.
-           if (op.getType() == StatsManagerOperationType.NODE_REMOVAL) {
-               try {
-                   LOG.debug("Node {} disconnected. Cleaning internal data.",op.getNodeId());
-                   op.applyOperation(null);
-               } catch (final Exception e) {
-                   LOG.warn("Unhandled exception while cleaning up internal data of node [{}]. "
-                           + "Exception {}",op.getNodeId(), e);
-               }
-           }
+           dataStoreOperQueue.poll();
        }
    }
 
@@ -249,52 +250,81 @@ public class StatisticsManagerImpl implements StatisticsManager, Runnable {
        }
    }
 
-   @Override
-   public void connectedNodeRegistration(final InstanceIdentifier<Node> nodeIdent,
-           final List<StatCapabTypes> statTypes, final Short nrOfSwitchTables) {
-       for (final StatPermCollector collector : statCollectors) {
-           if (collector.connectedNodeRegistration(nodeIdent, statTypes, nrOfSwitchTables)) {
-               return;
-           }
-       }
-       synchronized (statCollectorLock) {
-           for (final StatPermCollector collector : statCollectors) {
-               if (collector.connectedNodeRegistration(nodeIdent, statTypes, nrOfSwitchTables)) {
-                   return;
-               }
-           }
-           final StatPermCollectorImpl newCollector = new StatPermCollectorImpl(this,
-                   statManagerConfig.getMinRequestNetMonitorInterval(), statCollectors.size() + 1,
-                   statManagerConfig.getMaxNodesForCollector());
-           final List<StatPermCollector> statCollectorsNew = new ArrayList<>(statCollectors);
-           newCollector.connectedNodeRegistration(nodeIdent, statTypes, nrOfSwitchTables);
-           statCollectorsNew.add(newCollector);
-           statCollectors = Collections.unmodifiableList(statCollectorsNew);
-       }
-   }
+    @Override
+    public void connectedNodeRegistration(final InstanceIdentifier<Node> nodeIdent,
+            final List<StatCapabTypes> statTypes, final Short nrOfSwitchTables) {
 
-   @Override
-   public void disconnectedNodeUnregistration(final InstanceIdentifier<Node> nodeIdent) {
-       flowListeningCommiter.cleanForDisconnect(nodeIdent);
 
-       for (final StatPermCollector collector : statCollectors) {
-           if (collector.disconnectedNodeUnregistration(nodeIdent)) {
-               if ( ! collector.hasActiveNodes()) {
-                   synchronized (statCollectorLock) {
-                       if (collector.hasActiveNodes()) {
-                           return;
-                       }
-                       final List<StatPermCollector> newStatColl =
-                               new ArrayList<>(statCollectors);
-                       newStatColl.remove(collector);
-                       statCollectors = Collections.unmodifiableList(newStatColl);
-                   }
-               }
-               return;
-           }
-       }
-       LOG.debug("Node {} has not been removed.", nodeIdent);
-   }
+        Pair<StatPermCollector, UUID> collectorUUIDPair = nodeCollectorMap.get(nodeIdent);
+        if (collectorUUIDPair == null) {
+            // no collector contains this node,
+            // check if one of the collectors can accommodate it
+            // if no then add a new collector
+
+            synchronized(statCollectorLock) {
+                for (int i = statCollectors.size() - 1; i >= 0; i--) {
+                    // start from back of the list as most likely previous ones might be full
+                    final StatPermCollector aCollector = statCollectors.get(i);
+                    if (aCollector.connectedNodeRegistration(nodeIdent, statTypes, nrOfSwitchTables)) {
+                        // if the collector returns true after adding node, then return
+                        nodeCollectorMap.put(nodeIdent, new Pair(aCollector, UUID.randomUUID()));
+                        LOG.debug("NodeAdded: Num Nodes Registered with StatisticsManager:{}",
+                                numNodesBeingCollected.incrementAndGet());
+                        return;
+                    }
+                }
+                // no collector was able to add this node
+                LOG.info("No existing collector found for new node. Creating a new collector for {}", nodeIdent);
+                final StatPermCollectorImpl newCollector = new StatPermCollectorImpl(this,
+                        statManagerConfig.getMinRequestNetMonitorInterval(), statCollectors.size() + 1,
+                        statManagerConfig.getMaxNodesForCollector());
+
+                final List<StatPermCollector> statCollectorsNew = new ArrayList<>(statCollectors);
+                statCollectorsNew.add(newCollector);
+                statCollectors = Collections.unmodifiableList(statCollectorsNew);
+                nodeCollectorMap.put(nodeIdent, new Pair(newCollector, UUID.randomUUID()));
+                LOG.debug("NodeAdded: Num Nodes Registered with StatisticsManager:{}", numNodesBeingCollected.incrementAndGet());
+
+                newCollector.connectedNodeRegistration(nodeIdent, statTypes, nrOfSwitchTables);
+            }
+
+
+        } else {
+            // add to the collector, even if it rejects it.
+            collectorUUIDPair.getLeft().connectedNodeRegistration(nodeIdent, statTypes, nrOfSwitchTables);
+        }
+    }
+
+
+    @Override
+    public void disconnectedNodeUnregistration(final InstanceIdentifier<Node> nodeIdent) {
+        flowListeningCommiter.cleanForDisconnect(nodeIdent);
+
+        Pair<StatPermCollector, UUID> collectorUUIDPair = nodeCollectorMap.get(nodeIdent);
+        StatPermCollector collector = collectorUUIDPair.getLeft();
+        if (collector != null) {
+            nodeCollectorMap.remove(nodeIdent);
+            LOG.debug("NodeRemoved: Num Nodes Registered with StatisticsManager:{}", numNodesBeingCollected.decrementAndGet());
+
+            if (collector.disconnectedNodeUnregistration(nodeIdent)) {
+                if (!collector.hasActiveNodes()) {
+                    synchronized (statCollectorLock) {
+                        if (collector.hasActiveNodes()) {
+                            return;
+                        }
+                        final List<StatPermCollector> newStatColl = new ArrayList<>(statCollectors);
+                        newStatColl.remove(collector);
+                        statCollectors = Collections.unmodifiableList(newStatColl);
+                    }
+                }
+                LOG.info("Node:{} successfully removed by StatisticsManager ", nodeIdent);
+            } else {
+                LOG.error("Collector not disconnecting for node, no operations will be committed for this node:{}", nodeIdent);
+            }
+        } else {
+            LOG.error("Received node removed for {}, but unable to find it in nodeCollectorMap", nodeIdent);
+        }
+    }
 
    @Override
    public void registerAdditionalNodeFeature(final InstanceIdentifier<Node> nodeIdent,
@@ -352,6 +382,16 @@ public class StatisticsManagerImpl implements StatisticsManager, Runnable {
     @Override
     public StatisticsManagerConfig getConfiguration() {
         return statManagerConfig;
+    }
+
+    @Override
+    public UUID getGeneratedUUIDForNode(InstanceIdentifier<Node> nodeInstanceIdentifier) {
+        Pair<StatPermCollector, UUID> permCollectorUUIDPair = nodeCollectorMap.get(nodeInstanceIdentifier);
+        if (permCollectorUUIDPair != null) {
+            return permCollectorUUIDPair.getRight();
+        }
+        // we dont want to mark operations with null uuid and get NPEs later. So mark them with invalid ones
+        return UUID.fromString("invalid-uuid");
     }
 }
 

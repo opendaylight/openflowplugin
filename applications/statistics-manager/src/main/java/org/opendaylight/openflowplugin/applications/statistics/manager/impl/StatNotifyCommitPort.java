@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.applications.statistics.manager.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.util.UUID;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
@@ -107,6 +108,11 @@ public class StatNotifyCommitPort extends StatAbstractNotifyCommit<OpendaylightP
                 /* Notification for continue collecting statistics - Port statistics are still same size
                  * and they are small - don't need to wait for whole apply operation*/
                 notifyToCollectNextStatistics(nodeIdent, transId);
+            }
+
+            @Override
+            public UUID generatedUUIDForNode() {
+                return manager.getGeneratedUUIDForNode(getNodeIdentifier());
             }
         });
     }
