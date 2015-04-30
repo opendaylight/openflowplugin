@@ -57,7 +57,7 @@ public class MultiMsgCollectorImplTest {
     private final String hwTestValue = "test-value";
     private final String expectedExpirationMsg = "MultiMsgCollector can not wait for last multipart any more";
     private final String expectedTypMismatchMsg = "multipart message type mismatch";
-    private final String expectedUnknownXidMsg = "unknown xid received";
+    private final String expectedUnknownXidMsg = "unknown xid received for multipart of type OFPMPDESC";
 
     @Before
     public void setUp() {

@@ -14,7 +14,6 @@ import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -315,10 +314,11 @@ public class DeviceContextImpl implements DeviceContext {
             try {
                 requestContext.close();
             } catch (final Exception e) {
-                LOG.error("Closing RequestContext failed: ", e);
+                LOG.warn("Closing RequestContext failed: ", e);
             }
         } else {
-            LOG.error("Can't find request context registered for xid : {}", xid.getValue());
+            LOG.warn("Can't find request context registered for xid : {}. Exception message {}",
+                    xid.getValue(), deviceDataException.getMessage());
         }
     }
 
