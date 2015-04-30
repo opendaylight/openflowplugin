@@ -8,23 +8,21 @@
 
 package org.opendaylight.openflowplugin.applications.statistics.manager.impl;
 
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
-import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker.DataChangeScope;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.openflowplugin.applications.statistics.manager.StatNodeRegistration;
-import org.opendaylight.openflowplugin.applications.statistics.manager.StatisticsManager;
 import org.opendaylight.openflowplugin.applications.statistics.manager.StatPermCollector.StatCapabTypes;
-import org.opendaylight.openflowplugin.applications.statistics.manager.StatisticsManager.StatDataStoreOperation;
-import org.opendaylight.openflowplugin.applications.statistics.manager.StatisticsManager.StatDataStoreOperation.StatsManagerOperationType;
+import org.opendaylight.openflowplugin.applications.statistics.manager.StatisticsManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FeatureCapability;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeUpdated;
@@ -41,15 +39,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRem
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 
 /**
  * statistics-manager
@@ -116,36 +110,29 @@ public class StatNodeRegistrationImpl implements StatNodeRegistration, DataChang
         Preconditions.checkNotNull(data, "SwitchFeatures data for {} can not be null!", keyIdent);
         Preconditions.checkArgument(( ! keyIdent.isWildcarded()), "InstanceIdentifier is WildCarded!");
 
-        manager.enqueue(new StatDataStoreOperation(StatsManagerOperationType.NODE_UPDATE,nodeIdent.firstKeyOf(Node.class, NodeKey.class).getId()) {
+        LOG.trace("STAT-MANAGER - connecting flow capable node {}", nodeIdent);
+        final List<StatCapabTypes> statCapabTypes = new ArrayList<>();
+        Short maxCapTables = Short.valueOf("1");
 
-            @Override
-            public void applyOperation(final ReadWriteTransaction tx) {
-
-                final List<StatCapabTypes> statCapabTypes = new ArrayList<>();
-                Short maxCapTables = Short.valueOf("1");
-
-                final List<Class<? extends FeatureCapability>> capabilities = data.getCapabilities() != null
-                        ? data.getCapabilities() : Collections.<Class<? extends FeatureCapability>> emptyList();
-                for (final Class<? extends FeatureCapability> capability : capabilities) {
-                    if (FlowFeatureCapabilityTableStats.class.equals(capability)) {
-                        statCapabTypes.add(StatCapabTypes.TABLE_STATS);
-                    } else if (FlowFeatureCapabilityFlowStats.class.equals(capability)) {
-                        statCapabTypes.add(StatCapabTypes.FLOW_STATS);
-                    } else if (FlowFeatureCapabilityGroupStats.class.equals(capability)) {
-                        statCapabTypes.add(StatCapabTypes.GROUP_STATS);
-                    } else if (FlowFeatureCapabilityPortStats.class.equals(capability)) {
-                        statCapabTypes.add(StatCapabTypes.PORT_STATS);
-                    } else if (FlowFeatureCapabilityQueueStats.class.equals(capability)) {
-                        statCapabTypes.add(StatCapabTypes.QUEUE_STATS);
-                    }
-                }
-                maxCapTables = data.getMaxTables();
-
-                final Optional<Short> maxTables = Optional.<Short> of(maxCapTables);
-                manager.connectedNodeRegistration(nodeIdent,
-                        Collections.unmodifiableList(statCapabTypes), maxTables.get());
+        final List<Class<? extends FeatureCapability>> capabilities = data.getCapabilities() != null
+                ? data.getCapabilities() : Collections.<Class<? extends FeatureCapability>> emptyList();
+        for (final Class<? extends FeatureCapability> capability : capabilities) {
+            if (FlowFeatureCapabilityTableStats.class.equals(capability)) {
+                statCapabTypes.add(StatCapabTypes.TABLE_STATS);
+            } else if (FlowFeatureCapabilityFlowStats.class.equals(capability)) {
+                statCapabTypes.add(StatCapabTypes.FLOW_STATS);
+            } else if (FlowFeatureCapabilityGroupStats.class.equals(capability)) {
+                statCapabTypes.add(StatCapabTypes.GROUP_STATS);
+            } else if (FlowFeatureCapabilityPortStats.class.equals(capability)) {
+                statCapabTypes.add(StatCapabTypes.PORT_STATS);
+            } else if (FlowFeatureCapabilityQueueStats.class.equals(capability)) {
+                statCapabTypes.add(StatCapabTypes.QUEUE_STATS);
             }
-        });
+        }
+        maxCapTables = data.getMaxTables();
+
+        final Optional<Short> maxTables = Optional.<Short> of(maxCapTables);
+        manager.connectedNodeRegistration(nodeIdent, Collections.unmodifiableList(statCapabTypes), maxTables.get());
     }
 
     @Override
@@ -153,13 +140,8 @@ public class StatNodeRegistrationImpl implements StatNodeRegistration, DataChang
         Preconditions.checkArgument(nodeIdent != null, "InstanceIdentifier can not be NULL!");
         Preconditions.checkArgument(( ! nodeIdent.isWildcarded()),
                 "InstanceIdentifier {} is WildCarded!", nodeIdent);
-        manager.enqueue(new StatDataStoreOperation(StatsManagerOperationType.NODE_REMOVAL,nodeIdent.firstKeyOf(Node.class, NodeKey.class).getId()) {
-
-            @Override
-            public void applyOperation(final ReadWriteTransaction tx) {
-                manager.disconnectedNodeUnregistration(nodeIdent);
-            }
-        });
+        LOG.trace("STAT-MANAGER - disconnect flow capable node {}", nodeIdent);
+        manager.disconnectedNodeUnregistration(nodeIdent);
     }
 
 
@@ -181,6 +163,7 @@ public class StatNodeRegistrationImpl implements StatNodeRegistration, DataChang
         final InstanceIdentifier<Node> nodeIdent =
                 nodeRefIdent.firstIdentifierOf(Node.class);
         if (nodeIdent != null) {
+            LOG.debug("Received onNodeRemoved for node:{} ", nodeIdent);
             disconnectFlowCapableNode(nodeIdent);
         }
     }
