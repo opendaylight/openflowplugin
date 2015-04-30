@@ -138,7 +138,8 @@ public class DropTestCommiter extends AbstractDropTest {
                 notificationRegistration.close();
             }
         } catch (Exception e) {
-            LOG.error("unregistration of notification listener failed", e);
+            LOG.warn("unregistration of notification listener failed: {}", e.getMessage());
+            LOG.debug("unregistration of notification listener failed.. ", e);
         }
     }
 

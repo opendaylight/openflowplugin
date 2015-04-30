@@ -74,7 +74,8 @@ public class MeterForwarder extends AbstractListeningCommiter<Meter> {
             try {
                 listenerRegistration.close();
             } catch (Exception e) {
-                LOG.error("Error by stop FRM MeterChangeListener.", e);
+                LOG.warn("Error by stop FRM MeterChangeListener.{}", e.getMessage());
+                LOG.debug("Error by stop FRM MeterChangeListener..", e);
             }
             listenerRegistration = null;
         }

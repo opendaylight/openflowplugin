@@ -8,9 +8,6 @@
 
 package org.opendaylight.openflowplugin.applications.frm.impl;
 
-import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
-
-import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeaturesKey;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import java.util.Collections;
@@ -37,6 +34,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeaturesKey;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -93,7 +92,8 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
             try {
                 listenerRegistration.close();
             } catch (Exception e) {
-                LOG.error("Error by stop FRM FlowNodeReconilListener.", e);
+                LOG.warn("Error by stop FRM FlowNodeReconilListener: {}", e.getMessage());
+                LOG.debug("Error by stop FRM FlowNodeReconilListener..", e);
             }
             listenerRegistration = null;
         }

@@ -7,9 +7,14 @@
  */
 package org.opendaylight.openflowplugin.applications.topology.manager;
 
+import static org.opendaylight.openflowplugin.applications.topology.manager.FlowCapableNodeMapping.getNodeConnectorKey;
+import static org.opendaylight.openflowplugin.applications.topology.manager.FlowCapableNodeMapping.getNodeKey;
+import static org.opendaylight.openflowplugin.applications.topology.manager.FlowCapableNodeMapping.toTerminationPointId;
+import static org.opendaylight.openflowplugin.applications.topology.manager.FlowCapableNodeMapping.toTopologyLink;
+import static org.opendaylight.openflowplugin.applications.topology.manager.FlowCapableNodeMapping.toTopologyNodeId;
+
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
@@ -32,12 +37,6 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.opendaylight.openflowplugin.applications.topology.manager.FlowCapableNodeMapping.getNodeConnectorKey;
-import static org.opendaylight.openflowplugin.applications.topology.manager.FlowCapableNodeMapping.getNodeKey;
-import static org.opendaylight.openflowplugin.applications.topology.manager.FlowCapableNodeMapping.toTerminationPointId;
-import static org.opendaylight.openflowplugin.applications.topology.manager.FlowCapableNodeMapping.toTopologyLink;
-import static org.opendaylight.openflowplugin.applications.topology.manager.FlowCapableNodeMapping.toTopologyNodeId;
 
 class FlowCapableTopologyExporter implements FlowTopologyDiscoveryListener {
 
@@ -84,7 +83,8 @@ class FlowCapableTopologyExporter implements FlowTopologyDiscoveryListener {
                     linkOptional = transaction.read(LogicalDatastoreType.OPERATIONAL,
                             TopologyManagerUtil.linkPath(toTopologyLink(notification), iiToTopology)).checkedGet();
                 } catch (ReadFailedException e) {
-                    LOG.error("Error occured when trying to read Link ", e);
+                    LOG.warn("Error occured when trying to read Link: {}", e.getMessage());
+                    LOG.debug("Error occured when trying to read Link.. ", e);
                 }
                 if (linkOptional.isPresent()) {
                     transaction.delete(LogicalDatastoreType.OPERATIONAL, TopologyManagerUtil.linkPath(toTopologyLink(notification), iiToTopology));

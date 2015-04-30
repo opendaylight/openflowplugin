@@ -7,11 +7,6 @@
  */
 package org.opendaylight.openflowplugin.applications.topology.manager;
 
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TpId;
-
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.google.common.base.Optional;
 import java.util.Collections;
 import java.util.List;
@@ -19,8 +14,12 @@ import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TpId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TopologyManagerUtil {
 
@@ -31,7 +30,8 @@ public class TopologyManagerUtil {
         try {
             topologyOptional = transaction.read(LogicalDatastoreType.OPERATIONAL, topology).checkedGet();
         } catch (ReadFailedException e) {
-            LOG.error("Error reading topology data for topology {}", topology, e);
+            LOG.warn("Error reading topology data for topology {}: {}", topology, e.getMessage());
+            LOG.debug("Error reading topology data for topology.. ", e);
         }
         if (topologyOptional.isPresent()) {
             removeAffectedLinks(id, topologyOptional, transaction, topology);
@@ -58,7 +58,8 @@ public class TopologyManagerUtil {
         try {
             topologyOptional = transaction.read(LogicalDatastoreType.OPERATIONAL, topology).checkedGet();
         } catch (ReadFailedException e) {
-            LOG.error("Error reading topology data for topology {}", topology, e);
+            LOG.warn("Error reading topology data for topology {}: {}", topology, e.getMessage());
+            LOG.debug("Error reading topology data for topology..", e);
         }
         if (topologyOptional.isPresent()) {
             removeAffectedLinks(id, topologyOptional, transaction, topology);

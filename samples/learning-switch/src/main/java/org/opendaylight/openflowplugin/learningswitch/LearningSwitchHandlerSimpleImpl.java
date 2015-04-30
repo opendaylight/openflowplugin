@@ -16,7 +16,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
-
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
@@ -85,7 +84,8 @@ public class LearningSwitchHandlerSimpleImpl implements LearningSwitchHandler, P
                 LOG.debug("closing dataChangeListenerRegistration");
                 registrationPublisher.getDataChangeListenerRegistration().close();
             } catch (Exception e) {
-                LOG.error("closing registration upon flowCapable node update listener failed: " + e.getMessage(), e);
+                LOG.warn("closing registration upon flowCapable node update listener failed: {}", e.getMessage());
+                LOG.debug("closing registration upon flowCapable node update listener failed.. ", e);
             }
         }
 

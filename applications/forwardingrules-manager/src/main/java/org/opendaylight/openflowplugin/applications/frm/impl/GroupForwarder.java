@@ -74,7 +74,8 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
             try {
                 listenerRegistration.close();
             } catch (Exception e) {
-                LOG.error("Error by stop FRM GroupChangeListener.", e);
+                LOG.warn("Error by stop FRM GroupChangeListener: {}", e.getMessage());
+                LOG.debug("Error by stop FRM GroupChangeListener..", e);
             }
             listenerRegistration = null;
         }
