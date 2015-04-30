@@ -68,16 +68,24 @@ class TransactionChainManager implements TransactionChainListener {
         LOG.debug("created txChainManager with operation limit {}", maxTx);
     }
 
+
+    public void commitOperationsGatheredInOneTransaction(){
+        enableCounter();
+        submitTransaction();
+    }
+    public void startGatheringOperationsToOneTransaction(){
+        counterIsEnabled = false;
+    }
+
     synchronized <T extends DataObject> void writeToTransaction(final LogicalDatastoreType store,
                                                                 final InstanceIdentifier<T> path, final T data) {
         if (wTx == null) {
             wTx = txChainFactory.newWriteOnlyTransaction();
         }
         wTx.put(store, path, data);
-        if (!counterIsEnabled) {
-            return;
+        if (counterIsEnabled) {
+            countTxInAndCommit();
         }
-        countTxInAndCommit();
     }
 
     synchronized <T extends DataObject> void addDeleteOperationTotTxChain(final LogicalDatastoreType store,
@@ -86,10 +94,9 @@ class TransactionChainManager implements TransactionChainListener {
             wTx = txChainFactory.newWriteOnlyTransaction();
         }
         wTx.delete(store, path);
-        if (!counterIsEnabled) {
-            return;
+        if (counterIsEnabled) {
+            countTxInAndCommit();
         }
-        countTxInAndCommit();
     }
 
     private void countTxInAndCommit() {
@@ -100,21 +107,25 @@ class TransactionChainManager implements TransactionChainListener {
     }
 
     synchronized void submitTransaction() {
-        if (wTx != null) {
-            LOG.trace("submitting transaction, counter: {}", nrOfActualTx);
-            wTx.submit();
-            wTx = null;
-            nrOfActualTx = 0L;
-        }
-        if (submitTaskTime != null && !submitTaskTime.isExpired()) {
-            submitTaskTime.cancel();
-        }
-        submitTaskTime = hashedWheelTimer.newTimeout(new TimerTask() {
-            @Override
-            public void run(final Timeout timeout) throws Exception {
-                submitTransaction();
+        if (counterIsEnabled) {
+            if (wTx != null) {
+                LOG.trace("submitting transaction, counter: {}", nrOfActualTx);
+                wTx.submit();
+                wTx = null;
+                nrOfActualTx = 0L;
             }
-        }, timerValue, TimeUnit.MILLISECONDS);
+            if (submitTaskTime != null && !submitTaskTime.isExpired()) {
+                submitTaskTime.cancel();
+            }
+            submitTaskTime = hashedWheelTimer.newTimeout(new TimerTask() {
+                @Override
+                public void run(final Timeout timeout) throws Exception {
+                    submitTransaction();
+                }
+            }, timerValue, TimeUnit.MILLISECONDS);
+        } else {
+            LOG.info("Task will not be scheduled - submit block issued.");
+        }
     }
 
     synchronized void enableCounter() {
@@ -133,4 +144,5 @@ class TransactionChainManager implements TransactionChainListener {
     public void onTransactionChainSuccessful(final TransactionChain<?, ?> chain) {
         // NOOP - only yet, here is probably place for notification to get new WriteTransaction
     }
+
 }
