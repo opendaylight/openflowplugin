@@ -80,6 +80,7 @@ public class TransactionChainManagerTest {
     @Test
     public void testSubmitTransaction() throws Exception {
         final Node data = new NodeBuilder().setId(nodeId).build();
+        txChainManager.enableCounter();
         txChainManager.writeToTransaction(LogicalDatastoreType.CONFIGURATION, path, data);
         txChainManager.submitTransaction();
 

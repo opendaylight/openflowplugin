@@ -14,7 +14,6 @@ import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -130,8 +129,8 @@ public class DeviceContextImpl implements DeviceContext {
      * and we are able to set a scheduler for an automatic transaction submitting by time (0,5sec).
      */
     void submitTransaction() {
-        txChainManager.submitTransaction();
         txChainManager.enableCounter();
+        txChainManager.submitTransaction();
     }
 
     @Override
@@ -474,4 +473,15 @@ public class DeviceContextImpl implements DeviceContext {
     public void addDeviceContextClosedHandler(final DeviceContextClosedHandler deviceContextClosedHandler) {
         this.closeHandlers.add(deviceContextClosedHandler);
     }
+
+    @Override
+    public void startGatheringOperationsToOneTransaction() {
+        txChainManager.startGatheringOperationsToOneTransaction();
+    }
+
+    @Override
+    public void commitOperationsGatheredInOneTransaction() {
+        txChainManager.commitOperationsGatheredInOneTransaction();
+    }
+
 }
