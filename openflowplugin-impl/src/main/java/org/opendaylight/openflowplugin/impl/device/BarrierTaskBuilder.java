@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 public class BarrierTaskBuilder {
 
     private static final Logger LOG = LoggerFactory.getLogger(BarrierTaskBuilder.class);
-    public static final long DELAY = 500L;
+    public static final long DELAY = 1500L;
 
     private final DeviceContext deviceCtx;
 
