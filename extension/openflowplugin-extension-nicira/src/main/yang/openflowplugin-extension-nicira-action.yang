@@ -93,6 +93,36 @@ module openflowplugin-extension-nicira-action {
             type empty;
         }
     }
+    grouping nxm-nx-nsp-grouping {
+        leaf nx-nsp-dst {
+            type empty;
+        }
+    }
+    grouping nxm-nx-nsi-grouping {
+        leaf nx-nsi-dst {
+            type empty;
+        }
+    }
+    grouping nxm-nx-nsc-1-grouping {
+        leaf nx-nsc-1-dst {
+            type empty;
+        }
+    }
+    grouping nxm-nx-nsc-2-grouping {
+        leaf nx-nsc-2-dst {
+            type empty;
+        }
+    }
+    grouping nxm-nx-nsc-3-grouping {
+        leaf nx-nsc-3-dst {
+            type empty;
+        }
+    }
+    grouping nxm-nx-nsc-4-grouping {
+        leaf nx-nsc-4-dst {
+            type empty;
+        }
+    }
 
     grouping dst-choice-grouping {
         choice dst-choice {
@@ -128,6 +158,24 @@ module openflowplugin-extension-nicira-action {
             }
             case dst-of-eth-dst-case {
                 uses nxm-of-eth-dst-grouping;
+            }
+            case dst-nx-nsp-case {
+                uses nxm-nx-nsp-grouping;
+            }
+            case dst-nx-nsi-case {
+                uses nxm-nx-nsi-grouping;
+            }
+            case dst-nx-nsc-1-case {
+                uses nxm-nx-nsc-1-grouping;
+            }
+            case dst-nx-nsc-2-case {
+                uses nxm-nx-nsc-2-grouping;
+            }
+            case dst-nx-nsc-3-case {
+                uses nxm-nx-nsc-3-grouping;
+            }
+            case dst-nx-nsc-4-case {
+                uses nxm-nx-nsc-4-grouping;
             }
         }
     }
@@ -169,6 +217,24 @@ module openflowplugin-extension-nicira-action {
             }
             case src-of-eth-type-case {
                 uses nxm-of-eth-type-grouping;
+            }
+            case src-nx-nsp-case {
+                uses nxm-nx-nsp-grouping;
+            }
+            case src-nx-nsi-case {
+                uses nxm-nx-nsi-grouping;
+            }
+            case src-nx-nsc-1-case {
+                uses nxm-nx-nsc-1-grouping;
+            }
+            case src-nx-nsc-2-case {
+                uses nxm-nx-nsc-2-grouping;
+            }
+            case src-nx-nsc-3-case {
+                uses nxm-nx-nsc-3-grouping;
+            }
+            case src-nx-nsc-4-case {
+                uses nxm-nx-nsc-4-grouping;
             }
         }
     }
