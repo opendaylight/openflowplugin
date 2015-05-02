@@ -83,6 +83,18 @@ module nicira-match {
     identity nxm-nx-nsi {
         base ofoxm:match-field;
     }
+    identity nxm-nx-nshc-1 {
+        base ofoxm:match-field;
+    }
+    identity nxm-nx-nshc-2 {
+        base ofoxm:match-field;
+    }
+    identity nxm-nx-nshc-3 {
+        base ofoxm:match-field;
+    }
+    identity nxm-nx-nshc-4 {
+        base ofoxm:match-field;
+    }
 
     grouping ofj-nxm-nx-match-reg-grouping {
         container reg-values {
@@ -184,6 +196,33 @@ module nicira-match {
             }
         }
     }
+    
+    grouping ofj-nxm-nx-match-nshc-grouping {
+        leaf nshc {
+            type uint32;
+        }
+    }
+    
+    grouping ofj-nxm-nx-match-nshc-1-grouping {
+        container nshc-1-values {
+            uses ofj-nxm-nx-match-nshc-grouping;
+        }
+    }
+    grouping ofj-nxm-nx-match-nshc-2-grouping {
+        container nshc-2-values {
+            uses ofj-nxm-nx-match-nshc-grouping;
+        }
+    }
+    grouping ofj-nxm-nx-match-nshc-3-grouping {
+        container nshc-3-values {
+            uses ofj-nxm-nx-match-nshc-grouping;
+        }
+    }
+    grouping ofj-nxm-nx-match-nshc-4-grouping {
+        container nshc-4-values {
+            uses ofj-nxm-nx-match-nshc-grouping;
+        }
+    }
 
     augment "/ofoxm:oxm-container/ofoxm:match-entry-value" {
         ext:augment-identifier "ofj-aug-nx-match";
@@ -229,6 +268,18 @@ module nicira-match {
         }
         case nsi-case-value {
             uses ofj-nxm-nx-match-nsi-grouping;
+        }
+        case nshc-1-case-value {
+            uses ofj-nxm-nx-match-nshc-1-grouping;
+        }
+        case nshc-2-case-value {
+            uses ofj-nxm-nx-match-nshc-2-grouping;
+        }
+        case nshc-3-case-value {
+            uses ofj-nxm-nx-match-nshc-3-grouping;
+        }
+        case nshc-4-case-value {
+            uses ofj-nxm-nx-match-nshc-4-grouping;
         }
 
     }
