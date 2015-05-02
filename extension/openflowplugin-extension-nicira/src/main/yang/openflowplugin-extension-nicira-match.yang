@@ -85,7 +85,18 @@ module openflowplugin-extension-nicira-match {
     identity nxm-nx-nsi-key {
         base ext-gen:extension-key;
     }
-    
+    identity nxm-nx-nsc-1-key {
+        base ext-gen:extension-key;
+    }
+    identity nxm-nx-nsc-2-key {
+        base ext-gen:extension-key;
+    }
+    identity nxm-nx-nsc-3-key {
+        base ext-gen:extension-key;
+    }
+    identity nxm-nx-nsc-4-key {
+        base ext-gen:extension-key;
+    }
     grouping ipv4-address-grouping {
         leaf ipv4-address {
             type inet:ipv4-address;
@@ -187,6 +198,34 @@ module openflowplugin-extension-nicira-match {
             }
         }
     }
+    grouping nxm-nx-nsc-1-grouping {
+        container nxm-nx-nsc-1 {
+            leaf value {
+                type uint32;
+            }
+        }
+    }
+    grouping nxm-nx-nsc-2-grouping {
+        container nxm-nx-nsc-2 {
+            leaf value {
+                type uint32;
+            }
+        }
+    }
+    grouping nxm-nx-nsc-3-grouping {
+        container nxm-nx-nsc-3 {
+            leaf value {
+                type uint32;
+            }
+        }
+    }
+    grouping nxm-nx-nsc-4-grouping {
+        container nxm-nx-nsc-4 {
+            leaf value {
+                type uint32;
+            }
+        }
+    }
 
     
     grouping all-matches-grouping {
@@ -204,6 +243,10 @@ module openflowplugin-extension-nicira-match {
         uses nxm-of-eth-type-grouping;
         uses nxm-nx-nsp-grouping;
         uses nxm-nx-nsi-grouping;
+        uses nxm-nx-nsc-1-grouping;
+        uses nxm-nx-nsc-2-grouping;
+        uses nxm-nx-nsc-3-grouping;
+        uses nxm-nx-nsc-4-grouping;
     }
     
     // MATCH augmentations
