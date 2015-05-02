@@ -191,6 +191,36 @@ module nicira-action {
             }
         }
     }
+    
+    grouping ofj-nx-action-set-nsc-grouping {
+        leaf nsc {
+            type uint32;
+        }
+        leaf experimenter-id {
+            type oft:experimenter-id;
+        }
+    }
+    
+    grouping ofj-nx-action-set-nsc-1-grouping {
+        container nx-action-set-nsc-1 {
+            uses ofj-nx-action-set-nsc-grouping;
+        }
+    }
+    grouping ofj-nx-action-set-nsc-2-grouping {
+        container nx-action-set-nsc-2 {
+            uses ofj-nx-action-set-nsc-grouping;
+        }
+    }
+    grouping ofj-nx-action-set-nsc-3-grouping {
+        container nx-action-set-nsc-3 {
+            uses ofj-nx-action-set-nsc-grouping;
+        }
+    }
+    grouping ofj-nx-action-set-nsc-4-grouping {
+        container nx-action-set-nsc-4 {
+            uses ofj-nx-action-set-nsc-grouping;
+        }
+    }
 
     augment "/ofaction:action-container/ofaction:action-choice" {
         ext:augment-identifier "ofj-aug-nx-action";
@@ -214,6 +244,18 @@ module nicira-action {
         }
         case action-set-nsi {
             uses ofj-nx-action-set-nsi-grouping;
+        }
+        case action-set-nsc-1 {
+            uses ofj-nx-action-set-nsc-1-grouping;
+        }
+        case action-set-nsc-2 {
+            uses ofj-nx-action-set-nsc-2-grouping;
+        }
+        case action-set-nsc-3 {
+            uses ofj-nx-action-set-nsc-3-grouping;
+        }
+        case action-set-nsc-4 {
+            uses ofj-nx-action-set-nsc-4-grouping;
         }
     }
 }
