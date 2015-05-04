@@ -178,7 +178,6 @@
           <!-- no startupFeatures -->
           <bootFeatures>
             <feature>standard</feature>
-            <feature>odl-restconf</feature>
           </bootFeatures>
           <!-- no installedFeatures -->
         </configuration>
