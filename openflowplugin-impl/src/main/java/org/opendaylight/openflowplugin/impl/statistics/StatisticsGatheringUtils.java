@@ -186,9 +186,11 @@ public final class StatisticsGatheringUtils {
         final InstanceIdentifier<Node> nodeIdent = InstanceIdentifier.create(Nodes.class)
                 .child(Node.class, new NodeKey(flowsStatistics.getId()));
 
-        deviceContext.startGatheringOperationsToOneTransaction();
-        deleteAllKnownFlows(deviceContext, nodeIdent);
+        if (deviceContext.getDeviceState().isValid()) {
+            deviceContext.startGatheringOperationsToOneTransaction();
+        }
 
+        deleteAllKnownFlows(deviceContext, nodeIdent);
 
         for (final FlowAndStatisticsMapList flowStat : flowsStatistics.getFlowAndStatisticsMapList()) {
             final FlowBuilder flowBuilder = new FlowBuilder(flowStat);
@@ -212,7 +214,9 @@ public final class StatisticsGatheringUtils {
             deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, flowIdent, flowBuilder.build());
         }
 
-        deviceContext.commitOperationsGatheredInOneTransaction();
+        if (deviceContext.getDeviceState().isValid()) {
+            deviceContext.commitOperationsGatheredInOneTransaction();
+        }
     }
 
     private static void deleteAllKnownFlows(final DeviceContext deviceContext, final InstanceIdentifier<Node> nodeIdent) {
