@@ -1,5 +1,9 @@
 package test.mock.util;
 
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import java.util.Collections;
 import java.util.concurrent.ExecutionException;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
@@ -16,7 +20,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 public abstract class FRMTest extends AbstractDataBrokerTest {
 
-    public void addFlowCapableNode(NodeKey nodeKey) throws ExecutionException, InterruptedException {
+    public void addFlowCapableNode(NodeKey nodeKey) {
         Nodes nodes = new NodesBuilder().setNode(Collections.<Node>emptyList()).build();
         InstanceIdentifier<Node> flowNodeIdentifier = InstanceIdentifier.create(Nodes.class)
                 .child(Node.class, nodeKey);
@@ -38,5 +42,15 @@ public abstract class FRMTest extends AbstractDataBrokerTest {
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.delete(LogicalDatastoreType.OPERATIONAL, InstanceIdentifier.create(Nodes.class).child(Node.class, nodeKey));
         writeTx.submit().get();
+    }
+
+    public void addTable(final TableKey tableKey, final NodeKey nodeKey) {
+        addFlowCapableNode(nodeKey);
+        final Table table = new TableBuilder().setKey(tableKey).setFlow(Collections.<Flow>emptyList()).build();
+        WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
+        InstanceIdentifier<Table> tableII = InstanceIdentifier.create(Nodes.class).child(Node.class, nodeKey)
+                .augmentation(FlowCapableNode.class).child(Table.class, tableKey);
+        writeTx.put(LogicalDatastoreType.CONFIGURATION, tableII, table);
+        assertCommit(writeTx.submit());
     }
 }
