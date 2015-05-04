@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3aa0d159_91a9a3e1",
+        "filename": "applications/statistics-manager/src/main/java/org/opendaylight/openflowplugin/applications/statistics/manager/impl/StatNodeRegistrationImpl.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 3576
+      },
+      "writtenOn": "2015-05-04T23:07:32Z",
+      "side": 1,
+      "message": "Is it intended to not allow these checks to match classes that inherit from these classes, as opposed to just the classes themselves?  Typically, comparisons like this are done with \"isAssignableFrom\", to allow for that.",
+      "revId": "3bac881cd0076e153baac3be1422dcdd1d72a747",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
