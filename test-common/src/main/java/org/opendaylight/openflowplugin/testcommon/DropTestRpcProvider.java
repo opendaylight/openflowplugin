@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.testcommon;
 
+import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.slf4j.Logger;
@@ -19,7 +20,7 @@ public class DropTestRpcProvider implements AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(DropTestDsProvider.class);
 
     private SalFlowService flowService;
-    private NotificationProviderService notificationService;
+    private NotificationService notificationService;
     private DropTestRpcSender commiter = new DropTestRpcSender();
     private boolean active = false;
 
@@ -33,7 +34,7 @@ public class DropTestRpcProvider implements AutoCloseable {
     /**
      * @param notificationService value for setter
      */
-    public void setNotificationService(final NotificationProviderService notificationService) {
+    public void setNotificationService(final NotificationService notificationService) {
         this.notificationService = notificationService;
     }
 

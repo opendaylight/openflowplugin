@@ -9,7 +9,7 @@ package org.opendaylight.openflowplugin.testcommon;
 
 import java.math.BigInteger;
 import java.util.concurrent.Callable;
-import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
@@ -64,9 +64,9 @@ public class DropTestRpcSender extends AbstractDropTest {
         }
     };
 
-    private NotificationProviderService notificationService;
+    private NotificationService notificationService;
 
-    private ListenerRegistration<NotificationListener> notificationRegistration;
+    private ListenerRegistration<DropTestRpcSender> notificationRegistration;
 
     /**
      * start listening on packetIn
@@ -75,9 +75,9 @@ public class DropTestRpcSender extends AbstractDropTest {
         SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(STARTUP_LOOP_TICK,
                 STARTUP_LOOP_MAX_RETRIES);
         try {
-            notificationRegistration = looper.loopUntilNoException(new Callable<ListenerRegistration<NotificationListener>>() {
+            notificationRegistration = looper.loopUntilNoException(new Callable<ListenerRegistration<DropTestRpcSender>>() {
                 @Override
-                public ListenerRegistration<NotificationListener> call() throws Exception {
+                public ListenerRegistration<DropTestRpcSender> call() throws Exception {
                     return notificationService.registerNotificationListener(DropTestRpcSender.this);
                 }
             });
@@ -116,7 +116,7 @@ public class DropTestRpcSender extends AbstractDropTest {
     /**
      * @param notificationService
      */
-    public void setNotificationService(NotificationProviderService notificationService) {
+    public void setNotificationService(NotificationService notificationService) {
         this.notificationService = notificationService;
     }
 

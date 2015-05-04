@@ -26,6 +26,8 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
+import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
@@ -108,7 +110,9 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
     private RequestContextStack emptyRequestContextStack;
     private TranslatorLibrary translatorLibrary;
     private DeviceInitializationPhaseHandler deviceInitPhaseHandler;
-    private NotificationProviderService notificationService;
+    private NotificationService notificationService;
+    private NotificationPublishService notificationPublishService;
+
     private final List<DeviceContext> synchronizedDeviceContextsList = new ArrayList<DeviceContext>();
     private final MessageIntelligenceAgency messageIntelligenceAgency = new MessageIntelligenceAgencyImpl();
 
@@ -162,6 +166,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         final DeviceContext deviceContext = new DeviceContextImpl(connectionContext, deviceState, dataBroker, hashedWheelTimer, messageIntelligenceAgency);
 
         deviceContext.setNotificationService(notificationService);
+        deviceContext.setNotificationPublishService(notificationPublishService);
         deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, deviceState.getNodeInstanceIdentifier(), new NodeBuilder().setId(deviceState.getNodeId()).build());
 
         connectionContext.setDeviceDisconnectedHandler(deviceContext);
@@ -427,8 +432,13 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
     }
 
     @Override
-    public void setNotificationService(final NotificationProviderService notificationServiceParam) {
+    public void setNotificationService(final NotificationService notificationServiceParam) {
         notificationService = notificationServiceParam;
+    }
+
+    @Override
+    public void setNotificationPublishService (final NotificationPublishService notificationService) {
+        this.notificationPublishService = notificationService;
     }
 
     @Override

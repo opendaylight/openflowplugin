@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.droptestkaraf;
 
 import com.google.common.base.Preconditions;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.openflowplugin.testcommon.DropTestDsProvider;
 import org.opendaylight.openflowplugin.testcommon.DropTestRpcProvider;
@@ -29,18 +30,18 @@ public class DropTestProviderImpl implements AutoCloseable {
     private static DropTestRpcProvider dropRpcProvider = new DropTestRpcProvider();
 
     public DropTestProviderImpl(final DataBroker dataBroker,
-                                final NotificationProviderService notificationProviderService,
+                                final NotificationService notificationService,
                                 final SalFlowService salFlowService) {
         Preconditions.checkNotNull(dataBroker, "Data broker can't be empty");
-        Preconditions.checkNotNull(notificationProviderService, "NotificationProviderService can't be empty");
+        Preconditions.checkNotNull(notificationService, "NotificationProviderService can't be empty");
         Preconditions.checkNotNull(salFlowService, "SalFlowService can't be empty");
 
         LOG.debug("Activator DropAllPack INIT");
 
         dropDsProvider.setDataService(dataBroker);
-        dropDsProvider.setNotificationService(notificationProviderService);
+        dropDsProvider.setNotificationService(notificationService);
 
-        dropRpcProvider.setNotificationService(notificationProviderService);
+        dropRpcProvider.setNotificationService(notificationService);
         dropRpcProvider.setFlowService(salFlowService);
 
         LOG.debug("Activator DropAllPack END");

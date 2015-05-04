@@ -8,6 +8,8 @@
 
 package org.opendaylight.openflowplugin.api.openflow.device;
 
+import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
+import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceConnectedHandler;
@@ -29,10 +31,16 @@ public interface DeviceManager extends DeviceConnectedHandler,
         DeviceInitializationPhaseHandler, DeviceContextClosedHandler {
 
     /**
-     * Sets notification service
+     * Sets notification receiving service
      * @param notificationService
      */
-    void setNotificationService(NotificationProviderService notificationService);
+    void setNotificationService(NotificationService notificationService);
+
+    /**
+     * Sets notification publish service
+     * @param notificationPublishService
+     */
+    void setNotificationPublishService(NotificationPublishService  notificationPublishService);
 
 }
 

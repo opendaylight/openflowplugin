@@ -22,9 +22,10 @@ import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicLong;
 import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
+import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
@@ -99,10 +100,11 @@ public class DeviceContextImpl implements DeviceContext {
     private final DeviceGroupRegistry deviceGroupRegistry;
     private final DeviceMeterRegistry deviceMeterRegistry;
     private Timeout barrierTaskTimeout;
-    private NotificationProviderService notificationService;
+    private NotificationService notificationService;
     private final MessageSpy<Class> messageSpy;
     private DeviceDisconnectedHandler deviceDisconnectedHandler;
     private List<DeviceContextClosedHandler> closeHandlers = new ArrayList<>();
+    private NotificationPublishService notificationPublishService;
 
 
     @VisibleForTesting
@@ -362,7 +364,10 @@ public class DeviceContextImpl implements DeviceContext {
         final TranslatorKey translatorKey = new TranslatorKey(packetInMessage.getVersion(), PacketIn.class.getName());
         final MessageTranslator<PacketInMessage, PacketReceived> messageTranslator = translatorLibrary.lookupTranslator(translatorKey);
         final PacketReceived packetReceived = messageTranslator.translate(packetInMessage, this, null);
-        notificationService.publish(packetReceived);
+        if (!notificationPublishService.offerNotification(packetReceived)){
+            LOG.debug("Notification offer refused by notification service.");
+        }
+
     }
 
     @Override
@@ -459,8 +464,13 @@ public class DeviceContextImpl implements DeviceContext {
     }
 
     @Override
-    public void setNotificationService(final NotificationProviderService notificationServiceParam) {
+    public void setNotificationService(final NotificationService notificationServiceParam) {
         notificationService = notificationServiceParam;
+    }
+
+    @Override
+    public void setNotificationPublishService(final NotificationPublishService notificationPublishService) {
+        this.notificationPublishService = notificationPublishService;
     }
 
     @Override

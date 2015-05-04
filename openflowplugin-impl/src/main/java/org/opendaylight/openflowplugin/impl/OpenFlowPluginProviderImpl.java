@@ -17,7 +17,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
+import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider;
@@ -51,7 +52,8 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     private RpcProviderRegistry rpcProviderRegistry;
     private StatisticsManager statisticsManager;
     private ConnectionManager connectionManager;
-    private NotificationProviderService notificationProviderService;
+    private NotificationService notificationProviderService;
+    private NotificationPublishService notificationPublishService;
 
     private ExtensionConverterManager extensionConverterManager;
 
@@ -129,6 +131,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         connectionManager.setDeviceConnectedHandler(deviceManager);
         deviceManager.setDeviceInitializationPhaseHandler(statisticsManager);
         deviceManager.setNotificationService(this.notificationProviderService);
+        deviceManager.setNotificationPublishService(this.notificationPublishService);
         statisticsManager.setDeviceInitializationPhaseHandler(rpcManager);
         rpcManager.setDeviceInitializationPhaseHandler(deviceManager);
 
@@ -137,8 +140,13 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     }
 
     @Override
-    public void setNotificationProviderService(final NotificationProviderService notificationProviderService) {
+    public void setNotificationProviderService(final NotificationService notificationProviderService) {
         this.notificationProviderService = notificationProviderService;
+    }
+
+    @Override
+    public void setNotificationPublishService(final NotificationPublishService notificationPublishProviderService) {
+        this.notificationPublishService = notificationPublishProviderService;
     }
 
     @Override

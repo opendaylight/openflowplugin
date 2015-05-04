@@ -11,9 +11,9 @@ import java.math.BigInteger;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicLong;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
@@ -31,7 +31,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.NotificationListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,9 +64,9 @@ public class DropTestCommiter extends AbstractDropTest {
         }
     };
 
-    private NotificationProviderService notificationService;
+    private NotificationService notificationService;
 
-    private ListenerRegistration<NotificationListener> notificationRegistration;
+    private ListenerRegistration<DropTestCommiter> notificationRegistration;
 
     /**
      * start listening on packetIn
@@ -76,9 +75,9 @@ public class DropTestCommiter extends AbstractDropTest {
         SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(STARTUP_LOOP_TICK,
                 STARTUP_LOOP_MAX_RETRIES);
         try {
-            notificationRegistration = looper.loopUntilNoException(new Callable<ListenerRegistration<NotificationListener>>() {
+            notificationRegistration = looper.loopUntilNoException(new Callable<ListenerRegistration<DropTestCommiter>>() {
                 @Override
-                public ListenerRegistration<NotificationListener> call() throws Exception {
+                public ListenerRegistration<DropTestCommiter> call() throws Exception {
                     return notificationService.registerNotificationListener(DropTestCommiter.this);
                 }
             });
@@ -146,7 +145,7 @@ public class DropTestCommiter extends AbstractDropTest {
     /**
      * @param notificationService
      */
-    public void setNotificationService(NotificationProviderService notificationService) {
+    public void setNotificationService(NotificationService notificationService) {
         this.notificationService = notificationService;
     }
 }
