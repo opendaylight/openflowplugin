@@ -178,13 +178,11 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         if (connectionContext.getFeatures().getVersion() == OFConstants.OFP_VERSION_1_0) {
             final CapabilitiesV10 capabilitiesV10 = connectionContext.getFeatures().getCapabilitiesV10();
 
-            synchronized (deviceContext) {
-                createEmptyFlowCapableNodeInDs(deviceContext);
-                makeEmptyTables(deviceContext, deviceContext.getDeviceState().getNodeInstanceIdentifier(), connectionContext.getFeatures().getTables());
-            }
             DeviceStateUtil.setDeviceStateBasedOnV10Capabilities(deviceState, capabilitiesV10);
 
             deviceFeaturesFuture = createDeviceFeaturesForOF10(messageListener, deviceContext, deviceState);
+            // create empty tables after device description is processed
+            chainTableTrunkWriteOF10(deviceContext, deviceFeaturesFuture);
 
             for (final PortGrouping port : connectionContext.getFeatures().getPhyPort()) {
                 final short ofVersion = deviceContext.getDeviceState().getVersion();
@@ -219,6 +217,30 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
                 // FIXME : remove session
                 LOG.trace("Device capabilities gathering future failed.");
                 LOG.trace("more info in exploration failure..", t);
+            }
+        });
+    }
+
+    private void chainTableTrunkWriteOF10(final DeviceContext deviceContext, ListenableFuture<List<RpcResult<List<MultipartReply>>>> deviceFeaturesFuture) {
+        Futures.addCallback(deviceFeaturesFuture, new FutureCallback<List<RpcResult<List<MultipartReply>>>>() {
+            @Override
+            public void onSuccess(List<RpcResult<List<MultipartReply>>> results) {
+                boolean allSucceeded = true;
+                for (RpcResult<List<MultipartReply>> rpcResult : results) {
+                    allSucceeded &= rpcResult.isSuccessful();
+                }
+                if (allSucceeded) {
+                    synchronized (deviceContext) {
+                        createEmptyFlowCapableNodeInDs(deviceContext);
+                        makeEmptyTables(deviceContext, deviceContext.getDeviceState().getNodeInstanceIdentifier(),
+                                deviceContext.getDeviceState().getFeatures().getTables());
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                //NOOP
             }
         });
     }
