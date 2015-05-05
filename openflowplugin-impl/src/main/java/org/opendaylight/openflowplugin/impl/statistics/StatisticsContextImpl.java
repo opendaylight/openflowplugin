@@ -15,6 +15,7 @@ import com.google.common.util.concurrent.SettableFuture;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -58,9 +59,9 @@ public class StatisticsContextImpl implements StatisticsContext {
     @Override
     public ListenableFuture<Boolean> gatherDynamicData() {
 
-
         final SettableFuture settableResultingFuture = SettableFuture.create();
         ListenableFuture<Boolean> resultingFuture = settableResultingFuture ;
+
 
         if (ConnectionContext.CONNECTION_STATE.WORKING.equals(deviceContext.getPrimaryConnectionContext().getConnectionState())) {
             final DeviceState devState = deviceContext.getDeviceState();

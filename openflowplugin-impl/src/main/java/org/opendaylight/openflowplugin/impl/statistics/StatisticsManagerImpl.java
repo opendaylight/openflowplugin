@@ -36,6 +36,12 @@ public class StatisticsManagerImpl implements StatisticsManager {
 
     private ConcurrentHashMap<DeviceContext, StatisticsContext> contexts = new ConcurrentHashMap();
 
+    private final TimeCounter timeCounter = new TimeCounter();
+
+    private static final long basicTimerDelay = 3000;
+    private static final long timerDelayShift = 1000;
+    private static long currentTimerDelay = basicTimerDelay;
+
     @Override
     public void setDeviceInitializationPhaseHandler(final DeviceInitializationPhaseHandler handler) {
         deviceInitPhaseHandler = handler;
@@ -78,27 +84,39 @@ public class StatisticsManagerImpl implements StatisticsManager {
     }
 
     private void pollStatistics() {
-        for (final StatisticsContext statisticsContext : contexts.values()) {
-            ListenableFuture deviceStatisticsCollectionFuture = statisticsContext.gatherDynamicData();
-            Futures.addCallback(deviceStatisticsCollectionFuture, new FutureCallback() {
-                @Override
-                public void onSuccess(final Object o) {
-                    //nothing to do here
-                }
+        try {
+            timeCounter.markStart();
+            for (final StatisticsContext statisticsContext : contexts.values()) {
+                ListenableFuture deviceStatisticsCollectionFuture = statisticsContext.gatherDynamicData();
+                Futures.addCallback(deviceStatisticsCollectionFuture, new FutureCallback() {
+                    @Override
+                    public void onSuccess(final Object o) {
+                        timeCounter.addTimeMark();
+                    }
 
-                @Override
-                public void onFailure(final Throwable throwable) {
-                    LOG.info("Statistics gathering for single node was not successful.");
-                }
-            });
-        }
-        if (null != hashedWheelTimer) {
-            hashedWheelTimer.newTimeout(new TimerTask() {
-                @Override
-                public void run(final Timeout timeout) throws Exception {
-                    pollStatistics();
-                }
-            }, 3000, TimeUnit.MILLISECONDS);
+                    @Override
+                    public void onFailure(final Throwable throwable) {
+                        timeCounter.addTimeMark();
+                        LOG.info("Statistics gathering for single node was not successful.");
+                    }
+                });
+            }
+        } finally {
+            long averageStatisticsGatheringTime = timeCounter.getAverageTimeBetweenMarks();
+            int numberOfDevices = contexts.size();
+            if ((averageStatisticsGatheringTime * numberOfDevices) > basicTimerDelay) {
+                currentTimerDelay += timerDelayShift;
+            } else {
+                currentTimerDelay = basicTimerDelay;
+            }
+            if (null != hashedWheelTimer) {
+                hashedWheelTimer.newTimeout(new TimerTask() {
+                    @Override
+                    public void run(final Timeout timeout) throws Exception {
+                        pollStatistics();
+                    }
+                }, currentTimerDelay, TimeUnit.MILLISECONDS);
+            }
         }
     }
 
@@ -114,5 +132,31 @@ public class StatisticsManagerImpl implements StatisticsManager {
                 LOG.debug("Error closing statistic context for node {}.", deviceContext.getDeviceState().getNodeId());
             }
         }
+    }
+
+    private final class TimeCounter {
+        private long beginningOfTime;
+        private long delta;
+        private int marksCount = 0;
+
+        public void markStart() {
+            beginningOfTime = System.currentTimeMillis();
+            delta = 0;
+            marksCount = 0;
+        }
+
+        public void addTimeMark() {
+            delta += System.currentTimeMillis() - beginningOfTime;
+            marksCount++;
+        }
+
+        public long getAverageTimeBetweenMarks() {
+            long average = 0;
+            if (marksCount > 0) {
+                average = delta / marksCount;
+            }
+            return average;
+        }
+
     }
 }
