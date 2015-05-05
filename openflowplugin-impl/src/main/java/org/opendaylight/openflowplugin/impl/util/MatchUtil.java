@@ -43,7 +43,7 @@ public final class MatchUtil {
         matchV10Builder.setNwTos(zeroShort);
         matchV10Builder.setTpDst(zeroInteger);
         matchV10Builder.setTpSrc(zeroInteger);
-        FlowWildcardsV10 flowWildcardsV10 = new FlowWildcardsV10(false, false, false, false, false, false, false, false, false, false);
+        FlowWildcardsV10 flowWildcardsV10 = new FlowWildcardsV10(true, true, true, true, true, true, true, true, true, true);
         matchV10Builder.setWildcards(flowWildcardsV10);
         return matchV10Builder;
     }
