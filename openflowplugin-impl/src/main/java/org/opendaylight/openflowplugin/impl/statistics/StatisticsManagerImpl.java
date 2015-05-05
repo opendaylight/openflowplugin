@@ -88,7 +88,8 @@ public class StatisticsManagerImpl implements StatisticsManager {
 
                 @Override
                 public void onFailure(final Throwable throwable) {
-                    LOG.info("Statistics gathering for single node was not successful.");
+                    LOG.info("Statistics gathering for single node was not successful: {}", throwable.getMessage());
+                    LOG.debug("Statistics gathering for single node was not successful.. ", throwable);
                 }
             });
         }
