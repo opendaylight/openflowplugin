@@ -124,6 +124,7 @@ class TransactionChainManager implements TransactionChainListener {
             if (wTx != null && nrOfActualTx > 0) {
                 LOG.trace("submitting transaction, counter: {}", nrOfActualTx);
                 CheckedFuture<Void, TransactionCommitFailedException> submitResult = wTx.submit();
+                hookTimeExpenseCounter(submitResult, String.valueOf(wTx.getIdentifier()));
                 wTx = null;
                 nrOfActualTx = 0L;
             }
@@ -141,6 +142,22 @@ class TransactionChainManager implements TransactionChainListener {
         } else {
             LOG.debug("transaction not committed - submit block issued");
         }
+    }
+
+    private void hookTimeExpenseCounter(CheckedFuture<Void, TransactionCommitFailedException> submitResult, final String name) {
+        final long submitFiredTime = System.currentTimeMillis();
+        LOG.debug("submit of {} fired", name);
+        Futures.addCallback(submitResult, new FutureCallback<Void>() {
+            @Override
+            public void onSuccess(Void result) {
+                LOG.debug("submit of {} finished in {} ms", name, System.currentTimeMillis() - submitFiredTime);
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                LOG.warn("transaction submit failed: {}", t.getMessage());
+            }
+        });
     }
 
     synchronized void enableSubmit() {
