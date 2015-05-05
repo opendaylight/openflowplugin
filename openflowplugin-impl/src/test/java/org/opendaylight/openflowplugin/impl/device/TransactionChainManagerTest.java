@@ -91,6 +91,7 @@ public class TransactionChainManagerTest {
         Mockito.verify(txChain).newWriteOnlyTransaction();
         Mockito.verify(writeTx).put(LogicalDatastoreType.CONFIGURATION, path, data);
         Mockito.verify(writeTx).submit();
+        Mockito.verify(writeTx).getIdentifier();
     }
 
     /**
@@ -129,6 +130,7 @@ public class TransactionChainManagerTest {
         Mockito.verify(txChain, Mockito.times(2)).newWriteOnlyTransaction();
         Mockito.verify(writeTx, Mockito.times(4)).put(LogicalDatastoreType.CONFIGURATION, path, data);
         Mockito.verify(writeTx, Mockito.times(2)).submit();
+        Mockito.verify(writeTx, Mockito.times(2)).getIdentifier();
     }
 
     @Test
