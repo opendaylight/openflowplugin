@@ -83,17 +83,17 @@ public class FlowHashFactory {
 
         @Override
         public short getTableId() {
-            return 0;
+            return tableId;
         }
 
         @Override
         public int getPriority() {
-            return 0;
+            return priority;
         }
 
         @Override
         public BigInteger getCookie() {
-            return null;
+            return cookie;
         }
     }
 }

@@ -93,9 +93,8 @@ public class FlowHashFactoryTest {
 
         HashSet<FlowHash> flowHashs = new HashSet();
         for (FlowAndStatisticsMapList item : flowStats.getFlowAndStatisticsMapList()) {
-            FlowHash flowHash = FlowHashFactory.create(item, deviceContext);
-            flowHashs.add(flowHash);
-            flowHashs.add(flowHash);
+            flowHashs.add(FlowHashFactory.create(item, deviceContext));
+            flowHashs.add(FlowHashFactory.create(item, deviceContext));
         }
         assertEquals(3, flowHashs.size());
     }
