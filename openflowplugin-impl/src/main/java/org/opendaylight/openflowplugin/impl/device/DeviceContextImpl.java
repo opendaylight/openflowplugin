@@ -129,7 +129,7 @@ public class DeviceContextImpl implements DeviceContext {
      * and we are able to set a scheduler for an automatic transaction submitting by time (0,5sec).
      */
     void submitTransaction() {
-        txChainManager.enableCounter();
+        txChainManager.enableSubmit();
         txChainManager.submitTransaction();
     }
 
