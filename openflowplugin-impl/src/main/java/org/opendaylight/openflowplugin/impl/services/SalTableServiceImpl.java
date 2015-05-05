@@ -7,6 +7,23 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
+import java.util.ArrayList;
+
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeaturesKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.TableFeaturesReplyConvertor;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.table.features._case.MultipartReplyTableFeatures;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyTableFeaturesCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.MultipartReplyBody;
 import java.math.BigInteger;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.TransactionId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableOutputBuilder;
@@ -48,14 +65,15 @@ public class SalTableServiceImpl extends CommonService implements SalTableServic
 
     @Override
     public Future<RpcResult<UpdateTableOutput>> updateTable(final UpdateTableInput input) {
-        class FunctionImpl implements Function<DataCrate<List<MultipartReply>>,ListenableFuture<RpcResult<List<MultipartReply>>>> {
+        class FunctionImpl implements
+                Function<DataCrate<List<MultipartReply>>, ListenableFuture<RpcResult<List<MultipartReply>>>> {
 
             @Override
             public ListenableFuture<RpcResult<List<MultipartReply>>> apply(final DataCrate<List<MultipartReply>> data) {
-                messageSpy.spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_SUCCESS);
+                messageSpy.spyMessage(input.getImplementedInterface(),
+                        MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_SUCCESS);
 
                 final SettableFuture<RpcResult<List<MultipartReply>>> result = SettableFuture.create();
-
 
                 final MultipartRequestTableFeaturesCaseBuilder caseBuilder = new MultipartRequestTableFeaturesCaseBuilder();
                 final MultipartRequestTableFeaturesBuilder requestBuilder = new MultipartRequestTableFeaturesBuilder();
@@ -80,7 +98,8 @@ public class SalTableServiceImpl extends CommonService implements SalTableServic
             }
         }
 
-        final ListenableFuture<RpcResult<List<MultipartReply>>> multipartFuture = handleServiceCall( PRIMARY_CONNECTION, new FunctionImpl());
+        final ListenableFuture<RpcResult<List<MultipartReply>>> multipartFuture = handleServiceCall(PRIMARY_CONNECTION,
+                new FunctionImpl());
         final SettableFuture<RpcResult<UpdateTableOutput>> finalFuture = SettableFuture.create();
 
         class CallBackImpl implements FutureCallback<RpcResult<List<MultipartReply>>> {
@@ -93,38 +112,80 @@ public class SalTableServiceImpl extends CommonService implements SalTableServic
                     final List<MultipartReply> multipartReplies = result.getResult();
                     if (multipartReplies.isEmpty()) {
                         LOGGER.debug("Multipart reply to table features request shouldn't be empty list.");
-                        finalFuture.set(RpcResultBuilder.<UpdateTableOutput>failed().withError(ErrorType.RPC, "Multipart reply list is empty.").build());
+                        finalFuture.set(RpcResultBuilder.<UpdateTableOutput> failed()
+                                .withError(ErrorType.RPC, "Multipart reply list is empty.").build());
                     } else {
                         final Long xid = multipartReplies.get(0).getXid();
-                        LOGGER.debug("OnSuccess, rpc result successful, multipart response for rpc update-table with xid {} obtained.",xid);
+                        LOGGER.debug(
+                                "OnSuccess, rpc result successful, multipart response for rpc update-table with xid {} obtained.",
+                                xid);
                         final UpdateTableOutputBuilder updateTableOutputBuilder = new UpdateTableOutputBuilder();
                         updateTableOutputBuilder.setTransactionId(new TransactionId(BigInteger.valueOf(xid)));
                         finalFuture.set(RpcResultBuilder.success(updateTableOutputBuilder.build()).build());
+                        writeResponseToOperationalDatastore(multipartReplies);
                     }
-                    //TODO: output could contain more interesting things then only xid.
-                    //(According to rfc output for table-update it is only xid)
-//                    for (MultipartReply multipartReply : result.getResult()) {
-//                        if (multipartReply.getType().equals(MultipartType.OFPMPTABLEFEATURES)) {
-//                        }
-//                    }
                 } else {
                     LOGGER.debug("OnSuccess, rpc result unsuccessful, multipart response for rpc update-table was unsuccessful.");
-                    finalFuture.set(RpcResultBuilder.<UpdateTableOutput>failed().withRpcErrors(result.getErrors()).build());
+                    finalFuture.set(RpcResultBuilder.<UpdateTableOutput> failed().withRpcErrors(result.getErrors())
+                            .build());
                 }
             }
 
             @Override
             public void onFailure(Throwable t) {
                 LOGGER.debug("Failure multipart response for table features request. Exception: {}", t);
-                finalFuture.set(RpcResultBuilder.<UpdateTableOutput>failed().withError(ErrorType.RPC, "Future error", t).build());
+                finalFuture.set(RpcResultBuilder.<UpdateTableOutput> failed()
+                        .withError(ErrorType.RPC, "Future error", t).build());
             }
+
+            /**
+             * @param multipartReplies
+             */
+            private void writeResponseToOperationalDatastore(final List<MultipartReply> multipartReplies) {
+
+                final List<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures> salTableFeatures = convertToSalTableFeatures(multipartReplies);
+
+                final NodeId nodeId = deviceContext.getPrimaryConnectionContext().getNodeId();
+                final InstanceIdentifier<FlowCapableNode> flowCapableNodeII = InstanceIdentifier.create(Nodes.class)
+                        .child(Node.class, new NodeKey(nodeId)).augmentation(FlowCapableNode.class);
+                for (org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures tableFeatureData : salTableFeatures) {
+                    final Short tableId = tableFeatureData.getTableId();
+                    KeyedInstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures, TableFeaturesKey> tableFeaturesII = flowCapableNodeII
+                            .child(Table.class, new TableKey(tableId))
+                            .child(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures.class,
+                                    new TableFeaturesKey(tableId));
+                    deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, tableFeaturesII,
+                            tableFeatureData);
+                }
+
+            }
+
+            private List<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures> convertToSalTableFeatures(
+                    final List<MultipartReply> multipartReplies) {
+                final List<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures> salTableFeaturesAll = new ArrayList<>();
+                for (MultipartReply multipartReply : multipartReplies) {
+                    if (multipartReply.getType().equals(MultipartType.OFPMPTABLEFEATURES)) {
+                        MultipartReplyBody multipartReplyBody = multipartReply.getMultipartReplyBody();
+                        if (multipartReplyBody instanceof MultipartReplyTableFeaturesCase) {
+                            MultipartReplyTableFeaturesCase tableFeaturesCase = ((MultipartReplyTableFeaturesCase) multipartReplyBody);
+                            MultipartReplyTableFeatures salTableFeatures = tableFeaturesCase
+                                    .getMultipartReplyTableFeatures();
+                            List<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures> salTableFeaturesPartial = TableFeaturesReplyConvertor
+                                    .toTableFeaturesReply(salTableFeatures);
+                            salTableFeaturesAll.addAll(salTableFeaturesPartial);
+                            LOGGER.debug("TableFeature {} for xid {}.", salTableFeatures, multipartReply.getXid());
+                        }
+                    }
+                }
+                return salTableFeaturesAll;
+            }
+
         }
 
         Futures.addCallback(multipartFuture, new CallBackImpl());
 
         return finalFuture;
     }
-
 
     private MultipartRequestInputBuilder createMultipartHeader(final MultipartType multipart, final Long xid) {
         final MultipartRequestInputBuilder mprInput = new MultipartRequestInputBuilder();

@@ -243,7 +243,7 @@ public class DeviceContextImpl implements DeviceContext {
                 //TODO : this is the point, where we can discover that add flow operation failed and where we should
                 //TODO : remove this flow from deviceFlowRegistry
                 final Error error = (Error) ofHeader;
-                final String message = "Operation on device failed";
+                final String message = "Operation on device failed with xid "+ofHeader.getXid()+".";
                 rpcResult = RpcResultBuilder
                         .<OfHeader>failed()
                         .withError(RpcError.ErrorType.APPLICATION, message, new DeviceDataException(message, error))
