@@ -55,15 +55,6 @@ public class StatisticsContextImpl implements StatisticsContext {
 
     }
 
-    private void pollFlowStatistics() {
-        final KeyedInstanceIdentifier<Node, NodeKey> nodeII = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(deviceContext.getPrimaryConnectionContext().getNodeId()));
-        final NodeRef nodeRef = new NodeRef(nodeII);
-        final GetAllFlowsStatisticsFromAllFlowTablesInputBuilder builder =
-                new GetAllFlowsStatisticsFromAllFlowTablesInputBuilder();
-        builder.setNode(nodeRef);
-        //TODO : process data from result
-    }
-
     @Override
     public ListenableFuture<Boolean> gatherDynamicData() {
 
