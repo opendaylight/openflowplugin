@@ -159,8 +159,11 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                 TableKey tableKey = table.getKey();
                 KeyedInstanceIdentifier<TableFeatures, TableFeaturesKey> tableFeaturesII
                     = nodeIdent.child(Table.class, tableKey).child(TableFeatures.class, new TableFeaturesKey(tableKey.getId()));
-                for (TableFeatures tableFeatures : table.getTableFeatures()) {
-                    provider.getTableFeaturesCommiter().update(tableFeaturesII, tableFeatures, null, nodeIdent);
+                List<TableFeatures> tableFeatures = table.getTableFeatures();
+                if (tableFeatures != null) {
+                    for (TableFeatures tableFeaturesItem : tableFeatures) {
+                        provider.getTableFeaturesCommiter().update(tableFeaturesII, tableFeaturesItem, null, nodeIdent);
+                    }
                 }
             }
 
