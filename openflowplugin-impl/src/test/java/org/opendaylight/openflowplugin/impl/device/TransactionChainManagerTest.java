@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.impl.device;
 
+import com.google.common.util.concurrent.Futures;
 import io.netty.util.HashedWheelTimer;
 import org.junit.After;
 import org.junit.Before;
@@ -24,6 +25,7 @@ import org.opendaylight.controller.md.sal.common.api.data.AsyncTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChain;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
+import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
@@ -61,6 +63,8 @@ public class TransactionChainManagerTest {
 
         nodeId = new NodeId("h2g2:42");
         path = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(nodeId));
+
+        Mockito.when(writeTx.submit()).thenReturn(Futures.<Void, TransactionCommitFailedException>immediateCheckedFuture(null));
     }
 
     @After
@@ -80,7 +84,7 @@ public class TransactionChainManagerTest {
     @Test
     public void testSubmitTransaction() throws Exception {
         final Node data = new NodeBuilder().setId(nodeId).build();
-        txChainManager.enableCounter();
+        txChainManager.enableSubmit();
         txChainManager.writeToTransaction(LogicalDatastoreType.CONFIGURATION, path, data);
         txChainManager.submitTransaction();
 
@@ -90,7 +94,7 @@ public class TransactionChainManagerTest {
     }
 
     /**
-     * test of {@link TransactionChainManager#enableCounter()}: no submit - counter is not active
+     * test of {@link TransactionChainManager#enableSubmit()}: no submit - counter is not active
      * @throws Exception
      */
     @Test
@@ -104,12 +108,12 @@ public class TransactionChainManagerTest {
     }
 
     /**
-     * test of {@link TransactionChainManager#enableCounter()}: submit - after counter activated
+     * test of {@link TransactionChainManager#enableSubmit()}: submit - after counter activated
      * @throws Exception
      */
     @Test
     public void testEnableCounter2() throws Exception {
-        txChainManager.enableCounter();
+        txChainManager.enableSubmit();
 
         final Node data = new NodeBuilder().setId(nodeId).build();
         txChainManager.writeToTransaction(LogicalDatastoreType.CONFIGURATION, path, data);
@@ -129,15 +133,24 @@ public class TransactionChainManagerTest {
 
     @Test
     public void testOnTransactionChainFailed() throws Exception {
-        txChainManager.onTransactionChainSuccessful(transactionChain);
-        // NOOP
-    }
-
-    @Test
-    public void testOnTransactionChainSuccessful() throws Exception {
         txChainManager.onTransactionChainFailed(transactionChain, Mockito.mock(AsyncTransaction.class), Mockito.mock(Throwable.class));
 
         Mockito.verify(txChain).close();
         Mockito.verify(dataBroker, Mockito.times(2)).createTransactionChain(txChainManager);
+    }
+
+    @Test
+    public void testOnTransactionChainSuccessful() throws Exception {
+        txChainManager.onTransactionChainSuccessful(transactionChain);
+        // NOOP
+        Mockito.verifyZeroInteractions(transactionChain);
+    }
+
+    @Test
+    public void testAddDeleteOperationTotTxChain() throws Exception {
+        txChainManager.addDeleteOperationTotTxChain(LogicalDatastoreType.CONFIGURATION, path);
+
+        Mockito.verify(txChain).newWriteOnlyTransaction();
+        Mockito.verify(writeTx).delete(LogicalDatastoreType.CONFIGURATION, path);
     }
 }
