@@ -10,6 +10,9 @@ package org.opendaylight.openflowplugin.impl.device;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.CheckedFuture;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
@@ -22,6 +25,7 @@ import org.opendaylight.controller.md.sal.common.api.data.AsyncTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChain;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
+import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
@@ -53,7 +57,7 @@ class TransactionChainManager implements TransactionChainListener {
     private WriteTransaction wTx;
     private Timeout submitTaskTime;
     private long nrOfActualTx;
-    private boolean counterIsEnabled;
+    private boolean submitIsEnabled;
 
     TransactionChainManager(@Nonnull final DataBroker dataBroker,
                             @Nonnull final HashedWheelTimer hashedWheelTimer,
@@ -70,11 +74,11 @@ class TransactionChainManager implements TransactionChainListener {
 
 
     public void commitOperationsGatheredInOneTransaction(){
-        enableCounter();
+        enableSubmit();
         submitTransaction();
     }
     public void startGatheringOperationsToOneTransaction(){
-        counterIsEnabled = false;
+        submitIsEnabled = false;
     }
 
     synchronized <T extends DataObject> void writeToTransaction(final LogicalDatastoreType store,
@@ -83,9 +87,7 @@ class TransactionChainManager implements TransactionChainListener {
             wTx = txChainFactory.newWriteOnlyTransaction();
         }
         wTx.put(store, path, data);
-        if (counterIsEnabled) {
-            countTxInAndCommit();
-        }
+        countTxInAndCommit();
     }
 
     synchronized <T extends DataObject> void addDeleteOperationTotTxChain(final LogicalDatastoreType store,
@@ -94,9 +96,7 @@ class TransactionChainManager implements TransactionChainListener {
             wTx = txChainFactory.newWriteOnlyTransaction();
         }
         wTx.delete(store, path);
-        if (counterIsEnabled) {
-            countTxInAndCommit();
-        }
+        countTxInAndCommit();
     }
 
     private void countTxInAndCommit() {
@@ -106,30 +106,45 @@ class TransactionChainManager implements TransactionChainListener {
         }
     }
 
+    synchronized void submitScheduledTransaction(Timeout timeout) {
+        if (timeout.isCancelled()) {
+            // zombie timer executed
+            return;
+        }
+
+        if (submitIsEnabled) {
+            submitTransaction();
+        } else {
+            LOG.info("transaction submit task will not be scheduled - submit block issued.");
+        }
+    }
+
     synchronized void submitTransaction() {
-        if (counterIsEnabled) {
-            if (wTx != null) {
+        if (submitIsEnabled) {
+            if (wTx != null && nrOfActualTx > 0) {
                 LOG.trace("submitting transaction, counter: {}", nrOfActualTx);
-                wTx.submit();
+                CheckedFuture<Void, TransactionCommitFailedException> submitResult = wTx.submit();
                 wTx = null;
                 nrOfActualTx = 0L;
             }
-            if (submitTaskTime != null && !submitTaskTime.isExpired()) {
+            if (submitTaskTime != null) {
+                // if possible then cancel current timer (even if being executed via timer)
                 submitTaskTime.cancel();
             }
             submitTaskTime = hashedWheelTimer.newTimeout(new TimerTask() {
                 @Override
                 public void run(final Timeout timeout) throws Exception {
-                    submitTransaction();
+                    submitScheduledTransaction(timeout);
                 }
             }, timerValue, TimeUnit.MILLISECONDS);
+
         } else {
-            LOG.info("Task will not be scheduled - submit block issued.");
+            LOG.debug("transaction not committed - submit block issued");
         }
     }
 
-    synchronized void enableCounter() {
-        counterIsEnabled = true;
+    synchronized void enableSubmit() {
+        submitIsEnabled = true;
     }
 
     @Override
