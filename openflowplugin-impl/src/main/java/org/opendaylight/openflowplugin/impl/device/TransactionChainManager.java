@@ -83,20 +83,33 @@ class TransactionChainManager implements TransactionChainListener {
 
     synchronized <T extends DataObject> void writeToTransaction(final LogicalDatastoreType store,
                                                                 final InstanceIdentifier<T> path, final T data) {
+        try {
+            WriteTransaction writeTx = getTransactionSafely();
+            writeTx.put(store, path, data);
+            countTxInAndCommit();
+        } catch (Exception e) {
+            LOG.warn("failed to put into writeOnlyTransaction: {}", e.getMessage());
+            LOG.trace("failed to put into writeOnlyTransaction.. ", e);
+        }
+    }
+
+    private WriteTransaction getTransactionSafely() {
         if (wTx == null) {
             wTx = txChainFactory.newWriteOnlyTransaction();
         }
-        wTx.put(store, path, data);
-        countTxInAndCommit();
+        return wTx;
     }
 
     synchronized <T extends DataObject> void addDeleteOperationTotTxChain(final LogicalDatastoreType store,
                                                                           final InstanceIdentifier<T> path) {
-        if (wTx == null) {
-            wTx = txChainFactory.newWriteOnlyTransaction();
+        try {
+            WriteTransaction writeTx = getTransactionSafely();
+            writeTx.delete(store, path);
+            countTxInAndCommit();
+        } catch (Exception e) {
+            LOG.warn("failed to put into writeOnlyTransaction [{}]: {}", e.getMessage());
+            LOG.trace("failed to put into writeOnlyTransaction.. ", e);
         }
-        wTx.delete(store, path);
-        countTxInAndCommit();
     }
 
     private void countTxInAndCommit() {
@@ -124,7 +137,7 @@ class TransactionChainManager implements TransactionChainListener {
             if (wTx != null && nrOfActualTx > 0) {
                 LOG.trace("submitting transaction, counter: {}", nrOfActualTx);
                 CheckedFuture<Void, TransactionCommitFailedException> submitResult = wTx.submit();
-                hookTimeExpenseCounter(submitResult, String.valueOf(wTx.getIdentifier()));
+                hookTimeExpenseCounter(submitResult, String.valueOf(wTx.getIdentifier()) + "::" + nrOfActualTx);
                 wTx = null;
                 nrOfActualTx = 0L;
             }
@@ -140,7 +153,7 @@ class TransactionChainManager implements TransactionChainListener {
             }, timerValue, TimeUnit.MILLISECONDS);
 
         } else {
-            LOG.debug("transaction not committed - submit block issued");
+            LOG.trace("transaction not committed - submit block issued");
         }
     }
 
