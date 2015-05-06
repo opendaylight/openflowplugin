@@ -13,7 +13,6 @@ import org.opendaylight.controller.md.sal.binding.api.BindingService;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
-import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.api.types.rev150327.OfpRole;
@@ -38,6 +37,7 @@ public interface OpenFlowPluginProvider extends AutoCloseable, BindingService {
     void setRpcProviderRegistry(RpcProviderRegistry rpcProviderRegistry);
 
     void setNotificationProviderService(NotificationService notificationProviderService);
+
     void setNotificationPublishService(NotificationPublishService notificationPublishService);
 
     /**

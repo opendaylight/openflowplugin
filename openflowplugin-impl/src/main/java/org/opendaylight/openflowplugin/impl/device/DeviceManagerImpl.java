@@ -30,7 +30,6 @@ import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -437,7 +436,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
     }
 
     @Override
-    public void setNotificationPublishService (final NotificationPublishService notificationService) {
+    public void setNotificationPublishService(final NotificationPublishService notificationService) {
         this.notificationPublishService = notificationService;
     }
 

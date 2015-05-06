@@ -14,7 +14,6 @@ import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginTimer;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceContextClosedHandler;
@@ -199,7 +198,7 @@ public interface DeviceContext extends AutoCloseable,
      */
     void setNotificationService(NotificationService notificationService);
 
-    void setNotificationPublishService(NotificationPublishService  notificationPublishService);
+    void setNotificationPublishService(NotificationPublishService notificationPublishService);
 
     MessageSpy getMessageSpy();
 

@@ -102,7 +102,7 @@ public class DropTestCommiter extends AbstractDropTest {
         final FlowBuilder fb = BUILDER.get();
         fb.setMatch(match);
         fb.setInstructions(instructions);
-        fb.setId(new FlowId(String.valueOf(fb.hashCode()) +"."+ ID_COUNTER.getAndIncrement()));
+        fb.setId(new FlowId(String.valueOf(fb.hashCode()) + "." + ID_COUNTER.getAndIncrement()));
 
         // Construct the flow instance id
         final InstanceIdentifier<Flow> flowInstanceId =
@@ -110,11 +110,11 @@ public class DropTestCommiter extends AbstractDropTest {
                 InstanceIdentifier.builder(Nodes.class)
                         // A particular node identified by nodeKey
                         .child(Node.class, node)
-                        // That is flow capable, only FlowCapableNodes have tables
+                                // That is flow capable, only FlowCapableNodes have tables
                         .augmentation(FlowCapableNode.class)
-                        // In the table identified by TableKey
+                                // In the table identified by TableKey
                         .child(Table.class, new TableKey((short) 0))
-                        // A flow identified by flowKey
+                                // A flow identified by flowKey
                         .child(Flow.class, new FlowKey(fb.getId()))
                         .build();
 
