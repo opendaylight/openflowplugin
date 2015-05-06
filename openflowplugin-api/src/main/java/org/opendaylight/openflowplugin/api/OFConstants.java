@@ -8,6 +8,7 @@
 package org.opendaylight.openflowplugin.api;
 
 import java.math.BigInteger;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
 
 /**
  * OFP related constants
@@ -46,8 +47,10 @@ public final class OFConstants {
     public static final Long OFPG_ALL = 0xfffffffcL;
     /** Refers to all queues conﬁgured at the speciﬁed port. */
     public static final Long OFPQ_ALL = ANY;
+    /** default cookie */
     public static final BigInteger DEFAULT_COOKIE = BigInteger.ZERO;
     public static final BigInteger DEFAULT_COOKIE_MASK = BigInteger.ZERO;
+    public static final FlowCookie DEFAULT_FLOW_COOKIE = new FlowCookie(DEFAULT_COOKIE);
     /** indicates that no buffering should be applied and the whole packet is to be
      *  sent to the controller. */
     public static final Long OFP_NO_BUFFER = 0xffffffffL;

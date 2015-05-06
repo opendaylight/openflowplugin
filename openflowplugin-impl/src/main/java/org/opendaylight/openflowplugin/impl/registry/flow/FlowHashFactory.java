@@ -8,9 +8,12 @@
 
 package org.opendaylight.openflowplugin.impl.registry.flow;
 
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Preconditions;
 import com.google.common.primitives.Longs;
 import java.math.BigInteger;
 import java.util.Objects;
+import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowHash;
 import org.opendaylight.openflowplugin.impl.util.HashUtil;
@@ -47,9 +50,9 @@ public class FlowHashFactory {
         public FlowHashDto(final long flowHash, final Flow flow) {
             this.flowHash = flowHash;
             this.intHashCode = Longs.hashCode(flowHash);
-            tableId = flow.getTableId();
-            priority = flow.getPriority();
-            cookie = flow.getCookie().getValue();
+            tableId = Preconditions.checkNotNull(flow.getTableId(), "flow tableId must not be null");
+            priority = Preconditions.checkNotNull(flow.getPriority(), "flow priority must not be null");
+            cookie = MoreObjects.firstNonNull(flow.getCookie(), OFConstants.DEFAULT_FLOW_COOKIE).getValue();
         }
 
 
