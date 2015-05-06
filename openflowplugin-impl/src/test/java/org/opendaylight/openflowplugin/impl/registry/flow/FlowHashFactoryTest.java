@@ -15,9 +15,8 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -100,7 +99,6 @@ public class FlowHashFactoryTest {
     }
 
     @Test
-    @Ignore
     public void testGetHash2() throws Exception {
         MatchBuilder match1Builder = new MatchBuilder().setLayer3Match(new Ipv4MatchBuilder()
                 .setIpv4Destination(new Ipv4Prefix("10.0.1.157/32")).build());
@@ -124,6 +122,43 @@ public class FlowHashFactoryTest {
         LOG.info("flowHash2: {}", flow2Hash.hashCode());
 
         Assert.assertNotSame(flow1Hash, flow2Hash);
+    }
+
+    @Test
+    public void testGetHashNPE() throws Exception {
+        MatchBuilder match1Builder = new MatchBuilder().setLayer3Match(new Ipv4MatchBuilder()
+                .setIpv4Destination(new Ipv4Prefix("10.0.1.157/32")).build());
+        FlowBuilder flow1Builder = new FlowBuilder()
+                .setCookie(new FlowCookie(BigInteger.valueOf(483)))
+                .setMatch(match1Builder.build())
+                .setPriority(2)
+                .setTableId((short) 0);
+
+        FlowBuilder fb1 = new FlowBuilder(flow1Builder.build());
+        fb1.setTableId(null);
+        try {
+            FlowHashFactory.create(fb1.build(), deviceContext);
+            Assert.fail("hash creation should have failed because of NPE");
+        } catch (Exception e) {
+            // expected
+            Assert.assertEquals("flow tableId must not be null", e.getMessage());
+        }
+
+        FlowBuilder fb2 = new FlowBuilder(flow1Builder.build());
+        fb2.setPriority(null);
+        try {
+            FlowHashFactory.create(fb2.build(), deviceContext);
+            Assert.fail("hash creation should have failed because of NPE");
+        } catch (Exception e) {
+            // expected
+            Assert.assertEquals("flow priority must not be null", e.getMessage());
+        }
+
+        FlowBuilder fb3 = new FlowBuilder(flow1Builder.build());
+        fb3.setCookie(null);
+        FlowHash flowHash = FlowHashFactory.create(fb3.build(), deviceContext);
+        Assert.assertNotNull(flowHash.getCookie());
+        Assert.assertEquals(OFConstants.DEFAULT_COOKIE, flowHash.getCookie());
     }
 
     @Test
