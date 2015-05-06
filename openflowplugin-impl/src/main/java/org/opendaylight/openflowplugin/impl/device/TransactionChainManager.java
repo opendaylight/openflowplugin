@@ -107,7 +107,7 @@ class TransactionChainManager implements TransactionChainListener {
             writeTx.delete(store, path);
             countTxInAndCommit();
         } catch (Exception e) {
-            LOG.warn("failed to put into writeOnlyTransaction [{}]: {}", e.getMessage());
+            LOG.warn("failed to put into writeOnlyTransaction : {}", e.getMessage());
             LOG.trace("failed to put into writeOnlyTransaction.. ", e);
         }
     }
