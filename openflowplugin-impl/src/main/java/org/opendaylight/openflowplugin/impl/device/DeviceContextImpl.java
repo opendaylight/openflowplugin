@@ -245,7 +245,7 @@ public class DeviceContextImpl implements DeviceContext {
                 //TODO : this is the point, where we can discover that add flow operation failed and where we should
                 //TODO : remove this flow from deviceFlowRegistry
                 final Error error = (Error) ofHeader;
-                final String message = "Operation on device failed with xid "+ofHeader.getXid()+".";
+                final String message = "Operation on device failed with xid " + ofHeader.getXid() + ".";
                 rpcResult = RpcResultBuilder
                         .<OfHeader>failed()
                         .withError(RpcError.ErrorType.APPLICATION, message, new DeviceDataException(message, error))
@@ -364,7 +364,7 @@ public class DeviceContextImpl implements DeviceContext {
         final TranslatorKey translatorKey = new TranslatorKey(packetInMessage.getVersion(), PacketIn.class.getName());
         final MessageTranslator<PacketInMessage, PacketReceived> messageTranslator = translatorLibrary.lookupTranslator(translatorKey);
         final PacketReceived packetReceived = messageTranslator.translate(packetInMessage, this, null);
-        if (!notificationPublishService.offerNotification(packetReceived)){
+        if (!notificationPublishService.offerNotification(packetReceived)) {
             LOG.debug("Notification offer refused by notification service.");
         }
 

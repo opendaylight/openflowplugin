@@ -24,7 +24,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.NotificationListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -95,13 +94,12 @@ public class DropTestRpcSender extends AbstractDropTest {
         // Finally build our flow
         fb.setMatch(match);
         fb.setInstructions(instructions);
-        //fb.setId(new FlowId(Long.toString(fb.hashCode)));
 
         // Construct the flow instance id
         final InstanceIdentifier<Node> flowInstanceId = InstanceIdentifier
                 // File under nodes
                 .builder(Nodes.class)
-                // A particular node identified by nodeKey
+                        // A particular node identified by nodeKey
                 .child(Node.class, node).build();
         fb.setNode(new NodeRef(flowInstanceId));
 
