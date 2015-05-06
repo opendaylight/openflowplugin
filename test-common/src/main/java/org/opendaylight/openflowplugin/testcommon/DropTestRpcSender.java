@@ -39,7 +39,7 @@ public class DropTestRpcSender extends AbstractDropTest {
     /**
      * @param flowService the flowService to set
      */
-    public void setFlowService(SalFlowService flowService) {
+    public void setFlowService(final SalFlowService flowService) {
         this.flowService = flowService;
     }
 
@@ -71,7 +71,7 @@ public class DropTestRpcSender extends AbstractDropTest {
      * start listening on packetIn
      */
     public void start() {
-        SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(STARTUP_LOOP_TICK,
+        final SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(STARTUP_LOOP_TICK,
                 STARTUP_LOOP_MAX_RETRIES);
         try {
             notificationRegistration = looper.loopUntilNoException(new Callable<ListenerRegistration<DropTestRpcSender>>() {
@@ -80,7 +80,7 @@ public class DropTestRpcSender extends AbstractDropTest {
                     return notificationService.registerNotificationListener(DropTestRpcSender.this);
                 }
             });
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LOG.warn("DropTest sender notification listener registration fail!");
             LOG.debug("DropTest sender notification listener registration fail! ..", e);
             throw new IllegalStateException("DropTest startup fail! Try again later.", e);
@@ -104,7 +104,7 @@ public class DropTestRpcSender extends AbstractDropTest {
         fb.setNode(new NodeRef(flowInstanceId));
 
         // Add flow
-        AddFlowInput flow = fb.build();
+        final AddFlowInput flow = fb.build();
         if (LOG.isDebugEnabled()) {
             LOG.debug("onPacketReceived - About to write flow (via SalFlowService) {}", flow);
         }
@@ -114,18 +114,19 @@ public class DropTestRpcSender extends AbstractDropTest {
     /**
      * @param notificationService
      */
-    public void setNotificationService(NotificationService notificationService) {
+    public void setNotificationService(final NotificationService notificationService) {
         this.notificationService = notificationService;
     }
 
     @Override
     public void close() {
+        super.close();
         try {
             LOG.debug("DropTestProvider stopped.");
             if (notificationRegistration != null) {
                 notificationRegistration.close();
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LOG.warn("unregistration of notification listener failed: {}", e.getMessage());
             LOG.debug("unregistration of notification listener failed.. ", e);
         }

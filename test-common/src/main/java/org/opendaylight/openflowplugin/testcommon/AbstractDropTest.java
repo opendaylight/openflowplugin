@@ -12,6 +12,8 @@ import static org.opendaylight.openflowjava.util.ByteBufUtils.macAddressToString
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DropActionCaseBuilder;
@@ -50,6 +52,9 @@ abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseab
     static final long STARTUP_LOOP_TICK = 500L;
     static final int STARTUP_LOOP_MAX_RETRIES = 8;
 
+    private final ExecutorService executorService = Executors.newFixedThreadPool(8);
+
+
     private static final AtomicIntegerFieldUpdater<AbstractDropTest> SENT_UPDATER = AtomicIntegerFieldUpdater.newUpdater(AbstractDropTest.class, "sent");
     private volatile int sent;
 
@@ -75,7 +80,19 @@ abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseab
 
         RCVD_UPDATER.incrementAndGet(this);
 
+        executorService.submit(new Runnable() {
+
+            @Override
+            public void run() {
+                processPacket(notification);
+            }
+        });
+        LOG.debug("onPacketReceived - Leaving", notification);
+    }
+
+    private void processPacket(final PacketReceived notification) {
         try {
+            // TODO Auto-generated method stub
             final byte[] rawPacket = notification.getPayload();
             final byte[] srcMac = Arrays.copyOfRange(rawPacket, 6, 12);
 
@@ -122,16 +139,21 @@ abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseab
             final NodeKey node = ncri.firstKeyOf(Node.class, NodeKey.class);
 
             processPacket(node, match.build(), isb.build());
+
             SENT_UPDATER.incrementAndGet(this);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             // TODO Auto-generated catch block
             LOG.warn("Failed to process packet: {}", e.getMessage());
             LOG.debug("Failed to process packet.. ", e);
             EXCS_UPDATER.incrementAndGet(this);
         }
-
-        LOG.debug("onPacketReceived - Leaving", notification);
     }
 
     protected abstract void processPacket(NodeKey node, Match match, Instructions instructions);
+
+
+    @Override
+    public void close() {
+        executorService.shutdown();
+    }
 }
