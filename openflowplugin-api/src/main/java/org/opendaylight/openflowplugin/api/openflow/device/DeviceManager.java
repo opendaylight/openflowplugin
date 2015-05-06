@@ -10,8 +10,6 @@ package org.opendaylight.openflowplugin.api.openflow.device;
 
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
-import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
-
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceConnectedHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceContextClosedHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
@@ -22,7 +20,6 @@ import org.opendaylight.openflowplugin.api.openflow.translator.TranslatorLibrari
  * This interface is responsible for instantiating DeviceContext and
  * registering transaction chain for each DeviceContext. Each device
  * has its own device context managed by this manager.
- * <p>
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 25.2.2015.
  */
 public interface DeviceManager extends DeviceConnectedHandler,
@@ -32,15 +29,17 @@ public interface DeviceManager extends DeviceConnectedHandler,
 
     /**
      * Sets notification receiving service
+     *
      * @param notificationService
      */
     void setNotificationService(NotificationService notificationService);
 
     /**
      * Sets notification publish service
+     *
      * @param notificationPublishService
      */
-    void setNotificationPublishService(NotificationPublishService  notificationPublishService);
+    void setNotificationPublishService(NotificationPublishService notificationPublishService);
 
 }
 

@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.testcommon;
 
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
-import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

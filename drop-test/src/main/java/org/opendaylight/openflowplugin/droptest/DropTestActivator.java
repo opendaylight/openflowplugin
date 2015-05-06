@@ -11,7 +11,6 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.controller.sal.binding.api.AbstractBindingAwareProvider;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
-import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.openflowplugin.outputtest.OutputTestCommandProvider;
 import org.opendaylight.openflowplugin.testcommon.DropTestDsProvider;
 import org.opendaylight.openflowplugin.testcommon.DropTestRpcProvider;
