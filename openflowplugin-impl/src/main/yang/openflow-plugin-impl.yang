@@ -8,6 +8,7 @@ module openflow-plugin-provider-impl {
     import openflow-provider {prefix openflow-provider; revision-date 2015-03-31;}
     import openflow-switch-connection-provider {prefix openflow-switch-connection-provider;revision-date 2014-03-28;}
     import opendaylight-md-sal-binding { prefix md-sal-binding; revision-date 2013-10-28;}
+    import opendaylight-sal-binding-broker-impl { prefix sal-broker; revision-date 2013-10-28;}
     import openflow-plugin-types { prefix ofp-types; revision-date 2015-03-27;}
     import openflowplugin-extension-registry {prefix ofp-ext-reg; revision-date 2015-04-25;}
 
@@ -46,6 +47,23 @@ module openflow-plugin-provider-impl {
                     }
                 }
             }
+            container notification-adapter {
+                uses config:service-ref {
+                    refine type {
+                        mandatory true;
+                        config:required-identity sal-broker:binding-new-notification-service;
+                    }
+                }
+            }
+            container notification-publish-adapter {
+                uses config:service-ref {
+                    refine type {
+                        mandatory true;
+                        config:required-identity sal-broker:binding-new-notification-publish-service;
+                    }
+                }
+            }
+            /*
             container notification-service {
                 uses config:service-ref {
                     refine type {
@@ -54,6 +72,7 @@ module openflow-plugin-provider-impl {
                     }
                 }
             }
+            */
             list openflow-switch-connection-provider {
                 uses config:service-ref {
                     refine type {

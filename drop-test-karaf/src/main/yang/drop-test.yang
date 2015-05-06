@@ -6,6 +6,7 @@ module drop-test-provider {
     import config {prefix config; revision-date 2013-04-05;}
     import rpc-context { prefix rpcx; revision-date 2013-06-17; }
     import opendaylight-md-sal-binding { prefix md-sal-binding; revision-date 2013-10-28;}
+    import opendaylight-sal-binding-broker-impl { prefix sal-broker; revision-date 2013-10-28;}
 
     description
         "drop-test-provider";
@@ -40,6 +41,15 @@ module drop-test-provider {
                     }
                 }
             }
+            container notification-adapter {
+                uses config:service-ref {
+                    refine type {
+                        mandatory true;
+                        config:required-identity sal-broker:binding-new-notification-service;
+                    }
+                }
+            }
+            /*
             container notification-service {
                 uses config:service-ref {
                     refine type {
@@ -48,6 +58,7 @@ module drop-test-provider {
                     }
                 }
             }
+            */
         }
     }
 }

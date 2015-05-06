@@ -8,6 +8,7 @@
 package org.opendaylight.openflowplugin.droptest;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.controller.sal.binding.api.AbstractBindingAwareProvider;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
@@ -34,9 +35,9 @@ public class DropTestActivator extends AbstractBindingAwareProvider {
         LOG.debug("Activator DropAllPack INIT");
         provider.setDataService(session.<DataBroker>getSALService(DataBroker.class));
 
-        provider.setNotificationService(session.<NotificationProviderService>getSALService(NotificationProviderService.class));
+        provider.setNotificationService(session.<NotificationService>getSALService(NotificationService.class));
 
-        rpcProvider.setNotificationService(session.<NotificationProviderService>getSALService(NotificationProviderService.class));
+        rpcProvider.setNotificationService(session.<NotificationService>getSALService(NotificationService.class));
 
         rpcProvider.setFlowService(session.<SalFlowService>getRpcService(SalFlowService.class));
         outCmdProvider.onSessionInitiated(session);

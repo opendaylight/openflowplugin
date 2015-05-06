@@ -10,6 +10,8 @@ package org.opendaylight.openflowplugin.api.openflow.device;
 
 import io.netty.util.Timeout;
 import java.math.BigInteger;
+import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
+import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
@@ -195,7 +197,9 @@ public interface DeviceContext extends AutoCloseable,
      *
      * @param notificationService
      */
-    void setNotificationService(NotificationProviderService notificationService);
+    void setNotificationService(NotificationService notificationService);
+
+    void setNotificationPublishService(NotificationPublishService  notificationPublishService);
 
     MessageSpy getMessageSpy();
 

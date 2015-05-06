@@ -11,6 +11,8 @@ package org.opendaylight.openflowplugin.api.openflow;
 import java.util.Collection;
 import org.opendaylight.controller.md.sal.binding.api.BindingService;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
+import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
@@ -35,7 +37,8 @@ public interface OpenFlowPluginProvider extends AutoCloseable, BindingService {
 
     void setRpcProviderRegistry(RpcProviderRegistry rpcProviderRegistry);
 
-    void setNotificationProviderService(NotificationProviderService notificationProviderService);
+    void setNotificationProviderService(NotificationService notificationProviderService);
+    void setNotificationPublishService(NotificationPublishService notificationPublishService);
 
     /**
      * Method sets role of this application in clustered environment.

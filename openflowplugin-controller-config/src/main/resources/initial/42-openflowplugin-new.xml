@@ -74,10 +74,18 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
                         <type xmlns:binding="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding">binding:binding-rpc-registry</type>
                         <name>binding-rpc-broker</name>
                     </rpc-registry>
-                    <notification-service>
+                    <!--notification-service>
                         <type xmlns:binding="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding">binding:binding-notification-service</type>
                         <name>binding-notification-broker</name>
-                    </notification-service>
+                    </notification-service-->
+                    <notification-adapter>
+                        <type xmlns:binding="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding:impl">binding:binding-new-notification-service</type>
+                        <name>binding-notification-adapter</name>
+                    </notification-adapter>
+                    <notification-publish-adapter>
+                        <type xmlns:binding="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding:impl">binding:binding-new-notification-publish-service</type>
+                        <name>binding-notification-publish-adapter</name>
+                    </notification-publish-adapter>
                     <rpc-requests-quota>20000</rpc-requests-quota>
                 </module>
             </modules>
