@@ -81,7 +81,9 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
             @Override
             public void onSuccess(final RpcResult<AddFlowOutput> rpcResult) {
                 messageSpy.spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_SUCCESS);
-                deviceContext.getDeviceFlowRegistry().store(flowHash, flowDescriptor);
+                synchronized (deviceContext) {
+                    deviceContext.getDeviceFlowRegistry().store(flowHash, flowDescriptor);
+                }
                 if (rpcResult.isSuccessful()) {
                     LOG.debug("flow add finished without error, id={}", flowId.getValue());
                 } else {
@@ -92,7 +94,9 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
             @Override
             public void onFailure(final Throwable throwable) {
                 messageSpy.spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_FAILURE);
-                deviceContext.getDeviceFlowRegistry().markToBeremoved(flowHash);
+                synchronized (deviceContext) {
+                    deviceContext.getDeviceFlowRegistry().markToBeremoved(flowHash);
+                }
                 LOG.trace("Service call for adding flows failed, id={}.", flowId.getValue(), throwable);
             }
         });
@@ -115,7 +119,9 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
                             public void onSuccess(final Object o) {
                                 messageSpy.spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_SUCCESS);
                                 FlowHash flowHash = FlowHashFactory.create(input, deviceContext.getPrimaryConnectionContext().getFeatures().getVersion());
-                                deviceContext.getDeviceFlowRegistry().markToBeremoved(flowHash);
+                                synchronized (deviceContext) {
+                                    deviceContext.getDeviceFlowRegistry().markToBeremoved(flowHash);
+                                }
                             }
 
                             @Override
@@ -173,13 +179,14 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
                 messageSpy.spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_SUCCESS);
                 short version = deviceContext.getPrimaryConnectionContext().getFeatures().getVersion();
                 FlowHash flowHash = FlowHashFactory.create(original, version);
-                deviceContext.getDeviceFlowRegistry().markToBeremoved(flowHash);
 
-                flowHash = FlowHashFactory.create(updated, version);
+                FlowHash updatedflowHash = FlowHashFactory.create(updated, version);
                 FlowId flowId = input.getFlowRef().getValue().firstKeyOf(Flow.class, FlowKey.class).getId();
                 FlowDescriptor flowDescriptor = FlowDescriptorFactory.create(updated.getTableId(), flowId);
-                deviceContext.getDeviceFlowRegistry().store(flowHash, flowDescriptor);
-
+                synchronized (deviceContext) {
+                    deviceContext.getDeviceFlowRegistry().markToBeremoved(flowHash);
+                    deviceContext.getDeviceFlowRegistry().store(updatedflowHash, flowDescriptor);
+                }
             }
 
             @Override
@@ -243,7 +250,9 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
 
                                 // xid might be not available in case requestContext not even stored
                                 if (xid != null) {
-                                    deviceContext.unhookRequestCtx(new Xid(xid));
+                                    synchronized (deviceContext) {
+                                        deviceContext.unhookRequestCtx(new Xid(xid));
+                                    }
                                 }
                             }
                         } else {

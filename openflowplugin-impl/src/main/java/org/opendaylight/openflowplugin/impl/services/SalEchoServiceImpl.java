@@ -7,31 +7,30 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
-import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
-import com.google.common.util.concurrent.SettableFuture;
-import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.echo.service.rev150305.SendEchoOutputBuilder;
-import org.opendaylight.openflowplugin.impl.callback.SuccessCallback;
-import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
-import org.opendaylight.openflowplugin.api.openflow.device.Xid;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoInputBuilder;
 import com.google.common.util.concurrent.JdkFutureAdapters;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoInput;
 import com.google.common.util.concurrent.ListenableFuture;
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
-import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
+import com.google.common.util.concurrent.SettableFuture;
 import java.util.concurrent.Future;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
+import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
+import org.opendaylight.openflowplugin.api.openflow.device.Xid;
+import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
+import org.opendaylight.openflowplugin.impl.callback.SuccessCallback;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.echo.service.rev150305.SalEchoService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.echo.service.rev150305.SendEchoInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.echo.service.rev150305.SendEchoOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.echo.service.rev150305.SendEchoOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoOutput;
+import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.echo.service.rev150305.SalEchoService;
+import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SalEchoServiceImpl extends CommonService implements SalEchoService {
 
@@ -96,7 +95,7 @@ public class SalEchoServiceImpl extends CommonService implements SalEchoService 
             public void onFailure(Throwable t) {
                 if (sendEchoOutput.isCancelled()) {
                     requestContext.getFuture().set(
-                            RpcResultBuilder.<SendEchoOutput> failed()
+                            RpcResultBuilder.<SendEchoOutput>failed()
                                     .withError(ErrorType.APPLICATION, "Echo response wasn't obtained until barrier.")
                                     .build());
                     LOG.debug("Echo reply with xid {} wasn't received by controller until barrier.",

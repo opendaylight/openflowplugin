@@ -81,7 +81,7 @@ class TransactionChainManager implements TransactionChainListener {
         submitIsEnabled = false;
     }
 
-    synchronized <T extends DataObject> void writeToTransaction(final LogicalDatastoreType store,
+    <T extends DataObject> void writeToTransaction(final LogicalDatastoreType store,
                                                                 final InstanceIdentifier<T> path, final T data) {
         try {
             WriteTransaction writeTx = getTransactionSafely();
@@ -100,7 +100,7 @@ class TransactionChainManager implements TransactionChainListener {
         return wTx;
     }
 
-    synchronized <T extends DataObject> void addDeleteOperationTotTxChain(final LogicalDatastoreType store,
+    <T extends DataObject> void addDeleteOperationTotTxChain(final LogicalDatastoreType store,
                                                                           final InstanceIdentifier<T> path) {
         try {
             WriteTransaction writeTx = getTransactionSafely();
@@ -119,7 +119,7 @@ class TransactionChainManager implements TransactionChainListener {
         }
     }
 
-    synchronized void submitScheduledTransaction(Timeout timeout) {
+    void submitScheduledTransaction(Timeout timeout) {
         if (timeout.isCancelled()) {
             // zombie timer executed
             return;
@@ -132,7 +132,7 @@ class TransactionChainManager implements TransactionChainListener {
         }
     }
 
-    synchronized void submitTransaction() {
+    void submitTransaction() {
         if (submitIsEnabled) {
             if (wTx != null && nrOfActualTx > 0) {
                 LOG.trace("submitting transaction, counter: {}", nrOfActualTx);
@@ -173,7 +173,7 @@ class TransactionChainManager implements TransactionChainListener {
         });
     }
 
-    synchronized void enableSubmit() {
+    void enableSubmit() {
         submitIsEnabled = true;
     }
 
