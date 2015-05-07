@@ -56,7 +56,7 @@ public class StatisticsContextImpl implements StatisticsContext {
 
         if (ConnectionContext.CONNECTION_STATE.WORKING.equals(deviceContext.getPrimaryConnectionContext().getConnectionState())) {
             final DeviceState devState = deviceContext.getDeviceState();
-            ListenableFuture<Boolean> emptyFuture = Futures.immediateFuture(new Boolean(false));
+            final ListenableFuture<Boolean> emptyFuture = Futures.immediateFuture(new Boolean(false));
             final ListenableFuture<Boolean> flowStatistics = devState.isFlowStatisticsAvailable() ? wrapLoggingOnStatisticsRequestCall(MultipartType.OFPMPFLOW) : emptyFuture;
 
             final ListenableFuture<Boolean> tableStatistics = devState.isTableStatisticsAvailable() ? wrapLoggingOnStatisticsRequestCall(MultipartType.OFPMPTABLE) : emptyFuture;
@@ -77,7 +77,7 @@ public class StatisticsContextImpl implements StatisticsContext {
                 @Override
                 public void onSuccess(final List<Boolean> booleans) {
                     boolean atLeastOneSuccess = false;
-                    for (Boolean bool : booleans) {
+                    for (final Boolean bool : booleans) {
                         atLeastOneSuccess |= bool.booleanValue();
                     }
                     settableResultingFuture.set(new Boolean(atLeastOneSuccess));
@@ -121,7 +121,7 @@ public class StatisticsContextImpl implements StatisticsContext {
 
     @Override
     public <T> void forgetRequestContext(final RequestContext<T> requestContext) {
-        requestContexts.remove(requestContexts);
+        requestContexts.remove(requestContext);
     }
 
     @Override
@@ -137,7 +137,7 @@ public class StatisticsContextImpl implements StatisticsContext {
 
     @Override
     public void close() throws Exception {
-        for (RequestContext requestContext : requestContexts) {
+        for (final RequestContext requestContext : requestContexts) {
             RequestContextUtil.closeRequestContextWithRpcError(requestContext, CONNECTION_CLOSED);
         }
     }
