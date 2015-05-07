@@ -213,14 +213,5 @@ public interface DeviceContext extends AutoCloseable,
 
     void commitOperationsGatheredInOneTransaction();
 
-    /**
-     * Method for creating lock on whole device context. Used as single point of synchronization.
-     */
-    void lock();
-
-    /**
-     * Method that release lock on this device context.
-     */
-    void unlock();
 }
 

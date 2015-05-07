@@ -105,27 +105,29 @@ public abstract class CommonService {
                                                                          final Function<DataCrate<T>, ListenableFuture<RpcResult<F>>> function,
                                                                          final DataCrateBuilder<T> dataCrateBuilder) {
 
-        synchronized (deviceContext) {
-            LOG.trace("Handling general service call");
-            final RequestContext<T> requestContext = requestContextStack.createRequestContext();
-            final SettableFuture<RpcResult<T>> result = requestContextStack.storeOrFail(requestContext);
-            if (!result.isDone()) {
-                DataCrate<T> dataCrate = dataCrateBuilder.setiDConnection(connectionID).setRequestContext(requestContext)
-                        .build();
-                requestContext.setXid(deviceContext.getNextXid());
-
-                LOG.trace("Hooking xid {} to device context - precaution.", requestContext.getXid().getValue());
-                deviceContext.hookRequestCtx(requestContext.getXid(), requestContext);
-
-                final ListenableFuture<RpcResult<F>> resultFromOFLib = function.apply(dataCrate);
-
-                final OFJResult2RequestCtxFuture<T> OFJResult2RequestCtxFuture = new OFJResult2RequestCtxFuture<>(requestContext, deviceContext);
-                OFJResult2RequestCtxFuture.processResultFromOfJava(resultFromOFLib);
-            } else {
-                messageSpy.spyMessage(requestContext.getClass(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_FAILURE);
-            }
+        LOG.trace("Handling general service call");
+        final RequestContext<T> requestContext = requestContextStack.createRequestContext();
+        final SettableFuture<RpcResult<T>> result = requestContextStack.storeOrFail(requestContext);
+        if (result.isDone()) {
+            messageSpy.spyMessage(requestContext.getClass(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_FAILURE);
             return result;
         }
+        DataCrate<T> dataCrate = dataCrateBuilder.setiDConnection(connectionID).setRequestContext(requestContext)
+                .build();
+        final ListenableFuture<RpcResult<F>> resultFromOFLib;
+
+        synchronized (deviceContext) {
+            requestContext.setXid(deviceContext.getNextXid());
+            LOG.trace("Hooking xid {} to device context - precaution.", requestContext.getXid().getValue());
+            deviceContext.hookRequestCtx(requestContext.getXid(), requestContext);
+            resultFromOFLib = function.apply(dataCrate);
+        }
+
+
+        final OFJResult2RequestCtxFuture<T> OFJResult2RequestCtxFuture = new OFJResult2RequestCtxFuture<>(requestContext, deviceContext);
+        OFJResult2RequestCtxFuture.processResultFromOfJava(resultFromOFLib);
+        return result;
+
     }
 
 }

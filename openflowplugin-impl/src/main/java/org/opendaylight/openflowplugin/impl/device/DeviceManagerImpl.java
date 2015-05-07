@@ -113,7 +113,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
     private NotificationService notificationService;
     private NotificationPublishService notificationPublishService;
 
-    private final List<DeviceContext> synchronizedDeviceContextsList = new ArrayList<DeviceContext>();
+    private final List<DeviceContext> deviceContexts = new ArrayList<DeviceContext>();
     private final MessageIntelligenceAgency messageIntelligenceAgency = new MessageIntelligenceAgencyImpl();
 
     public DeviceManagerImpl(@Nonnull final DataBroker dataBroker) {
@@ -238,11 +238,9 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
                     allSucceeded &= rpcResult.isSuccessful();
                 }
                 if (allSucceeded) {
-                    synchronized (deviceContext) {
-                        createEmptyFlowCapableNodeInDs(deviceContext);
-                        makeEmptyTables(deviceContext, deviceContext.getDeviceState().getNodeInstanceIdentifier(),
-                                deviceContext.getDeviceState().getFeatures().getTables());
-                    }
+                    createEmptyFlowCapableNodeInDs(deviceContext);
+                    makeEmptyTables(deviceContext, deviceContext.getDeviceState().getNodeInstanceIdentifier(),
+                            deviceContext.getDeviceState().getFeatures().getTables());
                 }
             }
 
@@ -311,7 +309,9 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         requestContext.setXid(xid);
 
         LOG.trace("Hooking xid {} to device context - precaution.", requestContext.getXid().getValue());
-        deviceContext.hookRequestCtx(requestContext.getXid(), requestContext);
+        synchronized (deviceContext) {
+            deviceContext.hookRequestCtx(requestContext.getXid(), requestContext);
+        }
 
 
         multiMsgCollector.registerMultipartXid(xid.getValue());
@@ -446,7 +446,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
 
     @Override
     public void close() throws Exception {
-        for (final DeviceContext deviceContext : synchronizedDeviceContextsList) {
+        for (final DeviceContext deviceContext : deviceContexts) {
             deviceContext.close();
         }
     }
@@ -459,6 +459,6 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
 
     @Override
     public void onDeviceContextClosed(final DeviceContext deviceContext) {
-        synchronizedDeviceContextsList.remove(deviceContext);
+        deviceContexts.remove(deviceContext);
     }
 }

@@ -92,8 +92,8 @@ public class FlowHashFactoryTest {
 
         HashSet<FlowHash> flowHashs = new HashSet();
         for (FlowAndStatisticsMapList item : flowStats.getFlowAndStatisticsMapList()) {
-            flowHashs.add(FlowHashFactory.create(item, deviceContext));
-            flowHashs.add(FlowHashFactory.create(item, deviceContext));
+            flowHashs.add(FlowHashFactory.create(item, OFConstants.OFP_VERSION_1_3));
+            flowHashs.add(FlowHashFactory.create(item, OFConstants.OFP_VERSION_1_3));
         }
         assertEquals(3, flowHashs.size());
     }
@@ -108,7 +108,7 @@ public class FlowHashFactoryTest {
                 .setPriority(2)
                 .setTableId((short) 0);
 
-        FlowHash flow1Hash = FlowHashFactory.create(flow1Builder.build(), deviceContext);
+        FlowHash flow1Hash = FlowHashFactory.create(flow1Builder.build(), OFConstants.OFP_VERSION_1_3);
         LOG.info("flowHash1: {}", flow1Hash.hashCode());
 
 
@@ -118,7 +118,7 @@ public class FlowHashFactoryTest {
                 .setCookie(new FlowCookie(BigInteger.valueOf(148)))
                 .setMatch(match2Builder.build());
 
-        FlowHash flow2Hash = FlowHashFactory.create(flow2Builder.build(), deviceContext);
+        FlowHash flow2Hash = FlowHashFactory.create(flow2Builder.build(), OFConstants.OFP_VERSION_1_3);
         LOG.info("flowHash2: {}", flow2Hash.hashCode());
 
         Assert.assertNotSame(flow1Hash, flow2Hash);
@@ -137,7 +137,7 @@ public class FlowHashFactoryTest {
         FlowBuilder fb1 = new FlowBuilder(flow1Builder.build());
         fb1.setTableId(null);
         try {
-            FlowHashFactory.create(fb1.build(), deviceContext);
+            FlowHashFactory.create(fb1.build(), OFConstants.OFP_VERSION_1_3);
             Assert.fail("hash creation should have failed because of NPE");
         } catch (Exception e) {
             // expected
@@ -147,7 +147,7 @@ public class FlowHashFactoryTest {
         FlowBuilder fb2 = new FlowBuilder(flow1Builder.build());
         fb2.setPriority(null);
         try {
-            FlowHashFactory.create(fb2.build(), deviceContext);
+            FlowHashFactory.create(fb2.build(), OFConstants.OFP_VERSION_1_3);
             Assert.fail("hash creation should have failed because of NPE");
         } catch (Exception e) {
             // expected
@@ -156,7 +156,7 @@ public class FlowHashFactoryTest {
 
         FlowBuilder fb3 = new FlowBuilder(flow1Builder.build());
         fb3.setCookie(null);
-        FlowHash flowHash = FlowHashFactory.create(fb3.build(), deviceContext);
+        FlowHash flowHash = FlowHashFactory.create(fb3.build(), OFConstants.OFP_VERSION_1_3);
         Assert.assertNotNull(flowHash.getCookie());
         Assert.assertEquals(OFConstants.DEFAULT_COOKIE, flowHash.getCookie());
     }
@@ -166,7 +166,7 @@ public class FlowHashFactoryTest {
         FlowsStatisticsUpdate flowStats = FLOWS_STATISTICS_UPDATE_BUILDER.build();
 
         for (FlowAndStatisticsMapList item : flowStats.getFlowAndStatisticsMapList()) {
-            FlowHash flowHash = FlowHashFactory.create(item, deviceContext);
+            FlowHash flowHash = FlowHashFactory.create(item, OFConstants.OFP_VERSION_1_3);
             FlowHash lastHash = null;
             if (null != lastHash) {
                 assertNotEquals(lastHash, flowHash);

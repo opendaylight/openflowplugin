@@ -71,7 +71,7 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
         }
 
 
-        final FlowHash flowHash = FlowHashFactory.create(input, deviceContext);
+        final FlowHash flowHash = FlowHashFactory.create(input, deviceContext.getPrimaryConnectionContext().getFeatures().getVersion());
         final FlowDescriptor flowDescriptor = FlowDescriptorFactory.create(input.getTableId(), flowId);
 
         final List<FlowModInputBuilder> ofFlowModInputs = FlowConvertor.toFlowModInputs(input, version, datapathId);
@@ -81,7 +81,9 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
             @Override
             public void onSuccess(final RpcResult<AddFlowOutput> rpcResult) {
                 messageSpy.spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_SUCCESS);
-                deviceContext.getDeviceFlowRegistry().store(flowHash, flowDescriptor);
+                synchronized (deviceContext) {
+                    deviceContext.getDeviceFlowRegistry().store(flowHash, flowDescriptor);
+                }
                 if (rpcResult.isSuccessful()) {
                     LOG.debug("flow add finished without error, id={}", flowId.getValue());
                 } else {
@@ -92,7 +94,9 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
             @Override
             public void onFailure(final Throwable throwable) {
                 messageSpy.spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_FAILURE);
-                deviceContext.getDeviceFlowRegistry().markToBeremoved(flowHash);
+                synchronized (deviceContext) {
+                    deviceContext.getDeviceFlowRegistry().markToBeremoved(flowHash);
+                }
                 LOG.trace("Service call for adding flows failed, id={}.", flowId.getValue(), throwable);
             }
         });
@@ -114,8 +118,10 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
                             @Override
                             public void onSuccess(final Object o) {
                                 messageSpy.spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_SUCCESS);
-                                FlowHash flowHash = FlowHashFactory.create(input, deviceContext);
-                                deviceContext.getDeviceFlowRegistry().markToBeremoved(flowHash);
+                                FlowHash flowHash = FlowHashFactory.create(input, deviceContext.getPrimaryConnectionContext().getFeatures().getVersion());
+                                synchronized (deviceContext) {
+                                    deviceContext.getDeviceFlowRegistry().markToBeremoved(flowHash);
+                                }
                             }
 
                             @Override
@@ -171,14 +177,16 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
             @Override
             public void onSuccess(final Object o) {
                 messageSpy.spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_SUCCESS);
-                FlowHash flowHash = FlowHashFactory.create(original, deviceContext);
-                deviceContext.getDeviceFlowRegistry().markToBeremoved(flowHash);
+                short version = deviceContext.getPrimaryConnectionContext().getFeatures().getVersion();
+                FlowHash flowHash = FlowHashFactory.create(original, version);
 
-                flowHash = FlowHashFactory.create(updated, deviceContext);
+                FlowHash updatedflowHash = FlowHashFactory.create(updated, version);
                 FlowId flowId = input.getFlowRef().getValue().firstKeyOf(Flow.class, FlowKey.class).getId();
                 FlowDescriptor flowDescriptor = FlowDescriptorFactory.create(updated.getTableId(), flowId);
-                deviceContext.getDeviceFlowRegistry().store(flowHash, flowDescriptor);
-
+                synchronized (deviceContext) {
+                    deviceContext.getDeviceFlowRegistry().markToBeremoved(flowHash);
+                    deviceContext.getDeviceFlowRegistry().store(updatedflowHash, flowDescriptor);
+                }
             }
 
             @Override
@@ -242,7 +250,9 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
 
                                 // xid might be not available in case requestContext not even stored
                                 if (xid != null) {
-                                    deviceContext.unhookRequestCtx(new Xid(xid));
+                                    synchronized (deviceContext) {
+                                        deviceContext.unhookRequestCtx(new Xid(xid));
+                                    }
                                 }
                             }
                         } else {

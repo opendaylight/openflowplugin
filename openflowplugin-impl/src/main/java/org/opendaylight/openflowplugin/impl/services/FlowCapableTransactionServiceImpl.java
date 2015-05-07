@@ -44,6 +44,7 @@ public class FlowCapableTransactionServiceImpl extends CommonService implements 
         final SettableFuture<RpcResult<Void>> sendBarrierOutput = requestContextStack
                 .storeOrFail(requestContext);
       if (!sendBarrierOutput.isDone()) {
+
           final Xid xid = deviceContext.getNextXid();
           requestContext.setXid(xid);
 
@@ -51,8 +52,10 @@ public class FlowCapableTransactionServiceImpl extends CommonService implements 
           barrierInputOFJavaBuilder.setVersion(version);
           barrierInputOFJavaBuilder.setXid(xid.getValue());
 
-          LOG.trace("Hooking xid {} to device context - precaution.", requestContext.getXid().getValue());
-          deviceContext.hookRequestCtx(requestContext.getXid(), requestContext);
+          synchronized (deviceContext) {
+              LOG.trace("Hooking xid {} to device context - precaution.", requestContext.getXid().getValue());
+              deviceContext.hookRequestCtx(requestContext.getXid(), requestContext);
+          }
 
           final BarrierInput barrierInputOFJava = barrierInputOFJavaBuilder.build();
 
