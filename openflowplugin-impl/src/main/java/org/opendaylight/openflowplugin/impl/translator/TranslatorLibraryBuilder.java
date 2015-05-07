@@ -8,9 +8,9 @@
 
 package org.opendaylight.openflowplugin.impl.translator;
 
+import com.google.common.collect.ImmutableMap;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
@@ -22,7 +22,7 @@ public class TranslatorLibraryBuilder {
 
     private final Map<TranslatorKey, MessageTranslator<?, ?>> translators = new HashMap<>();
 
-    public TranslatorLibraryBuilder addTranslator(TranslatorKey key, MessageTranslator<?, ?> translator) {
+    public TranslatorLibraryBuilder addTranslator(final TranslatorKey key, final MessageTranslator<?, ?> translator) {
         translators.put(key, translator);
         return this;
     }
@@ -32,17 +32,16 @@ public class TranslatorLibraryBuilder {
     }
 
     private final class TranslatorLibraryImpl implements TranslatorLibrary {
-        private Map<TranslatorKey, MessageTranslator<?, ?>> translators = new ConcurrentHashMap<>();
+        private final Map<TranslatorKey, MessageTranslator<?, ?>> translators;
 
-        TranslatorLibraryImpl(Map<TranslatorKey, MessageTranslator<?, ?>> translators) {
-            this.translators.putAll(translators);
+        TranslatorLibraryImpl(final Map<TranslatorKey, MessageTranslator<?, ?>> translators) {
+            this.translators = ImmutableMap.copyOf(translators);
         }
 
         @Override
         @SuppressWarnings("unchecked")
-        public <I, O> MessageTranslator<I, O> lookupTranslator(TranslatorKey key) {
+        public <I, O> MessageTranslator<I, O> lookupTranslator(final TranslatorKey key) {
             return (MessageTranslator<I, O>) translators.get(key);
         }
-
     }
 }
