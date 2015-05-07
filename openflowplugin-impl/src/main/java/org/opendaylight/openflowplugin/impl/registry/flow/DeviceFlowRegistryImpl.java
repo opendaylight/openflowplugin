@@ -33,8 +33,9 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
 
     @Override
     public FlowDescriptor retrieveIdForFlow(final FlowHash flowHash) throws FlowRegistryException {
-        if (flowRegistry.containsKey(flowHash)) {
-            return flowRegistry.get(flowHash);
+        FlowDescriptor flowDescriptor = flowRegistry.get(flowHash);
+        if (null != flowDescriptor) {
+            return flowDescriptor;
         }
         throw new FlowRegistryException("Flow hash not registered.");
     }
