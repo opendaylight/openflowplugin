@@ -52,7 +52,7 @@ abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseab
     static final long STARTUP_LOOP_TICK = 500L;
     static final int STARTUP_LOOP_MAX_RETRIES = 8;
 
-    private final ExecutorService executorService = Executors.newFixedThreadPool(8);
+    private final ExecutorService executorService = Executors.newFixedThreadPool(32);
 
 
     private static final AtomicIntegerFieldUpdater<AbstractDropTest> SENT_UPDATER = AtomicIntegerFieldUpdater.newUpdater(AbstractDropTest.class, "sent");

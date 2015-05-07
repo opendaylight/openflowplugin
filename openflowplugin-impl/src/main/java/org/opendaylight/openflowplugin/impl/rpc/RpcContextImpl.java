@@ -54,7 +54,7 @@ public class RpcContextImpl implements RpcContext {
         final RoutedRpcRegistration<S> routedRpcReg = rpcProviderRegistry.addRoutedRpcImplementation(serviceClass, serviceInstance);
         routedRpcReg.registerPath(NodeContext.class, nodeInstanceIdentifier);
         rpcRegistrations.add(routedRpcReg);
-        LOG.debug("Registration of service {} for device {}.",serviceClass, nodeInstanceIdentifier);
+        LOG.debug("Registration of service {} for device {}.", serviceClass, nodeInstanceIdentifier);
     }
 
     @Override
@@ -111,10 +111,11 @@ public class RpcContextImpl implements RpcContext {
 
     @Override
     public void onDeviceDisconnected(final ConnectionContext connectionContext) {
-        for (RoutedRpcRegistration registration : rpcRegistrations) {
-            registration.close();
-        }
-
         synchronizedRequestsList.clear();
+        try {
+            close();
+        } catch (Exception e) {
+            LOG.warn("Close failed {}", e);
+        }
     }
 }

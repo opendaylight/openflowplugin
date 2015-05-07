@@ -90,7 +90,7 @@ public class DeviceContextImpl implements DeviceContext {
     private final DataBroker dataBroker;
     private final XidGenerator xidGenerator;
     private final HashedWheelTimer hashedWheelTimer;
-    private final Map<Long, RequestContext> requests = new TreeMap();
+    private final Map<Long, RequestContext> requests = new TreeMap<>();
 
     private final Map<SwitchConnectionDistinguisher, ConnectionContext> auxiliaryConnectionContexts;
     private final TransactionChainManager txChainManager;

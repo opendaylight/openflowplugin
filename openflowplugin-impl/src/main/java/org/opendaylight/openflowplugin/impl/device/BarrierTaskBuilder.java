@@ -77,12 +77,10 @@ public class BarrierTaskBuilder {
                 if (deviceCtx.getNumberOfOutstandingRequests() > 0) {
                     BarrierInput barrierInput = makeBarrier();
                     LOG.trace("sending out barrier [{}]", barrierInput.getXid());
-                    synchronized (deviceCtx) {
-                        final Future<RpcResult<BarrierOutput>> future = deviceCtx.getPrimaryConnectionContext()
-                                .getConnectionAdapter().barrier(barrierInput);
-                        final ListenableFuture<RpcResult<BarrierOutput>> lsFuture = JdkFutureAdapters.listenInPoolThread(future);
-                        Futures.addCallback(lsFuture, makeCallBack());
-                    }
+                    final Future<RpcResult<BarrierOutput>> future = deviceCtx.getPrimaryConnectionContext()
+                            .getConnectionAdapter().barrier(barrierInput);
+                    final ListenableFuture<RpcResult<BarrierOutput>> lsFuture = JdkFutureAdapters.listenInPoolThread(future);
+                    Futures.addCallback(lsFuture, makeCallBack());
                 } else {
                     // if no requests
                     buildAndFireBarrierTask();
@@ -96,16 +94,14 @@ public class BarrierTaskBuilder {
             return new FutureCallback<RpcResult<BarrierOutput>>() {
                 @Override
                 public void onSuccess(final RpcResult<BarrierOutput> result) {
-                    synchronized (deviceCtx) {
-                        if (!result.isSuccessful()) {
-                            for (RpcError rpcError : result.getErrors()) {
-                                LOG.trace("Barrier response with error {}", rpcError, rpcError.getCause());
-                            }
-                        } else if (null != result.getResult().getXid()) {
-                            BarrierProcessor.processOutstandingRequests(result.getResult().getXid(), deviceCtx);
+                    if (!result.isSuccessful()) {
+                        for (RpcError rpcError : result.getErrors()) {
+                            LOG.trace("Barrier response with error {}", rpcError, rpcError.getCause());
                         }
-                        buildAndFireBarrierTask();
+                    } else if (null != result.getResult().getXid()) {
+                        BarrierProcessor.processOutstandingRequests(result.getResult().getXid(), deviceCtx);
                     }
+                    buildAndFireBarrierTask();
                 }
 
                 @Override
