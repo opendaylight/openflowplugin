@@ -90,7 +90,7 @@ public class DeviceContextImpl implements DeviceContext {
     private final DataBroker dataBroker;
     private final XidGenerator xidGenerator;
     private final HashedWheelTimer hashedWheelTimer;
-    private final Map<Long, RequestContext> requests = new TreeMap();
+    private final Map<Long, RequestContext> requests = new TreeMap<>();
 
     private final Map<SwitchConnectionDistinguisher, ConnectionContext> auxiliaryConnectionContexts;
     private final TransactionChainManager txChainManager;
@@ -188,7 +188,7 @@ public class DeviceContextImpl implements DeviceContext {
     }
 
     @Override
-    public Xid getNextXid() {
+    synchronized public Xid getNextXid() {
         return xidGenerator.generate();
     }
 
@@ -203,12 +203,12 @@ public class DeviceContextImpl implements DeviceContext {
     }
 
     @Override
-    public void hookRequestCtx(final Xid xid, final RequestContext requestFutureContext) {
+    synchronized public void hookRequestCtx(final Xid xid, final RequestContext requestFutureContext) {
         requests.put(xid.getValue(), requestFutureContext);
     }
 
     @Override
-    public RequestContext unhookRequestCtx(final Xid xid) {
+    synchronized public RequestContext unhookRequestCtx(final Xid xid) {
         return requests.remove(xid.getValue());
     }
 

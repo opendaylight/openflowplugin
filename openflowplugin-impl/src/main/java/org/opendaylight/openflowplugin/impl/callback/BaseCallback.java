@@ -45,12 +45,10 @@ public class BaseCallback<I, O> implements FutureCallback<RpcResult<I>> {
     @Override
     public void onSuccess(final RpcResult<I> fRpcResult) {
         if (!fRpcResult.isSuccessful()) {
-            synchronized (deviceContext) {
-                deviceContext.getMessageSpy().spyMessage(getRequestContext().getClass(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE);
+            deviceContext.getMessageSpy().spyMessage(getRequestContext().getClass(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE);
 
-                // remove current request from request cache in deviceContext
-                deviceContext.unhookRequestCtx(getRequestContext().getXid());
-            }
+            // remove current request from request cache in deviceContext
+            deviceContext.unhookRequestCtx(getRequestContext().getXid());
 
             // handle requestContext failure
             StringBuilder rpcErrors = new StringBuilder();
@@ -61,7 +59,7 @@ public class BaseCallback<I, O> implements FutureCallback<RpcResult<I>> {
             }
             LOG.trace("OF Java result for XID {} was not successful. Errors : {}", getRequestContext().getXid().getValue(), rpcErrors.toString());
             getRequestContext().getFuture().set(
-                RpcResultBuilder.<O>failed().withRpcErrors(fRpcResult.getErrors()).build());
+                    RpcResultBuilder.<O>failed().withRpcErrors(fRpcResult.getErrors()).build());
             RequestContextUtil.closeRequstContext(getRequestContext());
         } else {
             // else: message was successfully sent - waiting for callback on requestContext.future to get invoked

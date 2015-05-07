@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
 
     private final Map<FlowHash, FlowDescriptor> flowRegistry = new ConcurrentHashMap<>();
-    private final List<FlowHash> marks = Collections.synchronizedList(new ArrayList());
+    private final List<FlowHash> marks = new ArrayList();
     private final Logger LOG = LoggerFactory.getLogger(DeviceFlowRegistryImpl.class);
 
     @Override

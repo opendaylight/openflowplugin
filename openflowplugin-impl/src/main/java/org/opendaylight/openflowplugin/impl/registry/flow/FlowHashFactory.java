@@ -14,7 +14,6 @@ import com.google.common.primitives.Longs;
 import java.math.BigInteger;
 import java.util.Objects;
 import org.opendaylight.openflowplugin.api.OFConstants;
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowHash;
 import org.opendaylight.openflowplugin.impl.util.HashUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow;
