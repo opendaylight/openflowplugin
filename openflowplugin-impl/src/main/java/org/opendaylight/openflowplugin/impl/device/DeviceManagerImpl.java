@@ -152,7 +152,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
     @Override
     public void onDeviceContextLevelUp(final DeviceContext deviceContext) {
         // final phase - we have to add new Device to MD-SAL DataStore
-        Preconditions.checkNotNull(deviceContext != null);
+        Preconditions.checkNotNull(deviceContext);
         ((DeviceContextImpl) deviceContext).submitTransaction();
         new BarrierTaskBuilder(deviceContext).buildAndFireBarrierTask();
     }
