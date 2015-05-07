@@ -9,8 +9,8 @@ package org.opendaylight.openflowplugin.impl.rpc;
 
 import com.google.common.util.concurrent.SettableFuture;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.Collection;
+import javax.annotation.concurrent.GuardedBy;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
@@ -27,15 +27,15 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 
 public class RpcContextImpl implements RpcContext {
-
     private static final Logger LOG = org.slf4j.LoggerFactory.getLogger(RpcContextImpl.class);
     final RpcProviderRegistry rpcProviderRegistry;
 
     // TODO: add private Sal salBroker
     private final KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier;
-    private final List<RoutedRpcRegistration> rpcRegistrations = new ArrayList<>();
-    private final List<RequestContext<?>> synchronizedRequestsList = Collections
-            .<RequestContext<?>>synchronizedList(new ArrayList<RequestContext<?>>());
+    private final Collection<RoutedRpcRegistration<?>> rpcRegistrations = new ArrayList<>();
+
+    @GuardedBy("requestsList")
+    private final Collection<RequestContext<?>> requestsList = new ArrayList<RequestContext<?>>();
 
     private int maxRequestsPerDevice;
 
@@ -61,13 +61,23 @@ public class RpcContextImpl implements RpcContext {
     public <T> SettableFuture<RpcResult<T>> storeOrFail(final RequestContext<T> requestContext) {
         final SettableFuture<RpcResult<T>> rpcResultFuture = requestContext.getFuture();
 
-        if (synchronizedRequestsList.size() < maxRequestsPerDevice) {
-            synchronizedRequestsList.add(requestContext);
-        } else {
+        final boolean success;
+        // FIXME: use a fixed-size collection, with lockless reserve/set queue
+        synchronized (requestsList) {
+            if (requestsList.size() < maxRequestsPerDevice) {
+                requestsList.add(requestContext);
+                success = true;
+            } else {
+                success = false;
+            }
+        }
+
+        if (!success) {
             final RpcResult<T> rpcResult = RpcResultBuilder.<T>failed()
                     .withError(RpcError.ErrorType.APPLICATION, "", "Device's request queue is full.").build();
             rpcResultFuture.set(rpcResult);
         }
+
         return rpcResultFuture;
     }
 
@@ -94,27 +104,26 @@ public class RpcContextImpl implements RpcContext {
 
     @Override
     public <T> void forgetRequestContext(final RequestContext<T> requestContext) {
-        synchronizedRequestsList.remove(requestContext);
-        LOG.trace("Removed request context with xid {}. Context request in list {}.",
-                requestContext.getXid().getValue(), synchronizedRequestsList.size());
+        synchronized (requestsList) {
+            requestsList.remove(requestContext);
+            LOG.trace("Removed request context with xid {}. Context request in list {}.",
+                requestContext.getXid().getValue(), requestsList.size());
+        }
     }
-
 
     @Override
     public <T> RequestContext<T> createRequestContext() {
         return new RequestContextImpl<T>(this);
     }
 
-    public boolean isRequestContextCapacityEmpty() {
-        return synchronizedRequestsList.size() <= maxRequestsPerDevice;
-    }
-
     @Override
     public void onDeviceDisconnected(final ConnectionContext connectionContext) {
-        for (RoutedRpcRegistration registration : rpcRegistrations) {
+        for (RoutedRpcRegistration<?> registration : rpcRegistrations) {
             registration.close();
         }
 
-        synchronizedRequestsList.clear();
+        synchronized (requestsList) {
+            requestsList.clear();
+        }
     }
 }
