@@ -102,7 +102,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
 
     private static final long TICK_DURATION = 500; // 0.5 sec.
     private ScheduledThreadPoolExecutor spyPool;
-    private int spyRate = 10;
+    private final int spyRate = 10;
 
     private final DataBroker dataBroker;
     private final HashedWheelTimer hashedWheelTimer;
@@ -177,7 +177,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
 
         deviceContext.attachOpenflowMessageListener(messageListener);
 
-        ListenableFuture<List<RpcResult<List<MultipartReply>>>> deviceFeaturesFuture = null;
+        final ListenableFuture<List<RpcResult<List<MultipartReply>>>> deviceFeaturesFuture;
 
         if (connectionContext.getFeatures().getVersion() == OFConstants.OFP_VERSION_1_0) {
             final CapabilitiesV10 capabilitiesV10 = connectionContext.getFeatures().getCapabilitiesV10();
@@ -225,12 +225,12 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         });
     }
 
-    private void chainTableTrunkWriteOF10(final DeviceContext deviceContext, ListenableFuture<List<RpcResult<List<MultipartReply>>>> deviceFeaturesFuture) {
+    private void chainTableTrunkWriteOF10(final DeviceContext deviceContext, final ListenableFuture<List<RpcResult<List<MultipartReply>>>> deviceFeaturesFuture) {
         Futures.addCallback(deviceFeaturesFuture, new FutureCallback<List<RpcResult<List<MultipartReply>>>>() {
             @Override
-            public void onSuccess(List<RpcResult<List<MultipartReply>>> results) {
+            public void onSuccess(final List<RpcResult<List<MultipartReply>>> results) {
                 boolean allSucceeded = true;
-                for (RpcResult<List<MultipartReply>> rpcResult : results) {
+                for (final RpcResult<List<MultipartReply>> rpcResult : results) {
                     allSucceeded &= rpcResult.isSuccessful();
                 }
                 if (allSucceeded) {
@@ -243,28 +243,28 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(final Throwable t) {
                 //NOOP
             }
         });
     }
 
 
-    private ListenableFuture<RpcResult<List<MultipartReply>>> processReplyDesc(OpenflowProtocolListenerFullImpl messageListener,
-                                                                               DeviceContext deviceContext,
-                                                                               DeviceState deviceState) {
+    private ListenableFuture<RpcResult<List<MultipartReply>>> processReplyDesc(final OpenflowProtocolListenerFullImpl messageListener,
+                                                                               final DeviceContext deviceContext,
+                                                                               final DeviceState deviceState) {
         final ListenableFuture<RpcResult<List<MultipartReply>>> replyDesc = getNodeStaticInfo(messageListener,
                 MultipartType.OFPMPDESC, deviceContext, deviceState.getNodeInstanceIdentifier(), deviceState.getVersion());
         return replyDesc;
     }
 
-    private ListenableFuture<List<RpcResult<List<MultipartReply>>>> createDeviceFeaturesForOF10(OpenflowProtocolListenerFullImpl messageListener,
-                                                                                                DeviceContext deviceContext,
-                                                                                                DeviceState deviceState) {
+    private ListenableFuture<List<RpcResult<List<MultipartReply>>>> createDeviceFeaturesForOF10(final OpenflowProtocolListenerFullImpl messageListener,
+                                                                                                final DeviceContext deviceContext,
+                                                                                                final DeviceState deviceState) {
         return Futures.allAsList(Arrays.asList(processReplyDesc(messageListener, deviceContext, deviceState)));
     }
 
-    private ListenableFuture<List<RpcResult<List<MultipartReply>>>> createDeviceFeaturesForOF13(OpenflowProtocolListenerFullImpl messageListener,
+    private ListenableFuture<List<RpcResult<List<MultipartReply>>>> createDeviceFeaturesForOF13(final OpenflowProtocolListenerFullImpl messageListener,
                                                                                                 final DeviceContext deviceContext,
                                                                                                 final DeviceState deviceState) {
         final ListenableFuture<RpcResult<List<MultipartReply>>> replyDesc = processReplyDesc(messageListener, deviceContext, deviceState);
@@ -442,13 +442,13 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
 
     @Override
     public void close() throws Exception {
-        for (DeviceContext deviceContext : synchronizedDeviceContextsList) {
+        for (final DeviceContext deviceContext : synchronizedDeviceContextsList) {
             deviceContext.close();
         }
     }
 
     private static void createEmptyFlowCapableNodeInDs(final DeviceContext deviceContext) {
-        FlowCapableNodeBuilder flowCapableNodeBuilder = new FlowCapableNodeBuilder();
+        final FlowCapableNodeBuilder flowCapableNodeBuilder = new FlowCapableNodeBuilder();
         final InstanceIdentifier<FlowCapableNode> fNodeII = deviceContext.getDeviceState().getNodeInstanceIdentifier().augmentation(FlowCapableNode.class);
         deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, fNodeII, flowCapableNodeBuilder.build());
     }

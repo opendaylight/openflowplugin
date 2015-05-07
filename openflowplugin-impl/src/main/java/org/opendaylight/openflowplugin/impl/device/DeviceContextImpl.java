@@ -90,7 +90,7 @@ public class DeviceContextImpl implements DeviceContext {
     private final DataBroker dataBroker;
     private final XidGenerator xidGenerator;
     private final HashedWheelTimer hashedWheelTimer;
-    private Map<Long, RequestContext> requests = new TreeMap();
+    private final Map<Long, RequestContext> requests = new TreeMap();
 
     private final Map<SwitchConnectionDistinguisher, ConnectionContext> auxiliaryConnectionContexts;
     private final TransactionChainManager txChainManager;
@@ -103,7 +103,7 @@ public class DeviceContextImpl implements DeviceContext {
     private NotificationService notificationService;
     private final MessageSpy<Class> messageSpy;
     private DeviceDisconnectedHandler deviceDisconnectedHandler;
-    private List<DeviceContextClosedHandler> closeHandlers = new ArrayList<>();
+    private final List<DeviceContextClosedHandler> closeHandlers = new ArrayList<>();
     private NotificationPublishService notificationPublishService;
 
 
@@ -189,7 +189,7 @@ public class DeviceContextImpl implements DeviceContext {
     }
 
     @Override
-    public RequestContext lookupRequest(Xid xid) {
+    public RequestContext lookupRequest(final Xid xid) {
         return requests.get(xid.getValue());
     }
 
@@ -204,7 +204,7 @@ public class DeviceContextImpl implements DeviceContext {
     }
 
     @Override
-    public RequestContext unhookRequestCtx(Xid xid) {
+    public RequestContext unhookRequestCtx(final Xid xid) {
         return requests.remove(xid.getValue());
     }
 
@@ -281,7 +281,7 @@ public class DeviceContextImpl implements DeviceContext {
                     .withResult(ofHeaderList)
                     .build();
             replyFuture.set(rpcResult);
-            for (MultipartReply multipartReply : ofHeaderList) {
+            for (final MultipartReply multipartReply : ofHeaderList) {
                 messageSpy.spyMessage(multipartReply.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE);
             }
 
@@ -397,15 +397,15 @@ public class DeviceContextImpl implements DeviceContext {
             primaryConnectionContext.setConnectionState(ConnectionContext.CONNECTION_STATE.RIP);
             primaryConnectionContext.getConnectionAdapter().disconnect();
         }
-        for (Map.Entry<Long, RequestContext> entry : requests.entrySet()) {
+        for (final Map.Entry<Long, RequestContext> entry : requests.entrySet()) {
             RequestContextUtil.closeRequestContextWithRpcError(entry.getValue(), DEVICE_DISCONNECTED);
         }
-        for (ConnectionContext connectionContext : auxiliaryConnectionContexts.values()) {
+        for (final ConnectionContext connectionContext : auxiliaryConnectionContexts.values()) {
             if (connectionContext.getConnectionAdapter().isAlive()) {
                 connectionContext.getConnectionAdapter().disconnect();
             }
         }
-        for (DeviceContextClosedHandler deviceContextClosedHandler : closeHandlers) {
+        for (final DeviceContextClosedHandler deviceContextClosedHandler : closeHandlers) {
             deviceContextClosedHandler.onDeviceContextClosed(this);
         }
 
@@ -416,13 +416,16 @@ public class DeviceContextImpl implements DeviceContext {
         if (this.getPrimaryConnectionContext().equals(connectionContext)) {
             try {
                 close();
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 LOG.trace("Error closing device context.");
             }
             if (null != deviceDisconnectedHandler) {
                 deviceDisconnectedHandler.onDeviceDisconnected(connectionContext);
             }
         } else {
+            // FIXME: SCARY: Connection is not removed from map - HashMap
+            // Does not support removal by value.
+            // PRobably auxiliaryConnectionContext should be BiMap
             auxiliaryConnectionContexts.remove(connectionContext);
         }
     }
