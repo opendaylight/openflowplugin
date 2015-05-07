@@ -64,7 +64,7 @@ public class RpcContextImpl implements RpcContext {
         final boolean success;
         // FIXME: use a fixed-size collection, with lockless reserve/set queue
         synchronized (requestsList) {
-            if (requestsList.size() >= maxRequestsPerDevice) {
+            if (requestsList.size() < maxRequestsPerDevice) {
                 requestsList.add(requestContext);
                 success = true;
             } else {
