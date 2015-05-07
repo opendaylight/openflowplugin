@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicLong;
 import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
@@ -105,7 +106,7 @@ public class DeviceContextImpl implements DeviceContext {
     private DeviceDisconnectedHandler deviceDisconnectedHandler;
     private final List<DeviceContextClosedHandler> closeHandlers = new ArrayList<>();
     private NotificationPublishService notificationPublishService;
-
+    private final Semaphore semaphore = new Semaphore(1);
 
     @VisibleForTesting
     DeviceContextImpl(@Nonnull final ConnectionContext primaryConnectionContext,
@@ -498,6 +499,20 @@ public class DeviceContextImpl implements DeviceContext {
     @Override
     public void commitOperationsGatheredInOneTransaction() {
         txChainManager.commitOperationsGatheredInOneTransaction();
+    }
+
+    @Override
+    public void lock() {
+        try {
+            semaphore.acquire();
+        } catch (InterruptedException e) {
+            LOG.info("Semaphore interrupted.");
+        }
+    }
+
+    @Override
+    public void unlock() {
+        semaphore.release();
     }
 
 }
