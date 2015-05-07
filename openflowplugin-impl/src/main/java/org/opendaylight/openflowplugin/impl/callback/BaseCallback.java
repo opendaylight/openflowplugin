@@ -29,7 +29,7 @@ public class BaseCallback<I, O> implements FutureCallback<RpcResult<I>> {
 
     protected DeviceContext deviceContext;
     protected RequestContext<O> requestContext;
-    private ListenableFuture<RpcResult<I>> futureResultFromOfLib;
+    private final ListenableFuture<RpcResult<I>> futureResultFromOfLib;
 
     public BaseCallback(final DeviceContext deviceContext, final RequestContext<O> requestContext, final ListenableFuture<RpcResult<I>> futureResultFromOfLib) {
         this.deviceContext = deviceContext;
@@ -45,18 +45,19 @@ public class BaseCallback<I, O> implements FutureCallback<RpcResult<I>> {
 
                 // remove current request from request cache in deviceContext
                 deviceContext.unhookRequestCtx(requestContext.getXid());
-                // handle requestContext failure
-                StringBuilder rpcErrors = new StringBuilder();
-                if (null != fRpcResult.getErrors() && fRpcResult.getErrors().size() > 0) {
-                    for (RpcError error : fRpcResult.getErrors()) {
-                        rpcErrors.append(error.getMessage());
-                    }
-                }
-                LOG.trace("OF Java result for XID {} was not successful. Errors : {}", requestContext.getXid().getValue(), rpcErrors.toString());
-                requestContext.getFuture().set(
-                        RpcResultBuilder.<O>failed().withRpcErrors(fRpcResult.getErrors()).build());
-                RequestContextUtil.closeRequstContext(requestContext);
             }
+
+            // handle requestContext failure
+            StringBuilder rpcErrors = new StringBuilder();
+            if (null != fRpcResult.getErrors() && fRpcResult.getErrors().size() > 0) {
+                for (RpcError error : fRpcResult.getErrors()) {
+                    rpcErrors.append(error.getMessage());
+                }
+            }
+            LOG.trace("OF Java result for XID {} was not successful. Errors : {}", requestContext.getXid().getValue(), rpcErrors.toString());
+            requestContext.getFuture().set(
+                RpcResultBuilder.<O>failed().withRpcErrors(fRpcResult.getErrors()).build());
+            RequestContextUtil.closeRequstContext(requestContext);
         } else {
             // else: message was successfully sent - waiting for callback on requestContext.future to get invoked
             // or can be implemented specific processing via processSuccess() method
