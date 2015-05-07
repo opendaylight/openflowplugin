@@ -8,11 +8,12 @@
 
 package org.opendaylight.openflowplugin.impl.translator;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 3.4.2015.
@@ -31,15 +32,10 @@ public class TranslatorLibraryBuilder {
     }
 
     private final class TranslatorLibraryImpl implements TranslatorLibrary {
-        private Map<TranslatorKey, MessageTranslator<?, ?>> translators = new HashMap<>();
+        private Map<TranslatorKey, MessageTranslator<?, ?>> translators = new ConcurrentHashMap<>();
 
         TranslatorLibraryImpl(Map<TranslatorKey, MessageTranslator<?, ?>> translators) {
-            this.translators = translators;
-        }
-
-        @Override
-        public MessageTranslator<?, ?> addTranslator(TranslatorKey key, MessageTranslator<?, ?> translator) {
-            return translators.put(key, translator);
+            this.translators.putAll(translators);
         }
 
         @Override
