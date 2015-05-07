@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3aa0d159_40cedcb5",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/SalEchoServiceImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 3576
+      },
+      "writtenOn": "2015-05-07T20:13:16Z",
+      "side": 1,
+      "message": "Just so it\u0027s clear, this will make any other thread executing this method wait until this thread has finished calling the \"hookRequestCtx()\" method before calling it itself.  This will not prevent any other thread from calling \"DeviceContext.hookRequestCtx()\" from another method (I have no idea whether this method might be called from somewhere else).\n\nWhat exactly is your reasoning for synchronizing this?  If you have a good one, perhaps putting a comment to that effect here would be useful?",
+      "revId": "794c2ed499887d182a8f584315cced241b7cc79e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3aa0d159_a0bec0fd",
+        "filename": "openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/registry/flow/FlowHashFactoryTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 3576
+      },
+      "writtenOn": "2015-05-07T20:13:16Z",
+      "side": 1,
+      "message": "When I see multiple blocks of assertions in a test, I believe it means you are \"testing multiple things\".  It\u0027s best for each test method to \"test one thing\".  If you divided this into three tests as it should be, you likely can use the \"expected\" variation of @Test to simplify the test a bit.",
+      "revId": "794c2ed499887d182a8f584315cced241b7cc79e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
