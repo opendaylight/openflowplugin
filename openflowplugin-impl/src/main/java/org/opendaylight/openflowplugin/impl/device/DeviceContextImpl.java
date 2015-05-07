@@ -236,10 +236,9 @@ public class DeviceContextImpl implements DeviceContext {
 
     @Override
     public void processReply(final OfHeader ofHeader) {
-        final RequestContext requestContext = requests.get(ofHeader.getXid());
+        final RequestContext requestContext = requests.remove(ofHeader.getXid());
         if (null != requestContext) {
             final SettableFuture replyFuture = requestContext.getFuture();
-            requests.remove(ofHeader.getXid());
             RpcResult<OfHeader> rpcResult;
             if (ofHeader instanceof Error) {
                 //TODO : this is the point, where we can discover that add flow operation failed and where we should
@@ -274,10 +273,9 @@ public class DeviceContextImpl implements DeviceContext {
 
     @Override
     public void processReply(final Xid xid, final List<MultipartReply> ofHeaderList) {
-        final RequestContext requestContext = requests.get(xid.getValue());
+        final RequestContext requestContext = requests.remove(xid.getValue());
         if (null != requestContext) {
             final SettableFuture replyFuture = requestContext.getFuture();
-            requests.remove(xid.getValue());
             final RpcResult<List<MultipartReply>> rpcResult = RpcResultBuilder
                     .<List<MultipartReply>>success()
                     .withResult(ofHeaderList)
@@ -304,11 +302,10 @@ public class DeviceContextImpl implements DeviceContext {
 
         LOG.trace("Processing exception for xid : {}", xid.getValue());
 
-        final RequestContext requestContext = requests.get(xid.getValue());
+        final RequestContext requestContext = requests.remove(xid.getValue());
 
         if (null != requestContext) {
             final SettableFuture replyFuture = requestContext.getFuture();
-            requests.remove(xid.getValue());
             final RpcResult<List<OfHeader>> rpcResult = RpcResultBuilder
                     .<List<OfHeader>>failed()
                     .withError(RpcError.ErrorType.APPLICATION, String.format("Message processing failed : %s", deviceDataException.getError()), deviceDataException)
