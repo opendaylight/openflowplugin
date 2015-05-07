@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.impl.registry.group;
 
 import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.opendaylight.openflowplugin.api.openflow.registry.group.DeviceGroupRegistry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
@@ -19,8 +20,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group
  */
 public class DeviceGroupRegistryImpl implements DeviceGroupRegistry {
 
-    private final List<GroupId> groupIdList = new ArrayList<>();
-    private final List<GroupId> marks = new ArrayList<>();
+    private final List<GroupId> groupIdList = Collections.synchronizedList(new ArrayList());
+    private final List<GroupId> marks = Collections.synchronizedList(new ArrayList());
 
     @Override
     public void store(final GroupId groupId) {

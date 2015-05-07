@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.impl.registry.meter;
 
 import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.opendaylight.openflowplugin.api.openflow.registry.meter.DeviceMeterRegistry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
@@ -19,8 +20,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter
  */
 public class DeviceMeterRegistryImpl implements DeviceMeterRegistry {
 
-    private final List<MeterId> meterIds = new ArrayList();
-    private final List<MeterId> marks = new ArrayList();
+    private final List<MeterId> meterIds = Collections.synchronizedList(new ArrayList());
+    private final List<MeterId> marks = Collections.synchronizedList(new ArrayList());
 
     @Override
     public void store(final MeterId meterId) {

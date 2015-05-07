@@ -10,9 +10,10 @@ package org.opendaylight.openflowplugin.impl.registry.flow;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowHash;
@@ -26,8 +27,8 @@ import org.slf4j.LoggerFactory;
  */
 public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
 
-    private final Map<FlowHash, FlowDescriptor> flowRegistry = new HashMap<>();
-    private final List<FlowHash> marks = new ArrayList();
+    private final Map<FlowHash, FlowDescriptor> flowRegistry = new ConcurrentHashMap<>();
+    private final List<FlowHash> marks = Collections.synchronizedList(new ArrayList());
     private final Logger LOG = LoggerFactory.getLogger(DeviceFlowRegistryImpl.class);
 
     @Override
