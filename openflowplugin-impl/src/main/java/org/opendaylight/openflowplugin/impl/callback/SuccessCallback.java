@@ -20,7 +20,7 @@ public abstract class SuccessCallback<I, O> extends BaseCallback<I, O> {
     }
 
     protected void processSuccess(final RpcResult<I> rpcResult) {
-        requestContext.getFuture().set(transform(rpcResult));
+        getRequestContext().getFuture().set(transform(rpcResult));
     }
 
 

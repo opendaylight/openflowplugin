@@ -8,6 +8,7 @@
 package org.opendaylight.openflowplugin.impl.callback;
 
 
+import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -27,24 +28,28 @@ public class BaseCallback<I, O> implements FutureCallback<RpcResult<I>> {
 
     private static final Logger LOG = LoggerFactory.getLogger(BaseCallback.class);
 
-    protected DeviceContext deviceContext;
-    protected RequestContext<O> requestContext;
+    private final DeviceContext deviceContext;
+    private final RequestContext<O> requestContext;
     private final ListenableFuture<RpcResult<I>> futureResultFromOfLib;
 
     public BaseCallback(final DeviceContext deviceContext, final RequestContext<O> requestContext, final ListenableFuture<RpcResult<I>> futureResultFromOfLib) {
-        this.deviceContext = deviceContext;
-        this.requestContext = requestContext;
-        this.futureResultFromOfLib = futureResultFromOfLib;
+        this.deviceContext = Preconditions.checkNotNull(deviceContext);
+        this.requestContext = Preconditions.checkNotNull(requestContext);
+        this.futureResultFromOfLib = Preconditions.checkNotNull(futureResultFromOfLib);
+    }
+
+    protected final RequestContext<O> getRequestContext() {
+        return requestContext;
     }
 
     @Override
     public void onSuccess(final RpcResult<I> fRpcResult) {
         if (!fRpcResult.isSuccessful()) {
             synchronized (deviceContext) {
-                deviceContext.getMessageSpy().spyMessage(requestContext.getClass(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE);
+                deviceContext.getMessageSpy().spyMessage(getRequestContext().getClass(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE);
 
                 // remove current request from request cache in deviceContext
-                deviceContext.unhookRequestCtx(requestContext.getXid());
+                deviceContext.unhookRequestCtx(getRequestContext().getXid());
             }
 
             // handle requestContext failure
@@ -54,10 +59,10 @@ public class BaseCallback<I, O> implements FutureCallback<RpcResult<I>> {
                     rpcErrors.append(error.getMessage());
                 }
             }
-            LOG.trace("OF Java result for XID {} was not successful. Errors : {}", requestContext.getXid().getValue(), rpcErrors.toString());
-            requestContext.getFuture().set(
+            LOG.trace("OF Java result for XID {} was not successful. Errors : {}", getRequestContext().getXid().getValue(), rpcErrors.toString());
+            getRequestContext().getFuture().set(
                 RpcResultBuilder.<O>failed().withRpcErrors(fRpcResult.getErrors()).build());
-            RequestContextUtil.closeRequstContext(requestContext);
+            RequestContextUtil.closeRequstContext(getRequestContext());
         } else {
             // else: message was successfully sent - waiting for callback on requestContext.future to get invoked
             // or can be implemented specific processing via processSuccess() method
@@ -68,28 +73,27 @@ public class BaseCallback<I, O> implements FutureCallback<RpcResult<I>> {
 
     @Override
     public void onFailure(final Throwable throwable) {
-        deviceContext.unhookRequestCtx(requestContext.getXid());
+        deviceContext.unhookRequestCtx(getRequestContext().getXid());
 
         if (futureResultFromOfLib.isCancelled()) {
-            deviceContext.getMessageSpy().spyMessage(requestContext.getClass(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS);
+            deviceContext.getMessageSpy().spyMessage(getRequestContext().getClass(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS);
 
-            LOG.trace("Asymmetric message - no response from OF Java expected for XID {}. Closing as successful.", requestContext.getXid().getValue());
-            requestContext.getFuture().set(RpcResultBuilder.<O>success().build());
+            LOG.trace("Asymmetric message - no response from OF Java expected for XID {}. Closing as successful.", getRequestContext().getXid().getValue());
+            getRequestContext().getFuture().set(RpcResultBuilder.<O>success().build());
         } else {
-            deviceContext.getMessageSpy().spyMessage(requestContext.getClass(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE);
-            LOG.trace("Exception occured while processing OF Java response for XID {}.", requestContext.getXid().getValue(), throwable);
-            requestContext.getFuture().set(
+            deviceContext.getMessageSpy().spyMessage(getRequestContext().getClass(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE);
+            LOG.trace("Exception occured while processing OF Java response for XID {}.", getRequestContext().getXid().getValue(), throwable);
+            getRequestContext().getFuture().set(
                     RpcResultBuilder.<O>failed()
                             .withError(RpcError.ErrorType.APPLICATION, "OF JAVA operation failed.", throwable)
                             .build());
         }
 
-        RequestContextUtil.closeRequstContext(requestContext);
+        RequestContextUtil.closeRequstContext(getRequestContext());
     }
 
     protected void processSuccess(final RpcResult<I> fRpcResult) {
         //should be override in child class where is awaited processing of
         //successfull future (e. g. transformation)
     }
-
 }
