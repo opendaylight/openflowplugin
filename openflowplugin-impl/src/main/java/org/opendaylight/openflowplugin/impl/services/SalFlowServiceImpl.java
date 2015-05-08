@@ -71,7 +71,7 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
         }
 
 
-        final FlowHash flowHash = FlowHashFactory.create(input, deviceContext);
+        final FlowHash flowHash = FlowHashFactory.create(input, deviceContext.getPrimaryConnectionContext().getFeatures().getVersion());
         final FlowDescriptor flowDescriptor = FlowDescriptorFactory.create(input.getTableId(), flowId);
 
         final List<FlowModInputBuilder> ofFlowModInputs = FlowConvertor.toFlowModInputs(input, version, datapathId);
@@ -114,7 +114,7 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
                             @Override
                             public void onSuccess(final Object o) {
                                 messageSpy.spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_SUCCESS);
-                                FlowHash flowHash = FlowHashFactory.create(input, deviceContext);
+                                FlowHash flowHash = FlowHashFactory.create(input, deviceContext.getPrimaryConnectionContext().getFeatures().getVersion());
                                 deviceContext.getDeviceFlowRegistry().markToBeremoved(flowHash);
                             }
 
@@ -171,10 +171,11 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
             @Override
             public void onSuccess(final Object o) {
                 messageSpy.spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_SUCCESS);
-                FlowHash flowHash = FlowHashFactory.create(original, deviceContext);
+                short version = deviceContext.getPrimaryConnectionContext().getFeatures().getVersion();
+                FlowHash flowHash = FlowHashFactory.create(original, version);
                 deviceContext.getDeviceFlowRegistry().markToBeremoved(flowHash);
 
-                flowHash = FlowHashFactory.create(updated, deviceContext);
+                flowHash = FlowHashFactory.create(updated, version);
                 FlowId flowId = input.getFlowRef().getValue().firstKeyOf(Flow.class, FlowKey.class).getId();
                 FlowDescriptor flowDescriptor = FlowDescriptorFactory.create(updated.getTableId(), flowId);
                 deviceContext.getDeviceFlowRegistry().store(flowHash, flowDescriptor);

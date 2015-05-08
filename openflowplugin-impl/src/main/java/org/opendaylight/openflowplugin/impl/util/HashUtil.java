@@ -109,7 +109,7 @@ public final class HashUtil {
         return hash;
     }
 
-    public static long calculateMatchHash(final Match match, DeviceContext deviceContext) {
+    public static long calculateMatchHash(final Match match, short version) {
         long hash = 0;
         long subHash = 0;
         long base = 0;
@@ -131,12 +131,12 @@ public final class HashUtil {
             base++;
             if (null != match.getInPhyPort()) {
                 hash = 1 << base;
-                subHash += calculateNodeConnectorIdHash(match.getInPhyPort(), deviceContext);
+                subHash += calculateNodeConnectorIdHash(match.getInPhyPort(), version);
             }
             base++;
             if (null != match.getInPort()) {
                 hash = 1 << base;
-                subHash += calculateNodeConnectorIdHash(match.getInPort(), deviceContext);
+                subHash += calculateNodeConnectorIdHash(match.getInPort(), version);
             }
             base++;
             if (null != match.getIpMatch()) {
@@ -542,9 +542,8 @@ public final class HashUtil {
         return hash;
     }
 
-    private static long calculateNodeConnectorIdHash(final NodeConnectorId inPhyPort, DeviceContext deviceContext) {
+    private static long calculateNodeConnectorIdHash(final NodeConnectorId inPhyPort, short version) {
         long hash = 0;
-        short version = deviceContext.getDeviceState().getVersion();
         Long portFromLogicalName = OpenflowPortsUtil.getPortFromLogicalName(OpenflowVersion.get(version), inPhyPort.getValue());
         hash += portFromLogicalName.intValue();
         return hash;
