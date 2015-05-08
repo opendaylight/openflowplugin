@@ -31,12 +31,9 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     private static final Logger LOG = LoggerFactory.getLogger(DeviceFlowRegistryImpl.class);
 
     @Override
-    public FlowDescriptor retrieveIdForFlow(final FlowHash flowHash) throws FlowRegistryException {
+    public FlowDescriptor retrieveIdForFlow(final FlowHash flowHash) {
         FlowDescriptor flowDescriptor = flowRegistry.get(flowHash);
-        if (null != flowDescriptor) {
-            return flowDescriptor;
-        }
-        throw new FlowRegistryException("Flow hash not registered.");
+        return flowDescriptor;
     }
 
 

@@ -20,7 +20,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowHash;
-import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryException;
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowDescriptorFactory;
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowHashFactory;
 import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.StatisticsGatheringService;
@@ -198,16 +197,16 @@ public final class StatisticsGatheringUtils {
             FlowHash flowHash = FlowHashFactory.create(flowBuilder.build(), deviceContext.getPrimaryConnectionContext().getFeatures().getVersion());
             short tableId = flowStat.getTableId();
             final DeviceFlowRegistry deviceFlowRegistry = deviceContext.getDeviceFlowRegistry();
-            try {
-                FlowDescriptor flowDescriptor;
-                flowDescriptor = deviceFlowRegistry.retrieveIdForFlow(flowHash);
+            FlowDescriptor flowDescriptor;
+            flowDescriptor = deviceFlowRegistry.retrieveIdForFlow(flowHash);
+            if (null != flowDescriptor) {
                 flowId = flowDescriptor.getFlowId();
-            } catch (FlowRegistryException e) {
+            } else {
                 LOG.trace("Flow descriptor for flow hash {} wasn't found.", flowHash.hashCode());
                 flowId = FlowUtil.createAlienFlowId(tableId);
-                FlowDescriptor flowDescriptor = FlowDescriptorFactory.create(tableId, flowId);
-                deviceFlowRegistry.store(flowHash, flowDescriptor);
+                flowDescriptor = FlowDescriptorFactory.create(tableId, flowId);
             }
+            deviceFlowRegistry.store(flowHash, flowDescriptor);
             FlowKey flowKey = new FlowKey(flowId);
             flowBuilder.setKey(flowKey);
             final TableKey tableKey = new TableKey(tableId);

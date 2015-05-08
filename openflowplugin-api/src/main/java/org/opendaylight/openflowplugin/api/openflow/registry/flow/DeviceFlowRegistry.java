@@ -16,7 +16,7 @@ import java.util.Map;
  */
 public interface DeviceFlowRegistry extends AutoCloseable {
 
-    FlowDescriptor retrieveIdForFlow(FlowHash flowHash) throws FlowRegistryException;
+    FlowDescriptor retrieveIdForFlow(FlowHash flowHash);
 
     void store(FlowHash flowHash, FlowDescriptor flowDescriptor);
 
