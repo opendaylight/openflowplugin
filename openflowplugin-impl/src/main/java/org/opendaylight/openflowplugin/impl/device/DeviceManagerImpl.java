@@ -309,9 +309,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         requestContext.setXid(xid);
 
         LOG.trace("Hooking xid {} to device context - precaution.", requestContext.getXid().getValue());
-        synchronized (deviceContext) {
-            deviceContext.hookRequestCtx(requestContext.getXid(), requestContext);
-        }
+        deviceContext.hookRequestCtx(requestContext.getXid(), requestContext);
 
 
         multiMsgCollector.registerMultipartXid(xid.getValue());

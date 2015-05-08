@@ -8,9 +8,7 @@
 
 package org.opendaylight.openflowplugin.impl.registry.flow;
 
-import com.google.common.collect.ImmutableMap;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -44,29 +42,37 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     @Override
     public void store(final FlowHash flowHash, final FlowDescriptor flowDescriptor) {
         LOG.trace("Storing flowDescriptor with table ID : {} and flow ID : {} for flow hash : {}", flowDescriptor.getTableKey().getId(), flowDescriptor.getFlowId().getValue(), flowHash.hashCode());
-        flowRegistry.put(flowHash, flowDescriptor);
+        synchronized (flowRegistry) {
+            flowRegistry.put(flowHash, flowDescriptor);
+        }
     }
 
     @Override
     public void markToBeremoved(final FlowHash flowHash) {
-        marks.add(flowHash);
+        synchronized (marks) {
+            marks.add(flowHash);
+        }
         LOG.trace("Flow hash {} was marked for removal.", flowHash.hashCode());
 
     }
 
     @Override
     public void removeMarked() {
-        for (FlowHash flowHash : marks) {
-            LOG.trace("Removing flowDescriptor for flow hash : {}", flowHash.hashCode());
-            flowRegistry.remove(flowHash);
+        synchronized (flowRegistry) {
+            for (FlowHash flowHash : marks) {
+                LOG.trace("Removing flowDescriptor for flow hash : {}", flowHash.hashCode());
+                flowRegistry.remove(flowHash);
+            }
         }
-        marks.clear();
+        synchronized (marks) {
+            marks.clear();
+        }
     }
 
 
     @Override
     public Map<FlowHash, FlowDescriptor> getAllFlowDescriptors() {
-        return ImmutableMap.copyOf(flowRegistry);
+        return flowRegistry;
     }
 
     @Override

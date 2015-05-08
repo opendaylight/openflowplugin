@@ -8,9 +8,7 @@
 
 package org.opendaylight.openflowplugin.impl.registry.group;
 
-import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import org.opendaylight.openflowplugin.api.openflow.registry.group.DeviceGroupRegistry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
@@ -35,18 +33,24 @@ public class DeviceGroupRegistryImpl implements DeviceGroupRegistry {
 
     @Override
     public void removeMarked() {
-        groupIdList.removeAll(marks);
+        synchronized (groupIdList) {
+            groupIdList.removeAll(marks);
+        }
         marks.clear();
     }
 
     @Override
     public List<GroupId> getAllGroupIds() {
-        return ImmutableList.copyOf(groupIdList);
+        return groupIdList;
     }
 
     @Override
     public void close() throws Exception {
-        groupIdList.clear();
-        marks.clear();
+        synchronized (groupIdList) {
+            groupIdList.clear();
+        }
+        synchronized (marks) {
+            marks.clear();
+        }
     }
 }

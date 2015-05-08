@@ -17,6 +17,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowHash;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryException;
@@ -175,10 +176,8 @@ public final class StatisticsGatheringUtils {
             final MeterBuilder meterBuilder = new MeterBuilder(meterConfigStats);
             meterBuilder.setKey(new MeterKey(meterId));
             meterBuilder.addAugmentation(NodeMeterStatistics.class, new NodeMeterStatisticsBuilder().build());
-            synchronized (deviceContext) {
-                deviceContext.getDeviceMeterRegistry().store(meterId);
-                deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, meterInstanceIdentifier, meterBuilder.build());
-            }
+            deviceContext.getDeviceMeterRegistry().store(meterId);
+            deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, meterInstanceIdentifier, meterBuilder.build());
         }
     }
 
@@ -188,9 +187,7 @@ public final class StatisticsGatheringUtils {
                 .child(Node.class, new NodeKey(flowsStatistics.getId()));
 
         if (deviceContext.getDeviceState().isValid()) {
-            synchronized (deviceContext) {
-                deviceContext.startGatheringOperationsToOneTransaction();
-            }
+            deviceContext.startGatheringOperationsToOneTransaction();
         }
 
         deleteAllKnownFlows(deviceContext, nodeIdent);
@@ -200,34 +197,27 @@ public final class StatisticsGatheringUtils {
             FlowId flowId = null;
             FlowHash flowHash = FlowHashFactory.create(flowBuilder.build(), deviceContext.getPrimaryConnectionContext().getFeatures().getVersion());
             short tableId = flowStat.getTableId();
+            final DeviceFlowRegistry deviceFlowRegistry = deviceContext.getDeviceFlowRegistry();
             try {
                 FlowDescriptor flowDescriptor;
-                synchronized (deviceContext) {
-                    flowDescriptor = deviceContext.getDeviceFlowRegistry().retrieveIdForFlow(flowHash);
-                }
+                flowDescriptor = deviceFlowRegistry.retrieveIdForFlow(flowHash);
                 flowId = flowDescriptor.getFlowId();
             } catch (FlowRegistryException e) {
                 LOG.trace("Flow descriptor for flow hash {} wasn't found.", flowHash.hashCode());
                 flowId = FlowUtil.createAlienFlowId(tableId);
                 FlowDescriptor flowDescriptor = FlowDescriptorFactory.create(tableId, flowId);
-                synchronized (deviceContext) {
-                    deviceContext.getDeviceFlowRegistry().store(flowHash, flowDescriptor);
-                }
+                deviceFlowRegistry.store(flowHash, flowDescriptor);
             }
             FlowKey flowKey = new FlowKey(flowId);
             flowBuilder.setKey(flowKey);
             final TableKey tableKey = new TableKey(tableId);
             final InstanceIdentifier<FlowCapableNode> fNodeIdent = getFlowCapableNodeInstanceIdentifier(singleMultipartData.getId());
             final InstanceIdentifier<Flow> flowIdent = fNodeIdent.child(Table.class, tableKey).child(Flow.class, flowKey);
-            synchronized (deviceContext) {
-                deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, flowIdent, flowBuilder.build());
-            }
+            deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, flowIdent, flowBuilder.build());
         }
 
         if (deviceContext.getDeviceState().isValid()) {
-            synchronized (deviceContext) {
-                deviceContext.commitOperationsGatheredInOneTransaction();
-            }
+            deviceContext.commitOperationsGatheredInOneTransaction();
         }
 
     }
@@ -245,14 +235,10 @@ public final class StatisticsGatheringUtils {
                         .child(Flow.class, flowKey);
 
                 LOG.trace("Deleting flow with id {}", flowInstanceIdentifier);
-                synchronized (deviceContext) {
-                    deviceContext.addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, flowInstanceIdentifier);
-                }
+                deviceContext.addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, flowInstanceIdentifier);
             }
         }
-        synchronized (deviceContext) {
-            deviceContext.getDeviceFlowRegistry().removeMarked();
-        }
+        deviceContext.getDeviceFlowRegistry().removeMarked();
     }
 
     private static void processQueueStatistics(final QueueStatisticsUpdate singleMultipartData, final DeviceContext deviceContext) {
@@ -272,9 +258,7 @@ public final class StatisticsGatheringUtils {
                         .augmentation(FlowCapableNodeConnector.class)
                         .child(Queue.class, qKey);
                 final InstanceIdentifier<FlowCapableNodeConnectorQueueStatisticsData> queueStatIdent = queueIdent.augmentation(FlowCapableNodeConnectorQueueStatisticsData.class);
-                synchronized (deviceContext) {
-                    deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, queueStatIdent, statBuild.build());
-                }
+                deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, queueStatIdent, statBuild.build());
             }
         }
     }
@@ -287,9 +271,7 @@ public final class StatisticsGatheringUtils {
             final InstanceIdentifier<FlowTableStatistics> tStatIdent = fNodeIdent.child(Table.class, new TableKey(tableStat.getTableId().getValue()))
                     .augmentation(FlowTableStatisticsData.class).child(FlowTableStatistics.class);
             final FlowTableStatistics stats = new FlowTableStatisticsBuilder(tableStat).build();
-            synchronized (deviceContext) {
-                deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, tStatIdent, stats);
-            }
+            deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, tStatIdent, stats);
         }
     }
 
@@ -305,9 +287,7 @@ public final class StatisticsGatheringUtils {
                     .augmentation(FlowCapableNodeConnectorStatisticsData.class);
             final InstanceIdentifier<FlowCapableNodeConnectorStatistics> flowCapNodeConnStatIdent =
                     nodeConnStatIdent.child(FlowCapableNodeConnectorStatistics.class);
-            synchronized (deviceContext) {
-                deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, flowCapNodeConnStatIdent, stats);
-            }
+            deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, flowCapNodeConnStatIdent, stats);
         }
     }
 
@@ -323,22 +303,16 @@ public final class StatisticsGatheringUtils {
             final InstanceIdentifier<NodeMeterStatistics> nodeMeterStatIdent = meterIdent
                     .augmentation(NodeMeterStatistics.class);
             final InstanceIdentifier<MeterStatistics> msIdent = nodeMeterStatIdent.child(MeterStatistics.class);
-            synchronized (deviceContext) {
-                deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, msIdent, stats);
-            }
+            deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, msIdent, stats);
         }
     }
 
     private static void deleteAllKnownMeters(final DeviceContext deviceContext, final InstanceIdentifier<FlowCapableNode> fNodeIdent) {
         for (MeterId meterId : deviceContext.getDeviceMeterRegistry().getAllMeterIds()) {
             final InstanceIdentifier<Meter> meterIdent = fNodeIdent.child(Meter.class, new MeterKey(meterId));
-            synchronized (deviceContext) {
-                deviceContext.addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, meterIdent);
-            }
+            deviceContext.addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, meterIdent);
         }
-        synchronized (deviceContext) {
-            deviceContext.getDeviceMeterRegistry().removeMarked();
-        }
+        deviceContext.getDeviceMeterRegistry().removeMarked();
     }
 
     private static void processGroupDescStats(GroupDescStatsUpdated groupDescStatsUpdated, final DeviceContext deviceContext) {
@@ -354,10 +328,9 @@ public final class StatisticsGatheringUtils {
             groupBuilder.addAugmentation(NodeGroupStatistics.class, new NodeGroupStatisticsBuilder().build());
 
             final InstanceIdentifier<Group> groupIdent = fNodeIdent.child(Group.class, new GroupKey(groupId));
-            synchronized (deviceContext) {
-                deviceContext.getDeviceGroupRegistry().store(groupId);
-                deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, groupIdent, groupBuilder.build());
-            }
+
+            deviceContext.getDeviceGroupRegistry().store(groupId);
+            deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, groupIdent, groupBuilder.build());
         }
     }
 
@@ -366,9 +339,7 @@ public final class StatisticsGatheringUtils {
             final InstanceIdentifier<Group> groupIdent = fNodeIdent.child(Group.class, new GroupKey(groupId));
             deviceContext.addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, groupIdent);
         }
-        synchronized (deviceContext) {
-            deviceContext.getDeviceGroupRegistry().removeMarked();
-        }
+        deviceContext.getDeviceGroupRegistry().removeMarked();
     }
 
     private static void processGroupStatistics(final GroupStatisticsUpdated singleMultipartData, final DeviceContext deviceContext) {

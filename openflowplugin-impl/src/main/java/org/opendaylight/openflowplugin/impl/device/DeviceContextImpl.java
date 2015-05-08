@@ -188,28 +188,36 @@ public class DeviceContextImpl implements DeviceContext {
     }
 
     @Override
-    synchronized public Xid getNextXid() {
+    public Xid getNextXid() {
         return xidGenerator.generate();
     }
 
     @Override
     public RequestContext lookupRequest(final Xid xid) {
-        return requests.get(xid.getValue());
+        synchronized (requests) {
+            return requests.get(xid.getValue());
+        }
     }
 
     @Override
     public int getNumberOfOutstandingRequests() {
-        return requests.size();
+        synchronized (requests) {
+            return requests.size();
+        }
     }
 
     @Override
-    synchronized public void hookRequestCtx(final Xid xid, final RequestContext requestFutureContext) {
-        requests.put(xid.getValue(), requestFutureContext);
+    public void hookRequestCtx(final Xid xid, final RequestContext requestFutureContext) {
+        synchronized (requests) {
+            requests.put(xid.getValue(), requestFutureContext);
+        }
     }
 
     @Override
-    synchronized public RequestContext unhookRequestCtx(final Xid xid) {
-        return requests.remove(xid.getValue());
+    public RequestContext unhookRequestCtx(final Xid xid) {
+        synchronized (requests) {
+            return requests.remove(xid.getValue());
+        }
     }
 
     @Override
@@ -277,7 +285,10 @@ public class DeviceContextImpl implements DeviceContext {
 
     @Override
     public void processReply(final Xid xid, final List<MultipartReply> ofHeaderList) {
-        final RequestContext requestContext = requests.remove(xid.getValue());
+        final RequestContext requestContext;
+        synchronized (requests) {
+            requestContext = requests.remove(xid.getValue());
+        }
         if (null != requestContext) {
             final SettableFuture replyFuture = requestContext.getFuture();
             final RpcResult<List<MultipartReply>> rpcResult = RpcResultBuilder
@@ -445,11 +456,13 @@ public class DeviceContextImpl implements DeviceContext {
     @Override
     public RequestContext extractNextOutstandingMessage(final long barrierXid) {
         RequestContext nextMessage = null;
-        final Iterator<Long> keyIterator = requests.keySet().iterator();
-        if (keyIterator.hasNext()) {
-            final Long oldestXid = keyIterator.next();
-            if (oldestXid < barrierXid) {
-                nextMessage = requests.remove(oldestXid);
+        synchronized (requests) {
+            final Iterator<Long> keyIterator = requests.keySet().iterator();
+            if (keyIterator.hasNext()) {
+                final Long oldestXid = keyIterator.next();
+                if (oldestXid < barrierXid) {
+                    nextMessage = requests.remove(oldestXid);
+                }
             }
         }
         return nextMessage;

@@ -8,7 +8,6 @@
 
 package org.opendaylight.openflowplugin.impl.registry.meter;
 
-import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
 import java.util.List;
 import org.opendaylight.openflowplugin.api.openflow.registry.meter.DeviceMeterRegistry;
@@ -34,18 +33,26 @@ public class DeviceMeterRegistryImpl implements DeviceMeterRegistry {
 
     @Override
     public void removeMarked() {
-        meterIds.removeAll(marks);
-        marks.clear();
+        synchronized (meterIds) {
+            meterIds.removeAll(marks);
+        }
+        synchronized (marks) {
+            marks.clear();
+        }
     }
 
     @Override
     public List<MeterId> getAllMeterIds() {
-        return ImmutableList.copyOf(meterIds);
+        return meterIds;
     }
 
     @Override
     public void close() throws Exception {
-        meterIds.clear();
-        marks.clear();
+        synchronized (meterIds) {
+            meterIds.clear();
+        }
+        synchronized (marks) {
+            marks.clear();
+        }
     }
 }
