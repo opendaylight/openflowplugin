@@ -32,7 +32,7 @@ public abstract class CommonService {
             .<Void>failed().withError(ErrorType.APPLICATION, "", "Request quota exceeded.").build());
 
 
-    private static final BigInteger PRIMARY_CONNECTION = new BigInteger("0");
+    private static final BigInteger PRIMARY_CONNECTION = BigInteger.ZERO;
 
     private final short version;
     private final BigInteger datapathId;

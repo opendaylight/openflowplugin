@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.impl.common;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
@@ -58,7 +59,7 @@ public class NodeConnectorTranslatorUtilTest {
     @Test
     public void testTranslateNodeConnectorFromFeaturesReply(){
         final FeaturesReply reply = mock(FeaturesReply.class);
-        final BigInteger dataPathId = new BigInteger("25");
+        final BigInteger dataPathId = BigInteger.valueOf(25L);
         final List<PhyPort> listPorts = Arrays.asList(mockPhyPortPort());
         when(reply.getPhyPort()).thenReturn(listPorts);
         when(reply.getDatapathId()).thenReturn(dataPathId);
@@ -136,7 +137,7 @@ public class NodeConnectorTranslatorUtilTest {
      */
     @Test
     public void testMakeNodeConnectorId(){
-        final BigInteger dataPathId = new BigInteger("25");
+        final BigInteger dataPathId = BigInteger.valueOf(25L);
         final String logicalName = "testPort";
         final long portNo = 45L;
         final NodeConnectorId nodeConnectorId = NodeConnectorTranslatorUtil.makeNodeConnectorId(dataPathId, logicalName, portNo);
@@ -152,7 +153,7 @@ public class NodeConnectorTranslatorUtilTest {
      */
     @Test
     public void testMakeNodeConnectorIdNullLogicalName(){
-        final BigInteger dataPathId = new BigInteger("25");
+        final BigInteger dataPathId = BigInteger.valueOf(25L);
         final long portNo = 45L;
         final NodeConnectorId nodeConnectorId = NodeConnectorTranslatorUtil.makeNodeConnectorId(dataPathId, null, portNo);
         Assert.assertNotNull(nodeConnectorId);

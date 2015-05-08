@@ -70,7 +70,7 @@ public class RpcManagerImplTest {
     public void invokeRpcTestExistsCapacityTest() throws InterruptedException, ExecutionException {
         final ConnectionContext mockedConnectionContext = mock(ConnectionContext.class);
         final FeaturesReply mockedFeatures = mock(FeaturesReply.class);
-        final BigInteger dummyDatapathId = new BigInteger("1");
+        final BigInteger dummyDatapathId = BigInteger.ONE;
         final Short dummyVersion = 1;
         final ConnectionAdapter mockedConnectionAdapter = mock(ConnectionAdapter.class);
 

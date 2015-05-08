@@ -13,7 +13,6 @@ import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-
 import org.opendaylight.openflowplugin.api.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
@@ -37,34 +36,34 @@ public class MultipartReplyTableFeaturesToTableUpdatedTranslator implements
 
 	protected static final Logger LOG = LoggerFactory
             .getLogger(MultipartReplyTableFeaturesToTableUpdatedTranslator.class);
-	
+
 	@Override
 	public List<DataObject> translate(SwitchConnectionDistinguisher cookie,
 			SessionContext sc, OfHeader msg) {
-		
-				
-		if(msg instanceof MultipartReply && ((MultipartReply) msg).getType() == MultipartType.OFPMPTABLEFEATURES) {
-			LOG.debug("MultipartReply Being translated to TableUpdated " );
-			MultipartReplyMessage mpReply = (MultipartReplyMessage)msg;
-                        
+
+
+        if (msg instanceof MultipartReply && ((MultipartReply) msg).getType() == MultipartType.OFPMPTABLEFEATURES) {
+            LOG.debug("MultipartReply Being translated to TableUpdated ");
+            MultipartReplyMessage mpReply = (MultipartReplyMessage) msg;
+
             List<DataObject> listDataObject = new CopyOnWriteArrayList<DataObject>();
-            
+
             TableUpdatedBuilder message = new TableUpdatedBuilder() ;
             message.setNode((new NodeRef(InventoryDataServiceUtil.identifierFromDatapathId(sc.getFeatures()
                     .getDatapathId()))));
             message.setMoreReplies(mpReply.getFlags().isOFPMPFREQMORE());
-            message.setTransactionId(new TransactionId(new BigInteger(mpReply.getXid().toString() ))) ;
+            message.setTransactionId(new TransactionId(BigInteger.valueOf(mpReply.getXid())));
             MultipartReplyTableFeaturesCase caseBody = (MultipartReplyTableFeaturesCase) mpReply.getMultipartReplyBody();
             MultipartReplyTableFeatures body = caseBody.getMultipartReplyTableFeatures();
             message.setTableFeatures(TableFeaturesReplyConvertor.toTableFeaturesReply(body)) ;
             listDataObject.add( message.build()) ;
-            
+
             return listDataObject ;
-            
-		}
-		return Collections.emptyList();
-		
-	}
-	
+
+        }
+        return Collections.emptyList();
+
+    }
+
 }
 

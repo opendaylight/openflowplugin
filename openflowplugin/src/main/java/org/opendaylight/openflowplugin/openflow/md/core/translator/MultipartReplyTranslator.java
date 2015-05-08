@@ -11,7 +11,6 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-
 import org.opendaylight.openflowplugin.api.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
@@ -99,7 +98,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Class converts multipart reply messages to the notification objects defined
  * by statistics provider (manager ).
- * 
+ *
  * @author avishnoi@in.ibm.com
  *
  */
@@ -107,7 +106,7 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
 
     protected static final Logger logger = LoggerFactory
             .getLogger(MultipartReplyTranslator.class);
-    
+
     private static FlowStatsResponseConvertor flowStatsConvertor = new FlowStatsResponseConvertor();
     private static GroupStatsResponseConvertor groupStatsConvertor = new GroupStatsResponseConvertor();
     private static MeterStatsResponseConvertor meterStatsConvertor = new MeterStatsResponseConvertor();
@@ -115,7 +114,7 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
 
     @Override
     public  List<DataObject> translate(SwitchConnectionDistinguisher cookie, SessionContext sc, OfHeader msg) {
-        
+
         List<DataObject> listDataObject = new CopyOnWriteArrayList<DataObject>();
 
         OpenflowVersion ofVersion = OpenflowVersion.get(sc.getPrimaryConductor().getVersion());
@@ -133,7 +132,7 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                 MultipartReplyFlowCase caseBody = (MultipartReplyFlowCase)mpReply.getMultipartReplyBody();
                 MultipartReplyFlow replyBody = caseBody.getMultipartReplyFlow();
                 message.setFlowAndStatisticsMapList(flowStatsConvertor.toSALFlowStatsList(replyBody.getFlowStats(),sc.getFeatures().getDatapathId(), ofVersion));
-                
+
                 logger.debug("Converted flow statistics : {}",message.build().toString());
                 listDataObject.add(message.build());
                 return listDataObject;
@@ -144,13 +143,13 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                 message.setId(node);
                 message.setMoreReplies(mpReply.getFlags().isOFPMPFREQMORE());
                 message.setTransactionId(generateTransactionId(mpReply.getXid()));
-                
+
                 MultipartReplyAggregateCase caseBody = (MultipartReplyAggregateCase)mpReply.getMultipartReplyBody();
                 MultipartReplyAggregate replyBody = caseBody.getMultipartReplyAggregate();
                 message.setByteCount(new Counter64(replyBody.getByteCount()));
                 message.setPacketCount(new Counter64(replyBody.getPacketCount()));
                 message.setFlowCount(new Counter32(replyBody.getFlowCount()));
-                
+
                 logger.debug("Converted aggregate flow statistics : {}",message.build().toString());
                 listDataObject.add(message.build());
                 return listDataObject;
@@ -158,7 +157,7 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
             case OFPMPPORTSTATS: {
 
                 logger.debug("Received port statistics multipart response");
-                
+
                 NodeConnectorStatisticsUpdateBuilder message = new NodeConnectorStatisticsUpdateBuilder();
                 message.setId(node);
                 message.setMoreReplies(mpReply.getFlags().isOFPMPFREQMORE());
@@ -166,27 +165,27 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
 
                 MultipartReplyPortStatsCase caseBody = (MultipartReplyPortStatsCase)mpReply.getMultipartReplyBody();
                 MultipartReplyPortStats replyBody = caseBody.getMultipartReplyPortStats();
-                
-                List<NodeConnectorStatisticsAndPortNumberMap> statsMap = 
+
+                List<NodeConnectorStatisticsAndPortNumberMap> statsMap =
                         new ArrayList<NodeConnectorStatisticsAndPortNumberMap>();
                 for (PortStats portStats: replyBody.getPortStats()){
-                    
-                    NodeConnectorStatisticsAndPortNumberMapBuilder statsBuilder = 
+
+                    NodeConnectorStatisticsAndPortNumberMapBuilder statsBuilder =
                             new NodeConnectorStatisticsAndPortNumberMapBuilder();
                     statsBuilder.setNodeConnectorId(
                             InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(sc.getFeatures().getDatapathId(),
                                     portStats.getPortNo(), ofVersion));
-                    
+
                     BytesBuilder bytesBuilder = new BytesBuilder();
                     bytesBuilder.setReceived(portStats.getRxBytes());
                     bytesBuilder.setTransmitted(portStats.getTxBytes());
                     statsBuilder.setBytes(bytesBuilder.build());
-                    
+
                     PacketsBuilder packetsBuilder = new PacketsBuilder();
                     packetsBuilder.setReceived(portStats.getRxPackets());
                     packetsBuilder.setTransmitted(portStats.getTxPackets());
                     statsBuilder.setPackets(packetsBuilder.build());
-                    
+
                     DurationBuilder durationBuilder = new DurationBuilder();
                     if (portStats.getDurationSec() != null)
                         durationBuilder.setSecond(new Counter32(portStats.getDurationSec()));
@@ -202,7 +201,7 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                     statsBuilder.setReceiveOverRunError(portStats.getRxOverErr());
                     statsBuilder.setTransmitDrops(portStats.getTxDropped());
                     statsBuilder.setTransmitErrors(portStats.getTxErrors());
-                    
+
                     statsMap.add(statsBuilder.build());
                 }
                 message.setNodeConnectorStatisticsAndPortNumberMap(statsMap);
@@ -221,14 +220,14 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                 MultipartReplyGroupCase caseBody = (MultipartReplyGroupCase)mpReply.getMultipartReplyBody();
                 MultipartReplyGroup replyBody = caseBody.getMultipartReplyGroup();
                 message.setGroupStats(groupStatsConvertor.toSALGroupStatsList(replyBody.getGroupStats()));
-                
+
                 logger.debug("Converted group statistics : {}",message.toString());
                 listDataObject.add(message.build());
                 return listDataObject;
             }
             case OFPMPGROUPDESC:{
                 logger.debug("Received group description statistics multipart reponse");
-                
+
                 GroupDescStatsUpdatedBuilder message = new GroupDescStatsUpdatedBuilder();
                 message.setId(node);
                 message.setMoreReplies(mpReply.getFlags().isOFPMPFREQMORE());
@@ -237,7 +236,7 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                 MultipartReplyGroupDesc replyBody = caseBody.getMultipartReplyGroupDesc();
 
                 message.setGroupDescStats(groupStatsConvertor.toSALGroupDescStatsList(replyBody.getGroupDesc(), ofVersion));
-                
+
                 logger.debug("Converted group statistics : {}",message.toString());
                 listDataObject.add(message.build());
                 return listDataObject;
@@ -250,9 +249,9 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                 message.setTransactionId(generateTransactionId(mpReply.getXid()));
                 MultipartReplyGroupFeaturesCase caseBody = (MultipartReplyGroupFeaturesCase)mpReply.getMultipartReplyBody();
                 MultipartReplyGroupFeatures replyBody = caseBody.getMultipartReplyGroupFeatures();
-                List<Class<? extends GroupType>> supportedGroups = 
+                List<Class<? extends GroupType>> supportedGroups =
                         new ArrayList<Class<? extends GroupType>>();
-                
+
                 if(replyBody.getTypes().isOFPGTALL()){
                     supportedGroups.add(GroupAll.class);
                 }
@@ -267,10 +266,10 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                 }
                 message.setGroupTypesSupported(supportedGroups);
                 message.setMaxGroups(replyBody.getMaxGroups());
-                
-                List<Class<? extends GroupCapability>> supportedCapabilities = 
+
+                List<Class<? extends GroupCapability>> supportedCapabilities =
                         new ArrayList<Class<? extends GroupCapability>>();
-                
+
                 if(replyBody.getCapabilities().isOFPGFCCHAINING()){
                     supportedCapabilities.add(Chaining.class);
                 }
@@ -285,7 +284,7 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                 }
 
                 message.setGroupCapabilitiesSupported(supportedCapabilities);
-                
+
                 message.setActions(getGroupActionsSupportBitmap(replyBody.getActionsBitmap()));
                 listDataObject.add(message.build());
 
@@ -297,7 +296,7 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                 message.setId(node);
                 message.setMoreReplies(mpReply.getFlags().isOFPMPFREQMORE());
                 message.setTransactionId(generateTransactionId(mpReply.getXid()));
-                
+
                 MultipartReplyMeterCase caseBody = (MultipartReplyMeterCase)mpReply.getMultipartReplyBody();
                 MultipartReplyMeter replyBody = caseBody.getMultipartReplyMeter();
                 message.setMeterStats(meterStatsConvertor.toSALMeterStatsList(replyBody.getMeterStats()));
@@ -307,16 +306,16 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
             }
             case OFPMPMETERCONFIG:{
                 logger.debug("Received meter config statistics multipart reponse");
-                
+
                 MeterConfigStatsUpdatedBuilder message = new MeterConfigStatsUpdatedBuilder();
                 message.setId(node);
                 message.setMoreReplies(mpReply.getFlags().isOFPMPFREQMORE());
                 message.setTransactionId(generateTransactionId(mpReply.getXid()));
-                
+
                 MultipartReplyMeterConfigCase caseBody = (MultipartReplyMeterConfigCase)mpReply.getMultipartReplyBody();
                 MultipartReplyMeterConfig replyBody = caseBody.getMultipartReplyMeterConfig();
                 message.setMeterConfigStats(meterStatsConvertor.toSALMeterConfigList(replyBody.getMeterConfig()));
-                
+
                 listDataObject.add(message.build());
                 return listDataObject;
             }
@@ -327,33 +326,33 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                 message.setId(node);
                 message.setMoreReplies(mpReply.getFlags().isOFPMPFREQMORE());
                 message.setTransactionId(generateTransactionId(mpReply.getXid()));
-                
+
                 MultipartReplyMeterFeaturesCase caseBody = (MultipartReplyMeterFeaturesCase)mpReply.getMultipartReplyBody();
                 MultipartReplyMeterFeatures replyBody = caseBody.getMultipartReplyMeterFeatures();
                 message.setMaxBands(replyBody.getMaxBands());
                 message.setMaxColor(replyBody.getMaxColor());
                 message.setMaxMeter(new Counter32(replyBody.getMaxMeter()));
-                
-                List<Class<? extends MeterCapability>> supportedCapabilities = 
+
+                List<Class<? extends MeterCapability>> supportedCapabilities =
                         new ArrayList<Class<? extends MeterCapability>>();
                 if(replyBody.getCapabilities().isOFPMFBURST()){
                     supportedCapabilities.add(MeterBurst.class);
                 }
                 if(replyBody.getCapabilities().isOFPMFKBPS()){
                     supportedCapabilities.add(MeterKbps.class);
-                    
+
                 }
                 if(replyBody.getCapabilities().isOFPMFPKTPS()){
                     supportedCapabilities.add(MeterPktps.class);
-                    
+
                 }
                 if(replyBody.getCapabilities().isOFPMFSTATS()){
                     supportedCapabilities.add(MeterStats.class);
-                    
+
                 }
                 message.setMeterCapabilitiesSupported(supportedCapabilities);
-                
-                List<Class<? extends MeterBand>> supportedMeterBand = 
+
+                List<Class<? extends MeterBand>> supportedMeterBand =
                         new ArrayList<Class <? extends MeterBand>>();
                 if(replyBody.getBandTypes().isOFPMBTDROP()){
                     supportedMeterBand.add(MeterBandDrop.class);
@@ -368,36 +367,36 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
             }
             case OFPMPTABLE: {
                 logger.debug("Received flow table statistics reponse from openflow {} switch",msg.getVersion()==1?"1.0":"1.3+");
-                
+
                 FlowTableStatisticsUpdateBuilder message = new FlowTableStatisticsUpdateBuilder();
                 message.setId(node);
                 message.setMoreReplies(mpReply.getFlags().isOFPMPFREQMORE());
                 message.setTransactionId(generateTransactionId(mpReply.getXid()));
-                
+
                 MultipartReplyTableCase caseBody = (MultipartReplyTableCase)mpReply.getMultipartReplyBody();
                 MultipartReplyTable replyBody = caseBody.getMultipartReplyTable();
                 List<TableStats> swTablesStats = replyBody.getTableStats();
-                
-                List<FlowTableAndStatisticsMap> salFlowStats = new ArrayList<FlowTableAndStatisticsMap>(); 
+
+                List<FlowTableAndStatisticsMap> salFlowStats = new ArrayList<FlowTableAndStatisticsMap>();
                 for(TableStats swTableStats : swTablesStats){
                     FlowTableAndStatisticsMapBuilder statisticsBuilder  = new FlowTableAndStatisticsMapBuilder();
-                    
+
                     statisticsBuilder.setActiveFlows(new Counter32(swTableStats.getActiveCount()));
                     statisticsBuilder.setPacketsLookedUp(new Counter64(swTableStats.getLookupCount()));
                     statisticsBuilder.setPacketsMatched(new Counter64(swTableStats.getMatchedCount()));
                     statisticsBuilder.setTableId(new TableId(swTableStats.getTableId()));
                     salFlowStats.add(statisticsBuilder.build());
                 }
-                
+
                 message.setFlowTableAndStatisticsMap(salFlowStats);
-                
+
                 logger.debug("Converted flow table statistics : {}",message.build().toString());
                 listDataObject.add(message.build());
                 return listDataObject;
             }
             case OFPMPQUEUE: {
                 logger.debug("Received queue statistics multipart response");
-                
+
                 QueueStatisticsUpdateBuilder message = new QueueStatisticsUpdateBuilder();
                 message.setId(node);
                 message.setMoreReplies(mpReply.getFlags().isOFPMPFREQMORE());
@@ -405,13 +404,13 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
 
                 MultipartReplyQueueCase caseBody = (MultipartReplyQueueCase)mpReply.getMultipartReplyBody();
                 MultipartReplyQueue replyBody = caseBody.getMultipartReplyQueue();
-                
-                List<QueueIdAndStatisticsMap> statsMap = 
+
+                List<QueueIdAndStatisticsMap> statsMap =
                         new ArrayList<QueueIdAndStatisticsMap>();
-                
+
                 for (QueueStats queueStats: replyBody.getQueueStats()){
-                    
-                    QueueIdAndStatisticsMapBuilder statsBuilder = 
+
+                    QueueIdAndStatisticsMapBuilder statsBuilder =
                             new QueueIdAndStatisticsMapBuilder();
                     statsBuilder.setNodeConnectorId(
                             InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(sc.getFeatures().getDatapathId(),
@@ -419,16 +418,16 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                     statsBuilder.setTransmissionErrors(new Counter64(queueStats.getTxErrors()));
                     statsBuilder.setTransmittedBytes(new Counter64(queueStats.getTxBytes()));
                     statsBuilder.setTransmittedPackets(new Counter64(queueStats.getTxPackets()));
-                    
+
                     DurationBuilder durationBuilder = new DurationBuilder();
                     durationBuilder.setSecond(new Counter32(queueStats.getDurationSec()));
                     durationBuilder.setNanosecond(new Counter32(queueStats.getDurationNsec()));
                     statsBuilder.setDuration(durationBuilder.build());
-                    
+
                     statsBuilder.setQueueId(new QueueId(queueStats.getQueueId()));
                     statsBuilder.setNodeConnectorId(InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(sc.getFeatures().getDatapathId(),
                             queueStats.getPortNo(), ofVersion));
-                    
+
                     statsMap.add(statsBuilder.build());
                 }
                 message.setQueueIdAndStatisticsMap(statsMap);
@@ -442,25 +441,24 @@ public class MultipartReplyTranslator implements IMDMessageTranslator<OfHeader, 
                 return listDataObject;
             }
         }
-        
+
         return listDataObject;
     }
-    
+
     private NodeId nodeIdFromDatapathId(BigInteger datapathId) {
         String current = datapathId.toString();
         return new NodeId("openflow:" + current);
     }
-    
+
     private TransactionId generateTransactionId(Long xid){
-        String stringXid =xid.toString();
-        BigInteger bigIntXid = new BigInteger( stringXid );
+        BigInteger bigIntXid = BigInteger.valueOf(xid);
         return new TransactionId(bigIntXid);
 
     }
 
-    /* 
+    /*
      * Method returns the bitmap of actions supported by each group.
-     * TODO: My recommendation would be, its good to have a respective model of 
+     * TODO: My recommendation would be, its good to have a respective model of
      * 'type bits', which will generate a class where all these flags will eventually
      * be stored as boolean. It will be convenient for application to check the
      * supported action, rather then doing bitmap operation.
