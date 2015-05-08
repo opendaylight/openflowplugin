@@ -73,7 +73,6 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
 
         final FlowHash flowHash = FlowHashFactory.create(input, deviceContext);
         final FlowDescriptor flowDescriptor = FlowDescriptorFactory.create(input.getTableId(), flowId);
-        deviceContext.getDeviceFlowRegistry().store(flowHash, flowDescriptor);
 
         final List<FlowModInputBuilder> ofFlowModInputs = FlowConvertor.toFlowModInputs(input, version, datapathId);
         final ListenableFuture<RpcResult<AddFlowOutput>> future = processFlowModInputBuilders(ofFlowModInputs);
@@ -82,6 +81,7 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
             @Override
             public void onSuccess(final RpcResult<AddFlowOutput> rpcResult) {
                 messageSpy.spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_SUCCESS);
+                deviceContext.getDeviceFlowRegistry().store(flowHash, flowDescriptor);
                 if (rpcResult.isSuccessful()) {
                     LOG.debug("flow add finished without error, id={}", flowId.getValue());
                 } else {
