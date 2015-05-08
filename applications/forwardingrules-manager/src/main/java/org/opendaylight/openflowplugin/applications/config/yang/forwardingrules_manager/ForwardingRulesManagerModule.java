@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 
 public class ForwardingRulesManagerModule extends org.opendaylight.openflowplugin.applications.config.yang.forwardingrules_manager.AbstractForwardingRulesManagerModule {
 
-    private static Logger LOG = LoggerFactory.getLogger(ForwardingRulesManagerModule.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ForwardingRulesManagerModule.class);
 
     public ForwardingRulesManagerModule(org.opendaylight.controller.config.api.ModuleIdentifier identifier, org.opendaylight.controller.config.api.DependencyResolver dependencyResolver) {
         super(identifier, dependencyResolver);

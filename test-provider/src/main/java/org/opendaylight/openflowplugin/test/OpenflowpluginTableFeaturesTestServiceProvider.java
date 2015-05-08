@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2013 Cisco Systems, Inc. and others.  All rights reserved.
- * 
+ *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
@@ -9,7 +9,6 @@
 package org.opendaylight.openflowplugin.test;
 
 import java.util.concurrent.Future;
-
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
@@ -32,14 +31,14 @@ import org.slf4j.LoggerFactory;
 public class OpenflowpluginTableFeaturesTestServiceProvider implements
         AutoCloseable, SalTableService {
 
-    private final static Logger LOG = LoggerFactory
+    private static final Logger LOG = LoggerFactory
             .getLogger(OpenflowpluginTableFeaturesTestServiceProvider.class);
     private RoutedRpcRegistration<SalTableService> tableRegistration;
     private NotificationProviderService notificationService;
 
     /**
      * get table registration
-     * 
+     *
      * @return {@link #tableRegistration}
      */
     public RoutedRpcRegistration<SalTableService> getTableRegistration() {
@@ -48,7 +47,7 @@ public class OpenflowpluginTableFeaturesTestServiceProvider implements
 
     /**
      * set {@link #tableRegistration}
-     * 
+     *
      * @param tableRegistration
      */
     public void setTableRegistration(
@@ -58,7 +57,7 @@ public class OpenflowpluginTableFeaturesTestServiceProvider implements
 
     /**
      * get notification service
-     * 
+     *
      * @return {@link #notificationService}
      */
     public NotificationProviderService getNotificationService() {
@@ -67,7 +66,7 @@ public class OpenflowpluginTableFeaturesTestServiceProvider implements
 
     /**
      * set {@link #notificationService}
-     * 
+     *
      * @param notificationService
      */
     public void setNotificationService(
@@ -82,7 +81,7 @@ public class OpenflowpluginTableFeaturesTestServiceProvider implements
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.AutoCloseable#close()
      */
     @Override
@@ -94,7 +93,7 @@ public class OpenflowpluginTableFeaturesTestServiceProvider implements
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026
      * .SalTableService

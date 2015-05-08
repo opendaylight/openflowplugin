@@ -159,7 +159,7 @@ import org.slf4j.LoggerFactory;
 
 public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, List<DataObject>> {
 
-    protected static final Logger LOG = LoggerFactory.getLogger(FlowRemovedTranslator.class);
+    private static final Logger LOG = LoggerFactory.getLogger(FlowRemovedTranslator.class);
     private static final String PREFIX_SEPARATOR = "/";
 
     @Override

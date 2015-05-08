@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 public class LearningSwitchManagerSimpleImpl implements DataChangeListenerRegistrationHolder,
         LearningSwitchManager {
 
-    protected static final Logger LOG = LoggerFactory
+    private static final Logger LOG = LoggerFactory
             .getLogger(LearningSwitchManagerSimpleImpl.class);
 
     private NotificationService notificationService;

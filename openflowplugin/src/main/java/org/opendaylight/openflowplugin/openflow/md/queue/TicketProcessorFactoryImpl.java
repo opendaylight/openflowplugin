@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
  */
 public class TicketProcessorFactoryImpl implements TicketProcessorFactory<OfHeader, DataObject> {
 
-    protected static final Logger LOG = LoggerFactory
+    private static final Logger LOG = LoggerFactory
             .getLogger(TicketProcessorFactoryImpl.class);
 
     protected Map<TranslatorKey, Collection<IMDMessageTranslator<OfHeader, List<DataObject>>>> translatorMapping;

@@ -18,7 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 class LLDPDiscoveryListener implements PacketProcessingListener {
-    static Logger LOG = LoggerFactory.getLogger(LLDPDiscoveryListener.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LLDPDiscoveryListener.class);
 
     private LLDPLinkAger lldpLinkAger;
     private NotificationProviderService notificationService;

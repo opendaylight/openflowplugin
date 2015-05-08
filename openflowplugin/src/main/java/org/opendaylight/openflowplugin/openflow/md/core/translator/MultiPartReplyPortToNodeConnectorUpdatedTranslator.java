@@ -11,7 +11,6 @@ import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-
 import org.opendaylight.openflowplugin.api.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
@@ -28,7 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class MultiPartReplyPortToNodeConnectorUpdatedTranslator implements IMDMessageTranslator<OfHeader, List<DataObject>> {
-    protected static final Logger LOG = LoggerFactory.getLogger(MultiPartReplyPortToNodeConnectorUpdatedTranslator.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MultiPartReplyPortToNodeConnectorUpdatedTranslator.class);
     @Override
     public List<DataObject> translate(SwitchConnectionDistinguisher cookie,
             SessionContext sc, OfHeader msg) {

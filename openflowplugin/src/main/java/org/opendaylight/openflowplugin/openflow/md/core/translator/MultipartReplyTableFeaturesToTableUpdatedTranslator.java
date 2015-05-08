@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 public class MultipartReplyTableFeaturesToTableUpdatedTranslator implements
 		IMDMessageTranslator<OfHeader, List<DataObject>> {
 
-	protected static final Logger LOG = LoggerFactory
+    private static final Logger LOG = LoggerFactory
             .getLogger(MultipartReplyTableFeaturesToTableUpdatedTranslator.class);
 
 	@Override

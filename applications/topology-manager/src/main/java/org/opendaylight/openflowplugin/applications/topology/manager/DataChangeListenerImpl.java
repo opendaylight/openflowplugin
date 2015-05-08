@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 
 public abstract class DataChangeListenerImpl implements DataChangeListener, AutoCloseable {
 
-    private final static Logger LOG = LoggerFactory.getLogger(DataChangeListenerImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DataChangeListenerImpl.class);
     private static final long STARTUP_LOOP_TICK = 500L;
     private static final int STARTUP_LOOP_MAX_RETRIES = 8;
     protected final ListenerRegistration<DataChangeListener> dataChangeListenerRegistration;

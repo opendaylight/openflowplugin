@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  */
 final class RolePushTask implements Callable<Boolean> {
 
-    public static final Logger LOG = LoggerFactory
+    private static final Logger LOG = LoggerFactory
             .getLogger(RolePushTask.class);
 
     public static final long TIMEOUT = 2000;

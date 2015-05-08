@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
  */
 public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenFlowPluginExtensionRegistratorProvider {
 
-    protected static final Logger LOG = LoggerFactory.getLogger(OpenFlowPluginProviderImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(OpenFlowPluginProviderImpl.class);
 
     private DeviceManager deviceManager;
     private RpcManager rpcManager;

@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
  */
 public class SimpleTaskRetryLooper {
 
-    private static Logger LOG = LoggerFactory.getLogger(SimpleTaskRetryLooper.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SimpleTaskRetryLooper.class);
 
     private final long tick;
     private final int maxRetries;

@@ -15,8 +15,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
+import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorUpdatedBuilder;
@@ -35,7 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class InventoryDataServiceUtil {
-    private final static Logger LOG = LoggerFactory.getLogger(InventoryDataServiceUtil.class);
+    private static final Logger LOG = LoggerFactory.getLogger(InventoryDataServiceUtil.class);
 
     public final static String OF_URI_PREFIX = "openflow:";
     /*
@@ -129,15 +129,15 @@ public abstract class InventoryDataServiceUtil {
     public static Long portNumberfromNodeConnectorId(OpenflowVersion ofVersion, NodeConnectorId ncId) {
         return portNumberfromNodeConnectorId(ofVersion, ncId.getValue());
     }
-    
+
     public static String portNoStringfromNodeConnectorID(String ncID) {
     	String[] split = ncID.split(":");
 
         // It can happen that token length will be just 1 i.e 2 or CONTROLLER
         // If the length is just one then this cannot be the new MD-SAL style node connector Id which
         // is of the form openflow:1:3.
-    	
-    	return split[split.length - 1];
+
+        return split[split.length - 1];
     }
 
     public static Long portNumberfromNodeConnectorId(OpenflowVersion ofVersion, String ncId) {

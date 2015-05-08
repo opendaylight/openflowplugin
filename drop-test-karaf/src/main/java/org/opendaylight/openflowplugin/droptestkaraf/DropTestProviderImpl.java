@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DropTestProviderImpl implements AutoCloseable {
 
-    private static Logger LOG = LoggerFactory.getLogger(DropTestProviderImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DropTestProviderImpl.class);
 
     private static DropTestDsProvider dropDsProvider = new DropTestDsProvider();
 

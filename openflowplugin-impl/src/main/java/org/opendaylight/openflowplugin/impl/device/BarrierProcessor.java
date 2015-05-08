@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
  */
 public class BarrierProcessor {
 
-    private static Logger LOG = LoggerFactory.getLogger(BarrierProcessor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(BarrierProcessor.class);
 
     /**
      * for all requestContexts from deviceContext cache which are older than barrier (lower barrierXid value) we do: <br>

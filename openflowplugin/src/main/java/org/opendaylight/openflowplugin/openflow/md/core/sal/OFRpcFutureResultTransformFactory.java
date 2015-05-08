@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal;
 
+import com.google.common.base.Function;
 import java.util.Collection;
 import org.opendaylight.controller.sal.common.util.Rpcs;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
@@ -28,7 +29,6 @@ import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.google.common.base.Function;
 
 /**
  * collection of transformation functions dedicated to rpc future results
@@ -36,7 +36,7 @@ import com.google.common.base.Function;
 public abstract class OFRpcFutureResultTransformFactory {
 
     private static final String MSG_ADD_FLOW_RPC = "Returning the Add Flow RPC result to MD-SAL";
-    protected static Logger LOG = LoggerFactory
+    protected static final Logger LOG = LoggerFactory
             .getLogger(OFRpcFutureResultTransformFactory.class);
 
     /**

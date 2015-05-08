@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 public class LLDPPacketPuntEnforcerModule extends org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.applications.table.miss.enforcer.rev140326.AbstractLLDPPacketPuntEnforcerModule {
     private static final long STARTUP_LOOP_TICK = 500L;
     private static final int STARTUP_LOOP_MAX_RETRIES = 8;
-    private static Logger LOG = LoggerFactory.getLogger(LLDPPacketPuntEnforcerModule.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LLDPPacketPuntEnforcerModule.class);
 
     public LLDPPacketPuntEnforcerModule(org.opendaylight.controller.config.api.ModuleIdentifier identifier, org.opendaylight.controller.config.api.DependencyResolver dependencyResolver) {
         super(identifier, dependencyResolver);

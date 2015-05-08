@@ -25,7 +25,7 @@ public class PortFeaturesUtil {
     private static PortFeaturesUtil instance = new PortFeaturesUtil();
 
     private final Map<Short, IGetBandwith> portVersionBandwidth;
-    protected static final Logger LOG = LoggerFactory.getLogger(PortFeaturesUtil.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PortFeaturesUtil.class);
 
     private PortFeaturesUtil() {
         this.portVersionBandwidth = new HashMap<>();

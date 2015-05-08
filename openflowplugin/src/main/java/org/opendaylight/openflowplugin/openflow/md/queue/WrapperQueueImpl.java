@@ -1,19 +1,17 @@
 package org.opendaylight.openflowplugin.openflow.md.queue;
 
+import com.google.common.base.Preconditions;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Queue;
-
 import org.opendaylight.openflowplugin.api.openflow.md.queue.QueueItem;
 import org.opendaylight.openflowplugin.api.openflow.md.queue.WaterMarkListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
-
 public class WrapperQueueImpl<E> implements Queue<E> {
 
-    protected static final Logger LOG = LoggerFactory
+    private static final Logger LOG = LoggerFactory
             .getLogger(WrapperQueueImpl.class);
 
     private int lowWaterMark;
@@ -61,7 +59,7 @@ public class WrapperQueueImpl<E> implements Queue<E> {
     /**
      * poll {@link QueueItem} and call {@link #marking()} for check marks and
      * set autoRead if it need it
-     * 
+     *
      * @return polled item
      */
     public E poll() {

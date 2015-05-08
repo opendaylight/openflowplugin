@@ -35,7 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class TerminationPointChangeListenerImpl extends DataChangeListenerImpl {
-    private final static Logger LOG = LoggerFactory.getLogger(TerminationPointChangeListenerImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TerminationPointChangeListenerImpl.class);
 
     public TerminationPointChangeListenerImpl(final DataBroker dataBroker, final OperationProcessor operationProcessor) {
         super(operationProcessor, dataBroker, InstanceIdentifier.builder(Nodes.class).child(Node.class)

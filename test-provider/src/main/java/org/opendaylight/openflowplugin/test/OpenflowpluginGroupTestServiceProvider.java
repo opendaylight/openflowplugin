@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2013 Cisco Systems, Inc. and others.  All rights reserved.
- * 
+ *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
@@ -9,7 +9,6 @@
 package org.opendaylight.openflowplugin.test;
 
 import java.util.concurrent.Future;
-
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
@@ -36,14 +35,14 @@ import org.slf4j.LoggerFactory;
 public class OpenflowpluginGroupTestServiceProvider implements AutoCloseable,
         SalGroupService {
 
-    private final static Logger LOG = LoggerFactory
+    private static final Logger LOG = LoggerFactory
             .getLogger(OpenflowpluginGroupTestServiceProvider.class);
     private RoutedRpcRegistration<SalGroupService> groupRegistration;
     private NotificationProviderService notificationService;
 
     /**
      * get group registration
-     * 
+     *
      * @return {@link #groupRegistration}
      */
     public RoutedRpcRegistration<SalGroupService> getGroupRegistration() {
@@ -52,7 +51,7 @@ public class OpenflowpluginGroupTestServiceProvider implements AutoCloseable,
 
     /**
      * set {@link #groupRegistration}
-     * 
+     *
      * @param groupRegistration
      */
     public void setGroupRegistration(
@@ -62,7 +61,7 @@ public class OpenflowpluginGroupTestServiceProvider implements AutoCloseable,
 
     /**
      * get notification service
-     * 
+     *
      * @return {@link #notificationService}
      */
     public NotificationProviderService getNotificationService() {
@@ -71,7 +70,7 @@ public class OpenflowpluginGroupTestServiceProvider implements AutoCloseable,
 
     /**
      * set {@link #notificationService}
-     * 
+     *
      * @param notificationService
      */
     public void setNotificationService(
@@ -86,7 +85,7 @@ public class OpenflowpluginGroupTestServiceProvider implements AutoCloseable,
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.AutoCloseable#close()
      */
     @Override
@@ -98,7 +97,7 @@ public class OpenflowpluginGroupTestServiceProvider implements AutoCloseable,
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918
      * .SalGroupService
@@ -114,7 +113,7 @@ public class OpenflowpluginGroupTestServiceProvider implements AutoCloseable,
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918
      * .SalGroupService
@@ -131,7 +130,7 @@ public class OpenflowpluginGroupTestServiceProvider implements AutoCloseable,
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918
      * .SalGroupService

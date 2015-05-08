@@ -7,29 +7,28 @@
  */
 package org.opendaylight.openflowplugin.applications.topology.manager;
 
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
+import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
-
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.topology.inventory.rev131030.InventoryNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.topology.inventory.rev131030.InventoryNodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeBuilder;
-import java.util.Set;
-import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import java.util.Map.Entry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import java.util.Map;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class NodeChangeListenerImpl extends DataChangeListenerImpl {
-    private final static Logger LOG = LoggerFactory.getLogger(NodeChangeListenerImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(NodeChangeListenerImpl.class);
 
     public NodeChangeListenerImpl(final DataBroker dataBroker, final OperationProcessor operationProcessor) {
         // TODO: listener on FlowCapableNode. what if node id in Node.class is changed (it won't be caught by this

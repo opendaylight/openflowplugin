@@ -8,12 +8,13 @@
 
 package org.opendaylight.openflowplugin.applications.statistics.manager.impl;
 
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -46,9 +47,6 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
-
 /**
  * statistics-manager
  * org.opendaylight.openflowplugin.applications.statistics.manager.impl
@@ -64,7 +62,7 @@ import com.google.common.base.Preconditions;
 public class StatListenCommitQueue extends StatAbstractListenCommit<Queue, OpendaylightQueueStatisticsListener>
                                         implements OpendaylightQueueStatisticsListener {
 
-    private final static Logger LOG = LoggerFactory.getLogger(StatListenCommitQueue.class);
+    private static final Logger LOG = LoggerFactory.getLogger(StatListenCommitQueue.class);
 
     public StatListenCommitQueue(final StatisticsManager manager, final DataBroker db,
             final NotificationProviderService nps) {

@@ -16,7 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class LLDPDiscoveryProvider implements AutoCloseable {
-    private final static Logger LOG =  LoggerFactory.getLogger(LLDPDiscoveryProvider.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LLDPDiscoveryProvider.class);
     private DataProviderService dataService;
     private NotificationProviderService notificationService;
 

@@ -18,7 +18,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-
+import org.opendaylight.openflowplugin.api.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.api.openflow.md.queue.HarvesterHandle;
 import org.opendaylight.openflowplugin.api.openflow.md.queue.PopListener;
@@ -27,7 +27,6 @@ import org.opendaylight.openflowplugin.api.openflow.md.queue.QueueKeeper;
 import org.opendaylight.openflowplugin.api.openflow.md.queue.QueueProcessor;
 import org.opendaylight.openflowplugin.api.openflow.statistics.MessageSpy;
 import org.opendaylight.openflowplugin.api.openflow.statistics.MessageSpy.STATISTIC_GROUP;
-import org.opendaylight.openflowplugin.api.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.ThreadPoolLoggingExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
@@ -63,7 +62,7 @@ import org.slf4j.LoggerFactory;
  */
 public class QueueProcessorLightImpl implements QueueProcessor<OfHeader, DataObject> {
 
-    protected static final Logger LOG = LoggerFactory
+    private static final Logger LOG = LoggerFactory
             .getLogger(QueueProcessorLightImpl.class);
 
     private BlockingQueue<TicketResult<DataObject>> ticketQueue;

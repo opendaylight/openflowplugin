@@ -27,7 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class FlowCapableTopologyProvider extends AbstractBindingAwareProvider implements AutoCloseable {
-    private final static Logger LOG = LoggerFactory.getLogger(FlowCapableTopologyProvider.class);
+    private static final Logger LOG = LoggerFactory.getLogger(FlowCapableTopologyProvider.class);
     private ListenerRegistration<NotificationListener> listenerRegistration;
     private Thread thread;
     private TerminationPointChangeListenerImpl terminationPointChangeListener;

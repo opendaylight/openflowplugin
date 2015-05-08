@@ -7,6 +7,9 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.translator;
 
+import java.math.BigInteger;
+import java.util.Collections;
+import java.util.List;
 import org.opendaylight.openflowplugin.api.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
@@ -31,16 +34,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.pa
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.math.BigInteger;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * translates packetIn from OF-API model to MD-SAL model, supports OF-1.3
  */
 public class PacketInTranslator implements IMDMessageTranslator<OfHeader, List<DataObject>> {
 
-    protected static final Logger LOG = LoggerFactory
+    private static final Logger LOG = LoggerFactory
             .getLogger(PacketInTranslator.class);
 
     @Override

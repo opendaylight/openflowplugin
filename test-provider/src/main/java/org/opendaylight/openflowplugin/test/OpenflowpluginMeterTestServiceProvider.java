@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2013 Cisco Systems, Inc. and others.  All rights reserved.
- * 
+ *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
@@ -9,7 +9,6 @@
 package org.opendaylight.openflowplugin.test;
 
 import java.util.concurrent.Future;
-
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
@@ -36,7 +35,7 @@ import org.slf4j.LoggerFactory;
 
 public class OpenflowpluginMeterTestServiceProvider implements AutoCloseable,
         SalMeterService {
-    private final static Logger LOG = LoggerFactory
+    private static final Logger LOG = LoggerFactory
             .getLogger(OpenflowpluginMeterTestServiceProvider.class);
     private DataBroker dataService;
     private RoutedRpcRegistration<SalMeterService> meterRegistration;
@@ -44,7 +43,7 @@ public class OpenflowpluginMeterTestServiceProvider implements AutoCloseable,
 
     /**
      * get data service
-     * 
+     *
      * @return {@link #dataService}
      */
     public DataBroker getDataService() {
@@ -53,7 +52,7 @@ public class OpenflowpluginMeterTestServiceProvider implements AutoCloseable,
 
     /**
      * set {@link #dataService}
-     * 
+     *
      * @param dataService
      */
     public void setDataService(final DataBroker dataService) {
@@ -62,7 +61,7 @@ public class OpenflowpluginMeterTestServiceProvider implements AutoCloseable,
 
     /**
      * get meter registration
-     * 
+     *
      * @return {@link #meterRegistration}
      */
     public RoutedRpcRegistration<SalMeterService> getMeterRegistration() {
@@ -71,7 +70,7 @@ public class OpenflowpluginMeterTestServiceProvider implements AutoCloseable,
 
     /**
      * set {@link #meterRegistration}
-     * 
+     *
      * @param meterRegistration
      */
     public void setMeterRegistration(
@@ -81,7 +80,7 @@ public class OpenflowpluginMeterTestServiceProvider implements AutoCloseable,
 
     /**
      * get notification service
-     * 
+     *
      * @return {@link #notificationService}
      */
     public NotificationProviderService getNotificationService() {
@@ -90,7 +89,7 @@ public class OpenflowpluginMeterTestServiceProvider implements AutoCloseable,
 
     /**
      * set {@link #notificationService}
-     * 
+     *
      * @param notificationService
      */
     public void setNotificationService(
@@ -105,7 +104,7 @@ public class OpenflowpluginMeterTestServiceProvider implements AutoCloseable,
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.AutoCloseable#close()
      */
     public void close() {
@@ -116,7 +115,7 @@ public class OpenflowpluginMeterTestServiceProvider implements AutoCloseable,
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918
      * .SalMeterService
@@ -131,7 +130,7 @@ public class OpenflowpluginMeterTestServiceProvider implements AutoCloseable,
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918
      * .SalMeterService
@@ -147,7 +146,7 @@ public class OpenflowpluginMeterTestServiceProvider implements AutoCloseable,
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918
      * .SalMeterService

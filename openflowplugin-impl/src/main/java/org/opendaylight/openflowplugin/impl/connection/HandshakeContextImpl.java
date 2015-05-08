@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
  */
 public class HandshakeContextImpl implements HandshakeContext {
 
-    private static Logger LOG = LoggerFactory.getLogger(HandshakeContextImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(HandshakeContextImpl.class);
 
     private ThreadPoolExecutor handshakePool;
     private HandshakeManager handshakeManager;

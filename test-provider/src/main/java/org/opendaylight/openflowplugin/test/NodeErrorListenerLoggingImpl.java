@@ -1,5 +1,6 @@
 package org.opendaylight.openflowplugin.test;
 
+import java.math.BigInteger;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.errors.rev131116.ErrorType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.node.error.service.rev140410.BadActionErrorNotification;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.node.error.service.rev140410.BadInstructionErrorNotification;
@@ -20,15 +21,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.node.error.service.rev14041
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.math.BigInteger;
-
 /**
  * dummy implementation flushing events into log
  *  @author kramesha
  */
 public class NodeErrorListenerLoggingImpl implements NodeErrorListener {
 
-    private static Logger LOG = LoggerFactory.getLogger(NodeErrorListenerLoggingImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(NodeErrorListenerLoggingImpl.class);
 
     @Override
     public void onBadActionErrorNotification(BadActionErrorNotification notification) {

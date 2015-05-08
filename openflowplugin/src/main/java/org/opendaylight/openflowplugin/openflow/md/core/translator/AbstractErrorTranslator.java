@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.openflow.md.core.translator;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-
 import org.opendaylight.openflowplugin.api.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
@@ -29,7 +28,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractErrorTranslator implements IMDMessageTranslator<OfHeader, List<DataObject>> {
 
-    protected static final Logger LOG = LoggerFactory.getLogger(AbstractErrorTranslator.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractErrorTranslator.class);
 
     @Override
     public List<DataObject> translate(SwitchConnectionDistinguisher cookie, SessionContext sc, OfHeader msg) {

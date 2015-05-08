@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.openflow.md.queue;
 
 import java.util.Collection;
-
 import org.opendaylight.openflowplugin.api.openflow.md.queue.Enqueuer;
 import org.opendaylight.openflowplugin.api.openflow.md.queue.HarvesterHandle;
 import org.opendaylight.openflowplugin.api.openflow.md.queue.QueueItem;
@@ -21,7 +20,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class QueueKeeperHarvester<IN> implements Runnable, HarvesterHandle {
-    private static Logger LOG = LoggerFactory.getLogger(QueueKeeperHarvester.class);
+    private static final Logger LOG = LoggerFactory.getLogger(QueueKeeperHarvester.class);
 
     private final Collection<QueueKeeper<IN>> messageSources;
     private final Enqueuer<QueueItem<IN>> enqueuer;

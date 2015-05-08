@@ -11,7 +11,6 @@ import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-
 import org.opendaylight.openflowplugin.api.openflow.md.core.IMDMessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.session.SessionContext;
@@ -24,13 +23,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class FeaturesV10ToNodeConnectorUpdatedTranslator implements IMDMessageTranslator<OfHeader, List<DataObject>> {
-    protected static final Logger LOG = LoggerFactory
+    private static final Logger LOG = LoggerFactory
             .getLogger(FeaturesV10ToNodeConnectorUpdatedTranslator.class);
 
     @Override
     public List<DataObject> translate(SwitchConnectionDistinguisher cookie,
             SessionContext sc, OfHeader msg) {
-        if(msg instanceof GetFeaturesOutput) {        
+        if (msg instanceof GetFeaturesOutput) {
             GetFeaturesOutput features = (GetFeaturesOutput) msg;
             List<DataObject> list = new CopyOnWriteArrayList<DataObject>();
             BigInteger datapathId = sc.getFeatures().getDatapathId();

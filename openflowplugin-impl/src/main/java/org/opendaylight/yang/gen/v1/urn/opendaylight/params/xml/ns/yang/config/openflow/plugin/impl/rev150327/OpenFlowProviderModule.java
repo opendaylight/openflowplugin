@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 
 public class OpenFlowProviderModule extends org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.config.openflow.plugin.impl.rev150327.AbstractOpenFlowProviderModule {
 
-    private static Logger LOG = LoggerFactory.getLogger(OpenFlowProviderModule.class);
+    private static final Logger LOG = LoggerFactory.getLogger(OpenFlowProviderModule.class);
 
     public OpenFlowProviderModule(org.opendaylight.controller.config.api.ModuleIdentifier identifier, org.opendaylight.controller.config.api.DependencyResolver dependencyResolver) {
         super(identifier, dependencyResolver);

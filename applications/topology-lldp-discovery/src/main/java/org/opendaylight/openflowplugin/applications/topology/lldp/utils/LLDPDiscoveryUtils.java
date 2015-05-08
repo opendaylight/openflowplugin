@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.applications.topology.lldp.utils;
 
 import java.nio.charset.Charset;
-
 import org.opendaylight.controller.liblldp.Ethernet;
 import org.opendaylight.controller.liblldp.LLDP;
 import org.opendaylight.controller.liblldp.LLDPTLV;
@@ -26,7 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class LLDPDiscoveryUtils {
-    static Logger LOG = LoggerFactory.getLogger(LLDPDiscoveryUtils.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LLDPDiscoveryUtils.class);
 
     public static final Long LLDP_INTERVAL = (long) (1000*5); // Send LLDP every five seconds
     public static final Long LLDP_EXPIRATION_TIME = LLDP_INTERVAL*3; // Let up to three intervals pass before we decide we are expired.

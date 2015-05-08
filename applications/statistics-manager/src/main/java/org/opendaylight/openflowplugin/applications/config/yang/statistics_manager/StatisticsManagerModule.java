@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 
 public class StatisticsManagerModule extends org.opendaylight.openflowplugin.applications.config.yang.statistics_manager.AbstractStatisticsManagerModule {
 
-    private final static Logger LOG = LoggerFactory.getLogger(StatisticsManagerModule.class);
+    private static final Logger LOG = LoggerFactory.getLogger(StatisticsManagerModule.class);
 
     private static final int MAX_NODES_FOR_COLLECTOR_DEFAULT = 16;
     private static final int MIN_REQUEST_NET_MONITOR_INTERVAL_DEFAULT = 3000;

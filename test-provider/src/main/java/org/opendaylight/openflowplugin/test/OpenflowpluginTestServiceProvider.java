@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2013 Cisco Systems, Inc. and others.  All rights reserved.
- * 
+ *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
@@ -9,7 +9,6 @@
 package org.opendaylight.openflowplugin.test;
 
 import java.util.concurrent.Future;
-
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
@@ -37,7 +36,7 @@ import org.slf4j.LoggerFactory;
 public class OpenflowpluginTestServiceProvider implements AutoCloseable,
         SalFlowService {
 
-    private final static Logger LOG = LoggerFactory
+    private static final Logger LOG = LoggerFactory
             .getLogger(OpenflowpluginTestServiceProvider.class);
 
     private DataBroker dataService;
@@ -46,7 +45,7 @@ public class OpenflowpluginTestServiceProvider implements AutoCloseable,
 
     /**
      * get data service
-     * 
+     *
      * @return {@link #dataService}
      */
     public DataBroker getDataService() {
@@ -55,7 +54,7 @@ public class OpenflowpluginTestServiceProvider implements AutoCloseable,
 
     /**
      * set {@link #dataService}
-     * 
+     *
      * @param dataService
      */
     public void setDataService(final DataBroker dataService) {
@@ -64,7 +63,7 @@ public class OpenflowpluginTestServiceProvider implements AutoCloseable,
 
     /**
      * get flow registration
-     * 
+     *
      * @return {@link #flowRegistration}
      */
     public RoutedRpcRegistration<SalFlowService> getFlowRegistration() {
@@ -73,7 +72,7 @@ public class OpenflowpluginTestServiceProvider implements AutoCloseable,
 
     /**
      * set {@link #flowRegistration}
-     * 
+     *
      * @param flowRegistration
      */
     public void setFlowRegistration(
@@ -83,7 +82,7 @@ public class OpenflowpluginTestServiceProvider implements AutoCloseable,
 
     /**
      * get notification service
-     * 
+     *
      * @return {@link #notificationProviderService}
      */
     public NotificationProviderService getNotificationService() {
@@ -92,7 +91,7 @@ public class OpenflowpluginTestServiceProvider implements AutoCloseable,
 
     /**
      * set {@link #notificationProviderService}
-     * 
+     *
      * @param notificationProviderService
      */
     public void setNotificationService(
@@ -107,7 +106,7 @@ public class OpenflowpluginTestServiceProvider implements AutoCloseable,
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.AutoCloseable#close()
      */
     @Override
@@ -119,7 +118,7 @@ public class OpenflowpluginTestServiceProvider implements AutoCloseable,
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.
      * SalFlowService
@@ -135,7 +134,7 @@ public class OpenflowpluginTestServiceProvider implements AutoCloseable,
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.
      * SalFlowService
@@ -151,7 +150,7 @@ public class OpenflowpluginTestServiceProvider implements AutoCloseable,
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.
      * SalFlowService
