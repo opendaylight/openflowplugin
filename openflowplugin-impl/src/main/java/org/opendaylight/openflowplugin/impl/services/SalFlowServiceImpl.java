@@ -64,6 +64,7 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
 
     @Override
     public Future<RpcResult<AddFlowOutput>> addFlow(final AddFlowInput input) {
+        getMessageSpy().spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_ENTERED);
         final FlowId flowId;
         if (null != input.getFlowRef()) {
             flowId = input.getFlowRef().getValue().firstKeyOf(Flow.class, FlowKey.class).getId();
@@ -82,7 +83,6 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
         Futures.addCallback(future, new FutureCallback<RpcResult<AddFlowOutput>>() {
             @Override
             public void onSuccess(final RpcResult<AddFlowOutput> rpcResult) {
-                getMessageSpy().spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_SUCCESS);
                 deviceContext.getDeviceFlowRegistry().store(flowHash, flowDescriptor);
                 if (rpcResult.isSuccessful()) {
                     LOG.debug("flow add finished without error, id={}", flowId.getValue());
@@ -93,7 +93,6 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
 
             @Override
             public void onFailure(final Throwable throwable) {
-                getMessageSpy().spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_FAILURE);
                 deviceContext.getDeviceFlowRegistry().markToBeremoved(flowHash);
                 LOG.trace("Service call for adding flows failed, id={}.", flowId.getValue(), throwable);
             }
@@ -115,14 +114,14 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
                     @Override
                     public void onSuccess(final Object o) {
                         final DeviceContext deviceContext = getDeviceContext();
-                        getMessageSpy().spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_SUCCESS);
+                        getMessageSpy().spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
                         FlowHash flowHash = FlowHashFactory.create(input, deviceContext.getPrimaryConnectionContext().getFeatures().getVersion());
                         deviceContext.getDeviceFlowRegistry().markToBeremoved(flowHash);
                     }
 
                     @Override
                     public void onFailure(final Throwable throwable) {
-                        getMessageSpy().spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_FAILURE);
+                        getMessageSpy().spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
                         StringBuffer errors = new StringBuffer();
                         try {
                             RpcResult<Void> result = future.get();
@@ -173,7 +172,7 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
             @Override
             public void onSuccess(final Object o) {
                 final DeviceContext deviceContext = getDeviceContext();
-                getMessageSpy().spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_SUCCESS);
+                getMessageSpy().spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
                 final short version = deviceContext.getPrimaryConnectionContext().getFeatures().getVersion();
                 FlowHash flowHash = FlowHashFactory.create(original, version);
 
@@ -187,7 +186,7 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
 
             @Override
             public void onFailure(final Throwable throwable) {
-                getMessageSpy().spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_FAILURE);
+                getMessageSpy().spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
             }
         });
         return future;

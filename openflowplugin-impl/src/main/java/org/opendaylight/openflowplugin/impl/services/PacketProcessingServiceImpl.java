@@ -17,6 +17,7 @@ import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
+import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.PacketOutConvertor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOutInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.ConnectionCookie;
@@ -32,9 +33,9 @@ public class PacketProcessingServiceImpl extends CommonService implements Packet
 
     @Override
     public Future<RpcResult<Void>> transmitPacket(final TransmitPacketInput input) {
+        getMessageSpy().spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_ENTERED);
 
         return handleServiceCall(new Function<DataCrate<Void>, ListenableFuture<RpcResult<Void>>>() {
-
             @Override
             public ListenableFuture<RpcResult<Void>> apply(DataCrate<Void> data) {
                 final Xid xid = data.getRequestContext().getXid();

@@ -377,17 +377,28 @@ public class DeviceContextImpl implements DeviceContext {
 
     @Override
     public void processPacketInMessage(final PacketInMessage packetInMessage) {
-        messageSpy.spyMessage(packetInMessage.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS);
+        messageSpy.spyMessage(packetInMessage.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH);
         final TranslatorKey translatorKey = new TranslatorKey(packetInMessage.getVersion(), PacketIn.class.getName());
         final MessageTranslator<PacketInMessage, PacketReceived> messageTranslator = translatorLibrary.lookupTranslator(translatorKey);
         final PacketReceived packetReceived = messageTranslator.translate(packetInMessage, this, null);
         final ConnectionAdapter connectionAdapter = this.getPrimaryConnectionContext().getConnectionAdapter();
+
+        if (packetReceived != null) {
+            messageSpy.spyMessage(packetInMessage.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_TRANSLATE_OUT_SUCCESS);
+        } else {
+            messageSpy.spyMessage(packetInMessage.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_TRANSLATE_SRC_FAILURE);
+        }
+
         if (connectionAdapter.isAutoRead()) {
             if (!notificationPublishService.offerNotification(packetReceived)) {
+                LOG.debug("Notification offer refused by notification service.");
+                messageSpy.spyMessage(packetInMessage.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE);
                 LOG.debug("Notification offer refused by notification service.");
                 connectionAdapter.setAutoRead(false);
                 LOG.info("Throttling primary connection for {}", connectionAdapter.getRemoteAddress());
                 this.throttledConnectionsHolder.storeThrottledConnection(connectionAdapter);
+            } else {
+                messageSpy.spyMessage(packetInMessage.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS);
             }
         }
 

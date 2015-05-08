@@ -76,7 +76,7 @@ public class SalGroupServiceImpl extends CommonService implements SalGroupServic
     }
 
     <T> ListenableFuture<RpcResult<Void>> convertAndSend(final Group iputGroup, final DataCrate<T> data) {
-        getMessageSpy().spyMessage(iputGroup.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_SUCCESS);
+        getMessageSpy().spyMessage(iputGroup.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
         final GroupModInputBuilder ofGroupModInput = GroupConvertor.toGroupModInput(iputGroup, getVersion(), getDatapathId());
         final Xid xid = data.getRequestContext().getXid();
         ofGroupModInput.setXid(xid.getValue());

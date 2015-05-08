@@ -76,7 +76,7 @@ public class FlowCapableTransactionServiceImpl extends CommonService implements 
             };
             Futures.addCallback(listenableBarrierOutputOFJava, successCallback);
         } else {
-            getMessageSpy().spyMessage(requestContext, MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_FAILURE);
+            getMessageSpy().spyMessage(requestContext, MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
         }
 
         //callback on request context future

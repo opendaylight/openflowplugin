@@ -14,16 +14,6 @@ package org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific;
 public interface MessageSpy<M> extends Runnable {
 
     /**
-     * @param message - message coming to OFP
-     */
-    void spyIn(M message);
-
-    /**
-     * @param message - message from OFP
-     */
-    void spyOut(M message);
-
-    /**
      * statistic groups overall in OFPlugin
      */
     enum STATISTIC_GROUP {
@@ -53,21 +43,25 @@ public interface MessageSpy<M> extends Runnable {
         FROM_SWITCH_PUBLISHED_FAILURE,
 
         /**
-         * message from MD-SAL to switch via RPC
+         * message from MD-SAL entered service - first point of encounter
          */
-        TO_SWITCH_SUCCESS,
+        TO_SWITCH_ENTERED,
         /**
-         * message from MD-SAL to switch via RPC failed to be sent to device.
+         * message from MD-SAL was disregarded (e.g. outstanding requests limit reached).
          */
-        TO_SWITCH_FAILED,
+        TO_SWITCH_DISREGARDED,
         /**
-         * message from MD-SAL to switch - sent to OFJava successfully and classified in DeviceContext
+         * message from MD-SAL to switch - sent to OFJava successfully
          */
-        TO_SWITCH_SUBMITTED_SUCCESS,
+        TO_SWITCH_SUBMIT_SUCCESS,
+        /**
+         * message from MD-SAL to switch - ready to sent to OFJava (might be one-to-multiple ration between entered and sent)
+         */
+        TO_SWITCH_READY_FOR_SUBMIT,
         /**
          * message from MD-SAL to switch - sent to OFJava but failed
          */
-        TO_SWITCH_SUBMITTED_FAILURE
+        TO_SWITCH_SUBMIT_FAILURE
     }
 
     /**

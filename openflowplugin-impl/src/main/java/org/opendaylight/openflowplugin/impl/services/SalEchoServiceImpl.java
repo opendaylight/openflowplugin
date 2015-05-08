@@ -82,7 +82,7 @@ public class SalEchoServiceImpl extends CommonService implements SalEchoService 
             };
             Futures.addCallback(listenableRpcEchoOutputOFJava, successCallback);
         } else {
-            getMessageSpy().spyMessage(requestContext, MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_FAILURE);
+            getMessageSpy().spyMessage(requestContext, MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
         }
 
         // callback on request context future

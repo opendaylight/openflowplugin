@@ -51,16 +51,6 @@ public class MessageIntelligenceAgencyImpl implements MessageIntelligenceAgency<
     private final ConcurrentMap<STATISTIC_GROUP, ConcurrentMap<Class, MessageCounters>> inputStats = new ConcurrentHashMap<>();
 
     @Override
-    public void spyIn(final Class message) {
-        getCounters(message, STATISTIC_GROUP.FROM_SWITCH_TRANSLATE_IN_SUCCESS).increment();
-    }
-
-    @Override
-    public void spyOut(final Class message) {
-        getCounters(message, STATISTIC_GROUP.FROM_SWITCH_TRANSLATE_OUT_SUCCESS).increment();
-    }
-
-    @Override
     public void spyMessage(final Class message, final STATISTIC_GROUP statGroup) {
         getCounters(message, statGroup).increment();
     }
