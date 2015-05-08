@@ -57,19 +57,19 @@ public class StatisticsContextImpl implements StatisticsContext {
         if (ConnectionContext.CONNECTION_STATE.WORKING.equals(deviceContext.getPrimaryConnectionContext().getConnectionState())) {
             final DeviceState devState = deviceContext.getDeviceState();
             final ListenableFuture<Boolean> emptyFuture = Futures.immediateFuture(new Boolean(false));
-            final ListenableFuture<Boolean> flowStatistics = devState.isFlowStatisticsAvailable() ? wrapLoggingOnStatisticsRequestCall(MultipartType.OFPMPFLOW) : emptyFuture;
+            final ListenableFuture<Boolean> flowStatistics = devState.isFlowStatisticsAvailable() ? StatisticsGatheringUtils.gatherStatistics(statisticsGatheringService, deviceContext, MultipartType.OFPMPFLOW) : emptyFuture;
 
-            final ListenableFuture<Boolean> tableStatistics = devState.isTableStatisticsAvailable() ? wrapLoggingOnStatisticsRequestCall(MultipartType.OFPMPTABLE) : emptyFuture;
+            final ListenableFuture<Boolean> tableStatistics = devState.isTableStatisticsAvailable() ? StatisticsGatheringUtils.gatherStatistics(statisticsGatheringService, deviceContext, MultipartType.OFPMPTABLE) : emptyFuture;
 
-            final ListenableFuture<Boolean> portStatistics = devState.isPortStatisticsAvailable() ? wrapLoggingOnStatisticsRequestCall(MultipartType.OFPMPPORTSTATS) : emptyFuture;
+            final ListenableFuture<Boolean> portStatistics = devState.isPortStatisticsAvailable() ? StatisticsGatheringUtils.gatherStatistics(statisticsGatheringService, deviceContext, MultipartType.OFPMPPORTSTATS) : emptyFuture;
 
-            final ListenableFuture<Boolean> queueStatistics = devState.isQueueStatisticsAvailable() ? wrapLoggingOnStatisticsRequestCall(MultipartType.OFPMPQUEUE) : emptyFuture;
+            final ListenableFuture<Boolean> queueStatistics = devState.isQueueStatisticsAvailable() ? StatisticsGatheringUtils.gatherStatistics(statisticsGatheringService, deviceContext, MultipartType.OFPMPQUEUE) : emptyFuture;
 
-            final ListenableFuture<Boolean> groupDescStatistics = devState.isGroupAvailable() ? wrapLoggingOnStatisticsRequestCall(MultipartType.OFPMPGROUPDESC) : emptyFuture;
-            final ListenableFuture<Boolean> groupStatistics = devState.isGroupAvailable() ? wrapLoggingOnStatisticsRequestCall(MultipartType.OFPMPGROUP) : emptyFuture;
+            final ListenableFuture<Boolean> groupDescStatistics = devState.isGroupAvailable() ? StatisticsGatheringUtils.gatherStatistics(statisticsGatheringService, deviceContext, MultipartType.OFPMPGROUPDESC) : emptyFuture;
+            final ListenableFuture<Boolean> groupStatistics = devState.isGroupAvailable() ? StatisticsGatheringUtils.gatherStatistics(statisticsGatheringService, deviceContext, MultipartType.OFPMPGROUP) : emptyFuture;
 
-            final ListenableFuture<Boolean> meterConfigStatistics = devState.isMetersAvailable() ? wrapLoggingOnStatisticsRequestCall(MultipartType.OFPMPMETERCONFIG) : emptyFuture;
-            final ListenableFuture<Boolean> meterStatistics = devState.isMetersAvailable() ? wrapLoggingOnStatisticsRequestCall(MultipartType.OFPMPMETER) : emptyFuture;
+            final ListenableFuture<Boolean> meterConfigStatistics = devState.isMetersAvailable() ? StatisticsGatheringUtils.gatherStatistics(statisticsGatheringService, deviceContext, MultipartType.OFPMPMETERCONFIG) : emptyFuture;
+            final ListenableFuture<Boolean> meterStatistics = devState.isMetersAvailable() ? StatisticsGatheringUtils.gatherStatistics(statisticsGatheringService, deviceContext, MultipartType.OFPMPMETER) : emptyFuture;
 
 
             final ListenableFuture<List<Boolean>> allFutures = Futures.allAsList(Arrays.asList(flowStatistics, tableStatistics, groupDescStatistics, groupStatistics, meterConfigStatistics, meterStatistics, portStatistics, queueStatistics));
@@ -101,22 +101,6 @@ public class StatisticsContextImpl implements StatisticsContext {
 
         }
         return resultingFuture;
-    }
-
-    private ListenableFuture<Boolean> wrapLoggingOnStatisticsRequestCall(final MultipartType type) {
-        final ListenableFuture<Boolean> future = StatisticsGatheringUtils.gatherStatistics(statisticsGatheringService, deviceContext, type);
-        Futures.addCallback(future, new FutureCallback() {
-            @Override
-            public void onSuccess(final Object o) {
-                LOG.trace("Multipart response for {} was successful.", type);
-            }
-
-            @Override
-            public void onFailure(final Throwable throwable) {
-                LOG.trace("Multipart response for {} FAILED.", type, throwable);
-            }
-        });
-        return future;
     }
 
     @Override
