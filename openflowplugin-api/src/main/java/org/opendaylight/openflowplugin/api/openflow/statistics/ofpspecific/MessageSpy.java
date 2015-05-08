@@ -51,17 +51,25 @@ public interface MessageSpy<M> extends Runnable {
          */
         TO_SWITCH_DISREGARDED,
         /**
-         * message from MD-SAL to switch - sent to OFJava successfully
-         */
-        TO_SWITCH_SUBMIT_SUCCESS,
-        /**
          * message from MD-SAL to switch - ready to sent to OFJava (might be one-to-multiple ration between entered and sent)
          */
         TO_SWITCH_READY_FOR_SUBMIT,
         /**
+         * message from MD-SAL to switch - sent to OFJava successfully
+         */
+        TO_SWITCH_SUBMIT_SUCCESS,
+        /**
+         * message from MD-SAL to switch - sent to OFJava successfully, no response expected
+         */
+        TO_SWITCH_SUBMIT_SUCCESS_NO_RESPONSE,
+        /**
          * message from MD-SAL to switch - sent to OFJava but failed
          */
-        TO_SWITCH_SUBMIT_FAILURE
+        TO_SWITCH_SUBMIT_FAILURE,
+        /**
+         * message from MD-SAL to switch - sent to OFJava but failed with exception
+         */
+        TO_SWITCH_SUBMIT_ERROR
     }
 
     /**

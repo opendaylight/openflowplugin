@@ -75,12 +75,12 @@ public class BaseCallback<I, O> implements FutureCallback<RpcResult<I>> {
         deviceContext.unhookRequestCtx(getRequestContext().getXid());
 
         if (futureResultFromOfLib.isCancelled()) {
-            deviceContext.getMessageSpy().spyMessage(getRequestContext().getClass(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
+            deviceContext.getMessageSpy().spyMessage(getRequestContext().getClass(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS_NO_RESPONSE);
 
             LOG.trace("Asymmetric message - no response from OF Java expected for XID {}. Closing as successful.", getRequestContext().getXid().getValue());
             getRequestContext().getFuture().set(RpcResultBuilder.<O>success().build());
         } else {
-            deviceContext.getMessageSpy().spyMessage(getRequestContext().getClass(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
+            deviceContext.getMessageSpy().spyMessage(getRequestContext().getClass(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_ERROR);
             LOG.trace("Exception occured while processing OF Java response for XID {}.", getRequestContext().getXid().getValue(), throwable);
             getRequestContext().getFuture().set(
                     RpcResultBuilder.<O>failed()
