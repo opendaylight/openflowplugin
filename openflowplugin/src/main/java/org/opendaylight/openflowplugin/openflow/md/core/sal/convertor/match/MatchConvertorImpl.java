@@ -10,12 +10,12 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 
 import static org.opendaylight.openflowjava.util.ByteBufUtils.macAddressToString;
 
+import com.google.common.base.Optional;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
 import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
@@ -264,8 +264,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Tunne
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TunnelIpv4Src;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Optional;
 
 /**
  * Utility class for converting a MD-SAL Flow into the OF flow mod
@@ -1061,7 +1059,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
                 MetadataBuilder metadataBuilder = new MetadataBuilder();
                 org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.metadata._case.Metadata metadata = ((MetadataCase) ofMatch.getMatchEntryValue()).getMetadata();
                 if (metadata != null) {
-                    metadataBuilder.setMetadata(new BigInteger(1, metadata.getMetadata()));
+                    metadataBuilder.setMetadata(new BigInteger(OFConstants.SIGNUM_UNSIGNED, metadata.getMetadata()));
                     byte[] metadataMask = metadata.getMask();
                     if (metadataMask != null) {
                         metadataBuilder.setMetadataMask(new BigInteger(OFConstants.SIGNUM_UNSIGNED, metadataMask));
@@ -1404,7 +1402,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
                 org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.tunnel.id._case.TunnelId tunnelId = ((TunnelIdCase) ofMatch.getMatchEntryValue()).getTunnelId();
                 TunnelBuilder tunnelBuilder = new TunnelBuilder();
                 if (tunnelId.getTunnelId()!= null) {
-                    tunnelBuilder.setTunnelId(new BigInteger(1, tunnelId.getTunnelId()));
+                    tunnelBuilder.setTunnelId(new BigInteger(OFConstants.SIGNUM_UNSIGNED, tunnelId.getTunnelId()));
                     byte[] mask = tunnelId.getMask();
                     if (null != mask) {
                         tunnelBuilder.setTunnelMask(new BigInteger(OFConstants.SIGNUM_UNSIGNED, mask));
@@ -1801,7 +1799,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
 //        setField.fieldsFrom(match.build());
 //        return setField.build();
 //    }
-    
+
     /**
      * Method converts OF SetField action to SAL SetFiled action.
      *
@@ -1814,12 +1812,12 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
         logger.debug("Converting OF SetField action to SAL SetField action");
         SetFieldCase setFieldCase = (SetFieldCase) action.getActionChoice();
         SetFieldAction setFieldAction = setFieldCase.getSetFieldAction();
-        
+
         SetFieldBuilder setField = new SetFieldBuilder();
         MatchBuilder match = OfMatchToSALMatchConvertor(setFieldAction.getMatchEntry(), null, ofVersion);
         setField.fieldsFrom(match.build());
         return setField.build();
     }
-    
-    
+
+
 }

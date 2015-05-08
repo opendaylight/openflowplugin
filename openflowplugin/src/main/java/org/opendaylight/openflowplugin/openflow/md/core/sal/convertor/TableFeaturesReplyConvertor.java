@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlInCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlOutCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DecMplsTtlCaseBuilder;
@@ -165,10 +166,10 @@ public class TableFeaturesReplyConvertor {
             salTableFeatures.setTableId(ofTableFeatures.getTableId());
             salTableFeatures.setName(ofTableFeatures.getName());
             if (ofTableFeatures.getMetadataMatch() != null) {
-                salTableFeatures.setMetadataMatch(new BigInteger(1, ofTableFeatures.getMetadataMatch()));
+                salTableFeatures.setMetadataMatch(new BigInteger(OFConstants.SIGNUM_UNSIGNED, ofTableFeatures.getMetadataMatch()));
             }
             if (ofTableFeatures.getMetadataWrite() != null) {
-                salTableFeatures.setMetadataWrite(new BigInteger(1, ofTableFeatures.getMetadataWrite()));
+                salTableFeatures.setMetadataWrite(new BigInteger(OFConstants.SIGNUM_UNSIGNED, ofTableFeatures.getMetadataWrite()));
             }
             if (ofTableFeatures.getConfig() != null) {
                 salTableFeatures.setConfig(new TableConfig(ofTableFeatures.getConfig().isOFPTCDEPRECATEDMASK()));
@@ -413,7 +414,7 @@ public class TableFeaturesReplyConvertor {
 
             builder.setOrder(index);
             index += 1;
-            
+
             instructionList.add(builder.build());
         }
         return instructionList;

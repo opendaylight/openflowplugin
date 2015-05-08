@@ -9,6 +9,12 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.translator;
 
+import java.math.BigInteger;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.core.IMDMessageTranslator;
@@ -150,12 +156,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Tunne
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.math.BigInteger;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, List<DataObject>> {
 
@@ -243,7 +243,7 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
             } else if (field.equals(Metadata.class)) {
                 MetadataBuilder metadata = new MetadataBuilder();
                 MetadataCase metadataCase = ((MetadataCase) entry.getMatchEntryValue());
-                metadata.setMetadata(new BigInteger(1, metadataCase.getMetadata().getMetadata()));
+                metadata.setMetadata(new BigInteger(OFConstants.SIGNUM_UNSIGNED, metadataCase.getMetadata().getMetadata()));
                 if (entry.isHasMask()) {
                     metadata.setMetadataMask(new BigInteger(OFConstants.SIGNUM_UNSIGNED, metadataCase.getMetadata().getMask()));
                 }
@@ -574,7 +574,7 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
             } else if (field.equals(TunnelId.class)) {
                 TunnelIdCase tunnelIdCase = ((TunnelIdCase) entry.getMatchEntryValue());
                 TunnelBuilder tunnel = new TunnelBuilder();
-                tunnel.setTunnelId(new BigInteger(1, tunnelIdCase.getTunnelId().getTunnelId()));
+                tunnel.setTunnelId(new BigInteger(OFConstants.SIGNUM_UNSIGNED, tunnelIdCase.getTunnelId().getTunnelId()));
                 if (entry.isHasMask()) {
                     tunnel.setTunnelMask(new BigInteger(OFConstants.SIGNUM_UNSIGNED, tunnelIdCase.getTunnelId().getMask()));
                 }

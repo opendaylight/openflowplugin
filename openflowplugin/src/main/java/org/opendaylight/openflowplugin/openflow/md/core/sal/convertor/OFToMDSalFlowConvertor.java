@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
@@ -114,8 +115,8 @@ public final class OFToMDSalFlowConvertor {
                         ((org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.WriteMetadataCase) switchInst.getInstructionChoice());
                 WriteMetadataCaseBuilder writeMetadataCaseBuilder = new WriteMetadataCaseBuilder();
                 WriteMetadataBuilder writeMetadataBuilder = new WriteMetadataBuilder();
-                writeMetadataBuilder.setMetadata(new BigInteger(writeMetadataCase.getWriteMetadata().getMetadata()));
-                writeMetadataBuilder.setMetadataMask(new BigInteger(1, writeMetadataCase.getWriteMetadata().getMetadataMask()));
+                writeMetadataBuilder.setMetadata(new BigInteger(OFConstants.SIGNUM_UNSIGNED, writeMetadataCase.getWriteMetadata().getMetadata()));
+                writeMetadataBuilder.setMetadataMask(new BigInteger(OFConstants.SIGNUM_UNSIGNED, writeMetadataCase.getWriteMetadata().getMetadataMask()));
                 writeMetadataCaseBuilder.setWriteMetadata(writeMetadataBuilder.build());
                 salInstruction = writeMetadataCaseBuilder.build();
             } else {
