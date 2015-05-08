@@ -25,6 +25,7 @@ import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
+import org.opendaylight.openflowplugin.api.openflow.connection.ThrottledConnectionsHolder;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
@@ -80,6 +81,8 @@ public class DeviceContextImplTest {
     HashedWheelTimer timer;
     @Mock
     MessageIntelligenceAgency messageIntelligenceAgency;
+    @Mock
+    ThrottledConnectionsHolder throttledConnectionsHolder;
 
     @Before
     public void setUp() {
@@ -92,29 +95,29 @@ public class DeviceContextImplTest {
         Mockito.when(txChainFactory.newWriteOnlyTransaction()).thenReturn(wTx);
         Mockito.when(dataBroker.newReadOnlyTransaction()).thenReturn(rTx);
 
-        deviceContext = new DeviceContextImpl(connectionContext, deviceState, dataBroker, timer, messageIntelligenceAgency);
+        deviceContext = new DeviceContextImpl(connectionContext, deviceState, dataBroker, timer, messageIntelligenceAgency,throttledConnectionsHolder);
         xid = deviceContext.getNextXid();
         xidMulti = deviceContext.getNextXid();
     }
 
     @Test(expected = NullPointerException.class)
     public void testDeviceContextImplConstructorNullConnectionContext() {
-        new DeviceContextImpl(null, deviceState, dataBroker, timer, messageIntelligenceAgency);
+        new DeviceContextImpl(null, deviceState, dataBroker, timer, messageIntelligenceAgency,throttledConnectionsHolder);
     }
 
     @Test(expected = NullPointerException.class)
     public void testDeviceContextImplConstructorNullDataBroker() {
-        new DeviceContextImpl(connectionContext, deviceState, null, timer, messageIntelligenceAgency);
+        new DeviceContextImpl(connectionContext, deviceState, null, timer, messageIntelligenceAgency,throttledConnectionsHolder);
     }
 
     @Test(expected = NullPointerException.class)
     public void testDeviceContextImplConstructorNullDeviceState() {
-        new DeviceContextImpl(connectionContext, null, dataBroker, timer, messageIntelligenceAgency);
+        new DeviceContextImpl(connectionContext, null, dataBroker, timer, messageIntelligenceAgency,throttledConnectionsHolder);
     }
 
     @Test(expected = NullPointerException.class)
     public void testDeviceContextImplConstructorNullTimer() {
-        new DeviceContextImpl(null, deviceState, dataBroker, null, messageIntelligenceAgency);
+        new DeviceContextImpl(null, deviceState, dataBroker, null, messageIntelligenceAgency,throttledConnectionsHolder);
     }
 
     @Test

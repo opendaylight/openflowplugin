@@ -26,7 +26,9 @@ import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
+import org.opendaylight.openflowplugin.api.openflow.connection.ThrottledConnectionsHolder;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
@@ -105,6 +107,7 @@ public class DeviceContextImpl implements DeviceContext {
     private DeviceDisconnectedHandler deviceDisconnectedHandler;
     private final List<DeviceContextClosedHandler> closeHandlers = new ArrayList<>();
     private NotificationPublishService notificationPublishService;
+    private final ThrottledConnectionsHolder throttledConnectionsHolder;
 
 
     @VisibleForTesting
@@ -112,7 +115,8 @@ public class DeviceContextImpl implements DeviceContext {
                       @Nonnull final DeviceState deviceState,
                       @Nonnull final DataBroker dataBroker,
                       @Nonnull final HashedWheelTimer hashedWheelTimer,
-                      @Nonnull final MessageSpy _messageSpy) {
+                      @Nonnull final MessageSpy _messageSpy,
+                      @Nonnull final ThrottledConnectionsHolder throttledConnectionsHolder) {
         this.primaryConnectionContext = Preconditions.checkNotNull(primaryConnectionContext);
         this.deviceState = Preconditions.checkNotNull(deviceState);
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
@@ -124,6 +128,7 @@ public class DeviceContextImpl implements DeviceContext {
         deviceGroupRegistry = new DeviceGroupRegistryImpl();
         deviceMeterRegistry = new DeviceMeterRegistryImpl();
         messageSpy = _messageSpy;
+        this.throttledConnectionsHolder = throttledConnectionsHolder;
     }
 
     /**
@@ -376,8 +381,14 @@ public class DeviceContextImpl implements DeviceContext {
         final TranslatorKey translatorKey = new TranslatorKey(packetInMessage.getVersion(), PacketIn.class.getName());
         final MessageTranslator<PacketInMessage, PacketReceived> messageTranslator = translatorLibrary.lookupTranslator(translatorKey);
         final PacketReceived packetReceived = messageTranslator.translate(packetInMessage, this, null);
-        if (!notificationPublishService.offerNotification(packetReceived)) {
-            LOG.debug("Notification offer refused by notification service.");
+        final ConnectionAdapter connectionAdapter = this.getPrimaryConnectionContext().getConnectionAdapter();
+        if (connectionAdapter.isAutoRead()) {
+            if (!notificationPublishService.offerNotification(packetReceived)) {
+                LOG.debug("Notification offer refused by notification service.");
+                connectionAdapter.setAutoRead(false);
+                LOG.info("Throttling primary connection for {}", connectionAdapter.getRemoteAddress());
+                this.throttledConnectionsHolder.storeThrottledConnection(connectionAdapter);
+            }
         }
 
     }
