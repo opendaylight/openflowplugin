@@ -28,29 +28,22 @@ import org.slf4j.Logger;
 public abstract class CommonService {
     private static final Logger LOG = org.slf4j.LoggerFactory.getLogger(CommonService.class);
     private static final long WAIT_TIME = 2000;
-    protected final static Future<RpcResult<Void>> ERROR_RPC_RESULT = Futures.immediateFuture(RpcResultBuilder
+    private final static Future<RpcResult<Void>> ERROR_RPC_RESULT = Futures.immediateFuture(RpcResultBuilder
             .<Void>failed().withError(ErrorType.APPLICATION, "", "Request quota exceeded.").build());
-    protected static final BigInteger PRIMARY_CONNECTION = new BigInteger("0");
-
-    // protected OFRpcTaskContext rpcTaskContext;
-    public short version;
-    public BigInteger datapathId;
-    protected RequestContextStack requestContextStack;
-    protected DeviceContext deviceContext;
-    public ConnectionAdapter primaryConnectionAdapter;
-    public MessageSpy messageSpy;
 
 
-    /**
-     * @deprecated use {@link #CommonService(RequestContextStack, DeviceContext)}
-     */
-    @Deprecated
-    public CommonService() {
-    }
+    private static final BigInteger PRIMARY_CONNECTION = new BigInteger("0");
+
+    private final short version;
+    private final BigInteger datapathId;
+    private final RequestContextStack requestContextStack;
+    private final DeviceContext deviceContext;
+    private final ConnectionAdapter primaryConnectionAdapter;
+    private final MessageSpy messageSpy;
+
 
     public CommonService(final RequestContextStack requestContextStack, DeviceContext deviceContext) {
         this.requestContextStack = requestContextStack;
-
         this.deviceContext = deviceContext;
         final FeaturesReply features = this.deviceContext.getPrimaryConnectionContext().getFeatures();
         this.datapathId = features.getDatapathId();
@@ -58,10 +51,38 @@ public abstract class CommonService {
         this.primaryConnectionAdapter = deviceContext.getPrimaryConnectionContext().getConnectionAdapter();
         this.messageSpy = deviceContext.getMessageSpy();
     }
+    public static BigInteger getPrimaryConnection() {
+        return PRIMARY_CONNECTION;
+    }
+
+    public short getVersion(){
+        return version;
+    }
+
+    public BigInteger getDatapathId() {
+        return datapathId;
+    }
+
+    public RequestContextStack getRequestContextStack() {
+        return requestContextStack;
+    }
+
+    public DeviceContext getDeviceContext() {
+        return deviceContext;
+    }
+
+    public ConnectionAdapter getPrimaryConnectionAdapter() {
+        return primaryConnectionAdapter;
+    }
+
+    public MessageSpy getMessageSpy() {
+        return messageSpy;
+    }
 
     protected long provideWaitTime() {
         return WAIT_TIME;
     }
+
 
     protected ConnectionAdapter provideConnectionAdapter(final BigInteger connectionID) {
         if (connectionID == null) {
@@ -91,6 +112,10 @@ public abstract class CommonService {
                                                                    final Function<DataCrate<T>, ListenableFuture<RpcResult<F>>> function) {
         DataCrateBuilder<T> dataCrateBuilder = DataCrateBuilder.<T>builder();
         return handleServiceCall(connectionID, function, dataCrateBuilder);
+    }
+    public <T, F> ListenableFuture<RpcResult<T>> handleServiceCall(final Function<DataCrate<T>, ListenableFuture<RpcResult<F>>> function) {
+        DataCrateBuilder<T> dataCrateBuilder = DataCrateBuilder.<T>builder();
+        return handleServiceCall(PRIMARY_CONNECTION, function, dataCrateBuilder);
     }
 
     /**

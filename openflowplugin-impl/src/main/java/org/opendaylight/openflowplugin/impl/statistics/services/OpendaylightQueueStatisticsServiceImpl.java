@@ -46,7 +46,7 @@ public class OpendaylightQueueStatisticsServiceImpl extends CommonService implem
     public Future<RpcResult<GetAllQueuesStatisticsFromAllPortsOutput>> getAllQueuesStatisticsFromAllPorts(
             final GetAllQueuesStatisticsFromAllPortsInput input) {
         return this.<GetAllQueuesStatisticsFromAllPortsOutput, Void>handleServiceCall(
-                PRIMARY_CONNECTION, new Function<DataCrate<GetAllQueuesStatisticsFromAllPortsOutput>, ListenableFuture<RpcResult<Void>>>() {
+                new Function<DataCrate<GetAllQueuesStatisticsFromAllPortsOutput>, ListenableFuture<RpcResult<Void>>>() {
 
                     @Override
                     public ListenableFuture<RpcResult<Void>> apply(final DataCrate<GetAllQueuesStatisticsFromAllPortsOutput> data) {
@@ -63,9 +63,9 @@ public class OpendaylightQueueStatisticsServiceImpl extends CommonService implem
                         // Set request body to main multipart request
                         final Xid xid = data.getRequestContext().getXid();
                         MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
-                                MultipartType.OFPMPQUEUE, xid.getValue(), version);
+                                MultipartType.OFPMPQUEUE, xid.getValue(), getVersion());
                         mprInput.setMultipartRequestBody(caseBuilder.build());
-                        Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext()
+                        Future<RpcResult<Void>> resultFromOFLib = getDeviceContext().getPrimaryConnectionContext()
                                 .getConnectionAdapter().multipartRequest(mprInput.build());
                         return JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
                     }
@@ -77,7 +77,7 @@ public class OpendaylightQueueStatisticsServiceImpl extends CommonService implem
     public Future<RpcResult<GetAllQueuesStatisticsFromGivenPortOutput>> getAllQueuesStatisticsFromGivenPort(
             final GetAllQueuesStatisticsFromGivenPortInput input) {
         return this.<GetAllQueuesStatisticsFromGivenPortOutput, Void>handleServiceCall(
-                PRIMARY_CONNECTION, new Function<DataCrate<GetAllQueuesStatisticsFromGivenPortOutput>, ListenableFuture<RpcResult<Void>>>() {
+                new Function<DataCrate<GetAllQueuesStatisticsFromGivenPortOutput>, ListenableFuture<RpcResult<Void>>>() {
 
                     @Override
                     public ListenableFuture<RpcResult<Void>> apply(final DataCrate<GetAllQueuesStatisticsFromGivenPortOutput> data) {
@@ -87,6 +87,7 @@ public class OpendaylightQueueStatisticsServiceImpl extends CommonService implem
                         // Select all queues
                         mprQueueBuilder.setQueueId(OFConstants.OFPQ_ALL);
                         // Select specific port
+                        final short version = getVersion();
                         mprQueueBuilder.setPortNo(InventoryDataServiceUtil.portNumberfromNodeConnectorId(
                                 OpenflowVersion.get(version), input.getNodeConnectorId()));
                         caseBuilder.setMultipartRequestQueue(mprQueueBuilder.build());
@@ -96,7 +97,7 @@ public class OpendaylightQueueStatisticsServiceImpl extends CommonService implem
                         MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
                                 MultipartType.OFPMPQUEUE, xid.getValue(), version);
                         mprInput.setMultipartRequestBody(caseBuilder.build());
-                        Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext()
+                        Future<RpcResult<Void>> resultFromOFLib = getDeviceContext().getPrimaryConnectionContext()
                                 .getConnectionAdapter().multipartRequest(mprInput.build());
                         return JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
 
@@ -108,7 +109,7 @@ public class OpendaylightQueueStatisticsServiceImpl extends CommonService implem
     public Future<RpcResult<GetQueueStatisticsFromGivenPortOutput>> getQueueStatisticsFromGivenPort(
             final GetQueueStatisticsFromGivenPortInput input) {
         return this.<GetQueueStatisticsFromGivenPortOutput, Void>handleServiceCall(
-                PRIMARY_CONNECTION, new Function<DataCrate<GetQueueStatisticsFromGivenPortOutput>, ListenableFuture<RpcResult<Void>>>() {
+                new Function<DataCrate<GetQueueStatisticsFromGivenPortOutput>, ListenableFuture<RpcResult<Void>>>() {
 
                     @Override
                     public ListenableFuture<RpcResult<Void>> apply(final DataCrate<GetQueueStatisticsFromGivenPortOutput> data) {
@@ -118,6 +119,7 @@ public class OpendaylightQueueStatisticsServiceImpl extends CommonService implem
                         // Select specific queue
                         mprQueueBuilder.setQueueId(input.getQueueId().getValue());
                         // Select specific port
+                        final short version = getVersion();
                         mprQueueBuilder.setPortNo(InventoryDataServiceUtil.portNumberfromNodeConnectorId(
                                 OpenflowVersion.get(version), input.getNodeConnectorId()));
                         caseBuilder.setMultipartRequestQueue(mprQueueBuilder.build());
@@ -127,7 +129,7 @@ public class OpendaylightQueueStatisticsServiceImpl extends CommonService implem
                         MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
                                 MultipartType.OFPMPQUEUE, xid.getValue(), version);
                         mprInput.setMultipartRequestBody(caseBuilder.build());
-                        Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext()
+                        Future<RpcResult<Void>> resultFromOFLib = getDeviceContext().getPrimaryConnectionContext()
                                 .getConnectionAdapter().multipartRequest(mprInput.build());
                         return JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
                     }

@@ -50,41 +50,40 @@ public class OpendaylightGroupStatisticsServiceImpl extends CommonService implem
     public Future<RpcResult<GetAllGroupStatisticsOutput>> getAllGroupStatistics(final GetAllGroupStatisticsInput input) {
 
 
-        return this.<GetAllGroupStatisticsOutput, Void>handleServiceCall(PRIMARY_CONNECTION,
-                new Function<DataCrate<GetAllGroupStatisticsOutput>, ListenableFuture<RpcResult<Void>>>() {
+        return this.<GetAllGroupStatisticsOutput, Void>handleServiceCall(new Function<DataCrate<GetAllGroupStatisticsOutput>, ListenableFuture<RpcResult<Void>>>() {
 
-                    @Override
-                    public ListenableFuture<RpcResult<Void>> apply(final DataCrate<GetAllGroupStatisticsOutput> data) {
+            @Override
+            public ListenableFuture<RpcResult<Void>> apply(final DataCrate<GetAllGroupStatisticsOutput> data) {
 
-                        final MultipartRequestGroupCaseBuilder caseBuilder = new MultipartRequestGroupCaseBuilder();
-                        final MultipartRequestGroupBuilder mprGroupBuild = new MultipartRequestGroupBuilder();
-                        mprGroupBuild.setGroupId(new GroupId(
-                                BinContent
-                                        .intToUnsignedLong(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Group.OFPGALL
-                                                .getIntValue())));
-                        caseBuilder.setMultipartRequestGroup(mprGroupBuild.build());
+                final MultipartRequestGroupCaseBuilder caseBuilder = new MultipartRequestGroupCaseBuilder();
+                final MultipartRequestGroupBuilder mprGroupBuild = new MultipartRequestGroupBuilder();
+                mprGroupBuild.setGroupId(new GroupId(
+                        BinContent
+                                .intToUnsignedLong(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Group.OFPGALL
+                                        .getIntValue())));
+                caseBuilder.setMultipartRequestGroup(mprGroupBuild.build());
 
-                        // Create multipart request header
-                        final Xid xid = data.getRequestContext().getXid();
-                        final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
-                                MultipartType.OFPMPGROUP, xid.getValue(), version);
+                // Create multipart request header
+                final Xid xid = data.getRequestContext().getXid();
+                final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
+                        MultipartType.OFPMPGROUP, xid.getValue(), getVersion());
 
-                        // Set request body to main multipart request
-                        mprInput.setMultipartRequestBody(caseBuilder.build());
+                // Set request body to main multipart request
+                mprInput.setMultipartRequestBody(caseBuilder.build());
 
-                        // Send the request, no cookies associated, use any connection
+                // Send the request, no cookies associated, use any connection
 
-                        final Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext()
-                                .getConnectionAdapter().multipartRequest(mprInput.build());
-                        return JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
-                    }
-                });
+                final Future<RpcResult<Void>> resultFromOFLib = getDeviceContext().getPrimaryConnectionContext()
+                        .getConnectionAdapter().multipartRequest(mprInput.build());
+                return JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
+            }
+        });
 
     }
 
     @Override
     public Future<RpcResult<GetGroupDescriptionOutput>> getGroupDescription(final GetGroupDescriptionInput input) {
-        return this.<GetGroupDescriptionOutput, Void>handleServiceCall(PRIMARY_CONNECTION,
+        return this.<GetGroupDescriptionOutput, Void>handleServiceCall(
                 new Function<DataCrate<GetGroupDescriptionOutput>, ListenableFuture<RpcResult<Void>>>() {
 
                     @Override
@@ -93,9 +92,9 @@ public class OpendaylightGroupStatisticsServiceImpl extends CommonService implem
 
                         final Xid xid = data.getRequestContext().getXid();
                         final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
-                                MultipartType.OFPMPGROUPDESC, xid.getValue(), version);
+                                MultipartType.OFPMPGROUPDESC, xid.getValue(), getVersion());
                         mprInput.setMultipartRequestBody(mprGroupDescCaseBuild.build());
-                        final Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext()
+                        final Future<RpcResult<Void>> resultFromOFLib = getDeviceContext().getPrimaryConnectionContext()
                                 .getConnectionAdapter().multipartRequest(mprInput.build());
                         return JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
                     }
@@ -105,7 +104,7 @@ public class OpendaylightGroupStatisticsServiceImpl extends CommonService implem
 
     @Override
     public Future<RpcResult<GetGroupFeaturesOutput>> getGroupFeatures(final GetGroupFeaturesInput input) {
-        return this.<GetGroupFeaturesOutput, Void>handleServiceCall(PRIMARY_CONNECTION,
+        return this.<GetGroupFeaturesOutput, Void>handleServiceCall(
                 new Function<DataCrate<GetGroupFeaturesOutput>, ListenableFuture<RpcResult<Void>>>() {
 
                     @Override
@@ -114,9 +113,9 @@ public class OpendaylightGroupStatisticsServiceImpl extends CommonService implem
 
                         final Xid xid = data.getRequestContext().getXid();
                         final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
-                                MultipartType.OFPMPGROUPFEATURES, xid.getValue(), version);
+                                MultipartType.OFPMPGROUPFEATURES, xid.getValue(), getVersion());
                         mprInput.setMultipartRequestBody(mprGroupFeaturesBuild.build());
-                        final Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext()
+                        final Future<RpcResult<Void>> resultFromOFLib = getDeviceContext().getPrimaryConnectionContext()
                                 .getConnectionAdapter().multipartRequest(mprInput.build());
                         return JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
                     }
@@ -126,7 +125,7 @@ public class OpendaylightGroupStatisticsServiceImpl extends CommonService implem
 
     @Override
     public Future<RpcResult<GetGroupStatisticsOutput>> getGroupStatistics(final GetGroupStatisticsInput input) {
-        return this.<GetGroupStatisticsOutput, Void>handleServiceCall(PRIMARY_CONNECTION,
+        return this.<GetGroupStatisticsOutput, Void>handleServiceCall(
                 new Function<DataCrate<GetGroupStatisticsOutput>, ListenableFuture<RpcResult<Void>>>() {
 
                     @Override
@@ -139,10 +138,10 @@ public class OpendaylightGroupStatisticsServiceImpl extends CommonService implem
 
                         final Xid xid = data.getRequestContext().getXid();
                         final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
-                                MultipartType.OFPMPGROUP, xid.getValue(), version);
+                                MultipartType.OFPMPGROUP, xid.getValue(), getVersion());
 
                         mprInput.setMultipartRequestBody(caseBuilder.build());
-                        final Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext()
+                        final Future<RpcResult<Void>> resultFromOFLib = getDeviceContext().getPrimaryConnectionContext()
                                 .getConnectionAdapter().multipartRequest(mprInput.build());
                         return JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
                     }

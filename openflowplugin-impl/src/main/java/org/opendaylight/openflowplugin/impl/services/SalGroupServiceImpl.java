@@ -39,8 +39,8 @@ public class SalGroupServiceImpl extends CommonService implements SalGroupServic
 
     @Override
     public Future<RpcResult<AddGroupOutput>> addGroup(final AddGroupInput input) {
-        deviceContext.getDeviceGroupRegistry().store(input.getGroupId());
-        return this.<AddGroupOutput, Void>handleServiceCall(PRIMARY_CONNECTION,
+        getDeviceContext().getDeviceGroupRegistry().store(input.getGroupId());
+        return this.<AddGroupOutput, Void>handleServiceCall(getPrimaryConnection(),
                 new Function<DataCrate<AddGroupOutput>, ListenableFuture<RpcResult<Void>>>() {
 
                     @Override
@@ -52,7 +52,7 @@ public class SalGroupServiceImpl extends CommonService implements SalGroupServic
 
     @Override
     public Future<RpcResult<UpdateGroupOutput>> updateGroup(final UpdateGroupInput input) {
-        return this.<UpdateGroupOutput, Void>handleServiceCall(PRIMARY_CONNECTION,
+        return this.<UpdateGroupOutput, Void>handleServiceCall(getPrimaryConnection(),
                 new Function<DataCrate<UpdateGroupOutput>, ListenableFuture<RpcResult<Void>>>() {
 
                     @Override
@@ -64,8 +64,8 @@ public class SalGroupServiceImpl extends CommonService implements SalGroupServic
 
     @Override
     public Future<RpcResult<RemoveGroupOutput>> removeGroup(final RemoveGroupInput input) {
-        deviceContext.getDeviceGroupRegistry().markToBeremoved(input.getGroupId());
-        return this.<RemoveGroupOutput, Void>handleServiceCall(PRIMARY_CONNECTION,
+        getDeviceContext().getDeviceGroupRegistry().markToBeremoved(input.getGroupId());
+        return this.<RemoveGroupOutput, Void>handleServiceCall(getPrimaryConnection(),
                 new Function<DataCrate<RemoveGroupOutput>, ListenableFuture<RpcResult<Void>>>() {
 
                     @Override
@@ -76,8 +76,8 @@ public class SalGroupServiceImpl extends CommonService implements SalGroupServic
     }
 
     <T> ListenableFuture<RpcResult<Void>> convertAndSend(final Group iputGroup, final DataCrate<T> data) {
-        messageSpy.spyMessage(iputGroup.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_SUCCESS);
-        final GroupModInputBuilder ofGroupModInput = GroupConvertor.toGroupModInput(iputGroup, version, datapathId);
+        getMessageSpy().spyMessage(iputGroup.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_SUCCESS);
+        final GroupModInputBuilder ofGroupModInput = GroupConvertor.toGroupModInput(iputGroup, getVersion(), getDatapathId());
         final Xid xid = data.getRequestContext().getXid();
         ofGroupModInput.setXid(xid.getValue());
         return JdkFutureAdapters.listenInPoolThread(provideConnectionAdapter(data.getiDConnection()).groupMod(ofGroupModInput.build()));

@@ -51,31 +51,30 @@ public class OpendaylightMeterStatisticsServiceImpl extends CommonService implem
     public Future<RpcResult<GetAllMeterConfigStatisticsOutput>> getAllMeterConfigStatistics(
             final GetAllMeterConfigStatisticsInput input) {
         return this
-                .<GetAllMeterConfigStatisticsOutput, Void>handleServiceCall(
-                        PRIMARY_CONNECTION, new Function<DataCrate<GetAllMeterConfigStatisticsOutput>, ListenableFuture<RpcResult<Void>>>() {
+                .<GetAllMeterConfigStatisticsOutput, Void>handleServiceCall(new Function<DataCrate<GetAllMeterConfigStatisticsOutput>, ListenableFuture<RpcResult<Void>>>() {
 
-                            @Override
-                            public ListenableFuture<RpcResult<Void>> apply(final DataCrate<GetAllMeterConfigStatisticsOutput> data) {
+                    @Override
+                    public ListenableFuture<RpcResult<Void>> apply(final DataCrate<GetAllMeterConfigStatisticsOutput> data) {
 
-                                MultipartRequestMeterConfigCaseBuilder caseBuilder =
-                                        new MultipartRequestMeterConfigCaseBuilder();
-                                MultipartRequestMeterConfigBuilder mprMeterConfigBuild =
-                                        new MultipartRequestMeterConfigBuilder();
-                                mprMeterConfigBuild.setMeterId(new MeterId(BinContent.intToUnsignedLong(
-                                        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common
-                                                .types.rev130731.Meter.OFPMALL.getIntValue())));
-                                caseBuilder.setMultipartRequestMeterConfig(mprMeterConfigBuild.build());
+                        MultipartRequestMeterConfigCaseBuilder caseBuilder =
+                                new MultipartRequestMeterConfigCaseBuilder();
+                        MultipartRequestMeterConfigBuilder mprMeterConfigBuild =
+                                new MultipartRequestMeterConfigBuilder();
+                        mprMeterConfigBuild.setMeterId(new MeterId(BinContent.intToUnsignedLong(
+                                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common
+                                        .types.rev130731.Meter.OFPMALL.getIntValue())));
+                        caseBuilder.setMultipartRequestMeterConfig(mprMeterConfigBuild.build());
 
-                                final Xid xid = data.getRequestContext().getXid();
-                                MultipartRequestInputBuilder mprInput = RequestInputUtils
-                                        .createMultipartHeader(MultipartType.OFPMPMETERCONFIG, xid.getValue(), version);
-                                mprInput.setMultipartRequestBody(caseBuilder.build());
-                                Future<RpcResult<Void>> resultFromOFLib = deviceContext
-                                        .getPrimaryConnectionContext().getConnectionAdapter().multipartRequest(mprInput.build());
-                                return JdkFutureAdapters
-                                        .listenInPoolThread(resultFromOFLib);
-                            }
-                        });
+                        final Xid xid = data.getRequestContext().getXid();
+                        MultipartRequestInputBuilder mprInput = RequestInputUtils
+                                .createMultipartHeader(MultipartType.OFPMPMETERCONFIG, xid.getValue(), getVersion());
+                        mprInput.setMultipartRequestBody(caseBuilder.build());
+                        Future<RpcResult<Void>> resultFromOFLib = getDeviceContext()
+                                .getPrimaryConnectionContext().getConnectionAdapter().multipartRequest(mprInput.build());
+                        return JdkFutureAdapters
+                                .listenInPoolThread(resultFromOFLib);
+                    }
+                });
 
     }
 
@@ -83,7 +82,6 @@ public class OpendaylightMeterStatisticsServiceImpl extends CommonService implem
     public Future<RpcResult<GetAllMeterStatisticsOutput>> getAllMeterStatistics(final GetAllMeterStatisticsInput input) {
 
         return this.<GetAllMeterStatisticsOutput, Void>handleServiceCall(
-                PRIMARY_CONNECTION,
                 new Function<DataCrate<GetAllMeterStatisticsOutput>, ListenableFuture<RpcResult<Void>>>() {
                     @Override
                     public ListenableFuture<RpcResult<Void>> apply(final DataCrate<GetAllMeterStatisticsOutput> data) {
@@ -99,9 +97,9 @@ public class OpendaylightMeterStatisticsServiceImpl extends CommonService implem
 
                         final Xid xid = data.getRequestContext().getXid();
                         MultipartRequestInputBuilder mprInput = RequestInputUtils
-                                .createMultipartHeader(MultipartType.OFPMPMETER, xid.getValue(), version);
+                                .createMultipartHeader(MultipartType.OFPMPMETER, xid.getValue(), getVersion());
                         mprInput.setMultipartRequestBody(caseBuilder.build());
-                        Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext()
+                        Future<RpcResult<Void>> resultFromOFLib = getDeviceContext().getPrimaryConnectionContext()
                                 .getConnectionAdapter().multipartRequest(mprInput.build());
 
                         return JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
@@ -114,7 +112,6 @@ public class OpendaylightMeterStatisticsServiceImpl extends CommonService implem
     @Override
     public Future<RpcResult<GetMeterFeaturesOutput>> getMeterFeatures(final GetMeterFeaturesInput input) {
         return this.<GetMeterFeaturesOutput, Void>handleServiceCall(
-                PRIMARY_CONNECTION,
                 new Function<DataCrate<GetMeterFeaturesOutput>, ListenableFuture<RpcResult<Void>>>() {
                     @Override
                     public ListenableFuture<RpcResult<Void>> apply(final DataCrate<GetMeterFeaturesOutput> data) {
@@ -124,9 +121,9 @@ public class OpendaylightMeterStatisticsServiceImpl extends CommonService implem
 
                         final Xid xid = data.getRequestContext().getXid();
                         MultipartRequestInputBuilder mprInput =
-                                RequestInputUtils.createMultipartHeader(MultipartType.OFPMPMETERFEATURES, xid.getValue(), version);
+                                RequestInputUtils.createMultipartHeader(MultipartType.OFPMPMETERFEATURES, xid.getValue(), getVersion());
                         mprInput.setMultipartRequestBody(mprMeterFeaturesBuild.build());
-                        Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext().getConnectionAdapter().multipartRequest(mprInput.build());
+                        Future<RpcResult<Void>> resultFromOFLib = getDeviceContext().getPrimaryConnectionContext().getConnectionAdapter().multipartRequest(mprInput.build());
                         return JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
                     }
                 });
@@ -135,7 +132,6 @@ public class OpendaylightMeterStatisticsServiceImpl extends CommonService implem
     @Override
     public Future<RpcResult<GetMeterStatisticsOutput>> getMeterStatistics(final GetMeterStatisticsInput input) {
         return this.<GetMeterStatisticsOutput, Void>handleServiceCall(
-                PRIMARY_CONNECTION,
                 new Function<DataCrate<GetMeterStatisticsOutput>, ListenableFuture<RpcResult<Void>>>() {
                     @Override
                     public ListenableFuture<RpcResult<Void>> apply(final DataCrate<GetMeterStatisticsOutput> data) {
@@ -148,9 +144,9 @@ public class OpendaylightMeterStatisticsServiceImpl extends CommonService implem
 
                         final Xid xid = data.getRequestContext().getXid();
                         MultipartRequestInputBuilder mprInput =
-                                RequestInputUtils.createMultipartHeader(MultipartType.OFPMPMETER, xid.getValue(), version);
+                                RequestInputUtils.createMultipartHeader(MultipartType.OFPMPMETER, xid.getValue(), getVersion());
                         mprInput.setMultipartRequestBody(caseBuilder.build());
-                        Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext().getConnectionAdapter().multipartRequest(mprInput.build());
+                        Future<RpcResult<Void>> resultFromOFLib = getDeviceContext().getPrimaryConnectionContext().getConnectionAdapter().multipartRequest(mprInput.build());
                         return JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
                     }
                 });

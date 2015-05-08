@@ -40,15 +40,15 @@ public class StatisticsGatheringService extends CommonService {
 
 
     public Future<RpcResult<List<MultipartReply>>> getStatisticsOfType(final MultipartType type) {
-        return handleServiceCall(
-                PRIMARY_CONNECTION, new Function<DataCrate<List<MultipartReply>>, ListenableFuture<RpcResult<Void>>>() {
+        return handleServiceCall( new Function<DataCrate<List<MultipartReply>>, ListenableFuture<RpcResult<Void>>>() {
                     @Override
                     public ListenableFuture<RpcResult<Void>> apply(final DataCrate<List<MultipartReply>> data) {
                         final Xid xid = data.getRequestContext().getXid();
+                        final DeviceContext deviceContext = getDeviceContext();
                         deviceContext.getOpenflowMessageListenerFacade().registerMultipartXid(xid.getValue());
                         MultipartRequestInput multipartRequestInput = MultipartRequestInputFactory.
                                 makeMultipartRequestInput(xid.getValue(),
-                                        version,
+                                        getVersion(),
                                         type);
                         final Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext()
                                 .getConnectionAdapter().multipartRequest(multipartRequestInput);

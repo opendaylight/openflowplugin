@@ -71,16 +71,17 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
         }
 
 
+        final DeviceContext deviceContext = getDeviceContext();
         final FlowHash flowHash = FlowHashFactory.create(input, deviceContext.getPrimaryConnectionContext().getFeatures().getVersion());
         final FlowDescriptor flowDescriptor = FlowDescriptorFactory.create(input.getTableId(), flowId);
 
-        final List<FlowModInputBuilder> ofFlowModInputs = FlowConvertor.toFlowModInputs(input, version, datapathId);
+        final List<FlowModInputBuilder> ofFlowModInputs = FlowConvertor.toFlowModInputs(input, getVersion(), getDatapathId());
         final ListenableFuture<RpcResult<AddFlowOutput>> future = processFlowModInputBuilders(ofFlowModInputs);
 
         Futures.addCallback(future, new FutureCallback<RpcResult<AddFlowOutput>>() {
             @Override
             public void onSuccess(final RpcResult<AddFlowOutput> rpcResult) {
-                messageSpy.spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_SUCCESS);
+                getMessageSpy().spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_SUCCESS);
                 synchronized (deviceContext) {
                     deviceContext.getDeviceFlowRegistry().store(flowHash, flowDescriptor);
                 }
@@ -93,7 +94,7 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
 
             @Override
             public void onFailure(final Throwable throwable) {
-                messageSpy.spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_FAILURE);
+                getMessageSpy().spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_FAILURE);
                 synchronized (deviceContext) {
                     deviceContext.getDeviceFlowRegistry().markToBeremoved(flowHash);
                 }
@@ -107,17 +108,17 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
     @Override
     public Future<RpcResult<RemoveFlowOutput>> removeFlow(final RemoveFlowInput input) {
         LOG.trace("Calling remove flow for flow with ID ={}.", input.getFlowRef());
-        return this.<RemoveFlowOutput, Void>handleServiceCall(PRIMARY_CONNECTION,
-                new Function<DataCrate<RemoveFlowOutput>, ListenableFuture<RpcResult<Void>>>() {
+        return this.<RemoveFlowOutput, Void>handleServiceCall(new Function<DataCrate<RemoveFlowOutput>, ListenableFuture<RpcResult<Void>>>() {
                     @Override
                     public ListenableFuture<RpcResult<Void>> apply(final DataCrate<RemoveFlowOutput> data) {
-                        final FlowModInputBuilder ofFlowModInput = FlowConvertor.toFlowModInput(input, version,
-                                datapathId);
+                        final FlowModInputBuilder ofFlowModInput = FlowConvertor.toFlowModInput(input, getVersion(),
+                                getDatapathId());
                         final ListenableFuture<RpcResult<Void>> future = createResultForFlowMod(data, ofFlowModInput);
                         Futures.addCallback(future, new FutureCallback() {
                             @Override
                             public void onSuccess(final Object o) {
-                                messageSpy.spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_SUCCESS);
+                                final DeviceContext deviceContext = getDeviceContext();
+                                getMessageSpy().spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_SUCCESS);
                                 FlowHash flowHash = FlowHashFactory.create(input, deviceContext.getPrimaryConnectionContext().getFeatures().getVersion());
                                 synchronized (deviceContext) {
                                     deviceContext.getDeviceFlowRegistry().markToBeremoved(flowHash);
@@ -126,7 +127,7 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
 
                             @Override
                             public void onFailure(final Throwable throwable) {
-                                messageSpy.spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_FAILURE);
+                                getMessageSpy().spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_FAILURE);
                                 StringBuffer errors = new StringBuffer();
                                 try {
                                     RpcResult<Void> result = future.get();
@@ -156,19 +157,19 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
         final List<FlowModInputBuilder> allFlowMods = new ArrayList<>();
         List<FlowModInputBuilder> ofFlowModInputs;
 
-        if (!FlowCreatorUtil.canModifyFlow(original, updated, version)) {
+        if (!FlowCreatorUtil.canModifyFlow(original, updated, getVersion())) {
             // We would need to remove original and add updated.
 
             // remove flow
             final RemoveFlowInputBuilder removeflow = new RemoveFlowInputBuilder(original);
             final List<FlowModInputBuilder> ofFlowRemoveInput = FlowConvertor.toFlowModInputs(removeflow.build(),
-                    version, datapathId);
+                    getVersion(), getDatapathId());
             // remove flow should be the first
             allFlowMods.addAll(ofFlowRemoveInput);
             final AddFlowInputBuilder addFlowInputBuilder = new AddFlowInputBuilder(updated);
-            ofFlowModInputs = FlowConvertor.toFlowModInputs(addFlowInputBuilder.build(), version, datapathId);
+            ofFlowModInputs = FlowConvertor.toFlowModInputs(addFlowInputBuilder.build(), getVersion(), getDatapathId());
         } else {
-            ofFlowModInputs = FlowConvertor.toFlowModInputs(updated, version, datapathId);
+            ofFlowModInputs = FlowConvertor.toFlowModInputs(updated, getVersion(), getDatapathId());
         }
 
         allFlowMods.addAll(ofFlowModInputs);
@@ -176,8 +177,9 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
         Futures.addCallback(future, new FutureCallback() {
             @Override
             public void onSuccess(final Object o) {
-                messageSpy.spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_SUCCESS);
-                short version = deviceContext.getPrimaryConnectionContext().getFeatures().getVersion();
+                final DeviceContext deviceContext = getDeviceContext();
+                getMessageSpy().spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_SUCCESS);
+                final short version = deviceContext.getPrimaryConnectionContext().getFeatures().getVersion();
                 FlowHash flowHash = FlowHashFactory.create(original, version);
 
                 FlowHash updatedflowHash = FlowHashFactory.create(updated, version);
@@ -191,7 +193,7 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
 
             @Override
             public void onFailure(final Throwable throwable) {
-                messageSpy.spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_FAILURE);
+                getMessageSpy().spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_FAILURE);
             }
         });
         return future;
@@ -204,7 +206,7 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
         for (FlowModInputBuilder flowModInputBuilder : ofFlowModInputs) {
             DataCrateBuilder<T> dataCrateBuilder = DataCrateBuilder.<T>builder().setFlowModInputBuilder(flowModInputBuilder);
             ListenableFuture<RpcResult<T>> partialFuture = handleServiceCall(
-                    PRIMARY_CONNECTION,
+                    getPrimaryConnection(),
                     new Function<DataCrate<T>, ListenableFuture<RpcResult<Void>>>() {
                         @Override
                         public ListenableFuture<RpcResult<Void>> apply(final DataCrate<T> data) {
@@ -250,6 +252,7 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
 
                                 // xid might be not available in case requestContext not even stored
                                 if (xid != null) {
+                                    final DeviceContext deviceContext = getDeviceContext();
                                     synchronized (deviceContext) {
                                         deviceContext.unhookRequestCtx(new Xid(xid));
                                     }

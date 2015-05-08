@@ -11,6 +11,8 @@ import com.google.common.base.Function;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.concurrent.Future;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.PortConvertor;
@@ -26,16 +28,19 @@ import org.slf4j.Logger;
 public class SalPortServiceImpl extends CommonService implements SalPortService {
     private static final Logger LOG = org.slf4j.LoggerFactory.getLogger(SalPortServiceImpl.class);
 
+    public SalPortServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
+        super(requestContextStack, deviceContext);
+    }
+
     @Override
     public Future<RpcResult<UpdatePortOutput>> updatePort(final UpdatePortInput input) {
-        return this.<UpdatePortOutput, Void> handleServiceCall(PRIMARY_CONNECTION,
-                new Function<DataCrate<UpdatePortOutput>, ListenableFuture<RpcResult<Void>>>() {
+        return this.<UpdatePortOutput, Void> handleServiceCall(new Function<DataCrate<UpdatePortOutput>, ListenableFuture<RpcResult<Void>>>() {
                     @Override
                     public ListenableFuture<RpcResult<Void>> apply(final DataCrate<UpdatePortOutput> data) {
-                        messageSpy.spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_SUCCESS);
+                        getMessageSpy().spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_SUCCESS);
 
                         final Port inputPort = input.getUpdatedPort().getPort().getPort().get(0);
-                        final PortModInput ofPortModInput = PortConvertor.toPortModInput(inputPort, version);
+                        final PortModInput ofPortModInput = PortConvertor.toPortModInput(inputPort, getVersion());
                         final PortModInputBuilder mdInput = new PortModInputBuilder(ofPortModInput);
                         final Xid xid = data.getRequestContext().getXid();
                         mdInput.setXid(xid.getValue());

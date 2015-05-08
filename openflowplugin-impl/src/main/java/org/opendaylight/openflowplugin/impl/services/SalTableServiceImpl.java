@@ -70,7 +70,7 @@ public class SalTableServiceImpl extends CommonService implements SalTableServic
 
             @Override
             public ListenableFuture<RpcResult<List<MultipartReply>>> apply(final DataCrate<List<MultipartReply>> data) {
-                messageSpy.spyMessage(input.getImplementedInterface(),
+                getMessageSpy().spyMessage(input.getImplementedInterface(),
                         MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_SUCCESS);
 
                 final SettableFuture<RpcResult<List<MultipartReply>>> result = SettableFuture.create();
@@ -84,12 +84,12 @@ public class SalTableServiceImpl extends CommonService implements SalTableServic
 
                 // Set request body to main multipart request
                 final Xid xid = data.getRequestContext().getXid();
-                deviceContext.getOpenflowMessageListenerFacade().registerMultipartXid(xid.getValue());
+                getDeviceContext().getOpenflowMessageListenerFacade().registerMultipartXid(xid.getValue());
                 final MultipartRequestInputBuilder mprInput = createMultipartHeader(MultipartType.OFPMPTABLEFEATURES,
                         xid.getValue());
                 mprInput.setMultipartRequestBody(caseBuilder.build());
 
-                final Future<RpcResult<Void>> resultFromOFLib = provideConnectionAdapter(PRIMARY_CONNECTION)
+                final Future<RpcResult<Void>> resultFromOFLib = getPrimaryConnectionAdapter()
                         .multipartRequest(mprInput.build());
                 final ListenableFuture<RpcResult<Void>> resultLib = JdkFutureAdapters
                         .listenInPoolThread(resultFromOFLib);
@@ -98,8 +98,7 @@ public class SalTableServiceImpl extends CommonService implements SalTableServic
             }
         }
 
-        final ListenableFuture<RpcResult<List<MultipartReply>>> multipartFuture = handleServiceCall(PRIMARY_CONNECTION,
-                new FunctionImpl());
+        final ListenableFuture<RpcResult<List<MultipartReply>>> multipartFuture = handleServiceCall(new FunctionImpl());
         final SettableFuture<RpcResult<UpdateTableOutput>> finalFuture = SettableFuture.create();
 
         class CallBackImpl implements FutureCallback<RpcResult<List<MultipartReply>>> {
@@ -145,6 +144,7 @@ public class SalTableServiceImpl extends CommonService implements SalTableServic
 
                 final List<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures> salTableFeatures = convertToSalTableFeatures(multipartReplies);
 
+                final DeviceContext  deviceContext = getDeviceContext();
                 final NodeId nodeId = deviceContext.getPrimaryConnectionContext().getNodeId();
                 final InstanceIdentifier<FlowCapableNode> flowCapableNodeII = InstanceIdentifier.create(Nodes.class)
                         .child(Node.class, new NodeKey(nodeId)).augmentation(FlowCapableNode.class);
@@ -190,7 +190,7 @@ public class SalTableServiceImpl extends CommonService implements SalTableServic
     private MultipartRequestInputBuilder createMultipartHeader(final MultipartType multipart, final Long xid) {
         final MultipartRequestInputBuilder mprInput = new MultipartRequestInputBuilder();
         mprInput.setType(multipart);
-        mprInput.setVersion(version);
+        mprInput.setVersion(getVersion());
         mprInput.setXid(xid);
         mprInput.setFlags(new MultipartRequestFlags(false));
         return mprInput;

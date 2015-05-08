@@ -38,8 +38,8 @@ public class SalMeterServiceImpl extends CommonService implements SalMeterServic
 
     @Override
     public Future<RpcResult<AddMeterOutput>> addMeter(final AddMeterInput input) {
-        deviceContext.getDeviceMeterRegistry().store(input.getMeterId());
-        return this.<AddMeterOutput, Void>handleServiceCall( PRIMARY_CONNECTION,
+        getDeviceContext().getDeviceMeterRegistry().store(input.getMeterId());
+        return this.<AddMeterOutput, Void>handleServiceCall( getPrimaryConnection(),
                  new Function<DataCrate<AddMeterOutput>,ListenableFuture<RpcResult<Void>>>() {
                     @Override
                     public ListenableFuture<RpcResult<Void>> apply(final DataCrate<AddMeterOutput> data) {
@@ -50,7 +50,7 @@ public class SalMeterServiceImpl extends CommonService implements SalMeterServic
 
     @Override
     public Future<RpcResult<UpdateMeterOutput>> updateMeter(final UpdateMeterInput input) {
-        return this.<UpdateMeterOutput, Void>handleServiceCall( PRIMARY_CONNECTION,
+        return this.<UpdateMeterOutput, Void>handleServiceCall( getPrimaryConnection(),
                  new Function<DataCrate<UpdateMeterOutput>,ListenableFuture<RpcResult<Void>>>() {
                     @Override
                     public ListenableFuture<RpcResult<Void>> apply(final DataCrate<UpdateMeterOutput> data) {
@@ -61,8 +61,8 @@ public class SalMeterServiceImpl extends CommonService implements SalMeterServic
 
     @Override
     public Future<RpcResult<RemoveMeterOutput>> removeMeter(final RemoveMeterInput input) {
-        deviceContext.getDeviceMeterRegistry().markToBeremoved(input.getMeterId());
-        return this.<RemoveMeterOutput, Void>handleServiceCall( PRIMARY_CONNECTION,
+        getDeviceContext().getDeviceMeterRegistry().markToBeremoved(input.getMeterId());
+        return this.<RemoveMeterOutput, Void>handleServiceCall( getPrimaryConnection(),
                  new Function<DataCrate<RemoveMeterOutput>,ListenableFuture<RpcResult<Void>>>() {
                     @Override
                     public ListenableFuture<RpcResult<Void>> apply(final DataCrate<RemoveMeterOutput> data) {
@@ -72,9 +72,9 @@ public class SalMeterServiceImpl extends CommonService implements SalMeterServic
     }
 
     <T> ListenableFuture<RpcResult<Void>> convertAndSend(final Meter iputMeter, final DataCrate<T> data) {
-        messageSpy.spyMessage(iputMeter.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_SUCCESS);
+        getMessageSpy().spyMessage(iputMeter.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_SUCCESS);
 
-        final MeterModInputBuilder ofMeterModInput = MeterConvertor.toMeterModInput(iputMeter, version);
+        final MeterModInputBuilder ofMeterModInput = MeterConvertor.toMeterModInput(iputMeter, getVersion());
         final Xid xid = data.getRequestContext().getXid();
         ofMeterModInput.setXid(xid.getValue());
         return JdkFutureAdapters.listenInPoolThread(provideConnectionAdapter(data.getiDConnection()).meterMod(ofMeterModInput.build()));

@@ -45,7 +45,7 @@ public class OpendaylightPortStatisticsServiceImpl extends CommonService impleme
             final GetAllNodeConnectorsStatisticsInput input) {
         return this
                 .<GetAllNodeConnectorsStatisticsOutput, Void>handleServiceCall(
-                        PRIMARY_CONNECTION, new Function<DataCrate<GetAllNodeConnectorsStatisticsOutput>, ListenableFuture<RpcResult<Void>>>() {
+                        new Function<DataCrate<GetAllNodeConnectorsStatisticsOutput>, ListenableFuture<RpcResult<Void>>>() {
 
                             @Override
                             public ListenableFuture<RpcResult<Void>> apply(final DataCrate<GetAllNodeConnectorsStatisticsOutput> data) {
@@ -60,9 +60,9 @@ public class OpendaylightPortStatisticsServiceImpl extends CommonService impleme
 
                                 final Xid xid = data.getRequestContext().getXid();
                                 MultipartRequestInputBuilder mprInput = RequestInputUtils
-                                        .createMultipartHeader(MultipartType.OFPMPPORTSTATS, xid.getValue(), version);
+                                        .createMultipartHeader(MultipartType.OFPMPPORTSTATS, xid.getValue(), getVersion());
                                 mprInput.setMultipartRequestBody(caseBuilder.build());
-                                Future<RpcResult<Void>> resultFromOFLib = deviceContext
+                                Future<RpcResult<Void>> resultFromOFLib = getDeviceContext()
                                         .getPrimaryConnectionContext().getConnectionAdapter().multipartRequest(mprInput.build());
                                 return JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
                             }
@@ -74,7 +74,7 @@ public class OpendaylightPortStatisticsServiceImpl extends CommonService impleme
             final GetNodeConnectorStatisticsInput input) {
         return this
                 .<GetNodeConnectorStatisticsOutput, Void>handleServiceCall(
-                        PRIMARY_CONNECTION, new Function<DataCrate<GetNodeConnectorStatisticsOutput>, ListenableFuture<RpcResult<Void>>>() {
+                        new Function<DataCrate<GetNodeConnectorStatisticsOutput>, ListenableFuture<RpcResult<Void>>>() {
 
                             @Override
                             public ListenableFuture<RpcResult<Void>> apply(final DataCrate<GetNodeConnectorStatisticsOutput> data) {
@@ -84,6 +84,7 @@ public class OpendaylightPortStatisticsServiceImpl extends CommonService impleme
                                 MultipartRequestPortStatsBuilder mprPortStatsBuilder =
                                         new MultipartRequestPortStatsBuilder();
                                 // Set specific port
+                                final short version = getVersion();
                                 mprPortStatsBuilder
                                         .setPortNo(InventoryDataServiceUtil.portNumberfromNodeConnectorId(
                                                 OpenflowVersion.get(version),
@@ -94,7 +95,7 @@ public class OpendaylightPortStatisticsServiceImpl extends CommonService impleme
                                 MultipartRequestInputBuilder mprInput = RequestInputUtils
                                         .createMultipartHeader(MultipartType.OFPMPPORTSTATS, xid.getValue(), version);
                                 mprInput.setMultipartRequestBody(caseBuilder.build());
-                                Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext()
+                                Future<RpcResult<Void>> resultFromOFLib = getDeviceContext().getPrimaryConnectionContext()
                                         .getConnectionAdapter().multipartRequest(mprInput.build());
                                 return JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
                             }

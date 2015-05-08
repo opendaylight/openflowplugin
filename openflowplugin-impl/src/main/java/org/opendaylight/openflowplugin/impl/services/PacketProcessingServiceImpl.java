@@ -33,15 +33,15 @@ public class PacketProcessingServiceImpl extends CommonService implements Packet
     @Override
     public Future<RpcResult<Void>> transmitPacket(final TransmitPacketInput input) {
 
-        return handleServiceCall(PRIMARY_CONNECTION, new Function<DataCrate<Void>, ListenableFuture<RpcResult<Void>>>() {
+        return handleServiceCall(new Function<DataCrate<Void>, ListenableFuture<RpcResult<Void>>>() {
 
             @Override
             public ListenableFuture<RpcResult<Void>> apply(DataCrate<Void> data) {
                 final Xid xid = data.getRequestContext().getXid();
-                final PacketOutInput message = PacketOutConvertor.toPacketOutInput(input, version, xid.getValue(),
-                        datapathId);
+                final PacketOutInput message = PacketOutConvertor.toPacketOutInput(input, getVersion(), xid.getValue(),
+                        getDatapathId());
 
-                BigInteger connectionID = PRIMARY_CONNECTION;
+                BigInteger connectionID = getPrimaryConnection();
                 final ConnectionCookie connectionCookie = input.getConnectionCookie();
                 if (connectionCookie != null && connectionCookie.getValue() != null) {
                     connectionID = BigInteger.valueOf(connectionCookie.getValue());

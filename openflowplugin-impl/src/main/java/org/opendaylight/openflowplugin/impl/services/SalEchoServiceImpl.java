@@ -42,10 +42,11 @@ public class SalEchoServiceImpl extends CommonService implements SalEchoService 
 
     @Override
     public Future<RpcResult<SendEchoOutput>> sendEcho(final SendEchoInput sendEchoInput) {
-        final RequestContext<SendEchoOutput> requestContext = requestContextStack.createRequestContext();
-        final SettableFuture<RpcResult<SendEchoOutput>> sendEchoOutput = requestContextStack
+        final RequestContext<SendEchoOutput> requestContext = getRequestContextStack().createRequestContext();
+        final SettableFuture<RpcResult<SendEchoOutput>> sendEchoOutput = getRequestContextStack()
                 .storeOrFail(requestContext);
         if (!sendEchoOutput.isDone()) {
+            final DeviceContext deviceContext = getDeviceContext();
             final Xid xid = deviceContext.getNextXid();
             requestContext.setXid(xid);
 
@@ -53,12 +54,12 @@ public class SalEchoServiceImpl extends CommonService implements SalEchoService 
             deviceContext.hookRequestCtx(requestContext.getXid(), requestContext);
 
             final EchoInputBuilder echoInputOFJavaBuilder = new EchoInputBuilder();
-            echoInputOFJavaBuilder.setVersion(version);
+            echoInputOFJavaBuilder.setVersion(getVersion());
             echoInputOFJavaBuilder.setXid(xid.getValue());
             echoInputOFJavaBuilder.setData(sendEchoInput.getData());
             final EchoInput echoInputOFJava = echoInputOFJavaBuilder.build();
 
-            final Future<RpcResult<EchoOutput>> rpcEchoOutputOFJava = provideConnectionAdapter(PRIMARY_CONNECTION)
+            final Future<RpcResult<EchoOutput>> rpcEchoOutputOFJava = getPrimaryConnectionAdapter()
                     .echo(echoInputOFJava);
             LOG.debug("Echo with xid {} was sent from controller", xid);
 
@@ -81,7 +82,7 @@ public class SalEchoServiceImpl extends CommonService implements SalEchoService 
             };
             Futures.addCallback(listenableRpcEchoOutputOFJava, successCallback);
         } else {
-            messageSpy.spyMessage(requestContext, MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_FAILURE);
+            getMessageSpy().spyMessage(requestContext, MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_FAILURE);
         }
 
         // callback on request context future

@@ -12,13 +12,10 @@ import com.google.common.base.MoreObjects;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
-
-import java.io.Serializable;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.Future;
+import javax.annotation.Nullable;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
@@ -33,7 +30,6 @@ import org.opendaylight.openflowplugin.impl.services.OFJResult2RequestCtxFuture;
 import org.opendaylight.openflowplugin.impl.services.RequestInputUtils;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchReactor;
 import org.opendaylight.openflowplugin.openflow.md.util.FlowCreatorUtil;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.AggregateFlowStatisticsUpdate;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForAllFlowsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput;
@@ -47,26 +43,18 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.G
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetFlowStatisticsFromFlowTableOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.OpendaylightFlowStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.get.aggregate.flow.statistics.from.flow.table._for.given.match.output.AggregatedFlowStatistics;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketIn;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyAggregateCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestAggregateCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestFlowCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.aggregate._case.MultipartRequestAggregateBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.flow._case.MultipartRequestFlowBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
-import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.annotation.Nullable;
 
 /**
  * @author joe
@@ -85,7 +73,6 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
 
 
         return this.<GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput, Void>handleServiceCall(
-                PRIMARY_CONNECTION,
                 new Function<DataCrate<GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput>, ListenableFuture<RpcResult<Void>>>() {
 
                     @Override
@@ -99,7 +86,7 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
                         mprAggregateRequestBuilder.setOutGroup(OFConstants.OFPG_ANY);
                         mprAggregateRequestBuilder.setCookie(OFConstants.DEFAULT_COOKIE);
                         mprAggregateRequestBuilder.setCookieMask(OFConstants.DEFAULT_COOKIE_MASK);
-
+                        final short version = getVersion();
                         FlowCreatorUtil.setWildcardedFlowMatch(version, mprAggregateRequestBuilder);
 
                         // Set request body to main multipart request
@@ -111,7 +98,7 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
 
                         mprInput.setMultipartRequestBody(multipartRequestAggregateCaseBuilder.build());
 
-                        final Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext()
+                        final Future<RpcResult<Void>> resultFromOFLib = getDeviceContext().getPrimaryConnectionContext()
                                 .getConnectionAdapter().multipartRequest(mprInput.build());
 
                         return JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
@@ -126,67 +113,70 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
 
 
         ListenableFuture<RpcResult<List<MultipartReply>>> rpcResultListenableFuture = handleServiceCall(
-            PRIMARY_CONNECTION,
-            new Function<DataCrate<List<MultipartReply>>, ListenableFuture<RpcResult<Void>>>() {
+                new Function<DataCrate<List<MultipartReply>>, ListenableFuture<RpcResult<Void>>>() {
 
-                @Override
-                public ListenableFuture<RpcResult<Void>> apply(final DataCrate<List<MultipartReply>> data) {
-                    final Xid xid = data.getRequestContext().getXid();
-                    deviceContext.getOpenflowMessageListenerFacade().registerMultipartXid(xid.getValue());
-                    final MultipartRequestAggregateCaseBuilder multipartRequestAggregateCaseBuilder = new MultipartRequestAggregateCaseBuilder();
-                    final MultipartRequestAggregateBuilder mprAggregateRequestBuilder = new MultipartRequestAggregateBuilder();
-                    final short tableId = MoreObjects.firstNonNull(input.getTableId(), OFConstants.OFPTT_ALL).shortValue();
-                    mprAggregateRequestBuilder.setTableId(tableId);
-                    long outputPortValue = MoreObjects.firstNonNull(input.getOutPort(), OFConstants.OFPP_ANY).longValue();
-                    mprAggregateRequestBuilder.setOutPort(outputPortValue);
-                    // TODO: repeating code
-                    if (version == OFConstants.OFP_VERSION_1_3) {
+                    @Override
+                    public ListenableFuture<RpcResult<Void>> apply(final DataCrate<List<MultipartReply>> data) {
+                        final Xid xid = data.getRequestContext().getXid();
+                        final DeviceContext deviceContext = getDeviceContext();
+                        deviceContext.getOpenflowMessageListenerFacade().registerMultipartXid(xid.getValue());
+                        final MultipartRequestAggregateCaseBuilder multipartRequestAggregateCaseBuilder = new MultipartRequestAggregateCaseBuilder();
+                        final MultipartRequestAggregateBuilder mprAggregateRequestBuilder = new MultipartRequestAggregateBuilder();
+                        final short tableId = MoreObjects.firstNonNull(input.getTableId(), OFConstants.OFPTT_ALL).shortValue();
+                        mprAggregateRequestBuilder.setTableId(tableId);
+                        long outputPortValue = MoreObjects.firstNonNull(input.getOutPort(), OFConstants.OFPP_ANY).longValue();
+                        mprAggregateRequestBuilder.setOutPort(outputPortValue);
+                        // TODO: repeating code
 
-                        if (input.getCookie() == null) {
+                        final short version = getVersion();
+                        if (version == OFConstants.OFP_VERSION_1_3) {
+
+                            if (input.getCookie() == null) {
+                                mprAggregateRequestBuilder.setCookie(OFConstants.DEFAULT_COOKIE);
+                            } else {
+                                mprAggregateRequestBuilder.setCookie(MoreObjects.firstNonNull(input.getCookie().getValue(), OFConstants.DEFAULT_COOKIE));
+                            }
+
+                            if (input.getCookieMask() == null) {
+                                mprAggregateRequestBuilder.setCookieMask(OFConstants.DEFAULT_COOKIE_MASK);
+                            } else {
+                                mprAggregateRequestBuilder.setCookieMask(MoreObjects.firstNonNull(input.getCookieMask().getValue(), OFConstants.DEFAULT_COOKIE_MASK));
+                            }
+                            long outGroup = MoreObjects.firstNonNull(input.getOutGroup(), OFConstants.OFPG_ANY).longValue();
+                            mprAggregateRequestBuilder.setOutGroup(outGroup);
+                        } else {
+                            mprAggregateRequestBuilder.setOutGroup(OFConstants.OFPG_ANY);
                             mprAggregateRequestBuilder.setCookie(OFConstants.DEFAULT_COOKIE);
-                        } else {
-                            mprAggregateRequestBuilder.setCookie(MoreObjects.firstNonNull(input.getCookie().getValue(), OFConstants.DEFAULT_COOKIE));
-                        }
-
-                        if (input.getCookieMask() == null) {
                             mprAggregateRequestBuilder.setCookieMask(OFConstants.DEFAULT_COOKIE_MASK);
-                        } else {
-                            mprAggregateRequestBuilder.setCookieMask(MoreObjects.firstNonNull(input.getCookieMask().getValue(), OFConstants.DEFAULT_COOKIE_MASK));
                         }
-                        long outGroup = MoreObjects.firstNonNull(input.getOutGroup(), OFConstants.OFPG_ANY).longValue();
-                        mprAggregateRequestBuilder.setOutGroup(outGroup);
-                    } else {
-                        mprAggregateRequestBuilder.setOutGroup(OFConstants.OFPG_ANY);
-                        mprAggregateRequestBuilder.setCookie(OFConstants.DEFAULT_COOKIE);
-                        mprAggregateRequestBuilder.setCookieMask(OFConstants.DEFAULT_COOKIE_MASK);
+
+                        MatchReactor.getInstance().convert(input.getMatch(), version, mprAggregateRequestBuilder,
+                                deviceContext.getPrimaryConnectionContext().getFeatures().getDatapathId());
+
+                        FlowCreatorUtil.setWildcardedFlowMatch(version, mprAggregateRequestBuilder);
+
+                        // Set request body to main multipart request
+                        multipartRequestAggregateCaseBuilder.setMultipartRequestAggregate(mprAggregateRequestBuilder
+                                .build());
+
+                        final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
+                                MultipartType.OFPMPAGGREGATE, xid.getValue(), version);
+
+                        mprInput.setMultipartRequestBody(multipartRequestAggregateCaseBuilder.build());
+                        final Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext()
+                                .getConnectionAdapter().multipartRequest(mprInput.build());
+                        return JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
                     }
-
-                    MatchReactor.getInstance().convert(input.getMatch(), version, mprAggregateRequestBuilder,
-                            deviceContext.getPrimaryConnectionContext().getFeatures().getDatapathId());
-
-                    FlowCreatorUtil.setWildcardedFlowMatch(version, mprAggregateRequestBuilder);
-
-                    // Set request body to main multipart request
-                    multipartRequestAggregateCaseBuilder.setMultipartRequestAggregate(mprAggregateRequestBuilder
-                            .build());
-
-                    final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
-                            MultipartType.OFPMPAGGREGATE, xid.getValue(), version);
-
-                    mprInput.setMultipartRequestBody(multipartRequestAggregateCaseBuilder.build());
-                    final Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext()
-                            .getConnectionAdapter().multipartRequest(mprInput.build());
-                    return JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
-                }
-            });
+                });
 
         return Futures.transform(rpcResultListenableFuture, new Function<RpcResult<List<MultipartReply>>, RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>>() {
             @Nullable
             @Override
             public RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput> apply(RpcResult<List<MultipartReply>> input) {
+                final DeviceContext deviceContext = getDeviceContext();
                 TranslatorLibrary translatorLibrary = deviceContext.oook();
                 RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput> rpcResult;
-                if(input.isSuccessful()) {
+                if (input.isSuccessful()) {
                     MultipartReply reply = input.getResult().get(0);
                     final TranslatorKey translatorKey = new TranslatorKey(reply.getVersion(), MultipartReplyAggregateCase.class.getName());
                     final MessageTranslator<MultipartReply, AggregatedFlowStatistics> messageTranslator = translatorLibrary.lookupTranslator(translatorKey);
@@ -221,8 +211,7 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
     public Future<RpcResult<GetAllFlowStatisticsFromFlowTableOutput>> getAllFlowStatisticsFromFlowTable(
             final GetAllFlowStatisticsFromFlowTableInput input) {
 
-        return this.<GetAllFlowStatisticsFromFlowTableOutput, Void>handleServiceCall(PRIMARY_CONNECTION,
-                new Function<DataCrate<GetAllFlowStatisticsFromFlowTableOutput>, ListenableFuture<RpcResult<Void>>>() {
+        return this.<GetAllFlowStatisticsFromFlowTableOutput, Void>handleServiceCall(new Function<DataCrate<GetAllFlowStatisticsFromFlowTableOutput>, ListenableFuture<RpcResult<Void>>>() {
 
                     @Override
                     public ListenableFuture<RpcResult<Void>> apply(final DataCrate<GetAllFlowStatisticsFromFlowTableOutput> data) {
@@ -233,6 +222,8 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
                         mprFlowRequestBuilder.setOutGroup(OFConstants.OFPG_ANY);
                         mprFlowRequestBuilder.setCookie(OFConstants.DEFAULT_COOKIE);
                         mprFlowRequestBuilder.setCookieMask(OFConstants.DEFAULT_COOKIE_MASK);
+
+                        final short version = getVersion();
                         FlowCreatorUtil.setWildcardedFlowMatch(version, mprFlowRequestBuilder);
 
                         final MultipartRequestFlowCaseBuilder multipartRequestFlowCaseBuilder = new MultipartRequestFlowCaseBuilder();
@@ -243,7 +234,7 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
                                 MultipartType.OFPMPFLOW, xid.getValue(), version);
 
                         mprInput.setMultipartRequestBody(multipartRequestFlowCaseBuilder.build());
-                        final Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext()
+                        final Future<RpcResult<Void>> resultFromOFLib = getDeviceContext().getPrimaryConnectionContext()
                                 .getConnectionAdapter().multipartRequest(mprInput.build());
                         return JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
                     }
@@ -255,8 +246,7 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
             final GetAllFlowsStatisticsFromAllFlowTablesInput input) {
 
 
-        return this.<GetAllFlowsStatisticsFromAllFlowTablesOutput, Void>handleServiceCall(PRIMARY_CONNECTION,
-                new Function<DataCrate<GetAllFlowsStatisticsFromAllFlowTablesOutput>, ListenableFuture<RpcResult<Void>>>() {
+        return this.<GetAllFlowsStatisticsFromAllFlowTablesOutput, Void>handleServiceCall(new Function<DataCrate<GetAllFlowsStatisticsFromAllFlowTablesOutput>, ListenableFuture<RpcResult<Void>>>() {
 
                     @Override
                     public ListenableFuture<RpcResult<Void>> apply(final DataCrate<GetAllFlowsStatisticsFromAllFlowTablesOutput> data) {
@@ -268,6 +258,7 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
                         mprFlowRequestBuilder.setOutGroup(OFConstants.OFPG_ANY);
                         mprFlowRequestBuilder.setCookie(OFConstants.DEFAULT_COOKIE);
                         mprFlowRequestBuilder.setCookieMask(OFConstants.DEFAULT_COOKIE_MASK);
+                        final short version = getVersion();
                         FlowCreatorUtil.setWildcardedFlowMatch(version, mprFlowRequestBuilder);
 
                         final Xid xid = data.getRequestContext().getXid();
@@ -276,7 +267,7 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
 
                         multipartRequestFlowCaseBuilder.setMultipartRequestFlow(mprFlowRequestBuilder.build());
                         mprInput.setMultipartRequestBody(multipartRequestFlowCaseBuilder.build());
-                        final Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext()
+                        final Future<RpcResult<Void>> resultFromOFLib = getDeviceContext().getPrimaryConnectionContext()
                                 .getConnectionAdapter().multipartRequest(mprInput.build());
                         return JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
                     }
@@ -288,8 +279,7 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
             final GetFlowStatisticsFromFlowTableInput input) {
 
 
-        return this.<GetFlowStatisticsFromFlowTableOutput, Void>handleServiceCall(PRIMARY_CONNECTION,
-                new Function<DataCrate<GetFlowStatisticsFromFlowTableOutput>, ListenableFuture<RpcResult<Void>>>() {
+        return this.<GetFlowStatisticsFromFlowTableOutput, Void>handleServiceCall(new Function<DataCrate<GetFlowStatisticsFromFlowTableOutput>, ListenableFuture<RpcResult<Void>>>() {
 
                     @Override
                     public ListenableFuture<RpcResult<Void>> apply(final DataCrate<GetFlowStatisticsFromFlowTableOutput> data) {
@@ -323,6 +313,8 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
                         }
 
                         // convert and inject match
+                        final short version = getVersion();
+                        final DeviceContext deviceContext = getDeviceContext();
                         MatchReactor.getInstance().convert(input.getMatch(), version, mprFlowRequestBuilder,
                                 deviceContext.getPrimaryConnectionContext().getFeatures().getDatapathId());
 
@@ -340,8 +332,8 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
     }
 
     private <T> void convertRpcResultToRequestFuture(final RequestContext<T> requestContext,
-                                                                        final ListenableFuture<RpcResult<Void>> futureResultFromOfLib) {
-        final OFJResult2RequestCtxFuture<T> OFJResult2RequestCtxFuture = new OFJResult2RequestCtxFuture<>(requestContext, deviceContext);
+                                                     final ListenableFuture<RpcResult<Void>> futureResultFromOfLib) {
+        final OFJResult2RequestCtxFuture<T> OFJResult2RequestCtxFuture = new OFJResult2RequestCtxFuture<>(requestContext, getDeviceContext());
         OFJResult2RequestCtxFuture.processResultFromOfJava(futureResultFromOfLib);
     }
 

@@ -41,8 +41,7 @@ public class OpendaylightFlowTableStatisticsServiceImpl extends CommonService im
             final GetFlowTablesStatisticsInput input) {
 
 
-        return this.<GetFlowTablesStatisticsOutput, Void>handleServiceCall(PRIMARY_CONNECTION,
-                new Function<DataCrate<GetFlowTablesStatisticsOutput>, ListenableFuture<RpcResult<Void>>>() {
+        return this.<GetFlowTablesStatisticsOutput, Void>handleServiceCall(new Function<DataCrate<GetFlowTablesStatisticsOutput>, ListenableFuture<RpcResult<Void>>>() {
 
                     @Override
                     public ListenableFuture<RpcResult<Void>> apply(final DataCrate<GetFlowTablesStatisticsOutput> data) {
@@ -56,10 +55,10 @@ public class OpendaylightFlowTableStatisticsServiceImpl extends CommonService im
                         // Set request body to main multipart request
                         final Xid xid = data.getRequestContext().getXid();
                         final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
-                                MultipartType.OFPMPFLOW, xid.getValue(), version);
+                                MultipartType.OFPMPFLOW, xid.getValue(), getVersion());
 
                         mprInput.setMultipartRequestBody(multipartRequestTableCaseBuilder.build());
-                        final Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext()
+                        final Future<RpcResult<Void>> resultFromOFLib = getDeviceContext().getPrimaryConnectionContext()
                                 .getConnectionAdapter().multipartRequest(mprInput.build());
 
                         return JdkFutureAdapters.listenInPoolThread(resultFromOFLib);

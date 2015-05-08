@@ -48,7 +48,7 @@ public class NodeConfigServiceImpl extends CommonService implements NodeConfigSe
             builder.setXid(xid.getValue());
             builder.setFlags(flag);
             builder.setMissSendLen(input.getMissSearchLength());
-            builder.setVersion(version);
+            builder.setVersion(getVersion());
             ListenableFuture<RpcResult<Void>> futureResultFromOfLib;
             synchronized (deviceContext) {
                 futureResultFromOfLib = JdkFutureAdapters.listenInPoolThread(deviceContext.getPrimaryConnectionContext().getConnectionAdapter().setConfig(builder.build()));

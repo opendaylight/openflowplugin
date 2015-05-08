@@ -39,16 +39,16 @@ public class FlowCapableTransactionServiceImpl extends CommonService implements 
 
     @Override
     public Future<RpcResult<Void>> sendBarrier(SendBarrierInput input) {
-        final RequestContext<Void> requestContext = requestContextStack.createRequestContext();
-        final SettableFuture<RpcResult<Void>> sendBarrierOutput = requestContextStack
+        final RequestContext<Void> requestContext = getRequestContextStack().createRequestContext();
+        final SettableFuture<RpcResult<Void>> sendBarrierOutput = getRequestContextStack()
                 .storeOrFail(requestContext);
         if (!sendBarrierOutput.isDone()) {
-
+            final DeviceContext deviceContext =getDeviceContext();
             final Xid xid = deviceContext.getNextXid();
             requestContext.setXid(xid);
 
             final BarrierInputBuilder barrierInputOFJavaBuilder = new BarrierInputBuilder();
-            barrierInputOFJavaBuilder.setVersion(version);
+            barrierInputOFJavaBuilder.setVersion(getVersion());
             barrierInputOFJavaBuilder.setXid(xid.getValue());
 
             LOG.trace("Hooking xid {} to device context - precaution.", requestContext.getXid().getValue());
@@ -56,7 +56,7 @@ public class FlowCapableTransactionServiceImpl extends CommonService implements 
 
             final BarrierInput barrierInputOFJava = barrierInputOFJavaBuilder.build();
 
-            final Future<RpcResult<BarrierOutput>> barrierOutputOFJava = provideConnectionAdapter(PRIMARY_CONNECTION)
+            final Future<RpcResult<BarrierOutput>> barrierOutputOFJava = getPrimaryConnectionAdapter()
                     .barrier(barrierInputOFJava);
             LOG.debug("Barrier with xid {} was sent from controller.", xid);
 
@@ -76,7 +76,7 @@ public class FlowCapableTransactionServiceImpl extends CommonService implements 
             };
             Futures.addCallback(listenableBarrierOutputOFJava, successCallback);
         } else {
-            messageSpy.spyMessage(requestContext, MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_FAILURE);
+            getMessageSpy().spyMessage(requestContext, MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMITTED_FAILURE);
         }
 
         //callback on request context future
