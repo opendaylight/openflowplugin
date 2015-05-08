@@ -195,7 +195,7 @@ public final class StatisticsGatheringUtils {
         for (final FlowAndStatisticsMapList flowStat : flowsStatistics.getFlowAndStatisticsMapList()) {
             final FlowBuilder flowBuilder = new FlowBuilder(flowStat);
             FlowId flowId = null;
-            FlowHash flowHash = FlowHashFactory.create(flowBuilder.build(), deviceContext);
+            FlowHash flowHash = FlowHashFactory.create(flowBuilder.build(), deviceContext.getPrimaryConnectionContext().getFeatures().getVersion());
             short tableId = flowStat.getTableId();
             try {
                 FlowDescriptor flowDescriptor = deviceContext.getDeviceFlowRegistry().retrieveIdForFlow(flowHash);

@@ -28,13 +28,13 @@ public class FlowHashFactory {
     public FlowHashFactory() {
     }
 
-    public static FlowHash create(Flow flow, DeviceContext deviceContext) {
-        long hash = calculateHash(flow, deviceContext);
+    public static FlowHash create(Flow flow, short version) {
+        long hash = calculateHash(flow, version);
         return new FlowHashDto(hash, flow);
     }
 
-    private static long calculateHash(Flow flow, DeviceContext deviceContext) {
-        return HashUtil.calculateMatchHash(flow.getMatch(), deviceContext);
+    private static long calculateHash(Flow flow, short version) {
+        return HashUtil.calculateMatchHash(flow.getMatch(), version);
     }
 
 
