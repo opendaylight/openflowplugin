@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.impl.registry.flow;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -25,7 +26,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
 
-    private final Map<FlowHash, FlowDescriptor> flowRegistry = new ConcurrentHashMap<>();
+    private final Map<FlowHash, FlowDescriptor> flowRegistry = new HashMap<>();
     private final List<FlowHash> marks = new ArrayList();
     private final Logger LOG = LoggerFactory.getLogger(DeviceFlowRegistryImpl.class);
 
