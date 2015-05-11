@@ -13,9 +13,16 @@ import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import javax.management.InstanceAlreadyExistsException;
+import javax.management.MBeanRegistrationException;
+import javax.management.MBeanServer;
+import javax.management.MalformedObjectNameException;
+import javax.management.NotCompliantMBeanException;
+import javax.management.ObjectName;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
@@ -26,12 +33,15 @@ import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionManager
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
+import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
 import org.opendaylight.openflowplugin.extension.api.ExtensionConverterRegistrator;
 import org.opendaylight.openflowplugin.extension.api.OpenFlowPluginExtensionRegistratorProvider;
 import org.opendaylight.openflowplugin.impl.connection.ConnectionManagerImpl;
 import org.opendaylight.openflowplugin.impl.device.DeviceManagerImpl;
 import org.opendaylight.openflowplugin.impl.rpc.RpcManagerImpl;
 import org.opendaylight.openflowplugin.impl.statistics.StatisticsManagerImpl;
+import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.MessageIntelligenceAgencyImpl;
+import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.MessageIntelligenceAgencyMXBean;
 import org.opendaylight.openflowplugin.impl.util.TranslatorLibraryUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionConverterManager;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionConverterManagerImpl;
@@ -124,7 +134,11 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         OFSessionUtil.getSessionManager().setExtensionConverterProvider(extensionConverterManager);
 
         connectionManager = new ConnectionManagerImpl();
-        deviceManager = new DeviceManagerImpl(dataBroker);
+        MessageIntelligenceAgency messageIntelligenceAgency = new MessageIntelligenceAgencyImpl();
+
+        registerMXBean(messageIntelligenceAgency);
+
+        deviceManager = new DeviceManagerImpl(dataBroker, messageIntelligenceAgency);
         statisticsManager = new StatisticsManagerImpl();
         rpcManager = new RpcManagerImpl(rpcProviderRegistry, rpcRequestsQuota);
 
@@ -137,6 +151,22 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
 
         TranslatorLibraryUtil.setBasicTranslatorLibrary(deviceManager);
         startSwitchConnections();
+    }
+
+    private void registerMXBean(final MessageIntelligenceAgency messageIntelligenceAgency) {
+        MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+        try {
+            String pathToMxBean = String.format("%s:type=%s",
+                    MessageIntelligenceAgencyMXBean.class.getPackage().getName(),
+                    MessageIntelligenceAgencyMXBean.class.getSimpleName());
+            ObjectName name = new ObjectName(pathToMxBean);
+            mbs.registerMBean(messageIntelligenceAgency, name);
+        } catch (MalformedObjectNameException
+                | NotCompliantMBeanException
+                | MBeanRegistrationException
+                | InstanceAlreadyExistsException e) {
+            LOG.warn("Error registering MBean {}", e);
+        }
     }
 
     @Override

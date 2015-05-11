@@ -22,6 +22,7 @@ import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
+import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestDescCase;
@@ -46,6 +47,8 @@ public class DeviceManagerImplTest {
     private RpcManager rpcManager;
     @Mock
     private WriteTransaction wTx;
+    @Mock
+    private MessageIntelligenceAgency messageIntelligenceAgency;
 
     /**
      * @throws java.lang.Exception
@@ -56,7 +59,7 @@ public class DeviceManagerImplTest {
         Mockito.when(connectionContext.getFeatures()).thenReturn(features);
         Mockito.when(features.getVersion()).thenReturn((short) 42);
         Mockito.when(dataBroker.newWriteOnlyTransaction()).thenReturn(wTx);
-        deviceManager = new DeviceManagerImpl(dataBroker);
+        deviceManager = new DeviceManagerImpl(dataBroker, messageIntelligenceAgency);
     }
 
     /**
