@@ -31,6 +31,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
 <!--      Possible transport-protocol options: TCP, TLS, UDP -->
           <transport-protocol>TCP</transport-protocol>
           <switch-idle-timeout>15000</switch-idle-timeout>
+          <echo-reply-timeout>2000</echo-reply-timeout>
 <!--           Exemplary TLS configuration:
                 - uncomment the <tls> tag
                 - copy exemplary-switch-privkey.pem, exemplary-switch-cert.pem and exemplary-cacert.pem
@@ -64,6 +65,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
 <!--      Possible transport-protocol options: TCP, TLS, UDP -->
           <transport-protocol>TCP</transport-protocol>
           <switch-idle-timeout>15000</switch-idle-timeout>
+          <echo-reply-timeout>2000</echo-reply-timeout>
 <!--           Exemplary TLS configuration:
                 - uncomment the <tls> tag
                 - copy exemplary-switch-privkey.pem, exemplary-switch-cert.pem and exemplary-cacert.pem

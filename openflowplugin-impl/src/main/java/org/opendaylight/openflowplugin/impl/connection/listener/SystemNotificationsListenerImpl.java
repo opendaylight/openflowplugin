@@ -12,9 +12,14 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
+
 import java.net.InetSocketAddress;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
@@ -28,23 +33,27 @@ import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
 /**
  *
  */
-public class SystemNotificationsListenerImpl implements SystemNotificationsListener {
+public class SystemNotificationsListenerImpl extends DefaultHandler implements SystemNotificationsListener {
 
-    private ConnectionContext connectionContext;
+	private ConnectionContext connectionContext;
     private static final Logger LOG = LoggerFactory.getLogger(SystemNotificationsListenerImpl.class);
     @VisibleForTesting
-    static final long MAX_ECHO_REPLY_TIMEOUT = 2000;
-
+    static long MAX_ECHO_REPLY_TIMEOUT = 2000L;
+    private static final String OPENFLOWPLUGIN_XML_PATH = "openflowplugin/openflowplugin-controller-config/src/main/resources/initial/42-openflowplugin.xml";
 
     /**
      * @param connectionContext
      */
     public SystemNotificationsListenerImpl(ConnectionContext connectionContext) {
         this.connectionContext = connectionContext;
+        this.parseXmlForEchoReplyTimeout();
     }
 
     @Override
@@ -77,20 +86,25 @@ public class SystemNotificationsListenerImpl implements SystemNotificationsListe
                             .echo(builder.build());
 
                     try {
-                        RpcResult<EchoOutput> echoReplyValue = echoReplyFuture.get(MAX_ECHO_REPLY_TIMEOUT, TimeUnit.MILLISECONDS);
-                        if (echoReplyValue.isSuccessful()) {
-                            connectionContext.setConnectionState(ConnectionContext.CONNECTION_STATE.WORKING);
-                            shouldBeDisconnected = false;
-                        } else {
-                            for (RpcError replyError : echoReplyValue
-                                    .getErrors()) {
-                                Throwable cause = replyError.getCause();
-                                LOG.warn("while receiving echoReply [{}] in TIMEOUTING state {} ",
-                                        remoteAddress,
-                                        cause.getMessage());
-                                LOG.trace("while receiving echoReply [{}] in TIMEOUTING state ..", remoteAddress, cause);
-                            }
-                        }
+                    	/*
+                    	 * Checks the retrieved data from XML for the tag "<echo-reply-timeout>"
+                    	 */
+
+
+                    	RpcResult<EchoOutput> echoReplyValue = echoReplyFuture.get(MAX_ECHO_REPLY_TIMEOUT, TimeUnit.MILLISECONDS);
+                    	if (echoReplyValue.isSuccessful()) {
+                    		connectionContext.setConnectionState(ConnectionContext.CONNECTION_STATE.WORKING);
+                    		shouldBeDisconnected = false;
+                    	} else {
+                    		for (RpcError replyError : echoReplyValue
+                    				.getErrors()) {
+                    			Throwable cause = replyError.getCause();
+                    			LOG.warn("while receiving echoReply [{}] in TIMEOUTING state {} ",
+                    					remoteAddress,
+                    					cause.getMessage());
+                    			LOG.trace("while receiving echoReply [{}] in TIMEOUTING state ..", remoteAddress, cause);
+                    		}
+                    	}
                     } catch (Exception e) {
                         LOG.warn("while waiting for echoReply in TIMEOUTING state: {}", e.getMessage());
                         LOG.trace("while waiting for echoReply in TIMEOUTING state ..", remoteAddress, e);
@@ -147,4 +161,54 @@ public class SystemNotificationsListenerImpl implements SystemNotificationsListe
         connectionContext.propagateClosingConnection();
     }
 
+
+    /**
+     * Parses and Retrieves data from XML
+     */
+    public void parseXmlForEchoReplyTimeout(){
+	try {
+    		SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
+    		SAXParser saxParser = saxParserFactory.newSAXParser();
+    		saxParser.parse(OPENFLOWPLUGIN_XML_PATH, new CustDefaultHandler());
+    	} catch (Exception e) {
+    		LOG.error("While parsing of echoReplyTimeout", e.getMessage(),e);
+	}
+	}
+
+    /**
+     * Customized DefaultHandler class to get the EchoReplyTimeout data from XML
+     *
+     */
+    private class CustDefaultHandler extends DefaultHandler{
+
+    	private static final String XML_TAG_ECHO_REPLY_TIMEOUT = "echo-reply-timeout";
+    	private String echoReplyTimeoutTag ="close";
+    	public void startElement(String uri, String localName, String qName,
+    			Attributes attributes) throws SAXException {
+    		if (qName.equalsIgnoreCase(XML_TAG_ECHO_REPLY_TIMEOUT)) {
+    			echoReplyTimeoutTag = "open";
+    		}
+    	}
+    	public void characters(char ch[], int start, int length)
+    			throws SAXException {
+    		if (echoReplyTimeoutTag.equals("open")) {
+    			String timeout = new String(ch, start, length);
+				LOG.trace("The value of echo-reply-timeout : " + timeout);
+    			try {
+    				MAX_ECHO_REPLY_TIMEOUT = Long.parseLong(timeout);
+    			} catch (NumberFormatException e) {
+    				LOG.error("Exception occured during parsing of EchoReplyTimeout", e.getMessage(),e);
+    			}
+    		}
+    	}
+
+    	public void endElement(String uri, String localName, String qName)
+    			throws SAXException {
+    		if (qName.equalsIgnoreCase(XML_TAG_ECHO_REPLY_TIMEOUT)) {
+    			echoReplyTimeoutTag = "close";
+    		}
+    	}
+
+    }
 }
+
