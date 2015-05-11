@@ -116,16 +116,19 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
     private NotificationPublishService notificationPublishService;
 
     private final List<DeviceContext> deviceContexts = new ArrayList<DeviceContext>();
-    private final MessageIntelligenceAgency messageIntelligenceAgency = new MessageIntelligenceAgencyImpl();
+    private final MessageIntelligenceAgency messageIntelligenceAgency;
     private final ThrottledConnectionsHolder throttledConnectionsHolder;
 
-    public DeviceManagerImpl(@Nonnull final DataBroker dataBroker) {
+    public DeviceManagerImpl(@Nonnull final DataBroker dataBroker,
+                             @Nonnull final MessageIntelligenceAgency messageIntelligenceAgency) {
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
         hashedWheelTimer = new HashedWheelTimer(TICK_DURATION, TimeUnit.MILLISECONDS, 10);
         /* merge empty nodes to oper DS to predict any problems with missing parent for Node */
         final WriteTransaction tx = dataBroker.newWriteOnlyTransaction();
         tx.merge(LogicalDatastoreType.OPERATIONAL, InstanceIdentifier.create(Nodes.class), new NodesBuilder().build());
         tx.submit();
+
+        this.messageIntelligenceAgency = messageIntelligenceAgency;
 
         emptyRequestContextStack = new RequestContextStack() {
             @Override

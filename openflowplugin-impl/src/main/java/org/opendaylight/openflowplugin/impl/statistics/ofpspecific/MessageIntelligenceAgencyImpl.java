@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
  * Class counts message of {@link org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy.STATISTIC_GROUP} type
  * and provides info as debug log.
  */
-public class MessageIntelligenceAgencyImpl implements MessageIntelligenceAgency<Class> {
+public class MessageIntelligenceAgencyImpl implements MessageIntelligenceAgency<Class>, MessageIntelligenceAgencyMXBean {
 
     private static final Logger LOG = LoggerFactory.getLogger(MessageIntelligenceAgencyImpl.class);
 
