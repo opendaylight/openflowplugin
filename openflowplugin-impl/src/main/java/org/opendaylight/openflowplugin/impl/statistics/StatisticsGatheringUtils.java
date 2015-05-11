@@ -205,8 +205,8 @@ public final class StatisticsGatheringUtils {
                 LOG.trace("Flow descriptor for flow hash {} wasn't found.", flowHash.hashCode());
                 flowId = FlowUtil.createAlienFlowId(tableId);
                 flowDescriptor = FlowDescriptorFactory.create(tableId, flowId);
+                deviceFlowRegistry.store(flowHash, flowDescriptor);
             }
-            deviceFlowRegistry.store(flowHash, flowDescriptor);
             FlowKey flowKey = new FlowKey(flowId);
             flowBuilder.setKey(flowKey);
             final TableKey tableKey = new TableKey(tableId);
