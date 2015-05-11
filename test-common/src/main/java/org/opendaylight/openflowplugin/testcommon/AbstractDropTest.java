@@ -52,8 +52,8 @@ abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseab
     static final long STARTUP_LOOP_TICK = 500L;
     static final int STARTUP_LOOP_MAX_RETRIES = 8;
 
-    private final ExecutorService executorService = Executors.newFixedThreadPool(8);
-
+    static private final int PROCESSING_THREAD_NUMBER = 8;
+    private final ExecutorService[] executorServiceLot;
 
     private static final AtomicIntegerFieldUpdater<AbstractDropTest> SENT_UPDATER = AtomicIntegerFieldUpdater.newUpdater(AbstractDropTest.class, "sent");
     private volatile int sent;
@@ -63,6 +63,13 @@ abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseab
 
     private static final AtomicIntegerFieldUpdater<AbstractDropTest> EXCS_UPDATER = AtomicIntegerFieldUpdater.newUpdater(AbstractDropTest.class, "excs");
     private volatile int excs;
+
+    public AbstractDropTest() {
+        executorServiceLot = new ExecutorService[PROCESSING_THREAD_NUMBER];
+        for (int i = 0; i < PROCESSING_THREAD_NUMBER; i++) {
+            executorServiceLot[i] = Executors.newFixedThreadPool(1);
+        }
+    }
 
     public final DropTestStats getStats() {
         return new DropTestStats(this.sent, this.rcvd, this.excs);
@@ -80,7 +87,10 @@ abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseab
 
         RCVD_UPDATER.incrementAndGet(this);
 
-        executorService.submit(new Runnable() {
+        NodeKey nodeKey = notification.getIngress().getValue().firstKeyOf(Node.class, NodeKey.class);
+        int nodeIdHash = nodeKey.getId().getValue().hashCode();
+
+        executorServiceLot[nodeIdHash % PROCESSING_THREAD_NUMBER].submit(new Runnable() {
 
             @Override
             public void run() {
@@ -154,6 +164,8 @@ abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseab
 
     @Override
     public void close() {
-        executorService.shutdown();
+        for (ExecutorService service : executorServiceLot) {
+            service.shutdown();
+        }
     }
 }
