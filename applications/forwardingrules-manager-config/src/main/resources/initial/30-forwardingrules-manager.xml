@@ -39,6 +39,24 @@
         <capability>
             urn:opendaylight:params:xml:ns:yang:openflowplugin:app:forwardingrules-manager?module=forwardingrules-manager&amp;revision=2014-09-25
         </capability>
+        <capability>
+            urn:opendaylight:flow:service?module=sal-flow&amp;revision=2013-08-19
+        </capability>
+        <capability>
+            urn:opendaylight:group:service?module=sal-group&amp;revision=2013-09-18
+        </capability>
+        <capability>
+            urn:opendaylight:meter:service?module=sal-meter&amp;revision=2013-09-18
+        </capability>
+        <capability>
+            urn:opendaylight:port:service?module=sal-port&amp;revision=2013-11-07
+        </capability>
+        <capability>
+            urn:opendaylight:queue:service?module=sal-queue&amp;revision=2015-03-05
+        </capability>
+        <capability>
+            urn:opendaylight:table:service?module=sal-table&amp;revision=2013-10-26
+        </capability>
     </required-capabilities>
 
 </snapshot>
