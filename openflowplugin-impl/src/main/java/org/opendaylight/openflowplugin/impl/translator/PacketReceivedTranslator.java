@@ -56,7 +56,8 @@ public class PacketReceivedTranslator implements MessageTranslator<PacketInMessa
             packetReceivedBuilder.setFlowCookie(new FlowCookie(input.getCookie()));
         }
         if (port != null) {
-            packetReceivedBuilder.setIngress(InventoryDataServiceUtil.nodeConnectorRefFromDatapathIdPortno(datapathId, port, OpenflowVersion.get(input.getVersion())));
+            packetReceivedBuilder.setIngress(InventoryDataServiceUtil.nodeConnectorRefFromDatapathIdPortno(
+                    datapathId, port, OpenflowVersion.get(input.getVersion()), deviceContext.getDeviceState().getNodeInstanceIdentifier()));
         }
         packetReceivedBuilder.setPacketInReason(PacketInUtil.getMdSalPacketInReason(input.getReason()));
 

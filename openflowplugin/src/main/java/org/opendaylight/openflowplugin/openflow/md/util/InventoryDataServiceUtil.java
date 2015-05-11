@@ -31,6 +31,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -151,13 +152,24 @@ public abstract class InventoryDataServiceUtil {
         return new NodeConnectorRef(nodeConnectorInstanceIdentifierFromDatapathIdPortno(datapathId, portNo, ofVersion));
     }
 
+    public static NodeConnectorRef nodeConnectorRefFromDatapathIdPortno(BigInteger datapathId, Long portNo,
+                                                                        OpenflowVersion ofVersion,
+                                                                        KeyedInstanceIdentifier<Node, NodeKey> nodePath) {
+        return new NodeConnectorRef(nodeConnectorInstanceIdentifierFromDatapathIdPortno(datapathId, portNo, ofVersion, nodePath));
+    }
+
     public static InstanceIdentifier<NodeConnector> nodeConnectorInstanceIdentifierFromDatapathIdPortno(
             BigInteger datapathId, Long portNo, OpenflowVersion ofVersion) {
         NodeId nodeId = nodeIdFromDatapathId(datapathId);
+        KeyedInstanceIdentifier<Node, NodeKey> nodePath = KeyedInstanceIdentifier.create(Nodes.class)
+                .child(Node.class, new NodeKey(nodeId));
+        return nodeConnectorInstanceIdentifierFromDatapathIdPortno(datapathId, portNo, ofVersion, nodePath);
+    }
+
+    public static InstanceIdentifier<NodeConnector> nodeConnectorInstanceIdentifierFromDatapathIdPortno(
+            BigInteger datapathId, Long portNo, OpenflowVersion ofVersion, KeyedInstanceIdentifier<Node, NodeKey> nodePath) {
         NodeConnectorId nodeConnectorId = nodeConnectorIdfromDatapathPortNo(datapathId, portNo, ofVersion);
-        return InstanceIdentifier.builder(Nodes.class) //
-                .child(Node.class, new NodeKey(nodeId)) //
-                .child(NodeConnector.class, new NodeConnectorKey(nodeConnectorId)).build();
+        return nodePath.child(NodeConnector.class, new NodeConnectorKey(nodeConnectorId));
     }
 
     public static NodeConnectorUpdatedBuilder nodeConnectorUpdatedBuilderFromDatapathIdPortNo(BigInteger datapathId,
