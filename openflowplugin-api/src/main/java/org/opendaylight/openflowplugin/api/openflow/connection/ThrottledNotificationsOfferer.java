@@ -8,12 +8,15 @@
 
 package org.opendaylight.openflowplugin.api.openflow.connection;
 
-import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
+import com.google.common.util.concurrent.ListenableFuture;
+import java.util.Queue;
 
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 8.5.2015.
  */
-public interface ThrottledConnectionsHolder {
+public interface ThrottledNotificationsOfferer<T> extends AutoCloseable {
 
-    void storeThrottledConnection(ConnectionAdapter connectionAdapter);
+    ListenableFuture<Void> applyThrottlingOnConnection(Queue<T> notificationsQueue);
+
+    boolean isThrottlingEffective(Queue<T> notificationsQueue);
 }

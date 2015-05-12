@@ -150,6 +150,8 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         rpcManager.setDeviceInitializationPhaseHandler(deviceManager);
 
         TranslatorLibraryUtil.setBasicTranslatorLibrary(deviceManager);
+        deviceManager.initialize();
+        
         startSwitchConnections();
     }
 
