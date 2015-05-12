@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.connection.listener;
 
+import org.opendaylight.openflowplugin.openflow.md.core.ThreadPoolLoggingExecutor;
+
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -35,21 +37,19 @@ import org.slf4j.LoggerFactory;
 public class SystemNotificationsListenerImpl implements SystemNotificationsListener {
 
     private ConnectionContext connectionContext;
+    ThreadPoolLoggingExecutor handshakePool;
     private static final Logger LOG = LoggerFactory.getLogger(SystemNotificationsListenerImpl.class);
     @VisibleForTesting
     static final long MAX_ECHO_REPLY_TIMEOUT = 2000;
 
-
-    /**
-     * @param connectionContext
-     */
-    public SystemNotificationsListenerImpl(ConnectionContext connectionContext) {
+    public SystemNotificationsListenerImpl(final ConnectionContext connectionContext, 
+            final ThreadPoolLoggingExecutor handshakePool) {
         this.connectionContext = connectionContext;
+        this.handshakePool = handshakePool;
     }
 
     @Override
     public void onDisconnectEvent(DisconnectEvent notification) {
-        // TODO Auto-generated method stub
         disconnect();
     }
 
@@ -145,6 +145,23 @@ public class SystemNotificationsListenerImpl implements SystemNotificationsListe
         });
 
         connectionContext.propagateClosingConnection();
+        shutdownPoolPolitely();
     }
 
+    private void shutdownPoolPolitely() {
+        handshakePool.shutdown();
+        try {
+            handshakePool.awaitTermination(1, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            LOG.info("Error while awaiting termination on pool. Will use shutdownNow method.");
+            shutdownPool();
+        }
+        handshakePool.purge();
+        LOG.debug("pool is terminated: {}", handshakePool.isTerminated());
+    }
+
+    private void shutdownPool() {
+        handshakePool.shutdownNow();
+        LOG.debug("pool is terminated: {}", handshakePool.isTerminated());
+    }
 }

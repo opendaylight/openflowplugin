@@ -69,7 +69,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
                 new OpenflowProtocolListenerInitialImpl(connectionContext, handshakeContext);
         connectionAdapter.setMessageListener(ofMessageListener);
 
-        final SystemNotificationsListener systemListener = new SystemNotificationsListenerImpl(connectionContext);
+        final SystemNotificationsListener systemListener = new SystemNotificationsListenerImpl(connectionContext, handshakePool);
         connectionAdapter.setSystemListener(systemListener);
 
         LOG.trace("connection ballet finished");

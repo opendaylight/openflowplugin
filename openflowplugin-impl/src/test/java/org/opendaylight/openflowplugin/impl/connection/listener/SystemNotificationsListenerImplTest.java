@@ -8,6 +8,10 @@
 
 package org.opendaylight.openflowplugin.impl.connection.listener;
 
+import static org.junit.Assert.*;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.TimeUnit;
+import org.opendaylight.openflowplugin.openflow.md.core.ThreadPoolLoggingExecutor;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.SettableFuture;
 import java.net.InetSocketAddress;
@@ -66,7 +70,11 @@ public class SystemNotificationsListenerImplTest {
 
         Mockito.when(connectionContext.getConnectionAdapter()).thenReturn(connectionAdapter);
         Mockito.when(connectionContext.getFeatures()).thenReturn(features);
-        systemNotificationsListener = new SystemNotificationsListenerImpl(connectionContext);
+        
+        ThreadPoolLoggingExecutor threadPoolLoggingExecutor = new ThreadPoolLoggingExecutor(2000, 2000, 0L, TimeUnit.MILLISECONDS,
+                new ArrayBlockingQueue<Runnable>(20), "OFHandshake-test identifier");
+
+        systemNotificationsListener = new SystemNotificationsListenerImpl(connectionContext, threadPoolLoggingExecutor);
     }
 
     @After
@@ -91,6 +99,7 @@ public class SystemNotificationsListenerImplTest {
         Mockito.verify(connectionAdapter).disconnect();
         Mockito.verify(connectionContext).setConnectionState(ConnectionContext.CONNECTION_STATE.RIP);
         Mockito.verify(connectionContext).propagateClosingConnection();
+        assertTrue(systemNotificationsListener.handshakePool.isTerminated());
     }
 
     /**
@@ -110,6 +119,7 @@ public class SystemNotificationsListenerImplTest {
         Mockito.verify(connectionAdapter).disconnect();
         Mockito.verify(connectionContext).setConnectionState(ConnectionContext.CONNECTION_STATE.RIP);
         Mockito.verify(connectionContext).propagateClosingConnection();
+        assertTrue(systemNotificationsListener.handshakePool.isTerminated());
     }
 
     /**
@@ -131,6 +141,7 @@ public class SystemNotificationsListenerImplTest {
         Mockito.verify(connectionAdapter).disconnect();
         Mockito.verify(connectionContext).setConnectionState(ConnectionContext.CONNECTION_STATE.RIP);
         Mockito.verify(connectionContext).propagateClosingConnection();
+        assertTrue(systemNotificationsListener.handshakePool.isTerminated());
     }
 
     /**
@@ -151,6 +162,7 @@ public class SystemNotificationsListenerImplTest {
         Mockito.verify(connectionAdapter, Mockito.never()).disconnect();
         Mockito.verify(connectionContext).setConnectionState(ConnectionContext.CONNECTION_STATE.RIP);
         Mockito.verify(connectionContext).propagateClosingConnection();
+        assertTrue(systemNotificationsListener.handshakePool.isTerminated());
     }
 
     /**
@@ -182,6 +194,7 @@ public class SystemNotificationsListenerImplTest {
         Mockito.verify(connectionAdapter, Mockito.timeout(SAFE_TIMEOUT)).echo(Matchers.any(EchoInput.class));
         Mockito.verify(connectionContext, Mockito.timeout(SAFE_TIMEOUT)).setConnectionState(ConnectionContext.CONNECTION_STATE.WORKING);
         Mockito.verify(connectionAdapter, Mockito.never()).disconnect();
+        assertFalse(systemNotificationsListener.handshakePool.isTerminated());
     }
 
     /**
@@ -212,6 +225,7 @@ public class SystemNotificationsListenerImplTest {
 
         Mockito.verify(connectionAdapter).disconnect();
         Mockito.verify(connectionContext).propagateClosingConnection();
+        assertTrue(systemNotificationsListener.handshakePool.isTerminated());
     }
 
     private void verifyCommonInvocations() {
