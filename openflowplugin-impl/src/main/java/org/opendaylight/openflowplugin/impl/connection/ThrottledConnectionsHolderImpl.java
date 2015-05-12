@@ -29,7 +29,7 @@ public class ThrottledConnectionsHolderImpl implements ThrottledConnectionsHolde
     private final Set<ConnectionAdapter> throttledConnections = Collections.synchronizedSet(new LinkedHashSet<ConnectionAdapter>());
     private final HashedWheelTimer hashedWheelTimer;
     private Timeout timeout;
-    private long delay = 100L;
+    private long delay = 30L;
     private static final Logger LOG = LoggerFactory.getLogger(ThrottledConnectionsHolderImpl.class);
 
     public ThrottledConnectionsHolderImpl(final HashedWheelTimer hashedWheelTimer) {
@@ -39,7 +39,7 @@ public class ThrottledConnectionsHolderImpl implements ThrottledConnectionsHolde
     @Override
     public void storeThrottledConnection(final ConnectionAdapter connectionAdapter) {
         throttledConnections.add(connectionAdapter);
-        LOG.info("Adding piece of throttle for {}", connectionAdapter.getRemoteAddress());
+        LOG.debug("Adding piece of throttle for {}", connectionAdapter.getRemoteAddress());
         synchronized (this) {
             if (null == timeout) {
                 scheduleTimeout();
@@ -64,7 +64,7 @@ public class ThrottledConnectionsHolderImpl implements ThrottledConnectionsHolde
                 ConnectionAdapter connectionAdapter = iterator.next();
                 iterator.remove();
                 connectionAdapter.setAutoRead(true);
-                LOG.info("Un - throttling primary connection for {}", connectionAdapter.getRemoteAddress());
+                LOG.debug("Un - throttling primary connection for {}", connectionAdapter.getRemoteAddress());
             }
 
             scheduleTimeout();
