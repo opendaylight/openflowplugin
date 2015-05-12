@@ -123,15 +123,26 @@ public final class StatisticsGatheringUtils {
             @Override
             public Boolean apply(final RpcResult<List<MultipartReply>> rpcResult) {
                 if (rpcResult.isSuccessful()) {
+                    boolean firstRun = true;
                     for (final MultipartReply singleReply : rpcResult.getResult()) {
                         final List<? extends DataObject> multipartDataList = MULTIPART_REPLY_TRANSLATOR.translate(deviceContext, singleReply);
                         for (final DataObject singleMultipartData : multipartDataList) {
                             if (singleMultipartData instanceof GroupStatisticsUpdated) {
-                                processGroupStatistics((GroupStatisticsUpdated) singleMultipartData, deviceContext);
+                                final GroupStatisticsUpdated groupStatisticsUpdated = (GroupStatisticsUpdated) singleMultipartData;
+                                final InstanceIdentifier<FlowCapableNode> fnodeId = getFlowCapableNodeInstanceIdentifier(groupStatisticsUpdated.getId());
+                                if (firstRun) {
+                                    deleteAllKnownGroups(deviceContext, fnodeId);
+                                }
+                                processGroupStatistics(groupStatisticsUpdated, deviceContext, fnodeId);
                             }
 
                             if (singleMultipartData instanceof MeterStatisticsUpdated) {
-                                processMetersStatistics((MeterStatisticsUpdated) singleMultipartData, deviceContext);
+                                final MeterStatisticsUpdated meterStatisticsUpdated = (MeterStatisticsUpdated) singleMultipartData;
+                                final InstanceIdentifier<FlowCapableNode> fnodeId = getFlowCapableNodeInstanceIdentifier(meterStatisticsUpdated.getId());
+                                if (firstRun) {
+                                    deleteAllKnownMeters(deviceContext, fnodeId);
+                                }
+                                processMetersStatistics(meterStatisticsUpdated, deviceContext, fnodeId);
                             }
                             if (singleMultipartData instanceof NodeConnectorStatisticsUpdate) {
                                 processNodeConnectorStatistics((NodeConnectorStatisticsUpdate) singleMultipartData, deviceContext);
@@ -143,7 +154,13 @@ public final class StatisticsGatheringUtils {
                                 processQueueStatistics((QueueStatisticsUpdate) singleMultipartData, deviceContext);
                             }
                             if (singleMultipartData instanceof FlowsStatisticsUpdate) {
-                                processFlowStatistics((FlowsStatisticsUpdate) singleMultipartData, deviceContext);
+                                FlowsStatisticsUpdate flowsStatisticsUpdate = (FlowsStatisticsUpdate) singleMultipartData;
+                                final InstanceIdentifier<Node> nodeIdent = InstanceIdentifier.create(Nodes.class)
+                                        .child(Node.class, new NodeKey(flowsStatisticsUpdate.getId()));
+                                if (firstRun) {
+                                    deleteAllKnownFlows(deviceContext, nodeIdent);
+                                }
+                                processFlowStatistics(flowsStatisticsUpdate, deviceContext, nodeIdent);
                             }
                             if (singleMultipartData instanceof GroupDescStatsUpdated) {
                                 processGroupDescStats((GroupDescStatsUpdated) singleMultipartData, deviceContext);
@@ -153,6 +170,7 @@ public final class StatisticsGatheringUtils {
                             }
 
                             //TODO : implement experimenter
+                            firstRun = false;
                         }
                     }
                     return Boolean.TRUE;
@@ -165,9 +183,6 @@ public final class StatisticsGatheringUtils {
     private static void processMeterConfigStatsUpdated(final MeterConfigStatsUpdated meterConfigStatsUpdated, final DeviceContext deviceContext) {
         NodeId nodeId = meterConfigStatsUpdated.getId();
         final InstanceIdentifier<FlowCapableNode> fNodeIdent = getFlowCapableNodeInstanceIdentifier(nodeId);
-
-
-        deleteAllKnownMeters(deviceContext, fNodeIdent);
         for (MeterConfigStats meterConfigStats : meterConfigStatsUpdated.getMeterConfigStats()) {
             final MeterId meterId = meterConfigStats.getMeterId();
             final InstanceIdentifier<Meter> meterInstanceIdentifier = fNodeIdent.child(Meter.class, new MeterKey(meterId));
@@ -180,16 +195,12 @@ public final class StatisticsGatheringUtils {
         }
     }
 
-    private static void processFlowStatistics(final FlowsStatisticsUpdate singleMultipartData, final DeviceContext deviceContext) {
+    private static void processFlowStatistics(final FlowsStatisticsUpdate singleMultipartData, final DeviceContext deviceContext, final InstanceIdentifier<Node> nodeIdent) {
         final FlowsStatisticsUpdate flowsStatistics = singleMultipartData;
-        final InstanceIdentifier<Node> nodeIdent = InstanceIdentifier.create(Nodes.class)
-                .child(Node.class, new NodeKey(flowsStatistics.getId()));
 
         if (deviceContext.getDeviceState().isValid()) {
             deviceContext.startGatheringOperationsToOneTransaction();
         }
-
-        deleteAllKnownFlows(deviceContext, nodeIdent);
 
         for (final FlowAndStatisticsMapList flowStat : flowsStatistics.getFlowAndStatisticsMapList()) {
             final FlowBuilder flowBuilder = new FlowBuilder(flowStat);
@@ -290,10 +301,10 @@ public final class StatisticsGatheringUtils {
         }
     }
 
-    private static void processMetersStatistics(final MeterStatisticsUpdated singleMultipartData, final DeviceContext deviceContext) {
+    private static void processMetersStatistics(final MeterStatisticsUpdated singleMultipartData,
+                                                final DeviceContext deviceContext,
+                                                final InstanceIdentifier<FlowCapableNode> fNodeIdent) {
         final MeterStatisticsUpdated meterStatisticsUpdated = singleMultipartData;
-        final InstanceIdentifier<FlowCapableNode> fNodeIdent = getFlowCapableNodeInstanceIdentifier(meterStatisticsUpdated.getId());
-
 
         for (final MeterStats mStat : meterStatisticsUpdated.getMeterStats()) {
             final MeterStatistics stats = new MeterStatisticsBuilder(mStat).build();
@@ -318,7 +329,6 @@ public final class StatisticsGatheringUtils {
         NodeId nodeId = groupDescStatsUpdated.getId();
         final InstanceIdentifier<FlowCapableNode> fNodeIdent = getFlowCapableNodeInstanceIdentifier(nodeId);
 
-        deleteAllKnownGroups(deviceContext, fNodeIdent);
         for (GroupDescStats groupDescStats : groupDescStatsUpdated.getGroupDescStats()) {
             final GroupId groupId = groupDescStats.getGroupId();
 
@@ -341,10 +351,9 @@ public final class StatisticsGatheringUtils {
         deviceContext.getDeviceGroupRegistry().removeMarked();
     }
 
-    private static void processGroupStatistics(final GroupStatisticsUpdated singleMultipartData, final DeviceContext deviceContext) {
+    private static void processGroupStatistics(final GroupStatisticsUpdated singleMultipartData, final DeviceContext deviceContext, final InstanceIdentifier<FlowCapableNode> fNodeIdent) {
         final GroupStatisticsUpdated groupStatistics = singleMultipartData;
         NodeId nodeId = groupStatistics.getId();
-        final InstanceIdentifier<FlowCapableNode> fNodeIdent = getFlowCapableNodeInstanceIdentifier(nodeId);
 
         for (final GroupStats groupStats : groupStatistics.getGroupStats()) {
 
