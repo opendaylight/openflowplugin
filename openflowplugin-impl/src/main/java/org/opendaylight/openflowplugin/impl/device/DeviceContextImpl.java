@@ -394,7 +394,7 @@ public class DeviceContextImpl implements DeviceContext {
                 messageSpy.spyMessage(packetInMessage.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE);
                 LOG.debug("Notification offer refused by notification service.");
                 connectionAdapter.setAutoRead(false);
-                LOG.info("Throttling primary connection for {}", connectionAdapter.getRemoteAddress());
+                LOG.debug("Throttling primary connection for {}", connectionAdapter.getRemoteAddress());
                 this.throttledConnectionsHolder.storeThrottledConnection(connectionAdapter);
             } else {
                 messageSpy.spyMessage(packetInMessage.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS);
