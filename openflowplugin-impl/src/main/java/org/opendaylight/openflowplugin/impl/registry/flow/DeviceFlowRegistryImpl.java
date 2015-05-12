@@ -8,15 +8,13 @@
 
 package org.opendaylight.openflowplugin.impl.registry.flow;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowHash;
-import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +25,7 @@ import org.slf4j.LoggerFactory;
 public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
 
     private final Map<FlowHash, FlowDescriptor> flowRegistry = new HashMap<>();
-    private final List<FlowHash> marks = new ArrayList();
+    private final Collection<FlowHash> marks = new HashSet<>();
     private static final Logger LOG = LoggerFactory.getLogger(DeviceFlowRegistryImpl.class);
 
     @Override
