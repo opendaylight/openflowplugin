@@ -29,7 +29,7 @@ public class ThrottledConnectionsHolderImpl implements ThrottledConnectionsHolde
     private final Set<ConnectionAdapter> throttledConnections = Collections.synchronizedSet(new LinkedHashSet<ConnectionAdapter>());
     private final HashedWheelTimer hashedWheelTimer;
     private Timeout timeout;
-    private long delay = 30L;
+    private long delay = 10L;
     private static final Logger LOG = LoggerFactory.getLogger(ThrottledConnectionsHolderImpl.class);
 
     public ThrottledConnectionsHolderImpl(final HashedWheelTimer hashedWheelTimer) {
