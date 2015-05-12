@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3aa0d159_751ce3c1",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 397,
+      "author": {
+        "id": 649
+      },
+      "writtenOn": "2015-05-12T22:32:00Z",
+      "side": 1,
+      "message": "Sonar does not like \u003d\u003d on objects. Writing it like:\n\nDOMNotificationPublishService.REJECTED.equals(listenableFuture)\n\nis just as efficient.",
+      "revId": "dd41032d9b9d818595a1af07aa8380705f7c31ba",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
