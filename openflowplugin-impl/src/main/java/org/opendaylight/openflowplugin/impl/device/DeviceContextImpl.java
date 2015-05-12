@@ -117,7 +117,7 @@ public class DeviceContextImpl implements DeviceContext {
     private final Collection<DeviceContextClosedHandler> closeHandlers = new HashSet<>();
     private NotificationPublishService notificationPublishService;
     private final ThrottledNotificationsOfferer throttledConnectionsHolder;
-    private BlockingQueue<PacketInMessage> bumperQueue;
+    private BlockingQueue<PacketReceived> bumperQueue;
 
 
     @VisibleForTesting
@@ -139,7 +139,7 @@ public class DeviceContextImpl implements DeviceContext {
         deviceMeterRegistry = new DeviceMeterRegistryImpl();
         messageSpy = _messageSpy;
         this.throttledConnectionsHolder = throttledConnectionsHolder;
-        bumperQueue = new ArrayBlockingQueue<PacketInMessage>(5000);
+        bumperQueue = new ArrayBlockingQueue<>(5000);
     }
 
     /**
@@ -316,6 +316,7 @@ public class DeviceContextImpl implements DeviceContext {
                 messageSpy.spyMessage(multipartReply.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE);
             }
 
+            unhookRequestCtx(xid);
             try {
                 requestContext.close();
             } catch (final Exception e) {
@@ -403,7 +404,7 @@ public class DeviceContextImpl implements DeviceContext {
         }
 
         if (throttledConnectionsHolder.isThrottlingEffective(bumperQueue)) {
-            boolean caught = bumperQueue.offer(packetInMessage);
+            boolean caught = bumperQueue.offer(packetReceived);
             if (!caught) {
                 LOG.debug("ingress notification dropped - no place in bumper queue [{}]", connectionAdapter.getRemoteAddress());
             }
@@ -417,7 +418,7 @@ public class DeviceContextImpl implements DeviceContext {
                     LOG.trace("notification offer interrupted..", e);
                 } catch (ExecutionException e) {
                     if (e.getCause() instanceof NotificationRejectedException) {
-                        applyThrottling(packetInMessage, connectionAdapter);
+                        applyThrottling(packetReceived, connectionAdapter);
                     } else {
                         LOG.debug("notification offer failed: {}", e.getMessage());
                         LOG.trace("notification offer failed..", e);
@@ -429,17 +430,17 @@ public class DeviceContextImpl implements DeviceContext {
         }
     }
 
-    private void applyThrottling(PacketInMessage packetInMessage, final ConnectionAdapter connectionAdapter) {
+    private void applyThrottling(PacketReceived packetReceived, final ConnectionAdapter connectionAdapter) {
         final InetSocketAddress remoteAddress = connectionAdapter.getRemoteAddress();
         LOG.debug("Notification offer refused by notification service.");
-        messageSpy.spyMessage(packetInMessage.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE);
+        messageSpy.spyMessage(packetReceived.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE);
         connectionAdapter.setAutoRead(false);
 
         LOG.debug("Throttling ingress for {}", remoteAddress);
         final ListenableFuture<Void> queueDone;
 
         // adding first notification
-        bumperQueue.offer(packetInMessage);
+        bumperQueue.offer(packetReceived);
         synchronized (bumperQueue) {
             queueDone = throttledConnectionsHolder.applyThrottlingOnConnection(bumperQueue);
         }

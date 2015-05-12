@@ -7,22 +7,21 @@
  */
 package org.opendaylight.openflowplugin.impl.util;
 
-import org.opendaylight.yang.gen.v1.urn.opendaylight.echo.service.rev150305.SalEchoService;
-import org.opendaylight.openflowplugin.impl.services.FlowCapableTransactionServiceImpl;
-
-import org.opendaylight.openflowplugin.impl.services.SalEchoServiceImpl;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.FlowCapableTransactionService;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
+import org.opendaylight.openflowplugin.impl.services.FlowCapableTransactionServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.NodeConfigServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.PacketProcessingServiceImpl;
+import org.opendaylight.openflowplugin.impl.services.SalEchoServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.SalFlowServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.SalGroupServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.SalMeterServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.SalTableServiceImpl;
 import org.opendaylight.openflowplugin.impl.statistics.services.OpendaylightFlowStatisticsServiceImpl;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.echo.service.rev150305.SalEchoService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.OpendaylightFlowStatisticsService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.FlowCapableTransactionService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.SalGroupService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.SalMeterService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.NodeConfigService;
