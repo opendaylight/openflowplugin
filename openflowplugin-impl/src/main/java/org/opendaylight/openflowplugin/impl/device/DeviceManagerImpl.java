@@ -122,7 +122,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
     public DeviceManagerImpl(@Nonnull final DataBroker dataBroker,
                              @Nonnull final MessageIntelligenceAgency messageIntelligenceAgency) {
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
-        hashedWheelTimer = new HashedWheelTimer(TICK_DURATION, TimeUnit.MILLISECONDS, 10);
+        hashedWheelTimer = new HashedWheelTimer(TICK_DURATION, TimeUnit.MILLISECONDS, 500);
         /* merge empty nodes to oper DS to predict any problems with missing parent for Node */
         final WriteTransaction tx = dataBroker.newWriteOnlyTransaction();
         tx.merge(LogicalDatastoreType.OPERATIONAL, InstanceIdentifier.create(Nodes.class), new NodesBuilder().build());
@@ -215,6 +215,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
             }
         } else if (OFConstants.OFP_VERSION_1_3 == version) {
             final Capabilities capabilities = connectionContext.getFeatures().getCapabilities();
+            LOG.debug("Setting capabilities for device {}", deviceContext.getDeviceState().getNodeId());
             DeviceStateUtil.setDeviceStateBasedOnV13Capabilities(deviceState, capabilities);
             deviceFeaturesFuture = createDeviceFeaturesForOF13(messageListener, deviceContext, deviceState);
         } else {
