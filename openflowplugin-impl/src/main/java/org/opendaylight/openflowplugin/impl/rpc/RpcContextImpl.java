@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.impl.rpc;
 import com.google.common.util.concurrent.SettableFuture;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import javax.annotation.concurrent.GuardedBy;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
@@ -32,10 +33,10 @@ public class RpcContextImpl implements RpcContext {
 
     // TODO: add private Sal salBroker
     private final KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier;
-    private final Collection<RoutedRpcRegistration<?>> rpcRegistrations = new ArrayList<>();
+    private final Collection<RoutedRpcRegistration<?>> rpcRegistrations = new HashSet<>();
 
     @GuardedBy("requestsList")
-    private final Collection<RequestContext<?>> requestsList = new ArrayList<RequestContext<?>>();
+    private final Collection<RequestContext<?>> requestsList = new HashSet<RequestContext<?>>();
 
     private int maxRequestsPerDevice;
 
