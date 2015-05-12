@@ -31,4 +31,12 @@
       </modules>
     </data>
   </configuration>
+
+  <required-capabilities>
+    <capability>urn:opendaylight:flow:inventory?module=flow-node-inventory&amp;revision=2013-08-19</capability>
+    <capability>urn:ietf:params:xml:ns:yang:ietf-yang-types?module=ietf-yang-types&amp;revision=2010-09-24</capability>
+    <capability>urn:opendaylight:inventory?module=opendaylight-inventory&amp;revision=2013-08-19</capability>
+    <capability>urn:opendaylight:packet:service?module=packet-processing&amp;revision=2013-07-09</capability>
+    <capability>urn:opendaylight:flow:types:port?module=opendaylight-port-types&amp;revision=2013-09-25</capability>
+  </required-capabilities>
 </snapshot>
