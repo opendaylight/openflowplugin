@@ -14,9 +14,9 @@ import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.CodecPreconditionException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Nxm1Class;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.nx.match.nsc._2.grouping.Nsc2ValuesBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.Nsc2CaseValue;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.Nsc2CaseValueBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.nx.match.nshc._3.grouping.Nshc3ValuesBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.Nshc3CaseValue;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.Nshc3CaseValueBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.ExtensionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.grouping.Extension;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifPacketIn;
@@ -25,35 +25,35 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifSwitchFlowRemovedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifUpdateFlowStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifUpdateFlowStatsBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxNsc2Grouping;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxNsc2Key;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.nsc._2.grouping.NxmNxNsc2;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.nsc._2.grouping.NxmNxNsc2Builder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxNshc3Grouping;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxNshc3Key;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.nshc._3.grouping.NxmNxNshc3;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.nshc._3.grouping.NxmNxNshc3Builder;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
 
 import com.google.common.base.Optional;
 
-public class Nsc2Convertor implements ConvertorToOFJava<MatchEntry>, ConvertorFromOFJava<MatchEntry, MatchPath> {
+public class Nshc3Convertor implements ConvertorToOFJava<MatchEntry>, ConvertorFromOFJava<MatchEntry, MatchPath> {
     @Override
     public ExtensionAugment<? extends Augmentation<Extension>> convert(MatchEntry input, MatchPath path) {
-        Nsc2CaseValue nsc2CaseValue = ((Nsc2CaseValue) input.getMatchEntryValue());
+        Nshc3CaseValue nsc3CaseValue = ((Nshc3CaseValue) input.getMatchEntryValue());
 
-        return resolveAugmentation(new NxmNxNsc2Builder().setValue(nsc2CaseValue.getNsc2Values().getNsc()).build(), path,
-                NxmNxNsc2Key.class);
+        return resolveAugmentation(new NxmNxNshc3Builder().setValue(nsc3CaseValue.getNshc3Values().getNshc()).build(), path,
+                NxmNxNshc3Key.class);
     }
 
-    private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(NxmNxNsc2 value,
+    private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(NxmNxNshc3 value,
                                                                                            MatchPath path, Class<? extends ExtensionKey> key) {
         switch (path) {
             case FLOWSSTATISTICSUPDATE_FLOWANDSTATISTICSMAPLIST_MATCH:
                 return new ExtensionAugment<>(NxAugMatchNotifUpdateFlowStats.class,
-                        new NxAugMatchNotifUpdateFlowStatsBuilder().setNxmNxNsc2(value).build(), key);
+                        new NxAugMatchNotifUpdateFlowStatsBuilder().setNxmNxNshc3(value).build(), key);
             case PACKETRECEIVED_MATCH:
                 return new ExtensionAugment<>(NxAugMatchNotifPacketIn.class, new NxAugMatchNotifPacketInBuilder()
-                        .setNxmNxNsc2(value).build(), key);
+                        .setNxmNxNshc3(value).build(), key);
             case SWITCHFLOWREMOVED_MATCH:
                 return new ExtensionAugment<>(NxAugMatchNotifSwitchFlowRemoved.class,
-                        new NxAugMatchNotifSwitchFlowRemovedBuilder().setNxmNxNsc2(value).build(), key);
+                        new NxAugMatchNotifSwitchFlowRemovedBuilder().setNxmNxNshc3(value).build(), key);
             default:
                 throw new CodecPreconditionException(path);
         }
@@ -61,19 +61,19 @@ public class Nsc2Convertor implements ConvertorToOFJava<MatchEntry>, ConvertorFr
 
     @Override
     public MatchEntry convert(Extension extension) {
-        Optional<NxmNxNsc2Grouping> matchGrouping = MatchUtil.nsc2Resolver.getExtension(extension);
+        Optional<NxmNxNshc3Grouping> matchGrouping = MatchUtil.nsc3Resolver.getExtension(extension);
         if (!matchGrouping.isPresent()) {
             throw new CodecPreconditionException(extension);
         }
-        Long value = matchGrouping.get().getNxmNxNsc2().getValue();
-        Nsc2CaseValueBuilder nsc2CaseValueBuilder = new Nsc2CaseValueBuilder();
-        nsc2CaseValueBuilder.setNsc2Values(new Nsc2ValuesBuilder()
-                .setNsc(value).build());
+        Long value = matchGrouping.get().getNxmNxNshc3().getValue();
+        Nshc3CaseValueBuilder nsc3CaseValueBuilder = new Nshc3CaseValueBuilder();
+        nsc3CaseValueBuilder.setNshc3Values(new Nshc3ValuesBuilder()
+                .setNshc(value).build());
 
 
-        return MatchUtil.createDefaultMatchEntryBuilder(org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxNsc2.class,
+        return MatchUtil.createDefaultMatchEntryBuilder(org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxNshc3.class,
                 Nxm1Class.class,
-                nsc2CaseValueBuilder.build()).build();
+                nsc3CaseValueBuilder.build()).build();
     }
 
 }

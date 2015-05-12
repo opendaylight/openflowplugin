@@ -15,10 +15,10 @@ import org.opendaylight.openflowjava.nx.codec.match.ArpTpaCodec;
 import org.opendaylight.openflowjava.nx.codec.match.EthDstCodec;
 import org.opendaylight.openflowjava.nx.codec.match.EthSrcCodec;
 import org.opendaylight.openflowjava.nx.codec.match.EthTypeCodec;
-import org.opendaylight.openflowjava.nx.codec.match.Nsc1Codec;
-import org.opendaylight.openflowjava.nx.codec.match.Nsc2Codec;
-import org.opendaylight.openflowjava.nx.codec.match.Nsc3Codec;
-import org.opendaylight.openflowjava.nx.codec.match.Nsc4Codec;
+import org.opendaylight.openflowjava.nx.codec.match.Nshc1Codec;
+import org.opendaylight.openflowjava.nx.codec.match.Nshc2Codec;
+import org.opendaylight.openflowjava.nx.codec.match.Nshc3Codec;
+import org.opendaylight.openflowjava.nx.codec.match.Nshc4Codec;
 import org.opendaylight.openflowjava.nx.codec.match.NsiCodec;
 import org.opendaylight.openflowjava.nx.codec.match.NspCodec;
 import org.opendaylight.openflowjava.nx.codec.match.Reg0Codec;
@@ -60,8 +60,8 @@ public class NiciraMatchCodecs {
     public static final EthTypeCodec ETH_TYPE_CODEC = new EthTypeCodec();
     public static final NspCodec NSP_CODEC = new NspCodec();
     public static final NsiCodec NSI_CODEC = new NsiCodec();
-    public static final Nsc1Codec NSC1_CODEC = new Nsc1Codec();
-    public static final Nsc2Codec NSC2_CODEC = new Nsc2Codec();
-    public static final Nsc3Codec NSC3_CODEC = new Nsc3Codec();
-    public static final Nsc4Codec NSC4_CODEC = new Nsc4Codec();
+    public static final Nshc1Codec NSC1_CODEC = new Nshc1Codec();
+    public static final Nshc2Codec NSC2_CODEC = new Nshc2Codec();
+    public static final Nshc3Codec NSC3_CODEC = new Nshc3Codec();
+    public static final Nshc4Codec NSC4_CODEC = new Nshc4Codec();
 }

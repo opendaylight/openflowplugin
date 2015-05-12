@@ -192,8 +192,8 @@ module nicira-action {
         }
     }
     
-    grouping ofj-nx-action-set-nsc-grouping {
-        leaf nsc {
+    grouping ofj-nx-action-set-nshc-grouping {
+        leaf nshc {
             type uint32;
         }
         leaf experimenter-id {
@@ -201,24 +201,24 @@ module nicira-action {
         }
     }
     
-    grouping ofj-nx-action-set-nsc-1-grouping {
-        container nx-action-set-nsc-1 {
-            uses ofj-nx-action-set-nsc-grouping;
+    grouping ofj-nx-action-set-nshc-1-grouping {
+        container nx-action-set-nshc-1 {
+            uses ofj-nx-action-set-nshc-grouping;
         }
     }
-    grouping ofj-nx-action-set-nsc-2-grouping {
-        container nx-action-set-nsc-2 {
-            uses ofj-nx-action-set-nsc-grouping;
+    grouping ofj-nx-action-set-nshc-2-grouping {
+        container nx-action-set-nshc-2 {
+            uses ofj-nx-action-set-nshc-grouping;
         }
     }
-    grouping ofj-nx-action-set-nsc-3-grouping {
-        container nx-action-set-nsc-3 {
-            uses ofj-nx-action-set-nsc-grouping;
+    grouping ofj-nx-action-set-nshc-3-grouping {
+        container nx-action-set-nshc-3 {
+            uses ofj-nx-action-set-nshc-grouping;
         }
     }
-    grouping ofj-nx-action-set-nsc-4-grouping {
-        container nx-action-set-nsc-4 {
-            uses ofj-nx-action-set-nsc-grouping;
+    grouping ofj-nx-action-set-nshc-4-grouping {
+        container nx-action-set-nshc-4 {
+            uses ofj-nx-action-set-nshc-grouping;
         }
     }
 
@@ -245,17 +245,17 @@ module nicira-action {
         case action-set-nsi {
             uses ofj-nx-action-set-nsi-grouping;
         }
-        case action-set-nsc-1 {
-            uses ofj-nx-action-set-nsc-1-grouping;
+        case action-set-nshc-1 {
+            uses ofj-nx-action-set-nshc-1-grouping;
         }
-        case action-set-nsc-2 {
-            uses ofj-nx-action-set-nsc-2-grouping;
+        case action-set-nshc-2 {
+            uses ofj-nx-action-set-nshc-2-grouping;
         }
-        case action-set-nsc-3 {
-            uses ofj-nx-action-set-nsc-3-grouping;
+        case action-set-nshc-3 {
+            uses ofj-nx-action-set-nshc-3-grouping;
         }
-        case action-set-nsc-4 {
-            uses ofj-nx-action-set-nsc-4-grouping;
+        case action-set-nshc-4 {
+            uses ofj-nx-action-set-nshc-4-grouping;
         }
     }
 }

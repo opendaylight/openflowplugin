@@ -19,33 +19,33 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Nxm1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxNsc1;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.nx.match.nsc._1.grouping.Nsc1ValuesBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.Nsc1CaseValue;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.Nsc1CaseValueBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxNshc2;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.nx.match.nshc._2.grouping.Nshc2ValuesBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.Nshc2CaseValue;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.Nshc2CaseValueBuilder;
 
-public class Nsc1Codec extends AbstractMatchCodec {
+public class Nshc2Codec extends AbstractMatchCodec {
 
     private static final int VALUE_LENGTH = 4;
-    private static final int NXM_FIELD_CODE = 39;
-    public static final MatchEntrySerializerKey<Nxm1Class, NxmNxNsc1> SERIALIZER_KEY = new MatchEntrySerializerKey<>(
-            EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxNsc1.class);
+    private static final int NXM_FIELD_CODE = 40;
+    public static final MatchEntrySerializerKey<Nxm1Class, NxmNxNshc2> SERIALIZER_KEY = new MatchEntrySerializerKey<>(
+            EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxNshc2.class);
     public static final MatchEntryDeserializerKey DESERIALIZER_KEY = new MatchEntryDeserializerKey(
             EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_1_CLASS, NXM_FIELD_CODE);
 
     @Override
     public void serialize(MatchEntry input, ByteBuf outBuffer) {
         serializeHeader(input, outBuffer);
-        Nsc1CaseValue csc1CaseValue = ((Nsc1CaseValue) input.getMatchEntryValue());
-        outBuffer.writeInt(csc1CaseValue.getNsc1Values().getNsc().intValue());
+        Nshc2CaseValue csc1CaseValue = ((Nshc2CaseValue) input.getMatchEntryValue());
+        outBuffer.writeInt(csc1CaseValue.getNshc2Values().getNshc().intValue());
     }
 
     @Override
     public MatchEntry deserialize(ByteBuf message) {
         MatchEntryBuilder matchEntryBuilder = deserializeHeader(message);
-        Nsc1CaseValueBuilder nsc1CaseValueBuilder = new Nsc1CaseValueBuilder();
-        nsc1CaseValueBuilder.setNsc1Values(new Nsc1ValuesBuilder().setNsc(message.readUnsignedInt()).build());
-        matchEntryBuilder.setMatchEntryValue(nsc1CaseValueBuilder.build());
+        Nshc2CaseValueBuilder nsc2CaseValueBuilder = new Nshc2CaseValueBuilder();
+        nsc2CaseValueBuilder.setNshc2Values(new Nshc2ValuesBuilder().setNshc(message.readUnsignedInt()).build());
+        matchEntryBuilder.setMatchEntryValue(nsc2CaseValueBuilder.build());
 
         return matchEntryBuilder.build();
     }
@@ -67,7 +67,7 @@ public class Nsc1Codec extends AbstractMatchCodec {
 
     @Override
     public Class<? extends MatchField> getNxmField() {
-        return NxmNxNsc1.class;
+        return NxmNxNshc2.class;
     }
 
     @Override

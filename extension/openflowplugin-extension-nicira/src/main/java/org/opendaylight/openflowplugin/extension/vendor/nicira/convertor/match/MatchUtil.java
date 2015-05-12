@@ -26,10 +26,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchRpcUpdateFlowUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxArpShaGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxArpThaGrouping;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxNsc1Grouping;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxNsc2Grouping;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxNsc3Grouping;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxNsc4Grouping;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxNshc1Grouping;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxNshc2Grouping;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxNshc3Grouping;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxNshc4Grouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxNsiGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxNspGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxRegGrouping;
@@ -79,14 +79,14 @@ public class MatchUtil {
             NxmNxNsiGrouping.class);
     public final static GroupingResolver<NxmNxNspGrouping, Extension> nspResolver = new GroupingResolver<>(
             NxmNxNspGrouping.class);
-    public final static GroupingResolver<NxmNxNsc1Grouping, Extension> nsc1Resolver = new GroupingResolver<>(
-            NxmNxNsc1Grouping.class);
-    public final static GroupingResolver<NxmNxNsc2Grouping, Extension> nsc2Resolver = new GroupingResolver<>(
-            NxmNxNsc2Grouping.class);
-    public final static GroupingResolver<NxmNxNsc3Grouping, Extension> nsc3Resolver = new GroupingResolver<>(
-            NxmNxNsc3Grouping.class);
-    public final static GroupingResolver<NxmNxNsc4Grouping, Extension> nsc4Resolver = new GroupingResolver<>(
-            NxmNxNsc4Grouping.class);
+    public final static GroupingResolver<NxmNxNshc1Grouping, Extension> nsc1Resolver = new GroupingResolver<>(
+            NxmNxNshc1Grouping.class);
+    public final static GroupingResolver<NxmNxNshc2Grouping, Extension> nsc2Resolver = new GroupingResolver<>(
+            NxmNxNshc2Grouping.class);
+    public final static GroupingResolver<NxmNxNshc3Grouping, Extension> nsc3Resolver = new GroupingResolver<>(
+            NxmNxNshc3Grouping.class);
+    public final static GroupingResolver<NxmNxNshc4Grouping, Extension> nsc4Resolver = new GroupingResolver<>(
+            NxmNxNshc4Grouping.class);
 
     static {
         augmentationsOfExtension.add(NxAugMatchRpcAddFlow.class);
