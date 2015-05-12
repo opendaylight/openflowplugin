@@ -103,7 +103,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceManagerImpl.class);
 
-    private static final long TICK_DURATION = 500; // 0.5 sec.
+    private static final long TICK_DURATION = 10; // 0.5 sec.
     private ScheduledThreadPoolExecutor spyPool;
     private final int spyRate = 10;
 
