@@ -14,7 +14,9 @@ import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -105,7 +107,7 @@ public class DeviceContextImpl implements DeviceContext {
     private NotificationService notificationService;
     private final MessageSpy<Class> messageSpy;
     private DeviceDisconnectedHandler deviceDisconnectedHandler;
-    private final List<DeviceContextClosedHandler> closeHandlers = new ArrayList<>();
+    private final Collection<DeviceContextClosedHandler> closeHandlers = new HashSet<>();
     private NotificationPublishService notificationPublishService;
     private final ThrottledConnectionsHolder throttledConnectionsHolder;
 
