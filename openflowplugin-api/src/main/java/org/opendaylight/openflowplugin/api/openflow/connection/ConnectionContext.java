@@ -63,6 +63,17 @@ public interface ConnectionContext {
      */
     ConnectionAdapter getConnectionAdapter();
 
+    /**
+     * Returns reference to OFJava outbound queue provider. Outbound queue is used for outbound messages processing.
+     *
+     * @return
+     */
+    OutboundQueueProvider getOutboundQueueProvider();
+    /**
+     * Method sets reference to OFJava outbound queue provider.
+     *
+     */
+    void setOutboundQueueProvider(OutboundQueueProvider  outboundQueueProvider);
 
     /**
      * Method returns current connection state.

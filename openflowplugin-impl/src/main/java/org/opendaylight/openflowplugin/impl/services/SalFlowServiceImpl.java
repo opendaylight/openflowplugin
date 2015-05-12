@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.impl.services;
 import com.google.common.base.Function;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import java.util.ArrayList;
@@ -19,6 +18,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
@@ -47,6 +47,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.UpdatedFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -192,14 +193,13 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
         return future;
     }
 
-    private <T> ListenableFuture<RpcResult<T>> processFlowModInputBuilders(
-            final List<FlowModInputBuilder> ofFlowModInputs) {
+    private <T> ListenableFuture<RpcResult<T>> processFlowModInputBuilders(final List<FlowModInputBuilder> ofFlowModInputs) {
+
         final List<ListenableFuture<RpcResult<T>>> partialFutures = new ArrayList<>();
 
         for (FlowModInputBuilder flowModInputBuilder : ofFlowModInputs) {
             DataCrateBuilder<T> dataCrateBuilder = DataCrateBuilder.<T>builder().setFlowModInputBuilder(flowModInputBuilder);
             ListenableFuture<RpcResult<T>> partialFuture = handleServiceCall(
-                    getPrimaryConnection(),
                     new Function<DataCrate<T>, ListenableFuture<RpcResult<Void>>>() {
                         @Override
                         public ListenableFuture<RpcResult<Void>> apply(final DataCrate<T> data) {
@@ -295,14 +295,27 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
     }
 
     protected <T> ListenableFuture<RpcResult<Void>> createResultForFlowMod(final DataCrate<T> data, final FlowModInputBuilder flowModInputBuilder) {
-        final Xid xid = data.getRequestContext().getXid();
-        flowModInputBuilder.setXid(xid.getValue());
+        final OutboundQueue outboundQueue = getDeviceContext().getPrimaryConnectionContext().getOutboundQueueProvider().getOutboundQueue();
+        long xid = data.getRequestContext().getXid().getValue();
+        flowModInputBuilder.setXid(xid);
         final FlowModInput flowModInput = flowModInputBuilder.build();
-        Future<RpcResult<Void>> flowModResult = provideConnectionAdapter(data.getiDConnection()).flowMod(
-                flowModInput);
 
-        final ListenableFuture<RpcResult<Void>> result = JdkFutureAdapters.listenInPoolThread(flowModResult);
-        return result;
+        final SettableFuture<RpcResult<Void>> settableFuture = SettableFuture.create();
+        outboundQueue.commitEntry(xid, flowModInput, new FutureCallback<OfHeader>() {
+            @Override
+            public void onSuccess(final OfHeader ofHeader) {
+                settableFuture.set(RpcResultBuilder.<Void>success().build());
+                getMessageSpy().spyMessage(flowModInput.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
+            }
+
+            @Override
+            public void onFailure(final Throwable throwable) {
+                RpcResultBuilder rpcResultBuilder = RpcResultBuilder.<Void>failed().withError(ErrorType.APPLICATION, throwable.getMessage());
+                settableFuture.set(rpcResultBuilder.build());
+                getMessageSpy().spyMessage(flowModInput.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
+            }
+        });
+        return settableFuture;
     }
 
 }
