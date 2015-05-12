@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.connection.listener;
 
+import org.opendaylight.openflowplugin.api.openflow.connection.HandshakeContext;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -35,21 +36,19 @@ import org.slf4j.LoggerFactory;
 public class SystemNotificationsListenerImpl implements SystemNotificationsListener {
 
     private ConnectionContext connectionContext;
+    HandshakeContext handshakeContext;
     private static final Logger LOG = LoggerFactory.getLogger(SystemNotificationsListenerImpl.class);
     @VisibleForTesting
     static final long MAX_ECHO_REPLY_TIMEOUT = 2000;
 
-
-    /**
-     * @param connectionContext
-     */
-    public SystemNotificationsListenerImpl(ConnectionContext connectionContext) {
+    public SystemNotificationsListenerImpl(final ConnectionContext connectionContext, 
+            final HandshakeContext handshakeContext) {
         this.connectionContext = connectionContext;
+        this.handshakeContext = handshakeContext;
     }
 
     @Override
     public void onDisconnectEvent(DisconnectEvent notification) {
-        // TODO Auto-generated method stub
         disconnect();
     }
 
@@ -145,6 +144,10 @@ public class SystemNotificationsListenerImpl implements SystemNotificationsListe
         });
 
         connectionContext.propagateClosingConnection();
+        try {
+            handshakeContext.close();
+        } catch (Exception e) {
+            LOG.debug("Closing of handshake context wasn't successfull. {}", e);
+        }
     }
-
 }
