@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3aa0d159_d5361752",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/connection/ThrottledNotificationsOffererImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 649
+      },
+      "writtenOn": "2015-05-12T22:30:22Z",
+      "side": 1,
+      "message": "if we have these per-device, some identification would be nice",
+      "revId": "aa48215771cded950092320ff3b3a5367ac73558",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3aa0d159_35309b55",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/connection/ThrottledNotificationsOffererImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 649
+      },
+      "writtenOn": "2015-05-12T22:30:22Z",
+      "side": 1,
+      "message": "do not throw raw Exceptions",
+      "revId": "aa48215771cded950092320ff3b3a5367ac73558",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
