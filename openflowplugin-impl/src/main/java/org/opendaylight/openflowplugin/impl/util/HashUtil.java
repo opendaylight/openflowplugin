@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.impl.util;
 
+import com.google.common.annotations.VisibleForTesting;
 import java.math.BigInteger;
 import java.util.StringTokenizer;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
@@ -518,7 +519,8 @@ public final class HashUtil {
         return hash;
     }
 
-    private static long calculateIpMatchHash(final IpMatch ipMatch) {
+    @VisibleForTesting
+    public static long calculateIpMatchHash(final IpMatch ipMatch) {
         long hash = 0;
         Short ipEcn = ipMatch.getIpEcn();
         if (null != ipEcn) {
@@ -529,15 +531,20 @@ public final class HashUtil {
             hash += ipProtocol;
         }
 
-        Short ipDscp = ipMatch.getIpDscp().getValue();
-        if (null != ipDscp) {
-            hash += ipDscp;
+        if (null != ipMatch.getIpDscp()) {
+            Short ipDscp = ipMatch.getIpDscp().getValue();
+            if (null != ipDscp) {
+                hash += ipDscp;
+            }
         }
 
         IpVersion ipVersion = ipMatch.getIpProto();
-        if (null != ipVersion) {
+        if (null != ipVersion)
+
+        {
             hash += ipVersion.getIntValue();
         }
+
         return hash;
     }
 
