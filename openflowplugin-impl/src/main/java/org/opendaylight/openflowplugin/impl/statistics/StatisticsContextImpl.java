@@ -14,6 +14,8 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -35,7 +37,7 @@ public class StatisticsContextImpl implements StatisticsContext {
 
     private static final Logger LOG = LoggerFactory.getLogger(StatisticsContextImpl.class);
     public static final String CONNECTION_CLOSED = "Connection closed.";
-    private final List<RequestContext> requestContexts = new ArrayList();
+    private final Collection<RequestContext> requestContexts = new HashSet<>();
     private final DeviceContext deviceContext;
 
 
