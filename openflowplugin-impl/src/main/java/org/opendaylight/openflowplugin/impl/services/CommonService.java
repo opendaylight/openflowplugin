@@ -14,10 +14,12 @@ import com.google.common.util.concurrent.SettableFuture;
 import java.math.BigInteger;
 import java.util.concurrent.Future;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
+import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
+import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
@@ -51,11 +53,12 @@ public abstract class CommonService {
         this.primaryConnectionAdapter = deviceContext.getPrimaryConnectionContext().getConnectionAdapter();
         this.messageSpy = deviceContext.getMessageSpy();
     }
+
     public static BigInteger getPrimaryConnection() {
         return PRIMARY_CONNECTION;
     }
 
-    public short getVersion(){
+    public short getVersion() {
         return version;
     }
 
@@ -111,23 +114,22 @@ public abstract class CommonService {
     public <T, F> ListenableFuture<RpcResult<T>> handleServiceCall(final BigInteger connectionID,
                                                                    final Function<DataCrate<T>, ListenableFuture<RpcResult<F>>> function) {
         DataCrateBuilder<T> dataCrateBuilder = DataCrateBuilder.<T>builder();
-        return handleServiceCall(connectionID, function, dataCrateBuilder);
+        return handleServiceCall(function, dataCrateBuilder);
     }
+
     public <T, F> ListenableFuture<RpcResult<T>> handleServiceCall(final Function<DataCrate<T>, ListenableFuture<RpcResult<F>>> function) {
         DataCrateBuilder<T> dataCrateBuilder = DataCrateBuilder.<T>builder();
-        return handleServiceCall(PRIMARY_CONNECTION, function, dataCrateBuilder);
+        return handleServiceCall(function, dataCrateBuilder);
     }
 
     /**
      * @param <T>
      * @param <F>
-     * @param connectionID
      * @param function
      * @param dataCrateBuilder predefined data
      * @return
      */
-    public final <T, F> ListenableFuture<RpcResult<T>> handleServiceCall(final BigInteger connectionID,
-                                                                         final Function<DataCrate<T>, ListenableFuture<RpcResult<F>>> function,
+    public final <T, F> ListenableFuture<RpcResult<T>> handleServiceCall(final Function<DataCrate<T>, ListenableFuture<RpcResult<F>>> function,
                                                                          final DataCrateBuilder<T> dataCrateBuilder) {
 
         LOG.trace("Handling general service call");
@@ -135,15 +137,23 @@ public abstract class CommonService {
         final SettableFuture<RpcResult<T>> result = requestContextStack.storeOrFail(requestContext);
         if (result.isDone()) {
             messageSpy.spyMessage(requestContext.getClass(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_DISREGARDED);
+            LOG.trace("Request context refused.");
             return result;
         }
-        DataCrate<T> dataCrate = dataCrateBuilder.setiDConnection(connectionID).setRequestContext(requestContext)
+
+        long reservedXid;
+        final OutboundQueue outboundQueue = deviceContext.getPrimaryConnectionContext().getOutboundQueueProvider().getOutboundQueue();
+        synchronized (outboundQueue) {
+            reservedXid = outboundQueue.reserveEntry();
+        }
+        final Xid xid = new Xid(reservedXid);
+        requestContext.setXid(xid);
+        DataCrate<T> dataCrate = dataCrateBuilder.setRequestContext(requestContext)
                 .build();
         final ListenableFuture<RpcResult<F>> resultFromOFLib;
 
-        requestContext.setXid(deviceContext.getNextXid());
         LOG.trace("Hooking xid {} to device context - precaution.", requestContext.getXid().getValue());
-        deviceContext.hookRequestCtx(requestContext.getXid(), requestContext);
+        deviceContext.hookRequestCtx(xid, requestContext);
 
         messageSpy.spyMessage(requestContext.getClass(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_READY_FOR_SUBMIT);
         synchronized (deviceContext) {
