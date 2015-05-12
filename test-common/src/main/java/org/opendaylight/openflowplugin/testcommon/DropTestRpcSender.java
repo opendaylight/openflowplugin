@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DropTestRpcSender extends AbstractDropTest {
     private static final Logger LOG = LoggerFactory.getLogger(DropTestRpcSender.class);
+    private static final InstanceIdentifier<Nodes> NODES_IDENTIFIER = InstanceIdentifier.create(Nodes.class);
 
     private SalFlowService flowService;
 
@@ -96,11 +97,7 @@ public class DropTestRpcSender extends AbstractDropTest {
         fb.setInstructions(instructions);
 
         // Construct the flow instance id
-        final InstanceIdentifier<Node> flowInstanceId = InstanceIdentifier
-                // File under nodes
-                .builder(Nodes.class)
-                        // A particular node identified by nodeKey
-                .child(Node.class, node).build();
+        final InstanceIdentifier<Node> flowInstanceId = NODES_IDENTIFIER.child(Node.class, node);
         fb.setNode(new NodeRef(flowInstanceId));
 
         // Add flow
