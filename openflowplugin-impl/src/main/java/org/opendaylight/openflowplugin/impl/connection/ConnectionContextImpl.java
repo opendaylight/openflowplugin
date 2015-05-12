@@ -9,6 +9,7 @@ package org.opendaylight.openflowplugin.impl.connection;
 
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
+import org.opendaylight.openflowplugin.api.openflow.connection.OutboundQueueProvider;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceDisconnectedHandler;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
@@ -26,6 +27,7 @@ public class ConnectionContextImpl implements ConnectionContext {
     private NodeId nodeId;
     private DeviceDisconnectedHandler deviceDisconnectedHandler;
     private static final Logger LOG = LoggerFactory.getLogger(ConnectionContextImpl.class);
+    private OutboundQueueProvider outboundQueueProvider;
 
     /**
      * @param connectionAdapter
@@ -37,6 +39,16 @@ public class ConnectionContextImpl implements ConnectionContext {
     @Override
     public ConnectionAdapter getConnectionAdapter() {
         return connectionAdapter;
+    }
+
+    @Override
+    public OutboundQueueProvider getOutboundQueueProvider() {
+        return this.outboundQueueProvider;
+    }
+
+    @Override
+    public void setOutboundQueueProvider(final OutboundQueueProvider outboundQueueProvider) {
+        this.outboundQueueProvider = outboundQueueProvider;
     }
 
     @Override
