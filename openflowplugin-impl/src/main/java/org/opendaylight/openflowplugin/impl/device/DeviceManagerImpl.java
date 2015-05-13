@@ -31,6 +31,7 @@ import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
+import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandlerRegistration;
 import org.opendaylight.openflowplugin.api.ConnectionException;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
@@ -123,8 +124,8 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
     private final List<DeviceContext> deviceContexts = new ArrayList<DeviceContext>();
     private final MessageIntelligenceAgency messageIntelligenceAgency;
 
-    private final long barrierNanos = 1000L;
-    private final int maxQueueDepth = 25600;
+    private final long barrierNanos = 500000000L;
+    private final int maxQueueDepth = 1024;
 
     public DeviceManagerImpl(@Nonnull final DataBroker dataBroker,
                              @Nonnull final MessageIntelligenceAgency messageIntelligenceAgency) {
@@ -334,36 +335,46 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         LOG.trace("Hooking xid {} to device context - precaution.", requestContext.getXid().getValue());
         deviceContext.hookRequestCtx(requestContext.getXid(), requestContext);
 
+        final ListenableFuture<RpcResult<List<MultipartReply>>> requestContextFuture = requestContext.getFuture();
 
         multiMsgCollector.registerMultipartXid(xid.getValue());
         outboundQueue.commitEntry(reservedXid, MultipartRequestInputFactory.makeMultipartRequestInput(xid.getValue(), version, type), new FutureCallback<OfHeader>() {
             @Override
             public void onSuccess(final OfHeader ofHeader) {
-                if (ofHeader instanceof RpcResult) {
-                    RpcResult<List<MultipartReply>> rpcResult = (RpcResult) ofHeader;
-                    final List<MultipartReply> result = rpcResult.getResult();
-                    if (result != null) {
-                        translateAndWriteReply(type, deviceContext, nodeII, result);
-                    } else {
-                        final Iterator<RpcError> rpcErrorIterator = rpcResult.getErrors().iterator();
-                        while (rpcErrorIterator.hasNext()) {
-                            final RpcError rpcError = rpcErrorIterator.next();
-                            LOG.info("Failed to retrieve static node {} info: {}", type, rpcError.getMessage());
-                            if (null != rpcError.getCause()) {
-                                LOG.trace("Detailed error:", rpcError.getCause());
-                            }
-                        }
-                        if (MultipartType.OFPMPTABLEFEATURES.equals(type)) {
-                            makeEmptyTables(deviceContext, nodeII, deviceContext.getPrimaryConnectionContext().getFeatures().getTables());
-                        }
-                    }
-                }
+                LOG.info("Static node {} info: {} collected", type);
             }
 
 
             @Override
             public void onFailure(final Throwable t) {
                 LOG.info("Failed to retrieve static node {} info: {}", type, t.getMessage());
+            }
+        });
+
+        Futures.addCallback(requestContextFuture, new FutureCallback<RpcResult<List<MultipartReply>>>() {
+            @Override
+            public void onSuccess(final RpcResult<List<MultipartReply>> rpcResult) {
+                final List<MultipartReply> result = rpcResult.getResult();
+                if (result != null) {
+                    translateAndWriteReply(type, deviceContext, nodeII, result);
+                } else {
+                    final Iterator<RpcError> rpcErrorIterator = rpcResult.getErrors().iterator();
+                    while (rpcErrorIterator.hasNext()) {
+                        final RpcError rpcError = rpcErrorIterator.next();
+                            LOG.info("Failed to retrieve static node {} info: {}", type, rpcError.getMessage());
+                        if (null != rpcError.getCause()) {
+                            LOG.trace("Detailed error:", rpcError.getCause());
+                        }
+                    }
+                    if (MultipartType.OFPMPTABLEFEATURES.equals(type)) {
+                        makeEmptyTables(deviceContext, nodeII, deviceContext.getPrimaryConnectionContext().getFeatures().getTables());
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(final Throwable throwable) {
+
             }
         });
 
