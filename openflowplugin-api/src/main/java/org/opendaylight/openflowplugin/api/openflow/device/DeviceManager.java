@@ -41,5 +41,9 @@ public interface DeviceManager extends DeviceConnectedHandler,
      */
     void setNotificationPublishService(NotificationPublishService notificationPublishService);
 
+    /**
+     * invoked after all services injected
+     */
+    void initialize();
 }
 

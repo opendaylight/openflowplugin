@@ -25,7 +25,7 @@ import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
-import org.opendaylight.openflowplugin.api.openflow.connection.ThrottledConnectionsHolder;
+import org.opendaylight.openflowplugin.api.openflow.connection.ThrottledNotificationsOfferer;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
@@ -82,7 +82,7 @@ public class DeviceContextImplTest {
     @Mock
     MessageIntelligenceAgency messageIntelligenceAgency;
     @Mock
-    ThrottledConnectionsHolder throttledConnectionsHolder;
+    ThrottledNotificationsOfferer throttledConnectionsHolder;
 
     @Before
     public void setUp() {

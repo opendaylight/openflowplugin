@@ -33,7 +33,7 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.ConnectionException;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
-import org.opendaylight.openflowplugin.api.openflow.connection.ThrottledConnectionsHolder;
+import org.opendaylight.openflowplugin.api.openflow.connection.ThrottledNotificationsOfferer;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
@@ -48,11 +48,10 @@ import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
 import org.opendaylight.openflowplugin.impl.common.MultipartRequestInputFactory;
 import org.opendaylight.openflowplugin.impl.common.NodeStaticReplyTranslatorUtil;
-import org.opendaylight.openflowplugin.impl.connection.ThrottledConnectionsHolderImpl;
+import org.opendaylight.openflowplugin.impl.connection.ThrottledNotificationsOffererImpl;
 import org.opendaylight.openflowplugin.impl.device.listener.OpenflowProtocolListenerFullImpl;
 import org.opendaylight.openflowplugin.impl.rpc.RequestContextImpl;
 import org.opendaylight.openflowplugin.impl.services.OFJResult2RequestCtxFuture;
-import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.MessageIntelligenceAgencyImpl;
 import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeBuilder;
@@ -75,6 +74,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.CapabilitiesV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.MultipartReplyBody;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyDescCase;
@@ -114,10 +114,10 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
     private DeviceInitializationPhaseHandler deviceInitPhaseHandler;
     private NotificationService notificationService;
     private NotificationPublishService notificationPublishService;
+    private ThrottledNotificationsOfferer<PacketInMessage> throttledNotificationsOfferer;
 
     private final List<DeviceContext> deviceContexts = new ArrayList<DeviceContext>();
     private final MessageIntelligenceAgency messageIntelligenceAgency;
-    private final ThrottledConnectionsHolder throttledConnectionsHolder;
 
     public DeviceManagerImpl(@Nonnull final DataBroker dataBroker,
                              @Nonnull final MessageIntelligenceAgency messageIntelligenceAgency) {
@@ -146,10 +146,6 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
                 return new RequestContextImpl<>(this);
             }
         };
-        spyPool = new ScheduledThreadPoolExecutor(1);
-        spyPool.scheduleAtFixedRate(messageIntelligenceAgency, spyRate, spyRate, TimeUnit.SECONDS);
-
-        throttledConnectionsHolder = new ThrottledConnectionsHolderImpl(hashedWheelTimer);
     }
 
     @Override
@@ -171,7 +167,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
 
         final DeviceState deviceState = new DeviceStateImpl(connectionContext.getFeatures(), connectionContext.getNodeId());
 
-        final DeviceContext deviceContext = new DeviceContextImpl(connectionContext, deviceState, dataBroker, hashedWheelTimer, messageIntelligenceAgency, throttledConnectionsHolder);
+        final DeviceContext deviceContext = new DeviceContextImpl(connectionContext, deviceState, dataBroker, hashedWheelTimer, messageIntelligenceAgency, throttledNotificationsOfferer);
 
         deviceContext.setNotificationService(notificationService);
         deviceContext.setNotificationPublishService(notificationPublishService);
@@ -456,6 +452,9 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         for (final DeviceContext deviceContext : deviceContexts) {
             deviceContext.close();
         }
+        if (throttledNotificationsOfferer != null) {
+            throttledNotificationsOfferer.close();
+        }
     }
 
     private static void createEmptyFlowCapableNodeInDs(final DeviceContext deviceContext) {
@@ -467,5 +466,13 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
     @Override
     public void onDeviceContextClosed(final DeviceContext deviceContext) {
         deviceContexts.remove(deviceContext);
+    }
+
+    @Override
+    public void initialize() {
+        spyPool = new ScheduledThreadPoolExecutor(1);
+        spyPool.scheduleAtFixedRate(messageIntelligenceAgency, spyRate, spyRate, TimeUnit.SECONDS);
+
+        throttledNotificationsOfferer = new ThrottledNotificationsOffererImpl<>(notificationPublishService, messageIntelligenceAgency);
     }
 }
