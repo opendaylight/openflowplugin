@@ -98,11 +98,13 @@ public class SalFlowServiceNewImpl implements SalFlowService {
             outboundQueue.commitEntry(reservedXid, flowModInput, new FutureCallback<OfHeader>() {
                 @Override
                 public void onSuccess(final OfHeader ofHeader) {
+                    deviceContext.getDeviceFlowRegistry().store(flowHash, flowDescriptor);
                     RequestContextUtil.closeRequstContext(requestContext);
                 }
 
                 @Override
                 public void onFailure(final Throwable throwable) {
+                    deviceContext.unhookRequestCtx(xid);
                     RequestContextUtil.closeRequstContext(requestContext);
                 }
             });
