@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicLong;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -84,6 +85,7 @@ public class DeviceContextImplTest {
     @Mock
     ThrottledNotificationsOfferer throttledConnectionsHolder;
 
+    private AtomicLong atomicLong = new AtomicLong(0);
     @Before
     public void setUp() {
         Mockito.when(dataBroker.createTransactionChain(Mockito.any(TransactionChainManager.class))).thenReturn(txChainFactory);
@@ -94,10 +96,11 @@ public class DeviceContextImplTest {
         Mockito.when(requestContextMultiReply.getFuture()).thenReturn(settableFutureMultiReply);
         Mockito.when(txChainFactory.newWriteOnlyTransaction()).thenReturn(wTx);
         Mockito.when(dataBroker.newReadOnlyTransaction()).thenReturn(rTx);
+        Mockito.when(deviceContext.getReservedXid()).thenReturn(atomicLong.getAndIncrement());
 
         deviceContext = new DeviceContextImpl(connectionContext, deviceState, dataBroker, timer, messageIntelligenceAgency,throttledConnectionsHolder);
-        xid = deviceContext.getNextXid();
-        xidMulti = deviceContext.getNextXid();
+        xid = new Xid(deviceContext.getReservedXid());
+        xidMulti = new Xid(deviceContext.getReservedXid());
     }
 
     @Test(expected = NullPointerException.class)

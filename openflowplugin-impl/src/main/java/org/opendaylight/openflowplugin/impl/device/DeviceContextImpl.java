@@ -124,6 +124,11 @@ public class DeviceContextImpl implements DeviceContext {
         return multiMsgCollector;
     }
 
+    @Override
+    public Long getReservedXid() {
+        return this.getPrimaryConnectionContext().getOutboundQueueProvider().getOutboundQueue().reserveEntry();
+    }
+
     private MultiMsgCollector multiMsgCollector = new MultiMsgCollectorImpl();
 
 
@@ -209,11 +214,6 @@ public class DeviceContextImpl implements DeviceContext {
     @Override
     public ConnectionContext getAuxiliaryConnectiobContexts(final BigInteger cookie) {
         return auxiliaryConnectionContexts.get(new SwitchConnectionCookieOFImpl(cookie.longValue()));
-    }
-
-    @Override
-    public Xid getNextXid() {
-        return xidGenerator.generate();
     }
 
     @Override

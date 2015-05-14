@@ -43,8 +43,13 @@ public class FlowCapableTransactionServiceImpl extends CommonService implements 
         final SettableFuture<RpcResult<Void>> sendBarrierOutput = getRequestContextStack()
                 .storeOrFail(requestContext);
         if (!sendBarrierOutput.isDone()) {
-            final DeviceContext deviceContext =getDeviceContext();
-            final Xid xid = deviceContext.getNextXid();
+            final DeviceContext deviceContext = getDeviceContext();
+            final Long reservedXid = deviceContext.getReservedXid();
+            if (null == reservedXid){
+                RequestContextUtil.closeRequestContextWithRpcError(requestContext, "Outbound queue wasn't able to reserve XID.");
+                return sendBarrierOutput;
+            }
+            final Xid xid = new Xid(reservedXid);
             requestContext.setXid(xid);
 
             final BarrierInputBuilder barrierInputOFJavaBuilder = new BarrierInputBuilder();

@@ -82,7 +82,7 @@ public class RpcManagerImplTest {
         final Xid mockedXid = mock(Xid.class);
         final Long dummyXid = 1l;
         when(mockedXid.getValue()).thenReturn(dummyXid);
-        when(mockedDeviceContext.getNextXid()).thenReturn(mockedXid);
+        when(mockedDeviceContext.getReservedXid()).thenReturn(dummyXid);
 
         invokeRpcTestExistsCapacity(10, true);
         invokeRpcTestExistsCapacity(0, false);
