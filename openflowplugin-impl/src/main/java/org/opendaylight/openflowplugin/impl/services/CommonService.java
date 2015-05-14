@@ -135,15 +135,19 @@ public abstract class CommonService {
         final RequestContext<T> requestContext = requestContextStack.createRequestContext();
         final SettableFuture<RpcResult<T>> result = requestContextStack.storeOrFail(requestContext);
         if (result.isDone()) {
-            messageSpy.spyMessage(requestContext.getClass(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_DISREGARDED);
             LOG.trace("Request context refused.");
             return result;
         }
 
-        final Long reservedXid = deviceContext.getReservedXid();
+        Long reservedXid = deviceContext.getReservedXid();
         if (null == reservedXid) {
-            RequestContextUtil.closeRequestContextWithRpcError(requestContext, "Outbound queue wasn't able to reserve XID.");
-            return result;
+            //retry
+            reservedXid = deviceContext.getReservedXid();
+            if (null == reservedXid) {
+                RequestContextUtil.closeRequestContextWithRpcError(requestContext, "Outbound queue wasn't able to reserve XID.");
+                deviceContext.getMessageSpy().spyMessage(requestContext.getClass(), MessageSpy.STATISTIC_GROUP.RESERVATION_REJECTED);
+                return result;
+            }
         }
         final Xid xid = new Xid(reservedXid);
         requestContext.setXid(xid);
