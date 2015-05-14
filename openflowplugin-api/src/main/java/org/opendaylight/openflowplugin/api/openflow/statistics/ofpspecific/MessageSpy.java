@@ -77,7 +77,11 @@ public interface MessageSpy<M> extends Runnable {
         /**
          * message from MD-SAL to switch - sent to OFJava but failed with exception
          */
-        TO_SWITCH_SUBMIT_ERROR
+        TO_SWITCH_SUBMIT_ERROR,
+        /**
+         * TEMPORARY STATISTIC VALUE
+         */
+        REQUEST_STACK_FREED
 
     }
 
