@@ -7,11 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.device.listener;
 
-import com.google.common.annotations.VisibleForTesting;
-import javax.annotation.Nonnull;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceReplyProcessor;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.api.openflow.device.listener.OpenflowMessageListenerFacade;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoReplyInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoRequestMessage;
@@ -19,7 +16,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemovedMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloMessage;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
@@ -35,7 +31,6 @@ public class OpenflowProtocolListenerFullImpl implements OpenflowMessageListener
 
     private final ConnectionAdapter connectionAdapter;
     private DeviceReplyProcessor deviceReplyProcessor;
-    private MultiMsgCollector multiMsgCollector;
 
     /**
      * @param connectionAdapter
@@ -43,9 +38,8 @@ public class OpenflowProtocolListenerFullImpl implements OpenflowMessageListener
      */
     public OpenflowProtocolListenerFullImpl(final ConnectionAdapter connectionAdapter, final DeviceReplyProcessor deviceReplyProcessor) {
         this.connectionAdapter = connectionAdapter;
+        this.connectionAdapter.setMessageListener(this);
         this.deviceReplyProcessor = deviceReplyProcessor;
-        multiMsgCollector = new MultiMsgCollectorImpl();
-        multiMsgCollector.setDeviceReplyProcessor(deviceReplyProcessor);
     }
 
     @Override
@@ -83,7 +77,7 @@ public class OpenflowProtocolListenerFullImpl implements OpenflowMessageListener
     @Override
     public void onMultipartReplyMessage(final MultipartReplyMessage notification) {
         LOG.trace("Multipart Reply with XID: {}", notification.getXid());
-        multiMsgCollector.addMultipartMsg(notification);
+//        multiMsgCollector.addMultipartMsg(notification);
     }
 
     @Override
@@ -96,23 +90,4 @@ public class OpenflowProtocolListenerFullImpl implements OpenflowMessageListener
         deviceReplyProcessor.processPortStatusMessage(notification);
     }
 
-    @Override
-    public void registerMultipartXid(final long xid) {
-        multiMsgCollector.registerMultipartXid(xid);
-    }
-
-    @Override
-    public void addMultipartMsg(@Nonnull final MultipartReply reply) {
-        // NOOP (not delegated)
-    }
-
-    @Override
-    public void setDeviceReplyProcessor(final DeviceReplyProcessor deviceReplyProcessor) {
-        this.deviceReplyProcessor = deviceReplyProcessor;
-    }
-
-    @VisibleForTesting
-    void setMultiMsgCollector(MultiMsgCollector multiMsgCollector) {
-        this.multiMsgCollector = multiMsgCollector;
-    }
 }

@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.impl.device;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import io.netty.util.HashedWheelTimer;
@@ -31,7 +30,6 @@ import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
-import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandlerRegistration;
 import org.opendaylight.openflowplugin.api.ConnectionException;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
@@ -55,7 +53,6 @@ import org.opendaylight.openflowplugin.impl.connection.OutboundQueueProviderImpl
 import org.opendaylight.openflowplugin.impl.connection.ThrottledNotificationsOffererImpl;
 import org.opendaylight.openflowplugin.impl.device.listener.OpenflowProtocolListenerFullImpl;
 import org.opendaylight.openflowplugin.impl.rpc.RequestContextImpl;
-import org.opendaylight.openflowplugin.impl.services.OFJResult2RequestCtxFuture;
 import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeBuilder;
@@ -78,8 +75,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.CapabilitiesV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.MultipartReplyBody;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyDescCase;
@@ -187,8 +184,6 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         final OpenflowProtocolListenerFullImpl messageListener = new OpenflowProtocolListenerFullImpl(
                 connectionContext.getConnectionAdapter(), deviceContext);
 
-        deviceContext.attachOpenflowMessageListener(messageListener);
-
         final ListenableFuture<List<RpcResult<List<MultipartReply>>>> deviceFeaturesFuture;
 
         final Short version = connectionContext.getFeatures().getVersion();
@@ -202,7 +197,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
 
             DeviceStateUtil.setDeviceStateBasedOnV10Capabilities(deviceState, capabilitiesV10);
 
-            deviceFeaturesFuture = createDeviceFeaturesForOF10(messageListener, deviceContext, deviceState);
+            deviceFeaturesFuture = createDeviceFeaturesForOF10(deviceContext, deviceState);
             // create empty tables after device description is processed
             chainTableTrunkWriteOF10(deviceContext, deviceFeaturesFuture);
 
@@ -225,7 +220,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
             final Capabilities capabilities = connectionContext.getFeatures().getCapabilities();
             LOG.debug("Setting capabilities for device {}", deviceContext.getDeviceState().getNodeId());
             DeviceStateUtil.setDeviceStateBasedOnV13Capabilities(deviceState, capabilities);
-            deviceFeaturesFuture = createDeviceFeaturesForOF13(messageListener, deviceContext, deviceState);
+            deviceFeaturesFuture = createDeviceFeaturesForOF13(deviceContext, deviceState);
         } else {
             deviceFeaturesFuture = Futures.immediateFailedFuture(new ConnectionException("Unsupported version " + version));
         }
@@ -269,36 +264,44 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
     }
 
 
-    private ListenableFuture<RpcResult<List<MultipartReply>>> processReplyDesc(final OpenflowProtocolListenerFullImpl messageListener,
-                                                                               final DeviceContext deviceContext,
+    private ListenableFuture<RpcResult<List<MultipartReply>>> processReplyDesc(final DeviceContext deviceContext,
                                                                                final DeviceState deviceState) {
-        final ListenableFuture<RpcResult<List<MultipartReply>>> replyDesc = getNodeStaticInfo(messageListener,
-                MultipartType.OFPMPDESC, deviceContext, deviceState.getNodeInstanceIdentifier(), deviceState.getVersion());
+
+        final ListenableFuture<RpcResult<List<MultipartReply>>> replyDesc = getNodeStaticInfo(MultipartType.OFPMPDESC,
+                deviceContext,
+                deviceState.getNodeInstanceIdentifier(),
+                deviceState.getVersion());
         return replyDesc;
     }
 
-    private ListenableFuture<List<RpcResult<List<MultipartReply>>>> createDeviceFeaturesForOF10(final OpenflowProtocolListenerFullImpl messageListener,
-                                                                                                final DeviceContext deviceContext,
+    private ListenableFuture<List<RpcResult<List<MultipartReply>>>> createDeviceFeaturesForOF10(final DeviceContext deviceContext,
                                                                                                 final DeviceState deviceState) {
-        return Futures.allAsList(Arrays.asList(processReplyDesc(messageListener, deviceContext, deviceState)));
+        return Futures.allAsList(Arrays.asList(processReplyDesc(deviceContext, deviceState)));
     }
 
-    private ListenableFuture<List<RpcResult<List<MultipartReply>>>> createDeviceFeaturesForOF13(final OpenflowProtocolListenerFullImpl messageListener,
-                                                                                                final DeviceContext deviceContext,
+    private ListenableFuture<List<RpcResult<List<MultipartReply>>>> createDeviceFeaturesForOF13(final DeviceContext deviceContext,
                                                                                                 final DeviceState deviceState) {
-        final ListenableFuture<RpcResult<List<MultipartReply>>> replyDesc = processReplyDesc(messageListener, deviceContext, deviceState);
+        final ListenableFuture<RpcResult<List<MultipartReply>>> replyDesc = processReplyDesc(deviceContext, deviceState);
 
-        final ListenableFuture<RpcResult<List<MultipartReply>>> replyMeterFeature = getNodeStaticInfo(messageListener,
-                MultipartType.OFPMPMETERFEATURES, deviceContext, deviceState.getNodeInstanceIdentifier(), deviceState.getVersion());
+        final ListenableFuture<RpcResult<List<MultipartReply>>> replyMeterFeature = getNodeStaticInfo(MultipartType.OFPMPMETERFEATURES,
+                deviceContext,
+                deviceState.getNodeInstanceIdentifier(),
+                deviceState.getVersion());
 
-        final ListenableFuture<RpcResult<List<MultipartReply>>> replyGroupFeatures = getNodeStaticInfo(messageListener,
-                MultipartType.OFPMPGROUPFEATURES, deviceContext, deviceState.getNodeInstanceIdentifier(), deviceState.getVersion());
+        final ListenableFuture<RpcResult<List<MultipartReply>>> replyGroupFeatures = getNodeStaticInfo(MultipartType.OFPMPGROUPFEATURES,
+                deviceContext,
+                deviceState.getNodeInstanceIdentifier(),
+                deviceState.getVersion());
 
-        final ListenableFuture<RpcResult<List<MultipartReply>>> replyTableFeatures = getNodeStaticInfo(messageListener,
-                MultipartType.OFPMPTABLEFEATURES, deviceContext, deviceState.getNodeInstanceIdentifier(), deviceState.getVersion());
+        final ListenableFuture<RpcResult<List<MultipartReply>>> replyTableFeatures = getNodeStaticInfo(MultipartType.OFPMPTABLEFEATURES,
+                deviceContext,
+                deviceState.getNodeInstanceIdentifier(),
+                deviceState.getVersion());
 
-        final ListenableFuture<RpcResult<List<MultipartReply>>> replyPortDescription = getNodeStaticInfo(messageListener,
-                MultipartType.OFPMPPORTDESC, deviceContext, deviceState.getNodeInstanceIdentifier(), deviceState.getVersion());
+        final ListenableFuture<RpcResult<List<MultipartReply>>> replyPortDescription = getNodeStaticInfo(MultipartType.OFPMPPORTDESC,
+                deviceContext,
+                deviceState.getNodeInstanceIdentifier(),
+                deviceState.getVersion());
 
         return Futures.allAsList(Arrays.asList(replyDesc,
                 replyMeterFeature,
@@ -318,7 +321,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         this.translatorLibrary = translatorLibrary;
     }
 
-    private ListenableFuture<RpcResult<List<MultipartReply>>> getNodeStaticInfo(final MultiMsgCollector multiMsgCollector, final MultipartType type, final DeviceContext deviceContext,
+    private ListenableFuture<RpcResult<List<MultipartReply>>> getNodeStaticInfo(final MultipartType type, final DeviceContext deviceContext,
                                                                                 final InstanceIdentifier<Node> nodeII, final short version) {
 
         final OutboundQueue outboundQueue = deviceContext.getPrimaryConnectionContext().getOutboundQueueProvider().getOutboundQueue();
@@ -337,17 +340,27 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
 
         final ListenableFuture<RpcResult<List<MultipartReply>>> requestContextFuture = requestContext.getFuture();
 
+        final MultiMsgCollector multiMsgCollector = deviceContext.getMultiMsgCollector();
         multiMsgCollector.registerMultipartXid(xid.getValue());
         outboundQueue.commitEntry(reservedXid, MultipartRequestInputFactory.makeMultipartRequestInput(xid.getValue(), version, type), new FutureCallback<OfHeader>() {
             @Override
             public void onSuccess(final OfHeader ofHeader) {
-                LOG.info("Static node {} info: {} collected", type);
-            }
+                if (ofHeader instanceof MultipartReply) {
+                    MultipartReply multipartReply = (MultipartReply) ofHeader;
+                    multiMsgCollector.addMultipartMsg(multipartReply);
+                } else {
+                    if (null != ofHeader) {
+                        LOG.info("Unexpected response type received {}.", ofHeader.getClass());
+                    } else {
+                        LOG.info("Response received is null.");
+                    }
+                }
 
+            }
 
             @Override
             public void onFailure(final Throwable t) {
-                LOG.info("Failed to retrieve static node {} info: {}", type, t.getMessage());
+                LOG.info("Fail response from OutboundQueue.");
             }
         });
 
@@ -356,12 +369,13 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
             public void onSuccess(final RpcResult<List<MultipartReply>> rpcResult) {
                 final List<MultipartReply> result = rpcResult.getResult();
                 if (result != null) {
+                    LOG.info("Static node {} info: {} collected", nodeII.toString(), type);
                     translateAndWriteReply(type, deviceContext, nodeII, result);
                 } else {
                     final Iterator<RpcError> rpcErrorIterator = rpcResult.getErrors().iterator();
                     while (rpcErrorIterator.hasNext()) {
                         final RpcError rpcError = rpcErrorIterator.next();
-                            LOG.info("Failed to retrieve static node {} info: {}", type, rpcError.getMessage());
+                        LOG.info("Failed to retrieve static node {} info: {}", type, rpcError.getMessage());
                         if (null != rpcError.getCause()) {
                             LOG.trace("Detailed error:", rpcError.getCause());
                         }
@@ -374,7 +388,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
 
             @Override
             public void onFailure(final Throwable throwable) {
-
+                LOG.info("Request of type {} for static info of node {} failed.", type, nodeII);
             }
         });
 

@@ -19,8 +19,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceReplyProcessor;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
-import org.opendaylight.openflowplugin.impl.connection.testutil.MsgGeneratorTestUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoReplyInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoRequestMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoRequestMessageBuilder;
@@ -32,9 +30,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemovedMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloMessageBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessage;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessageBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OpenflowProtocolListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
@@ -59,8 +55,6 @@ public class OpenflowProtocolListenerFullImplTest {
     private DeviceReplyProcessor deviceReplyProcessor;
     @Mock
     private ConnectionAdapter connectionAdapter;
-    @Mock
-    private MultiMsgCollector multiMessageCollector;
 
     private final String hwDescValue = "test-val";
     private final long xid = 42L;
@@ -69,12 +63,12 @@ public class OpenflowProtocolListenerFullImplTest {
     public void setUp() {
         // place for mocking method's general behavior for HandshakeContext and ConnectionContext
         ofProtocolListener = new OpenflowProtocolListenerFullImpl(connectionAdapter, deviceReplyProcessor);
-        ofProtocolListener.setMultiMsgCollector(multiMessageCollector);
+        Mockito.verify(connectionAdapter).setMessageListener(Matchers.any(OpenflowProtocolListener.class));
     }
 
     @After
     public void tearDown() {
-        Mockito.verifyNoMoreInteractions(connectionAdapter, deviceReplyProcessor, multiMessageCollector);
+        Mockito.verifyNoMoreInteractions(connectionAdapter, deviceReplyProcessor);
     }
 
     /**
@@ -136,18 +130,6 @@ public class OpenflowProtocolListenerFullImplTest {
     }
 
     /**
-     * Test method for {@link OpenflowProtocolListenerFullImpl#onMultipartReplyMessage(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessage)}.
-     */
-    @Test
-    public void testOnMultipartReplyMessage() {
-        final MultipartReply multipartReply = MsgGeneratorTestUtils.makeMultipartDescReply(xid, hwDescValue, false).build();
-        ofProtocolListener.registerMultipartXid(xid);
-        ofProtocolListener.onMultipartReplyMessage((MultipartReplyMessage) multipartReply);
-        Mockito.verify(multiMessageCollector).registerMultipartXid(xid);
-        Mockito.verify(multiMessageCollector).addMultipartMsg(Mockito.any(MultipartReply.class));
-    }
-
-    /**
      * Test method for {@link OpenflowProtocolListenerFullImpl#onPacketInMessage(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage)}.
      */
     @Test
@@ -171,11 +153,4 @@ public class OpenflowProtocolListenerFullImplTest {
         Mockito.verify(deviceReplyProcessor).processPortStatusMessage(Matchers.any(PortStatusMessage.class));
     }
 
-    @Test
-    public void testAddMultipartMsg() throws Exception {
-        MultipartReplyMessageBuilder multipartDescReply = MsgGeneratorTestUtils.makeMultipartDescReply(xid, hwDescValue, false);
-        ofProtocolListener.addMultipartMsg(multipartDescReply.build());
-
-        // NOOP
-    }
 }

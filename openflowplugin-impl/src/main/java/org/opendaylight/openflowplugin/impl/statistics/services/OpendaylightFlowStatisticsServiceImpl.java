@@ -119,7 +119,7 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
                     public ListenableFuture<RpcResult<Void>> apply(final DataCrate<List<MultipartReply>> data) {
                         final Xid xid = data.getRequestContext().getXid();
                         final DeviceContext deviceContext = getDeviceContext();
-                        deviceContext.getOpenflowMessageListenerFacade().registerMultipartXid(xid.getValue());
+                        deviceContext.getMultiMsgCollector().registerMultipartXid(xid.getValue());
                         final MultipartRequestAggregateCaseBuilder multipartRequestAggregateCaseBuilder = new MultipartRequestAggregateCaseBuilder();
                         final MultipartRequestAggregateBuilder mprAggregateRequestBuilder = new MultipartRequestAggregateBuilder();
                         final short tableId = MoreObjects.firstNonNull(input.getTableId(), OFConstants.OFPTT_ALL).shortValue();
