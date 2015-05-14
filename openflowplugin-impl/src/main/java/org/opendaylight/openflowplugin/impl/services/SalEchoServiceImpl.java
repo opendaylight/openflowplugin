@@ -47,7 +47,12 @@ public class SalEchoServiceImpl extends CommonService implements SalEchoService 
                 .storeOrFail(requestContext);
         if (!sendEchoOutput.isDone()) {
             final DeviceContext deviceContext = getDeviceContext();
-            final Xid xid = deviceContext.getNextXid();
+            final Long reserverXid = deviceContext.getReservedXid();
+            if (null == reserverXid){
+                RequestContextUtil.closeRequestContextWithRpcError(requestContext, "Outbound queue wasn't able to reserve XID.");
+                return sendEchoOutput;
+            }
+            final Xid xid = new Xid(reserverXid);
             requestContext.setXid(xid);
 
             LOG.trace("Hooking xid {} to device context - precaution.", requestContext.getXid().getValue());
