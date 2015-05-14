@@ -121,7 +121,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
     private final List<DeviceContext> deviceContexts = new ArrayList<DeviceContext>();
     private final MessageIntelligenceAgency messageIntelligenceAgency;
 
-    private final long barrierNanos = 500000000L;
+    private final long barrierNanos = TimeUnit.MILLISECONDS.toNanos(500);
     private final int maxQueueDepth = 25600;
 
     public DeviceManagerImpl(@Nonnull final DataBroker dataBroker,
