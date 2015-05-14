@@ -81,11 +81,13 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
         final List<FlowModInputBuilder> ofFlowModInputs = FlowConvertor.toFlowModInputs(input, getVersion(), getDatapathId());
         final ListenableFuture<RpcResult<AddFlowOutput>> future = processFlowModInputBuilders(ofFlowModInputs);
 
+        deviceContext.getDeviceFlowRegistry().store(flowHash, flowDescriptor);
+
         Futures.addCallback(future, new FutureCallback<RpcResult<AddFlowOutput>>() {
             @Override
             public void onSuccess(final RpcResult<AddFlowOutput> rpcResult) {
-                deviceContext.getDeviceFlowRegistry().store(flowHash, flowDescriptor);
                 if (rpcResult.isSuccessful()) {
+                    getMessageSpy().spyMessage(FlowModInput.class, MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
                     LOG.debug("flow add finished without error, id={}", flowId.getValue());
                 } else {
                     LOG.debug("flow add failed with error, id={}", flowId.getValue());
@@ -95,6 +97,7 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
             @Override
             public void onFailure(final Throwable throwable) {
                 deviceContext.getDeviceFlowRegistry().markToBeremoved(flowHash);
+                getMessageSpy().spyMessage(FlowModInput.class, MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
                 LOG.trace("Service call for adding flows failed, id={}.", flowId.getValue(), throwable);
             }
         });
@@ -305,14 +308,12 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
             @Override
             public void onSuccess(final OfHeader ofHeader) {
                 settableFuture.set(RpcResultBuilder.<Void>success().build());
-                getMessageSpy().spyMessage(flowModInput.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
             }
 
             @Override
             public void onFailure(final Throwable throwable) {
                 RpcResultBuilder rpcResultBuilder = RpcResultBuilder.<Void>failed().withError(ErrorType.APPLICATION, throwable.getMessage());
                 settableFuture.set(rpcResultBuilder.build());
-                getMessageSpy().spyMessage(flowModInput.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
             }
         });
         return settableFuture;
