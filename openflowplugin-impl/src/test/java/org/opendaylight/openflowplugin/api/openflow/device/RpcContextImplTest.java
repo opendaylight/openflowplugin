@@ -21,6 +21,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
+import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.impl.rpc.RpcContextImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -43,6 +44,8 @@ public class RpcContextImplTest {
 
     @Mock
     private DeviceContext deviceContext;
+    @Mock
+    private MessageSpy messageSpy;
 
     private RpcContext rpcContext;
 
@@ -53,7 +56,7 @@ public class RpcContextImplTest {
         NodeId nodeId = new NodeId("openflow:1");
         KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(nodeId));
 
-        rpcContext = new RpcContextImpl(mockedRpcProviderRegistry, nodeInstanceIdentifier);
+        rpcContext = new RpcContextImpl(messageSpy, mockedRpcProviderRegistry, nodeInstanceIdentifier);
     }
 
     @Test
