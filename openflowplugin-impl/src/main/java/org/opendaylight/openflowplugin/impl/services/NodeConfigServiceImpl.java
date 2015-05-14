@@ -44,7 +44,13 @@ public class NodeConfigServiceImpl extends CommonService implements NodeConfigSe
         if (!result.isDone()) {
             SetConfigInputBuilder builder = new SetConfigInputBuilder();
             SwitchConfigFlag flag = SwitchConfigFlag.valueOf(input.getFlag());
-            final Xid xid = deviceContext.getNextXid();
+            final Long reserverXid = deviceContext.getReservedXid();
+            if (null == reserverXid){
+                RequestContextUtil.closeRequestContextWithRpcError(requestContext, "Outbound queue wasn't able to reserve XID.");
+                return result;
+            }
+
+            final Xid xid = new Xid(reserverXid);
             builder.setXid(xid.getValue());
             builder.setFlags(flag);
             builder.setMissSendLen(input.getMissSearchLength());

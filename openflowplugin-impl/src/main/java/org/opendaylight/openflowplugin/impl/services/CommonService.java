@@ -14,7 +14,6 @@ import com.google.common.util.concurrent.SettableFuture;
 import java.math.BigInteger;
 import java.util.concurrent.Future;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
-import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
@@ -141,10 +140,10 @@ public abstract class CommonService {
             return result;
         }
 
-        long reservedXid;
-        final OutboundQueue outboundQueue = deviceContext.getPrimaryConnectionContext().getOutboundQueueProvider().getOutboundQueue();
-        synchronized (outboundQueue) {
-            reservedXid = outboundQueue.reserveEntry();
+        final Long reservedXid = deviceContext.getReservedXid();
+        if (null == reservedXid) {
+            RequestContextUtil.closeRequestContextWithRpcError(requestContext, "Outbound queue wasn't able to reserve XID.");
+            return result;
         }
         final Xid xid = new Xid(reservedXid);
         requestContext.setXid(xid);
