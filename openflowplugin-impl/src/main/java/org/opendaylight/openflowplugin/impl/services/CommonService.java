@@ -136,6 +136,7 @@ public abstract class CommonService {
         final SettableFuture<RpcResult<T>> result = requestContextStack.storeOrFail(requestContext);
         if (result.isDone()) {
             LOG.trace("Request context refused.");
+            deviceContext.getMessageSpy().spyMessage(requestContext.getClass(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_DISREGARDED);
             return result;
         }
 
@@ -145,7 +146,7 @@ public abstract class CommonService {
             reservedXid = deviceContext.getReservedXid();
             if (null == reservedXid) {
                 RequestContextUtil.closeRequestContextWithRpcError(requestContext, "Outbound queue wasn't able to reserve XID.");
-                deviceContext.getMessageSpy().spyMessage(requestContext.getClass(), MessageSpy.STATISTIC_GROUP.RESERVATION_REJECTED);
+                deviceContext.getMessageSpy().spyMessage(requestContext.getClass(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_RESERVATION_REJECTED);
                 return result;
             }
         }

@@ -48,7 +48,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.exception.DeviceDataE
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceContextClosedHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceDisconnectedHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
-import org.opendaylight.openflowplugin.api.openflow.device.listener.OpenflowMessageListenerFacade;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
@@ -408,8 +407,10 @@ public class DeviceContextImpl implements DeviceContext {
         } else {
             ListenableFuture<?> listenableFuture = notificationPublishService.offerNotification(packetReceived);
             if (listenableFuture.isDone()) {
+                Object x = null;
                 try {
-                    listenableFuture.get();
+                    x = listenableFuture.get();
+                    messageSpy.spyMessage(packetInMessage.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS);
                 } catch (InterruptedException e) {
                     LOG.debug("notification offer interrupted: {}", e.getMessage());
                     LOG.trace("notification offer interrupted..", e);
@@ -419,6 +420,10 @@ public class DeviceContextImpl implements DeviceContext {
                     } else {
                         LOG.debug("notification offer failed: {}", e.getMessage());
                         LOG.trace("notification offer failed..", e);
+                    }
+                } finally {
+                    if (null == x) {
+                        messageSpy.spyMessage(packetInMessage.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_NOTIFICATION_REJECTED);
                     }
                 }
             } else {
