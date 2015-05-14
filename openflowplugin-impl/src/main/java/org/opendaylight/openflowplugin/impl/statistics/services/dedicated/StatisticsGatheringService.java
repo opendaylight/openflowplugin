@@ -60,31 +60,29 @@ public class StatisticsGatheringService extends CommonService {
                                                          type);
                                          final OutboundQueue outboundQueue = deviceContext.getPrimaryConnectionContext().getOutboundQueueProvider().getOutboundQueue();
                                          final SettableFuture<RpcResult<Void>> settableFuture = SettableFuture.create();
-                                         synchronized (outboundQueue) {
-                                             outboundQueue.commitEntry(xid.getValue(), multipartRequestInput, new FutureCallback<OfHeader>() {
-                                                 @Override
-                                                 public void onSuccess(final OfHeader ofHeader) {
-                                                     if (ofHeader instanceof MultipartReply) {
-                                                         final MultipartReply multipartReply = (MultipartReply) ofHeader;
-                                                         settableFuture.set(RpcResultBuilder.<Void>success().build());
-                                                         multiMsgCollector.addMultipartMsg(multipartReply);
+                                         outboundQueue.commitEntry(xid.getValue(), multipartRequestInput, new FutureCallback<OfHeader>() {
+                                             @Override
+                                             public void onSuccess(final OfHeader ofHeader) {
+                                                 if (ofHeader instanceof MultipartReply) {
+                                                     final MultipartReply multipartReply = (MultipartReply) ofHeader;
+                                                     settableFuture.set(RpcResultBuilder.<Void>success().build());
+                                                     multiMsgCollector.addMultipartMsg(multipartReply);
+                                                 } else {
+                                                     if (null != ofHeader) {
+                                                         LOG.info("Unexpected response type received {}.", ofHeader.getClass());
                                                      } else {
-                                                         if (null != ofHeader) {
-                                                             LOG.info("Unexpected response type received {}.", ofHeader.getClass());
-                                                         } else {
-                                                             LOG.info("Response received is null.");
-                                                         }
+                                                         LOG.info("Unexpected response type received {}.", ofHeader.getClass());
                                                      }
-
                                                  }
 
-                                                 @Override
-                                                 public void onFailure(final Throwable throwable) {
-                                                     RpcResultBuilder rpcResultBuilder = RpcResultBuilder.<Void>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage());
-                                                     settableFuture.set(rpcResultBuilder.build());
-                                                 }
-                                             });
-                                         }
+                                             }
+
+                                             @Override
+                                             public void onFailure(final Throwable throwable) {
+                                                 RpcResultBuilder rpcResultBuilder = RpcResultBuilder.<Void>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage());
+                                                 settableFuture.set(rpcResultBuilder.build());
+                                             }
+                                         });
                                          return settableFuture;
                                      }
                                  }

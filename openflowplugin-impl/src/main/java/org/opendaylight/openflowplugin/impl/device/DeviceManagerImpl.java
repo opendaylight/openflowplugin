@@ -122,7 +122,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
     private final MessageIntelligenceAgency messageIntelligenceAgency;
 
     private final long barrierNanos = 500000000L;
-    private final int maxQueueDepth = 1024;
+    private final int maxQueueDepth = 25600;
 
     public DeviceManagerImpl(@Nonnull final DataBroker dataBroker,
                              @Nonnull final MessageIntelligenceAgency messageIntelligenceAgency) {

@@ -8,19 +8,18 @@
 package org.opendaylight.openflowplugin.impl.services;
 
 import com.google.common.base.Function;
-import com.google.common.util.concurrent.AsyncFunction;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.JdkFutureAdapters;
+import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.ListenableFuture;
-import java.math.BigInteger;
+import com.google.common.util.concurrent.SettableFuture;
 import java.util.concurrent.Future;
+import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.PacketOutConvertor;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOutInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.ConnectionCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInput;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -42,23 +41,29 @@ public class PacketProcessingServiceImpl extends CommonService implements Packet
                 final PacketOutInput message = PacketOutConvertor.toPacketOutInput(input, getVersion(), xid.getValue(),
                         getDatapathId());
 
-                BigInteger connectionID = getPrimaryConnection();
-                final ConnectionCookie connectionCookie = input.getConnectionCookie();
-                if (connectionCookie != null && connectionCookie.getValue() != null) {
-                    connectionID = BigInteger.valueOf(connectionCookie.getValue());
-                }
+                final OutboundQueue outboundQueue = getDeviceContext().getPrimaryConnectionContext().getOutboundQueueProvider().getOutboundQueue();
 
-                ListenableFuture<RpcResult<Void>> rpcResultListenableFuture = JdkFutureAdapters.listenInPoolThread(provideConnectionAdapter(connectionID).packetOut(message));
-                return Futures.transform(rpcResultListenableFuture, new AsyncFunction<RpcResult<Void>, RpcResult<Void>>() {
+                final SettableFuture<RpcResult<Void>> settableFuture = SettableFuture.create();
+
+                outboundQueue.commitEntry(xid.getValue(), message, new FutureCallback<OfHeader>() {
                     @Override
-                    public ListenableFuture<RpcResult<Void>> apply(RpcResult<Void> rpcResult) throws Exception {
-                        if (! rpcResult.isSuccessful()) {
-                            return Futures.immediateFuture(rpcResult);
-                        } else {
-                            return Futures.immediateCancelledFuture();
+                    public void onSuccess(final OfHeader ofHeader) {
+                        if (ofHeader instanceof RpcResult) {
+                            RpcResult rpcResult = (RpcResult) ofHeader;
+                            if (!rpcResult.isSuccessful()) {
+                                settableFuture.set(rpcResult);
+                            } else {
+                                settableFuture.cancel(true);
+                            }
                         }
                     }
+
+                    @Override
+                    public void onFailure(final Throwable throwable) {
+                        settableFuture.cancel(true);
+                    }
                 });
+                return settableFuture;
             }
         });
 

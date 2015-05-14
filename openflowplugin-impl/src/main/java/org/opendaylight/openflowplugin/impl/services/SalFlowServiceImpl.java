@@ -76,14 +76,8 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
             FlowId flowId = null;
             @Override
             public void onSuccess(final RpcResult<AddFlowOutput> rpcResult) {
-                if (null != input.getFlowRef()) {
-                    flowId = input.getFlowRef().getValue().firstKeyOf(Flow.class, FlowKey.class).getId();
-                    final FlowDescriptor flowDescriptor = FlowDescriptorFactory.create(input.getTableId(), flowId);
-                    deviceContext.getDeviceFlowRegistry().store(flowHash, flowDescriptor);
-                } else {
-                    flowId = getDeviceContext().getDeviceFlowRegistry().storeIfNecessary(flowHash, input.getTableId());
-                }
                 if (rpcResult.isSuccessful()) {
+                    getMessageSpy().spyMessage(FlowModInput.class, MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
                     LOG.debug("flow add finished without error, id={}", flowId.getValue());
                 } else {
                     LOG.debug("flow add failed with error, id={}", flowId.getValue());
@@ -93,7 +87,8 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
             @Override
             public void onFailure(final Throwable throwable) {
                 deviceContext.getDeviceFlowRegistry().markToBeremoved(flowHash);
-                LOG.trace("Service call for adding flows failed, hash id={}.", flowHash, throwable);
+                getMessageSpy().spyMessage(FlowModInput.class, MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
+                LOG.trace("Service call for adding flows failed, id={}.", flowId.getValue(), throwable);
             }
         });
 
@@ -305,14 +300,12 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
             @Override
             public void onSuccess(final OfHeader ofHeader) {
                 settableFuture.set(RpcResultBuilder.<Void>success().build());
-                getMessageSpy().spyMessage(flowModInput.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
             }
 
             @Override
             public void onFailure(final Throwable throwable) {
                 RpcResultBuilder rpcResultBuilder = RpcResultBuilder.<Void>failed().withError(ErrorType.APPLICATION, throwable.getMessage());
                 settableFuture.set(rpcResultBuilder.build());
-                getMessageSpy().spyMessage(flowModInput.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
             }
         });
         return settableFuture;
