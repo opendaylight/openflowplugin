@@ -160,12 +160,8 @@ public abstract class CommonService {
         deviceContext.hookRequestCtx(xid, requestContext);
 
         messageSpy.spyMessage(requestContext.getClass(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_READY_FOR_SUBMIT);
-        synchronized (deviceContext) {
-            resultFromOFLib = function.apply(dataCrate);
-        }
+        function.apply(dataCrate);
 
-        final OFJResult2RequestCtxFuture<T> OFJResult2RequestCtxFuture = new OFJResult2RequestCtxFuture<>(requestContext, deviceContext);
-        OFJResult2RequestCtxFuture.processResultFromOfJava(resultFromOFLib);
         return result;
 
     }
