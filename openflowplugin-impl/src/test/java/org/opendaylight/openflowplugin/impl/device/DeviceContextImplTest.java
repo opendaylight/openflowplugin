@@ -96,11 +96,10 @@ public class DeviceContextImplTest {
         Mockito.when(requestContextMultiReply.getFuture()).thenReturn(settableFutureMultiReply);
         Mockito.when(txChainFactory.newWriteOnlyTransaction()).thenReturn(wTx);
         Mockito.when(dataBroker.newReadOnlyTransaction()).thenReturn(rTx);
-        Mockito.when(deviceContext.getReservedXid()).thenReturn(atomicLong.getAndIncrement());
-
         deviceContext = new DeviceContextImpl(connectionContext, deviceState, dataBroker, timer, messageIntelligenceAgency,throttledConnectionsHolder);
-        xid = new Xid(deviceContext.getReservedXid());
-        xidMulti = new Xid(deviceContext.getReservedXid());
+
+        xid = new Xid(atomicLong.incrementAndGet());
+        xidMulti = new Xid(atomicLong.incrementAndGet());
     }
 
     @Test(expected = NullPointerException.class)

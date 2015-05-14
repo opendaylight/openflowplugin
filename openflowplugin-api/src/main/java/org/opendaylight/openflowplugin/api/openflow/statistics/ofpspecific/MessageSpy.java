@@ -69,8 +69,17 @@ public interface MessageSpy<M> extends Runnable {
         /**
          * message from MD-SAL to switch - sent to OFJava but failed with exception
          */
-        TO_SWITCH_SUBMIT_ERROR
-    }
+        TO_SWITCH_SUBMIT_ERROR,
+        /**
+         * message from MD-SAL to switch - asked for XID reservation in queue, but rejected
+         */
+        RESERVATION_REJECTED,
+        /**
+         * message from switch to MD-SAL  - notification service rejected notfication
+         */
+        NOTIFICATION_REJECTED
+
+        }
 
     /**
      * @param message   from switch or to switch - depends on statGroup
