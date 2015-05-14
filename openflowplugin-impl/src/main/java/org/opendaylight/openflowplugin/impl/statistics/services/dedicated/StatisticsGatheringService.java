@@ -52,7 +52,7 @@ public class StatisticsGatheringService extends CommonService {
                     public ListenableFuture<RpcResult<Void>> apply(final DataCrate<List<MultipartReply>> data) {
                         final Xid xid = data.getRequestContext().getXid();
                         final DeviceContext deviceContext = getDeviceContext();
-                        deviceContext.getOpenflowMessageListenerFacade().registerMultipartXid(xid.getValue());
+                        deviceContext.getMultiMsgCollector().registerMultipartXid(xid.getValue());
                         MultipartRequestInput multipartRequestInput = MultipartRequestInputFactory.
                                 makeMultipartRequestInput(xid.getValue(),
                                         getVersion(),

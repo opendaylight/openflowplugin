@@ -47,6 +47,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.device.exception.DeviceDataException;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceContextClosedHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceDisconnectedHandler;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.api.openflow.device.listener.OpenflowMessageListenerFacade;
 import org.opendaylight.openflowplugin.api.openflow.md.core.SwitchConnectionDistinguisher;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
@@ -55,6 +56,7 @@ import org.opendaylight.openflowplugin.api.openflow.registry.group.DeviceGroupRe
 import org.opendaylight.openflowplugin.api.openflow.registry.meter.DeviceMeterRegistry;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.impl.common.NodeStaticReplyTranslatorUtil;
+import org.opendaylight.openflowplugin.impl.device.listener.MultiMsgCollectorImpl;
 import org.opendaylight.openflowplugin.impl.registry.flow.DeviceFlowRegistryImpl;
 import org.opendaylight.openflowplugin.impl.registry.group.DeviceGroupRegistryImpl;
 import org.opendaylight.openflowplugin.impl.registry.meter.DeviceMeterRegistryImpl;
@@ -106,7 +108,6 @@ public class DeviceContextImpl implements DeviceContext {
     private final Map<SwitchConnectionDistinguisher, ConnectionContext> auxiliaryConnectionContexts;
     private final TransactionChainManager txChainManager;
     private TranslatorLibrary translatorLibrary;
-    private OpenflowMessageListenerFacade openflowMessageListenerFacade;
     private final DeviceFlowRegistry deviceFlowRegistry;
     private final DeviceGroupRegistry deviceGroupRegistry;
     private final DeviceMeterRegistry deviceMeterRegistry;
@@ -118,6 +119,12 @@ public class DeviceContextImpl implements DeviceContext {
     private NotificationPublishService notificationPublishService;
     private final ThrottledNotificationsOfferer throttledConnectionsHolder;
     private BlockingQueue<PacketReceived> bumperQueue;
+
+    public MultiMsgCollector getMultiMsgCollector() {
+        return multiMsgCollector;
+    }
+
+    private MultiMsgCollector multiMsgCollector = new MultiMsgCollectorImpl();
 
 
     @VisibleForTesting
@@ -140,6 +147,7 @@ public class DeviceContextImpl implements DeviceContext {
         messageSpy = _messageSpy;
         this.throttledConnectionsHolder = throttledConnectionsHolder;
         bumperQueue = new ArrayBlockingQueue<>(5000);
+        multiMsgCollector.setDeviceReplyProcessor(this);
     }
 
     /**
@@ -234,17 +242,6 @@ public class DeviceContextImpl implements DeviceContext {
         synchronized (requests) {
             return requests.remove(xid.getValue());
         }
-    }
-
-    @Override
-    public void attachOpenflowMessageListener(final OpenflowMessageListenerFacade openflowMessageListenerFacade) {
-        this.openflowMessageListenerFacade = openflowMessageListenerFacade;
-        primaryConnectionContext.getConnectionAdapter().setMessageListener(openflowMessageListenerFacade);
-    }
-
-    @Override
-    public OpenflowMessageListenerFacade getOpenflowMessageListenerFacade() {
-        return openflowMessageListenerFacade;
     }
 
     @Override
