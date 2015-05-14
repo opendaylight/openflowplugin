@@ -22,6 +22,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionReadyListener;
+import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandler;
+import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandlerRegistration;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.ModelDrivenSwitch;
 import org.opendaylight.openflowplugin.api.openflow.md.core.ConnectionConductor;
@@ -793,6 +795,11 @@ class MockConnectionAdapter implements ConnectionAdapter {
     public boolean isAutoRead() {
         // TODO Auto-generated method stub
         return false;
+    }
+
+    @Override
+    public <T extends OutboundQueueHandler> OutboundQueueHandlerRegistration<T> registerOutboundQueueHandler(final T t, final int i, final long l) {
+        return null;
     }
 
     @Override
