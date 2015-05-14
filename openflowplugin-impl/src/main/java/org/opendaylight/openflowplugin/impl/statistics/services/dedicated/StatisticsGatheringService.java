@@ -10,16 +10,15 @@ package org.opendaylight.openflowplugin.impl.statistics.services.dedicated;
 
 import com.google.common.base.Function;
 import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import java.util.List;
 import java.util.concurrent.Future;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
-import org.opendaylight.openflowplugin.api.openflow.connection.OutboundQueueProvider;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.impl.common.MultipartRequestInputFactory;
 import org.opendaylight.openflowplugin.impl.services.CommonService;
 import org.opendaylight.openflowplugin.impl.services.DataCrate;
@@ -47,35 +46,48 @@ public class StatisticsGatheringService extends CommonService {
 
 
     public Future<RpcResult<List<MultipartReply>>> getStatisticsOfType(final MultipartType type) {
-        return handleServiceCall( new Function<DataCrate<List<MultipartReply>>, ListenableFuture<RpcResult<Void>>>() {
-                    @Override
-                    public ListenableFuture<RpcResult<Void>> apply(final DataCrate<List<MultipartReply>> data) {
-                        final Xid xid = data.getRequestContext().getXid();
-                        final DeviceContext deviceContext = getDeviceContext();
-                        deviceContext.getOpenflowMessageListenerFacade().registerMultipartXid(xid.getValue());
-                        MultipartRequestInput multipartRequestInput = MultipartRequestInputFactory.
-                                makeMultipartRequestInput(xid.getValue(),
-                                        getVersion(),
-                                        type);
-                        final OutboundQueue outboundQueue = deviceContext.getPrimaryConnectionContext().getOutboundQueueProvider().getOutboundQueue();
-                        final SettableFuture<RpcResult<Void>> settableFuture = SettableFuture.create();
-                        synchronized (outboundQueue){
-                            outboundQueue.commitEntry(xid.getValue(), multipartRequestInput, new FutureCallback<OfHeader>() {
-                                @Override
-                                public void onSuccess(final OfHeader ofHeader) {
-                                    settableFuture.set(RpcResultBuilder.<Void>success().build());
-                                }
+        return handleServiceCall(new Function<DataCrate<List<MultipartReply>>, ListenableFuture<RpcResult<Void>>>() {
+                                     @Override
+                                     public ListenableFuture<RpcResult<Void>> apply(final DataCrate<List<MultipartReply>> data) {
+                                         final Xid xid = data.getRequestContext().getXid();
+                                         final DeviceContext deviceContext = getDeviceContext();
+                                         final MultiMsgCollector multiMsgCollector = deviceContext.getMultiMsgCollector();
 
-                                @Override
-                                public void onFailure(final Throwable throwable) {
-                                    RpcResultBuilder rpcResultBuilder = RpcResultBuilder.<Void>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage());
-                                    settableFuture.set(rpcResultBuilder.build());
-                                }
-                            });
-                        }
-                        return settableFuture;
-                    }
-                }
+                                         multiMsgCollector.registerMultipartXid(xid.getValue());
+                                         MultipartRequestInput multipartRequestInput = MultipartRequestInputFactory.
+                                                 makeMultipartRequestInput(xid.getValue(),
+                                                         getVersion(),
+                                                         type);
+                                         final OutboundQueue outboundQueue = deviceContext.getPrimaryConnectionContext().getOutboundQueueProvider().getOutboundQueue();
+                                         final SettableFuture<RpcResult<Void>> settableFuture = SettableFuture.create();
+                                         synchronized (outboundQueue) {
+                                             outboundQueue.commitEntry(xid.getValue(), multipartRequestInput, new FutureCallback<OfHeader>() {
+                                                 @Override
+                                                 public void onSuccess(final OfHeader ofHeader) {
+                                                     if (ofHeader instanceof MultipartReply) {
+                                                         final MultipartReply multipartReply = (MultipartReply) ofHeader;
+                                                         settableFuture.set(RpcResultBuilder.<Void>success().build());
+                                                         multiMsgCollector.addMultipartMsg(multipartReply);
+                                                     } else {
+                                                         if (null != ofHeader) {
+                                                             LOG.info("Unexpected response type received {}.", ofHeader.getClass());
+                                                         } else {
+                                                             LOG.info("Response received is null.");
+                                                         }
+                                                     }
+
+                                                 }
+
+                                                 @Override
+                                                 public void onFailure(final Throwable throwable) {
+                                                     RpcResultBuilder rpcResultBuilder = RpcResultBuilder.<Void>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage());
+                                                     settableFuture.set(rpcResultBuilder.build());
+                                                 }
+                                             });
+                                         }
+                                         return settableFuture;
+                                     }
+                                 }
 
         );
     }

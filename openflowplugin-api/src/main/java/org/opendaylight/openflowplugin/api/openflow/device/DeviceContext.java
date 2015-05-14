@@ -20,6 +20,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceContex
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceDisconnectedHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceReplyProcessor;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MessageHandler;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.OutstandingMessageExtractor;
 import org.opendaylight.openflowplugin.api.openflow.device.listener.OpenflowMessageListenerFacade;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
@@ -146,20 +147,6 @@ public interface DeviceContext extends AutoCloseable,
     RequestContext unhookRequestCtx(Xid xid);
 
     /**
-     * Method that attaches anyMessageTypeListener to connection adapters as message listener.
-     *
-     * @param openflowMessageListenerFacade
-     */
-    void attachOpenflowMessageListener(OpenflowMessageListenerFacade openflowMessageListenerFacade);
-
-    /**
-     * Method returns registered {@link org.opendaylight.openflowplugin.api.openflow.device.listener.OpenflowMessageListenerFacade}
-     *
-     * @return
-     */
-    OpenflowMessageListenerFacade getOpenflowMessageListenerFacade();
-
-    /**
      * Method exposes flow registry used for storing flow ids identified by calculated flow hash.
      *
      * @return
@@ -212,6 +199,8 @@ public interface DeviceContext extends AutoCloseable,
     void startGatheringOperationsToOneTransaction();
 
     void commitOperationsGatheredInOneTransaction();
+
+    public MultiMsgCollector getMultiMsgCollector();
 
 }
 
