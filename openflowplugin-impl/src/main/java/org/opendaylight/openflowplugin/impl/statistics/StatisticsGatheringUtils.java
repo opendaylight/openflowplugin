@@ -8,15 +8,19 @@
 
 package org.opendaylight.openflowplugin.impl.statistics;
 
+import java.util.concurrent.ExecutionException;
+import com.google.common.base.Optional;
+import com.google.common.util.concurrent.CheckedFuture;
+import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
+import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableBuilder;
 import com.google.common.collect.Iterables;
-
 import java.util.Collections;
 import com.google.common.base.Function;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.List;
-import java.util.Map;
 import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -224,21 +228,26 @@ public final class StatisticsGatheringUtils {
 
     private static void deleteAllKnownFlows(final DeviceContext deviceContext, final InstanceIdentifier<Node> nodeIdent) {
         if (deviceContext.getDeviceState().deviceSynchronized()) {
-            for (Map.Entry<FlowHash, FlowDescriptor> registryEntry : deviceContext.getDeviceFlowRegistry().getAllFlowDescriptors().entrySet()) {
-                FlowDescriptor flowDescriptor = registryEntry.getValue();
-
-                FlowId flowId = flowDescriptor.getFlowId();
-                FlowKey flowKey = new FlowKey(flowId);
-                final InstanceIdentifier<Flow> flowInstanceIdentifier = nodeIdent
-                        .augmentation(FlowCapableNode.class)
-                        .child(Table.class, flowDescriptor.getTableKey())
-                        .child(Flow.class, flowKey);
-
-                LOG.trace("Deleting flow with id {}", flowInstanceIdentifier);
-                deviceContext.addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, flowInstanceIdentifier);
+            final Short numOfTablesOnDevice = deviceContext.getDeviceState().getFeatures().getTables();
+            for (short i=0; i<numOfTablesOnDevice; i++) {
+                KeyedInstanceIdentifier<Table, TableKey> iiToTable
+                    = nodeIdent.augmentation(FlowCapableNode.class).child( Table.class, new TableKey(i) );
+                final ReadTransaction readTx = deviceContext.getReadTransaction();
+                CheckedFuture<Optional<Table>, ReadFailedException> tableDataFuture = readTx.read(LogicalDatastoreType.OPERATIONAL, iiToTable);
+                try {
+                    Optional<Table> tableDataOpt = tableDataFuture.get();
+                    if (tableDataOpt.isPresent()) {
+                        final Table tableData = tableDataOpt.get();
+                        final Table table = new TableBuilder(tableData).setFlow(Collections.<Flow>emptyList()).build();
+                        deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToTable, table);
+                    }
+                } catch (InterruptedException e) {
+                    LOG.trace("Reading of table features for table wit ID {} was interrputed.",i);
+                } catch (ExecutionException e) {
+                    LOG.trace("Reading of table features for table wit ID {} encountered execution exception {}.",i,e);
+                }
             }
         }
-        deviceContext.getDeviceFlowRegistry().removeMarked();
     }
 
     private static void processQueueStatistics(final Iterable<QueueStatisticsUpdate> data, final DeviceContext deviceContext) {
