@@ -16,7 +16,6 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.List;
-import java.util.Map;
 import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -224,21 +223,14 @@ public final class StatisticsGatheringUtils {
 
     private static void deleteAllKnownFlows(final DeviceContext deviceContext, final InstanceIdentifier<Node> nodeIdent) {
         if (deviceContext.getDeviceState().deviceSynchronized()) {
-            for (Map.Entry<FlowHash, FlowDescriptor> registryEntry : deviceContext.getDeviceFlowRegistry().getAllFlowDescriptors().entrySet()) {
-                FlowDescriptor flowDescriptor = registryEntry.getValue();
+            final InstanceIdentifier<Flow> flowInstanceIdentifier = nodeIdent
+                    .augmentation(FlowCapableNode.class)
+                    .child(Table.class)
+                    .child(Flow.class);
 
-                FlowId flowId = flowDescriptor.getFlowId();
-                FlowKey flowKey = new FlowKey(flowId);
-                final InstanceIdentifier<Flow> flowInstanceIdentifier = nodeIdent
-                        .augmentation(FlowCapableNode.class)
-                        .child(Table.class, flowDescriptor.getTableKey())
-                        .child(Flow.class, flowKey);
-
-                LOG.trace("Deleting flow with id {}", flowInstanceIdentifier);
-                deviceContext.addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, flowInstanceIdentifier);
-            }
+            LOG.trace("Deleting all flows");
+            deviceContext.addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, flowInstanceIdentifier);
         }
-        deviceContext.getDeviceFlowRegistry().removeMarked();
     }
 
     private static void processQueueStatistics(final Iterable<QueueStatisticsUpdate> data, final DeviceContext deviceContext) {
