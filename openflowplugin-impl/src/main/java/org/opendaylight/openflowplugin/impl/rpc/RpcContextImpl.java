@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.impl.rpc;
 
 import com.google.common.util.concurrent.SettableFuture;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import javax.annotation.concurrent.GuardedBy;
@@ -17,6 +16,7 @@ import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
+import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
@@ -29,18 +29,21 @@ import org.slf4j.Logger;
 
 public class RpcContextImpl implements RpcContext {
     private static final Logger LOG = org.slf4j.LoggerFactory.getLogger(RpcContextImpl.class);
+    private MessageSpy messagSpy;
     final RpcProviderRegistry rpcProviderRegistry;
 
     // TODO: add private Sal salBroker
     private final KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier;
     private final Collection<RoutedRpcRegistration<?>> rpcRegistrations = new HashSet<>();
 
+
     @GuardedBy("requestsList")
     private final Collection<RequestContext<?>> requestsList = new HashSet<RequestContext<?>>();
 
     private int maxRequestsPerDevice;
 
-    public RpcContextImpl(final RpcProviderRegistry rpcProviderRegistry, final KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier) {
+    public RpcContextImpl(final MessageSpy messagSpy, final RpcProviderRegistry rpcProviderRegistry, final KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier) {
+        this.messagSpy = messagSpy;
         this.rpcProviderRegistry = rpcProviderRegistry;
         this.nodeInstanceIdentifier = nodeInstanceIdentifier;
     }
@@ -108,7 +111,8 @@ public class RpcContextImpl implements RpcContext {
         synchronized (requestsList) {
             requestsList.remove(requestContext);
             LOG.trace("Removed request context with xid {}. Context request in list {}.",
-                requestContext.getXid().getValue(), requestsList.size());
+                    requestContext.getXid().getValue(), requestsList.size());
+            messagSpy.spyMessage(RpcContextImpl.class, MessageSpy.STATISTIC_GROUP.REQUEST_STACK_FREED);
         }
     }
 
