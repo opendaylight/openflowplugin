@@ -69,7 +69,11 @@ public class StatisticsGatheringService extends CommonService {
                                                          settableFuture.set(RpcResultBuilder.<Void>success().build());
                                                          multiMsgCollector.addMultipartMsg(multipartReply);
                                                      } else {
-                                                         LOG.info("Unexpected response type received {}.", ofHeader.getClass());
+                                                         if (null != ofHeader) {
+                                                             LOG.info("Unexpected response type received {}.", ofHeader.getClass());
+                                                         } else {
+                                                             LOG.info("Response received is null.");
+                                                         }
                                                      }
 
                                                  }
