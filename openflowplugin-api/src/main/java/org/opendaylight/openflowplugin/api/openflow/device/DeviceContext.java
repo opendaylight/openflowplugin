@@ -112,12 +112,6 @@ public interface DeviceContext extends AutoCloseable,
      */
     ConnectionContext getAuxiliaryConnectiobContexts(BigInteger cookie);
 
-    /**
-     * Method generates unique XID value.
-     *
-     * @return
-     */
-    Xid getNextXid();
 
     /**
      * @param xid key
@@ -201,6 +195,8 @@ public interface DeviceContext extends AutoCloseable,
     void commitOperationsGatheredInOneTransaction();
 
     public MultiMsgCollector getMultiMsgCollector();
+
+    Long getReservedXid();
 
 }
 
