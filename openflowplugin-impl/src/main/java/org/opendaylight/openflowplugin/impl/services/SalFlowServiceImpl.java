@@ -90,6 +90,7 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
                     getMessageSpy().spyMessage(FlowModInput.class, MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
                     LOG.debug("flow add finished without error, id={}", flowId.getValue());
                 } else {
+                    getMessageSpy().spyMessage(FlowModInput.class, MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
                     LOG.debug("flow add failed with error, id={}", flowId.getValue());
                 }
             }
