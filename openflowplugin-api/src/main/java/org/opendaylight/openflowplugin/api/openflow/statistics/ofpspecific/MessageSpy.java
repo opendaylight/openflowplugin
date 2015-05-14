@@ -34,6 +34,10 @@ public interface MessageSpy<M> extends Runnable {
          */
         FROM_SWITCH_TRANSLATE_SRC_FAILURE,
         /**
+         * message from switch to MD-SAL  - notification service rejected notfication
+         */
+        FROM_SWITCH_NOTIFICATION_REJECTED,
+        /**
          * message from switch finally published into MD-SAL
          */
         FROM_SWITCH_PUBLISHED_SUCCESS,
@@ -50,6 +54,10 @@ public interface MessageSpy<M> extends Runnable {
          * message from MD-SAL was disregarded (e.g. outstanding requests limit reached).
          */
         TO_SWITCH_DISREGARDED,
+        /**
+         * message from MD-SAL to switch - asked for XID reservation in queue, but rejected
+         */
+        TO_SWITCH_RESERVATION_REJECTED,
         /**
          * message from MD-SAL to switch - ready to sent to OFJava (might be one-to-multiple ration between entered and sent)
          */
@@ -71,15 +79,11 @@ public interface MessageSpy<M> extends Runnable {
          */
         TO_SWITCH_SUBMIT_ERROR,
         /**
-         * message from MD-SAL to switch - asked for XID reservation in queue, but rejected
+         * TEMPORARY STATISTIC VALUE
          */
-        RESERVATION_REJECTED,
-        /**
-         * message from switch to MD-SAL  - notification service rejected notfication
-         */
-        NOTIFICATION_REJECTED
+        REQUEST_STACK_FREED
 
-        }
+    }
 
     /**
      * @param message   from switch or to switch - depends on statGroup

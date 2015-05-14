@@ -18,10 +18,12 @@ import java.util.concurrent.Future;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Matchers;
+import org.mockito.Mock;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
+import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.impl.rpc.RpcContextImpl;
 import org.opendaylight.openflowplugin.impl.rpc.RpcManagerImpl;
 import org.opendaylight.openflowplugin.impl.services.SalFlowServiceImpl;
@@ -50,6 +52,8 @@ public class RpcManagerImplTest {
     final RpcContext mockedRpcContext = mock(RpcContext.class);
     final AddFlowInput mockedFlowInput = prepareTestingAddFlow();
     final DeviceContext mockedDeviceContext = mock(DeviceContext.class);
+    @Mock
+    private MessageSpy messageSpy;
 
     @Ignore
     @Test
@@ -93,7 +97,7 @@ public class RpcManagerImplTest {
         // TODO: how to invoke service remotely?
         NodeId nodeId = new NodeId("openflow:1");
         KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(nodeId));
-        final RpcContextImpl rpcContext = new RpcContextImpl(mockedProviderContext, nodeInstanceIdentifier);
+        final RpcContextImpl rpcContext = new RpcContextImpl(messageSpy, mockedProviderContext, nodeInstanceIdentifier);
         when(mockedProviderContext.getRpcService(SalFlowService.class)).thenReturn(new SalFlowServiceImpl(rpcContext, mockedDeviceContext));
         rpcContext.setRequestContextQuota(capacity);
 
