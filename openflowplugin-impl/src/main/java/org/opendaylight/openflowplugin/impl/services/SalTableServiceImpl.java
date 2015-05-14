@@ -83,7 +83,7 @@ public class SalTableServiceImpl extends CommonService implements SalTableServic
 
                 // Set request body to main multipart request
                 final Xid xid = data.getRequestContext().getXid();
-                getDeviceContext().getOpenflowMessageListenerFacade().registerMultipartXid(xid.getValue());
+                getDeviceContext().getMultiMsgCollector().registerMultipartXid(xid.getValue());
                 final MultipartRequestInputBuilder mprInput = createMultipartHeader(MultipartType.OFPMPTABLEFEATURES,
                         xid.getValue());
                 mprInput.setMultipartRequestBody(caseBuilder.build());
