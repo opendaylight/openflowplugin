@@ -29,7 +29,6 @@ import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowHash;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowDescriptorFactory;
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowHashFactory;
-import org.opendaylight.openflowplugin.impl.util.FlowUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.FlowConvertor;
 import org.opendaylight.openflowplugin.openflow.md.util.FlowCreatorUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
@@ -65,25 +64,24 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
     @Override
     public Future<RpcResult<AddFlowOutput>> addFlow(final AddFlowInput input) {
         getMessageSpy().spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_ENTERED);
-        final FlowId flowId;
-        if (null != input.getFlowRef()) {
-            flowId = input.getFlowRef().getValue().firstKeyOf(Flow.class, FlowKey.class).getId();
-        } else {
-            flowId = FlowUtil.createAlienFlowId(input.getTableId());
-        }
-
-
-        final DeviceContext deviceContext = getDeviceContext();
-        final FlowHash flowHash = FlowHashFactory.create(input, deviceContext.getPrimaryConnectionContext().getFeatures().getVersion());
-        final FlowDescriptor flowDescriptor = FlowDescriptorFactory.create(input.getTableId(), flowId);
 
         final List<FlowModInputBuilder> ofFlowModInputs = FlowConvertor.toFlowModInputs(input, getVersion(), getDatapathId());
         final ListenableFuture<RpcResult<AddFlowOutput>> future = processFlowModInputBuilders(ofFlowModInputs);
 
         Futures.addCallback(future, new FutureCallback<RpcResult<AddFlowOutput>>() {
+
+            final DeviceContext deviceContext = getDeviceContext();
+            final FlowHash flowHash = FlowHashFactory.create(input, deviceContext.getPrimaryConnectionContext().getFeatures().getVersion());
+            FlowId flowId = null;
             @Override
             public void onSuccess(final RpcResult<AddFlowOutput> rpcResult) {
-                deviceContext.getDeviceFlowRegistry().store(flowHash, flowDescriptor);
+                if (null != input.getFlowRef()) {
+                    flowId = input.getFlowRef().getValue().firstKeyOf(Flow.class, FlowKey.class).getId();
+                    final FlowDescriptor flowDescriptor = FlowDescriptorFactory.create(input.getTableId(), flowId);
+                    deviceContext.getDeviceFlowRegistry().store(flowHash, flowDescriptor);
+                } else {
+                    flowId = getDeviceContext().getDeviceFlowRegistry().storeIfNecessary(flowHash, input.getTableId());
+                }
                 if (rpcResult.isSuccessful()) {
                     LOG.debug("flow add finished without error, id={}", flowId.getValue());
                 } else {
@@ -94,7 +92,7 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
             @Override
             public void onFailure(final Throwable throwable) {
                 deviceContext.getDeviceFlowRegistry().markToBeremoved(flowHash);
-                LOG.trace("Service call for adding flows failed, id={}.", flowId.getValue(), throwable);
+                LOG.trace("Service call for adding flows failed, hash id={}.", flowHash, throwable);
             }
         });
 

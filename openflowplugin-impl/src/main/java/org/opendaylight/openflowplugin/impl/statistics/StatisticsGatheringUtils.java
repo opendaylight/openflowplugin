@@ -24,13 +24,10 @@ import java.util.List;
 import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
-import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowHash;
-import org.opendaylight.openflowplugin.impl.registry.flow.FlowDescriptorFactory;
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowHashFactory;
 import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.StatisticsGatheringService;
-import org.opendaylight.openflowplugin.impl.util.FlowUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
@@ -199,21 +196,13 @@ public final class StatisticsGatheringUtils {
         for (final FlowsStatisticsUpdate flowsStatistics : data) {
             for (final FlowAndStatisticsMapList flowStat : flowsStatistics.getFlowAndStatisticsMapList()) {
                 final FlowBuilder flowBuilder = new FlowBuilder(flowStat);
-                FlowId flowId = null;
-                FlowHash flowHash = FlowHashFactory.create(flowBuilder.build(), deviceContext.getPrimaryConnectionContext().getFeatures().getVersion());
                 short tableId = flowStat.getTableId();
-                final DeviceFlowRegistry deviceFlowRegistry = deviceContext.getDeviceFlowRegistry();
-                FlowDescriptor flowDescriptor;
-                flowDescriptor = deviceFlowRegistry.retrieveIdForFlow(flowHash);
-                if (null != flowDescriptor) {
-                    flowId = flowDescriptor.getFlowId();
-                } else {
-                    LOG.trace("Flow descriptor for flow hash {} wasn't found.", flowHash.hashCode());
-                    flowId = FlowUtil.createAlienFlowId(tableId);
-                    flowDescriptor = FlowDescriptorFactory.create(tableId, flowId);
-                    deviceFlowRegistry.store(flowHash, flowDescriptor);
-                }
-                FlowKey flowKey = new FlowKey(flowId);
+                final Short version = deviceContext.getPrimaryConnectionContext().getFeatures().getVersion();
+                
+                final FlowHash flowHash = FlowHashFactory.create(flowBuilder.build(), version);
+                final FlowId flowId = deviceContext.getDeviceFlowRegistry().storeIfNecessary(flowHash, tableId);
+
+                final FlowKey flowKey = new FlowKey(flowId);
                 flowBuilder.setKey(flowKey);
                 final TableKey tableKey = new TableKey(tableId);
                 final InstanceIdentifier<FlowCapableNode> fNodeIdent = getFlowCapableNodeInstanceIdentifier(flowsStatistics.getId());

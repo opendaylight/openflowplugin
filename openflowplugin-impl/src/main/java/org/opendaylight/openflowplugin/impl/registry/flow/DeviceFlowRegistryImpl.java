@@ -8,6 +8,8 @@
 
 package org.opendaylight.openflowplugin.impl.registry.flow;
 
+import org.opendaylight.openflowplugin.impl.util.FlowUtil;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -43,6 +45,22 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
         }
     }
 
+    @Override
+    public FlowId storeIfNecessary(final FlowHash flowHash, final short tableId) {
+        FlowId alienFlowId = FlowUtil.createAlienFlowId(tableId);
+        FlowDescriptor alienFlowDescriptor = FlowDescriptorFactory.create(tableId, alienFlowId);
+        synchronized (flowRegistry) {
+            FlowDescriptor flowDescriptorFromRegistry = flowRegistry.get(flowHash);
+            if (flowDescriptorFromRegistry != null) {
+                return flowDescriptorFromRegistry.getFlowId();
+            } else {
+                LOG.trace("Flow descriptor for flow hash {} wasn't found.", flowHash.hashCode());
+                flowRegistry.put(flowHash, alienFlowDescriptor);
+                return alienFlowId;
+            }
+        }
+    }
+    
     @Override
     public void markToBeremoved(final FlowHash flowHash) {
         synchronized (marks) {
