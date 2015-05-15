@@ -9,6 +9,8 @@
 package org.opendaylight.openflowplugin.api.openflow.registry.flow;
 
 
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
+
 import java.util.Map;
 
 /**
@@ -19,6 +21,8 @@ public interface DeviceFlowRegistry extends AutoCloseable {
     FlowDescriptor retrieveIdForFlow(FlowHash flowHash);
 
     void store(FlowHash flowHash, FlowDescriptor flowDescriptor);
+
+    FlowId storeIfNecessary(FlowHash flowHash, short tableId);
 
     void markToBeremoved(FlowHash flowHash);
 
