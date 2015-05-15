@@ -52,6 +52,7 @@ class DeviceStateImpl implements DeviceState {
         Preconditions.checkArgument(featuresReply != null);
         featuresOutput = new GetFeaturesOutputBuilder(featuresReply).build();
         this.nodeId = Preconditions.checkNotNull(nodeId);
+        // FIXME: use builder, as we will be using this identifier often
         nodeII = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(nodeId));
         version = featuresReply.getVersion();
     }
@@ -92,7 +93,7 @@ class DeviceStateImpl implements DeviceState {
     }
 
     @Override
-    public void setMeterAvailable(boolean available) {
+    public void setMeterAvailable(final boolean available) {
         meterIsAvailable = available;
     }
 
@@ -102,7 +103,7 @@ class DeviceStateImpl implements DeviceState {
     }
 
     @Override
-    public void setGroupAvailable(boolean available) {
+    public void setGroupAvailable(final boolean available) {
         groupIsAvailable = available;
     }
 
