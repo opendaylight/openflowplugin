@@ -9,7 +9,6 @@ package org.opendaylight.openflowplugin.impl.services;
 
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.SettableFuture;
 import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
@@ -22,48 +21,41 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetConfigInputBuilder;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
-/**
- * @author joe
- */
 public class NodeConfigServiceImpl extends CommonService implements NodeConfigService {
 
-    private final RequestContextStack requestContextStack;
+    // FIXME: should be only in CommonService
     private final DeviceContext deviceContext;
 
     public NodeConfigServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
         super(requestContextStack, deviceContext);
-        this.requestContextStack = requestContextStack;
         this.deviceContext = deviceContext;
     }
 
-
     @Override
     public Future<RpcResult<SetConfigOutput>> setConfig(final SetConfigInput input) {
-        final RequestContext requestContext = requestContextStack.createRequestContext();
-        final SettableFuture<RpcResult<SetConfigOutput>> result = requestContextStack.storeOrFail(requestContext);
-        if (!result.isDone()) {
-            SetConfigInputBuilder builder = new SetConfigInputBuilder();
-            SwitchConfigFlag flag = SwitchConfigFlag.valueOf(input.getFlag());
-            final Long reserverXid = deviceContext.getReservedXid();
-            if (null == reserverXid){
-                RequestContextUtil.closeRequestContextWithRpcError(requestContext, "Outbound queue wasn't able to reserve XID.");
-                return result;
-            }
-
-            final Xid xid = new Xid(reserverXid);
-            builder.setXid(xid.getValue());
-            builder.setFlags(flag);
-            builder.setMissSendLen(input.getMissSearchLength());
-            builder.setVersion(getVersion());
-            ListenableFuture<RpcResult<Void>> futureResultFromOfLib;
-            synchronized (deviceContext) {
-                futureResultFromOfLib = JdkFutureAdapters.listenInPoolThread(deviceContext.getPrimaryConnectionContext().getConnectionAdapter().setConfig(builder.build()));
-            }
-            OFJResult2RequestCtxFuture<SetConfigOutput> OFJResult2RequestCtxFuture = new OFJResult2RequestCtxFuture<>(requestContext, deviceContext);
-            OFJResult2RequestCtxFuture.processResultFromOfJava(futureResultFromOfLib);
-        } else {
-            RequestContextUtil.closeRequstContext(requestContext);
+        final RequestContext<SetConfigOutput> requestContext = createRequestContext();
+        if (requestContext == null) {
+            return failedFuture();
         }
-        return result;
+
+        SetConfigInputBuilder builder = new SetConfigInputBuilder();
+        SwitchConfigFlag flag = SwitchConfigFlag.valueOf(input.getFlag());
+        final Long reserverXid = deviceContext.getReservedXid();
+        if (null == reserverXid) {
+            return RequestContextUtil.closeRequestContextWithRpcError(requestContext, "Outbound queue wasn't able to reserve XID.");
+        }
+
+        final Xid xid = new Xid(reserverXid);
+        builder.setXid(xid.getValue());
+        builder.setFlags(flag);
+        builder.setMissSendLen(input.getMissSearchLength());
+        builder.setVersion(getVersion());
+        ListenableFuture<RpcResult<Void>> futureResultFromOfLib;
+        synchronized (deviceContext) {
+            futureResultFromOfLib = JdkFutureAdapters.listenInPoolThread(deviceContext.getPrimaryConnectionContext().getConnectionAdapter().setConfig(builder.build()));
+        }
+        OFJResult2RequestCtxFuture<SetConfigOutput> OFJResult2RequestCtxFuture = new OFJResult2RequestCtxFuture<>(requestContext, deviceContext);
+        OFJResult2RequestCtxFuture.processResultFromOfJava(futureResultFromOfLib);
+        return requestContext.getFuture();
     }
 }

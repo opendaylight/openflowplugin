@@ -11,7 +11,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.SettableFuture;
 import io.netty.util.HashedWheelTimer;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -52,7 +51,7 @@ import org.opendaylight.openflowplugin.impl.common.NodeStaticReplyTranslatorUtil
 import org.opendaylight.openflowplugin.impl.connection.OutboundQueueProviderImpl;
 import org.opendaylight.openflowplugin.impl.connection.ThrottledNotificationsOffererImpl;
 import org.opendaylight.openflowplugin.impl.device.listener.OpenflowProtocolListenerFullImpl;
-import org.opendaylight.openflowplugin.impl.rpc.RequestContextImpl;
+import org.opendaylight.openflowplugin.impl.rpc.AbstractRequestContext;
 import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeBuilder;
@@ -137,18 +136,13 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
 
         emptyRequestContextStack = new RequestContextStack() {
             @Override
-            public <T> void forgetRequestContext(final RequestContext<T> requestContext) {
-                //NOOP
-            }
-
-            @Override
-            public <T> SettableFuture<RpcResult<T>> storeOrFail(final RequestContext<T> data) {
-                return data.getFuture();
-            }
-
-            @Override
             public <T> RequestContext<T> createRequestContext() {
-                return new RequestContextImpl<>(this);
+                return new AbstractRequestContext<T>() {
+                    @Override
+                    public void close() {
+                        //NOOP
+                    }
+                };
             }
         };
     }

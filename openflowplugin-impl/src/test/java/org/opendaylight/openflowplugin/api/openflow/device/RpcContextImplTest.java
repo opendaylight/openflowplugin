@@ -7,13 +7,8 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.device;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import java.util.Iterator;
-import java.util.concurrent.Future;
+import static org.junit.Assert.assertNull;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,15 +18,12 @@ import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.impl.rpc.RpcContextImpl;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
-import org.opendaylight.yangtools.yang.common.RpcError;
-import org.opendaylight.yangtools.yang.common.RpcResult;
 
 /**
  * @author joe
@@ -47,16 +39,12 @@ public class RpcContextImplTest {
     @Mock
     private MessageSpy messageSpy;
 
-    private RpcContext rpcContext;
-
-    private static final String QUEUE_IS_FULL = "Device's request queue is full.";
+    private KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier;
 
     @Before
     public void setup() {
         NodeId nodeId = new NodeId("openflow:1");
-        KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(nodeId));
-
-        rpcContext = new RpcContextImpl(messageSpy, mockedRpcProviderRegistry, nodeInstanceIdentifier);
+        nodeInstanceIdentifier = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(nodeId));
     }
 
     @Test
@@ -66,25 +54,16 @@ public class RpcContextImplTest {
 
     @Test
     public void testStoreOrFail() throws Exception {
+        final RpcContext rpcContext = new RpcContextImpl(messageSpy, mockedRpcProviderRegistry, nodeInstanceIdentifier, 100);
         RequestContext requestContext = rpcContext.createRequestContext();
-        rpcContext.setRequestContextQuota(100);
-        Future<RpcResult<UpdateFlowOutput>> resultFuture = rpcContext.storeOrFail(requestContext);
-        assertNotNull(resultFuture);
-        assertFalse(resultFuture.isDone());
+        assertNotNull(requestContext);
+
     }
 
     @Test
     public void testStoreOrFailThatFails() throws Exception {
+        final RpcContext rpcContext = new RpcContextImpl(messageSpy, mockedRpcProviderRegistry, nodeInstanceIdentifier, 0);
         RequestContext requestContext = rpcContext.createRequestContext();
-        rpcContext.setRequestContextQuota(0);
-        Future<RpcResult<UpdateFlowOutput>> resultFuture = rpcContext.storeOrFail(requestContext);
-        assertNotNull(resultFuture);
-        assertTrue(resultFuture.isDone());
-        RpcResult<UpdateFlowOutput> updateFlowOutputRpcResult = resultFuture.get();
-        assertNotNull(updateFlowOutputRpcResult);
-        assertEquals(1, updateFlowOutputRpcResult.getErrors().size());
-        Iterator<RpcError> iterator = updateFlowOutputRpcResult.getErrors().iterator();
-        assertEquals(QUEUE_IS_FULL, iterator.next().getMessage());
+        assertNull(requestContext);
     }
-
 }

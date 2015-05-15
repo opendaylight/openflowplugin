@@ -10,9 +10,7 @@ package org.opendaylight.openflowplugin.impl.services;
 import com.google.common.base.Function;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.SettableFuture;
 import java.math.BigInteger;
-import java.util.concurrent.Future;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -21,7 +19,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
-import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
+import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
@@ -29,10 +27,6 @@ import org.slf4j.Logger;
 public abstract class CommonService {
     private static final Logger LOG = org.slf4j.LoggerFactory.getLogger(CommonService.class);
     private static final long WAIT_TIME = 2000;
-    private final static Future<RpcResult<Void>> ERROR_RPC_RESULT = Futures.immediateFuture(RpcResultBuilder
-            .<Void>failed().withError(ErrorType.APPLICATION, "", "Request quota exceeded.").build());
-
-
     private static final BigInteger PRIMARY_CONNECTION = BigInteger.ZERO;
 
     private final short version;
@@ -43,7 +37,7 @@ public abstract class CommonService {
     private final MessageSpy messageSpy;
 
 
-    public CommonService(final RequestContextStack requestContextStack, DeviceContext deviceContext) {
+    public CommonService(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
         this.requestContextStack = requestContextStack;
         this.deviceContext = deviceContext;
         final FeaturesReply features = this.deviceContext.getPrimaryConnectionContext().getFeatures();
@@ -132,12 +126,11 @@ public abstract class CommonService {
                                                                          final DataCrateBuilder<T> dataCrateBuilder) {
 
         LOG.trace("Handling general service call");
-        final RequestContext<T> requestContext = requestContextStack.createRequestContext();
-        final SettableFuture<RpcResult<T>> result = requestContextStack.storeOrFail(requestContext);
-        if (result.isDone()) {
+        final RequestContext<T> requestContext = createRequestContext();
+        if (requestContext == null) {
             LOG.trace("Request context refused.");
-            deviceContext.getMessageSpy().spyMessage(requestContext.getClass(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_DISREGARDED);
-            return result;
+            deviceContext.getMessageSpy().spyMessage(null, MessageSpy.STATISTIC_GROUP.TO_SWITCH_DISREGARDED);
+            return failedFuture();
         }
 
         Long reservedXid = deviceContext.getReservedXid();
@@ -145,9 +138,8 @@ public abstract class CommonService {
             //retry
             reservedXid = deviceContext.getReservedXid();
             if (null == reservedXid) {
-                RequestContextUtil.closeRequestContextWithRpcError(requestContext, "Outbound queue wasn't able to reserve XID.");
                 deviceContext.getMessageSpy().spyMessage(requestContext.getClass(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_RESERVATION_REJECTED);
-                return result;
+                return RequestContextUtil.closeRequestContextWithRpcError(requestContext, "Outbound queue wasn't able to reserve XID.");
             }
         }
         final Xid xid = new Xid(reservedXid);
@@ -162,8 +154,17 @@ public abstract class CommonService {
         messageSpy.spyMessage(requestContext.getClass(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_READY_FOR_SUBMIT);
         function.apply(dataCrate);
 
-        return result;
+        return requestContext.getFuture();
 
     }
 
+    protected final <T> RequestContext<T> createRequestContext() {
+        return requestContextStack.createRequestContext();
+    }
+
+    protected static <T> ListenableFuture<RpcResult<T>> failedFuture() {
+        final RpcResult<T> rpcResult = RpcResultBuilder.<T>failed()
+                .withError(RpcError.ErrorType.APPLICATION, "", "Request quota exceeded").build();
+        return Futures.immediateFuture(rpcResult);
+    }
 }

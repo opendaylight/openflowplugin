@@ -9,27 +9,16 @@ package org.opendaylight.openflowplugin.impl.rpc;
 
 import com.google.common.util.concurrent.SettableFuture;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
-import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
-/**
- * @author joe
- */
-public class RequestContextImpl<T> implements RequestContext<T> {
-
-    private final RequestContextStack requestContextStack;
+public abstract class AbstractRequestContext<T> implements RequestContext<T> {
     private SettableFuture<RpcResult<T>> rpcResultFuture;
     private long waitTimeout;
     private Xid xid;
 
-    public RequestContextImpl(RequestContextStack requestContextStack) {
-        this.requestContextStack = requestContextStack;
-    }
+    protected AbstractRequestContext() {
 
-    @Override
-    public void close() {
-        requestContextStack.forgetRequestContext(this);
     }
 
     @Override
@@ -46,7 +35,7 @@ public class RequestContextImpl<T> implements RequestContext<T> {
     }
 
     @Override
-    public void setXid(Xid xid) {
+    public void setXid(final Xid xid) {
         this.xid = xid;
     }
 
@@ -56,7 +45,7 @@ public class RequestContextImpl<T> implements RequestContext<T> {
     }
 
     @Override
-    public void setWaitTimeout(long waitTimeout) {
+    public void setWaitTimeout(final long waitTimeout) {
         this.waitTimeout = waitTimeout;
     }
 }

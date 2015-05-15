@@ -7,11 +7,9 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
-import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.SettableFuture;
 import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
@@ -24,7 +22,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierOutput;
-import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
@@ -38,74 +35,51 @@ public class FlowCapableTransactionServiceImpl extends CommonService implements 
     }
 
     @Override
-    public Future<RpcResult<Void>> sendBarrier(SendBarrierInput input) {
+    public Future<RpcResult<Void>> sendBarrier(final SendBarrierInput input) {
         final RequestContext<Void> requestContext = getRequestContextStack().createRequestContext();
-        final SettableFuture<RpcResult<Void>> sendBarrierOutput = getRequestContextStack()
-                .storeOrFail(requestContext);
-        if (!sendBarrierOutput.isDone()) {
-            final DeviceContext deviceContext = getDeviceContext();
-            final Long reservedXid = deviceContext.getReservedXid();
-            if (null == reservedXid){
-                RequestContextUtil.closeRequestContextWithRpcError(requestContext, "Outbound queue wasn't able to reserve XID.");
-                return sendBarrierOutput;
-            }
-            final Xid xid = new Xid(reservedXid);
-            requestContext.setXid(xid);
-
-            final BarrierInputBuilder barrierInputOFJavaBuilder = new BarrierInputBuilder();
-            barrierInputOFJavaBuilder.setVersion(getVersion());
-            barrierInputOFJavaBuilder.setXid(xid.getValue());
-
-            LOG.trace("Hooking xid {} to device context - precaution.", requestContext.getXid().getValue());
-            deviceContext.hookRequestCtx(requestContext.getXid(), requestContext);
-
-            final BarrierInput barrierInputOFJava = barrierInputOFJavaBuilder.build();
-
-            final Future<RpcResult<BarrierOutput>> barrierOutputOFJava = getPrimaryConnectionAdapter()
-                    .barrier(barrierInputOFJava);
-            LOG.debug("Barrier with xid {} was sent from controller.", xid);
-
-            ListenableFuture<RpcResult<BarrierOutput>> listenableBarrierOutputOFJava = JdkFutureAdapters
-                    .listenInPoolThread(barrierOutputOFJava);
-
-            // callback on OF JAVA future
-            SuccessCallback<BarrierOutput, Void> successCallback = new SuccessCallback<BarrierOutput, Void>(
-                    deviceContext, requestContext, listenableBarrierOutputOFJava) {
-
-                @Override
-                public RpcResult<Void> transform(RpcResult<BarrierOutput> rpcResult) {
-                    //no transformation, because output for request context is Void
-                    LOG.debug("Barrier reply with xid {} was obtained by controller.", rpcResult.getResult().getXid());
-                    return RpcResultBuilder.<Void>success().build();
-                }
-            };
-            Futures.addCallback(listenableBarrierOutputOFJava, successCallback);
-        } else {
-            getMessageSpy().spyMessage(requestContext, MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
+        if (requestContext == null) {
+            getMessageSpy().spyMessage(null, MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
+            return failedFuture();
         }
 
-        //callback on request context future
-        Futures.addCallback(sendBarrierOutput, new FutureCallback<RpcResult<Void>>() {
+        final DeviceContext deviceContext = getDeviceContext();
+        final Long reservedXid = deviceContext.getReservedXid();
+        if (null == reservedXid) {
+            return RequestContextUtil.closeRequestContextWithRpcError(requestContext, "Outbound queue wasn't able to reserve XID.");
+        }
+        final Xid xid = new Xid(reservedXid);
+        requestContext.setXid(xid);
+
+        final BarrierInputBuilder barrierInputOFJavaBuilder = new BarrierInputBuilder();
+        barrierInputOFJavaBuilder.setVersion(getVersion());
+        barrierInputOFJavaBuilder.setXid(xid.getValue());
+
+        LOG.trace("Hooking xid {} to device context - precaution.", requestContext.getXid().getValue());
+        deviceContext.hookRequestCtx(requestContext.getXid(), requestContext);
+
+        final BarrierInput barrierInputOFJava = barrierInputOFJavaBuilder.build();
+
+        // FIXME: should be submitted through OutboundQueue
+        final Future<RpcResult<BarrierOutput>> barrierOutputOFJava = getPrimaryConnectionAdapter()
+                .barrier(barrierInputOFJava);
+        LOG.debug("Barrier with xid {} was sent from controller.", xid);
+
+        ListenableFuture<RpcResult<BarrierOutput>> listenableBarrierOutputOFJava = JdkFutureAdapters
+                .listenInPoolThread(barrierOutputOFJava);
+
+        // callback on OF JAVA future
+        SuccessCallback<BarrierOutput, Void> successCallback = new SuccessCallback<BarrierOutput, Void>(
+                deviceContext, requestContext, listenableBarrierOutputOFJava) {
 
             @Override
-            public void onSuccess(RpcResult<Void> result) {
+            public RpcResult<Void> transform(final RpcResult<BarrierOutput> rpcResult) {
+                //no transformation, because output for request context is Void
+                LOG.debug("Barrier reply with xid {} was obtained by controller.", rpcResult.getResult().getXid());
+                return RpcResultBuilder.<Void>success().build();
             }
+        };
+        Futures.addCallback(listenableBarrierOutputOFJava, successCallback);
 
-            @Override
-            public void onFailure(Throwable t) {
-                if (sendBarrierOutput.isCancelled()) {
-                    requestContext.getFuture().set(
-                            RpcResultBuilder.<Void>failed()
-                                    .withError(ErrorType.APPLICATION, "Barrier response wasn't obtained until barrier.")
-                                    .build());
-                    LOG.debug("Barrier reply with xid {} wasn't obtained by controller.", requestContext.getXid());
-
-                }
-            }
-        });
-
-        return sendBarrierOutput;
-
+        return requestContext.getFuture();
     }
-
 }

@@ -33,8 +33,7 @@ public class RpcManagerImpl implements RpcManager {
 
     @Override
     public void onDeviceContextLevelUp(final DeviceContext deviceContext) {
-        final RpcContext rpcContext = new RpcContextImpl(deviceContext.getMessageSpy(), rpcProviderRegistry, deviceContext.getDeviceState().getNodeInstanceIdentifier());
-        rpcContext.setRequestContextQuota(maxRequestsQuota.intValue());
+        final RpcContext rpcContext = new RpcContextImpl(deviceContext.getMessageSpy(), rpcProviderRegistry, deviceContext.getDeviceState().getNodeInstanceIdentifier(), maxRequestsQuota.intValue());
         deviceContext.setDeviceDisconnectedHandler(rpcContext);
         MdSalRegistratorUtils.registerServices(rpcContext, deviceContext);
         // finish device initialization cycle back to DeviceManager
