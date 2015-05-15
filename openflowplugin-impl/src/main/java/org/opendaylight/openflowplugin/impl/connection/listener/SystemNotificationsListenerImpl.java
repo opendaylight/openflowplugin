@@ -7,7 +7,6 @@
  */
 package org.opendaylight.openflowplugin.impl.connection.listener;
 
-import org.opendaylight.openflowplugin.api.openflow.connection.HandshakeContext;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -18,6 +17,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
+import org.opendaylight.openflowplugin.api.openflow.connection.HandshakeContext;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoOutput;
@@ -35,25 +35,25 @@ import org.slf4j.LoggerFactory;
  */
 public class SystemNotificationsListenerImpl implements SystemNotificationsListener {
 
-    private ConnectionContext connectionContext;
+    private final ConnectionContext connectionContext;
     HandshakeContext handshakeContext;
     private static final Logger LOG = LoggerFactory.getLogger(SystemNotificationsListenerImpl.class);
     @VisibleForTesting
     static final long MAX_ECHO_REPLY_TIMEOUT = 2000;
 
-    public SystemNotificationsListenerImpl(final ConnectionContext connectionContext, 
+    public SystemNotificationsListenerImpl(final ConnectionContext connectionContext,
             final HandshakeContext handshakeContext) {
         this.connectionContext = connectionContext;
         this.handshakeContext = handshakeContext;
     }
 
     @Override
-    public void onDisconnectEvent(DisconnectEvent notification) {
+    public void onDisconnectEvent(final DisconnectEvent notification) {
         disconnect();
     }
 
     @Override
-    public void onSwitchIdleEvent(SwitchIdleEvent notification) {
+    public void onSwitchIdleEvent(final SwitchIdleEvent notification) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -69,7 +69,7 @@ public class SystemNotificationsListenerImpl implements SystemNotificationsListe
                     connectionContext.setConnectionState(ConnectionContext.CONNECTION_STATE.TIMEOUTING);
                     EchoInputBuilder builder = new EchoInputBuilder();
                     builder.setVersion(features.getVersion());
-                    Xid xid = new Xid(0);
+                    Xid xid = new Xid(0L);
                     builder.setXid(xid.getValue());
 
                     Future<RpcResult<EchoOutput>> echoReplyFuture = connectionContext.getConnectionAdapter()
