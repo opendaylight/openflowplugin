@@ -193,7 +193,7 @@ public interface DeviceContext extends AutoCloseable,
 
     void commitOperationsGatheredInOneTransaction();
 
-    public MultiMsgCollector getMultiMsgCollector();
+    MultiMsgCollector getMultiMsgCollector();
 
     Long getReservedXid();
 

@@ -8,7 +8,7 @@
 
 package org.opendaylight.openflowplugin.api.openflow.device;
 
-import com.google.common.util.concurrent.SettableFuture;
+import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
 /**
@@ -16,11 +16,12 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
  * @param <T>
  */
 public interface RequestFutureContext<T> {
-
     /**
      * Method returns future to be used for handling device requests.
      *
      * @return
      */
-    SettableFuture<RpcResult<T>> getFuture();
+    ListenableFuture<RpcResult<T>> getFuture();
+
+    void setResult(RpcResult<T> result);
 }
