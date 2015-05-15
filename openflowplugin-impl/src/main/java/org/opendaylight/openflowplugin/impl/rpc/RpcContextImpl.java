@@ -7,10 +7,9 @@
  */
 package org.opendaylight.openflowplugin.impl.rpc;
 
-import com.google.common.util.concurrent.SettableFuture;
 import java.util.Collection;
 import java.util.HashSet;
-import javax.annotation.concurrent.GuardedBy;
+import java.util.concurrent.Semaphore;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
@@ -22,30 +21,24 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.RpcService;
-import org.opendaylight.yangtools.yang.common.RpcError;
-import org.opendaylight.yangtools.yang.common.RpcResult;
-import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RpcContextImpl implements RpcContext {
-    private static final Logger LOG = org.slf4j.LoggerFactory.getLogger(RpcContextImpl.class);
-    private MessageSpy messagSpy;
-    final RpcProviderRegistry rpcProviderRegistry;
+    private static final Logger LOG = LoggerFactory.getLogger(RpcContextImpl.class);
+    private final RpcProviderRegistry rpcProviderRegistry;
+    private final MessageSpy messageSpy;
+    private final Semaphore tracker;
 
     // TODO: add private Sal salBroker
     private final KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier;
     private final Collection<RoutedRpcRegistration<?>> rpcRegistrations = new HashSet<>();
 
-
-    @GuardedBy("requestsList")
-    private final Collection<RequestContext<?>> requestsList = new HashSet<RequestContext<?>>();
-
-    private int maxRequestsPerDevice;
-
-    public RpcContextImpl(final MessageSpy messagSpy, final RpcProviderRegistry rpcProviderRegistry, final KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier) {
-        this.messagSpy = messagSpy;
+    public RpcContextImpl(final MessageSpy messageSpy, final RpcProviderRegistry rpcProviderRegistry, final KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier, final int maxRequests) {
+        this.messageSpy = messageSpy;
         this.rpcProviderRegistry = rpcProviderRegistry;
         this.nodeInstanceIdentifier = nodeInstanceIdentifier;
+        tracker = new Semaphore(maxRequests, true);
     }
 
     /**
@@ -61,74 +54,40 @@ public class RpcContextImpl implements RpcContext {
         LOG.debug("Registration of service {} for device {}.", serviceClass, nodeInstanceIdentifier);
     }
 
-    @Override
-    public <T> SettableFuture<RpcResult<T>> storeOrFail(final RequestContext<T> requestContext) {
-        final SettableFuture<RpcResult<T>> rpcResultFuture = requestContext.getFuture();
-
-        final boolean success;
-        // FIXME: use a fixed-size collection, with lockless reserve/set queue
-        synchronized (requestsList) {
-            if (requestsList.size() < maxRequestsPerDevice) {
-                requestsList.add(requestContext);
-                success = true;
-            } else {
-                success = false;
-            }
-        }
-
-        if (!success) {
-            final RpcResult<T> rpcResult = RpcResultBuilder.<T>failed()
-                    .withError(RpcError.ErrorType.APPLICATION, "", "Device's request queue is full.").build();
-            rpcResultFuture.set(rpcResult);
-        }
-
-        return rpcResultFuture;
-    }
-
     /**
      * Unregisters all services.
      *
      * @see java.lang.AutoCloseable#close()
      */
     @Override
-    public void close() throws Exception {
+    public void close() {
         for (final RoutedRpcRegistration<?> rpcRegistration : rpcRegistrations) {
             rpcRegistration.unregisterPath(NodeContext.class, nodeInstanceIdentifier);
             rpcRegistration.close();
         }
     }
 
-    /**
-     * @see org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext#setRequestContextQuota(int)
-     */
-    @Override
-    public void setRequestContextQuota(final int maxRequestsPerDevice) {
-        this.maxRequestsPerDevice = maxRequestsPerDevice;
-    }
-
-    @Override
-    public <T> void forgetRequestContext(final RequestContext<T> requestContext) {
-        synchronized (requestsList) {
-            requestsList.remove(requestContext);
-            LOG.trace("Removed request context with xid {}. Context request in list {}.",
-                    requestContext.getXid().getValue(), requestsList.size());
-            messagSpy.spyMessage(RpcContextImpl.class, MessageSpy.STATISTIC_GROUP.REQUEST_STACK_FREED);
-        }
-    }
-
     @Override
     public <T> RequestContext<T> createRequestContext() {
-        return new RequestContextImpl<T>(this);
+        if (!tracker.tryAcquire()) {
+            LOG.trace("Device queue {} at capacity", this);
+            return null;
+        }
+
+        return new AbstractRequestContext<T>() {
+            @Override
+            public void close() {
+                tracker.release();
+                LOG.trace("Removed request context with xid {}", getXid().getValue());
+                messageSpy.spyMessage(RpcContextImpl.class, MessageSpy.STATISTIC_GROUP.REQUEST_STACK_FREED);
+            }
+        };
     }
 
     @Override
     public void onDeviceDisconnected(final ConnectionContext connectionContext) {
         for (RoutedRpcRegistration<?> registration : rpcRegistrations) {
             registration.close();
-        }
-
-        synchronized (requestsList) {
-            requestsList.clear();
         }
     }
 }

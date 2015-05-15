@@ -7,11 +7,9 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
-import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.SettableFuture;
 import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
@@ -26,7 +24,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.echo.service.rev150305.Send
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoOutput;
-import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
@@ -43,77 +40,54 @@ public class SalEchoServiceImpl extends CommonService implements SalEchoService 
     @Override
     public Future<RpcResult<SendEchoOutput>> sendEcho(final SendEchoInput sendEchoInput) {
         final RequestContext<SendEchoOutput> requestContext = getRequestContextStack().createRequestContext();
-        final SettableFuture<RpcResult<SendEchoOutput>> sendEchoOutput = getRequestContextStack()
-                .storeOrFail(requestContext);
-        if (!sendEchoOutput.isDone()) {
-            final DeviceContext deviceContext = getDeviceContext();
-            Long reserverXid = deviceContext.getReservedXid();
-            if (null == reserverXid) {
-                if (null == reserverXid) {
-                    reserverXid = deviceContext.getReservedXid();
-                    RequestContextUtil.closeRequestContextWithRpcError(requestContext, "Outbound queue wasn't able to reserve XID.");
-                    return sendEchoOutput;
-                }
-            }
-            final Xid xid = new Xid(reserverXid);
-            requestContext.setXid(xid);
-
-            LOG.trace("Hooking xid {} to device context - precaution.", requestContext.getXid().getValue());
-            deviceContext.hookRequestCtx(requestContext.getXid(), requestContext);
-
-            final EchoInputBuilder echoInputOFJavaBuilder = new EchoInputBuilder();
-            echoInputOFJavaBuilder.setVersion(getVersion());
-            echoInputOFJavaBuilder.setXid(xid.getValue());
-            echoInputOFJavaBuilder.setData(sendEchoInput.getData());
-            final EchoInput echoInputOFJava = echoInputOFJavaBuilder.build();
-
-            final Future<RpcResult<EchoOutput>> rpcEchoOutputOFJava = getPrimaryConnectionAdapter()
-                    .echo(echoInputOFJava);
-            LOG.debug("Echo with xid {} was sent from controller", xid);
-
-            ListenableFuture<RpcResult<EchoOutput>> listenableRpcEchoOutputOFJava = JdkFutureAdapters
-                    .listenInPoolThread(rpcEchoOutputOFJava);
-
-            // callback on OF JAVA future
-            SuccessCallback<EchoOutput, SendEchoOutput> successCallback = new SuccessCallback<EchoOutput, SendEchoOutput>(
-                    deviceContext, requestContext, listenableRpcEchoOutputOFJava) {
-
-                @Override
-                public RpcResult<SendEchoOutput> transform(RpcResult<EchoOutput> rpcResult) {
-                    EchoOutput echoOutputOFJava = rpcResult.getResult();
-                    SendEchoOutputBuilder sendEchoOutputBuilder = new SendEchoOutputBuilder();
-                    sendEchoOutputBuilder.setData(echoOutputOFJava.getData());
-
-                    LOG.debug("Echo with xid {} was received by controller.", rpcResult.getResult().getXid());
-                    return RpcResultBuilder.success(sendEchoOutputBuilder.build()).build();
-                }
-            };
-            Futures.addCallback(listenableRpcEchoOutputOFJava, successCallback);
-        } else {
-            getMessageSpy().spyMessage(requestContext, MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
+        if (requestContext == null) {
+            getMessageSpy().spyMessage(null, MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
+            return failedFuture();
         }
 
-        // callback on request context future
-        Futures.addCallback(sendEchoOutput, new FutureCallback<RpcResult<SendEchoOutput>>() {
+
+        final DeviceContext deviceContext = getDeviceContext();
+        Long reserverXid = deviceContext.getReservedXid();
+        if (null == reserverXid) {
+            reserverXid = deviceContext.getReservedXid();
+            return RequestContextUtil.closeRequestContextWithRpcError(requestContext, "Outbound queue wasn't able to reserve XID.");
+        }
+        final Xid xid = new Xid(reserverXid);
+        requestContext.setXid(xid);
+
+        LOG.trace("Hooking xid {} to device context - precaution.", requestContext.getXid().getValue());
+        deviceContext.hookRequestCtx(requestContext.getXid(), requestContext);
+
+        final EchoInputBuilder echoInputOFJavaBuilder = new EchoInputBuilder();
+        echoInputOFJavaBuilder.setVersion(getVersion());
+        echoInputOFJavaBuilder.setXid(xid.getValue());
+        echoInputOFJavaBuilder.setData(sendEchoInput.getData());
+        final EchoInput echoInputOFJava = echoInputOFJavaBuilder.build();
+
+        // FIXME: should be submitted via OutboundQueue
+        final Future<RpcResult<EchoOutput>> rpcEchoOutputOFJava = getPrimaryConnectionAdapter()
+                .echo(echoInputOFJava);
+        LOG.debug("Echo with xid {} was sent from controller", xid);
+
+        ListenableFuture<RpcResult<EchoOutput>> listenableRpcEchoOutputOFJava = JdkFutureAdapters
+                .listenInPoolThread(rpcEchoOutputOFJava);
+
+        // callback on OF JAVA future
+        SuccessCallback<EchoOutput, SendEchoOutput> successCallback = new SuccessCallback<EchoOutput, SendEchoOutput>(
+                deviceContext, requestContext, listenableRpcEchoOutputOFJava) {
 
             @Override
-            public void onSuccess(RpcResult<SendEchoOutput> result) {
-            }
+            public RpcResult<SendEchoOutput> transform(final RpcResult<EchoOutput> rpcResult) {
+                EchoOutput echoOutputOFJava = rpcResult.getResult();
+                SendEchoOutputBuilder sendEchoOutputBuilder = new SendEchoOutputBuilder();
+                sendEchoOutputBuilder.setData(echoOutputOFJava.getData());
 
-            @Override
-            public void onFailure(Throwable t) {
-                if (sendEchoOutput.isCancelled()) {
-                    requestContext.getFuture().set(
-                            RpcResultBuilder.<SendEchoOutput>failed()
-                                    .withError(ErrorType.APPLICATION, "Echo response wasn't obtained until barrier.")
-                                    .build());
-                    LOG.debug("Echo reply with xid {} wasn't received by controller until barrier.",
-                            requestContext.getXid());
-                }
+                LOG.debug("Echo with xid {} was received by controller.", rpcResult.getResult().getXid());
+                return RpcResultBuilder.success(sendEchoOutputBuilder.build()).build();
             }
-        });
+        };
+        Futures.addCallback(listenableRpcEchoOutputOFJava, successCallback);
 
-        return sendEchoOutput;
+        return requestContext.getFuture();
     }
-
 }

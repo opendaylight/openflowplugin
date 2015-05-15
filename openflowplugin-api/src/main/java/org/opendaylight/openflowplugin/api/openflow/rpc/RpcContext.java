@@ -19,16 +19,5 @@ import org.opendaylight.yangtools.yang.binding.RpcService;
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 25.2.2015.
  */
 public interface RpcContext extends RequestContextStack, AutoCloseable, DeviceDisconnectedHandler {
-
     <S extends RpcService> void registerRpcServiceImplementation(Class<S> serviceClass, S serviceInstance);
-
-
-    /**
-     * Method for setting request quota value. When the Request Context quota is exceeded, incoming RPCs fail
-     * immediately, with a well-defined error.
-     *
-     * @param maxRequestsPerDevice
-     */
-    void setRequestContextQuota(int maxRequestsPerDevice);
-
 }

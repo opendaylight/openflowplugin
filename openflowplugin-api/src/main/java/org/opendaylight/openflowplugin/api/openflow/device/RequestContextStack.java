@@ -5,33 +5,18 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.api.openflow.device;
 
-import com.google.common.util.concurrent.SettableFuture;
-import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
-import org.opendaylight.yangtools.yang.common.RpcResult;
+import javax.annotation.Nullable;
 
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 1.4.2015.
  */
 public interface RequestContextStack {
-
-    <T> void forgetRequestContext(RequestContext<T> requestContext);
-
-    /**
-     * Method adds request to request queue which has limited quota. After number of requests exceeds quota limit future
-     * will be done immediately and will contain information about exceeded request quota.
-     *
-     * @param data
-     */
-    <T> SettableFuture<RpcResult<T>> storeOrFail(RequestContext<T> data);
-
     /**
      * Method returns new request context for current request.
      *
-     * @return
+     * @return A request context, or null if one cannot be created.
      */
-    <T> RequestContext<T> createRequestContext();
-
+    @Nullable <T> RequestContext<T> createRequestContext();
 }
