@@ -21,11 +21,10 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
-import org.opendaylight.openflowplugin.impl.rpc.RequestContextImpl;
+import org.opendaylight.openflowplugin.impl.rpc.AbstractRequestContext;
 import org.opendaylight.openflowplugin.impl.services.RequestContextUtil;
 import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.StatisticsGatheringService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
-import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,17 +34,15 @@ import org.slf4j.LoggerFactory;
 public class StatisticsContextImpl implements StatisticsContext {
 
     private static final Logger LOG = LoggerFactory.getLogger(StatisticsContextImpl.class);
-    public static final String CONNECTION_CLOSED = "Connection closed.";
+    private static final String CONNECTION_CLOSED = "Connection closed.";
     private final Collection<RequestContext<?>> requestContexts = new HashSet<>();
     private final DeviceContext deviceContext;
-
 
     private final StatisticsGatheringService statisticsGatheringService;
 
     public StatisticsContextImpl(final DeviceContext deviceContext) {
         this.deviceContext = deviceContext;
         statisticsGatheringService = new StatisticsGatheringService(this, deviceContext);
-
     }
 
     @Override
@@ -105,24 +102,20 @@ public class StatisticsContextImpl implements StatisticsContext {
     }
 
     @Override
-    public <T> void forgetRequestContext(final RequestContext<T> requestContext) {
-        requestContexts.remove(requestContext);
-    }
-
-    @Override
-    public <T> SettableFuture<RpcResult<T>> storeOrFail(final RequestContext<T> data) {
-        requestContexts.add(data);
-        return data.getFuture();
-    }
-
-    @Override
     public <T> RequestContext<T> createRequestContext() {
-        return new RequestContextImpl<>(this);
+        final AbstractRequestContext<T> ret = new AbstractRequestContext<T>() {
+            @Override
+            public void close() {
+                requestContexts.remove(this);
+            }
+        };
+        requestContexts.add(ret);
+        return ret;
     }
 
     @Override
-    public void close() throws Exception {
-        for (final RequestContext requestContext : requestContexts) {
+    public void close() {
+        for (final RequestContext<?> requestContext : requestContexts) {
             RequestContextUtil.closeRequestContextWithRpcError(requestContext, CONNECTION_CLOSED);
         }
     }

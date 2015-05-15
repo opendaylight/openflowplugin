@@ -8,6 +8,7 @@
 package org.opendaylight.openflowplugin.api.openflow.device;
 
 
+
 /**
  * Request context handles all requests on device. Number of requests is limited by request quota. When this quota is
  * exceeded all rpc's will end up with exception.
@@ -41,4 +42,6 @@ public interface RequestContext<T> extends RequestFutureContext<T>, AutoCloseabl
      */
     void setWaitTimeout(long waitTimeout);
 
+    @Override
+    void close();
 }
