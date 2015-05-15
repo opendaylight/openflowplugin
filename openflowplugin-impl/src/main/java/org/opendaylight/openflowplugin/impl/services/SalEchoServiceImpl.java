@@ -14,7 +14,6 @@ import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
-import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.impl.callback.SuccessCallback;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.echo.service.rev150305.SalEchoService;
@@ -47,27 +46,20 @@ public class SalEchoServiceImpl extends CommonService implements SalEchoService 
 
 
         final DeviceContext deviceContext = getDeviceContext();
-        Long reserverXid = deviceContext.getReservedXid();
-        if (null == reserverXid) {
-            reserverXid = deviceContext.getReservedXid();
-            return RequestContextUtil.closeRequestContextWithRpcError(requestContext, "Outbound queue wasn't able to reserve XID.");
-        }
-        final Xid xid = new Xid(reserverXid);
-        requestContext.setXid(xid);
 
         LOG.trace("Hooking xid {} to device context - precaution.", requestContext.getXid().getValue());
         deviceContext.hookRequestCtx(requestContext.getXid(), requestContext);
 
         final EchoInputBuilder echoInputOFJavaBuilder = new EchoInputBuilder();
         echoInputOFJavaBuilder.setVersion(getVersion());
-        echoInputOFJavaBuilder.setXid(xid.getValue());
+        echoInputOFJavaBuilder.setXid(requestContext.getXid().getValue());
         echoInputOFJavaBuilder.setData(sendEchoInput.getData());
         final EchoInput echoInputOFJava = echoInputOFJavaBuilder.build();
 
         // FIXME: should be submitted via OutboundQueue
         final Future<RpcResult<EchoOutput>> rpcEchoOutputOFJava = getPrimaryConnectionAdapter()
                 .echo(echoInputOFJava);
-        LOG.debug("Echo with xid {} was sent from controller", xid);
+        LOG.debug("Echo with xid {} was sent from controller", requestContext.getXid());
 
         ListenableFuture<RpcResult<EchoOutput>> listenableRpcEchoOutputOFJava = JdkFutureAdapters
                 .listenInPoolThread(rpcEchoOutputOFJava);

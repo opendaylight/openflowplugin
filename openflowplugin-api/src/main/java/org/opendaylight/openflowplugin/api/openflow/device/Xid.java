@@ -8,18 +8,43 @@
 
 package org.opendaylight.openflowplugin.api.openflow.device;
 
+import com.google.common.base.Preconditions;
+
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 26.2.2015.
  */
-public class Xid {
+public final class Xid {
+    private final Long value;
 
-    private long value;
-
-    public Xid(final long value) {
-        this.value = value;
+    public Xid(final Long value) {
+        this.value = Preconditions.checkNotNull(value);
     }
 
-    public long getValue() {
+    public Long getValue() {
         return value;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + value.hashCode();
+        return result;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof Xid)) {
+            return false;
+        }
+        return value.equals(((Xid) obj).value);
+    }
+
+    @Override
+    public String toString() {
+        return "Xid [value=" + value + "]";
     }
 }

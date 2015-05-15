@@ -15,10 +15,10 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 public abstract class AbstractRequestContext<T> implements RequestContext<T> {
     private SettableFuture<RpcResult<T>> rpcResultFuture;
     private long waitTimeout;
-    private Xid xid;
+    private final Xid xid;
 
-    protected AbstractRequestContext() {
-
+    protected AbstractRequestContext(final Long xid) {
+        this.xid = new Xid(xid);
     }
 
     @Override
@@ -32,11 +32,6 @@ public abstract class AbstractRequestContext<T> implements RequestContext<T> {
     @Override
     public Xid getXid() {
         return xid;
-    }
-
-    @Override
-    public void setXid(final Xid xid) {
-        this.xid = xid;
     }
 
     @Override

@@ -133,18 +133,6 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         tx.submit();
 
         this.messageIntelligenceAgency = messageIntelligenceAgency;
-
-        emptyRequestContextStack = new RequestContextStack() {
-            @Override
-            public <T> RequestContext<T> createRequestContext() {
-                return new AbstractRequestContext<T>() {
-                    @Override
-                    public void close() {
-                        //NOOP
-                    }
-                };
-            }
-        };
     }
 
     @Override
@@ -179,6 +167,20 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         connectionContext.setDeviceDisconnectedHandler(deviceContext);
         deviceContext.setTranslatorLibrary(translatorLibrary);
         deviceContext.addDeviceContextClosedHandler(this);
+
+        emptyRequestContextStack = new RequestContextStack() {
+            @Override
+            public <T> RequestContext<T> createRequestContext() {
+                final Long xid = deviceContext.getReservedXid();
+
+                return new AbstractRequestContext<T>(xid) {
+                    @Override
+                    public void close() {
+                        //NOOP
+                    }
+                };
+            }
+        };
 
         final OpenflowProtocolListenerFullImpl messageListener = new OpenflowProtocolListenerFullImpl(
                 connectionContext.getConnectionAdapter(), deviceContext);
@@ -323,7 +325,6 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         final Xid xid = new Xid(reservedXid);
 
         final RequestContext<List<MultipartReply>> requestContext = emptyRequestContextStack.createRequestContext();
-        requestContext.setXid(xid);
 
         LOG.trace("Hooking xid {} to device context - precaution.", requestContext.getXid().getValue());
         deviceContext.hookRequestCtx(requestContext.getXid(), requestContext);
@@ -506,6 +507,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
     @Override
     public void onDeviceContextClosed(final DeviceContext deviceContext) {
         deviceContexts.remove(deviceContext);
+        emptyRequestContextStack = null;
     }
 
     @Override

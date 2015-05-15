@@ -103,7 +103,13 @@ public class StatisticsContextImpl implements StatisticsContext {
 
     @Override
     public <T> RequestContext<T> createRequestContext() {
-        final AbstractRequestContext<T> ret = new AbstractRequestContext<T>() {
+        final Long xid = deviceContext.getReservedXid();
+        if (xid == null) {
+            LOG.debug("Device is shut down");
+            return null;
+        }
+
+        final AbstractRequestContext<T> ret = new AbstractRequestContext<T>(xid) {
             @Override
             public void close() {
                 requestContexts.remove(this);

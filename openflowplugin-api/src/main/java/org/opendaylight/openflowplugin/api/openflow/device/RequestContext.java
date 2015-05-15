@@ -25,11 +25,6 @@ public interface RequestContext<T> extends RequestFutureContext<T>, AutoCloseabl
     Xid getXid();
 
     /**
-     * Sets xid generated for this request.
-     */
-    void setXid(Xid xid);
-
-    /**
      * Returns request timeout value.
      *
      * @return
