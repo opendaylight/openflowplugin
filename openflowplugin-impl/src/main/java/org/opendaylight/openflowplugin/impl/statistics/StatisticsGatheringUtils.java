@@ -192,14 +192,11 @@ public final class StatisticsGatheringUtils {
     }
 
     private static void processFlowStatistics(final Iterable<FlowsStatisticsUpdate> data, final DeviceContext deviceContext) {
-        boolean isFirstLoop = true;
+        final NodeId nodeId = deviceContext.getDeviceState().getNodeId();
+        final InstanceIdentifier<Node> nodeIdent = InstanceIdentifier.create(Nodes.class)
+                .child(Node.class, new NodeKey(nodeId));
+        deleteAllKnownFlows(deviceContext, nodeIdent);
         for (final FlowsStatisticsUpdate flowsStatistics : data) {
-            if (isFirstLoop) {
-                final InstanceIdentifier<Node> nodeIdent = InstanceIdentifier.create(Nodes.class)
-                        .child(Node.class, new NodeKey(flowsStatistics.getId()));
-                deleteAllKnownFlows(deviceContext, nodeIdent);
-                isFirstLoop = false;
-            }
             for (final FlowAndStatisticsMapList flowStat : flowsStatistics.getFlowAndStatisticsMapList()) {
                 final FlowBuilder flowBuilder = new FlowBuilder(flowStat);
                 FlowId flowId = null;
@@ -305,13 +302,10 @@ public final class StatisticsGatheringUtils {
 
     private static void processMetersStatistics(final Iterable<MeterStatisticsUpdated> data,
                                                 final DeviceContext deviceContext) {
-        boolean isFirstLoop = true;
+        NodeId nodeId = deviceContext.getDeviceState().getNodeId();
+        final InstanceIdentifier<FlowCapableNode> fNodeIdent = getFlowCapableNodeInstanceIdentifier(nodeId);
+        deleteAllKnownMeters(deviceContext, fNodeIdent);
         for (MeterStatisticsUpdated meterStatisticsUpdated : data) {
-            final InstanceIdentifier<FlowCapableNode> fNodeIdent = getFlowCapableNodeInstanceIdentifier(meterStatisticsUpdated.getId());
-            if (isFirstLoop) {
-                deleteAllKnownMeters(deviceContext, fNodeIdent);
-                isFirstLoop = false;
-            }
             for (final MeterStats mStat : meterStatisticsUpdated.getMeterStats()) {
                 final MeterStatistics stats = new MeterStatisticsBuilder(mStat).build();
                 final MeterId meterId = mStat.getMeterId();
@@ -361,15 +355,10 @@ public final class StatisticsGatheringUtils {
     }
 
     private static void processGroupStatistics(final Iterable<GroupStatisticsUpdated> data, final DeviceContext deviceContext) {
-        boolean isFirstLoop = true; 
+        NodeId nodeId = deviceContext.getDeviceState().getNodeId();
+        final InstanceIdentifier<FlowCapableNode> fNodeIdent = getFlowCapableNodeInstanceIdentifier(nodeId);
+        deleteAllKnownGroups(deviceContext, fNodeIdent);
         for (GroupStatisticsUpdated groupStatistics : data) {
-            NodeId nodeId = groupStatistics.getId();
-            final InstanceIdentifier<FlowCapableNode> fNodeIdent = getFlowCapableNodeInstanceIdentifier(nodeId);
-            if (isFirstLoop) {
-                deleteAllKnownGroups(deviceContext, fNodeIdent);
-                isFirstLoop = false;
-            }
-    
             for (final GroupStats groupStats : groupStatistics.getGroupStats()) {
     
                 final InstanceIdentifier<Group> groupIdent = fNodeIdent.child(Group.class, new GroupKey(groupStats.getGroupId()));
