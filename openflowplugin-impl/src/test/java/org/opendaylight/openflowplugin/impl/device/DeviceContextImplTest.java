@@ -26,6 +26,7 @@ import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
+import org.opendaylight.openflowplugin.api.openflow.connection.OutboundQueueProvider;
 import org.opendaylight.openflowplugin.api.openflow.connection.ThrottledNotificationsOfferer;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
@@ -84,6 +85,8 @@ public class DeviceContextImplTest {
     MessageIntelligenceAgency messageIntelligenceAgency;
     @Mock
     ThrottledNotificationsOfferer throttledConnectionsHolder;
+    @Mock
+    OutboundQueueProvider outboundQueueProvider;
 
     private AtomicLong atomicLong = new AtomicLong(0);
     @Before
@@ -96,6 +99,7 @@ public class DeviceContextImplTest {
         Mockito.when(requestContextMultiReply.getFuture()).thenReturn(settableFutureMultiReply);
         Mockito.when(txChainFactory.newWriteOnlyTransaction()).thenReturn(wTx);
         Mockito.when(dataBroker.newReadOnlyTransaction()).thenReturn(rTx);
+        Mockito.when(connectionContext.getOutboundQueueProvider()).thenReturn(outboundQueueProvider);
         deviceContext = new DeviceContextImpl(connectionContext, deviceState, dataBroker, timer, messageIntelligenceAgency,throttledConnectionsHolder);
 
         xid = new Xid(atomicLong.incrementAndGet());

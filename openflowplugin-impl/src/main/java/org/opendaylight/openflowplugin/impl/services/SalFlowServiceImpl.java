@@ -208,13 +208,13 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
         final SettableFuture<RpcResult<T>> finalFuture = SettableFuture.create();
         Futures.addCallback(allFutures, new FutureCallback<List<RpcResult<T>>>() {
             @Override
-            public void onSuccess(List<RpcResult<T>> results) {
+            public void onSuccess(final List<RpcResult<T>> results) {
                 RpcResultBuilder rpcResultBuilder = RpcResultBuilder.success();
                 finalFuture.set(rpcResultBuilder.build());
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(final Throwable t) {
                 RpcResultBuilder rpcResultBuilder = RpcResultBuilder.failed();
                 finalFuture.set(rpcResultBuilder.build());
             }
@@ -228,7 +228,7 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
     }
 
     protected <T> ListenableFuture<RpcResult<Void>> createResultForFlowMod(final DataCrate<T> data, final FlowModInputBuilder flowModInputBuilder) {
-        final OutboundQueue outboundQueue = getDeviceContext().getPrimaryConnectionContext().getOutboundQueueProvider().getOutboundQueue();
+        final OutboundQueue outboundQueue = getDeviceContext().getPrimaryConnectionContext().getOutboundQueueProvider();
         final long xid = data.getRequestContext().getXid().getValue();
         flowModInputBuilder.setXid(xid);
         final FlowModInput flowModInput = flowModInputBuilder.build();

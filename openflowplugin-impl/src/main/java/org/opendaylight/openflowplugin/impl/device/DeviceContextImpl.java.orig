@@ -36,7 +36,6 @@ import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
-import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.OutboundQueueProvider;
 import org.opendaylight.openflowplugin.api.openflow.connection.ThrottledNotificationsOfferer;
@@ -119,8 +118,12 @@ public class DeviceContextImpl implements DeviceContext {
     private final Collection<DeviceContextClosedHandler> closeHandlers = new HashSet<>();
     private NotificationPublishService notificationPublishService;
     private final ThrottledNotificationsOfferer throttledConnectionsHolder;
+<<<<<<< HEAD
+    private final BlockingQueue<PacketReceived> bumperQueue;
+=======
     private BlockingQueue<PacketReceived> bumperQueue;
-    private final OutboundQueue outboundQueueProvider;
+    private final OutboundQueueProvider outboundQueueProvider;
+>>>>>>> aeadb9b... OutboundQueueProvider encapsulation in deviceContext
 
     @Override
     public MultiMsgCollector getMultiMsgCollector() {
@@ -129,7 +132,11 @@ public class DeviceContextImpl implements DeviceContext {
 
     @Override
     public Long getReservedXid() {
-        return outboundQueueProvider.reserveEntry();
+<<<<<<< HEAD
+        return this.getPrimaryConnectionContext().getOutboundQueueProvider().reserveEntry();
+=======
+        return outboundQueueProvider.getOutboundQueue().reserveEntry();
+>>>>>>> aeadb9b... OutboundQueueProvider encapsulation in deviceContext
     }
 
     private final MultiMsgCollector multiMsgCollector = new MultiMsgCollectorImpl();

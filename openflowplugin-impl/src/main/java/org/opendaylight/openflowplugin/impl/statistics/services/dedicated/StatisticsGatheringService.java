@@ -22,6 +22,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgColl
 import org.opendaylight.openflowplugin.impl.common.MultipartRequestInputFactory;
 import org.opendaylight.openflowplugin.impl.services.CommonService;
 import org.opendaylight.openflowplugin.impl.services.DataCrate;
+import org.opendaylight.openflowplugin.impl.services.RequestContextUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInput;
@@ -58,7 +59,7 @@ public class StatisticsGatheringService extends CommonService {
                                                  makeMultipartRequestInput(xid.getValue(),
                                                          getVersion(),
                                                          type);
-                                         final OutboundQueue outboundQueue = deviceContext.getPrimaryConnectionContext().getOutboundQueueProvider().getOutboundQueue();
+                                         final OutboundQueue outboundQueue = deviceContext.getPrimaryConnectionContext().getOutboundQueueProvider();
                                          final SettableFuture<RpcResult<Void>> settableFuture = SettableFuture.create();
                                          outboundQueue.commitEntry(xid.getValue(), multipartRequestInput, new FutureCallback<OfHeader>() {
                                              @Override
@@ -71,15 +72,17 @@ public class StatisticsGatheringService extends CommonService {
                                                      if (null != ofHeader) {
                                                          LOG.info("Unexpected response type received {}.", ofHeader.getClass());
                                                      } else {
-                                                         LOG.info("Unexpected response type received {}.", ofHeader.getClass());
+                                                         LOG.info("Ofheader was null.");
                                                      }
                                                  }
-
                                              }
 
                                              @Override
                                              public void onFailure(final Throwable throwable) {
                                                  RpcResultBuilder rpcResultBuilder = RpcResultBuilder.<Void>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage());
+                                                 getDeviceContext().unhookRequestCtx(data.getRequestContext().getXid());
+                                                 RequestContextUtil.closeRequstContext(data.getRequestContext());
+
                                                  settableFuture.set(rpcResultBuilder.build());
                                              }
                                          });

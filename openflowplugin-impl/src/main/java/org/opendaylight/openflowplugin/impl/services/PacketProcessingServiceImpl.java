@@ -36,12 +36,12 @@ public class PacketProcessingServiceImpl extends CommonService implements Packet
 
         return handleServiceCall(new Function<DataCrate<Void>, ListenableFuture<RpcResult<Void>>>() {
             @Override
-            public ListenableFuture<RpcResult<Void>> apply(DataCrate<Void> data) {
+            public ListenableFuture<RpcResult<Void>> apply(final DataCrate<Void> data) {
                 final Xid xid = data.getRequestContext().getXid();
                 final PacketOutInput message = PacketOutConvertor.toPacketOutInput(input, getVersion(), xid.getValue(),
                         getDatapathId());
 
-                final OutboundQueue outboundQueue = getDeviceContext().getPrimaryConnectionContext().getOutboundQueueProvider().getOutboundQueue();
+                final OutboundQueue outboundQueue = getDeviceContext().getPrimaryConnectionContext().getOutboundQueueProvider();
 
                 final SettableFuture<RpcResult<Void>> settableFuture = SettableFuture.create();
 
