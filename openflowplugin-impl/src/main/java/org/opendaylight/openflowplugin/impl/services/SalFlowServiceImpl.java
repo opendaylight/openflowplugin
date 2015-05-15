@@ -122,6 +122,7 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
                     @Override
                     public void onFailure(final Throwable throwable) {
                         getMessageSpy().spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
+                        LOG.trace("Flow modification failed..", throwable);
                         StringBuffer errors = new StringBuffer();
                         try {
                             RpcResult<Void> result = future.get();
@@ -133,8 +134,9 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
                             }
                         } catch (InterruptedException | ExecutionException e) {
                             LOG.trace("Flow modification failed. Can't read errors from RpcResult.");
+                        } finally {
+                            LOG.trace("Flow modification failed. Errors : {}", errors.toString());
                         }
-                        LOG.trace("Flow modification failed. Errors : {}", errors.toString());
                     }
                 });
                 return future;

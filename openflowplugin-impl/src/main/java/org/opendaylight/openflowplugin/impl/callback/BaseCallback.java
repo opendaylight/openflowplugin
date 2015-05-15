@@ -51,13 +51,18 @@ public class BaseCallback<I, O> implements FutureCallback<RpcResult<I>> {
             deviceContext.unhookRequestCtx(getRequestContext().getXid());
 
             // handle requestContext failure
-            StringBuilder rpcErrors = new StringBuilder();
-            if (null != fRpcResult.getErrors() && fRpcResult.getErrors().size() > 0) {
-                for (RpcError error : fRpcResult.getErrors()) {
-                    rpcErrors.append(error.getMessage());
+            if (LOG.isTraceEnabled()) {
+                StringBuilder rpcErrors = new StringBuilder();
+                if (null != fRpcResult.getErrors() && fRpcResult.getErrors().size() > 0) {
+                    for (RpcError error : fRpcResult.getErrors()) {
+                        rpcErrors.append(error.getMessage());
+                            LOG.trace("Errors from rpc result.. ",error);
+                    }
                 }
+                LOG.trace("OF Java result for XID {} was not successful. Errors : {}", getRequestContext().getXid().getValue(), rpcErrors.toString());
+            
             }
-            LOG.trace("OF Java result for XID {} was not successful. Errors : {}", getRequestContext().getXid().getValue(), rpcErrors.toString());
+
             getRequestContext().getFuture().set(
                     RpcResultBuilder.<O>failed().withRpcErrors(fRpcResult.getErrors()).build());
             RequestContextUtil.closeRequstContext(getRequestContext());
