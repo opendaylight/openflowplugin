@@ -21,7 +21,7 @@ public class AbstractRequestContextTest {
 
     @Before
     public void setup() {
-        requestContext = new AbstractRequestContext<Object>() {
+        requestContext = new AbstractRequestContext<Object>(1L) {
             @Override
             public void close() {
                 // No-op

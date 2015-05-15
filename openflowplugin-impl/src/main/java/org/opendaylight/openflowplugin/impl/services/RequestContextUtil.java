@@ -7,7 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
-import com.google.common.util.concurrent.SettableFuture;
+import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -23,9 +23,9 @@ public final class RequestContextUtil {
     }
 
 
-    public static <T> SettableFuture<RpcResult<T>> closeRequestContextWithRpcError(final RequestContext<T> requestContext, final String errorMessage) {
+    public static <T> ListenableFuture<RpcResult<T>> closeRequestContextWithRpcError(final RequestContext<T> requestContext, final String errorMessage) {
         RpcResultBuilder<T> rpcResultBuilder = RpcResultBuilder.<T>failed().withRpcError(RpcResultBuilder.newError(RpcError.ErrorType.APPLICATION, "", errorMessage));
-        requestContext.getFuture().set(rpcResultBuilder.build());
+        requestContext.setResult(rpcResultBuilder.build());
         closeRequstContext(requestContext);
         return requestContext.getFuture();
     }
