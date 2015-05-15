@@ -405,7 +405,10 @@ public class DeviceContextImpl implements DeviceContext {
         }
 
         ListenableFuture<?> listenableFuture = notificationPublishService.offerNotification(packetReceived);
-        if (listenableFuture.isDone()) {
+        if (NotificationPublishService.REJECTED.equals(listenableFuture)) {
+            LOG.debug("notification offer rejected");
+            messageSpy.spyMessage(packetInMessage.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_NOTIFICATION_REJECTED);
+        } else if (listenableFuture.isDone()) {
             Object x = null;
             try {
                 x = listenableFuture.get();
@@ -414,11 +417,8 @@ public class DeviceContextImpl implements DeviceContext {
                 LOG.debug("notification offer interrupted: {}", e.getMessage());
                 LOG.trace("notification offer interrupted..", e);
             } catch (ExecutionException e) {
-                if (e.getCause() instanceof NotificationRejectedException) {
-                } else {
-                    LOG.debug("notification offer failed: {}", e.getMessage());
-                    LOG.trace("notification offer failed..", e);
-                }
+                LOG.debug("notification offer failed: {}", e.getMessage());
+                LOG.trace("notification offer failed..", e);
             } finally {
                 if (null == x) {
                     messageSpy.spyMessage(packetInMessage.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_NOTIFICATION_REJECTED);
