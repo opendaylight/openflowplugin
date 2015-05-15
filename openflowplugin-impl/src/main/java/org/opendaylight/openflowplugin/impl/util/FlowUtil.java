@@ -27,9 +27,9 @@ public final class FlowUtil {
         throw new IllegalStateException("This class should not be instantiated.");
     }
 
-    public static FlowId createAlienFlowId(final Short tableId) {
+    public static FlowId createAlienFlowId(final short tableId) {
         final StringBuilder sBuilder = new StringBuilder(ALIEN_SYSTEM_FLOW_ID)
-                .append(tableId).append("-").append(unaccountedFlowsCounter.incrementAndGet());
+                .append(tableId).append('-').append(unaccountedFlowsCounter.incrementAndGet());
         String alienId =  sBuilder.toString();
         return new FlowId(alienId);
 
