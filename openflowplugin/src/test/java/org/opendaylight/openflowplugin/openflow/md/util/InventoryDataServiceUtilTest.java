@@ -9,7 +9,6 @@ package org.opendaylight.openflowplugin.openflow.md.util;
 
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
-
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.Futures;
 import java.math.BigInteger;
@@ -18,12 +17,12 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
-import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
+import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
@@ -37,7 +36,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.No
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumberValuesV10;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
@@ -48,18 +46,18 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 public class InventoryDataServiceUtilTest {
 
 
-    private static final long PORT_NO = (long) PortNumberValuesV10.CONTROLLER.getIntValue();
+    private static final long PORT_NO = PortNumberValuesV10.CONTROLLER.getIntValue();
     private static final BigInteger PATH_ID = BigInteger.TEN;
 
-    @MockitoAnnotations.Mock
+    @Mock
     DataBroker dataBroker;
-    @MockitoAnnotations.Mock
+    @Mock
     ReadOnlyTransaction readOnlyTransaction;
-    @MockitoAnnotations.Mock
-    ReadWriteTransaction readWriteTransaction;
-    @MockitoAnnotations.Mock
+    @Mock
+    WriteTransaction writeTransaction;
+    @Mock
     Nodes nodes;
-    @MockitoAnnotations.Mock
+    @Mock
     Node node;
 
 
@@ -78,7 +76,7 @@ public class InventoryDataServiceUtilTest {
      * Primitive test method for {@link InventoryDataServiceUtil#putNodeConnector(org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId, org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector)} ()}.
      */
     public void testPutNodeConnector(){
-        when(dataBroker.newReadWriteTransaction()).thenReturn(readWriteTransaction);
+        when(dataBroker.newWriteOnlyTransaction()).thenReturn(writeTransaction);
 
         NodeId nodeId = new NodeId("1");
         NodeConnectorBuilder nodeConnectorBuilder = new NodeConnectorBuilder();
@@ -253,14 +251,14 @@ public class InventoryDataServiceUtilTest {
     			"INPORT",
     			"openflow:628192264910264962"
     	};
-    	
+
     	String[] expectedPortNoStrings = new String[]{
     			"2",
     			"3411",
     			"INPORT",
     			"628192264910264962"
     	};
-    	
+
     	for (int i = 0; i < nodeConnectorIDs.length; i++) {
     		String portNoString = InventoryDataServiceUtil.portNoStringfromNodeConnectorID(nodeConnectorIDs[i]);
     		Assert.assertEquals(expectedPortNoStrings[i], portNoString);
