@@ -27,7 +27,6 @@ import java.util.TreeMap;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.atomic.AtomicLong;
 import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
@@ -101,7 +100,6 @@ public class DeviceContextImpl implements DeviceContext {
     private final ConnectionContext primaryConnectionContext;
     private final DeviceState deviceState;
     private final DataBroker dataBroker;
-    private final XidGenerator xidGenerator;
     private final HashedWheelTimer hashedWheelTimer;
     private final Map<Long, RequestContext> requests = new TreeMap<>();
 
@@ -145,7 +143,6 @@ public class DeviceContextImpl implements DeviceContext {
         this.deviceState = Preconditions.checkNotNull(deviceState);
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
         this.hashedWheelTimer = Preconditions.checkNotNull(hashedWheelTimer);
-        xidGenerator = new XidGenerator();
         txChainManager = new TransactionChainManager(dataBroker, hashedWheelTimer, 500L, 500L);
         auxiliaryConnectionContexts = new HashMap<>();
         deviceFlowRegistry = new DeviceFlowRegistryImpl();
@@ -390,7 +387,6 @@ public class DeviceContextImpl implements DeviceContext {
     @Override
     public void processPacketInMessage(final PacketInMessage packetInMessage) {
         messageSpy.spyMessage(packetInMessage.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH);
-        final ConnectionAdapter connectionAdapter = this.getPrimaryConnectionContext().getConnectionAdapter();
 
         final TranslatorKey translatorKey = new TranslatorKey(packetInMessage.getVersion(), PacketIn.class.getName());
         final MessageTranslator<PacketInMessage, PacketReceived> messageTranslator = translatorLibrary.lookupTranslator(translatorKey);
@@ -515,16 +511,6 @@ public class DeviceContextImpl implements DeviceContext {
         } else {
             final SwitchConnectionDistinguisher connectionDistinguisher = createConnectionDistinguisher(connectionContext);
             auxiliaryConnectionContexts.remove(connectionDistinguisher);
-        }
-    }
-
-
-    private class XidGenerator {
-
-        private final AtomicLong xid = new AtomicLong(0);
-
-        public Xid generate() {
-            return new Xid(xid.incrementAndGet());
         }
     }
 
