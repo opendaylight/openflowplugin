@@ -14,7 +14,6 @@ import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
-import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.impl.callback.SuccessCallback;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.FlowCapableTransactionService;
@@ -43,16 +42,10 @@ public class FlowCapableTransactionServiceImpl extends CommonService implements 
         }
 
         final DeviceContext deviceContext = getDeviceContext();
-        final Long reservedXid = deviceContext.getReservedXid();
-        if (null == reservedXid) {
-            return RequestContextUtil.closeRequestContextWithRpcError(requestContext, "Outbound queue wasn't able to reserve XID.");
-        }
-        final Xid xid = new Xid(reservedXid);
-        requestContext.setXid(xid);
 
         final BarrierInputBuilder barrierInputOFJavaBuilder = new BarrierInputBuilder();
         barrierInputOFJavaBuilder.setVersion(getVersion());
-        barrierInputOFJavaBuilder.setXid(xid.getValue());
+        barrierInputOFJavaBuilder.setXid(requestContext.getXid().getValue());
 
         LOG.trace("Hooking xid {} to device context - precaution.", requestContext.getXid().getValue());
         deviceContext.hookRequestCtx(requestContext.getXid(), requestContext);
@@ -62,7 +55,7 @@ public class FlowCapableTransactionServiceImpl extends CommonService implements 
         // FIXME: should be submitted through OutboundQueue
         final Future<RpcResult<BarrierOutput>> barrierOutputOFJava = getPrimaryConnectionAdapter()
                 .barrier(barrierInputOFJava);
-        LOG.debug("Barrier with xid {} was sent from controller.", xid);
+        LOG.debug("Barrier with xid {} was sent from controller.", requestContext.getXid());
 
         ListenableFuture<RpcResult<BarrierOutput>> listenableBarrierOutputOFJava = JdkFutureAdapters
                 .listenInPoolThread(barrierOutputOFJava);
