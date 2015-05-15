@@ -11,9 +11,13 @@ package org.opendaylight.openflowplugin.api;
  * Created by Martin Bobak mbobak@cisco.com on 7/8/14.
  */
 public class ConnectionException extends Exception {
+    private static final long serialVersionUID = 1L;
 
-    public ConnectionException(String message){
+    public ConnectionException(final String message) {
         super(message);
     }
 
+    public ConnectionException(final String message, final Throwable cause) {
+        super(message, cause);
+    }
 }

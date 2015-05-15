@@ -18,8 +18,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter
  */
 public class DeviceMeterRegistryImpl implements DeviceMeterRegistry {
 
-    private final List<MeterId> meterIds = new ArrayList();
-    private final List<MeterId> marks = new ArrayList();
+    private final List<MeterId> meterIds = new ArrayList<>();
+    private final List<MeterId> marks = new ArrayList<>();
 
     @Override
     public void store(final MeterId meterId) {

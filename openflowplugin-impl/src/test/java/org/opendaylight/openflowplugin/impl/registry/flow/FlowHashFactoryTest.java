@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.impl.registry.flow;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
-
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -56,7 +55,7 @@ public class FlowHashFactoryTest {
 
     @Before
     public void setup() {
-        List<FlowAndStatisticsMapList> flowAndStatisticsMapListList = new ArrayList();
+        List<FlowAndStatisticsMapList> flowAndStatisticsMapListList = new ArrayList<>();
         for (int i = 1; i < 4; i++) {
             FlowAndStatisticsMapListBuilder flowAndStatisticsMapListBuilder = new FlowAndStatisticsMapListBuilder();
             flowAndStatisticsMapListBuilder.setPriority(i);
@@ -90,7 +89,7 @@ public class FlowHashFactoryTest {
     public void testEquals() throws Exception {
         FlowsStatisticsUpdate flowStats = FLOWS_STATISTICS_UPDATE_BUILDER.build();
 
-        HashSet<FlowHash> flowHashs = new HashSet();
+        HashSet<FlowHash> flowHashs = new HashSet<>();
         for (FlowAndStatisticsMapList item : flowStats.getFlowAndStatisticsMapList()) {
             flowHashs.add(FlowHashFactory.create(item, OFConstants.OFP_VERSION_1_3));
             flowHashs.add(FlowHashFactory.create(item, OFConstants.OFP_VERSION_1_3));

@@ -54,7 +54,7 @@ public class MultiMsgCollectorImpl implements MultiMsgCollector {
         cache = initCacheBuilder(timeout).build();
     }
 
-    private RemovalListener<Long, MultiCollectorObject> getRemovalListener() {
+    private static RemovalListener<Long, MultiCollectorObject> getRemovalListener() {
         return new RemovalListener<Long, MultiCollectorObject>() {
             @Override
             public void onRemoval(final RemovalNotification<Long, MultiCollectorObject> notification) {
@@ -67,7 +67,7 @@ public class MultiMsgCollectorImpl implements MultiMsgCollector {
         };
     }
 
-    private CacheBuilder<Long, MultiCollectorObject> initCacheBuilder(final int timeout) {
+    private static CacheBuilder<Long, MultiCollectorObject> initCacheBuilder(final int timeout) {
         return CacheBuilder.newBuilder()
                 .expireAfterAccess(timeout, TimeUnit.SECONDS)
                 .removalListener(getRemovalListener())
@@ -109,7 +109,7 @@ public class MultiMsgCollectorImpl implements MultiMsgCollector {
     }
 
     @Override
-    public void setDeviceReplyProcessor(DeviceReplyProcessor deviceReplyProcessor) {
+    public void setDeviceReplyProcessor(final DeviceReplyProcessor deviceReplyProcessor) {
         this.deviceReplyProcessor = deviceReplyProcessor;
     }
 
@@ -127,7 +127,7 @@ public class MultiMsgCollectorImpl implements MultiMsgCollector {
             replyCollection.add(reply);
         }
 
-        void publishCollection(long xid) {
+        void publishCollection(final long xid) {
             deviceReplyProcessor.processReply(new Xid(xid), replyCollection);
         }
 

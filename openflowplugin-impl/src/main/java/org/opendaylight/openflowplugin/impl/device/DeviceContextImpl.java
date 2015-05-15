@@ -38,7 +38,6 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
-import org.opendaylight.openflowplugin.api.openflow.connection.OutboundQueueProvider;
 import org.opendaylight.openflowplugin.api.openflow.connection.ThrottledNotificationsOfferer;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
@@ -114,12 +113,12 @@ public class DeviceContextImpl implements DeviceContext {
     private final DeviceMeterRegistry deviceMeterRegistry;
     private Timeout barrierTaskTimeout;
     private NotificationService notificationService;
-    private final MessageSpy<Class> messageSpy;
+    private final MessageSpy<Class<?>> messageSpy;
     private DeviceDisconnectedHandler deviceDisconnectedHandler;
     private final Collection<DeviceContextClosedHandler> closeHandlers = new HashSet<>();
     private NotificationPublishService notificationPublishService;
     private final ThrottledNotificationsOfferer throttledConnectionsHolder;
-    private BlockingQueue<PacketReceived> bumperQueue;
+    private final BlockingQueue<PacketReceived> bumperQueue;
     private final OutboundQueue outboundQueueProvider;
 
     @Override
@@ -180,7 +179,7 @@ public class DeviceContextImpl implements DeviceContext {
         auxiliaryConnectionContexts.put(connectionDistinguisher, connectionContext);
     }
 
-    private SwitchConnectionDistinguisher createConnectionDistinguisher(final ConnectionContext connectionContext) {
+    private static SwitchConnectionDistinguisher createConnectionDistinguisher(final ConnectionContext connectionContext) {
         return new SwitchConnectionCookieOFImpl(connectionContext.getFeatures().getAuxiliaryId());
     }
 

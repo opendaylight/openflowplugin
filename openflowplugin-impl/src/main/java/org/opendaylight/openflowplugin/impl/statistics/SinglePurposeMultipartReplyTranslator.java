@@ -112,7 +112,7 @@ public class SinglePurposeMultipartReplyTranslator {
     private static MeterStatsResponseConvertor meterStatsConvertor = new MeterStatsResponseConvertor();
 
 
-    public List<DataObject> translate(DeviceContext deviceContext, OfHeader msg) {
+    public List<DataObject> translate(final DeviceContext deviceContext, final OfHeader msg) {
 
         List<DataObject> listDataObject = new CopyOnWriteArrayList<DataObject>();
 
@@ -121,7 +121,7 @@ public class SinglePurposeMultipartReplyTranslator {
         final FeaturesReply features = deviceContext.getPrimaryConnectionContext().getFeatures();
         if (msg instanceof MultipartReplyMessage) {
             MultipartReplyMessage mpReply = (MultipartReplyMessage) msg;
-            NodeId node = this.nodeIdFromDatapathId(features.getDatapathId());
+            NodeId node = SinglePurposeMultipartReplyTranslator.nodeIdFromDatapathId(features.getDatapathId());
             switch (mpReply.getType()) {
                 case OFPMPFLOW: {
                     FlowsStatisticsUpdateBuilder message = new FlowsStatisticsUpdateBuilder();
@@ -182,10 +182,12 @@ public class SinglePurposeMultipartReplyTranslator {
                         statsBuilder.setPackets(packetsBuilder.build());
 
                         DurationBuilder durationBuilder = new DurationBuilder();
-                        if (portStats.getDurationSec() != null)
+                        if (portStats.getDurationSec() != null) {
                             durationBuilder.setSecond(new Counter32(portStats.getDurationSec()));
-                        if (portStats.getDurationNsec() != null)
+                        }
+                        if (portStats.getDurationNsec() != null) {
                             durationBuilder.setNanosecond(new Counter32(portStats.getDurationNsec()));
+                        }
                         statsBuilder.setDuration(durationBuilder.build());
                         statsBuilder.setCollisionCount(portStats.getCollisions());
                         statsBuilder.setKey(new NodeConnectorStatisticsAndPortNumberMapKey(statsBuilder.getNodeConnectorId()));
@@ -426,15 +428,14 @@ public class SinglePurposeMultipartReplyTranslator {
         return listDataObject;
     }
 
-    private NodeId nodeIdFromDatapathId(BigInteger datapathId) {
+    private static NodeId nodeIdFromDatapathId(final BigInteger datapathId) {
         String current = datapathId.toString();
         return new NodeId("openflow:" + current);
     }
 
-    private TransactionId generateTransactionId(Long xid) {
+    private static TransactionId generateTransactionId(final Long xid) {
         BigInteger bigIntXid = BigInteger.valueOf(xid);
         return new TransactionId(bigIntXid);
-
     }
 
     /*
@@ -446,7 +447,7 @@ public class SinglePurposeMultipartReplyTranslator {
      * @param actionsSupported
      * @return
      */
-    private List<Long> getGroupActionsSupportBitmap(List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ActionType> actionsSupported) {
+    private static List<Long> getGroupActionsSupportBitmap(final List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ActionType> actionsSupported) {
         List<Long> supportActionByGroups = new ArrayList<Long>();
         for (org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ActionType supportedActions : actionsSupported) {
             long supportActionBitmap = 0;

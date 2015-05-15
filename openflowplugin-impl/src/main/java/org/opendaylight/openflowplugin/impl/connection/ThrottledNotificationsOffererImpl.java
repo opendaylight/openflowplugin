@@ -33,7 +33,7 @@ public class ThrottledNotificationsOffererImpl<T extends Notification> implement
     private final Map<Queue<T>, SettableFuture<Void>> throttledQueues = new ConcurrentHashMap<>();
     private final ThreadPoolLoggingExecutor throttleWorkerPool;
     private final NotificationPublishService notificationPublishService;
-    private final MessageSpy<Class> messageIntelligenceAgency;
+    private final MessageSpy<Class<?>> messageIntelligenceAgency;
     private boolean finishing = false;
     private CountDownLatch sleeperLatch = new CountDownLatch(0);
 
@@ -41,7 +41,7 @@ public class ThrottledNotificationsOffererImpl<T extends Notification> implement
      * @param notificationPublishService
      * @param messageIntelligenceAgency
      */
-    public ThrottledNotificationsOffererImpl(NotificationPublishService notificationPublishService, MessageSpy<Class> messageIntelligenceAgency) {
+    public ThrottledNotificationsOffererImpl(final NotificationPublishService notificationPublishService, final MessageSpy<Class<?>> messageIntelligenceAgency) {
         this.notificationPublishService = notificationPublishService;
         this.messageIntelligenceAgency = messageIntelligenceAgency;
         throttleWorkerPool = new ThreadPoolLoggingExecutor(
@@ -51,7 +51,7 @@ public class ThrottledNotificationsOffererImpl<T extends Notification> implement
     }
 
     @Override
-    public ListenableFuture<Void> applyThrottlingOnConnection(Queue<T> notificationsQueue) {
+    public ListenableFuture<Void> applyThrottlingOnConnection(final Queue<T> notificationsQueue) {
         SettableFuture<Void> throttleWatching = SettableFuture.create();
         throttledQueues.put(notificationsQueue, throttleWatching);
         synchronized (throttledQueues) {
@@ -106,7 +106,7 @@ public class ThrottledNotificationsOffererImpl<T extends Notification> implement
     }
 
     @Override
-    public boolean isThrottlingEffective(Queue<T> notificationsQueue) {
+    public boolean isThrottlingEffective(final Queue<T> notificationsQueue) {
         return throttledQueues.containsKey(notificationsQueue);
     }
 

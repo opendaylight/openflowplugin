@@ -18,8 +18,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group
  */
 public class DeviceGroupRegistryImpl implements DeviceGroupRegistry {
 
-    private final List<GroupId> groupIdList = new ArrayList();
-    private final List<GroupId> marks = new ArrayList();
+    private final List<GroupId> groupIdList = new ArrayList<>();
+    private final List<GroupId> marks = new ArrayList<>();
 
     @Override
     public void store(final GroupId groupId) {

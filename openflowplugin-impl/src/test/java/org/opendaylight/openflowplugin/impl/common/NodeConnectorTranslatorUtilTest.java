@@ -11,7 +11,6 @@ package org.opendaylight.openflowplugin.impl.common;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
@@ -194,7 +193,7 @@ public class NodeConnectorTranslatorUtilTest {
         return phyport;
     }
 
-    private PortStateV10 getPortStateV10() {
+    private static PortStateV10 getPortStateV10() {
         final PortStateV10 portState = new PortStateV10(Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE);
         return portState;
     }
@@ -214,7 +213,7 @@ public class NodeConnectorTranslatorUtilTest {
                 pfV10Bls[7], pfV10Bls[8], pfV10Bls[9], pfV10Bls[10], pfV10Bls[11]);
     }
 
-    private MacAddress getMacAddress() {
+    private static MacAddress getMacAddress() {
         return new MacAddress(MAC_ADDRESS);
     }
 
@@ -226,19 +225,19 @@ public class NodeConnectorTranslatorUtilTest {
         return new PortConfig(portCfgBools[0], portCfgBools[1], portCfgBools[2], portCfgBools[3]);
     }
 
-    private void assertEqualsStateV10(final PortStateV10 psV10, final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortState state) {
+    private static void assertEqualsStateV10(final PortStateV10 psV10, final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortState state) {
         assertEquals(psV10.isBlocked(), state.isBlocked());
         assertEquals(psV10.isLinkDown(), state.isLinkDown());
         assertEquals(psV10.isLive(), state.isLive());
     }
 
-    private void assertEqualsState(final PortState ps, final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortState state) {
+    private static void assertEqualsState(final PortState ps, final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortState state) {
         assertEquals(ps.isBlocked(), state.isBlocked());
         assertEquals(ps.isLinkDown(), state.isLinkDown());
         assertEquals(ps.isLive(), state.isLive());
     }
 
-    private void assertEqualsPortFeaturesV10(final PortFeaturesV10 apfV10, final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures npf) {
+    private static void assertEqualsPortFeaturesV10(final PortFeaturesV10 apfV10, final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures npf) {
         assertEquals(apfV10.is_100mbFd(), npf.isHundredMbFd());
         assertEquals(apfV10.is_100mbHd(), npf.isHundredMbHd());
 
@@ -256,7 +255,7 @@ public class NodeConnectorTranslatorUtilTest {
         assertEquals(apfV10.isPauseAsym(), npf.isPauseAsym());
     }
 
-    private void assertEqualsPortFeatures(final PortFeatures apf, final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures npf) {
+    private static void assertEqualsPortFeatures(final PortFeatures apf, final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures npf) {
         assertEquals(apf.is_100gbFd(), npf.isHundredGbFd());
         assertEquals(apf.is_100mbFd(), npf.isHundredMbFd());
         assertEquals(apf.is_100mbHd(), npf.isHundredMbHd());

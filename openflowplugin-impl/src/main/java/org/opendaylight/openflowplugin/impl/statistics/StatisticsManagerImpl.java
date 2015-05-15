@@ -34,7 +34,7 @@ public class StatisticsManagerImpl implements StatisticsManager {
 
     private HashedWheelTimer hashedWheelTimer;
 
-    private ConcurrentHashMap<DeviceContext, StatisticsContext> contexts = new ConcurrentHashMap();
+    private final ConcurrentHashMap<DeviceContext, StatisticsContext> contexts = new ConcurrentHashMap<>();
 
     private final TimeCounter timeCounter = new TimeCounter();
 
@@ -87,10 +87,10 @@ public class StatisticsManagerImpl implements StatisticsManager {
         try {
             timeCounter.markStart();
             for (final StatisticsContext statisticsContext : contexts.values()) {
-                ListenableFuture deviceStatisticsCollectionFuture = statisticsContext.gatherDynamicData();
-                Futures.addCallback(deviceStatisticsCollectionFuture, new FutureCallback() {
+                ListenableFuture<Boolean> deviceStatisticsCollectionFuture = statisticsContext.gatherDynamicData();
+                Futures.addCallback(deviceStatisticsCollectionFuture, new FutureCallback<Boolean>() {
                     @Override
-                    public void onSuccess(final Object o) {
+                    public void onSuccess(final Boolean o) {
                         timeCounter.addTimeMark();
                     }
 

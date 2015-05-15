@@ -9,7 +9,6 @@
 package org.opendaylight.openflowplugin.api.openflow.statistics;
 
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceContextClosedHandler;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceDisconnectedHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializator;
 

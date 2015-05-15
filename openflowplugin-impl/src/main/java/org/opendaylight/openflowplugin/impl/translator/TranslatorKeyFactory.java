@@ -21,7 +21,7 @@ public class TranslatorKeyFactory {
         this.version = version;
     }
 
-    public TranslatorKey createTranslatorKey(Class messageClass) {
+    public TranslatorKey createTranslatorKey(final Class<?> messageClass) {
         return new TranslatorKey(version, messageClass.getName().toString());
     }
 }

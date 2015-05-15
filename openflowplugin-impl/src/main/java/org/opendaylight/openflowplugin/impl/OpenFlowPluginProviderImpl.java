@@ -70,7 +70,7 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     private DataBroker dataBroker;
     private OfpRole role;
     private Collection<SwitchConnectionProvider> switchConnectionProviders;
-    private Long rpcRequestsQuota;
+    private final Long rpcRequestsQuota;
 
     public OpenFlowPluginProviderImpl(final Long rpcRequestsQuota) {
         this.rpcRequestsQuota = rpcRequestsQuota;
@@ -151,11 +151,11 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
 
         TranslatorLibraryUtil.setBasicTranslatorLibrary(deviceManager);
         deviceManager.initialize();
-        
+
         startSwitchConnections();
     }
 
-    private void registerMXBean(final MessageIntelligenceAgency messageIntelligenceAgency) {
+    private static void registerMXBean(final MessageIntelligenceAgency messageIntelligenceAgency) {
         MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
         try {
             String pathToMxBean = String.format("%s:type=%s",

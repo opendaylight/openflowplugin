@@ -12,7 +12,6 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -37,7 +36,7 @@ public class StatisticsContextImpl implements StatisticsContext {
 
     private static final Logger LOG = LoggerFactory.getLogger(StatisticsContextImpl.class);
     public static final String CONNECTION_CLOSED = "Connection closed.";
-    private final Collection<RequestContext> requestContexts = new HashSet<>();
+    private final Collection<RequestContext<?>> requestContexts = new HashSet<>();
     private final DeviceContext deviceContext;
 
 
@@ -52,7 +51,7 @@ public class StatisticsContextImpl implements StatisticsContext {
     @Override
     public ListenableFuture<Boolean> gatherDynamicData() {
 
-        final SettableFuture settableResultingFuture = SettableFuture.create();
+        final SettableFuture<Boolean> settableResultingFuture = SettableFuture.create();
         ListenableFuture<Boolean> resultingFuture = settableResultingFuture;
 
 

@@ -7,7 +7,6 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.rpc;
 
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceDisconnectedHandler;
 import org.opendaylight.yangtools.yang.binding.RpcService;

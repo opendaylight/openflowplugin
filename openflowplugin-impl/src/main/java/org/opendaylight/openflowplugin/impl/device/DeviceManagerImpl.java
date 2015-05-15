@@ -242,7 +242,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         });
     }
 
-    private void chainTableTrunkWriteOF10(final DeviceContext deviceContext, final ListenableFuture<List<RpcResult<List<MultipartReply>>>> deviceFeaturesFuture) {
+    private static void chainTableTrunkWriteOF10(final DeviceContext deviceContext, final ListenableFuture<List<RpcResult<List<MultipartReply>>>> deviceFeaturesFuture) {
         Futures.addCallback(deviceFeaturesFuture, new FutureCallback<List<RpcResult<List<MultipartReply>>>>() {
             @Override
             public void onSuccess(final List<RpcResult<List<MultipartReply>>> results) {
@@ -263,7 +263,6 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
             }
         });
     }
-
 
     private ListenableFuture<RpcResult<List<MultipartReply>>> processReplyDesc(final DeviceContext deviceContext,
                                                                                final DeviceState deviceState) {

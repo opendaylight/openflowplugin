@@ -12,7 +12,6 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionReadyListener;
-import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandler;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionManager;
 import org.opendaylight.openflowplugin.api.openflow.connection.HandshakeContext;
@@ -83,7 +82,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
      * @return
      */
     private static ThreadPoolLoggingExecutor createHandshakePool(
-            final String connectionIdentifier, int handshakeThreadLimit) {
+            final String connectionIdentifier, final int handshakeThreadLimit) {
         return new ThreadPoolLoggingExecutor(handshakeThreadLimit,
                 handshakeThreadLimit, 0L, TimeUnit.MILLISECONDS,
                 new ArrayBlockingQueue<Runnable>(HELLO_LIMIT), "OFHandshake-" + connectionIdentifier);
@@ -95,7 +94,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
      * @return
      */
     private HandshakeManager createHandshakeManager(final ConnectionAdapter connectionAdapter,
-            HandshakeListener handshakeListener) {
+            final HandshakeListener handshakeListener) {
         HandshakeManagerImpl handshakeManager = new HandshakeManagerImpl(connectionAdapter,
                 ConnectionConductor.versionOrder.get(0),
                 ConnectionConductor.versionOrder);
@@ -116,23 +115,23 @@ public class ConnectionManagerImpl implements ConnectionManager {
     /**
      * @param bitmapNegotiationEnabled the bitmapNegotiationEnabled to set
      */
-    public void setBitmapNegotiationEnabled(boolean bitmapNegotiationEnabled) {
+    public void setBitmapNegotiationEnabled(final boolean bitmapNegotiationEnabled) {
         this.bitmapNegotiationEnabled = bitmapNegotiationEnabled;
     }
 
     @Override
-    public boolean accept(InetAddress switchAddress) {
+    public boolean accept(final InetAddress switchAddress) {
         // TODO add connection accept logic based on address
         return true;
     }
 
     @Override
-    public void setDeviceConnectedHandler(DeviceConnectedHandler deviceConnectedHandler) {
+    public void setDeviceConnectedHandler(final DeviceConnectedHandler deviceConnectedHandler) {
         this.deviceConnectedHandler = deviceConnectedHandler;
     }
 
     @Override
-    public void setMessageHandler(MessageHandler arg0) {
+    public void setMessageHandler(final MessageHandler arg0) {
         // TODO Auto-generated method stub
 
     }

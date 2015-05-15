@@ -8,7 +8,6 @@
 
 package org.opendaylight.openflowplugin.api.openflow.device.listener;
 
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OpenflowProtocolListener;
 
 /**

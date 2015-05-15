@@ -33,7 +33,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.pa
  */
 public class PacketReceivedTranslator implements MessageTranslator<PacketInMessage, PacketReceived> {
     @Override
-    public PacketReceived translate(PacketInMessage input, DeviceContext deviceContext, Object connectionDistinguisher) {
+    public PacketReceived translate(final PacketInMessage input, final DeviceContext deviceContext, final Object connectionDistinguisher) {
 
         PacketReceivedBuilder packetReceivedBuilder = new PacketReceivedBuilder();
         BigInteger datapathId = deviceContext.getPrimaryConnectionContext().getFeatures().getDatapathId();
@@ -73,7 +73,7 @@ public class PacketReceivedTranslator implements MessageTranslator<PacketInMessa
         return packetReceivedBuilder.build();
     }
 
-    private org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match getPacketInMatch(PacketInMessage input, BigInteger datapathId) {
+    private static org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match getPacketInMatch(final PacketInMessage input, final BigInteger datapathId) {
         Match match = MatchConvertorImpl.fromOFMatchToSALMatch(input.getMatch(),
                 datapathId,
                 OpenflowVersion.get(input.getVersion().shortValue())).build();
@@ -88,7 +88,7 @@ public class PacketReceivedTranslator implements MessageTranslator<PacketInMessa
         return matchBuilder.build();
     }
 
-    private Long getPortNumberFromMatch(List<MatchEntry> entries) {
+    private static Long getPortNumberFromMatch(final List<MatchEntry> entries) {
         Long port = null;
         for (MatchEntry entry : entries) {
             if (InPortCase.class.equals(entry.getMatchEntryValue().getImplementedInterface())) {

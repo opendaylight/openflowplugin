@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
  * Class counts message of {@link org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy.STATISTIC_GROUP} type
  * and provides info as debug log.
  */
-public class MessageIntelligenceAgencyImpl implements MessageIntelligenceAgency<Class>, MessageIntelligenceAgencyMXBean {
+public class MessageIntelligenceAgencyImpl implements MessageIntelligenceAgency<Class<?>>, MessageIntelligenceAgencyMXBean {
 
     private static final Logger LOG = LoggerFactory.getLogger(MessageIntelligenceAgencyImpl.class);
 
@@ -48,10 +48,10 @@ public class MessageIntelligenceAgencyImpl implements MessageIntelligenceAgency<
         }
     }
 
-    private final ConcurrentMap<STATISTIC_GROUP, ConcurrentMap<Class, MessageCounters>> inputStats = new ConcurrentHashMap<>();
+    private final ConcurrentMap<STATISTIC_GROUP, ConcurrentMap<Class<?>, MessageCounters>> inputStats = new ConcurrentHashMap<>();
 
     @Override
-    public void spyMessage(final Class message, final STATISTIC_GROUP statGroup) {
+    public void spyMessage(final Class<?> message, final STATISTIC_GROUP statGroup) {
         getCounters(message, statGroup).increment();
     }
 
@@ -60,13 +60,13 @@ public class MessageIntelligenceAgencyImpl implements MessageIntelligenceAgency<
      * @param statGroup TODO
      * @return
      */
-    private MessageCounters getCounters(final Class message, final STATISTIC_GROUP statGroup) {
-        ConcurrentMap<Class, MessageCounters> groupData = getOrCreateGroupData(statGroup);
+    private MessageCounters getCounters(final Class<?> message, final STATISTIC_GROUP statGroup) {
+        ConcurrentMap<Class<?>, MessageCounters> groupData = getOrCreateGroupData(statGroup);
         MessageCounters counters = getOrCreateCountersPair(message, groupData);
         return counters;
     }
 
-    private static MessageCounters getOrCreateCountersPair(final Class msgType, final ConcurrentMap<Class, MessageCounters> groupData) {
+    private static MessageCounters getOrCreateCountersPair(final Class<?> msgType, final ConcurrentMap<Class<?>, MessageCounters> groupData) {
         final MessageCounters lookup = groupData.get(msgType);
         if (lookup != null) {
             return lookup;
@@ -78,14 +78,14 @@ public class MessageIntelligenceAgencyImpl implements MessageIntelligenceAgency<
 
     }
 
-    private ConcurrentMap<Class, MessageCounters> getOrCreateGroupData(final STATISTIC_GROUP statGroup) {
-        final ConcurrentMap<Class, MessageCounters> lookup = inputStats.get(statGroup);
+    private ConcurrentMap<Class<?>, MessageCounters> getOrCreateGroupData(final STATISTIC_GROUP statGroup) {
+        final ConcurrentMap<Class<?>, MessageCounters> lookup = inputStats.get(statGroup);
         if (lookup != null) {
             return lookup;
         }
 
-        final ConcurrentMap<Class, MessageCounters> newmap = new ConcurrentHashMap<>();
-        final ConcurrentMap<Class, MessageCounters> check = inputStats.putIfAbsent(statGroup, newmap);
+        final ConcurrentMap<Class<?>, MessageCounters> newmap = new ConcurrentHashMap<>();
+        final ConcurrentMap<Class<?>, MessageCounters> check = inputStats.putIfAbsent(statGroup, newmap);
 
         return check == null ? newmap : check;
     }
@@ -105,9 +105,9 @@ public class MessageIntelligenceAgencyImpl implements MessageIntelligenceAgency<
         List<String> dump = new ArrayList<>();
 
         for (STATISTIC_GROUP statGroup : STATISTIC_GROUP.values()) {
-            Map<Class, MessageCounters> groupData = inputStats.get(statGroup);
+            Map<Class<?>, MessageCounters> groupData = inputStats.get(statGroup);
             if (groupData != null) {
-                for (Entry<Class, MessageCounters> statEntry : groupData.entrySet()) {
+                for (Entry<Class<?>, MessageCounters> statEntry : groupData.entrySet()) {
                     long amountPerInterval = statEntry.getValue().accumulate();
                     long cumulativeAmount = statEntry.getValue().getCumulative();
                     dump.add(String.format("%s: MSG[%s] -> +%d | %d",

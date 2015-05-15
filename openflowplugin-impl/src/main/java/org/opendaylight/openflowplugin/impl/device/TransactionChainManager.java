@@ -119,7 +119,7 @@ class TransactionChainManager implements TransactionChainListener {
         }
     }
 
-    void submitScheduledTransaction(Timeout timeout) {
+    void submitScheduledTransaction(final Timeout timeout) {
         if (timeout.isCancelled()) {
             // zombie timer executed
             return;
@@ -157,17 +157,17 @@ class TransactionChainManager implements TransactionChainListener {
         }
     }
 
-    private void hookTimeExpenseCounter(CheckedFuture<Void, TransactionCommitFailedException> submitResult, final String name) {
+    private static void hookTimeExpenseCounter(final CheckedFuture<Void, TransactionCommitFailedException> submitResult, final String name) {
         final long submitFiredTime = System.currentTimeMillis();
         LOG.debug("submit of {} fired", name);
         Futures.addCallback(submitResult, new FutureCallback<Void>() {
             @Override
-            public void onSuccess(Void result) {
+            public void onSuccess(final Void result) {
                 LOG.debug("submit of {} finished in {} ms", name, System.currentTimeMillis() - submitFiredTime);
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(final Throwable t) {
                 LOG.warn("transaction submit failed: {}", t.getMessage());
             }
         });

@@ -8,23 +8,21 @@
 
 package org.opendaylight.openflowplugin.impl.statistics;
 
-import java.util.concurrent.ExecutionException;
-import com.google.common.base.Optional;
-import com.google.common.util.concurrent.CheckedFuture;
-import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
-import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableBuilder;
-import com.google.common.collect.Iterables;
-import java.util.Collections;
 import com.google.common.base.Function;
+import com.google.common.base.Optional;
+import com.google.common.collect.Iterables;
+import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import javax.annotation.Nullable;
+import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
-import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowHash;
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowHashFactory;
 import org.opendaylight.openflowplugin.impl.statistics.services.dedicated.StatisticsGatheringService;
@@ -35,6 +33,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.me
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.MeterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.MeterKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
@@ -178,7 +177,7 @@ public final class StatisticsGatheringUtils {
             for (MeterConfigStats meterConfigStats : meterConfigStatsUpdated.getMeterConfigStats()) {
                 final MeterId meterId = meterConfigStats.getMeterId();
                 final InstanceIdentifier<Meter> meterInstanceIdentifier = fNodeIdent.child(Meter.class, new MeterKey(meterId));
-    
+
                 final MeterBuilder meterBuilder = new MeterBuilder(meterConfigStats);
                 meterBuilder.setKey(new MeterKey(meterId));
                 meterBuilder.addAugmentation(NodeMeterStatistics.class, new NodeMeterStatisticsBuilder().build());
@@ -198,7 +197,7 @@ public final class StatisticsGatheringUtils {
                 final FlowBuilder flowBuilder = new FlowBuilder(flowStat);
                 short tableId = flowStat.getTableId();
                 final Short version = deviceContext.getPrimaryConnectionContext().getFeatures().getVersion();
-                
+
                 final FlowHash flowHash = FlowHashFactory.create(flowBuilder.build(), version);
                 final FlowId flowId = deviceContext.getDeviceFlowRegistry().storeIfNecessary(flowHash, tableId);
 
@@ -262,7 +261,7 @@ public final class StatisticsGatheringUtils {
     private static void processFlowTableStatistics(final Iterable<FlowTableStatisticsUpdate> data, final DeviceContext deviceContext) {
         for(final FlowTableStatisticsUpdate flowTableStatisticsUpdate : data) {
             final InstanceIdentifier<FlowCapableNode> fNodeIdent = getFlowCapableNodeInstanceIdentifier(flowTableStatisticsUpdate.getId());
-    
+
             for (final FlowTableAndStatisticsMap tableStat : flowTableStatisticsUpdate.getFlowTableAndStatisticsMap()) {
                 final InstanceIdentifier<FlowTableStatistics> tStatIdent = fNodeIdent.child(Table.class, new TableKey(tableStat.getTableId().getValue()))
                         .augmentation(FlowTableStatisticsData.class).child(FlowTableStatistics.class);
@@ -319,16 +318,16 @@ public final class StatisticsGatheringUtils {
         for ( GroupDescStatsUpdated groupDescStatsUpdated : data) {
             NodeId nodeId = groupDescStatsUpdated.getId();
             final InstanceIdentifier<FlowCapableNode> fNodeIdent = getFlowCapableNodeInstanceIdentifier(nodeId);
-    
+
             for (GroupDescStats groupDescStats : groupDescStatsUpdated.getGroupDescStats()) {
                 final GroupId groupId = groupDescStats.getGroupId();
-    
+
                 final GroupBuilder groupBuilder = new GroupBuilder(groupDescStats);
                 groupBuilder.setKey(new GroupKey(groupId));
                 groupBuilder.addAugmentation(NodeGroupStatistics.class, new NodeGroupStatisticsBuilder().build());
-    
+
                 final InstanceIdentifier<Group> groupIdent = fNodeIdent.child(Group.class, new GroupKey(groupId));
-    
+
                 deviceContext.getDeviceGroupRegistry().store(groupId);
                 deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, groupIdent, groupBuilder.build());
             }
@@ -349,11 +348,11 @@ public final class StatisticsGatheringUtils {
         deleteAllKnownGroups(deviceContext, fNodeIdent);
         for (GroupStatisticsUpdated groupStatistics : data) {
             for (final GroupStats groupStats : groupStatistics.getGroupStats()) {
-    
+
                 final InstanceIdentifier<Group> groupIdent = fNodeIdent.child(Group.class, new GroupKey(groupStats.getGroupId()));
                 final InstanceIdentifier<NodeGroupStatistics> nGroupStatIdent = groupIdent
                         .augmentation(NodeGroupStatistics.class);
-    
+
                 final InstanceIdentifier<GroupStatistics> gsIdent = nGroupStatIdent.child(GroupStatistics.class);
                 final GroupStatistics stats = new GroupStatisticsBuilder(groupStats).build();
                 deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, gsIdent, stats);

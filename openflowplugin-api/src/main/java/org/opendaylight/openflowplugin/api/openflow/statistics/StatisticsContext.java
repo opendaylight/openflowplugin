@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.api.openflow.statistics;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 27.2.2015.

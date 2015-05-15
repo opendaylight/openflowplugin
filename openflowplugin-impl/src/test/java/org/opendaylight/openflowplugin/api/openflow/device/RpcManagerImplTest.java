@@ -11,7 +11,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
 import java.math.BigInteger;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -108,7 +107,7 @@ public class RpcManagerImplTest {
     /**
      * @return
      */
-    private AddFlowInput prepareTestingAddFlow() {
+    private static AddFlowInput prepareTestingAddFlow() {
         final AddFlowInputBuilder builder = new AddFlowInputBuilder();
         builder.setFlowName("dummy flow");
         builder.setHardTimeout(10000);
