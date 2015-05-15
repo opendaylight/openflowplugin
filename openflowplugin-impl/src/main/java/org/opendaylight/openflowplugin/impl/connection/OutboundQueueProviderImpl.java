@@ -8,19 +8,23 @@
 
 package org.opendaylight.openflowplugin.impl.connection;
 
+import com.google.common.util.concurrent.FutureCallback;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.openflow.connection.OutboundQueueProvider;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 12.5.2015.
  */
 public class OutboundQueueProviderImpl implements OutboundQueueProvider {
-
-    private OutboundQueue outboundQueue;
+    private static final Logger LOG = LoggerFactory.getLogger(OutboundQueueProviderImpl.class);
     private final short ofVersion;
+    private volatile OutboundQueue outboundQueue;
 
     public OutboundQueueProviderImpl(final short ofVersion) {
         this.ofVersion = ofVersion;
@@ -37,12 +41,44 @@ public class OutboundQueueProviderImpl implements OutboundQueueProvider {
     }
 
     @Override
-    public void onConnectionQueueChanged(final OutboundQueue outboundQueue) {
-        this.outboundQueue = outboundQueue;
+    public synchronized void onConnectionQueueChanged(final OutboundQueue queue) {
+        LOG.debug("Replacing queue {} with {}", outboundQueue, queue);
+        outboundQueue = queue;
+        notifyAll();
     }
 
     @Override
-    public OutboundQueue getOutboundQueue() {
-        return this.outboundQueue;
+    public
+    Long reserveEntry() {
+        for (;;) {
+            OutboundQueue queue = outboundQueue;
+            if (queue == null) {
+                LOG.debug("No queue present, failing request");
+                return null;
+            }
+
+            final Long ret = queue.reserveEntry();
+            if (ret != null) {
+                return ret;
+            }
+
+            LOG.debug("Reservation failed, trying to recover");
+            synchronized (this) {
+                while (queue.equals(outboundQueue)) {
+                    LOG.debug("Queue {} is not replaced yet, going to sleep", queue);
+                    try {
+                        wait();
+                    } catch (InterruptedException e) {
+                        LOG.info("Interrupted while waiting for entry", e);
+                        return null;
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public void commitEntry(final Long xid, final OfHeader message, final FutureCallback<OfHeader> callback) {
+        outboundQueue.commitEntry(xid, message, callback);
     }
 }
