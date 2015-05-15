@@ -82,7 +82,7 @@ public class MultiMsgCollectorImplTest {
      */
     @Test
     public void testAddMultipartMsgOne() {
-        final long xid = 1L;
+        final Long xid = 1L;
         collector.registerMultipartXid(xid);
         collector.addMultipartMsg(MsgGeneratorTestUtils.makeMultipartDescReply(xid, hwTestValue, false).build());
 
@@ -100,7 +100,7 @@ public class MultiMsgCollectorImplTest {
      */
     @Test
     public void testAddMultipartMsgTwo() {
-        final long xid = 1L;
+        final Long xid = 1L;
         collector.registerMultipartXid(xid);
         collector.addMultipartMsg(MsgGeneratorTestUtils.makeMultipartDescReply(xid, hwTestValue, true).build());
         collector.addMultipartMsg(MsgGeneratorTestUtils.makeMultipartDescReply(xid, hwTestValue, false).build());
@@ -120,7 +120,7 @@ public class MultiMsgCollectorImplTest {
      */
     @Test
     public void testAddMultipartMsgNotExpectedXid() {
-        final long xid = 1L;
+        final Long xid = 1L;
         collector.addMultipartMsg(MsgGeneratorTestUtils.makeMultipartDescReply(xid, hwTestValue, true).build());
 
         Mockito.verify(deviceProcessor).processException(xidCaptor.capture(), ddeCaptor.capture());
@@ -134,7 +134,7 @@ public class MultiMsgCollectorImplTest {
      */
     @Test
     public void testAddMultipartMsgWrongType1() {
-        final long xid = 1L;
+        final Long xid = 1L;
         collector.registerMultipartXid(xid);
         collector.addMultipartMsg(MsgGeneratorTestUtils.makeMultipartDescReply(xid, hwTestValue, true).build());
         collector.addMultipartMsg(MsgGeneratorTestUtils.makeMultipartDescReply(xid, hwTestValue, false)
@@ -163,7 +163,7 @@ public class MultiMsgCollectorImplTest {
      */
     @Test
     public void testAddMultipartMsgWrongType2() {
-        final long xid = 1L;
+        final Long xid = 1L;
         collector.registerMultipartXid(xid);
         collector.addMultipartMsg(MsgGeneratorTestUtils.makeMultipartDescReply(xid, hwTestValue, true).build());
         collector.addMultipartMsg(MsgGeneratorTestUtils.makeMultipartDescReply(xid, hwTestValue, true)
@@ -191,7 +191,7 @@ public class MultiMsgCollectorImplTest {
      */
     @Test
     public void testAddMultipartMsgWrongType3() {
-        final long xid = 1L;
+        final Long xid = 1L;
         collector.registerMultipartXid(xid);
         collector.addMultipartMsg(MsgGeneratorTestUtils.makeMultipartDescReply(xid, hwTestValue, true).build());
         collector.addMultipartMsg(MsgGeneratorTestUtils.makeMultipartDescReply(xid, hwTestValue, true)
@@ -217,7 +217,7 @@ public class MultiMsgCollectorImplTest {
      */
     @Test
     public void testAddMultipartMsgExpiration() throws InterruptedException {
-        final long xid = 1L;
+        final Long xid = 1L;
         collector.registerMultipartXid(xid);
         collector.addMultipartMsg(MsgGeneratorTestUtils.makeMultipartDescReply(xid, hwTestValue, true).build());
 

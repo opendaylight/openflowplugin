@@ -16,7 +16,6 @@ import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
-import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yangtools.yang.common.RpcError;
@@ -133,23 +132,12 @@ public abstract class CommonService {
             return failedFuture();
         }
 
-        Long reservedXid = deviceContext.getReservedXid();
-        if (null == reservedXid) {
-            //retry
-            reservedXid = deviceContext.getReservedXid();
-            if (null == reservedXid) {
-                deviceContext.getMessageSpy().spyMessage(requestContext.getClass(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_RESERVATION_REJECTED);
-                return RequestContextUtil.closeRequestContextWithRpcError(requestContext, "Outbound queue wasn't able to reserve XID.");
-            }
-        }
-        final Xid xid = new Xid(reservedXid);
-        requestContext.setXid(xid);
         DataCrate<T> dataCrate = dataCrateBuilder.setRequestContext(requestContext)
                 .build();
         final ListenableFuture<RpcResult<F>> resultFromOFLib;
 
         LOG.trace("Hooking xid {} to device context - precaution.", requestContext.getXid().getValue());
-        deviceContext.hookRequestCtx(xid, requestContext);
+        deviceContext.hookRequestCtx(requestContext.getXid(), requestContext);
 
         messageSpy.spyMessage(requestContext.getClass(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_READY_FOR_SUBMIT);
         function.apply(dataCrate);

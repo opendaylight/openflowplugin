@@ -7,7 +7,7 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.device;
 
-
+import javax.annotation.Nullable;
 
 /**
  * Request context handles all requests on device. Number of requests is limited by request quota. When this quota is
@@ -16,18 +16,15 @@ package org.opendaylight.openflowplugin.api.openflow.device;
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 25.2.2015.
  */
 public interface RequestContext<T> extends RequestFutureContext<T>, AutoCloseable {
-
     /**
-     * Returns xid generated for this request.
+     * Returns XID generated for this request.
      *
-     * @return
+     * @return Allocated XID, or null if the device has disconnected.
      */
-    Xid getXid();
+    @Nullable Xid getXid();
 
-    /**
-     * Sets xid generated for this request.
-     */
-    void setXid(Xid xid);
+    @Override
+    void close();
 
     /**
      * Returns request timeout value.
@@ -36,12 +33,8 @@ public interface RequestContext<T> extends RequestFutureContext<T>, AutoCloseabl
      */
     long getWaitTimeout();
 
-
     /**
      * Sets request timeout value.
      */
     void setWaitTimeout(long waitTimeout);
-
-    @Override
-    void close();
 }
