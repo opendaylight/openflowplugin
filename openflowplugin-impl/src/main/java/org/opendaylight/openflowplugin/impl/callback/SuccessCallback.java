@@ -14,15 +14,15 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 
 public abstract class SuccessCallback<I, O> extends BaseCallback<I, O> {
 
-    public SuccessCallback(DeviceContext deviceContext, RequestContext<O> requestContext,
-            ListenableFuture<RpcResult<I>> futureResultFromOfLib) {
+    public SuccessCallback(final DeviceContext deviceContext, final RequestContext<O> requestContext,
+            final ListenableFuture<RpcResult<I>> futureResultFromOfLib) {
         super(deviceContext, requestContext, futureResultFromOfLib);
     }
 
+    @Override
     protected void processSuccess(final RpcResult<I> rpcResult) {
-        getRequestContext().getFuture().set(transform(rpcResult));
+        getRequestContext().setResult(transform(rpcResult));
     }
-
 
     abstract public RpcResult<O> transform(RpcResult<I> rpcResult);
 }

@@ -9,6 +9,7 @@ package org.opendaylight.openflowplugin.api.openflow.device;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.when;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,7 +34,8 @@ public class RpcContextImplTest {
 
     @Mock
     private BindingAwareBroker.ProviderContext mockedRpcProviderRegistry;
-
+    @Mock
+    private DeviceState deviceState;
     @Mock
     private DeviceContext deviceContext;
     @Mock
@@ -45,6 +47,9 @@ public class RpcContextImplTest {
     public void setup() {
         NodeId nodeId = new NodeId("openflow:1");
         nodeInstanceIdentifier = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(nodeId));
+
+        when(deviceState.getNodeInstanceIdentifier()).thenReturn(nodeInstanceIdentifier);
+        when(deviceContext.getDeviceState()).thenReturn(deviceState);
     }
 
     @Test
@@ -54,7 +59,7 @@ public class RpcContextImplTest {
 
     @Test
     public void testStoreOrFail() throws Exception {
-        final RpcContext rpcContext = new RpcContextImpl(messageSpy, mockedRpcProviderRegistry, nodeInstanceIdentifier, 100);
+        final RpcContext rpcContext = new RpcContextImpl(messageSpy, mockedRpcProviderRegistry, deviceContext, 100);
         RequestContext requestContext = rpcContext.createRequestContext();
         assertNotNull(requestContext);
 
@@ -62,7 +67,7 @@ public class RpcContextImplTest {
 
     @Test
     public void testStoreOrFailThatFails() throws Exception {
-        final RpcContext rpcContext = new RpcContextImpl(messageSpy, mockedRpcProviderRegistry, nodeInstanceIdentifier, 0);
+        final RpcContext rpcContext = new RpcContextImpl(messageSpy, mockedRpcProviderRegistry, deviceContext, 0);
         RequestContext requestContext = rpcContext.createRequestContext();
         assertNull(requestContext);
     }

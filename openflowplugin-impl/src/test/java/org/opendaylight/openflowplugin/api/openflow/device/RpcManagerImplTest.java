@@ -96,7 +96,7 @@ public class RpcManagerImplTest {
         // TODO: how to invoke service remotely?
         NodeId nodeId = new NodeId("openflow:1");
         KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(nodeId));
-        final RpcContextImpl rpcContext = new RpcContextImpl(messageSpy, mockedProviderContext, nodeInstanceIdentifier, capacity);
+        final RpcContextImpl rpcContext = new RpcContextImpl(messageSpy, mockedProviderContext, mockedDeviceContext, capacity);
         when(mockedProviderContext.getRpcService(SalFlowService.class)).thenReturn(new SalFlowServiceImpl(rpcContext, mockedDeviceContext));
 
         final SalFlowService salFlowService = mockedProviderContext.getRpcService(SalFlowService.class);

@@ -12,7 +12,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.SettableFuture;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import java.math.BigInteger;
@@ -30,7 +29,6 @@ import java.util.concurrent.ExecutionException;
 import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
-import org.opendaylight.controller.md.sal.binding.api.NotificationRejectedException;
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -263,7 +261,6 @@ public class DeviceContextImpl implements DeviceContext {
     public void processReply(final OfHeader ofHeader) {
         final RequestContext requestContext = requests.remove(ofHeader.getXid());
         if (null != requestContext) {
-            final SettableFuture replyFuture = requestContext.getFuture();
             RpcResult<OfHeader> rpcResult;
             if (ofHeader instanceof Error) {
                 //TODO : this is the point, where we can discover that add flow operation failed and where we should
@@ -283,7 +280,7 @@ public class DeviceContextImpl implements DeviceContext {
                 messageSpy.spyMessage(ofHeader.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS);
             }
 
-            replyFuture.set(rpcResult);
+            requestContext.setResult(rpcResult);
             try {
                 requestContext.close();
             } catch (final Exception e) {
@@ -303,12 +300,11 @@ public class DeviceContextImpl implements DeviceContext {
             requestContext = requests.remove(xid.getValue());
         }
         if (null != requestContext) {
-            final SettableFuture replyFuture = requestContext.getFuture();
             final RpcResult<List<MultipartReply>> rpcResult = RpcResultBuilder
                     .<List<MultipartReply>>success()
                     .withResult(ofHeaderList)
                     .build();
-            replyFuture.set(rpcResult);
+            requestContext.setResult(rpcResult);
             for (final MultipartReply multipartReply : ofHeaderList) {
                 messageSpy.spyMessage(multipartReply.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE);
             }
@@ -334,12 +330,11 @@ public class DeviceContextImpl implements DeviceContext {
         final RequestContext requestContext = requests.remove(xid.getValue());
 
         if (null != requestContext) {
-            final SettableFuture replyFuture = requestContext.getFuture();
             final RpcResult<List<OfHeader>> rpcResult = RpcResultBuilder
                     .<List<OfHeader>>failed()
                     .withError(RpcError.ErrorType.APPLICATION, String.format("Message processing failed : %s", deviceDataException.getError()), deviceDataException)
                     .build();
-            replyFuture.set(rpcResult);
+            requestContext.setResult(rpcResult);
             messageSpy.spyMessage(deviceDataException.getClass(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE);
             try {
                 requestContext.close();

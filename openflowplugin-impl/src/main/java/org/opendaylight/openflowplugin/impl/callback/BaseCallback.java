@@ -60,10 +60,10 @@ public class BaseCallback<I, O> implements FutureCallback<RpcResult<I>> {
                     }
                 }
                 LOG.trace("OF Java result for XID {} was not successful. Errors : {}", getRequestContext().getXid().getValue(), rpcErrors.toString());
-            
+
             }
 
-            getRequestContext().getFuture().set(
+            getRequestContext().setResult(
                     RpcResultBuilder.<O>failed().withRpcErrors(fRpcResult.getErrors()).build());
             RequestContextUtil.closeRequstContext(getRequestContext());
         } else {
@@ -83,11 +83,11 @@ public class BaseCallback<I, O> implements FutureCallback<RpcResult<I>> {
             deviceContext.getMessageSpy().spyMessage(getRequestContext().getClass(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS_NO_RESPONSE);
 
             LOG.trace("Asymmetric message - no response from OF Java expected for XID {}. Closing as successful.", getRequestContext().getXid().getValue());
-            getRequestContext().getFuture().set(RpcResultBuilder.<O>success().build());
+            getRequestContext().setResult(RpcResultBuilder.<O>success().build());
         } else {
             deviceContext.getMessageSpy().spyMessage(getRequestContext().getClass(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_ERROR);
             LOG.trace("Exception occured while processing OF Java response for XID {}.", getRequestContext().getXid().getValue(), throwable);
-            getRequestContext().getFuture().set(
+            getRequestContext().setResult(
                     RpcResultBuilder.<O>failed()
                             .withError(RpcError.ErrorType.APPLICATION, "OF JAVA operation failed.", throwable)
                             .build());
