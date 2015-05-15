@@ -8,6 +8,7 @@
 package org.opendaylight.openflowplugin.impl.connection;
 
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
+import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.OutboundQueueProvider;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceDisconnectedHandler;
@@ -42,7 +43,7 @@ public class ConnectionContextImpl implements ConnectionContext {
     }
 
     @Override
-    public OutboundQueueProvider getOutboundQueueProvider() {
+    public OutboundQueue getOutboundQueueProvider() {
         return this.outboundQueueProvider;
     }
 

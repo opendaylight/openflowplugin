@@ -324,12 +324,8 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
     private ListenableFuture<RpcResult<List<MultipartReply>>> getNodeStaticInfo(final MultipartType type, final DeviceContext deviceContext,
                                                                                 final InstanceIdentifier<Node> nodeII, final short version) {
 
-        final OutboundQueue outboundQueue = deviceContext.getPrimaryConnectionContext().getOutboundQueueProvider().getOutboundQueue();
-
-        long reservedXid;
-        synchronized (outboundQueue) {
-            reservedXid = outboundQueue.reserveEntry();
-        }
+        final OutboundQueue queue = deviceContext.getPrimaryConnectionContext().getOutboundQueueProvider();
+        Long reservedXid = queue.reserveEntry();
         final Xid xid = new Xid(reservedXid);
 
         final RequestContext<List<MultipartReply>> requestContext = emptyRequestContextStack.createRequestContext();
@@ -342,7 +338,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
 
         final MultiMsgCollector multiMsgCollector = deviceContext.getMultiMsgCollector();
         multiMsgCollector.registerMultipartXid(xid.getValue());
-        outboundQueue.commitEntry(reservedXid, MultipartRequestInputFactory.makeMultipartRequestInput(xid.getValue(), version, type), new FutureCallback<OfHeader>() {
+        queue.commitEntry(reservedXid, MultipartRequestInputFactory.makeMultipartRequestInput(xid.getValue(), version, type), new FutureCallback<OfHeader>() {
             @Override
             public void onSuccess(final OfHeader ofHeader) {
                 if (ofHeader instanceof MultipartReply) {

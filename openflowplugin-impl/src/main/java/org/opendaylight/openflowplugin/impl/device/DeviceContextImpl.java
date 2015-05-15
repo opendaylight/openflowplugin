@@ -117,18 +117,19 @@ public class DeviceContextImpl implements DeviceContext {
     private final Collection<DeviceContextClosedHandler> closeHandlers = new HashSet<>();
     private NotificationPublishService notificationPublishService;
     private final ThrottledNotificationsOfferer throttledConnectionsHolder;
-    private BlockingQueue<PacketReceived> bumperQueue;
+    private final BlockingQueue<PacketReceived> bumperQueue;
 
+    @Override
     public MultiMsgCollector getMultiMsgCollector() {
         return multiMsgCollector;
     }
 
     @Override
     public Long getReservedXid() {
-        return this.getPrimaryConnectionContext().getOutboundQueueProvider().getOutboundQueue().reserveEntry();
+        return this.getPrimaryConnectionContext().getOutboundQueueProvider().reserveEntry();
     }
 
-    private MultiMsgCollector multiMsgCollector = new MultiMsgCollectorImpl();
+    private final MultiMsgCollector multiMsgCollector = new MultiMsgCollectorImpl();
 
 
     @VisibleForTesting
@@ -432,7 +433,7 @@ public class DeviceContextImpl implements DeviceContext {
         }
     }
 
-    private void applyThrottling(PacketReceived packetReceived, final ConnectionAdapter connectionAdapter) {
+    private void applyThrottling(final PacketReceived packetReceived, final ConnectionAdapter connectionAdapter) {
         final InetSocketAddress remoteAddress = connectionAdapter.getRemoteAddress();
         LOG.debug("Notification offer refused by notification service.");
         messageSpy.spyMessage(packetReceived.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE);
@@ -448,13 +449,13 @@ public class DeviceContextImpl implements DeviceContext {
         }
         Futures.addCallback(queueDone, new FutureCallback<Void>() {
             @Override
-            public void onSuccess(Void result) {
+            public void onSuccess(final Void result) {
                 LOG.debug("Un - throttling ingress for {}", remoteAddress);
                 connectionAdapter.setAutoRead(true);
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(final Throwable t) {
                 LOG.warn("failed to offer queued notification for {}: {}", remoteAddress, t.getMessage());
                 LOG.debug("failed to offer queued notification for {}.. ", remoteAddress, t);
             }

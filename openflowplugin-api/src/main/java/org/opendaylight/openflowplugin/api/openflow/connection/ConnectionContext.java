@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.api.openflow.connection;
 
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
+import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceDisconnectedHandler;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
@@ -68,7 +69,7 @@ public interface ConnectionContext {
      *
      * @return
      */
-    OutboundQueueProvider getOutboundQueueProvider();
+    OutboundQueue getOutboundQueueProvider();
     /**
      * Method sets reference to OFJava outbound queue provider.
      *

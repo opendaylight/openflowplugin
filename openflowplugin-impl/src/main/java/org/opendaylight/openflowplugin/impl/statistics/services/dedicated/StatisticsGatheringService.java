@@ -58,7 +58,7 @@ public class StatisticsGatheringService extends CommonService {
                                                  makeMultipartRequestInput(xid.getValue(),
                                                          getVersion(),
                                                          type);
-                                         final OutboundQueue outboundQueue = deviceContext.getPrimaryConnectionContext().getOutboundQueueProvider().getOutboundQueue();
+                                         final OutboundQueue outboundQueue = deviceContext.getPrimaryConnectionContext().getOutboundQueueProvider();
                                          final SettableFuture<RpcResult<Void>> settableFuture = SettableFuture.create();
                                          outboundQueue.commitEntry(xid.getValue(), multipartRequestInput, new FutureCallback<OfHeader>() {
                                              @Override

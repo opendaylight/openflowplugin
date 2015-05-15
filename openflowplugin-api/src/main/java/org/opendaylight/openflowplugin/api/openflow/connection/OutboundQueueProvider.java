@@ -14,7 +14,6 @@ import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandle
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 12.5.2015.
  */
-public interface OutboundQueueProvider extends OutboundQueueHandler {
+public interface OutboundQueueProvider extends OutboundQueue, OutboundQueueHandler {
 
-    OutboundQueue getOutboundQueue();
 }
