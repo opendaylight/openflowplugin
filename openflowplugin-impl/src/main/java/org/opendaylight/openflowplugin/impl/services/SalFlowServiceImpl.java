@@ -26,6 +26,7 @@ import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowHash;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowDescriptorFactory;
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowHashFactory;
+import org.opendaylight.openflowplugin.impl.util.FlowUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.FlowConvertor;
 import org.opendaylight.openflowplugin.openflow.md.util.FlowCreatorUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
@@ -65,12 +66,18 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
 
         final List<FlowModInputBuilder> ofFlowModInputs = FlowConvertor.toFlowModInputs(input, getVersion(), getDatapathId());
         final ListenableFuture<RpcResult<AddFlowOutput>> future = processFlowModInputBuilders(ofFlowModInputs);
+        final FlowId flowId;
+        if (null != input.getFlowRef()) {
+            flowId = input.getFlowRef().getValue().firstKeyOf(Flow.class, FlowKey.class).getId();
+        } else {
+            flowId = FlowUtil.createAlienFlowId(input.getTableId());
+        }
 
         Futures.addCallback(future, new FutureCallback<RpcResult<AddFlowOutput>>() {
 
             final DeviceContext deviceContext = getDeviceContext();
             final FlowHash flowHash = FlowHashFactory.create(input, deviceContext.getPrimaryConnectionContext().getFeatures().getVersion());
-            FlowId flowId = null;
+
             @Override
             public void onSuccess(final RpcResult<AddFlowOutput> rpcResult) {
                 if (rpcResult.isSuccessful()) {
