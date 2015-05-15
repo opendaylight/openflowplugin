@@ -7,6 +7,9 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.session;
 
+import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandler;
+import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandlerRegistration;
+
 import java.math.BigInteger;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
@@ -16,7 +19,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.Future;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -799,5 +801,15 @@ class MockConnectionAdapter implements ConnectionAdapter {
     public void setAutoRead(boolean arg0) {
         // TODO Auto-generated method stub
 
+    }
+
+    /* (non-Javadoc)
+     * @see org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter#registerOutboundQueueHandler(org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandler, int, long)
+     */
+    @Override
+    public <T extends OutboundQueueHandler> OutboundQueueHandlerRegistration<T> registerOutboundQueueHandler(T arg0,
+            int arg1, long arg2) {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

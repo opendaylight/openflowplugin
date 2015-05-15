@@ -8,6 +8,9 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.plan;
 
+import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandler;
+import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandlerRegistration;
+
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.Futures;
@@ -647,6 +650,16 @@ public class ConnectionAdapterStackImpl implements ConnectionAdapter, Runnable {
     @Override
     public void setAutoRead(boolean autoRead) {
         this.autoRead = autoRead;
+    }
+
+    /* (non-Javadoc)
+     * @see org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter#registerOutboundQueueHandler(org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandler, int, long)
+     */
+    @Override
+    public <T extends OutboundQueueHandler> OutboundQueueHandlerRegistration<T> registerOutboundQueueHandler(T arg0,
+            int arg1, long arg2) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }
