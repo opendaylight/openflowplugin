@@ -51,6 +51,7 @@ public class NodeConfigServiceImpl extends CommonService implements NodeConfigSe
         }
 
         final Xid xid = new Xid(reservedXid);
+        requestContext.setXid(xid);
         builder.setXid(xid.getValue());
         builder.setFlags(flag);
         builder.setMissSendLen(input.getMissSearchLength());
