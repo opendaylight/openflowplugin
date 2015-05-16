@@ -27,10 +27,10 @@ import org.slf4j.LoggerFactory;
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 8.5.2015.
  */
-public class ThrottledNotificationsOffererImpl<T extends Notification> implements ThrottledNotificationsOfferer<T>, Runnable {
+public class ThrottledNotificationsOffererImpl implements ThrottledNotificationsOfferer, Runnable {
 
     private static final Logger LOG = LoggerFactory.getLogger(ThrottledNotificationsOffererImpl.class);
-    private final Map<Queue<T>, SettableFuture<Void>> throttledQueues = new ConcurrentHashMap<>();
+    private final Map<Queue<? extends Notification>, SettableFuture<Void>> throttledQueues = new ConcurrentHashMap<>();
     private final ThreadPoolLoggingExecutor throttleWorkerPool;
     private final NotificationPublishService notificationPublishService;
     private final MessageSpy messageIntelligenceAgency;
@@ -51,7 +51,7 @@ public class ThrottledNotificationsOffererImpl<T extends Notification> implement
     }
 
     @Override
-    public ListenableFuture<Void> applyThrottlingOnConnection(final Queue<T> notificationsQueue) {
+    public ListenableFuture<Void> applyThrottlingOnConnection(final Queue<? extends Notification> notificationsQueue) {
         SettableFuture<Void> throttleWatching = SettableFuture.create();
         throttledQueues.put(notificationsQueue, throttleWatching);
         synchronized (throttledQueues) {
@@ -77,9 +77,9 @@ public class ThrottledNotificationsOffererImpl<T extends Notification> implement
                     // NOOP
                 }
             } else {
-                for (Map.Entry<Queue<T>, SettableFuture<Void>> throttledTuple : throttledQueues.entrySet()) {
-                    Queue<T> key = throttledTuple.getKey();
-                    T notification = key.poll();
+                for (Map.Entry<Queue<? extends Notification>, SettableFuture<Void>> throttledTuple : throttledQueues.entrySet()) {
+                    Queue<? extends Notification> key = throttledTuple.getKey();
+                    Notification notification = key.poll();
                     if (notification == null) {
                         synchronized (key) {
                             // free throttling and announce via future
@@ -106,7 +106,7 @@ public class ThrottledNotificationsOffererImpl<T extends Notification> implement
     }
 
     @Override
-    public boolean isThrottlingEffective(final Queue<T> notificationsQueue) {
+    public boolean isThrottlingEffective(final Queue<? extends Notification> notificationsQueue) {
         return throttledQueues.containsKey(notificationsQueue);
     }
 

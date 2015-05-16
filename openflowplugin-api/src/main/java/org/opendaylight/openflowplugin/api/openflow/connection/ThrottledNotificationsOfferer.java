@@ -10,15 +10,16 @@ package org.opendaylight.openflowplugin.api.openflow.connection;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.Queue;
+import org.opendaylight.yangtools.yang.binding.Notification;
 
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 8.5.2015.
  */
-public interface ThrottledNotificationsOfferer<T> extends AutoCloseable {
+public interface ThrottledNotificationsOfferer extends AutoCloseable {
 
-    ListenableFuture<Void> applyThrottlingOnConnection(Queue<T> notificationsQueue);
+    ListenableFuture<Void> applyThrottlingOnConnection(Queue<? extends Notification> notificationsQueue);
 
-    boolean isThrottlingEffective(Queue<T> notificationsQueue);
+    boolean isThrottlingEffective(Queue<? extends Notification> notificationsQueue);
 
     @Override
     void close() throws SecurityException;

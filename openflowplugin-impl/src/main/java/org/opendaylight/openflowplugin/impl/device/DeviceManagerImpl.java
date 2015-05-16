@@ -75,7 +75,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.MultipartReplyBody;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyDescCase;
@@ -115,7 +114,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
     private DeviceInitializationPhaseHandler deviceInitPhaseHandler;
     private NotificationService notificationService;
     private NotificationPublishService notificationPublishService;
-    private ThrottledNotificationsOfferer<PacketInMessage> throttledNotificationsOfferer;
+    private ThrottledNotificationsOfferer throttledNotificationsOfferer;
 
     private final List<DeviceContext> deviceContexts = new ArrayList<DeviceContext>();
     private final MessageIntelligenceAgency messageIntelligenceAgency;
@@ -509,6 +508,6 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         spyPool = new ScheduledThreadPoolExecutor(1);
         spyPool.scheduleAtFixedRate(messageIntelligenceAgency, spyRate, spyRate, TimeUnit.SECONDS);
 
-        throttledNotificationsOfferer = new ThrottledNotificationsOffererImpl<>(notificationPublishService, messageIntelligenceAgency);
+        throttledNotificationsOfferer = new ThrottledNotificationsOffererImpl(notificationPublishService, messageIntelligenceAgency);
     }
 }
