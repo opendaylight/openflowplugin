@@ -186,7 +186,6 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         final ListenableFuture<List<RpcResult<List<MultipartReply>>>> deviceFeaturesFuture;
 
 
-
         if (OFConstants.OFP_VERSION_1_0 == version) {
             final CapabilitiesV10 capabilitiesV10 = connectionContext.getFeatures().getCapabilitiesV10();
 
@@ -319,10 +318,9 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
                                                                                 final InstanceIdentifier<Node> nodeII, final short version) {
 
         final OutboundQueue queue = deviceContext.getPrimaryConnectionContext().getOutboundQueueProvider();
-        Long reservedXid = queue.reserveEntry();
-        final Xid xid = new Xid(reservedXid);
 
         final RequestContext<List<MultipartReply>> requestContext = emptyRequestContextStack.createRequestContext();
+        final Xid xid = requestContext.getXid();
 
         LOG.trace("Hooking xid {} to device context - precaution.", requestContext.getXid().getValue());
         deviceContext.hookRequestCtx(requestContext.getXid(), requestContext);
@@ -331,7 +329,10 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
 
         final MultiMsgCollector multiMsgCollector = deviceContext.getMultiMsgCollector();
         multiMsgCollector.registerMultipartXid(xid.getValue());
-        queue.commitEntry(reservedXid, MultipartRequestInputFactory.makeMultipartRequestInput(xid.getValue(), version, type), new FutureCallback<OfHeader>() {
+
+        createSuccessProcessingCallback(type, deviceContext, nodeII, requestContextFuture);
+
+        queue.commitEntry(xid.getValue(), MultipartRequestInputFactory.makeMultipartRequestInput(xid.getValue(), version, type), new FutureCallback<OfHeader>() {
             @Override
             public void onSuccess(final OfHeader ofHeader) {
                 if (ofHeader instanceof MultipartReply) {
@@ -353,6 +354,11 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
             }
         });
 
+
+        return requestContext.getFuture();
+    }
+
+    private void createSuccessProcessingCallback(final MultipartType type, final DeviceContext deviceContext, final InstanceIdentifier<Node> nodeII, final ListenableFuture<RpcResult<List<MultipartReply>>> requestContextFuture) {
         Futures.addCallback(requestContextFuture, new FutureCallback<RpcResult<List<MultipartReply>>>() {
             @Override
             public void onSuccess(final RpcResult<List<MultipartReply>> rpcResult) {
@@ -380,16 +386,6 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
                 LOG.info("Request of type {} for static info of node {} failed.", type, nodeII);
             }
         });
-
-
-/*
-        final ListenableFuture<RpcResult<Void>> rpcFuture = JdkFutureAdapters.listenInPoolThread(deviceContext.getPrimaryConnectionContext().getConnectionAdapter()
-                .multipartRequest(MultipartRequestInputFactory.makeMultipartRequestInput(xid.getValue(), version, type)));
-        final OFJResult2RequestCtxFuture OFJResult2RequestCtxFuture = new OFJResult2RequestCtxFuture(requestContext, deviceContext);
-        OFJResult2RequestCtxFuture.processResultFromOfJava(rpcFuture);
-*/
-
-        return requestContext.getFuture();
     }
 
     // FIXME : remove after ovs tableFeatures fix
