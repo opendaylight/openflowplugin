@@ -26,12 +26,13 @@ import org.slf4j.LoggerFactory;
  * Class counts message of {@link org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy.STATISTIC_GROUP} type
  * and provides info as debug log.
  */
-public class MessageIntelligenceAgencyImpl implements MessageIntelligenceAgency<Class<?>>, MessageIntelligenceAgencyMXBean {
+public class MessageIntelligenceAgencyImpl implements MessageIntelligenceAgency, MessageIntelligenceAgencyMXBean {
 
     private static final Logger LOG = LoggerFactory.getLogger(MessageIntelligenceAgencyImpl.class);
 
     private static final class MessageCounters {
         private static final AtomicLongFieldUpdater<MessageCounters> UPDATER = AtomicLongFieldUpdater.newUpdater(MessageCounters.class, "current");
+        @SuppressWarnings("unused")
         private volatile long current;
         private long cumulative;
 
@@ -54,7 +55,7 @@ public class MessageIntelligenceAgencyImpl implements MessageIntelligenceAgency<
 
     @Override
     public void spyMessage(@Nonnull final Class<?> message, final STATISTIC_GROUP statGroup) {
-        Preconditions.checkNotNull(message,"Message can't be null.");
+        Preconditions.checkNotNull(message, "Message can't be null.");
         getCounters(message, statGroup).increment();
     }
 

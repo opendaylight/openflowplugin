@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 20.4.2015.
  */
-public interface MessageIntelligenceAgency<M> extends MessageSpy<M> {
+public interface MessageIntelligenceAgency extends MessageSpy {
 
     List<String> provideIntelligence();
 }

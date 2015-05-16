@@ -33,7 +33,7 @@ public class ThrottledNotificationsOffererImpl<T extends Notification> implement
     private final Map<Queue<T>, SettableFuture<Void>> throttledQueues = new ConcurrentHashMap<>();
     private final ThreadPoolLoggingExecutor throttleWorkerPool;
     private final NotificationPublishService notificationPublishService;
-    private final MessageSpy<Class<?>> messageIntelligenceAgency;
+    private final MessageSpy messageIntelligenceAgency;
     private boolean finishing = false;
     private CountDownLatch sleeperLatch = new CountDownLatch(0);
 
@@ -41,7 +41,7 @@ public class ThrottledNotificationsOffererImpl<T extends Notification> implement
      * @param notificationPublishService
      * @param messageIntelligenceAgency
      */
-    public ThrottledNotificationsOffererImpl(final NotificationPublishService notificationPublishService, final MessageSpy<Class<?>> messageIntelligenceAgency) {
+    public ThrottledNotificationsOffererImpl(final NotificationPublishService notificationPublishService, final MessageSpy messageIntelligenceAgency) {
         this.notificationPublishService = notificationPublishService;
         this.messageIntelligenceAgency = messageIntelligenceAgency;
         throttleWorkerPool = new ThreadPoolLoggingExecutor(
