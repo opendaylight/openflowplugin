@@ -90,7 +90,7 @@ public class FlowCapableTopologyProvider extends AbstractBindingAwareProvider im
         }
     }
 
-    private void unregisterListener(final AutoCloseable listenerToClose) {
+    private static void unregisterListener(final AutoCloseable listenerToClose) {
         if (listenerToClose != null) {
             try {
                 listenerToClose.close();

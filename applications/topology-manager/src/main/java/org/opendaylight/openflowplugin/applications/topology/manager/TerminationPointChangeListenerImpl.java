@@ -44,7 +44,7 @@ public class TerminationPointChangeListenerImpl extends DataChangeListenerImpl {
     }
 
     @Override
-    public void onDataChanged(AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
+    public void onDataChanged(final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
         processAddedTerminationPoints(change.getCreatedData());
         processUpdatedTerminationPoints(change.getUpdatedData());
         processRemovedTerminationPoints(change.getRemovedPaths());
@@ -53,19 +53,18 @@ public class TerminationPointChangeListenerImpl extends DataChangeListenerImpl {
     /**
      * @param removedPaths
      */
-    private void processRemovedTerminationPoints(Set<InstanceIdentifier<?>> removedNodes) {
+    private void processRemovedTerminationPoints(final Set<InstanceIdentifier<?>> removedNodes) {
         for (final InstanceIdentifier<?> removedNode : removedNodes) {
             final TpId terminationPointId = provideTopologyTerminationPointId(removedNode);
             final InstanceIdentifier<TerminationPoint> iiToTopologyTerminationPoint = provideIIToTopologyTerminationPoint(
                     terminationPointId, removedNode);
-            final InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node> node = iiToTopologyTerminationPoint.firstIdentifierOf(org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node.class);
-
 
             if (iiToTopologyTerminationPoint != null) {
+                final InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node> node = iiToTopologyTerminationPoint.firstIdentifierOf(org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node.class);
                 operationProcessor.enqueueOperation(new TopologyOperation() {
 
                     @Override
-                    public void applyOperation(ReadWriteTransaction transaction) {
+                    public void applyOperation(final ReadWriteTransaction transaction) {
                         Optional<org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node> nodeOptional = Optional.absent();
                         try {
                             nodeOptional = transaction.read(LogicalDatastoreType.OPERATIONAL, node).checkedGet();
@@ -89,17 +88,17 @@ public class TerminationPointChangeListenerImpl extends DataChangeListenerImpl {
     /**
      * @param updatedData
      */
-    private void processUpdatedTerminationPoints(Map<InstanceIdentifier<?>, DataObject> updatedData) {
+    private void processUpdatedTerminationPoints(final Map<InstanceIdentifier<?>, DataObject> updatedData) {
         // TODO Auto-generated method stub
     }
 
-    private void processAddedTerminationPoints(Map<InstanceIdentifier<?>, DataObject> addedDatas) {
+    private void processAddedTerminationPoints(final Map<InstanceIdentifier<?>, DataObject> addedDatas) {
         for (Entry<InstanceIdentifier<?>, DataObject> addedData : addedDatas.entrySet()) {
             createData(addedData.getKey(), addedData.getValue());
         }
     }
 
-    protected void createData(InstanceIdentifier<?> iiToNodeInInventory, final DataObject data) {
+    protected void createData(final InstanceIdentifier<?> iiToNodeInInventory, final DataObject data) {
         TpId terminationPointIdInTopology = provideTopologyTerminationPointId(iiToNodeInInventory);
         if (terminationPointIdInTopology != null) {
             InstanceIdentifier<TerminationPoint> iiToTopologyTerminationPoint = provideIIToTopologyTerminationPoint(
@@ -122,7 +121,7 @@ public class TerminationPointChangeListenerImpl extends DataChangeListenerImpl {
         operationProcessor.enqueueOperation(new TopologyOperation() {
 
             @Override
-            public void applyOperation(ReadWriteTransaction transaction) {
+            public void applyOperation(final ReadWriteTransaction transaction) {
                 if ((flowCapNodeConnector.getState() != null && flowCapNodeConnector.getState().isLinkDown())
                         || (flowCapNodeConnector.getConfiguration() != null && flowCapNodeConnector.getConfiguration().isPORTDOWN())) {
                     TopologyManagerUtil.removeAffectedLinks(point.getTpId(), transaction, II_TO_TOPOLOGY);
@@ -131,7 +130,7 @@ public class TerminationPointChangeListenerImpl extends DataChangeListenerImpl {
         });
     }
 
-    private TerminationPoint prepareTopologyTerminationPoint(final TpId terminationPointIdInTopology,
+    private static TerminationPoint prepareTopologyTerminationPoint(final TpId terminationPointIdInTopology,
             final InstanceIdentifier<?> iiToNodeInInventory) {
         final InventoryNodeConnector inventoryNodeConnector = new InventoryNodeConnectorBuilder()
                 .setInventoryNodeConnectorRef(
@@ -147,8 +146,8 @@ public class TerminationPointChangeListenerImpl extends DataChangeListenerImpl {
      * @param terminationPointIdInTopology
      * @return
      */
-    private InstanceIdentifier<TerminationPoint> provideIIToTopologyTerminationPoint(TpId terminationPointIdInTopology,
-            InstanceIdentifier<?> iiToNodeInInventory) {
+    private InstanceIdentifier<TerminationPoint> provideIIToTopologyTerminationPoint(final TpId terminationPointIdInTopology,
+            final InstanceIdentifier<?> iiToNodeInInventory) {
         NodeId nodeIdInTopology = provideTopologyNodeId(iiToNodeInInventory);
         if (terminationPointIdInTopology != null && nodeIdInTopology != null) {
             InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node> iiToTopologyNode = provideIIToTopologyNode(nodeIdInTopology);
@@ -163,7 +162,7 @@ public class TerminationPointChangeListenerImpl extends DataChangeListenerImpl {
      * @param iiToNodeInInventory
      * @return
      */
-    private TpId provideTopologyTerminationPointId(InstanceIdentifier<?> iiToNodeInInventory) {
+    private static TpId provideTopologyTerminationPointId(final InstanceIdentifier<?> iiToNodeInInventory) {
         NodeConnectorKey inventoryNodeConnectorKey = iiToNodeInInventory.firstKeyOf(NodeConnector.class,
                 NodeConnectorKey.class);
         if (inventoryNodeConnectorKey != null) {
