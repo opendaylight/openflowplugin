@@ -38,7 +38,7 @@ public class NodeChangeListenerImpl extends DataChangeListenerImpl {
     }
 
     @Override
-    public void onDataChanged(AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
+    public void onDataChanged(final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
         processAddedNode(change.getCreatedData());
         // processUpdatedNode(change.getUpdatedData());
         processRemovedNode(change.getRemovedPaths());
@@ -47,7 +47,7 @@ public class NodeChangeListenerImpl extends DataChangeListenerImpl {
     /**
      * @param removedPaths
      */
-    private void processRemovedNode(Set<InstanceIdentifier<?>> removedNodes) {
+    private void processRemovedNode(final Set<InstanceIdentifier<?>> removedNodes) {
         for (InstanceIdentifier<?> removedNode : removedNodes) {
             final NodeId nodeId = provideTopologyNodeId(removedNode);
             final InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node> iiToTopologyRemovedNode = provideIIToTopologyNode(nodeId);
@@ -55,7 +55,7 @@ public class NodeChangeListenerImpl extends DataChangeListenerImpl {
                 operationProcessor.enqueueOperation(new TopologyOperation() {
 
                     @Override
-                    public void applyOperation(ReadWriteTransaction transaction) {
+                    public void applyOperation(final ReadWriteTransaction transaction) {
                         transaction.delete(LogicalDatastoreType.OPERATIONAL, iiToTopologyRemovedNode);
                         TopologyManagerUtil.removeAffectedLinks(nodeId, transaction, II_TO_TOPOLOGY);
                     }
@@ -78,13 +78,13 @@ public class NodeChangeListenerImpl extends DataChangeListenerImpl {
     /**
      * @param createdData
      */
-    private void processAddedNode(Map<InstanceIdentifier<?>, DataObject> addedDatas) {
+    private void processAddedNode(final Map<InstanceIdentifier<?>, DataObject> addedDatas) {
         for (Entry<InstanceIdentifier<?>, DataObject> addedData : addedDatas.entrySet()) {
             createData(addedData.getKey());
         }
     }
 
-    protected void createData(InstanceIdentifier<?> iiToNodeInInventory) {
+    protected void createData(final InstanceIdentifier<?> iiToNodeInInventory) {
         final NodeId nodeIdInTopology = provideTopologyNodeId(iiToNodeInInventory);
         if (nodeIdInTopology != null) {
             final InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node> iiToTopologyNode = provideIIToTopologyNode(nodeIdInTopology);
@@ -99,7 +99,7 @@ public class NodeChangeListenerImpl extends DataChangeListenerImpl {
      * @param iiToNodeInInventory
      * @return
      */
-    private org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node prepareTopologyNode(NodeId nodeIdInTopology, InstanceIdentifier<?> iiToNodeInInventory) {
+    private static org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node prepareTopologyNode(final NodeId nodeIdInTopology, final InstanceIdentifier<?> iiToNodeInInventory) {
         final InventoryNode inventoryNode = new InventoryNodeBuilder()
         .setInventoryNodeRef(new NodeRef(iiToNodeInInventory.firstIdentifierOf(Node.class)))
         .build();

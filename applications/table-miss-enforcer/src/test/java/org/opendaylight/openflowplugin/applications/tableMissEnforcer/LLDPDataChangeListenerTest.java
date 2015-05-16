@@ -10,10 +10,8 @@ package org.opendaylight.openflowplugin.applications.tableMissEnforcer;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-
 import org.junit.Test;
 import org.mockito.Mock;
-import org.opendaylight.openflowplugin.applications.tableMissEnforcer.LLDPPacketPuntEnforcer;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
@@ -40,18 +38,18 @@ public class LLDPDataChangeListenerTest {
         evaluateFlow(lldpDataChangeListener.createFlow());
     }
 
-    private final void evaluateFlow(Flow flow) {
+    private static void evaluateFlow(final Flow flow) {
         evaluateInstructions(flow.getInstructions());
     }
 
-    private final void evaluateInstructions(Instructions instructions) {
+    private static void evaluateInstructions(final Instructions instructions) {
         assertNotNull(instructions.getInstruction());
         assertEquals(1, instructions.getInstruction().size());
         Instruction instruction = instructions.getInstruction().get(0);
         evaluateInstruction(instruction);
     }
 
-    private final void evaluateInstruction(Instruction instruction) {
+    private static void evaluateInstruction(final Instruction instruction) {
         if (instruction.getInstruction() instanceof ApplyActionsCase) {
             ApplyActionsCase applyActionsCase = (ApplyActionsCase) instruction.getInstruction();
             assertNotNull(applyActionsCase.getApplyActions().getAction());
@@ -61,7 +59,7 @@ public class LLDPDataChangeListenerTest {
         }
     }
 
-    private final void evaluateAction(Action action) {
+    private static void evaluateAction(final Action action) {
         if (action.getAction() instanceof OutputActionCase) {
             OutputActionCase outputActionCase = (OutputActionCase) action.getAction();
             assertEquals("CONTROLLER", outputActionCase.getOutputAction().getOutputNodeConnector().getValue());
