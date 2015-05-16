@@ -18,6 +18,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.FlowCapableTransactionService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
@@ -54,12 +55,13 @@ public class FlowCapableTransactionServiceImpl extends CommonService implements 
 
         final OutboundQueue outboundQueue = getDeviceContext().getPrimaryConnectionContext().getOutboundQueueProvider();
         final SettableFuture<RpcResult<Void>> settableFuture = SettableFuture.create();
-        outboundQueue.commitEntry(xid.getValue(), barrierInputOFJavaBuilder.build(), new FutureCallback<OfHeader>() {
+        final BarrierInput barrierInput = barrierInputOFJavaBuilder.build();
+        outboundQueue.commitEntry(xid.getValue(), barrierInput, new FutureCallback<OfHeader>() {
             @Override
             public void onSuccess(final OfHeader ofHeader) {
                 RequestContextUtil.closeRequstContext(requestContext);
                 getDeviceContext().unhookRequestCtx(requestContext.getXid());
-                getMessageSpy().spyMessage(FlowModInput.class, MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
+                getMessageSpy().spyMessage(barrierInput.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
 
                 settableFuture.set(RpcResultBuilder.<Void>success().build());
             }
@@ -69,6 +71,7 @@ public class FlowCapableTransactionServiceImpl extends CommonService implements 
                 RpcResultBuilder rpcResultBuilder = RpcResultBuilder.<Void>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
                 RequestContextUtil.closeRequstContext(requestContext);
                 getDeviceContext().unhookRequestCtx(requestContext.getXid());
+                getMessageSpy().spyMessage(barrierInput.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
                 settableFuture.set(rpcResultBuilder.build());
             }
         });

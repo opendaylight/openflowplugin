@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.impl.services;
 import com.google.common.base.Function;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import java.math.BigInteger;
@@ -37,8 +36,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartRequestFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.MultipartReplyBody;
@@ -99,7 +98,8 @@ public class SalTableServiceImpl extends CommonService implements SalTableServic
                 final MultiMsgCollector multiMsgCollector = getDeviceContext().getMultiMsgCollector();
                 multiMsgCollector.registerMultipartXid(xid.getValue());
 
-                outboundQueue.commitEntry(xid.getValue(), mprInput.build(), new FutureCallback<OfHeader>() {
+                final MultipartRequestInput multipartRequestInput = mprInput.build();
+                outboundQueue.commitEntry(xid.getValue(), multipartRequestInput, new FutureCallback<OfHeader>() {
                     @Override
                     public void onSuccess(final OfHeader ofHeader) {
                         if (ofHeader instanceof MultipartReply) {
@@ -112,7 +112,7 @@ public class SalTableServiceImpl extends CommonService implements SalTableServic
                                 LOG.info("Response received is null.");
                             }
                         }
-                        getMessageSpy().spyMessage(FlowModInput.class, MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
+                        getMessageSpy().spyMessage(multipartRequestInput.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
                         settableFuture.set(RpcResultBuilder.<Void>success().build());
                     }
 
@@ -121,6 +121,7 @@ public class SalTableServiceImpl extends CommonService implements SalTableServic
                         RpcResultBuilder rpcResultBuilder = RpcResultBuilder.<Void>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
                         RequestContextUtil.closeRequstContext(requestContext);
                         getDeviceContext().unhookRequestCtx(requestContext.getXid());
+                        getMessageSpy().spyMessage(multipartRequestInput.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
                         settableFuture.set(rpcResultBuilder.build());
                     }
                 });
@@ -141,7 +142,7 @@ public class SalTableServiceImpl extends CommonService implements SalTableServic
                     final List<MultipartReply> multipartReplies = result.getResult();
                     if (multipartReplies.isEmpty()) {
                         LOGGER.debug("Multipart reply to table features request shouldn't be empty list.");
-                        finalFuture.set(RpcResultBuilder.<UpdateTableOutput> failed()
+                        finalFuture.set(RpcResultBuilder.<UpdateTableOutput>failed()
                                 .withError(ErrorType.RPC, "Multipart reply list is empty.").build());
                     } else {
                         final Long xid = multipartReplies.get(0).getXid();
@@ -155,7 +156,7 @@ public class SalTableServiceImpl extends CommonService implements SalTableServic
                     }
                 } else {
                     LOGGER.debug("OnSuccess, rpc result unsuccessful, multipart response for rpc update-table was unsuccessful.");
-                    finalFuture.set(RpcResultBuilder.<UpdateTableOutput> failed().withRpcErrors(result.getErrors())
+                    finalFuture.set(RpcResultBuilder.<UpdateTableOutput>failed().withRpcErrors(result.getErrors())
                             .build());
                 }
             }
@@ -163,7 +164,7 @@ public class SalTableServiceImpl extends CommonService implements SalTableServic
             @Override
             public void onFailure(Throwable t) {
                 LOGGER.debug("Failure multipart response for table features request. Exception: {}", t);
-                finalFuture.set(RpcResultBuilder.<UpdateTableOutput> failed()
+                finalFuture.set(RpcResultBuilder.<UpdateTableOutput>failed()
                         .withError(ErrorType.RPC, "Future error", t).build());
             }
 
@@ -174,7 +175,7 @@ public class SalTableServiceImpl extends CommonService implements SalTableServic
 
                 final List<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures> salTableFeatures = convertToSalTableFeatures(multipartReplies);
 
-                final DeviceContext  deviceContext = getDeviceContext();
+                final DeviceContext deviceContext = getDeviceContext();
                 final NodeId nodeId = deviceContext.getPrimaryConnectionContext().getNodeId();
                 final InstanceIdentifier<FlowCapableNode> flowCapableNodeII = InstanceIdentifier.create(Nodes.class)
                         .child(Node.class, new NodeKey(nodeId)).augmentation(FlowCapableNode.class);

@@ -67,7 +67,7 @@ public class SalEchoServiceImpl extends CommonService implements SalEchoService 
             public void onSuccess(final OfHeader ofHeader) {
                 RequestContextUtil.closeRequstContext(requestContext);
                 getDeviceContext().unhookRequestCtx(requestContext.getXid());
-                getMessageSpy().spyMessage(FlowModInput.class, MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
+                getMessageSpy().spyMessage(echoInputOFJava.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
 
                 settableFuture.set(RpcResultBuilder.<SendEchoOutput>success().build());
             }
@@ -77,6 +77,7 @@ public class SalEchoServiceImpl extends CommonService implements SalEchoService 
                 RpcResultBuilder rpcResultBuilder = RpcResultBuilder.<Void>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
                 RequestContextUtil.closeRequstContext(requestContext);
                 getDeviceContext().unhookRequestCtx(requestContext.getXid());
+                getMessageSpy().spyMessage(echoInputOFJava.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
                 settableFuture.set(rpcResultBuilder.build());
             }
         });

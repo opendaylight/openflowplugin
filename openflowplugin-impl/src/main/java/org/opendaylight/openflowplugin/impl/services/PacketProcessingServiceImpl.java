@@ -52,8 +52,10 @@ public class PacketProcessingServiceImpl extends CommonService implements Packet
                         if (ofHeader instanceof RpcResult) {
                             RpcResult rpcResult = (RpcResult) ofHeader;
                             if (!rpcResult.isSuccessful()) {
+                                getMessageSpy().spyMessage(message.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
                                 settableFuture.set(rpcResult);
                             } else {
+                                getMessageSpy().spyMessage(message.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
                                 settableFuture.cancel(true);
                             }
                         }
@@ -61,6 +63,8 @@ public class PacketProcessingServiceImpl extends CommonService implements Packet
 
                     @Override
                     public void onFailure(final Throwable throwable) {
+                        getMessageSpy().spyMessage(message.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
+
                         settableFuture.cancel(true);
                     }
                 });

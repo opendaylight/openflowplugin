@@ -27,7 +27,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.Sal
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeterOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MeterModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MeterModInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.common.RpcError;
@@ -83,12 +83,13 @@ public class SalMeterServiceImpl extends CommonService implements SalMeterServic
         final Xid xid = requestContext.getXid();
         ofMeterModInput.setXid(xid.getValue());
         final SettableFuture<RpcResult<Void>> settableFuture = SettableFuture.create();
-        outboundQueue.commitEntry(xid.getValue(), ofMeterModInput.build(), new FutureCallback<OfHeader>() {
+        final MeterModInput meterModInput = ofMeterModInput.build();
+        outboundQueue.commitEntry(xid.getValue(), meterModInput, new FutureCallback<OfHeader>() {
             @Override
             public void onSuccess(final OfHeader ofHeader) {
                 RequestContextUtil.closeRequstContext(requestContext);
                 getDeviceContext().unhookRequestCtx(requestContext.getXid());
-                getMessageSpy().spyMessage(FlowModInput.class, MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
+                getMessageSpy().spyMessage(meterModInput.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
 
                 settableFuture.set(RpcResultBuilder.<Void>success().build());
             }
@@ -98,6 +99,7 @@ public class SalMeterServiceImpl extends CommonService implements SalMeterServic
                 RpcResultBuilder rpcResultBuilder = RpcResultBuilder.<Void>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
                 RequestContextUtil.closeRequstContext(requestContext);
                 getDeviceContext().unhookRequestCtx(requestContext.getXid());
+                getMessageSpy().spyMessage(meterModInput.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
                 settableFuture.set(rpcResultBuilder.build());
             }
         });

@@ -9,7 +9,6 @@ package org.opendaylight.openflowplugin.impl.services;
 
 import com.google.common.base.Function;
 import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import java.util.concurrent.Future;
@@ -28,7 +27,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.Sal
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GroupModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GroupModInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.common.RpcError;
@@ -49,22 +48,22 @@ public class SalGroupServiceImpl extends CommonService implements SalGroupServic
     public Future<RpcResult<AddGroupOutput>> addGroup(final AddGroupInput input) {
         getDeviceContext().getDeviceGroupRegistry().store(input.getGroupId());
         return this.<AddGroupOutput, Void>handleServiceCall(new Function<RequestContext<AddGroupOutput>, ListenableFuture<RpcResult<Void>>>() {
-                    @Override
-                    public ListenableFuture<RpcResult<Void>> apply(final RequestContext<AddGroupOutput> requestContext) {
-                        return convertAndSend(input, requestContext);
-                    }
-                });
+            @Override
+            public ListenableFuture<RpcResult<Void>> apply(final RequestContext<AddGroupOutput> requestContext) {
+                return convertAndSend(input, requestContext);
+            }
+        });
     }
 
     @Override
     public Future<RpcResult<UpdateGroupOutput>> updateGroup(final UpdateGroupInput input) {
         return this.<UpdateGroupOutput, Void>handleServiceCall(new Function<RequestContext<UpdateGroupOutput>, ListenableFuture<RpcResult<Void>>>() {
 
-                    @Override
-                    public ListenableFuture<RpcResult<Void>> apply(final RequestContext<UpdateGroupOutput> requestContext) {
-                        return convertAndSend(input.getUpdatedGroup(), requestContext);
-                    }
-                });
+            @Override
+            public ListenableFuture<RpcResult<Void>> apply(final RequestContext<UpdateGroupOutput> requestContext) {
+                return convertAndSend(input.getUpdatedGroup(), requestContext);
+            }
+        });
     }
 
     @Override
@@ -72,11 +71,11 @@ public class SalGroupServiceImpl extends CommonService implements SalGroupServic
         getDeviceContext().getDeviceGroupRegistry().markToBeremoved(input.getGroupId());
         return this.<RemoveGroupOutput, Void>handleServiceCall(new Function<RequestContext<RemoveGroupOutput>, ListenableFuture<RpcResult<Void>>>() {
 
-                    @Override
-                    public ListenableFuture<RpcResult<Void>> apply(final RequestContext<RemoveGroupOutput> requestContext) {
-                        return convertAndSend(input, requestContext);
-                    }
-                });
+            @Override
+            public ListenableFuture<RpcResult<Void>> apply(final RequestContext<RemoveGroupOutput> requestContext) {
+                return convertAndSend(input, requestContext);
+            }
+        });
     }
 
     <T> ListenableFuture<RpcResult<Void>> convertAndSend(final Group iputGroup, final RequestContext<T> requestContext) {
@@ -86,12 +85,13 @@ public class SalGroupServiceImpl extends CommonService implements SalGroupServic
         final Xid xid = requestContext.getXid();
         ofGroupModInput.setXid(xid.getValue());
         final SettableFuture<RpcResult<Void>> settableFuture = SettableFuture.create();
-        outboundQueue.commitEntry(xid.getValue(), ofGroupModInput.build(), new FutureCallback<OfHeader>() {
+        final GroupModInput groupModInput = ofGroupModInput.build();
+        outboundQueue.commitEntry(xid.getValue(), groupModInput, new FutureCallback<OfHeader>() {
             @Override
             public void onSuccess(final OfHeader ofHeader) {
                 RequestContextUtil.closeRequstContext(requestContext);
                 getDeviceContext().unhookRequestCtx(requestContext.getXid());
-                getMessageSpy().spyMessage(FlowModInput.class, MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
+                getMessageSpy().spyMessage(groupModInput.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
 
                 settableFuture.set(RpcResultBuilder.<Void>success().build());
             }
@@ -101,6 +101,7 @@ public class SalGroupServiceImpl extends CommonService implements SalGroupServic
                 RpcResultBuilder rpcResultBuilder = RpcResultBuilder.<Void>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
                 RequestContextUtil.closeRequstContext(requestContext);
                 getDeviceContext().unhookRequestCtx(requestContext.getXid());
+                getMessageSpy().spyMessage(groupModInput.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
                 settableFuture.set(rpcResultBuilder.build());
             }
         });

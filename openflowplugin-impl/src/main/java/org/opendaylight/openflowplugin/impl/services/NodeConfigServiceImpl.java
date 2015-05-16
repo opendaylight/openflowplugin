@@ -20,7 +20,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.Nod
 import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.SetConfigInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.SetConfigOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.SwitchConfigFlag;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetConfigInputBuilder;
 import org.opendaylight.yangtools.yang.common.RpcError;
@@ -52,12 +51,13 @@ public class NodeConfigServiceImpl extends CommonService implements NodeConfigSe
         final OutboundQueue outboundQueue = getDeviceContext().getPrimaryConnectionContext().getOutboundQueueProvider();
 
         final SettableFuture<RpcResult<SetConfigOutput>> settableFuture = SettableFuture.create();
-        outboundQueue.commitEntry(xid.getValue(), builder.build(), new FutureCallback<OfHeader>() {
+        final org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetConfigInput setConfigInput = builder.build();
+        outboundQueue.commitEntry(xid.getValue(), setConfigInput, new FutureCallback<OfHeader>() {
             @Override
             public void onSuccess(final OfHeader ofHeader) {
                 RequestContextUtil.closeRequstContext(requestContext);
                 getDeviceContext().unhookRequestCtx(requestContext.getXid());
-                getMessageSpy().spyMessage(FlowModInput.class, MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
+                getMessageSpy().spyMessage(setConfigInput.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
 
                 settableFuture.set(RpcResultBuilder.<SetConfigOutput>success().build());
             }
@@ -67,6 +67,7 @@ public class NodeConfigServiceImpl extends CommonService implements NodeConfigSe
                 RpcResultBuilder rpcResultBuilder = RpcResultBuilder.<Void>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
                 RequestContextUtil.closeRequstContext(requestContext);
                 getDeviceContext().unhookRequestCtx(requestContext.getXid());
+                getMessageSpy().spyMessage(setConfigInput.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
                 settableFuture.set(rpcResultBuilder.build());
             }
         });
