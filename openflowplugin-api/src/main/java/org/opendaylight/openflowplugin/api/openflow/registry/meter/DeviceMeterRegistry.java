@@ -24,6 +24,7 @@ public interface DeviceMeterRegistry extends AutoCloseable {
 
     List<MeterId> getAllMeterIds();
 
-
+    @Override
+    void close();
 
 }

@@ -17,5 +17,5 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
  */
 public interface MessageHandler {
 
-    <M extends ChildOf<DataObject>> void onMessage(M message, RequestContext requestContext);
+    <M extends ChildOf<DataObject>> void onMessage(M message, RequestContext<?> requestContext);
 }

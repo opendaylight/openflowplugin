@@ -127,22 +127,22 @@ public class DeviceContextImplTest {
 
     @Test(expected = NullPointerException.class)
     public void testDeviceContextImplConstructorNullConnectionContext() {
-        new DeviceContextImpl(null, deviceState, dataBroker, timer, messageIntelligenceAgency,throttledConnectionsHolder);
+        new DeviceContextImpl(null, deviceState, dataBroker, timer, messageIntelligenceAgency,throttledConnectionsHolder).close();
     }
 
     @Test(expected = NullPointerException.class)
     public void testDeviceContextImplConstructorNullDataBroker() {
-        new DeviceContextImpl(connectionContext, deviceState, null, timer, messageIntelligenceAgency,throttledConnectionsHolder);
+        new DeviceContextImpl(connectionContext, deviceState, null, timer, messageIntelligenceAgency,throttledConnectionsHolder).close();
     }
 
     @Test(expected = NullPointerException.class)
     public void testDeviceContextImplConstructorNullDeviceState() {
-        new DeviceContextImpl(connectionContext, null, dataBroker, timer, messageIntelligenceAgency,throttledConnectionsHolder);
+        new DeviceContextImpl(connectionContext, null, dataBroker, timer, messageIntelligenceAgency,throttledConnectionsHolder).close();
     }
 
     @Test(expected = NullPointerException.class)
     public void testDeviceContextImplConstructorNullTimer() {
-        new DeviceContextImpl(null, deviceState, dataBroker, null, messageIntelligenceAgency,throttledConnectionsHolder);
+        new DeviceContextImpl(null, deviceState, dataBroker, null, messageIntelligenceAgency,throttledConnectionsHolder).close();
     }
 
     @Test

@@ -45,7 +45,7 @@ public class DeviceGroupRegistryImpl implements DeviceGroupRegistry {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         synchronized (groupIdList) {
             groupIdList.clear();
         }

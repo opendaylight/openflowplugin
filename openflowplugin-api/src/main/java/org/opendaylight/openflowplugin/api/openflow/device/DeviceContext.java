@@ -116,7 +116,7 @@ public interface DeviceContext extends AutoCloseable,
      * @param xid key
      * @return request by xid
      */
-    RequestContext lookupRequest(Xid xid);
+    RequestContext<?> lookupRequest(Xid xid);
 
     /**
      * @return number of outstanding requests in map
@@ -130,14 +130,14 @@ public interface DeviceContext extends AutoCloseable,
      * @param xid
      * @param requestFutureContext
      */
-    void hookRequestCtx(Xid xid, RequestContext requestFutureContext);
+    void hookRequestCtx(Xid xid, RequestContext<?> requestFutureContext);
 
     /**
      * Method removes request context from request context map.
      *
      * @param xid
      */
-    RequestContext unhookRequestCtx(Xid xid);
+    RequestContext<?> unhookRequestCtx(Xid xid);
 
     /**
      * Method exposes flow registry used for storing flow ids identified by calculated flow hash.
