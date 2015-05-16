@@ -19,5 +19,5 @@ public interface OutstandingMessageExtractor {
      * @param barrierXid
      * @return next older message, delivered messages will be removed from original cache
      */
-    RequestContext extractNextOutstandingMessage(long barrierXid);
+    RequestContext<?> extractNextOutstandingMessage(long barrierXid);
 }

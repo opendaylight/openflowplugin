@@ -9,9 +9,8 @@
 package org.opendaylight.openflowplugin.api.openflow.registry.flow;
 
 
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
-
 import java.util.Map;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 8.4.2015.
@@ -29,4 +28,7 @@ public interface DeviceFlowRegistry extends AutoCloseable {
     void removeMarked();
 
     Map<FlowHash, FlowDescriptor> getAllFlowDescriptors();
+
+    @Override
+    void close();
 }

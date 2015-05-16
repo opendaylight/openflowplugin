@@ -47,7 +47,7 @@ public class DeviceMeterRegistryImpl implements DeviceMeterRegistry {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         synchronized (meterIds) {
             meterIds.clear();
         }

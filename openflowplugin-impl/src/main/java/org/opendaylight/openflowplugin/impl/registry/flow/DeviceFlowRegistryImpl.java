@@ -8,8 +8,6 @@
 
 package org.opendaylight.openflowplugin.impl.registry.flow;
 
-import org.opendaylight.openflowplugin.impl.util.FlowUtil;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -17,6 +15,8 @@ import java.util.Map;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowHash;
+import org.opendaylight.openflowplugin.impl.util.FlowUtil;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,7 +60,7 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
             }
         }
     }
-    
+
     @Override
     public void markToBeremoved(final FlowHash flowHash) {
         synchronized (marks) {
@@ -90,7 +90,7 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         flowRegistry.clear();
         marks.clear();
     }

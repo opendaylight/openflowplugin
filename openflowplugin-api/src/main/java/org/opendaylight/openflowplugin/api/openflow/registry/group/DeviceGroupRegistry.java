@@ -24,4 +24,6 @@ public interface DeviceGroupRegistry extends AutoCloseable {
 
     List<GroupId> getAllGroupIds();
 
+    @Override
+    void close();
 }

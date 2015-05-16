@@ -99,7 +99,7 @@ public class DeviceContextImpl implements DeviceContext {
     private final DeviceState deviceState;
     private final DataBroker dataBroker;
     private final HashedWheelTimer hashedWheelTimer;
-    private final Map<Long, RequestContext> requests = new TreeMap<>();
+    private final Map<Long, RequestContext<?>> requests = new TreeMap<>();
 
     private final Map<SwitchConnectionDistinguisher, ConnectionContext> auxiliaryConnectionContexts;
     private final TransactionChainManager txChainManager;
@@ -163,7 +163,7 @@ public class DeviceContextImpl implements DeviceContext {
     }
 
     @Override
-    public <M extends ChildOf<DataObject>> void onMessage(final M message, final RequestContext requestContext) {
+    public <M extends ChildOf<DataObject>> void onMessage(final M message, final RequestContext<?> requestContext) {
         // TODO Auto-generated method stub
 
     }
@@ -215,7 +215,7 @@ public class DeviceContextImpl implements DeviceContext {
     }
 
     @Override
-    public RequestContext lookupRequest(final Xid xid) {
+    public RequestContext<?> lookupRequest(final Xid xid) {
         synchronized (requests) {
             return requests.get(xid.getValue());
         }
@@ -229,14 +229,14 @@ public class DeviceContextImpl implements DeviceContext {
     }
 
     @Override
-    public void hookRequestCtx(final Xid xid, final RequestContext requestFutureContext) {
+    public void hookRequestCtx(final Xid xid, final RequestContext<?> requestFutureContext) {
         synchronized (requests) {
             requests.put(xid.getValue(), requestFutureContext);
         }
     }
 
     @Override
-    public RequestContext unhookRequestCtx(final Xid xid) {
+    public RequestContext<?> unhookRequestCtx(final Xid xid) {
         synchronized (requests) {
             return requests.remove(xid.getValue());
         }
@@ -464,7 +464,7 @@ public class DeviceContextImpl implements DeviceContext {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         deviceState.setValid(false);
 
         LOG.trace("Removing node {} from operational DS.", getDeviceState().getNodeId());
@@ -478,7 +478,7 @@ public class DeviceContextImpl implements DeviceContext {
             primaryConnectionContext.setConnectionState(ConnectionContext.CONNECTION_STATE.RIP);
             primaryConnectionContext.getConnectionAdapter().disconnect();
         }
-        for (final Map.Entry<Long, RequestContext> entry : requests.entrySet()) {
+        for (final Map.Entry<Long, RequestContext<?>> entry : requests.entrySet()) {
             RequestContextUtil.closeRequestContextWithRpcError(entry.getValue(), DEVICE_DISCONNECTED);
         }
         for (final ConnectionContext connectionContext : auxiliaryConnectionContexts.values()) {
@@ -489,7 +489,6 @@ public class DeviceContextImpl implements DeviceContext {
         for (final DeviceContextClosedHandler deviceContextClosedHandler : closeHandlers) {
             deviceContextClosedHandler.onDeviceContextClosed(this);
         }
-
     }
 
     @Override
@@ -510,8 +509,8 @@ public class DeviceContextImpl implements DeviceContext {
     }
 
     @Override
-    public RequestContext extractNextOutstandingMessage(final long barrierXid) {
-        RequestContext nextMessage = null;
+    public RequestContext<?> extractNextOutstandingMessage(final long barrierXid) {
+        RequestContext<?> nextMessage = null;
         synchronized (requests) {
             final Iterator<Long> keyIterator = requests.keySet().iterator();
             if (keyIterator.hasNext()) {
