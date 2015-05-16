@@ -135,12 +135,8 @@ public abstract class CommonService {
 
         Long reservedXid = deviceContext.getReservedXid();
         if (null == reservedXid) {
-            //retry
-            reservedXid = deviceContext.getReservedXid();
-            if (null == reservedXid) {
-                deviceContext.getMessageSpy().spyMessage(requestContext.getClass(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_RESERVATION_REJECTED);
-                return RequestContextUtil.closeRequestContextWithRpcError(requestContext, "Outbound queue wasn't able to reserve XID.");
-            }
+            deviceContext.getMessageSpy().spyMessage(requestContext.getClass(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_RESERVATION_REJECTED);
+            return RequestContextUtil.closeRequestContextWithRpcError(requestContext, "Outbound queue wasn't able to reserve XID.");
         }
         final Xid xid = new Xid(reservedXid);
         requestContext.setXid(xid);
