@@ -110,7 +110,7 @@ public abstract class CommonService {
         final RequestContext<T> requestContext = createRequestContext();
         if (requestContext == null) {
             LOG.trace("Request context refused.");
-            deviceContext.getMessageSpy().spyMessage(null, MessageSpy.STATISTIC_GROUP.TO_SWITCH_DISREGARDED);
+            deviceContext.getMessageSpy().spyMessage(CommonService.class, MessageSpy.STATISTIC_GROUP.TO_SWITCH_DISREGARDED);
             return failedFuture();
         }
 
