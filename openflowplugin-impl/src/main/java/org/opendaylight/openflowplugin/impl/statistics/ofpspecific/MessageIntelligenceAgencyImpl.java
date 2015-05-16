@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.impl.statistics.ofpspecific;
 
+import com.google.common.base.Preconditions;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicLongFieldUpdater;
+import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +53,8 @@ public class MessageIntelligenceAgencyImpl implements MessageIntelligenceAgency<
     private final ConcurrentMap<STATISTIC_GROUP, ConcurrentMap<Class<?>, MessageCounters>> inputStats = new ConcurrentHashMap<>();
 
     @Override
-    public void spyMessage(final Class<?> message, final STATISTIC_GROUP statGroup) {
+    public void spyMessage(@Nonnull final Class<?> message, final STATISTIC_GROUP statGroup) {
+        Preconditions.checkNotNull(message,"Message can't be null.");
         getCounters(message, statGroup).increment();
     }
 
