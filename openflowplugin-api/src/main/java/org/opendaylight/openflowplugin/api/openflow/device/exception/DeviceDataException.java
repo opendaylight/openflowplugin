@@ -10,6 +10,10 @@ package org.opendaylight.openflowplugin.api.openflow.device.exception;
 
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.Error;
 
+/**
+ * @deprecated FIXME: TO BE REMOVED: migrate to org.opendaylight.openflowjava.protocol.api.connection.DeviceRequestFailedException.
+ */
+@Deprecated
 public class DeviceDataException extends Exception {
 
     /**
@@ -18,15 +22,15 @@ public class DeviceDataException extends Exception {
     private static final long serialVersionUID = 1L;
     private Error error;
 
-    public DeviceDataException(String message) {
+    public DeviceDataException(final String message) {
         super(message);
     }
 
-    public DeviceDataException(String message, Throwable cause) {
+    public DeviceDataException(final String message, final Throwable cause) {
         super(message, cause);
     }
 
-    public DeviceDataException(String message, Error error) {
+    public DeviceDataException(final String message, final Error error) {
         super(message);
         this.error= error;
     }
