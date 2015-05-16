@@ -107,9 +107,9 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
                 final FlowModInputBuilder ofFlowModInput = FlowConvertor.toFlowModInput(input, getVersion(),
                         getDatapathId());
                 final ListenableFuture<RpcResult<Void>> future = createResultForFlowMod(requestContext, ofFlowModInput);
-                Futures.addCallback(future, new FutureCallback() {
+                Futures.addCallback(future, new FutureCallback<RpcResult<Void>>() {
                     @Override
-                    public void onSuccess(final Object o) {
+                    public void onSuccess(final RpcResult<Void> o) {
                         final DeviceContext deviceContext = getDeviceContext();
                         getMessageSpy().spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
                         FlowHash flowHash = FlowHashFactory.create(input, deviceContext.getPrimaryConnectionContext().getFeatures().getVersion());
@@ -166,10 +166,10 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
         }
 
         allFlowMods.addAll(ofFlowModInputs);
-        ListenableFuture future = processFlowModInputBuilders(allFlowMods);
-        Futures.addCallback(future, new FutureCallback() {
+        ListenableFuture<RpcResult<UpdateFlowOutput>> future = processFlowModInputBuilders(allFlowMods);
+        Futures.addCallback(future, new FutureCallback<RpcResult<UpdateFlowOutput>>() {
             @Override
-            public void onSuccess(final Object o) {
+            public void onSuccess(final RpcResult<UpdateFlowOutput> o) {
                 final DeviceContext deviceContext = getDeviceContext();
                 getMessageSpy().spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
                 final short version = deviceContext.getPrimaryConnectionContext().getFeatures().getVersion();
@@ -211,13 +211,13 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
         Futures.addCallback(allFutures, new FutureCallback<List<RpcResult<T>>>() {
             @Override
             public void onSuccess(final List<RpcResult<T>> results) {
-                RpcResultBuilder rpcResultBuilder = RpcResultBuilder.success();
+                RpcResultBuilder<T> rpcResultBuilder = RpcResultBuilder.success();
                 finalFuture.set(rpcResultBuilder.build());
             }
 
             @Override
             public void onFailure(final Throwable t) {
-                RpcResultBuilder rpcResultBuilder = RpcResultBuilder.failed();
+                RpcResultBuilder<T> rpcResultBuilder = RpcResultBuilder.failed();
                 finalFuture.set(rpcResultBuilder.build());
             }
         });
@@ -244,7 +244,7 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
 
             @Override
             public void onFailure(final Throwable throwable) {
-                RpcResultBuilder rpcResultBuilder = RpcResultBuilder.<Void>failed().withError(ErrorType.APPLICATION, throwable.getMessage(), throwable);
+                RpcResultBuilder<Void> rpcResultBuilder = RpcResultBuilder.<Void>failed().withError(ErrorType.APPLICATION, throwable.getMessage(), throwable);
                 RequestContextUtil.closeRequstContext(requestContext);
                 getDeviceContext().unhookRequestCtx(requestContext.getXid());
                 settableFuture.set(rpcResultBuilder.build());

@@ -118,7 +118,7 @@ public class SalTableServiceImpl extends CommonService implements SalTableServic
 
                     @Override
                     public void onFailure(final Throwable throwable) {
-                        RpcResultBuilder rpcResultBuilder = RpcResultBuilder.<Void>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
+                        RpcResultBuilder<Void> rpcResultBuilder = RpcResultBuilder.<Void>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
                         RequestContextUtil.closeRequstContext(requestContext);
                         getDeviceContext().unhookRequestCtx(requestContext.getXid());
                         getMessageSpy().spyMessage(multipartRequestInput.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
@@ -136,7 +136,7 @@ public class SalTableServiceImpl extends CommonService implements SalTableServic
             private final Logger LOGGER = org.slf4j.LoggerFactory.getLogger(CallBackImpl.class);
 
             @Override
-            public void onSuccess(RpcResult<List<MultipartReply>> result) {
+            public void onSuccess(final RpcResult<List<MultipartReply>> result) {
 
                 if (result.isSuccessful()) {
                     final List<MultipartReply> multipartReplies = result.getResult();
@@ -162,7 +162,7 @@ public class SalTableServiceImpl extends CommonService implements SalTableServic
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(final Throwable t) {
                 LOGGER.debug("Failure multipart response for table features request. Exception: {}", t);
                 finalFuture.set(RpcResultBuilder.<UpdateTableOutput>failed()
                         .withError(ErrorType.RPC, "Future error", t).build());

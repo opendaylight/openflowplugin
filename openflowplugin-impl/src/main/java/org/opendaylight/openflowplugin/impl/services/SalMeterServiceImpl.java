@@ -39,7 +39,7 @@ public class SalMeterServiceImpl extends CommonService implements SalMeterServic
 
     private static final Logger LOG = org.slf4j.LoggerFactory.getLogger(SalMeterServiceImpl.class);
 
-    public SalMeterServiceImpl(RequestContextStack requestContextStack, DeviceContext deviceContext) {
+    public SalMeterServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
         super(requestContextStack, deviceContext);
     }
 
@@ -96,7 +96,7 @@ public class SalMeterServiceImpl extends CommonService implements SalMeterServic
 
             @Override
             public void onFailure(final Throwable throwable) {
-                RpcResultBuilder rpcResultBuilder = RpcResultBuilder.<Void>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
+                RpcResultBuilder<Void> rpcResultBuilder = RpcResultBuilder.<Void>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
                 RequestContextUtil.closeRequstContext(requestContext);
                 getDeviceContext().unhookRequestCtx(requestContext.getXid());
                 getMessageSpy().spyMessage(meterModInput.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);

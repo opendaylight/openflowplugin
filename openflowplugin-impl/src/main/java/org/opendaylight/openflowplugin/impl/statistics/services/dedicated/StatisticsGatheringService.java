@@ -79,7 +79,7 @@ public class StatisticsGatheringService extends CommonService {
 
                                              @Override
                                              public void onFailure(final Throwable throwable) {
-                                                 RpcResultBuilder rpcResultBuilder = RpcResultBuilder.<Void>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage());
+                                                 RpcResultBuilder<Void> rpcResultBuilder = RpcResultBuilder.<Void>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage());
                                                  getDeviceContext().unhookRequestCtx(requestContext.getXid());
                                                  RequestContextUtil.closeRequstContext(requestContext);
 

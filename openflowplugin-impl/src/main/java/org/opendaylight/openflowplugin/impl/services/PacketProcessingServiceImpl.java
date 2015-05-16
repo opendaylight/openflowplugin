@@ -50,7 +50,8 @@ public class PacketProcessingServiceImpl extends CommonService implements Packet
                     @Override
                     public void onSuccess(final OfHeader ofHeader) {
                         if (ofHeader instanceof RpcResult) {
-                            RpcResult rpcResult = (RpcResult) ofHeader;
+                            @SuppressWarnings("unchecked")
+                            RpcResult<Void> rpcResult = (RpcResult<Void>) ofHeader;
                             if (!rpcResult.isSuccessful()) {
                                 getMessageSpy().spyMessage(message.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
                                 settableFuture.set(rpcResult);

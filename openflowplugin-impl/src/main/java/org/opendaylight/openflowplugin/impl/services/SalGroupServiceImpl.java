@@ -38,7 +38,7 @@ import org.slf4j.Logger;
 public class SalGroupServiceImpl extends CommonService implements SalGroupService {
 
 
-    public SalGroupServiceImpl(RequestContextStack requestContextStack, DeviceContext deviceContext) {
+    public SalGroupServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
         super(requestContextStack, deviceContext);
     }
 
@@ -98,7 +98,7 @@ public class SalGroupServiceImpl extends CommonService implements SalGroupServic
 
             @Override
             public void onFailure(final Throwable throwable) {
-                RpcResultBuilder rpcResultBuilder = RpcResultBuilder.<Void>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
+                RpcResultBuilder<Void> rpcResultBuilder = RpcResultBuilder.<Void>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
                 RequestContextUtil.closeRequstContext(requestContext);
                 getDeviceContext().unhookRequestCtx(requestContext.getXid());
                 getMessageSpy().spyMessage(groupModInput.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);

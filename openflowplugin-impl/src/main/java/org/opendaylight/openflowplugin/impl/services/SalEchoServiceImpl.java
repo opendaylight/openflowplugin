@@ -73,7 +73,7 @@ public class SalEchoServiceImpl extends CommonService implements SalEchoService 
 
             @Override
             public void onFailure(final Throwable throwable) {
-                RpcResultBuilder rpcResultBuilder = RpcResultBuilder.<Void>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
+                RpcResultBuilder<SendEchoOutput> rpcResultBuilder = RpcResultBuilder.<SendEchoOutput>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
                 RequestContextUtil.closeRequstContext(requestContext);
                 getDeviceContext().unhookRequestCtx(requestContext.getXid());
                 getMessageSpy().spyMessage(echoInputOFJava.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
