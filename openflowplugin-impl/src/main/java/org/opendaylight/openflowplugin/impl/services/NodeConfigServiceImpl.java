@@ -8,8 +8,6 @@
 package org.opendaylight.openflowplugin.impl.services;
 
 import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.JdkFutureAdapters;
-import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import java.util.concurrent.Future;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
@@ -45,12 +43,8 @@ public class NodeConfigServiceImpl extends CommonService implements NodeConfigSe
 
         SetConfigInputBuilder builder = new SetConfigInputBuilder();
         SwitchConfigFlag flag = SwitchConfigFlag.valueOf(input.getFlag());
-        final Long reservedXid = getDeviceContext().getReservedXid();
-        if (null == reservedXid) {
-            return RequestContextUtil.closeRequestContextWithRpcError(requestContext, "Outbound queue wasn't able to reserve XID.");
-        }
 
-        final Xid xid = new Xid(reservedXid);
+        final Xid xid = requestContext.getXid();
         builder.setXid(xid.getValue());
         builder.setFlags(flag);
         builder.setMissSendLen(input.getMissSearchLength());
