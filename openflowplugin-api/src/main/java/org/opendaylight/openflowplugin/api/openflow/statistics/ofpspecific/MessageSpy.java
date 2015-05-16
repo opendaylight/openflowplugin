@@ -11,7 +11,7 @@ package org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific;
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 20.4.2015.
  */
-public interface MessageSpy<M> extends Runnable {
+public interface MessageSpy extends Runnable {
 
     /**
      * statistic groups overall in OFPlugin
@@ -89,5 +89,5 @@ public interface MessageSpy<M> extends Runnable {
      * @param message   from switch or to switch - depends on statGroup
      * @param statGroup
      */
-    void spyMessage(M message, STATISTIC_GROUP statGroup);
+    void spyMessage(Class<?> message, STATISTIC_GROUP statGroup);
 }

@@ -109,7 +109,7 @@ public class DeviceContextImpl implements DeviceContext {
     private final DeviceMeterRegistry deviceMeterRegistry;
     private Timeout barrierTaskTimeout;
     private NotificationService notificationService;
-    private final MessageSpy<Class<?>> messageSpy;
+    private final MessageSpy messageSpy;
     private DeviceDisconnectedHandler deviceDisconnectedHandler;
     private final Collection<DeviceContextClosedHandler> closeHandlers = new HashSet<>();
     private NotificationPublishService notificationPublishService;
