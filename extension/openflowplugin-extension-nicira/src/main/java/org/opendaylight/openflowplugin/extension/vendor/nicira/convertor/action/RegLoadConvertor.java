@@ -13,7 +13,6 @@ import org.opendaylight.openflowplugin.extension.api.ConvertorActionToOFJava;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.CodecPreconditionException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionRegLoad;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionRegLoadBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.reg.load.grouping.NxActionRegLoad;
@@ -36,7 +35,7 @@ public class RegLoadConvertor implements
         ConvertorActionFromOFJava<Action, ActionPath> {
 
     @Override
-    public org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action convert(Action input, ActionPath path) {
+    public org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action convert(final Action input, final ActionPath path) {
         NxActionRegLoad actionRegLoad = ((ActionRegLoad) input.getActionChoice()).getNxActionRegLoad();
         DstBuilder dstBuilder = new DstBuilder();
         dstBuilder.setDstChoice(RegMoveConvertor.resolveDst(actionRegLoad.getDst()));
@@ -48,11 +47,11 @@ public class RegLoadConvertor implements
         return resolveAction(nxRegLoadBuilder.build(), path);
     }
 
-    private static int resolveStart(int ofsNBints) {
+    private static int resolveStart(final int ofsNBints) {
         return extractSub(ofsNBints, 10, 6);
     }
 
-    private static int resolveEnd(int ofsNBints) {
+    private static int resolveEnd(final int ofsNBints) {
         int ofs = extractSub(ofsNBints, 10, 6);
         int nBits = extractSub(ofsNBints, 6, 0);
         return ofs + nBits;
@@ -64,8 +63,8 @@ public class RegLoadConvertor implements
         return rightShifted & mask;
     }
 
-    private static org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action resolveAction(NxRegLoad value,
-                                                                                                                    ActionPath path) {
+    private static org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action resolveAction(final NxRegLoad value,
+                                                                                                                    final ActionPath path) {
         switch (path) {
             case NODES_NODE_TABLE_FLOW_INSTRUCTIONS_INSTRUCTION_WRITEACTIONSCASE_WRITEACTIONS_ACTION_ACTION_EXTENSIONLIST_EXTENSION:
                 return new NxActionRegLoadNodesNodeTableFlowWriteActionsCaseBuilder().setNxRegLoad(value).build();
@@ -81,7 +80,7 @@ public class RegLoadConvertor implements
     }
 
     @Override
-    public Action convert(org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action nxActionArg) {
+    public Action convert(final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action nxActionArg) {
         Preconditions.checkArgument(nxActionArg instanceof NxActionRegLoadGrouping);
 
         NxActionRegLoadGrouping nxAction = (NxActionRegLoadGrouping) nxActionArg;

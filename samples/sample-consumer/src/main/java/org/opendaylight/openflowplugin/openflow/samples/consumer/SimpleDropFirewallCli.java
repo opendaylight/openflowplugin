@@ -9,7 +9,6 @@ package org.opendaylight.openflowplugin.openflow.samples.consumer;
 
 import java.util.Collections;
 import java.util.List;
-
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DropActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DropActionCaseBuilder;
@@ -17,7 +16,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.InstructionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCaseBuilder;
@@ -32,20 +30,20 @@ public class SimpleDropFirewallCli {
 
     private SimpleDropFirewall service;
 
-    public void setService(SimpleDropFirewall service) {
+    public void setService(final SimpleDropFirewall service) {
         this.service = service;
     }
 
     /**
      * Form of input is:
-     * 
+     *
      * node name node-connector number source ip-address destinatinon ip-address
-     * 
+     *
      * @param cliInput
      *            Parsed input from CLI
      * @return
      */
-    public AddFlowInput createTcpFlow(List<String> cliInput) {
+    public AddFlowInput createTcpFlow(final List<String> cliInput) {
         AddFlowInputBuilder ret = new AddFlowInputBuilder();
         ret.setNode(nodeFromString(cliInput.get(0)));
 
@@ -72,20 +70,20 @@ public class SimpleDropFirewallCli {
         //
         ApplyActionsCaseBuilder aaBldr = new ApplyActionsCaseBuilder();
         aaBldr.setApplyActions(new ApplyActionsBuilder().setAction(actions).build());
-        
+
         InstructionBuilder instructionBldr = new InstructionBuilder();
         instructionBldr.setInstruction(aaBldr.build());
-        
+
         List<Instruction> isntructions = Collections.singletonList(instructionBldr.build());
         InstructionsBuilder instructionsBldr = new InstructionsBuilder();
 		instructionsBldr.setInstruction(isntructions);
-        
+
         ret.setInstructions(instructionsBldr.build());
 
         return ret.build();
     }
 
-    private NodeRef nodeFromString(String string) {
+    private NodeRef nodeFromString(final String string) {
         // TODO Auto-generated method stub
         return null;
     }
