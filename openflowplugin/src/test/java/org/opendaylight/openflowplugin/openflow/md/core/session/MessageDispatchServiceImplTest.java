@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.Future;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -99,7 +98,7 @@ public class MessageDispatchServiceImplTest {
 
     /**
      * Test barrier message for null cookie
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -226,7 +225,7 @@ public class MessageDispatchServiceImplTest {
 
     /**
      * Test packet out message for primary connection
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -238,7 +237,7 @@ public class MessageDispatchServiceImplTest {
 
     /**
      * Test packet out message for auxiliary connection
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -256,7 +255,7 @@ public class MessageDispatchServiceImplTest {
 
     /**
      * Test packet out message when multiple auxiliary connection exist
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -293,7 +292,7 @@ public class MessageDispatchServiceImplTest {
 
     /**
      * Test for invalid session
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -600,6 +599,7 @@ class MockConnectionAdapter implements ConnectionAdapter {
 
     private MessageType messageType;
     private ConnectionReadyListener connectionReadyListener;
+    private boolean packetInFiltering;
 
     public MockConnectionAdapter() {
         setMessageType(MessageType.NONE);
@@ -780,7 +780,7 @@ class MockConnectionAdapter implements ConnectionAdapter {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter
      * #getRemoteAddress()
@@ -806,5 +806,10 @@ class MockConnectionAdapter implements ConnectionAdapter {
     public void setAutoRead(boolean arg0) {
         // TODO Auto-generated method stub
 
+    }
+
+    @Override
+    public void setPacketInFiltering(boolean packetInFiltering) {
+        this.packetInFiltering = packetInFiltering;
     }
 }

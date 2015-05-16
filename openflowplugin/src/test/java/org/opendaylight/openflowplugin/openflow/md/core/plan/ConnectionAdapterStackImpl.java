@@ -107,6 +107,7 @@ public class ConnectionAdapterStackImpl implements ConnectionAdapter, Runnable {
 
     private boolean autoRead = true;
     private final ExecutorService pool;
+    private boolean packetInFiltering;
 
 
     /**
@@ -656,4 +657,8 @@ public class ConnectionAdapterStackImpl implements ConnectionAdapter, Runnable {
         this.autoRead = autoRead;
     }
 
+    @Override
+    public void setPacketInFiltering(boolean packetInFiltering) {
+        this.packetInFiltering = packetInFiltering;
+    }
 }
