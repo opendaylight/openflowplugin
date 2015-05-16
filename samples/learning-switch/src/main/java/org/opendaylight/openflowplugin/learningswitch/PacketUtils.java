@@ -66,7 +66,7 @@ public abstract class PacketUtils {
      * @param payload
      * @return destination MAC address
      */
-    public static byte[] extractDstMac(byte[] payload) {
+    public static byte[] extractDstMac(final byte[] payload) {
         return Arrays.copyOfRange(payload, DST_MAC_START_POSITION, DST_MAC_END_POSITION);
     }
 
@@ -74,7 +74,7 @@ public abstract class PacketUtils {
      * @param payload
      * @return source MAC address
      */
-    public static byte[] extractSrcMac(byte[] payload) {
+    public static byte[] extractSrcMac(final byte[] payload) {
         return Arrays.copyOfRange(payload, SRC_MAC_START_POSITION, SRC_MAC_END_POSITION);
     }
 
@@ -82,7 +82,7 @@ public abstract class PacketUtils {
      * @param payload
      * @return source MAC address
      */
-    public static byte[] extractEtherType(byte[] payload) {
+    public static byte[] extractEtherType(final byte[] payload) {
         return Arrays.copyOfRange(payload, ETHER_TYPE_START_POSITION, ETHER_TYPE_END_POSITION);
     }
 
@@ -91,7 +91,7 @@ public abstract class PacketUtils {
      * @return {@link MacAddress} wrapping string value, baked upon binary MAC
      *         address
      */
-    public static MacAddress rawMacToMac(byte[] rawMac) {
+    public static MacAddress rawMacToMac(final byte[] rawMac) {
         MacAddress mac = null;
         if (rawMac != null && rawMac.length == MAC_ADDRESS_SIZE) {
             StringBuilder sb = new StringBuilder();
@@ -109,11 +109,10 @@ public abstract class PacketUtils {
      * @param port
      * @return port wrapped into {@link NodeConnectorRef}
      */
-    public static NodeConnectorRef createNodeConnRef(InstanceIdentifier<Node> nodeInstId, NodeKey nodeKey, String port) {
-        StringBuilder sBuild = new StringBuilder(nodeKey.getId().getValue()).append(":").append(port);
+    public static NodeConnectorRef createNodeConnRef(final InstanceIdentifier<Node> nodeInstId, final NodeKey nodeKey, final String port) {
+        StringBuilder sBuild = new StringBuilder(nodeKey.getId().getValue()).append(':').append(port);
         NodeConnectorKey nConKey = new NodeConnectorKey(new NodeConnectorId(sBuild.toString()));
-        InstanceIdentifier<NodeConnector> portPath = InstanceIdentifier.builder(nodeInstId)
-                .child(NodeConnector.class, nConKey).build();
+        InstanceIdentifier<NodeConnector> portPath = nodeInstId.child(NodeConnector.class, nConKey);
         return new NodeConnectorRef(portPath);
     }
 }
