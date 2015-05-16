@@ -12,10 +12,10 @@ import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.services.CommonService;
-import org.opendaylight.openflowplugin.impl.services.DataCrate;
 import org.opendaylight.openflowplugin.impl.services.RequestInputUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.GetFlowTablesStatisticsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.GetFlowTablesStatisticsOutput;
@@ -41,29 +41,29 @@ public class OpendaylightFlowTableStatisticsServiceImpl extends CommonService im
             final GetFlowTablesStatisticsInput input) {
 
 
-        return this.<GetFlowTablesStatisticsOutput, Void>handleServiceCall(new Function<DataCrate<GetFlowTablesStatisticsOutput>, ListenableFuture<RpcResult<Void>>>() {
+        return this.<GetFlowTablesStatisticsOutput, Void>handleServiceCall(new Function<RequestContext<GetFlowTablesStatisticsOutput>, ListenableFuture<RpcResult<Void>>>() {
 
-                    @Override
-                    public ListenableFuture<RpcResult<Void>> apply(final DataCrate<GetFlowTablesStatisticsOutput> data) {
+            @Override
+            public ListenableFuture<RpcResult<Void>> apply(final RequestContext<GetFlowTablesStatisticsOutput> requestContext) {
 
-                        // Create multipart request body for fetch all the group stats
-                        final MultipartRequestTableCaseBuilder multipartRequestTableCaseBuilder = new MultipartRequestTableCaseBuilder();
-                        final MultipartRequestTableBuilder multipartRequestTableBuilder = new MultipartRequestTableBuilder();
-                        multipartRequestTableBuilder.setEmpty(true);
-                        multipartRequestTableCaseBuilder.setMultipartRequestTable(multipartRequestTableBuilder.build());
+                // Create multipart request body for fetch all the group stats
+                final MultipartRequestTableCaseBuilder multipartRequestTableCaseBuilder = new MultipartRequestTableCaseBuilder();
+                final MultipartRequestTableBuilder multipartRequestTableBuilder = new MultipartRequestTableBuilder();
+                multipartRequestTableBuilder.setEmpty(true);
+                multipartRequestTableCaseBuilder.setMultipartRequestTable(multipartRequestTableBuilder.build());
 
-                        // Set request body to main multipart request
-                        final Xid xid = data.getRequestContext().getXid();
-                        final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
-                                MultipartType.OFPMPFLOW, xid.getValue(), getVersion());
+                // Set request body to main multipart request
+                final Xid xid = requestContext.getXid();
+                final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
+                        MultipartType.OFPMPFLOW, xid.getValue(), getVersion());
 
-                        mprInput.setMultipartRequestBody(multipartRequestTableCaseBuilder.build());
-                        final Future<RpcResult<Void>> resultFromOFLib = getDeviceContext().getPrimaryConnectionContext()
-                                .getConnectionAdapter().multipartRequest(mprInput.build());
+                mprInput.setMultipartRequestBody(multipartRequestTableCaseBuilder.build());
+                final Future<RpcResult<Void>> resultFromOFLib = getDeviceContext().getPrimaryConnectionContext()
+                        .getConnectionAdapter().multipartRequest(mprInput.build());
 
-                        return JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
-                    }
-                });
+                return JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
+            }
+        });
     }
 
 }

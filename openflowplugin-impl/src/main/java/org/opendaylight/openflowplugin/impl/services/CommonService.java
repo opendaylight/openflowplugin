@@ -97,33 +97,14 @@ public abstract class CommonService {
         return primaryConnectionAdapter;
     }
 
-    /**
-     * @param connectionID connection identifier
-     * @param function     data sender
-     * @param <T>          rpc result backend type
-     * @param <F>          final rpc backend type
-     * @return
-     */
-    public <T, F> ListenableFuture<RpcResult<T>> handleServiceCall(final BigInteger connectionID,
-                                                                   final Function<DataCrate<T>, ListenableFuture<RpcResult<F>>> function) {
-        DataCrateBuilder<T> dataCrateBuilder = DataCrateBuilder.<T>builder();
-        return handleServiceCall(function, dataCrateBuilder);
-    }
-
-    public <T, F> ListenableFuture<RpcResult<T>> handleServiceCall(final Function<DataCrate<T>, ListenableFuture<RpcResult<F>>> function) {
-        DataCrateBuilder<T> dataCrateBuilder = DataCrateBuilder.<T>builder();
-        return handleServiceCall(function, dataCrateBuilder);
-    }
 
     /**
      * @param <T>
      * @param <F>
      * @param function
-     * @param dataCrateBuilder predefined data
      * @return
      */
-    public final <T, F> ListenableFuture<RpcResult<T>> handleServiceCall(final Function<DataCrate<T>, ListenableFuture<RpcResult<F>>> function,
-                                                                         final DataCrateBuilder<T> dataCrateBuilder) {
+    public final <T, F> ListenableFuture<RpcResult<T>> handleServiceCall(final Function<RequestContext<T>, ListenableFuture<RpcResult<F>>> function) {
 
         LOG.trace("Handling general service call");
         final RequestContext<T> requestContext = createRequestContext();
@@ -140,15 +121,13 @@ public abstract class CommonService {
         }
         final Xid xid = new Xid(reservedXid);
         requestContext.setXid(xid);
-        DataCrate<T> dataCrate = dataCrateBuilder.setRequestContext(requestContext)
-                .build();
         final ListenableFuture<RpcResult<F>> resultFromOFLib;
 
         LOG.trace("Hooking xid {} to device context - precaution.", requestContext.getXid().getValue());
         deviceContext.hookRequestCtx(xid, requestContext);
 
         messageSpy.spyMessage(requestContext.getClass(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_READY_FOR_SUBMIT);
-        function.apply(dataCrate);
+        function.apply(requestContext);
 
         return requestContext.getFuture();
 

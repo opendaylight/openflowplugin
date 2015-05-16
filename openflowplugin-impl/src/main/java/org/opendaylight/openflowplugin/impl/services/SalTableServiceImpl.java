@@ -18,9 +18,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
+import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.TableFeaturesConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.TableFeaturesReplyConvertor;
@@ -34,8 +37,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartRequestFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.MultipartReplyBody;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyTableFeaturesCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.table.features._case.MultipartReplyTableFeatures;
@@ -49,6 +54,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.Upd
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeaturesKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -65,10 +71,10 @@ public class SalTableServiceImpl extends CommonService implements SalTableServic
     @Override
     public Future<RpcResult<UpdateTableOutput>> updateTable(final UpdateTableInput input) {
         class FunctionImpl implements
-                Function<DataCrate<List<MultipartReply>>, ListenableFuture<RpcResult<List<MultipartReply>>>> {
+                Function<RequestContext<List<MultipartReply>>, ListenableFuture<RpcResult<Void>>> {
 
             @Override
-            public ListenableFuture<RpcResult<List<MultipartReply>>> apply(final DataCrate<List<MultipartReply>> data) {
+            public ListenableFuture<RpcResult<Void>> apply(final RequestContext<List<MultipartReply>> requestContext) {
                 getMessageSpy().spyMessage(input.getImplementedInterface(),
                         MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
 
@@ -82,18 +88,43 @@ public class SalTableServiceImpl extends CommonService implements SalTableServic
                 caseBuilder.setMultipartRequestTableFeatures(requestBuilder.build());
 
                 // Set request body to main multipart request
-                final Xid xid = data.getRequestContext().getXid();
+                final Xid xid = requestContext.getXid();
                 getDeviceContext().getMultiMsgCollector().registerMultipartXid(xid.getValue());
                 final MultipartRequestInputBuilder mprInput = createMultipartHeader(MultipartType.OFPMPTABLEFEATURES,
                         xid.getValue());
                 mprInput.setMultipartRequestBody(caseBuilder.build());
+                final OutboundQueue outboundQueue = getDeviceContext().getPrimaryConnectionContext().getOutboundQueueProvider();
 
-                final Future<RpcResult<Void>> resultFromOFLib = getPrimaryConnectionAdapter()
-                        .multipartRequest(mprInput.build());
-                final ListenableFuture<RpcResult<Void>> resultLib = JdkFutureAdapters
-                        .listenInPoolThread(resultFromOFLib);
+                final SettableFuture<RpcResult<Void>> settableFuture = SettableFuture.create();
+                final MultiMsgCollector multiMsgCollector = getDeviceContext().getMultiMsgCollector();
+                multiMsgCollector.registerMultipartXid(xid.getValue());
 
-                return result;
+                outboundQueue.commitEntry(xid.getValue(), mprInput.build(), new FutureCallback<OfHeader>() {
+                    @Override
+                    public void onSuccess(final OfHeader ofHeader) {
+                        if (ofHeader instanceof MultipartReply) {
+                            MultipartReply multipartReply = (MultipartReply) ofHeader;
+                            multiMsgCollector.addMultipartMsg(multipartReply);
+                        } else {
+                            if (null != ofHeader) {
+                                LOG.info("Unexpected response type received {}.", ofHeader.getClass());
+                            } else {
+                                LOG.info("Response received is null.");
+                            }
+                        }
+                        getMessageSpy().spyMessage(FlowModInput.class, MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
+                        settableFuture.set(RpcResultBuilder.<Void>success().build());
+                    }
+
+                    @Override
+                    public void onFailure(final Throwable throwable) {
+                        RpcResultBuilder rpcResultBuilder = RpcResultBuilder.<Void>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
+                        RequestContextUtil.closeRequstContext(requestContext);
+                        getDeviceContext().unhookRequestCtx(requestContext.getXid());
+                        settableFuture.set(rpcResultBuilder.build());
+                    }
+                });
+                return settableFuture;
             }
         }
 

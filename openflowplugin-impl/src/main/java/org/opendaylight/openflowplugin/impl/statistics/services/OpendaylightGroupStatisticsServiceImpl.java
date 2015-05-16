@@ -13,10 +13,10 @@ import com.google.common.util.concurrent.ListenableFuture;
 import java.util.concurrent.Future;
 import org.opendaylight.openflowjava.protocol.api.util.BinContent;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.services.CommonService;
-import org.opendaylight.openflowplugin.impl.services.DataCrate;
 import org.opendaylight.openflowplugin.impl.services.RequestInputUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetAllGroupStatisticsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetAllGroupStatisticsOutput;
@@ -50,10 +50,10 @@ public class OpendaylightGroupStatisticsServiceImpl extends CommonService implem
     public Future<RpcResult<GetAllGroupStatisticsOutput>> getAllGroupStatistics(final GetAllGroupStatisticsInput input) {
 
 
-        return this.<GetAllGroupStatisticsOutput, Void>handleServiceCall(new Function<DataCrate<GetAllGroupStatisticsOutput>, ListenableFuture<RpcResult<Void>>>() {
+        return this.<GetAllGroupStatisticsOutput, Void>handleServiceCall(new Function<RequestContext<GetAllGroupStatisticsOutput>, ListenableFuture<RpcResult<Void>>>() {
 
             @Override
-            public ListenableFuture<RpcResult<Void>> apply(final DataCrate<GetAllGroupStatisticsOutput> data) {
+            public ListenableFuture<RpcResult<Void>> apply(final RequestContext<GetAllGroupStatisticsOutput> requestContext) {
 
                 final MultipartRequestGroupCaseBuilder caseBuilder = new MultipartRequestGroupCaseBuilder();
                 final MultipartRequestGroupBuilder mprGroupBuild = new MultipartRequestGroupBuilder();
@@ -64,7 +64,7 @@ public class OpendaylightGroupStatisticsServiceImpl extends CommonService implem
                 caseBuilder.setMultipartRequestGroup(mprGroupBuild.build());
 
                 // Create multipart request header
-                final Xid xid = data.getRequestContext().getXid();
+                final Xid xid = requestContext.getXid();
                 final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
                         MultipartType.OFPMPGROUP, xid.getValue(), getVersion());
 
@@ -84,13 +84,13 @@ public class OpendaylightGroupStatisticsServiceImpl extends CommonService implem
     @Override
     public Future<RpcResult<GetGroupDescriptionOutput>> getGroupDescription(final GetGroupDescriptionInput input) {
         return this.<GetGroupDescriptionOutput, Void>handleServiceCall(
-                new Function<DataCrate<GetGroupDescriptionOutput>, ListenableFuture<RpcResult<Void>>>() {
+                new Function<RequestContext<GetGroupDescriptionOutput>, ListenableFuture<RpcResult<Void>>>() {
 
                     @Override
-                    public ListenableFuture<RpcResult<Void>> apply(final DataCrate<GetGroupDescriptionOutput> data) {
+                    public ListenableFuture<RpcResult<Void>> apply(final RequestContext<GetGroupDescriptionOutput> requestContext) {
                         final MultipartRequestGroupDescCaseBuilder mprGroupDescCaseBuild = new MultipartRequestGroupDescCaseBuilder();
 
-                        final Xid xid = data.getRequestContext().getXid();
+                        final Xid xid = requestContext.getXid();
                         final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
                                 MultipartType.OFPMPGROUPDESC, xid.getValue(), getVersion());
                         mprInput.setMultipartRequestBody(mprGroupDescCaseBuild.build());
@@ -105,13 +105,13 @@ public class OpendaylightGroupStatisticsServiceImpl extends CommonService implem
     @Override
     public Future<RpcResult<GetGroupFeaturesOutput>> getGroupFeatures(final GetGroupFeaturesInput input) {
         return this.<GetGroupFeaturesOutput, Void>handleServiceCall(
-                new Function<DataCrate<GetGroupFeaturesOutput>, ListenableFuture<RpcResult<Void>>>() {
+                new Function<RequestContext<GetGroupFeaturesOutput>, ListenableFuture<RpcResult<Void>>>() {
 
                     @Override
-                    public ListenableFuture<RpcResult<Void>> apply(final DataCrate<GetGroupFeaturesOutput> data) {
+                    public ListenableFuture<RpcResult<Void>> apply(final RequestContext<GetGroupFeaturesOutput> requestContext) {
                         final MultipartRequestGroupFeaturesCaseBuilder mprGroupFeaturesBuild = new MultipartRequestGroupFeaturesCaseBuilder();
 
-                        final Xid xid = data.getRequestContext().getXid();
+                        final Xid xid = requestContext.getXid();
                         final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
                                 MultipartType.OFPMPGROUPFEATURES, xid.getValue(), getVersion());
                         mprInput.setMultipartRequestBody(mprGroupFeaturesBuild.build());
@@ -126,17 +126,17 @@ public class OpendaylightGroupStatisticsServiceImpl extends CommonService implem
     @Override
     public Future<RpcResult<GetGroupStatisticsOutput>> getGroupStatistics(final GetGroupStatisticsInput input) {
         return this.<GetGroupStatisticsOutput, Void>handleServiceCall(
-                new Function<DataCrate<GetGroupStatisticsOutput>, ListenableFuture<RpcResult<Void>>>() {
+                new Function<RequestContext<GetGroupStatisticsOutput>, ListenableFuture<RpcResult<Void>>>() {
 
                     @Override
-                    public ListenableFuture<RpcResult<Void>> apply(final DataCrate<GetGroupStatisticsOutput> data) {
+                    public ListenableFuture<RpcResult<Void>> apply(final RequestContext<GetGroupStatisticsOutput> requestContext) {
 
                         final MultipartRequestGroupCaseBuilder caseBuilder = new MultipartRequestGroupCaseBuilder();
                         final MultipartRequestGroupBuilder mprGroupBuild = new MultipartRequestGroupBuilder();
                         mprGroupBuild.setGroupId(new GroupId(input.getGroupId().getValue()));
                         caseBuilder.setMultipartRequestGroup(mprGroupBuild.build());
 
-                        final Xid xid = data.getRequestContext().getXid();
+                        final Xid xid = requestContext.getXid();
                         final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
                                 MultipartType.OFPMPGROUP, xid.getValue(), getVersion());
 

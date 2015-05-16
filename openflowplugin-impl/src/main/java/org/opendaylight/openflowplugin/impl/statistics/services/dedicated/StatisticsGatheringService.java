@@ -16,12 +16,12 @@ import java.util.List;
 import java.util.concurrent.Future;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.impl.common.MultipartRequestInputFactory;
 import org.opendaylight.openflowplugin.impl.services.CommonService;
-import org.opendaylight.openflowplugin.impl.services.DataCrate;
 import org.opendaylight.openflowplugin.impl.services.RequestContextUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
@@ -47,10 +47,10 @@ public class StatisticsGatheringService extends CommonService {
 
 
     public Future<RpcResult<List<MultipartReply>>> getStatisticsOfType(final MultipartType type) {
-        return handleServiceCall(new Function<DataCrate<List<MultipartReply>>, ListenableFuture<RpcResult<Void>>>() {
+        return handleServiceCall(new Function<RequestContext<List<MultipartReply>>, ListenableFuture<RpcResult<Void>>>() {
                                      @Override
-                                     public ListenableFuture<RpcResult<Void>> apply(final DataCrate<List<MultipartReply>> data) {
-                                         final Xid xid = data.getRequestContext().getXid();
+                                     public ListenableFuture<RpcResult<Void>> apply(final RequestContext<List<MultipartReply>> requestContext) {
+                                         final Xid xid = requestContext.getXid();
                                          final DeviceContext deviceContext = getDeviceContext();
                                          final MultiMsgCollector multiMsgCollector = deviceContext.getMultiMsgCollector();
 
@@ -80,8 +80,8 @@ public class StatisticsGatheringService extends CommonService {
                                              @Override
                                              public void onFailure(final Throwable throwable) {
                                                  RpcResultBuilder rpcResultBuilder = RpcResultBuilder.<Void>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage());
-                                                 getDeviceContext().unhookRequestCtx(data.getRequestContext().getXid());
-                                                 RequestContextUtil.closeRequstContext(data.getRequestContext());
+                                                 getDeviceContext().unhookRequestCtx(requestContext.getXid());
+                                                 RequestContextUtil.closeRequstContext(requestContext);
 
                                                  settableFuture.set(rpcResultBuilder.build());
                                              }

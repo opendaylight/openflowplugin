@@ -19,6 +19,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
+import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
@@ -100,12 +101,12 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
     @Override
     public Future<RpcResult<RemoveFlowOutput>> removeFlow(final RemoveFlowInput input) {
         LOG.trace("Calling remove flow for flow with ID ={}.", input.getFlowRef());
-        return this.<RemoveFlowOutput, Void>handleServiceCall(new Function<DataCrate<RemoveFlowOutput>, ListenableFuture<RpcResult<Void>>>() {
+        return this.<RemoveFlowOutput, Void>handleServiceCall(new Function<RequestContext<RemoveFlowOutput>, ListenableFuture<RpcResult<Void>>>() {
             @Override
-            public ListenableFuture<RpcResult<Void>> apply(final DataCrate<RemoveFlowOutput> data) {
+            public ListenableFuture<RpcResult<Void>> apply(final RequestContext<RemoveFlowOutput> requestContext) {
                 final FlowModInputBuilder ofFlowModInput = FlowConvertor.toFlowModInput(input, getVersion(),
                         getDatapathId());
-                final ListenableFuture<RpcResult<Void>> future = createResultForFlowMod(data, ofFlowModInput);
+                final ListenableFuture<RpcResult<Void>> future = createResultForFlowMod(requestContext, ofFlowModInput);
                 Futures.addCallback(future, new FutureCallback() {
                     @Override
                     public void onSuccess(final Object o) {
@@ -194,17 +195,14 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
 
         final List<ListenableFuture<RpcResult<T>>> partialFutures = new ArrayList<>();
 
-        for (FlowModInputBuilder flowModInputBuilder : ofFlowModInputs) {
-            DataCrateBuilder<T> dataCrateBuilder = DataCrateBuilder.<T>builder().setFlowModInputBuilder(flowModInputBuilder);
+        for (final FlowModInputBuilder flowModInputBuilder : ofFlowModInputs) {
             ListenableFuture<RpcResult<T>> partialFuture = handleServiceCall(
-                    new Function<DataCrate<T>, ListenableFuture<RpcResult<Void>>>() {
+                    new Function<RequestContext<T>, ListenableFuture<RpcResult<Void>>>() {
                         @Override
-                        public ListenableFuture<RpcResult<Void>> apply(final DataCrate<T> data) {
-                            return createResultForFlowMod(data);
+                        public ListenableFuture<RpcResult<Void>> apply(final RequestContext<T> requestContext) {
+                            return createResultForFlowMod(requestContext, flowModInputBuilder);
                         }
-                    },
-                    dataCrateBuilder
-            );
+                    });
             partialFutures.add(partialFuture);
         }
 
@@ -227,13 +225,9 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
         return finalFuture;
     }
 
-    protected <T> ListenableFuture<RpcResult<Void>> createResultForFlowMod(final DataCrate<T> data) {
-        return createResultForFlowMod(data, data.getFlowModInputBuilder());
-    }
-
-    protected <T> ListenableFuture<RpcResult<Void>> createResultForFlowMod(final DataCrate<T> data, final FlowModInputBuilder flowModInputBuilder) {
+    protected <T> ListenableFuture<RpcResult<Void>> createResultForFlowMod(final RequestContext<T> requestContext, final FlowModInputBuilder flowModInputBuilder) {
         final OutboundQueue outboundQueue = getDeviceContext().getPrimaryConnectionContext().getOutboundQueueProvider();
-        final long xid = data.getRequestContext().getXid().getValue();
+        final long xid = requestContext.getXid().getValue();
         flowModInputBuilder.setXid(xid);
         final FlowModInput flowModInput = flowModInputBuilder.build();
 
@@ -241,8 +235,8 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
         outboundQueue.commitEntry(xid, flowModInput, new FutureCallback<OfHeader>() {
             @Override
             public void onSuccess(final OfHeader ofHeader) {
-                RequestContextUtil.closeRequstContext(data.getRequestContext());
-                getDeviceContext().unhookRequestCtx(data.getRequestContext().getXid());
+                RequestContextUtil.closeRequstContext(requestContext);
+                getDeviceContext().unhookRequestCtx(requestContext.getXid());
                 getMessageSpy().spyMessage(FlowModInput.class, MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
 
                 settableFuture.set(RpcResultBuilder.<Void>success().build());
@@ -251,8 +245,8 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
             @Override
             public void onFailure(final Throwable throwable) {
                 RpcResultBuilder rpcResultBuilder = RpcResultBuilder.<Void>failed().withError(ErrorType.APPLICATION, throwable.getMessage(), throwable);
-                RequestContextUtil.closeRequstContext(data.getRequestContext());
-                getDeviceContext().unhookRequestCtx(data.getRequestContext().getXid());
+                RequestContextUtil.closeRequstContext(requestContext);
+                getDeviceContext().unhookRequestCtx(requestContext.getXid());
                 settableFuture.set(rpcResultBuilder.build());
             }
         });
