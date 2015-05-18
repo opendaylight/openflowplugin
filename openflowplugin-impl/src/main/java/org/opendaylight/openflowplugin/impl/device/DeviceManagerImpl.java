@@ -34,7 +34,6 @@ import org.opendaylight.openflowplugin.api.ConnectionException;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.OutboundQueueProvider;
-import org.opendaylight.openflowplugin.api.openflow.connection.ThrottledNotificationsOfferer;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
@@ -49,7 +48,6 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.Messa
 import org.opendaylight.openflowplugin.impl.common.MultipartRequestInputFactory;
 import org.opendaylight.openflowplugin.impl.common.NodeStaticReplyTranslatorUtil;
 import org.opendaylight.openflowplugin.impl.connection.OutboundQueueProviderImpl;
-import org.opendaylight.openflowplugin.impl.connection.ThrottledNotificationsOffererImpl;
 import org.opendaylight.openflowplugin.impl.device.listener.OpenflowProtocolListenerFullImpl;
 import org.opendaylight.openflowplugin.impl.rpc.AbstractRequestContext;
 import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
@@ -113,7 +111,6 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
     private DeviceInitializationPhaseHandler deviceInitPhaseHandler;
     private NotificationService notificationService;
     private NotificationPublishService notificationPublishService;
-    private ThrottledNotificationsOfferer throttledNotificationsOfferer;
 
     private final List<DeviceContext> deviceContexts = new ArrayList<DeviceContext>();
     private final MessageIntelligenceAgency messageIntelligenceAgency;
@@ -151,12 +148,16 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         // final phase - we have to add new Device to MD-SAL DataStore
         Preconditions.checkNotNull(deviceContext);
         ((DeviceContextImpl) deviceContext).submitTransaction();
+
+        deviceContext.onPublished();
     }
 
     @Override
     public void deviceConnected(@CheckForNull final ConnectionContext connectionContext) {
         Preconditions.checkArgument(connectionContext != null);
 
+        //FIXME: as soon as auxiliary connection are fully supported then this is needed only before device context published
+        connectionContext.getConnectionAdapter().setPacketInFiltering(true);
         final Short version = connectionContext.getFeatures().getVersion();
         OutboundQueueProvider outboundQueueProvider = new OutboundQueueProviderImpl(version);
         connectionContext.getConnectionAdapter().registerOutboundQueueHandler(outboundQueueProvider, maxQueueDepth, barrierNanos);
@@ -164,7 +165,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
 
         final DeviceState deviceState = new DeviceStateImpl(connectionContext.getFeatures(), connectionContext.getNodeId());
 
-        final DeviceContext deviceContext = new DeviceContextImpl(connectionContext, deviceState, dataBroker, hashedWheelTimer, messageIntelligenceAgency, throttledNotificationsOfferer);
+        final DeviceContext deviceContext = new DeviceContextImpl(connectionContext, deviceState, dataBroker, hashedWheelTimer, messageIntelligenceAgency);
 
         deviceContext.setNotificationService(notificationService);
         deviceContext.setNotificationPublishService(notificationPublishService);
@@ -487,9 +488,6 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         for (final DeviceContext deviceContext : deviceContexts) {
             deviceContext.close();
         }
-        if (throttledNotificationsOfferer != null) {
-            throttledNotificationsOfferer.close();
-        }
     }
 
     private static void createEmptyFlowCapableNodeInDs(final DeviceContext deviceContext) {
@@ -507,7 +505,5 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
     public void initialize() {
         spyPool = new ScheduledThreadPoolExecutor(1);
         spyPool.scheduleAtFixedRate(messageIntelligenceAgency, spyRate, spyRate, TimeUnit.SECONDS);
-
-        throttledNotificationsOfferer = new ThrottledNotificationsOffererImpl(notificationPublishService, messageIntelligenceAgency);
     }
 }

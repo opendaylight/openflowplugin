@@ -15,15 +15,11 @@ import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import java.math.BigInteger;
-import java.net.InetSocketAddress;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutionException;
 import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
@@ -33,7 +29,6 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
-import org.opendaylight.openflowplugin.api.openflow.connection.ThrottledNotificationsOfferer;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
@@ -78,9 +73,7 @@ import org.opendaylight.yangtools.yang.binding.ChildOf;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
-import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
-import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -108,9 +101,13 @@ public class DeviceContextImpl implements DeviceContext {
     private DeviceDisconnectedHandler deviceDisconnectedHandler;
     private final Collection<DeviceContextClosedHandler> closeHandlers = new HashSet<>();
     private NotificationPublishService notificationPublishService;
-    private final ThrottledNotificationsOfferer throttledConnectionsHolder;
-    private final BlockingQueue<PacketReceived> bumperQueue;
     private final OutboundQueue outboundQueueProvider;
+    private final MultiMsgCollector multiMsgCollector = new MultiMsgCollectorImpl();
+
+    private int outstandingNotificationsAmount = 0;
+    private boolean filteringPacketIn = false;
+    private Object throttlingLock = new Object();
+    private int filteringHighWaterMark = 0;
 
     @Override
     public MultiMsgCollector getMultiMsgCollector() {
@@ -122,16 +119,12 @@ public class DeviceContextImpl implements DeviceContext {
         return outboundQueueProvider.reserveEntry();
     }
 
-    private final MultiMsgCollector multiMsgCollector = new MultiMsgCollectorImpl();
-
-
     @VisibleForTesting
     DeviceContextImpl(@Nonnull final ConnectionContext primaryConnectionContext,
                       @Nonnull final DeviceState deviceState,
                       @Nonnull final DataBroker dataBroker,
                       @Nonnull final HashedWheelTimer hashedWheelTimer,
-                      @Nonnull final MessageSpy _messageSpy,
-                      @Nonnull final ThrottledNotificationsOfferer throttledConnectionsHolder) {
+                      @Nonnull final MessageSpy _messageSpy) {
         this.primaryConnectionContext = Preconditions.checkNotNull(primaryConnectionContext);
         this.deviceState = Preconditions.checkNotNull(deviceState);
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
@@ -142,8 +135,6 @@ public class DeviceContextImpl implements DeviceContext {
         deviceGroupRegistry = new DeviceGroupRegistryImpl();
         deviceMeterRegistry = new DeviceMeterRegistryImpl();
         messageSpy = _messageSpy;
-        this.throttledConnectionsHolder = throttledConnectionsHolder;
-        bumperQueue = new ArrayBlockingQueue<>(5000);
         multiMsgCollector.setDeviceReplyProcessor(this);
         outboundQueueProvider = Preconditions.checkNotNull(primaryConnectionContext.getOutboundQueueProvider());
     }
@@ -282,70 +273,62 @@ public class DeviceContextImpl implements DeviceContext {
     @Override
     public void processPacketInMessage(final PacketInMessage packetInMessage) {
         messageSpy.spyMessage(packetInMessage.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH);
+        final ConnectionAdapter connectionAdapter = getPrimaryConnectionContext().getConnectionAdapter();
 
         final TranslatorKey translatorKey = new TranslatorKey(packetInMessage.getVersion(), PacketIn.class.getName());
         final MessageTranslator<PacketInMessage, PacketReceived> messageTranslator = translatorLibrary.lookupTranslator(translatorKey);
         final PacketReceived packetReceived = messageTranslator.translate(packetInMessage, this, null);
 
         if (packetReceived != null) {
-            messageSpy.spyMessage(packetInMessage.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_TRANSLATE_OUT_SUCCESS);
+            messageSpy.spyMessage(packetReceived.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_TRANSLATE_OUT_SUCCESS);
         } else {
-            messageSpy.spyMessage(packetInMessage.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_TRANSLATE_SRC_FAILURE);
+            messageSpy.spyMessage(packetReceived.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_TRANSLATE_SRC_FAILURE);
             return;
         }
 
-        ListenableFuture<?> listenableFuture = notificationPublishService.offerNotification(packetReceived);
-        if (NotificationPublishService.REJECTED.equals(listenableFuture)) {
+        ListenableFuture<? extends Object> offerNotification = notificationPublishService.offerNotification(packetReceived);
+        outstandingNotificationsAmount += 1;
+        if (NotificationPublishService.REJECTED.equals(offerNotification)) {
             LOG.debug("notification offer rejected");
-            messageSpy.spyMessage(packetInMessage.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_NOTIFICATION_REJECTED);
-        } else if (listenableFuture.isDone()) {
-            Object x = null;
-            try {
-                x = listenableFuture.get();
-                messageSpy.spyMessage(packetInMessage.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS);
-            } catch (InterruptedException e) {
-                LOG.debug("notification offer interrupted: {}", e.getMessage());
-                LOG.trace("notification offer interrupted..", e);
-            } catch (ExecutionException e) {
-                LOG.debug("notification offer failed: {}", e.getMessage());
-                LOG.trace("notification offer failed..", e);
-            } finally {
-                if (null == x) {
-                    messageSpy.spyMessage(packetInMessage.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_NOTIFICATION_REJECTED);
+            messageSpy.spyMessage(packetReceived.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_NOTIFICATION_REJECTED);
+            synchronized (throttlingLock) {
+                if (outstandingNotificationsAmount > 0) {
+                    connectionAdapter.setPacketInFiltering(true);
+                    filteringPacketIn = true;
+                    filteringHighWaterMark = outstandingNotificationsAmount;
+                    LOG.debug("PacketIn filtering on: {}, watermark: {}", connectionAdapter.getRemoteAddress(), outstandingNotificationsAmount);
                 }
             }
-        } else {
-            messageSpy.spyMessage(packetInMessage.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS);
         }
-    }
 
-    private void applyThrottling(final PacketReceived packetReceived, final ConnectionAdapter connectionAdapter) {
-        final InetSocketAddress remoteAddress = connectionAdapter.getRemoteAddress();
-        LOG.debug("Notification offer refused by notification service.");
-        messageSpy.spyMessage(packetReceived.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE);
-        connectionAdapter.setAutoRead(false);
+        Futures.addCallback(offerNotification,
+                new FutureCallback<Object>() {
+                    @Override
+                    public void onSuccess(Object result) {
+                        countdownFiltering();
+                        messageSpy.spyMessage(packetReceived.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS);
+                    }
 
-        LOG.debug("Throttling ingress for {}", remoteAddress);
-        final ListenableFuture<Void> queueDone;
+                    @Override
+                    public void onFailure(Throwable t) {
+                        countdownFiltering();
+                        messageSpy.spyMessage(packetReceived.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_NOTIFICATION_REJECTED);
+                        LOG.debug("notification offer failed: {}, outstanding: {}", t.getMessage(), outstandingNotificationsAmount);
+                        LOG.trace("notification offer failed..", t);
+                    }
 
-        // adding first notification
-        bumperQueue.offer(packetReceived);
-        synchronized (bumperQueue) {
-            queueDone = throttledConnectionsHolder.applyThrottlingOnConnection(bumperQueue);
-        }
-        Futures.addCallback(queueDone, new FutureCallback<Void>() {
-            @Override
-            public void onSuccess(final Void result) {
-                LOG.debug("Un - throttling ingress for {}", remoteAddress);
-                connectionAdapter.setAutoRead(true);
-            }
-
-            @Override
-            public void onFailure(final Throwable t) {
-                LOG.warn("failed to offer queued notification for {}: {}", remoteAddress, t.getMessage());
-                LOG.debug("failed to offer queued notification for {}.. ", remoteAddress, t);
-            }
-        });
+                    private void countdownFiltering() {
+                        synchronized (throttlingLock) {
+                            outstandingNotificationsAmount -= 1;
+                            if (outstandingNotificationsAmount == 0 && filteringPacketIn) {
+                                connectionAdapter.setPacketInFiltering(false);
+                                filteringPacketIn = false;
+                                LOG.debug("PacketIn filtering off: {}, outstanding: {}", connectionAdapter.getRemoteAddress(), outstandingNotificationsAmount);
+                            }
+                        }
+                    }
+                }
+        );
     }
 
     @Override
@@ -450,4 +433,11 @@ public class DeviceContextImpl implements DeviceContext {
         txChainManager.commitOperationsGatheredInOneTransaction();
     }
 
+    @Override
+    public void onPublished() {
+        primaryConnectionContext.getConnectionAdapter().setPacketInFiltering(false);
+        for (ConnectionContext switchAuxConnectionContext : auxiliaryConnectionContexts.values()) {
+            switchAuxConnectionContext.getConnectionAdapter().setPacketInFiltering(false);
+        }
+    }
 }

@@ -167,5 +167,10 @@ public interface DeviceContext extends AutoCloseable,
 
     Long getReservedXid();
 
+    /**
+     * indicates that device context is fully published (e.g.: packetIn messages should be passed)
+     */
+    void onPublished();
+
 }
 
