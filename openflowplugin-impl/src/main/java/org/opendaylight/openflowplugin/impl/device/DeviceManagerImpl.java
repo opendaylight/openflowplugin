@@ -128,7 +128,10 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         hashedWheelTimer = new HashedWheelTimer(TICK_DURATION, TimeUnit.MILLISECONDS, 500);
         /* merge empty nodes to oper DS to predict any problems with missing parent for Node */
         final WriteTransaction tx = dataBroker.newWriteOnlyTransaction();
-        tx.merge(LogicalDatastoreType.OPERATIONAL, InstanceIdentifier.create(Nodes.class), new NodesBuilder().build());
+
+        final NodesBuilder nodesBuilder = new NodesBuilder();
+        nodesBuilder.setNode(Collections.<Node>emptyList());
+        tx.merge(LogicalDatastoreType.OPERATIONAL, InstanceIdentifier.create(Nodes.class), nodesBuilder.build());
         tx.submit();
 
         this.messageIntelligenceAgency = messageIntelligenceAgency;
