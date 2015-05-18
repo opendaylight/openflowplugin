@@ -24,6 +24,7 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 
 public abstract class CommonService {
+    protected static final RpcResult<Void> SUCCESSFUL_RPCRESULT = RpcResultBuilder.<Void>success().build();
     private static final Logger LOG = org.slf4j.LoggerFactory.getLogger(CommonService.class);
     private static final long WAIT_TIME = 2000;
     private static final BigInteger PRIMARY_CONNECTION = BigInteger.ZERO;

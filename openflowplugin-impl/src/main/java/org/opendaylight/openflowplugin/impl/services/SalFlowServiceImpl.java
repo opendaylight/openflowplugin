@@ -238,7 +238,7 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
                 RequestContextUtil.closeRequstContext(requestContext);
                 getMessageSpy().spyMessage(FlowModInput.class, MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
 
-                settableFuture.set(RpcResultBuilder.<Void>success().build());
+                settableFuture.set(SUCCESSFUL_RPCRESULT);
             }
 
             @Override
