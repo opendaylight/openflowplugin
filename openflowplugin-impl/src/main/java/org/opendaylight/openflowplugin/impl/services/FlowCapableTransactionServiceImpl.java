@@ -51,7 +51,6 @@ public class FlowCapableTransactionServiceImpl extends CommonService implements 
         barrierInputOFJavaBuilder.setXid(xid.getValue());
 
         LOG.trace("Hooking xid {} to device context - precaution.", requestContext.getXid().getValue());
-        deviceContext.hookRequestCtx(requestContext.getXid(), requestContext);
 
         final OutboundQueue outboundQueue = getDeviceContext().getPrimaryConnectionContext().getOutboundQueueProvider();
         final SettableFuture<RpcResult<Void>> settableFuture = SettableFuture.create();
@@ -60,7 +59,6 @@ public class FlowCapableTransactionServiceImpl extends CommonService implements 
             @Override
             public void onSuccess(final OfHeader ofHeader) {
                 RequestContextUtil.closeRequstContext(requestContext);
-                getDeviceContext().unhookRequestCtx(requestContext.getXid());
                 getMessageSpy().spyMessage(barrierInput.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
 
                 settableFuture.set(RpcResultBuilder.<Void>success().build());
@@ -70,7 +68,6 @@ public class FlowCapableTransactionServiceImpl extends CommonService implements 
             public void onFailure(final Throwable throwable) {
                 RpcResultBuilder<Void> rpcResultBuilder = RpcResultBuilder.<Void>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
                 RequestContextUtil.closeRequstContext(requestContext);
-                getDeviceContext().unhookRequestCtx(requestContext.getXid());
                 getMessageSpy().spyMessage(barrierInput.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
                 settableFuture.set(rpcResultBuilder.build());
             }

@@ -54,7 +54,7 @@ public class StatisticsGatheringService extends CommonService {
                                          final DeviceContext deviceContext = getDeviceContext();
                                          final MultiMsgCollector multiMsgCollector = deviceContext.getMultiMsgCollector();
 
-                                         multiMsgCollector.registerMultipartXid(xid.getValue());
+                                         multiMsgCollector.registerMultipartRequestContext(requestContext);
                                          MultipartRequestInput multipartRequestInput = MultipartRequestInputFactory.
                                                  makeMultipartRequestInput(xid.getValue(),
                                                          getVersion(),
@@ -80,7 +80,6 @@ public class StatisticsGatheringService extends CommonService {
                                              @Override
                                              public void onFailure(final Throwable throwable) {
                                                  RpcResultBuilder<Void> rpcResultBuilder = RpcResultBuilder.<Void>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage());
-                                                 getDeviceContext().unhookRequestCtx(requestContext.getXid());
                                                  RequestContextUtil.closeRequstContext(requestContext);
 
                                                  settableFuture.set(rpcResultBuilder.build());

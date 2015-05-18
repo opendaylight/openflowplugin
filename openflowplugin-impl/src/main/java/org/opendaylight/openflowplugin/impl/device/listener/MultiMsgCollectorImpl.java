@@ -17,25 +17,31 @@ import com.google.common.cache.RemovalNotification;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.device.exception.DeviceDataException;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceReplyProcessor;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
+import org.opendaylight.yangtools.yang.common.RpcError;
+import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
 /**
+ * <p>
  * openflowplugin-api
  * org.opendaylight.openflowplugin.impl.openflow.device
- * <p>
+ *
  * Implementation for {@link MultiMsgCollector} interface
  *
  * @author <a href="mailto:vdemcak@cisco.com">Vaclav Demcak</a>
  * @author <a href="mailto:tkubas@cisco.com">Timotej Kubas</a>
- *         <p>
+ *         </p>
  *         Created: Mar 23, 2015
  */
 @VisibleForTesting
@@ -77,8 +83,8 @@ public class MultiMsgCollectorImpl implements MultiMsgCollector {
     }
 
     @Override
-    public void registerMultipartXid(final long xid) {
-        cache.put(xid, new MultiCollectorObject());
+    public void registerMultipartRequestContext(final RequestContext requestContext) {
+        cache.put(requestContext.getXid().getValue(), new MultiCollectorObject(requestContext));
     }
 
     @Override
@@ -91,7 +97,7 @@ public class MultiMsgCollectorImpl implements MultiMsgCollector {
             MultipartType multipartType = reply.getType();
             LOG.trace("Orphaned multipart msg with XID : {} of type {}", xid, multipartType);
             deviceReplyProcessor.processException(new Xid(xid),
-                    new DeviceDataException("unknown xid received for multipart of type "+multipartType));
+                    new DeviceDataException("unknown xid received for multipart of type " + multipartType));
             return;
         }
 
@@ -116,9 +122,11 @@ public class MultiMsgCollectorImpl implements MultiMsgCollector {
     private class MultiCollectorObject {
         private final List<MultipartReply> replyCollection;
         private MultipartType msgType;
+        private final RequestContext requestContext;
 
-        MultiCollectorObject() {
+        MultiCollectorObject(final RequestContext requestContext) {
             replyCollection = new ArrayList<>();
+            this.requestContext = requestContext;
         }
 
         void add(final MultipartReply reply) throws DeviceDataException {
@@ -128,12 +136,39 @@ public class MultiMsgCollectorImpl implements MultiMsgCollector {
         }
 
         void publishCollection(final long xid) {
+            final RpcResult<List<MultipartReply>> rpcResult = RpcResultBuilder
+                    .<List<MultipartReply>>success()
+                    .withResult(replyCollection)
+                    .build();
+            requestContext.setResult(rpcResult);
+            try {
+                requestContext.close();
+            } catch (final Exception e) {
+                LOG.warn("Closing RequestContext failed: {}", e.getMessage());
+                LOG.debug("Closing RequestContext failed.. ", e);
+            }
             deviceReplyProcessor.processReply(new Xid(xid), replyCollection);
         }
 
         void invalidateFutureByTimeout(final long key) {
             final String msg = "MultiMsgCollector can not wait for last multipart any more";
-            deviceReplyProcessor.processException(new Xid(key), new DeviceDataException(msg));
+            DeviceDataException deviceDataException = new DeviceDataException(msg);
+            final RpcResult<List<OfHeader>> rpcResult = RpcResultBuilder
+                    .<List<OfHeader>>failed()
+                    .withError(RpcError.ErrorType.APPLICATION, String.format("Message processing failed : %s", deviceDataException.getError()), deviceDataException)
+                    .build();
+            requestContext.setResult(rpcResult);
+            try {
+                requestContext.close();
+            } catch (final Exception e) {
+                LOG.warn("Closing RequestContext failed: ", e);
+                LOG.debug("Closing RequestContext failed..", e);
+            }
+            deviceReplyProcessor.processException(new Xid(key), deviceDataException);
+        }
+
+        public RequestContext getRequestContext() {
+            return requestContext;
         }
 
         private void msgTypeValidation(final MultipartType type, final long key) throws DeviceDataException {

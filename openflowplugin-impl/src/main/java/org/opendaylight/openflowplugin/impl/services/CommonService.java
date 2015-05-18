@@ -119,9 +119,6 @@ public abstract class CommonService {
         }
         final ListenableFuture<RpcResult<F>> resultFromOFLib;
 
-        LOG.trace("Hooking xid {} to device context - precaution.", requestContext.getXid().getValue());
-        deviceContext.hookRequestCtx(requestContext.getXid(), requestContext);
-
         messageSpy.spyMessage(requestContext.getClass(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_READY_FOR_SUBMIT);
         function.apply(requestContext);
 

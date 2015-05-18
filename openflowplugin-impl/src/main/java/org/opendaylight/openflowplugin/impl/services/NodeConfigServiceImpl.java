@@ -56,7 +56,6 @@ public class NodeConfigServiceImpl extends CommonService implements NodeConfigSe
             @Override
             public void onSuccess(final OfHeader ofHeader) {
                 RequestContextUtil.closeRequstContext(requestContext);
-                getDeviceContext().unhookRequestCtx(requestContext.getXid());
                 getMessageSpy().spyMessage(setConfigInput.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
 
                 settableFuture.set(RpcResultBuilder.<SetConfigOutput>success().build());
@@ -66,7 +65,6 @@ public class NodeConfigServiceImpl extends CommonService implements NodeConfigSe
             public void onFailure(final Throwable throwable) {
                 RpcResultBuilder<SetConfigOutput> rpcResultBuilder = RpcResultBuilder.<SetConfigOutput>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
                 RequestContextUtil.closeRequstContext(requestContext);
-                getDeviceContext().unhookRequestCtx(requestContext.getXid());
                 getMessageSpy().spyMessage(setConfigInput.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
                 settableFuture.set(rpcResultBuilder.build());
             }

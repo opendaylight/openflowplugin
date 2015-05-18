@@ -88,7 +88,6 @@ public class SalTableServiceImpl extends CommonService implements SalTableServic
 
                 // Set request body to main multipart request
                 final Xid xid = requestContext.getXid();
-                getDeviceContext().getMultiMsgCollector().registerMultipartXid(xid.getValue());
                 final MultipartRequestInputBuilder mprInput = createMultipartHeader(MultipartType.OFPMPTABLEFEATURES,
                         xid.getValue());
                 mprInput.setMultipartRequestBody(caseBuilder.build());
@@ -96,7 +95,7 @@ public class SalTableServiceImpl extends CommonService implements SalTableServic
 
                 final SettableFuture<RpcResult<Void>> settableFuture = SettableFuture.create();
                 final MultiMsgCollector multiMsgCollector = getDeviceContext().getMultiMsgCollector();
-                multiMsgCollector.registerMultipartXid(xid.getValue());
+                multiMsgCollector.registerMultipartRequestContext(requestContext);
 
                 final MultipartRequestInput multipartRequestInput = mprInput.build();
                 outboundQueue.commitEntry(xid.getValue(), multipartRequestInput, new FutureCallback<OfHeader>() {
@@ -120,7 +119,7 @@ public class SalTableServiceImpl extends CommonService implements SalTableServic
                     public void onFailure(final Throwable throwable) {
                         RpcResultBuilder<Void> rpcResultBuilder = RpcResultBuilder.<Void>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
                         RequestContextUtil.closeRequstContext(requestContext);
-                        getDeviceContext().unhookRequestCtx(requestContext.getXid());
+                        multiMsgCollector.registerMultipartRequestContext(requestContext);
                         getMessageSpy().spyMessage(multipartRequestInput.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
                         settableFuture.set(rpcResultBuilder.build());
                     }

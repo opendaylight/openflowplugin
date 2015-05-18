@@ -3,6 +3,7 @@ package org.opendaylight.openflowplugin.impl.device;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
+
 import com.google.common.util.concurrent.SettableFuture;
 import io.netty.util.HashedWheelTimer;
 import java.util.ArrayList;
@@ -91,6 +92,7 @@ public class DeviceContextImplTest {
     OutboundQueueProvider outboundQueueProvider;
 
     private final AtomicLong atomicLong = new AtomicLong(0);
+
     @Before
     public void setUp() {
         Mockito.when(dataBroker.createTransactionChain(Mockito.any(TransactionChainManager.class))).thenReturn(txChainFactory);
@@ -119,7 +121,7 @@ public class DeviceContextImplTest {
         Mockito.when(txChainFactory.newWriteOnlyTransaction()).thenReturn(wTx);
         Mockito.when(dataBroker.newReadOnlyTransaction()).thenReturn(rTx);
         Mockito.when(connectionContext.getOutboundQueueProvider()).thenReturn(outboundQueueProvider);
-        deviceContext = new DeviceContextImpl(connectionContext, deviceState, dataBroker, timer, messageIntelligenceAgency,throttledConnectionsHolder);
+        deviceContext = new DeviceContextImpl(connectionContext, deviceState, dataBroker, timer, messageIntelligenceAgency, throttledConnectionsHolder);
 
         xid = new Xid(atomicLong.incrementAndGet());
         xidMulti = new Xid(atomicLong.incrementAndGet());
@@ -127,22 +129,22 @@ public class DeviceContextImplTest {
 
     @Test(expected = NullPointerException.class)
     public void testDeviceContextImplConstructorNullConnectionContext() {
-        new DeviceContextImpl(null, deviceState, dataBroker, timer, messageIntelligenceAgency,throttledConnectionsHolder).close();
+        new DeviceContextImpl(null, deviceState, dataBroker, timer, messageIntelligenceAgency, throttledConnectionsHolder).close();
     }
 
     @Test(expected = NullPointerException.class)
     public void testDeviceContextImplConstructorNullDataBroker() {
-        new DeviceContextImpl(connectionContext, deviceState, null, timer, messageIntelligenceAgency,throttledConnectionsHolder).close();
+        new DeviceContextImpl(connectionContext, deviceState, null, timer, messageIntelligenceAgency, throttledConnectionsHolder).close();
     }
 
     @Test(expected = NullPointerException.class)
     public void testDeviceContextImplConstructorNullDeviceState() {
-        new DeviceContextImpl(connectionContext, null, dataBroker, timer, messageIntelligenceAgency,throttledConnectionsHolder).close();
+        new DeviceContextImpl(connectionContext, null, dataBroker, timer, messageIntelligenceAgency, throttledConnectionsHolder).close();
     }
 
     @Test(expected = NullPointerException.class)
     public void testDeviceContextImplConstructorNullTimer() {
-        new DeviceContextImpl(null, deviceState, dataBroker, null, messageIntelligenceAgency,throttledConnectionsHolder).close();
+        new DeviceContextImpl(null, deviceState, dataBroker, null, messageIntelligenceAgency, throttledConnectionsHolder).close();
     }
 
     @Test
@@ -169,30 +171,6 @@ public class DeviceContextImplTest {
         return asyncOutputBuilder.build();
     }
 
-    @Test
-    public void testProcessReply() {
-        final GetAsyncOutput asyncOutput = createAsyncOutput(xid);
-        LOG.info("Hooking RequestContext");
-        deviceContext.hookRequestCtx(xid, requestContext);
-        Assert.assertEquals(requestContext, deviceContext.lookupRequest(xid));
-
-        Assert.assertFalse(requestContext.getFuture().isDone());
-        LOG.info("Sending reply from device");
-        deviceContext.processReply(asyncOutput);
-        Assert.assertTrue(requestContext.getFuture().isDone());
-
-        LOG.info("Checking RequestContext.future");
-        try {
-            final Object object = requestContext.getFuture().get(1L, TimeUnit.SECONDS);
-            final RpcResult<OfHeader> rpcResult = (RpcResult<OfHeader>) object;
-            final GetAsyncOutput getAsyncOutput = (GetAsyncOutput) rpcResult.getResult();
-            assertEquals(asyncOutput.getVersion(), getAsyncOutput.getVersion());
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            LOG.error("Test failed when checking RequestContext.future", e);
-            fail("fail");
-        }
-        Assert.assertTrue(deviceContext.getNumberOfOutstandingRequests() == 0);
-    }
 
     private static Error createError(final Xid xid) {
         final ErrorMessageBuilder errorMessageBuilder = new ErrorMessageBuilder();
@@ -200,59 +178,6 @@ public class DeviceContextImplTest {
         errorMessageBuilder.setCodeString("42");
         errorMessageBuilder.setXid(xid.getValue());
         return errorMessageBuilder.build();
-    }
-
-    @Test
-    public void testProcessReplyError() {
-        LOG.info("Hooking RequestContext");
-        deviceContext.hookRequestCtx(xid, requestContext);
-        Assert.assertEquals(requestContext, deviceContext.lookupRequest(xid));
-
-        Assert.assertFalse(requestContext.getFuture().isDone());
-        LOG.info("Sending error reply from device");
-        final Error error = createError(xid);
-        deviceContext.processReply(error);
-        Assert.assertTrue(requestContext.getFuture().isDone());
-
-        LOG.info("Checking RequestContext.future");
-        try {
-            final Object object = requestContext.getFuture().get(1L, TimeUnit.SECONDS);
-            final RpcResult<OfHeader> rpcResult = (RpcResult<OfHeader>) object;
-            Assert.assertFalse(rpcResult.isSuccessful());
-            final List<RpcError> errors = (List<RpcError>) rpcResult.getErrors();
-            Assert.assertTrue(errors.get(0).getCause() instanceof DeviceDataException);
-            final DeviceDataException cause = (DeviceDataException) errors.get(0).getCause();
-            Assert.assertEquals(error, cause.getError());
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            LOG.error("Test failed when checking RequestContext.future", e);
-            fail("fail");
-        }
-        Assert.assertTrue(deviceContext.getNumberOfOutstandingRequests() == 0);
-    }
-
-    @Test
-    public void testProcessReplyList() {
-        LOG.info("Hooking RequestContext");
-        deviceContext.hookRequestCtx(xidMulti, requestContextMultiReply);
-        Assert.assertEquals(requestContextMultiReply, deviceContext.lookupRequest(xidMulti));
-
-        Assert.assertFalse(requestContextMultiReply.getFuture().isDone());
-        LOG.info("Sending reply from device");
-        deviceContext.processReply(xidMulti, createMultipartReplyList(xidMulti));
-        Assert.assertTrue(requestContextMultiReply.getFuture().isDone());
-
-        LOG.info("Checking RequestContext.future");
-        try {
-            final Object object = requestContextMultiReply.getFuture().get(1L, TimeUnit.SECONDS);
-            final RpcResult<List<OfHeader>> rpcResult = (RpcResult<List<OfHeader>>) object;
-            final List<OfHeader> multipartReplies = rpcResult.getResult();
-            final List<MultipartReply> expectedMpReplies = createMultipartReplyList(xidMulti);
-            assertEquals(expectedMpReplies, multipartReplies);
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            LOG.error("Test failed when checking RequestContext.future", e);
-            fail("fail");
-        }
-        Assert.assertTrue(deviceContext.getNumberOfOutstandingRequests() == 0);
     }
 
     private static List<MultipartReply> createMultipartReplyList(final Xid xid) {
@@ -273,32 +198,5 @@ public class DeviceContextImplTest {
         return multipartReplies;
     }
 
-    @Test
-    public void testProcessException() {
-        LOG.info("Hooking RequestContext");
-        deviceContext.hookRequestCtx(xid, requestContext);
-        Assert.assertEquals(requestContext, deviceContext.lookupRequest(xid));
-
-        Assert.assertFalse(requestContext.getFuture().isDone());
-
-        LOG.info("Sending reply from device");
-        deviceContext.processException(xid, new DeviceDataException("Some freakin' error", new NullPointerException()));
-        Assert.assertTrue(requestContext.getFuture().isDone());
-
-        LOG.info("Checking RequestContext.future");
-        try {
-            final Object object = requestContext.getFuture().get(1L, TimeUnit.SECONDS);
-            final RpcResult<OfHeader> rpcResult = (RpcResult<OfHeader>) object;
-            Assert.assertFalse(rpcResult.isSuccessful());
-            final List<RpcError> errors = (List<RpcError>) rpcResult.getErrors();
-            Assert.assertTrue(errors.get(0).getCause() instanceof DeviceDataException);
-            final DeviceDataException cause = (DeviceDataException) errors.get(0).getCause();
-            Assert.assertTrue(cause.getCause() instanceof NullPointerException);
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            LOG.error("Test failed when checking RequestContext.future", e);
-            fail("fail");
-        }
-        Assert.assertTrue(deviceContext.getNumberOfOutstandingRequests() == 0);
-    }
 
 }

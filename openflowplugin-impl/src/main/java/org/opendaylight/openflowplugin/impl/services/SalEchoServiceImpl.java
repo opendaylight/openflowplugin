@@ -49,8 +49,6 @@ public class SalEchoServiceImpl extends CommonService implements SalEchoService 
 
         LOG.trace("Hooking xid {} to device context - precaution.", requestContext.getXid().getValue());
         final Xid xid = requestContext.getXid();
-        deviceContext.hookRequestCtx(xid , requestContext);
-
         final EchoInputBuilder echoInputOFJavaBuilder = new EchoInputBuilder();
         echoInputOFJavaBuilder.setVersion(getVersion());
         echoInputOFJavaBuilder.setXid(requestContext.getXid().getValue());
@@ -65,7 +63,6 @@ public class SalEchoServiceImpl extends CommonService implements SalEchoService 
             @Override
             public void onSuccess(final OfHeader ofHeader) {
                 RequestContextUtil.closeRequstContext(requestContext);
-                getDeviceContext().unhookRequestCtx(requestContext.getXid());
                 getMessageSpy().spyMessage(echoInputOFJava.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
 
                 settableFuture.set(RpcResultBuilder.<SendEchoOutput>success().build());
@@ -75,7 +72,6 @@ public class SalEchoServiceImpl extends CommonService implements SalEchoService 
             public void onFailure(final Throwable throwable) {
                 RpcResultBuilder<SendEchoOutput> rpcResultBuilder = RpcResultBuilder.<SendEchoOutput>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
                 RequestContextUtil.closeRequstContext(requestContext);
-                getDeviceContext().unhookRequestCtx(requestContext.getXid());
                 getMessageSpy().spyMessage(echoInputOFJava.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
                 settableFuture.set(rpcResultBuilder.build());
             }
