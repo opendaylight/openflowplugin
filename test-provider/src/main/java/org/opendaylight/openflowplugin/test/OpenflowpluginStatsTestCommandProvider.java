@@ -545,7 +545,7 @@ public class OpenflowpluginStatsTestCommandProvider implements CommandProvider {
 
  @Override
  public String getHelp() {
-  StringBuffer help = new StringBuffer();
+  StringBuilder help = new StringBuilder();
   help.append("---MD-SAL Stats test module---\n");
   return help.toString();
  }

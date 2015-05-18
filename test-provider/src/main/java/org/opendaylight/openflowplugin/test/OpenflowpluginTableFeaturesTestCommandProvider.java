@@ -640,7 +640,7 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
 
     @Override
     public String getHelp() {
-        StringBuffer help = new StringBuffer();
+        StringBuilder help = new StringBuilder();
         help.append("---FRM MD-SAL Table test module---\n");
         help.append("\t modifyTable <node id>        - node ref\n");
 
