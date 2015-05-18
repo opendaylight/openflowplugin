@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.impl.statistics.services;
 
 import com.google.common.base.Function;
-import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.OFConstants;
@@ -19,8 +18,10 @@ import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.impl.services.CommonService;
 import org.opendaylight.openflowplugin.impl.services.RequestInputUtils;
+import org.opendaylight.openflowplugin.impl.util.StatisticsServiceUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestQueueCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.queue._case.MultipartRequestQueueBuilder;
@@ -55,19 +56,20 @@ public class OpendaylightQueueStatisticsServiceImpl extends CommonService implem
                         MultipartRequestQueueCaseBuilder caseBuilder = new MultipartRequestQueueCaseBuilder();
                         MultipartRequestQueueBuilder mprQueueBuilder = new MultipartRequestQueueBuilder();
                         // Select all ports
-                        mprQueueBuilder.setPortNo(OFConstants.OFPP_ANY);
                         // Select all the ports
                         mprQueueBuilder.setQueueId(OFConstants.OFPQ_ALL);
+                        mprQueueBuilder.setPortNo(OFConstants.OFPP_ANY);
                         caseBuilder.setMultipartRequestQueue(mprQueueBuilder.build());
 
                         // Set request body to main multipart request
                         final Xid xid = requestContext.getXid();
+
                         MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
                                 MultipartType.OFPMPQUEUE, xid.getValue(), getVersion());
                         mprInput.setMultipartRequestBody(caseBuilder.build());
-                        Future<RpcResult<Void>> resultFromOFLib = getDeviceContext().getPrimaryConnectionContext()
-                                .getConnectionAdapter().multipartRequest(mprInput.build());
-                        return JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
+                        MultipartRequestInput multipartRequestInput = mprInput.build();
+
+                        return StatisticsServiceUtil.getRpcResultListenableFuture(xid, multipartRequestInput, getDeviceContext());
                     }
                 });
 
@@ -85,11 +87,12 @@ public class OpendaylightQueueStatisticsServiceImpl extends CommonService implem
                         MultipartRequestQueueCaseBuilder caseBuilder = new MultipartRequestQueueCaseBuilder();
                         MultipartRequestQueueBuilder mprQueueBuilder = new MultipartRequestQueueBuilder();
                         // Select all queues
-                        mprQueueBuilder.setQueueId(OFConstants.OFPQ_ALL);
                         // Select specific port
                         final short version = getVersion();
                         mprQueueBuilder.setPortNo(InventoryDataServiceUtil.portNumberfromNodeConnectorId(
                                 OpenflowVersion.get(version), input.getNodeConnectorId()));
+
+                        mprQueueBuilder.setQueueId(OFConstants.OFPQ_ALL);
                         caseBuilder.setMultipartRequestQueue(mprQueueBuilder.build());
 
                         // Set request body to main multipart request
@@ -97,10 +100,8 @@ public class OpendaylightQueueStatisticsServiceImpl extends CommonService implem
                         MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
                                 MultipartType.OFPMPQUEUE, xid.getValue(), version);
                         mprInput.setMultipartRequestBody(caseBuilder.build());
-                        Future<RpcResult<Void>> resultFromOFLib = getDeviceContext().getPrimaryConnectionContext()
-                                .getConnectionAdapter().multipartRequest(mprInput.build());
-                        return JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
-
+                        MultipartRequestInput multipartRequestInput = mprInput.build();
+                        return StatisticsServiceUtil.getRpcResultListenableFuture(xid, multipartRequestInput, getDeviceContext());
                     }
                 });
     }
@@ -129,9 +130,8 @@ public class OpendaylightQueueStatisticsServiceImpl extends CommonService implem
                         MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
                                 MultipartType.OFPMPQUEUE, xid.getValue(), version);
                         mprInput.setMultipartRequestBody(caseBuilder.build());
-                        Future<RpcResult<Void>> resultFromOFLib = getDeviceContext().getPrimaryConnectionContext()
-                                .getConnectionAdapter().multipartRequest(mprInput.build());
-                        return JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
+                        MultipartRequestInput multipartRequestInput = mprInput.build();
+                        return StatisticsServiceUtil.getRpcResultListenableFuture(xid, multipartRequestInput, getDeviceContext());
                     }
                 });
     }

@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.impl.statistics.services;
 
 import com.google.common.base.Function;
-import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -17,6 +16,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.services.CommonService;
 import org.opendaylight.openflowplugin.impl.services.RequestInputUtils;
+import org.opendaylight.openflowplugin.impl.util.StatisticsServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.GetFlowTablesStatisticsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.GetFlowTablesStatisticsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.OpendaylightFlowTableStatisticsService;
@@ -58,10 +58,7 @@ public class OpendaylightFlowTableStatisticsServiceImpl extends CommonService im
                         MultipartType.OFPMPFLOW, xid.getValue(), getVersion());
 
                 mprInput.setMultipartRequestBody(multipartRequestTableCaseBuilder.build());
-                final Future<RpcResult<Void>> resultFromOFLib = getDeviceContext().getPrimaryConnectionContext()
-                        .getConnectionAdapter().multipartRequest(mprInput.build());
-
-                return JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
+                return StatisticsServiceUtil.getRpcResultListenableFuture(xid, mprInput.build(), getDeviceContext());
             }
         });
     }

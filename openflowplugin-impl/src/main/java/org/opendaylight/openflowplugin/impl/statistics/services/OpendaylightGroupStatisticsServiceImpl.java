@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.impl.statistics.services;
 
 import com.google.common.base.Function;
-import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.concurrent.Future;
 import org.opendaylight.openflowjava.protocol.api.util.BinContent;
@@ -18,6 +17,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.services.CommonService;
 import org.opendaylight.openflowplugin.impl.services.RequestInputUtils;
+import org.opendaylight.openflowplugin.impl.util.StatisticsServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetAllGroupStatisticsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetAllGroupStatisticsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetGroupDescriptionInput;
@@ -29,6 +29,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.OpendaylightGroupStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestGroupCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestGroupDescCaseBuilder;
@@ -73,13 +74,14 @@ public class OpendaylightGroupStatisticsServiceImpl extends CommonService implem
 
                 // Send the request, no cookies associated, use any connection
 
-                final Future<RpcResult<Void>> resultFromOFLib = getDeviceContext().getPrimaryConnectionContext()
-                        .getConnectionAdapter().multipartRequest(mprInput.build());
-                return JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
+                MultipartRequestInput multipartRequestInput = mprInput.build();
+
+                return StatisticsServiceUtil.getRpcResultListenableFuture(xid, multipartRequestInput, getDeviceContext());
             }
         });
 
     }
+
 
     @Override
     public Future<RpcResult<GetGroupDescriptionOutput>> getGroupDescription(final GetGroupDescriptionInput input) {
@@ -94,9 +96,8 @@ public class OpendaylightGroupStatisticsServiceImpl extends CommonService implem
                         final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
                                 MultipartType.OFPMPGROUPDESC, xid.getValue(), getVersion());
                         mprInput.setMultipartRequestBody(mprGroupDescCaseBuild.build());
-                        final Future<RpcResult<Void>> resultFromOFLib = getDeviceContext().getPrimaryConnectionContext()
-                                .getConnectionAdapter().multipartRequest(mprInput.build());
-                        return JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
+                        MultipartRequestInput multipartRequestInput = mprInput.build();
+                        return StatisticsServiceUtil.getRpcResultListenableFuture(xid, multipartRequestInput, getDeviceContext());
                     }
                 });
 
@@ -115,9 +116,8 @@ public class OpendaylightGroupStatisticsServiceImpl extends CommonService implem
                         final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
                                 MultipartType.OFPMPGROUPFEATURES, xid.getValue(), getVersion());
                         mprInput.setMultipartRequestBody(mprGroupFeaturesBuild.build());
-                        final Future<RpcResult<Void>> resultFromOFLib = getDeviceContext().getPrimaryConnectionContext()
-                                .getConnectionAdapter().multipartRequest(mprInput.build());
-                        return JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
+                        MultipartRequestInput multipartRequestInput = mprInput.build();
+                        return StatisticsServiceUtil.getRpcResultListenableFuture(xid, multipartRequestInput, getDeviceContext());
                     }
                 });
 
@@ -141,9 +141,8 @@ public class OpendaylightGroupStatisticsServiceImpl extends CommonService implem
                                 MultipartType.OFPMPGROUP, xid.getValue(), getVersion());
 
                         mprInput.setMultipartRequestBody(caseBuilder.build());
-                        final Future<RpcResult<Void>> resultFromOFLib = getDeviceContext().getPrimaryConnectionContext()
-                                .getConnectionAdapter().multipartRequest(mprInput.build());
-                        return JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
+                        MultipartRequestInput multipartRequestInput = mprInput.build();
+                        return StatisticsServiceUtil.getRpcResultListenableFuture(xid, multipartRequestInput, getDeviceContext());
                     }
                 });
     }

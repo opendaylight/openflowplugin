@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.impl.statistics.services;
 import com.google.common.base.Function;
 import com.google.common.base.MoreObjects;
 import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +25,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.impl.services.CommonService;
 import org.opendaylight.openflowplugin.impl.services.RequestInputUtils;
+import org.opendaylight.openflowplugin.impl.util.StatisticsServiceUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchReactor;
 import org.opendaylight.openflowplugin.openflow.md.util.FlowCreatorUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForAllFlowsInput;
@@ -96,10 +96,7 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
 
                         mprInput.setMultipartRequestBody(multipartRequestAggregateCaseBuilder.build());
 
-                        final Future<RpcResult<Void>> resultFromOFLib = getDeviceContext().getPrimaryConnectionContext()
-                                .getConnectionAdapter().multipartRequest(mprInput.build());
-
-                        return JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
+                        return StatisticsServiceUtil.getRpcResultListenableFuture(xid, mprInput.build(), getDeviceContext());
                     }
                 });
 
@@ -161,9 +158,7 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
                                 MultipartType.OFPMPAGGREGATE, xid.getValue(), version);
 
                         mprInput.setMultipartRequestBody(multipartRequestAggregateCaseBuilder.build());
-                        final Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext()
-                                .getConnectionAdapter().multipartRequest(mprInput.build());
-                        return JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
+                        return StatisticsServiceUtil.getRpcResultListenableFuture(xid, mprInput.build(), getDeviceContext());
                     }
                 });
 
@@ -232,9 +227,7 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
                         MultipartType.OFPMPFLOW, xid.getValue(), version);
 
                 mprInput.setMultipartRequestBody(multipartRequestFlowCaseBuilder.build());
-                final Future<RpcResult<Void>> resultFromOFLib = getDeviceContext().getPrimaryConnectionContext()
-                        .getConnectionAdapter().multipartRequest(mprInput.build());
-                return JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
+                return StatisticsServiceUtil.getRpcResultListenableFuture(xid, mprInput.build(), getDeviceContext());
             }
         });
     }
@@ -265,9 +258,7 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
 
                 multipartRequestFlowCaseBuilder.setMultipartRequestFlow(mprFlowRequestBuilder.build());
                 mprInput.setMultipartRequestBody(multipartRequestFlowCaseBuilder.build());
-                final Future<RpcResult<Void>> resultFromOFLib = getDeviceContext().getPrimaryConnectionContext()
-                        .getConnectionAdapter().multipartRequest(mprInput.build());
-                return JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
+                return StatisticsServiceUtil.getRpcResultListenableFuture(xid, mprInput.build(), getDeviceContext());
             }
         });
     }
@@ -322,9 +313,7 @@ public class OpendaylightFlowStatisticsServiceImpl extends CommonService impleme
                 final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
                         MultipartType.OFPMPFLOW, xid.getValue(), version);
                 mprInput.setMultipartRequestBody(multipartRequestFlowCaseBuilder.build());
-                final Future<RpcResult<Void>> resultFromOFLib = deviceContext.getPrimaryConnectionContext()
-                        .getConnectionAdapter().multipartRequest(mprInput.build());
-                return JdkFutureAdapters.listenInPoolThread(resultFromOFLib);
+                return StatisticsServiceUtil.getRpcResultListenableFuture(xid, mprInput.build(), getDeviceContext());
             }
         });
     }
