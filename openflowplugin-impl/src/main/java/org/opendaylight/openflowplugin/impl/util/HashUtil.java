@@ -388,7 +388,7 @@ public final class HashUtil {
 
         long delta = IPV6_TOKENS_COUNT - stringTokenizer.countTokens();
 
-        StringBuffer additions = new StringBuffer();
+        StringBuilder additions = new StringBuilder();
 
         if (delta > 0) {
             while (delta > 0) {
@@ -396,7 +396,8 @@ public final class HashUtil {
                 delta--;
             }
             if (ipv6Value.contains("/")) {
-                ipv6Value = ipv6Value.replace("/", additions.toString() + "/");
+                additions.append('/');
+                ipv6Value = ipv6Value.replace("/", additions.toString());
             } else {
                 ipv6Value += additions.toString();
             }

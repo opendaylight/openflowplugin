@@ -699,7 +699,7 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
 
     @Override
     public String getHelp() {
-        StringBuffer help = new StringBuffer();
+        StringBuilder help = new StringBuilder();
         help.append("---FRM MD-SAL Group test module---\n");
         help.append("\t addGroup <node id>        - node ref\n");
         help.append("\t modifyGroup <node id>        - node ref\n");
