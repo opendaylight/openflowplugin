@@ -274,7 +274,7 @@ public class StatListenCommitFlow extends StatAbstractListenCommit<Flow, Openday
      * FIXME: CREATE BETTER KEY - for flow (MATCH is the problem)
      */
     static String buildFlowIdOperKey(final FlowAndStatisticsMapList deviceFlow) {
-        return new StringBuffer().append(deviceFlow.getMatch())
+        return new StringBuilder().append(deviceFlow.getMatch())
                 .append(deviceFlow.getPriority()).append(deviceFlow.getCookie().getValue()).toString();
     }
 
