@@ -82,7 +82,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
                         <type xmlns:binding="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding:impl">binding:binding-new-notification-publish-service</type>
                         <name>binding-notification-publish-adapter</name>
                     </notification-publish-adapter>
-                    <rpc-requests-quota>20000</rpc-requests-quota>
+                    <rpc-requests-quota>200000</rpc-requests-quota>
                 </module>
             </modules>
 
