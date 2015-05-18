@@ -23,7 +23,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOutInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInput;
+import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
 public class PacketProcessingServiceImpl extends CommonService implements PacketProcessingService {
 
@@ -49,24 +51,16 @@ public class PacketProcessingServiceImpl extends CommonService implements Packet
                 outboundQueue.commitEntry(xid.getValue(), message, new FutureCallback<OfHeader>() {
                     @Override
                     public void onSuccess(final OfHeader ofHeader) {
-                        if (ofHeader instanceof RpcResult) {
-                            @SuppressWarnings("unchecked")
-                            RpcResult<Void> rpcResult = (RpcResult<Void>) ofHeader;
-                            if (!rpcResult.isSuccessful()) {
-                                getMessageSpy().spyMessage(message.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
-                                settableFuture.set(rpcResult);
-                            } else {
-                                getMessageSpy().spyMessage(message.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
-                                settableFuture.cancel(true);
-                            }
-                        }
+                        getMessageSpy().spyMessage(message.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
+                        final RpcResultBuilder<Void> rpcResultBuilder = RpcResultBuilder.<Void>success();
+                        settableFuture.set(rpcResultBuilder.build());
                     }
 
                     @Override
                     public void onFailure(final Throwable throwable) {
                         getMessageSpy().spyMessage(message.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
-
-                        settableFuture.cancel(true);
+                        final RpcResultBuilder<Void> rpcResultBuilder = RpcResultBuilder.<Void>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
+                        settableFuture.set(rpcResultBuilder.build());
                     }
                 });
                 return settableFuture;
