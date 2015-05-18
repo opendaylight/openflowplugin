@@ -23,13 +23,13 @@ public abstract class RpcUtil {
     public static void smokeRpc(RpcResult<?> result) throws Exception {
         if (!result.isSuccessful()) {
             Throwable firstCause = null;
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             for (RpcError error : result.getErrors()) {
                 if (firstCause != null) {
                     firstCause = error.getCause();
                 }
                 
-                sb.append("rpcError:").append(error.getCause().getMessage()).append(";");
+                sb.append("rpcError:").append(error.getCause().getMessage()).append(';');
             }
             throw new Exception(sb.toString(), firstCause);
         }

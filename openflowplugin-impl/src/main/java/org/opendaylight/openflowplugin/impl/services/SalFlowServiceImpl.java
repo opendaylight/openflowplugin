@@ -120,7 +120,7 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
                     public void onFailure(final Throwable throwable) {
                         getMessageSpy().spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
                         LOG.trace("Flow modification failed..", throwable);
-                        StringBuffer errors = new StringBuffer();
+                        StringBuilder errors = new StringBuilder();
                         try {
                             RpcResult<Void> result = future.get();
                             Collection<RpcError> rpcErrors = result.getErrors();

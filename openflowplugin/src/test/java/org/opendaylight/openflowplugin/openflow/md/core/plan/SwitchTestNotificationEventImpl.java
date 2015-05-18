@@ -34,16 +34,16 @@ public class SwitchTestNotificationEventImpl implements
 
     @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer("SwitchTestNotificationEventImpl [notification=");
+        StringBuilder sb = new StringBuilder("SwitchTestNotificationEventImpl [notification=");
         if (notification instanceof OfHeader) {
             OfHeader header = (OfHeader) notification;
-            sb.append("version:").append(header.getVersion()).append(";")
-                .append("xid:").append(header.getXid()).append(";")
+            sb.append("version:").append(header.getVersion()).append(';')
+                .append("xid:").append(header.getXid()).append(';')
                 .append("type:").append(header.getClass().getSimpleName());
         } else {
             sb.append(notification.toString());
         }
-        sb.append("]");
+        sb.append(']');
         return sb.toString();
     }
 }
