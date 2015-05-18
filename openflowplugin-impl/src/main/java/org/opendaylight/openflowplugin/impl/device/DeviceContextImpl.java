@@ -19,10 +19,8 @@ import java.net.InetSocketAddress;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutionException;
@@ -57,7 +55,6 @@ import org.opendaylight.openflowplugin.impl.device.listener.MultiMsgCollectorImp
 import org.opendaylight.openflowplugin.impl.registry.flow.DeviceFlowRegistryImpl;
 import org.opendaylight.openflowplugin.impl.registry.group.DeviceGroupRegistryImpl;
 import org.opendaylight.openflowplugin.impl.registry.meter.DeviceMeterRegistryImpl;
-import org.opendaylight.openflowplugin.impl.services.RequestContextUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.session.SwitchConnectionCookieOFImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
@@ -99,8 +96,6 @@ public class DeviceContextImpl implements DeviceContext {
     private final DeviceState deviceState;
     private final DataBroker dataBroker;
     private final HashedWheelTimer hashedWheelTimer;
-    private final Map<Long, RequestContext<?>> requests = new TreeMap<>();
-
     private final Map<SwitchConnectionDistinguisher, ConnectionContext> auxiliaryConnectionContexts;
     private final TransactionChainManager txChainManager;
     private TranslatorLibrary translatorLibrary;
@@ -214,33 +209,6 @@ public class DeviceContextImpl implements DeviceContext {
         return auxiliaryConnectionContexts.get(new SwitchConnectionCookieOFImpl(cookie.longValue()));
     }
 
-    @Override
-    public RequestContext<?> lookupRequest(final Xid xid) {
-        synchronized (requests) {
-            return requests.get(xid.getValue());
-        }
-    }
-
-    @Override
-    public int getNumberOfOutstandingRequests() {
-        synchronized (requests) {
-            return requests.size();
-        }
-    }
-
-    @Override
-    public void hookRequestCtx(final Xid xid, final RequestContext<?> requestFutureContext) {
-        synchronized (requests) {
-            requests.put(xid.getValue(), requestFutureContext);
-        }
-    }
-
-    @Override
-    public RequestContext<?> unhookRequestCtx(final Xid xid) {
-        synchronized (requests) {
-            return requests.remove(xid.getValue());
-        }
-    }
 
     @Override
     public DeviceFlowRegistry getDeviceFlowRegistry() {
@@ -259,93 +227,25 @@ public class DeviceContextImpl implements DeviceContext {
 
     @Override
     public void processReply(final OfHeader ofHeader) {
-        final RequestContext requestContext = requests.remove(ofHeader.getXid());
-        if (null != requestContext) {
-            RpcResult<OfHeader> rpcResult;
-            if (ofHeader instanceof Error) {
-                //TODO : this is the point, where we can discover that add flow operation failed and where we should
-                //TODO : remove this flow from deviceFlowRegistry
-                final Error error = (Error) ofHeader;
-                final String message = "Operation on device failed with xid " + ofHeader.getXid() + ".";
-                rpcResult = RpcResultBuilder
-                        .<OfHeader>failed()
-                        .withError(RpcError.ErrorType.APPLICATION, message, new DeviceDataException(message, error))
-                        .build();
-                messageSpy.spyMessage(ofHeader.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE);
-            } else {
-                rpcResult = RpcResultBuilder
-                        .<OfHeader>success()
-                        .withResult(ofHeader)
-                        .build();
-                messageSpy.spyMessage(ofHeader.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS);
-            }
-
-            requestContext.setResult(rpcResult);
-            try {
-                requestContext.close();
-            } catch (final Exception e) {
-                LOG.warn("Closing RequestContext failed: {}", e.getMessage());
-                LOG.debug("Closing RequestContext failed.. ", e);
-            }
+        RpcResult<OfHeader> rpcResult;
+        if (ofHeader instanceof Error) {
+            messageSpy.spyMessage(ofHeader.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE);
         } else {
-            LOG.warn("Can't find request context registered for xid : {}. Type of reply: {}. From address: {}", ofHeader.getXid(), ofHeader.getClass().getName(),
-                    getPrimaryConnectionContext().getConnectionAdapter().getRemoteAddress());
+            messageSpy.spyMessage(ofHeader.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS);
         }
+
     }
 
     @Override
     public void processReply(final Xid xid, final List<MultipartReply> ofHeaderList) {
-        final RequestContext requestContext;
-        synchronized (requests) {
-            requestContext = requests.remove(xid.getValue());
-        }
-        if (null != requestContext) {
-            final RpcResult<List<MultipartReply>> rpcResult = RpcResultBuilder
-                    .<List<MultipartReply>>success()
-                    .withResult(ofHeaderList)
-                    .build();
-            requestContext.setResult(rpcResult);
-            for (final MultipartReply multipartReply : ofHeaderList) {
-                messageSpy.spyMessage(multipartReply.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE);
-            }
-
-            unhookRequestCtx(xid);
-            try {
-                requestContext.close();
-            } catch (final Exception e) {
-                LOG.warn("Closing RequestContext failed: {}", e.getMessage());
-                LOG.debug("Closing RequestContext failed.. ", e);
-            }
-        } else {
-            LOG.warn("Can't find request context registered for xid : {}. Type of reply: MULTIPART. From address: {}", xid.getValue(),
-                    getPrimaryConnectionContext().getConnectionAdapter().getRemoteAddress());
+        for (final MultipartReply multipartReply : ofHeaderList) {
+            messageSpy.spyMessage(multipartReply.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE);
         }
     }
 
     @Override
     public void processException(final Xid xid, final DeviceDataException deviceDataException) {
-
-        LOG.trace("Processing exception for xid : {}", xid.getValue());
-
-        final RequestContext requestContext = requests.remove(xid.getValue());
-
-        if (null != requestContext) {
-            final RpcResult<List<OfHeader>> rpcResult = RpcResultBuilder
-                    .<List<OfHeader>>failed()
-                    .withError(RpcError.ErrorType.APPLICATION, String.format("Message processing failed : %s", deviceDataException.getError()), deviceDataException)
-                    .build();
-            requestContext.setResult(rpcResult);
-            messageSpy.spyMessage(deviceDataException.getClass(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE);
-            try {
-                requestContext.close();
-            } catch (final Exception e) {
-                LOG.warn("Closing RequestContext failed: ", e);
-                LOG.debug("Closing RequestContext failed..", e);
-            }
-        } else {
-            LOG.warn("Can't find request context registered for xid : {}. Exception message {}",
-                    xid.getValue(), deviceDataException.getMessage());
-        }
+        messageSpy.spyMessage(deviceDataException.getClass(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE);
     }
 
     @Override
@@ -478,9 +378,6 @@ public class DeviceContextImpl implements DeviceContext {
             primaryConnectionContext.setConnectionState(ConnectionContext.CONNECTION_STATE.RIP);
             primaryConnectionContext.getConnectionAdapter().disconnect();
         }
-        for (final Map.Entry<Long, RequestContext<?>> entry : requests.entrySet()) {
-            RequestContextUtil.closeRequestContextWithRpcError(entry.getValue(), DEVICE_DISCONNECTED);
-        }
         for (final ConnectionContext connectionContext : auxiliaryConnectionContexts.values()) {
             if (connectionContext.getConnectionAdapter().isAlive()) {
                 connectionContext.getConnectionAdapter().disconnect();
@@ -506,21 +403,6 @@ public class DeviceContextImpl implements DeviceContext {
             final SwitchConnectionDistinguisher connectionDistinguisher = createConnectionDistinguisher(connectionContext);
             auxiliaryConnectionContexts.remove(connectionDistinguisher);
         }
-    }
-
-    @Override
-    public RequestContext<?> extractNextOutstandingMessage(final long barrierXid) {
-        RequestContext<?> nextMessage = null;
-        synchronized (requests) {
-            final Iterator<Long> keyIterator = requests.keySet().iterator();
-            if (keyIterator.hasNext()) {
-                final Long oldestXid = keyIterator.next();
-                if (oldestXid < barrierXid) {
-                    nextMessage = requests.remove(oldestXid);
-                }
-            }
-        }
-        return nextMessage;
     }
 
     @Override

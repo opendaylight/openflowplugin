@@ -236,7 +236,6 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
             @Override
             public void onSuccess(final OfHeader ofHeader) {
                 RequestContextUtil.closeRequstContext(requestContext);
-                getDeviceContext().unhookRequestCtx(requestContext.getXid());
                 getMessageSpy().spyMessage(FlowModInput.class, MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
 
                 settableFuture.set(RpcResultBuilder.<Void>success().build());
@@ -246,7 +245,6 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
             public void onFailure(final Throwable throwable) {
                 RpcResultBuilder<Void> rpcResultBuilder = RpcResultBuilder.<Void>failed().withError(ErrorType.APPLICATION, throwable.getMessage(), throwable);
                 RequestContextUtil.closeRequstContext(requestContext);
-                getDeviceContext().unhookRequestCtx(requestContext.getXid());
                 settableFuture.set(rpcResultBuilder.build());
             }
         });

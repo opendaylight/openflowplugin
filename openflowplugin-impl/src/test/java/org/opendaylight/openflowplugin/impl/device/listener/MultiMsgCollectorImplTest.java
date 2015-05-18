@@ -20,6 +20,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.device.exception.DeviceDataException;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceReplyProcessor;
@@ -31,13 +32,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 /**
  * openflowplugin-api
  * org.opendaylight.openflowplugin.impl.openflow.device
- *
+ * <p/>
  * Test class for testing basic method functionality for {@link MultiMsgCollector}
  *
  * @author <a href="mailto:vdemcak@cisco.com">Vaclav Demcak</a>
  * @author <a href="mailto:tkubas@cisco.com">Timotej Kubas</a>
- *
- * Created: Mar 23, 2015
+ *         <p/>
+ *         Created: Mar 23, 2015
  */
 @RunWith(MockitoJUnitRunner.class)
 public class MultiMsgCollectorImplTest {
@@ -53,6 +54,10 @@ public class MultiMsgCollectorImplTest {
     ArgumentCaptor<Xid> xidCaptor;
     @Captor
     ArgumentCaptor<List<MultipartReply>> mmCaptor;
+    @Mock
+    RequestContext requestContext;
+    final Long xid = 1L;
+
 
     private final String hwTestValue = "test-value";
     private final String expectedExpirationMsg = "MultiMsgCollector can not wait for last multipart any more";
@@ -64,6 +69,7 @@ public class MultiMsgCollectorImplTest {
         collector = new MultiMsgCollectorImpl(1);
         collector.setDeviceReplyProcessor(deviceProcessor);
         cleanUpCheck = Runnables.doNothing();
+        Mockito.when(requestContext.getXid()).thenReturn(new Xid(xid));
     }
 
     @After
@@ -71,19 +77,19 @@ public class MultiMsgCollectorImplTest {
         Thread.sleep(1100L);
 
         // flush cache action
-        collector.registerMultipartXid(0L);
+        collector.registerMultipartRequestContext(requestContext);
         cleanUpCheck.run();
         Mockito.verifyNoMoreInteractions(deviceProcessor);
     }
 
     /**
      * test of ${link MultiMsgCollector#addMultipartMsg} <br>
-     *     success with message consisting of 1 part
+     * success with message consisting of 1 part
      */
     @Test
     public void testAddMultipartMsgOne() {
         final Long xid = 1L;
-        collector.registerMultipartXid(xid);
+        collector.registerMultipartRequestContext(requestContext);
         collector.addMultipartMsg(MsgGeneratorTestUtils.makeMultipartDescReply(xid, hwTestValue, false).build());
 
         Mockito.verify(deviceProcessor).processReply(xidCaptor.capture(), mmCaptor.capture());
@@ -95,13 +101,13 @@ public class MultiMsgCollectorImplTest {
     }
 
     /**
-     *  test of ${link MultiMsgCollector#addMultipartMsg} <br>
-     *     success with message consisting of 2 parts
+     * test of ${link MultiMsgCollector#addMultipartMsg} <br>
+     * success with message consisting of 2 parts
      */
     @Test
     public void testAddMultipartMsgTwo() {
         final Long xid = 1L;
-        collector.registerMultipartXid(xid);
+        collector.registerMultipartRequestContext(requestContext);
         collector.addMultipartMsg(MsgGeneratorTestUtils.makeMultipartDescReply(xid, hwTestValue, true).build());
         collector.addMultipartMsg(MsgGeneratorTestUtils.makeMultipartDescReply(xid, hwTestValue, false).build());
 
@@ -116,7 +122,7 @@ public class MultiMsgCollectorImplTest {
 
     /**
      * test of ${link MultiMsgCollector#addMultipartMsg} <br>
-     *     xid not registered before message
+     * xid not registered before message
      */
     @Test
     public void testAddMultipartMsgNotExpectedXid() {
@@ -130,12 +136,11 @@ public class MultiMsgCollectorImplTest {
 
     /**
      * test of ${link MultiMsgCollector#addMultipartMsg} <br>
-     *     message types are inconsistent - second message is final and should be rejected
+     * message types are inconsistent - second message is final and should be rejected
      */
     @Test
     public void testAddMultipartMsgWrongType1() {
-        final Long xid = 1L;
-        collector.registerMultipartXid(xid);
+        collector.registerMultipartRequestContext(requestContext);
         collector.addMultipartMsg(MsgGeneratorTestUtils.makeMultipartDescReply(xid, hwTestValue, true).build());
         collector.addMultipartMsg(MsgGeneratorTestUtils.makeMultipartDescReply(xid, hwTestValue, false)
                 .setType(MultipartType.OFPMPPORTDESC).build());
@@ -159,12 +164,12 @@ public class MultiMsgCollectorImplTest {
 
     /**
      * test of ${link MultiMsgCollector#addMultipartMsg} <br>
-     *     message types are inconsistent - second message is not final and should be rejected
+     * message types are inconsistent - second message is not final and should be rejected
      */
     @Test
     public void testAddMultipartMsgWrongType2() {
         final Long xid = 1L;
-        collector.registerMultipartXid(xid);
+        collector.registerMultipartRequestContext(requestContext);
         collector.addMultipartMsg(MsgGeneratorTestUtils.makeMultipartDescReply(xid, hwTestValue, true).build());
         collector.addMultipartMsg(MsgGeneratorTestUtils.makeMultipartDescReply(xid, hwTestValue, true)
                 .setType(MultipartType.OFPMPPORTDESC).build());
@@ -187,12 +192,12 @@ public class MultiMsgCollectorImplTest {
 
     /**
      * test of ${link MultiMsgCollector#addMultipartMsg} <br>
-     *     message types are inconsistent - second message and third should be rejected
+     * message types are inconsistent - second message and third should be rejected
      */
     @Test
     public void testAddMultipartMsgWrongType3() {
         final Long xid = 1L;
-        collector.registerMultipartXid(xid);
+        collector.registerMultipartRequestContext(requestContext);
         collector.addMultipartMsg(MsgGeneratorTestUtils.makeMultipartDescReply(xid, hwTestValue, true).build());
         collector.addMultipartMsg(MsgGeneratorTestUtils.makeMultipartDescReply(xid, hwTestValue, true)
                 .setType(MultipartType.OFPMPPORTDESC).build());
@@ -213,12 +218,12 @@ public class MultiMsgCollectorImplTest {
 
     /**
      * test of ${link MultiMsgCollector#addMultipartMsg} <br>
-     *     no second message arrived within expiration limit - first message should expire
+     * no second message arrived within expiration limit - first message should expire
      */
     @Test
     public void testAddMultipartMsgExpiration() throws InterruptedException {
         final Long xid = 1L;
-        collector.registerMultipartXid(xid);
+        collector.registerMultipartRequestContext(requestContext);
         collector.addMultipartMsg(MsgGeneratorTestUtils.makeMultipartDescReply(xid, hwTestValue, true).build());
 
         cleanUpCheck = new Runnable() {

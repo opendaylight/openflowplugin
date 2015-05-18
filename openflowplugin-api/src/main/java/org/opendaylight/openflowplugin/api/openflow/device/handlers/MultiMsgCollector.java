@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.api.openflow.device.handlers;
 
+import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import javax.annotation.Nonnull;
 
@@ -31,13 +32,13 @@ public interface MultiMsgCollector {
     final int DEFAULT_TIME_OUT = 10;
 
     /**
-     * Method registers a transaction id xid to the Multipart messages collector
+     * Method registers a requst context to the Multipart messages collector
      * and returns Settable future with all MultipartReply. Method has to be called before
      * send a request to the device, otherwise there is a small possibility to miss a first msg.
      *
-     * @param xid
+     * @param requestContext
      */
-    void registerMultipartXid(long xid);
+    void registerMultipartRequestContext(RequestContext requestContext);
 
     /**
      * Method adds a reply multipart message to the collection and if the message has marker

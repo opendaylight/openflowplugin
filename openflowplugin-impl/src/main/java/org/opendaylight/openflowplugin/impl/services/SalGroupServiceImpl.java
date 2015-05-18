@@ -90,7 +90,6 @@ public class SalGroupServiceImpl extends CommonService implements SalGroupServic
             @Override
             public void onSuccess(final OfHeader ofHeader) {
                 RequestContextUtil.closeRequstContext(requestContext);
-                getDeviceContext().unhookRequestCtx(requestContext.getXid());
                 getMessageSpy().spyMessage(groupModInput.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
 
                 settableFuture.set(RpcResultBuilder.<Void>success().build());
@@ -100,7 +99,6 @@ public class SalGroupServiceImpl extends CommonService implements SalGroupServic
             public void onFailure(final Throwable throwable) {
                 RpcResultBuilder<Void> rpcResultBuilder = RpcResultBuilder.<Void>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
                 RequestContextUtil.closeRequstContext(requestContext);
-                getDeviceContext().unhookRequestCtx(requestContext.getXid());
                 getMessageSpy().spyMessage(groupModInput.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
                 settableFuture.set(rpcResultBuilder.build());
             }

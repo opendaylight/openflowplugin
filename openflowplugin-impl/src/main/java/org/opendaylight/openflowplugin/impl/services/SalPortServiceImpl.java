@@ -58,7 +58,6 @@ public class SalPortServiceImpl extends CommonService implements SalPortService 
                     @Override
                     public void onSuccess(final OfHeader ofHeader) {
                         RequestContextUtil.closeRequstContext(requestContext);
-                        getDeviceContext().unhookRequestCtx(requestContext.getXid());
                         getMessageSpy().spyMessage(portModInput.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
 
                         settableFuture.set(RpcResultBuilder.<Void>success().build());
@@ -68,7 +67,6 @@ public class SalPortServiceImpl extends CommonService implements SalPortService 
                     public void onFailure(final Throwable throwable) {
                         RpcResultBuilder<Void> rpcResultBuilder = RpcResultBuilder.<Void>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
                         RequestContextUtil.closeRequstContext(requestContext);
-                        getDeviceContext().unhookRequestCtx(requestContext.getXid());
                         getMessageSpy().spyMessage(portModInput.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
                         settableFuture.set(rpcResultBuilder.build());
                     }

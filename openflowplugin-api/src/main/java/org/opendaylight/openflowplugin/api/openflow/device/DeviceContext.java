@@ -21,7 +21,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceDiscon
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceReplyProcessor;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MessageHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
-import org.opendaylight.openflowplugin.api.openflow.device.handlers.OutstandingMessageExtractor;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.group.DeviceGroupRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.meter.DeviceMeterRegistry;
@@ -51,7 +50,6 @@ public interface DeviceContext extends AutoCloseable,
         OpenFlowPluginTimer,
         MessageHandler,
         TranslatorLibrarian,
-        OutstandingMessageExtractor,
         DeviceReplyProcessor,
         DeviceDisconnectedHandler {
 
@@ -110,34 +108,6 @@ public interface DeviceContext extends AutoCloseable,
      * @return
      */
     ConnectionContext getAuxiliaryConnectiobContexts(BigInteger cookie);
-
-
-    /**
-     * @param xid key
-     * @return request by xid
-     */
-    RequestContext<?> lookupRequest(Xid xid);
-
-    /**
-     * @return number of outstanding requests in map
-     */
-    int getNumberOfOutstandingRequests();
-
-    /**
-     * Method writes request context into request context map. This method
-     * is ment to be used by org.opendaylight.openflowplugin.impl.services.OFJResult2RequestCtxFuture#processResultFromOfJava.
-     *
-     * @param xid
-     * @param requestFutureContext
-     */
-    void hookRequestCtx(Xid xid, RequestContext<?> requestFutureContext);
-
-    /**
-     * Method removes request context from request context map.
-     *
-     * @param xid
-     */
-    RequestContext<?> unhookRequestCtx(Xid xid);
 
     /**
      * Method exposes flow registry used for storing flow ids identified by calculated flow hash.
