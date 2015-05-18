@@ -53,10 +53,10 @@ public class PacketProcessingServiceImpl extends CommonService implements Packet
                             @SuppressWarnings("unchecked")
                             RpcResult<Void> rpcResult = (RpcResult<Void>) ofHeader;
                             if (!rpcResult.isSuccessful()) {
-                                getMessageSpy().spyMessage(message.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
+                                getMessageSpy().spyMessage(message.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
                                 settableFuture.set(rpcResult);
                             } else {
-                                getMessageSpy().spyMessage(message.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
+                                getMessageSpy().spyMessage(message.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
                                 settableFuture.cancel(true);
                             }
                         }
