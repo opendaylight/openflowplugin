@@ -19,6 +19,8 @@ import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.Counter32;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.NodeGroupFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.NodeGroupFeaturesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.group.features.GroupFeaturesBuilder;
@@ -32,6 +34,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.SelectLiveness;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.SelectWeight;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.NodeMeterFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.NodeMeterFeaturesBuilder;
@@ -52,18 +55,17 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
 
 /**
+ * <p>
  * openflowplugin-impl
  * org.opendaylight.openflowplugin.impl.common
  *
- *
- *
  * @author <a href="mailto:vdemcak@cisco.com">Vaclav Demcak</a>
- *
- * Created: Mar 31, 2015
+ *         </p>
+ *         Created: Mar 31, 2015
  */
 public class NodeStaticReplyTranslatorUtil {
 
-    private NodeStaticReplyTranslatorUtil () {
+    private NodeStaticReplyTranslatorUtil() {
         throw new UnsupportedOperationException("Utility class");
     }
 
@@ -82,6 +84,9 @@ public class NodeStaticReplyTranslatorUtil {
         flowCapAugBuilder.setManufacturer(reply.getMfrDesc());
         flowCapAugBuilder.setSoftware(reply.getSwDesc());
         flowCapAugBuilder.setSerialNumber(reply.getSerialNum());
+        flowCapAugBuilder.setTable(Collections.<Table>emptyList());
+        flowCapAugBuilder.setMeter(Collections.<Meter>emptyList());
+        flowCapAugBuilder.setGroup(Collections.<Group>emptyList());
         return flowCapAugBuilder.build();
     }
 
@@ -111,15 +116,15 @@ public class NodeStaticReplyTranslatorUtil {
         if (reply.getCapabilities().isOFPMFBURST()) {
             mCapability.add(MeterBurst.class);
         }
-        if(reply.getCapabilities().isOFPMFKBPS()){
+        if (reply.getCapabilities().isOFPMFKBPS()) {
             mCapability.add(MeterKbps.class);
 
         }
-        if(reply.getCapabilities().isOFPMFPKTPS()){
+        if (reply.getCapabilities().isOFPMFPKTPS()) {
             mCapability.add(MeterPktps.class);
 
         }
-        if(reply.getCapabilities().isOFPMFSTATS()){
+        if (reply.getCapabilities().isOFPMFSTATS()) {
             mCapability.add(MeterStats.class);
 
         }
@@ -138,32 +143,32 @@ public class NodeStaticReplyTranslatorUtil {
         Preconditions.checkArgument(reply != null);
         final GroupFeaturesBuilder groupFeature = new GroupFeaturesBuilder();
         groupFeature.setMaxGroups(reply.getMaxGroups());
-        final List<Class<? extends GroupType>> supportedGroups =  new ArrayList<>();
-        if(reply.getTypes().isOFPGTALL()){
+        final List<Class<? extends GroupType>> supportedGroups = new ArrayList<>();
+        if (reply.getTypes().isOFPGTALL()) {
             supportedGroups.add(GroupAll.class);
         }
-        if(reply.getTypes().isOFPGTSELECT()){
+        if (reply.getTypes().isOFPGTSELECT()) {
             supportedGroups.add(GroupSelect.class);
         }
-        if(reply.getTypes().isOFPGTINDIRECT()){
+        if (reply.getTypes().isOFPGTINDIRECT()) {
             supportedGroups.add(GroupIndirect.class);
         }
-        if(reply.getTypes().isOFPGTFF()){
+        if (reply.getTypes().isOFPGTFF()) {
             supportedGroups.add(GroupFf.class);
         }
         groupFeature.setGroupTypesSupported(supportedGroups);
 
         final List<Class<? extends GroupCapability>> gCapability = new ArrayList<>();
-        if(reply.getCapabilities().isOFPGFCCHAINING()){
+        if (reply.getCapabilities().isOFPGFCCHAINING()) {
             gCapability.add(Chaining.class);
         }
-        if(reply.getCapabilities().isOFPGFCCHAININGCHECKS()){
+        if (reply.getCapabilities().isOFPGFCCHAININGCHECKS()) {
             gCapability.add(ChainingChecks.class);
         }
-        if(reply.getCapabilities().isOFPGFCSELECTLIVENESS()){
+        if (reply.getCapabilities().isOFPGFCSELECTLIVENESS()) {
             gCapability.add(SelectLiveness.class);
         }
-        if(reply.getCapabilities().isOFPGFCSELECTWEIGHT()){
+        if (reply.getCapabilities().isOFPGFCSELECTWEIGHT()) {
             gCapability.add(SelectWeight.class);
         }
         groupFeature.setGroupCapabilitiesSupported(gCapability);
@@ -176,22 +181,22 @@ public class NodeStaticReplyTranslatorUtil {
         final List<Long> supportActionByGroups = new ArrayList<>();
         for (final ActionType actionType : reply.getActionsBitmap()) {
             long supportActionBitmap = 0;
-            supportActionBitmap |= actionType.isOFPATOUTPUT()?(1 << 0): 0;
-            supportActionBitmap |= actionType.isOFPATCOPYTTLOUT()?(1 << 11): 0;
-            supportActionBitmap |= actionType.isOFPATCOPYTTLIN()?(1 << 12): 0;
-            supportActionBitmap |= actionType.isOFPATSETMPLSTTL()?(1 << 15): 0;
-            supportActionBitmap |= actionType.isOFPATDECMPLSTTL()?(1 << 16): 0;
-            supportActionBitmap |= actionType.isOFPATPUSHVLAN()?(1 << 17): 0;
-            supportActionBitmap |= actionType.isOFPATPOPVLAN()?(1 << 18): 0;
-            supportActionBitmap |= actionType.isOFPATPUSHMPLS()?(1 << 19): 0;
-            supportActionBitmap |= actionType.isOFPATPOPMPLS()?(1 << 20): 0;
-            supportActionBitmap |= actionType.isOFPATSETQUEUE()?(1 << 21): 0;
-            supportActionBitmap |= actionType.isOFPATGROUP()?(1 << 22): 0;
-            supportActionBitmap |= actionType.isOFPATSETNWTTL()?(1 << 23): 0;
-            supportActionBitmap |= actionType.isOFPATDECNWTTL()?(1 << 24): 0;
-            supportActionBitmap |= actionType.isOFPATSETFIELD()?(1 << 25): 0;
-            supportActionBitmap |= actionType.isOFPATPUSHPBB()?(1 << 26): 0;
-            supportActionBitmap |= actionType.isOFPATPOPPBB()?(1 << 27): 0;
+            supportActionBitmap |= actionType.isOFPATOUTPUT() ? (1 << 0) : 0;
+            supportActionBitmap |= actionType.isOFPATCOPYTTLOUT() ? (1 << 11) : 0;
+            supportActionBitmap |= actionType.isOFPATCOPYTTLIN() ? (1 << 12) : 0;
+            supportActionBitmap |= actionType.isOFPATSETMPLSTTL() ? (1 << 15) : 0;
+            supportActionBitmap |= actionType.isOFPATDECMPLSTTL() ? (1 << 16) : 0;
+            supportActionBitmap |= actionType.isOFPATPUSHVLAN() ? (1 << 17) : 0;
+            supportActionBitmap |= actionType.isOFPATPOPVLAN() ? (1 << 18) : 0;
+            supportActionBitmap |= actionType.isOFPATPUSHMPLS() ? (1 << 19) : 0;
+            supportActionBitmap |= actionType.isOFPATPOPMPLS() ? (1 << 20) : 0;
+            supportActionBitmap |= actionType.isOFPATSETQUEUE() ? (1 << 21) : 0;
+            supportActionBitmap |= actionType.isOFPATGROUP() ? (1 << 22) : 0;
+            supportActionBitmap |= actionType.isOFPATSETNWTTL() ? (1 << 23) : 0;
+            supportActionBitmap |= actionType.isOFPATDECNWTTL() ? (1 << 24) : 0;
+            supportActionBitmap |= actionType.isOFPATSETFIELD() ? (1 << 25) : 0;
+            supportActionBitmap |= actionType.isOFPATPUSHPBB() ? (1 << 26) : 0;
+            supportActionBitmap |= actionType.isOFPATPOPPBB() ? (1 << 27) : 0;
             supportActionByGroups.add(Long.valueOf(supportActionBitmap));
         }
         groupFeature.setActions(supportActionByGroups);
