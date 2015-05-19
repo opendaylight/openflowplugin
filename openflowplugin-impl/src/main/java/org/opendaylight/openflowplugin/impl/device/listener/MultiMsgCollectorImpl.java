@@ -119,6 +119,14 @@ public class MultiMsgCollectorImpl implements MultiMsgCollector {
         this.deviceReplyProcessor = deviceReplyProcessor;
     }
 
+    @Override
+    public void invalidateRequestContext(final RequestContext requestContext) {
+        MultiCollectorObject  multiCollectorObject = cache.getIfPresent(requestContext);
+        if (null != multiCollectorObject){
+            multiCollectorObject.invalidateFutureByTimeout(requestContext.getXid().getValue());
+        }
+    }
+
     private class MultiCollectorObject {
         private final List<MultipartReply> replyCollection;
         private MultipartType msgType;
@@ -167,9 +175,6 @@ public class MultiMsgCollectorImpl implements MultiMsgCollector {
             deviceReplyProcessor.processException(new Xid(key), deviceDataException);
         }
 
-        public RequestContext getRequestContext() {
-            return requestContext;
-        }
 
         private void msgTypeValidation(final MultipartType type, final long key) throws DeviceDataException {
             if (msgType == null) {

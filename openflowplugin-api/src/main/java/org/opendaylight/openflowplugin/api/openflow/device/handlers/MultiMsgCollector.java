@@ -8,20 +8,20 @@
 
 package org.opendaylight.openflowplugin.api.openflow.device.handlers;
 
+import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
-import javax.annotation.Nonnull;
 
 /**
  * openflowplugin-api
  * org.opendaylight.openflowplugin.api.openflow.device
- * <p>
+ * <p/>
  * Collects multipart msgs from device by provided XID and returns them
  * to the caller as request/collection response one-to-one contract.
  *
  * @author <a href="mailto:vdemcak@cisco.com">Vaclav Demcak</a>
  * @author <a href="mailto:tkubas@cisco.com">Timotej Kubas</a>
- *         <p>
+ *         <p/>
  *         Created: Mar 23, 2015
  */
 public interface MultiMsgCollector {
@@ -49,5 +49,7 @@ public interface MultiMsgCollector {
     void addMultipartMsg(@Nonnull MultipartReply reply);
 
 
-    public void setDeviceReplyProcessor(DeviceReplyProcessor deviceReplyProcessor);
+    void setDeviceReplyProcessor(DeviceReplyProcessor deviceReplyProcessor);
+
+    void invalidateRequestContext(RequestContext requestContext);
 }
