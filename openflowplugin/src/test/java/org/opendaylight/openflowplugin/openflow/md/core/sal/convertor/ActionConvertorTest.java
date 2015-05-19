@@ -457,7 +457,8 @@ public class ActionConvertorTest {
         org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder actionBuilder =
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder();
         Address address;
-        address = new Ipv6Builder().setIpv6Address(new Ipv6Prefix("2001:0db8:85a3:0042:1000:8a2e:0370:7334")).build();
+        /* Use canonical form - no leading zeroes!!! */
+        address = new Ipv6Builder().setIpv6Address(new Ipv6Prefix("2001:db8:85a3:42:1000:8a2e:370:7334/128")).build();
         SetNwDstActionCase action = provisionNwDstActionBuilder(address);
         org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action ofAction = ActionConvertor.salToOFSetNwDst(action, actionBuilder, version);
         Assert.assertNull(ofAction);
@@ -496,7 +497,8 @@ public class ActionConvertorTest {
         org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder actionBuilder =
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder();
         Address address;
-        address = new Ipv6Builder().setIpv6Address(new Ipv6Prefix("2001:0db8:85a3:0042:1000:8a2e:0370:7334")).build();
+        /* Use canonical form - no leading zeroes and a prefix, even if the prefix is /128 !!! */
+        address = new Ipv6Builder().setIpv6Address(new Ipv6Prefix("2001:db8:85a3:42:1000:8a2e:370:7334/128")).build();
         SetNwDstActionCase action = provisionNwDstActionBuilder(address);
         ActionConvertor.salToOFSetNwDst(action, actionBuilder, version);
         Assert.assertEquals(SetFieldCase.class.getName(), actionBuilder.getActionChoice().getImplementedInterface().getName());
@@ -504,7 +506,8 @@ public class ActionConvertorTest {
         MatchEntry matchEntry = setFieldCase.getSetFieldAction().getMatchEntry().get(0);
         Assert.assertEquals(Ipv6Dst.class.getName(), matchEntry.getOxmMatchField().getName());
         Ipv6DstCase ipv6DstCase = ((Ipv6DstCase) matchEntry.getMatchEntryValue());
-        Assert.assertEquals("2001:0db8:85a3:0042:1000:8a2e:0370:7334", ipv6DstCase.getIpv6Dst().getIpv6Address().getValue());
+        /* We check the IP only, the netmask should have gone into the wildcard field */
+        Assert.assertEquals("2001:db8:85a3:42:1000:8a2e:370:7334", ipv6DstCase.getIpv6Dst().getIpv6Address().getValue());
     }
 
 
@@ -536,7 +539,8 @@ public class ActionConvertorTest {
         org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder actionBuilder =
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder();
         Address address;
-        address = new Ipv6Builder().setIpv6Address(new Ipv6Prefix("2001:0db8:85a3:0042:1000:8a2e:0370:7334")).build();
+        /* Use canonical form - no leading zeroes and a prefix, even if the prefix is /128 !!! */
+        address = new Ipv6Builder().setIpv6Address(new Ipv6Prefix("2001:db8:85a3:42:1000:8a2e:370:7334/128")).build();
         SetNwSrcActionCase action = provisionNwSrcActionBuilder(address);
         org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action ofAction = ActionConvertor.salToOFSetNwSrc(action, actionBuilder, version);
         Assert.assertNull(ofAction);
@@ -573,7 +577,8 @@ public class ActionConvertorTest {
         org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder actionBuilder =
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder();
         Address address;
-        address = new Ipv6Builder().setIpv6Address(new Ipv6Prefix("2001:0db8:85a3:0042:1000:8a2e:0370:7334")).build();
+        /* Use canonical form - no leading zeroes and a prefix, even if the prefix is /128 !!! */
+        address = new Ipv6Builder().setIpv6Address(new Ipv6Prefix("2001:db8:85a3:42:1000:8a2e:370:7334/128")).build();
         SetNwSrcActionCase action = provisionNwSrcActionBuilder(address);
         ActionConvertor.salToOFSetNwSrc(action, actionBuilder, version);
         Assert.assertEquals(SetFieldCase.class.getName(), actionBuilder.getActionChoice().getImplementedInterface().getName());
@@ -581,7 +586,8 @@ public class ActionConvertorTest {
         MatchEntry matchEntry = setFieldCase.getSetFieldAction().getMatchEntry().get(0);
         Ipv6SrcCase ipv6SrcCase = ((Ipv6SrcCase) matchEntry.getMatchEntryValue());
         Assert.assertEquals(Ipv6Src.class.getName(), matchEntry.getOxmMatchField().getName());
-        Assert.assertEquals("2001:0db8:85a3:0042:1000:8a2e:0370:7334", ipv6SrcCase.getIpv6Src().getIpv6Address().getValue());
+        /* We check the IP only, the netmask should have gone into the wildcard field */
+        Assert.assertEquals("2001:db8:85a3:42:1000:8a2e:370:7334", ipv6SrcCase.getIpv6Src().getIpv6Address().getValue());
     }
 
     /**

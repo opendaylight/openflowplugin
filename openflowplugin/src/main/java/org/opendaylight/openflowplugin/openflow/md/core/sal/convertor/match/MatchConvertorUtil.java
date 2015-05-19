@@ -19,28 +19,6 @@ public abstract class MatchConvertorUtil {
     private static final String PREFIX_SEPARATOR = "/";
 
     /**
-     * @param maskEntry
-     * @return subnetwork suffix in form of "/"+&lt;mask value {0..32}&gt;
-     */
-    public static String getIpv4Mask(byte[] maskEntry) {
-        int receivedMask = ByteBuffer.wrap(maskEntry).getInt();
-        int shiftCount = 0;
-
-        if (receivedMask == 0) {
-            shiftCount = 32;
-        } else {
-            while (receivedMask != 0xffffffff) {
-                receivedMask = receivedMask >> 1;
-                shiftCount++;
-                if (shiftCount >= 32) {
-                    throw new IllegalArgumentException("given mask is invalid: " + Arrays.toString(maskEntry));
-                }
-            }
-        }
-        return PREFIX_SEPARATOR + (32 - shiftCount);
-    }
-
-    /**
      * @param pField
      * @return integer containing lower 9 bits filled with corresponding flags
      */
@@ -56,46 +34,6 @@ public abstract class MatchConvertorUtil {
         bitmap |= pField.isUnrep() ? (1 << 7) : 0;
         bitmap |= pField.isUnseq() ? (1 << 8) : 0;
         return bitmap;
-    }
-
-    public static int ipv6NetmaskArrayToCIDRValue(byte[] rawMask) {
-
-        /*
-         * Openflow Spec : 1.3.2+
-         * An all-one-bits oxm_mask is equivalent to specifying 0 for oxm_hasmask and omitting oxm_mask.
-         * So when user specify 128 as a mask, switch omit that mask and we get null as a mask in flow
-         * statistics response.
-         */
-
-        int maskValue = 128;
-
-        if (rawMask != null) {
-            maskValue = 0;
-            for (int subArrayCounter = 0; subArrayCounter < 4; subArrayCounter++) {
-                int copyFrom = subArrayCounter * 4;
-
-                byte[] subArray = Arrays.copyOfRange(rawMask, copyFrom, copyFrom + 4);
-
-                int receivedMask = ByteBuffer.wrap(subArray).getInt();
-
-                int shiftCount = 0;
-
-                if (receivedMask == 0) {
-                    break;
-                }
-
-                while (receivedMask != 0xffffffff) {
-                    receivedMask = receivedMask >> 1;
-                    shiftCount++;
-                }
-
-                maskValue = maskValue + (32 - shiftCount);
-                if (shiftCount != 0) {
-                    break;
-                }
-            }
-        }
-        return maskValue;
     }
 
 }
