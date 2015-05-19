@@ -9,8 +9,10 @@
 package org.opendaylight.openflowplugin.impl.util;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.CharMatcher;
 import java.math.BigInteger;
 import java.util.StringTokenizer;
+import java.util.regex.Pattern;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpVersion;
@@ -56,6 +58,8 @@ import org.slf4j.LoggerFactory;
 public final class HashUtil {
 
     private static final Logger LOG = LoggerFactory.getLogger(HashUtil.class);
+    private static final CharMatcher SLASH_MATCHER = CharMatcher.is('/');
+    private static final Pattern DOUBLE_COLON = Pattern.compile("::");
     private static final int BASE_16 = 16;
     private static final int BASE_10 = 10;
     private static final long IPV6_TOKENS_COUNT = 8;
@@ -66,7 +70,7 @@ public final class HashUtil {
         throw new IllegalStateException("This class should not be instantiated.");
     }
 
-    public static long calculateEthernetMatchHash(EthernetMatch ethernetMatch) {
+    public static long calculateEthernetMatchHash(final EthernetMatch ethernetMatch) {
         long hash = 0;
 
         EthernetType ethernetType = ethernetMatch.getEthernetType();
@@ -87,19 +91,19 @@ public final class HashUtil {
         return hash;
     }
 
-    public static long calculateEthenetSourceHash(EthernetSource ethernetSource) {
+    public static long calculateEthenetSourceHash(final EthernetSource ethernetSource) {
         long hash = calculateMacAddressHash(ethernetSource.getAddress());
         hash += calculateMacAddressHash(ethernetSource.getMask());
         return hash;
     }
 
-    public static long calculateEthernetDestinationHash(EthernetDestination ethernetDestination) {
+    public static long calculateEthernetDestinationHash(final EthernetDestination ethernetDestination) {
         long hash = calculateMacAddressHash(ethernetDestination.getAddress());
         hash += calculateMacAddressHash(ethernetDestination.getMask());
         return hash;
     }
 
-    public static long calculateMacAddressHash(MacAddress macAddress) {
+    public static long calculateMacAddressHash(final MacAddress macAddress) {
 
         long hash = 0;
         if (null != macAddress) {
@@ -109,7 +113,7 @@ public final class HashUtil {
         return hash;
     }
 
-    public static long calculateMatchHash(final Match match, short version) {
+    public static long calculateMatchHash(final Match match, final short version) {
         long hash = 0;
         long subHash = 0;
         long base = 0;
@@ -382,8 +386,8 @@ public final class HashUtil {
         return hash;
     }
 
-    private static StringTokenizer getStringTokenizerWithFullAddressString(String value) {
-        String ipv6Value = value.replace("::", ":0000:");
+    private static StringTokenizer getStringTokenizerWithFullAddressString(final String value) {
+        String ipv6Value = DOUBLE_COLON.matcher(value).replaceAll(":0000:");
         StringTokenizer stringTokenizer = new StringTokenizer(ipv6Value, ":");
 
         long delta = IPV6_TOKENS_COUNT - stringTokenizer.countTokens();
@@ -395,9 +399,9 @@ public final class HashUtil {
                 additions.append(IPV6_TOKEN);
                 delta--;
             }
-            if (ipv6Value.contains("/")) {
+            if (ipv6Value.indexOf('/') != -1) {
                 additions.append('/');
-                ipv6Value = ipv6Value.replace("/", additions.toString());
+                ipv6Value = SLASH_MATCHER.replaceFrom(ipv6Value, additions.toString());
             } else {
                 ipv6Value += additions.toString();
             }
@@ -406,7 +410,7 @@ public final class HashUtil {
         return stringTokenizer;
     }
 
-    private static long calculateStopperBasedOnMaskValue(final Ipv6Prefix ipv6Prefix, long bitsBase) {
+    private static long calculateStopperBasedOnMaskValue(final Ipv6Prefix ipv6Prefix, final long bitsBase) {
         double maskValue = extractMask(ipv6Prefix);
         double bitCount = maskValue / bitsBase;
         return (int) Math.ceil(bitCount);
@@ -422,11 +426,11 @@ public final class HashUtil {
         return mask;
     }
 
-    private static long parseTokens(final StringTokenizer stringTokenizer, int base, int bitShift) {
+    private static long parseTokens(final StringTokenizer stringTokenizer, final int base, final int bitShift) {
         return parseTokens(stringTokenizer, 0, base, bitShift);
     }
 
-    private static long parseTokens(final StringTokenizer stringTokenizer, long stopper, int base, int bitShift) {
+    private static long parseTokens(final StringTokenizer stringTokenizer, final long stopper, final int base, final int bitShift) {
         long hash = 0;
         if (stringTokenizer.countTokens() > 0) {
             long step = 0;
@@ -434,11 +438,11 @@ public final class HashUtil {
                 String token = stringTokenizer.nextToken();
                 step++;
 
-                if (token.equals("")) {
+                if (token.isEmpty()) {
                     token = "0";
                 }
 
-                if (token.contains("/")) {
+                if (token.indexOf('/') != -1) {
                     StringTokenizer tokenizer = new StringTokenizer(token, "/");
                     hash += parseTokens(tokenizer, stopper, base, bitShift);
                 } else {
@@ -514,7 +518,7 @@ public final class HashUtil {
     }
 
 
-    private static long calculateIpAdressHash(final String address, long numberOfParts, int base) {
+    private static long calculateIpAdressHash(final String address, final long numberOfParts, final int base) {
         StringTokenizer stringTokenizer = new StringTokenizer(address, ".");
         long hash = parseTokens(stringTokenizer, numberOfParts, base, 8);
         return hash;
@@ -549,7 +553,7 @@ public final class HashUtil {
         return hash;
     }
 
-    private static long calculateNodeConnectorIdHash(final NodeConnectorId inPhyPort, short version) {
+    private static long calculateNodeConnectorIdHash(final NodeConnectorId inPhyPort, final short version) {
         long hash = 0;
         Long portFromLogicalName = OpenflowPortsUtil.getPortFromLogicalName(OpenflowVersion.get(version), inPhyPort.getValue());
         hash += portFromLogicalName.intValue();
