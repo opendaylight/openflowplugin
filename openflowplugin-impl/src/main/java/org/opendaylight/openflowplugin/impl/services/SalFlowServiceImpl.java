@@ -103,7 +103,7 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
     @Override
     public Future<RpcResult<RemoveFlowOutput>> removeFlow(final RemoveFlowInput input) {
         LOG.trace("Calling remove flow for flow with ID ={}.", input.getFlowRef());
-        return this.handleServiceCall(new Function<RequestContext<RemoveFlowOutput>, ListenableFuture<RpcResult<RemoveFlowOutput>>>() {
+        return handleServiceCall(new Function<RequestContext<RemoveFlowOutput>, ListenableFuture<RpcResult<RemoveFlowOutput>>>() {
             @Override
             public ListenableFuture<RpcResult<RemoveFlowOutput>> apply(final RequestContext<RemoveFlowOutput> requestContext) {
                 final FlowModInputBuilder ofFlowModInput = FlowConvertor.toFlowModInput(input, getVersion(),

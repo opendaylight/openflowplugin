@@ -47,9 +47,9 @@ public class SalGroupServiceImpl extends CommonService implements SalGroupServic
     @Override
     public Future<RpcResult<AddGroupOutput>> addGroup(final AddGroupInput input) {
         getDeviceContext().getDeviceGroupRegistry().store(input.getGroupId());
-        return this.<AddGroupOutput, Void>handleServiceCall(new Function<RequestContext<AddGroupOutput>, ListenableFuture<RpcResult<Void>>>() {
+        return handleServiceCall(new Function<RequestContext<AddGroupOutput>, ListenableFuture<RpcResult<AddGroupOutput>>>() {
             @Override
-            public ListenableFuture<RpcResult<Void>> apply(final RequestContext<AddGroupOutput> requestContext) {
+            public ListenableFuture<RpcResult<AddGroupOutput>> apply(final RequestContext<AddGroupOutput> requestContext) {
                 return convertAndSend(input, requestContext);
             }
         });
@@ -57,10 +57,10 @@ public class SalGroupServiceImpl extends CommonService implements SalGroupServic
 
     @Override
     public Future<RpcResult<UpdateGroupOutput>> updateGroup(final UpdateGroupInput input) {
-        return this.<UpdateGroupOutput, Void>handleServiceCall(new Function<RequestContext<UpdateGroupOutput>, ListenableFuture<RpcResult<Void>>>() {
+        return handleServiceCall(new Function<RequestContext<UpdateGroupOutput>, ListenableFuture<RpcResult<UpdateGroupOutput>>>() {
 
             @Override
-            public ListenableFuture<RpcResult<Void>> apply(final RequestContext<UpdateGroupOutput> requestContext) {
+            public ListenableFuture<RpcResult<UpdateGroupOutput>> apply(final RequestContext<UpdateGroupOutput> requestContext) {
                 return convertAndSend(input.getUpdatedGroup(), requestContext);
             }
         });
@@ -69,22 +69,22 @@ public class SalGroupServiceImpl extends CommonService implements SalGroupServic
     @Override
     public Future<RpcResult<RemoveGroupOutput>> removeGroup(final RemoveGroupInput input) {
         getDeviceContext().getDeviceGroupRegistry().markToBeremoved(input.getGroupId());
-        return this.<RemoveGroupOutput, Void>handleServiceCall(new Function<RequestContext<RemoveGroupOutput>, ListenableFuture<RpcResult<Void>>>() {
+        return handleServiceCall(new Function<RequestContext<RemoveGroupOutput>, ListenableFuture<RpcResult<RemoveGroupOutput>>>() {
 
             @Override
-            public ListenableFuture<RpcResult<Void>> apply(final RequestContext<RemoveGroupOutput> requestContext) {
+            public ListenableFuture<RpcResult<RemoveGroupOutput>> apply(final RequestContext<RemoveGroupOutput> requestContext) {
                 return convertAndSend(input, requestContext);
             }
         });
     }
 
-    <T> ListenableFuture<RpcResult<Void>> convertAndSend(final Group iputGroup, final RequestContext<T> requestContext) {
+    <T> ListenableFuture<RpcResult<T>> convertAndSend(final Group iputGroup, final RequestContext<T> requestContext) {
         final OutboundQueue outboundQueue = getDeviceContext().getPrimaryConnectionContext().getOutboundQueueProvider();
         getMessageSpy().spyMessage(iputGroup.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
         final GroupModInputBuilder ofGroupModInput = GroupConvertor.toGroupModInput(iputGroup, getVersion(), getDatapathId());
         final Xid xid = requestContext.getXid();
         ofGroupModInput.setXid(xid.getValue());
-        final SettableFuture<RpcResult<Void>> settableFuture = SettableFuture.create();
+        final SettableFuture<RpcResult<T>> settableFuture = SettableFuture.create();
         final GroupModInput groupModInput = ofGroupModInput.build();
         outboundQueue.commitEntry(xid.getValue(), groupModInput, new FutureCallback<OfHeader>() {
             @Override
@@ -92,12 +92,12 @@ public class SalGroupServiceImpl extends CommonService implements SalGroupServic
                 RequestContextUtil.closeRequstContext(requestContext);
                 getMessageSpy().spyMessage(groupModInput.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
 
-                settableFuture.set(RpcResultBuilder.<Void>success().build());
+                settableFuture.set(RpcResultBuilder.<T>success().build());
             }
 
             @Override
             public void onFailure(final Throwable throwable) {
-                RpcResultBuilder<Void> rpcResultBuilder = RpcResultBuilder.<Void>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
+                RpcResultBuilder<T> rpcResultBuilder = RpcResultBuilder.<T>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
                 RequestContextUtil.closeRequstContext(requestContext);
                 getMessageSpy().spyMessage(groupModInput.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
                 settableFuture.set(rpcResultBuilder.build());
