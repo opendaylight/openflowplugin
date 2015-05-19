@@ -149,13 +149,13 @@ public class StatisticsManagerImpl implements StatisticsManager {
         private int marksCount = 0;
 
         public void markStart() {
-            beginningOfTime = System.currentTimeMillis();
+            beginningOfTime = System.nanoTime();
             delta = 0;
             marksCount = 0;
         }
 
         public void addTimeMark() {
-            delta += System.currentTimeMillis() - beginningOfTime;
+            delta += System.nanoTime() - beginningOfTime;
             marksCount++;
         }
 
@@ -164,7 +164,7 @@ public class StatisticsManagerImpl implements StatisticsManager {
             if (marksCount > 0) {
                 average = delta / marksCount;
             }
-            return average;
+            return TimeUnit.NANOSECONDS.toMillis(average);
         }
 
     }
