@@ -7,27 +7,28 @@
  */
 package org.opendaylight.openflowplugin.impl.translator;
 
+import java.util.Collections;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
 import org.opendaylight.openflowplugin.openflow.md.util.PortTranslatorUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnectorBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.Queue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortNumberUni;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
 
 /**
  * @author tkubas
- *
  */
 public class PortUpdateTranslator implements MessageTranslator<PortGrouping, FlowCapableNodeConnector> {
 
     @Override
     public FlowCapableNodeConnector translate(final PortGrouping input,
-            final DeviceContext deviceContext, final Object connectionDistinguisher) {
+                                              final DeviceContext deviceContext, final Object connectionDistinguisher) {
         final FlowCapableNodeConnectorBuilder builder = new FlowCapableNodeConnectorBuilder();
         //OF1.0
-        if(deviceContext.getDeviceState().getVersion() == OFConstants.OFP_VERSION_1_0) {
+        if (deviceContext.getDeviceState().getVersion() == OFConstants.OFP_VERSION_1_0) {
             builder.setAdvertisedFeatures(PortTranslatorUtil.translatePortFeatures(input.getAdvertisedFeaturesV10()));
             builder.setConfiguration(PortTranslatorUtil.translatePortConfig(input.getConfigV10()));
             builder.setCurrentFeature(PortTranslatorUtil.translatePortFeatures(input.getCurrentFeaturesV10()));
@@ -41,6 +42,7 @@ public class PortUpdateTranslator implements MessageTranslator<PortGrouping, Flo
             builder.setPeerFeatures(PortTranslatorUtil.translatePortFeatures(input.getPeerFeatures()));
             builder.setState(PortTranslatorUtil.translatePortState(input.getState()));
             builder.setSupported(PortTranslatorUtil.translatePortFeatures(input.getSupportedFeaturesV10()));
+            builder.setQueue(Collections.<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.queues.Queue>emptyList());
         }
         builder.setCurrentSpeed(input.getCurrSpeed());
         builder.setHardwareAddress(input.getHwAddr());
