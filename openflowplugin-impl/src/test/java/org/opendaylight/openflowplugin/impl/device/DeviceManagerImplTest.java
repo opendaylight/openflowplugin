@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.device;
 
+import com.google.common.util.concurrent.CheckedFuture;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -19,6 +20,7 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
+import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
@@ -49,6 +51,8 @@ public class DeviceManagerImplTest {
     private WriteTransaction wTx;
     @Mock
     private MessageIntelligenceAgency messageIntelligenceAgency;
+    @Mock
+    private CheckedFuture<Void, TransactionCommitFailedException> checkedFuture;
 
     /**
      * @throws java.lang.Exception
@@ -59,7 +63,9 @@ public class DeviceManagerImplTest {
         Mockito.when(connectionContext.getFeatures()).thenReturn(features);
         Mockito.when(features.getVersion()).thenReturn((short) 42);
         Mockito.when(dataBroker.newWriteOnlyTransaction()).thenReturn(wTx);
-        deviceManager = new DeviceManagerImpl(dataBroker, messageIntelligenceAgency);
+        Mockito.when(wTx.submit()).thenReturn(checkedFuture);
+        Mockito.when(checkedFuture.get()).thenReturn((Void) null);
+
     }
 
     /**

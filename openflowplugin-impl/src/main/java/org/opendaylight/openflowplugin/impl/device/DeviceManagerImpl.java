@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.CheckForNull;
@@ -130,7 +131,12 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         final NodesBuilder nodesBuilder = new NodesBuilder();
         nodesBuilder.setNode(Collections.<Node>emptyList());
         tx.merge(LogicalDatastoreType.OPERATIONAL, InstanceIdentifier.create(Nodes.class), nodesBuilder.build());
-        tx.submit();
+        try {
+            tx.submit().get();
+        } catch (ExecutionException | InterruptedException e) {
+            LOG.error("Creation of node failed.", e);
+            throw new IllegalStateException(e);
+        }
 
         this.messageIntelligenceAgency = messageIntelligenceAgency;
     }
@@ -303,7 +309,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
     }
 
     private static ListenableFuture<RpcResult<List<MultipartReply>>> getNodeStaticInfo(final MultipartType type, final DeviceContext deviceContext,
-                                                                                final InstanceIdentifier<Node> nodeII, final short version) {
+                                                                                       final InstanceIdentifier<Node> nodeII, final short version) {
 
         final OutboundQueue queue = deviceContext.getPrimaryConnectionContext().getOutboundQueueProvider();
 
