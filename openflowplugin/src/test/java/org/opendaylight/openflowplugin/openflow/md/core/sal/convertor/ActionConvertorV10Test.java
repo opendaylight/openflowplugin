@@ -111,7 +111,8 @@ public class ActionConvertorV10Test {
         SetNwSrcActionCaseBuilder nwSrcCaseBuilder = new SetNwSrcActionCaseBuilder();
         SetNwSrcActionBuilder nwSrcBuilder = new SetNwSrcActionBuilder();
         Ipv4Builder ipv4Builder = new Ipv4Builder();
-        ipv4Builder.setIpv4Address(new Ipv4Prefix("10.0.0.1/24"));
+        /* Use prefix which is correct in canonical representation in test */
+        ipv4Builder.setIpv4Address(new Ipv4Prefix("10.0.0.0/24"));
         nwSrcBuilder.setAddress(ipv4Builder.build());
         nwSrcCaseBuilder.setSetNwSrcAction(nwSrcBuilder.build());
         actionBuilder.setAction(nwSrcCaseBuilder.build());
@@ -194,7 +195,7 @@ public class ActionConvertorV10Test {
         Assert.assertEquals("Wrong action type", "org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common"
                 + ".action.rev150203.action.grouping.action.choice.SetNwSrcCase", action.getActionChoice().getImplementedInterface().getName());
         SetNwSrcCase setNwSrcCase = (SetNwSrcCase) action.getActionChoice();
-        Assert.assertEquals("Wrong nw src", "10.0.0.1", setNwSrcCase.getSetNwSrcAction().getIpAddress().getValue());
+        Assert.assertEquals("Wrong nw src", "10.0.0.0", setNwSrcCase.getSetNwSrcAction().getIpAddress().getValue());
         
         action = actions.get(5);
         Assert.assertEquals("Wrong action type", "org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common"

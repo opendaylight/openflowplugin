@@ -434,7 +434,8 @@ public class MatchConvertorImpl2Test {
     public void testArpMatchConversionWithMasks() {
         MatchBuilder builder = new MatchBuilder();
         ArpMatchBuilder arpBuilder = new ArpMatchBuilder();
-        arpBuilder.setArpSourceTransportAddress(new Ipv4Prefix("10.0.0.3/8"));
+        /* Use canonnical prefixes !!! */
+        arpBuilder.setArpSourceTransportAddress(new Ipv4Prefix("10.0.0.0/8"));
         arpBuilder.setArpTargetTransportAddress(new Ipv4Prefix("10.0.0.4/31"));
         ArpSourceHardwareAddressBuilder srcHwBuilder = new ArpSourceHardwareAddressBuilder();
         srcHwBuilder.setAddress(new MacAddress("00:00:00:00:00:05"));
@@ -452,7 +453,7 @@ public class MatchConvertorImpl2Test {
         MatchEntry entry = entries.get(0);
         entry = entries.get(0);
         checkEntryHeader(entry, ArpSpa.class, true);
-        Assert.assertEquals("Wrong arp spa", "10.0.0.3", ((ArpSpaCase) entry.getMatchEntryValue())
+        Assert.assertEquals("Wrong arp spa", "10.0.0.0", ((ArpSpaCase) entry.getMatchEntryValue())
                 .getArpSpa().getIpv4Address().getValue());
         Assert.assertArrayEquals("Wrong arp spa mask", new byte[]{(byte) 255, 0, 0, 0},
                 ((ArpSpaCase) entry.getMatchEntryValue()).getArpSpa().getMask());
@@ -483,12 +484,12 @@ public class MatchConvertorImpl2Test {
     public void testIpv6MatchConversion() {
         MatchBuilder builder = new MatchBuilder();
         Ipv6MatchBuilder ipv6Builder = new Ipv6MatchBuilder();
-        ipv6Builder.setIpv6Source(new Ipv6Prefix("0000:0000:0000:0000:0000:0000:0000:0001"));
-        ipv6Builder.setIpv6Destination(new Ipv6Prefix("0000:0000:0000:0000:0000:0000:0000:0002"));
+        ipv6Builder.setIpv6Source(new Ipv6Prefix("::1/128"));
+        ipv6Builder.setIpv6Destination(new Ipv6Prefix("::2/128"));
         Ipv6LabelBuilder ipv6LabelBuilder = new Ipv6LabelBuilder();
         ipv6LabelBuilder.setIpv6Flabel(new Ipv6FlowLabel(3L));
         ipv6Builder.setIpv6Label(ipv6LabelBuilder.build());
-        ipv6Builder.setIpv6NdTarget(new Ipv6Address("0000:0000:0000:0000:0000:0000:0000:0004"));
+        ipv6Builder.setIpv6NdTarget(new Ipv6Address("::4"));
         ipv6Builder.setIpv6NdSll(new MacAddress("00:00:00:00:00:05"));
         ipv6Builder.setIpv6NdTll(new MacAddress("00:00:00:00:00:06"));
         Ipv6ExtHeaderBuilder extHdrBuilder = new Ipv6ExtHeaderBuilder();
@@ -500,12 +501,15 @@ public class MatchConvertorImpl2Test {
         List<MatchEntry> entries = convertor.convert(match, new BigInteger("42"));
         Assert.assertEquals("Wrong entries size", 7, entries.size());
         MatchEntry entry = entries.get(0);
-        checkEntryHeader(entry, Ipv6Src.class, false);
-        Assert.assertEquals("Wrong ipv6 src", "0000:0000:0000:0000:0000:0000:0000:0001",
+        /* Due to conversion ambiguities, we always get "has mask" because 
+         * an ip with no mask and prefix with /128 (or 32 in v4) cannot 
+         * be distinguished */
+        checkEntryHeader(entry, Ipv6Src.class, true);
+        Assert.assertEquals("Wrong ipv6 src", "::1",
                 ((Ipv6SrcCase) entry.getMatchEntryValue()).getIpv6Src().getIpv6Address().getValue());
         entry = entries.get(1);
-        checkEntryHeader(entry, Ipv6Dst.class, false);
-        Assert.assertEquals("Wrong ipv6 dst", "0000:0000:0000:0000:0000:0000:0000:0002",
+        checkEntryHeader(entry, Ipv6Dst.class, true);
+        Assert.assertEquals("Wrong ipv6 dst", "::2",
                 ((Ipv6DstCase) entry.getMatchEntryValue()).getIpv6Dst().getIpv6Address().getValue());
         entry = entries.get(2);
         checkEntryHeader(entry, Ipv6Flabel.class, false);
@@ -513,7 +517,7 @@ public class MatchConvertorImpl2Test {
                 ((Ipv6FlabelCase) entry.getMatchEntryValue()).getIpv6Flabel().getIpv6Flabel().getValue().intValue());
         entry = entries.get(3);
         checkEntryHeader(entry, Ipv6NdTarget.class, false);
-        Assert.assertEquals("Wrong ipv6 nd target", "0000:0000:0000:0000:0000:0000:0000:0004",
+        Assert.assertEquals("Wrong ipv6 nd target", "::4",
                 ((Ipv6NdTargetCase) entry.getMatchEntryValue()).getIpv6NdTarget().getIpv6Address().getValue());
         entry = entries.get(4);
         checkEntryHeader(entry, Ipv6NdSll.class, false);
@@ -536,8 +540,8 @@ public class MatchConvertorImpl2Test {
     public void testIpv6MatchConversionWithMasks() {
         MatchBuilder builder = new MatchBuilder();
         Ipv6MatchBuilder ipv6Builder = new Ipv6MatchBuilder();
-        ipv6Builder.setIpv6Source(new Ipv6Prefix("0000:0000:0000:0000:0000:0000:0000:0001/24"));
-        ipv6Builder.setIpv6Destination(new Ipv6Prefix("0000:0000:0000:0000:0000:0000:0000:0002/64"));
+        ipv6Builder.setIpv6Source(new Ipv6Prefix("::/24"));
+        ipv6Builder.setIpv6Destination(new Ipv6Prefix("::/64"));
         builder.setLayer3Match(ipv6Builder.build());
         Match match = builder.build();
 
@@ -545,13 +549,13 @@ public class MatchConvertorImpl2Test {
         Assert.assertEquals("Wrong entries size", 2, entries.size());
         MatchEntry entry = entries.get(0);
         checkEntryHeader(entry, Ipv6Src.class, true);
-        Assert.assertEquals("Wrong ipv6 src", "0000:0000:0000:0000:0000:0000:0000:0001",
+        Assert.assertEquals("Wrong ipv6 src", "::",
                 ((Ipv6SrcCase) entry.getMatchEntryValue()).getIpv6Src().getIpv6Address().getValue());
         Assert.assertArrayEquals("Wrong ipv6 src mask", new byte[]{(byte) 255, (byte) 255, (byte) 255, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0}, ((Ipv6SrcCase) entry.getMatchEntryValue()).getIpv6Src().getMask());
         entry = entries.get(1);
         checkEntryHeader(entry, Ipv6Dst.class, true);
-        Assert.assertEquals("Wrong ipv6 dst", "0000:0000:0000:0000:0000:0000:0000:0002",
+        Assert.assertEquals("Wrong ipv6 dst", "::",
                 ((Ipv6DstCase) entry.getMatchEntryValue()).getIpv6Dst().getIpv6Address().getValue());
         Assert.assertArrayEquals("Wrong ipv6 src mask", new byte[]{(byte) 255, (byte) 255, (byte) 255, (byte) 255,
                         (byte) 255, (byte) 255, (byte) 255, (byte) 255, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -619,8 +623,8 @@ public class MatchConvertorImpl2Test {
         tunnelBuilder.setTunnelMask(new BigInteger("14"));
         builder.setTunnel(tunnelBuilder.build());
         Ipv4MatchBuilder ipv4MatchBuilder = new Ipv4MatchBuilder();
-        ipv4MatchBuilder.setIpv4Source(new Ipv4Prefix("10.0.0.1/24"));
-        ipv4MatchBuilder.setIpv4Destination(new Ipv4Prefix("10.0.0.2/8"));
+        ipv4MatchBuilder.setIpv4Source(new Ipv4Prefix("10.0.0.0/24"));
+        ipv4MatchBuilder.setIpv4Destination(new Ipv4Prefix("10.0.0.0/8"));
         builder.setLayer3Match(ipv4MatchBuilder.build());
         Match match = builder.build();
 
@@ -654,13 +658,13 @@ public class MatchConvertorImpl2Test {
                 ((VlanVidCase) entry.getMatchEntryValue()).getVlanVid().getMask());
         entry = entries.get(4);
         checkEntryHeader(entry, Ipv4Src.class, true);
-        Assert.assertEquals("Wrong ipv4 src", "10.0.0.1", ((Ipv4SrcCase) entry.getMatchEntryValue())
+        Assert.assertEquals("Wrong ipv4 src", "10.0.0.0", ((Ipv4SrcCase) entry.getMatchEntryValue())
                 .getIpv4Src().getIpv4Address().getValue());
         Assert.assertArrayEquals("Wrong ipv4 src mask", new byte[]{(byte) 255, (byte) 255, (byte) 255, 0},
                 ((Ipv4SrcCase) entry.getMatchEntryValue()).getIpv4Src().getMask());
         entry = entries.get(5);
         checkEntryHeader(entry, Ipv4Dst.class, true);
-        Assert.assertEquals("Wrong ipv4 dst", "10.0.0.2", ((Ipv4DstCase) entry.getMatchEntryValue())
+        Assert.assertEquals("Wrong ipv4 dst", "10.0.0.0", ((Ipv4DstCase) entry.getMatchEntryValue())
                 .getIpv4Dst().getIpv4Address().getValue());
         Assert.assertArrayEquals("Wrong ipv4 dst mask", new byte[]{(byte) 255, 0, 0, 0},
                 ((Ipv4DstCase) entry.getMatchEntryValue()).getIpv4Dst().getMask());
