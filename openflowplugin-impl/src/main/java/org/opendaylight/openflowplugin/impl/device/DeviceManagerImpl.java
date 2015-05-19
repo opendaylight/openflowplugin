@@ -39,7 +39,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
-import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceInitializationPhaseHandler;
@@ -109,7 +108,6 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
 
     private final DataBroker dataBroker;
     private final HashedWheelTimer hashedWheelTimer;
-    private RequestContextStack emptyRequestContextStack;
     private TranslatorLibrary translatorLibrary;
     private DeviceInitializationPhaseHandler deviceInitPhaseHandler;
     private NotificationService notificationService;
@@ -169,18 +167,6 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         connectionContext.setDeviceDisconnectedHandler(deviceContext);
         deviceContext.setTranslatorLibrary(translatorLibrary);
         deviceContext.addDeviceContextClosedHandler(this);
-
-        emptyRequestContextStack = new RequestContextStack() {
-            @Override
-            public <T> RequestContext<T> createRequestContext() {
-                return new AbstractRequestContext<T>(deviceContext.getReservedXid()) {
-                    @Override
-                    public void close() {
-                        //NOOP
-                    }
-                };
-            }
-        };
 
         final OpenflowProtocolListenerFullImpl messageListener = new OpenflowProtocolListenerFullImpl(
                 connectionContext.getConnectionAdapter(), deviceContext);
@@ -316,15 +302,22 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         this.translatorLibrary = translatorLibrary;
     }
 
-    private ListenableFuture<RpcResult<List<MultipartReply>>> getNodeStaticInfo(final MultipartType type, final DeviceContext deviceContext,
+    private static ListenableFuture<RpcResult<List<MultipartReply>>> getNodeStaticInfo(final MultipartType type, final DeviceContext deviceContext,
                                                                                 final InstanceIdentifier<Node> nodeII, final short version) {
 
         final OutboundQueue queue = deviceContext.getPrimaryConnectionContext().getOutboundQueueProvider();
 
-        final RequestContext<List<MultipartReply>> requestContext = emptyRequestContextStack.createRequestContext();
+        final Long reserved = deviceContext.getReservedXid();
+        final RequestContext<List<MultipartReply>> requestContext = new AbstractRequestContext<List<MultipartReply>>(reserved) {
+            @Override
+            public void close() {
+                //NOOP
+            }
+        };
+
         final Xid xid = requestContext.getXid();
 
-        LOG.trace("Hooking xid {} to device context - precaution.", requestContext.getXid().getValue());
+        LOG.trace("Hooking xid {} to device context - precaution.", reserved);
 
         final ListenableFuture<RpcResult<List<MultipartReply>>> requestContextFuture = requestContext.getFuture();
 
@@ -359,7 +352,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         return requestContext.getFuture();
     }
 
-    private void createSuccessProcessingCallback(final MultipartType type, final DeviceContext deviceContext, final InstanceIdentifier<Node> nodeII, final ListenableFuture<RpcResult<List<MultipartReply>>> requestContextFuture) {
+    private static void createSuccessProcessingCallback(final MultipartType type, final DeviceContext deviceContext, final InstanceIdentifier<Node> nodeII, final ListenableFuture<RpcResult<List<MultipartReply>>> requestContextFuture) {
         Futures.addCallback(requestContextFuture, new FutureCallback<RpcResult<List<MultipartReply>>>() {
             @Override
             public void onSuccess(final RpcResult<List<MultipartReply>> rpcResult) {
@@ -502,7 +495,6 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
     @Override
     public void onDeviceContextClosed(final DeviceContext deviceContext) {
         deviceContexts.remove(deviceContext);
-        emptyRequestContextStack = null;
     }
 
     @Override
