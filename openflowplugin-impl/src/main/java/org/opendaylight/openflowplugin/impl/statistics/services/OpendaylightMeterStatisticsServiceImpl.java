@@ -51,11 +51,11 @@ public class OpendaylightMeterStatisticsServiceImpl extends CommonService implem
     @Override
     public Future<RpcResult<GetAllMeterConfigStatisticsOutput>> getAllMeterConfigStatistics(
             final GetAllMeterConfigStatisticsInput input) {
-        return this
-                .<GetAllMeterConfigStatisticsOutput, Void>handleServiceCall(new Function<RequestContext<GetAllMeterConfigStatisticsOutput>, ListenableFuture<RpcResult<Void>>>() {
+        return handleServiceCallNew(new Function<RequestContext<GetAllMeterConfigStatisticsOutput>,
+                ListenableFuture<RpcResult<GetAllMeterConfigStatisticsOutput>>>() {
 
                     @Override
-                    public ListenableFuture<RpcResult<Void>> apply(final RequestContext<GetAllMeterConfigStatisticsOutput> requestContext) {
+                    public ListenableFuture<RpcResult<GetAllMeterConfigStatisticsOutput>> apply(final RequestContext<GetAllMeterConfigStatisticsOutput> requestContext) {
 
                         MultipartRequestMeterConfigCaseBuilder caseBuilder =
                                 new MultipartRequestMeterConfigCaseBuilder();
@@ -80,10 +80,10 @@ public class OpendaylightMeterStatisticsServiceImpl extends CommonService implem
     @Override
     public Future<RpcResult<GetAllMeterStatisticsOutput>> getAllMeterStatistics(final GetAllMeterStatisticsInput input) {
 
-        return this.<GetAllMeterStatisticsOutput, Void>handleServiceCall(
-                new Function<RequestContext<GetAllMeterStatisticsOutput>, ListenableFuture<RpcResult<Void>>>() {
+        return handleServiceCallNew(
+                new Function<RequestContext<GetAllMeterStatisticsOutput>, ListenableFuture<RpcResult<GetAllMeterStatisticsOutput>>>() {
                     @Override
-                    public ListenableFuture<RpcResult<Void>> apply(final RequestContext<GetAllMeterStatisticsOutput> requestContext) {
+                    public ListenableFuture<RpcResult<GetAllMeterStatisticsOutput>> apply(final RequestContext<GetAllMeterStatisticsOutput> requestContext) {
 
                         MultipartRequestMeterCaseBuilder caseBuilder =
                                 new MultipartRequestMeterCaseBuilder();
@@ -108,10 +108,10 @@ public class OpendaylightMeterStatisticsServiceImpl extends CommonService implem
 
     @Override
     public Future<RpcResult<GetMeterFeaturesOutput>> getMeterFeatures(final GetMeterFeaturesInput input) {
-        return this.<GetMeterFeaturesOutput, Void>handleServiceCall(
-                new Function<RequestContext<GetMeterFeaturesOutput>, ListenableFuture<RpcResult<Void>>>() {
+        return handleServiceCallNew(
+                new Function<RequestContext<GetMeterFeaturesOutput>, ListenableFuture<RpcResult<GetMeterFeaturesOutput>>>() {
                     @Override
-                    public ListenableFuture<RpcResult<Void>> apply(final RequestContext<GetMeterFeaturesOutput> requestContext) {
+                    public ListenableFuture<RpcResult<GetMeterFeaturesOutput>> apply(final RequestContext<GetMeterFeaturesOutput> requestContext) {
 
                         MultipartRequestMeterFeaturesCaseBuilder mprMeterFeaturesBuild =
                                 new MultipartRequestMeterFeaturesCaseBuilder();
@@ -128,10 +128,10 @@ public class OpendaylightMeterStatisticsServiceImpl extends CommonService implem
 
     @Override
     public Future<RpcResult<GetMeterStatisticsOutput>> getMeterStatistics(final GetMeterStatisticsInput input) {
-        return this.<GetMeterStatisticsOutput, Void>handleServiceCall(
-                new Function<RequestContext<GetMeterStatisticsOutput>, ListenableFuture<RpcResult<Void>>>() {
+        return handleServiceCallNew(
+                new Function<RequestContext<GetMeterStatisticsOutput>, ListenableFuture<RpcResult<GetMeterStatisticsOutput>>>() {
                     @Override
-                    public ListenableFuture<RpcResult<Void>> apply(final RequestContext<GetMeterStatisticsOutput> requestContext) {
+                    public ListenableFuture<RpcResult<GetMeterStatisticsOutput>> apply(final RequestContext<GetMeterStatisticsOutput> requestContext) {
                         MultipartRequestMeterCaseBuilder caseBuilder =
                                 new MultipartRequestMeterCaseBuilder();
                         MultipartRequestMeterBuilder mprMeterBuild =

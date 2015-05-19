@@ -70,10 +70,10 @@ public class SalTableServiceImpl extends CommonService implements SalTableServic
     @Override
     public Future<RpcResult<UpdateTableOutput>> updateTable(final UpdateTableInput input) {
         class FunctionImpl implements
-                Function<RequestContext<List<MultipartReply>>, ListenableFuture<RpcResult<Void>>> {
+                Function<RequestContext<List<MultipartReply>>, ListenableFuture<RpcResult<List<MultipartReply>>>> {
 
             @Override
-            public ListenableFuture<RpcResult<Void>> apply(final RequestContext<List<MultipartReply>> requestContext) {
+            public ListenableFuture<RpcResult<List<MultipartReply>>> apply(final RequestContext<List<MultipartReply>> requestContext) {
                 getMessageSpy().spyMessage(input.getImplementedInterface(),
                         MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
 
@@ -93,7 +93,7 @@ public class SalTableServiceImpl extends CommonService implements SalTableServic
                 mprInput.setMultipartRequestBody(caseBuilder.build());
                 final OutboundQueue outboundQueue = getDeviceContext().getPrimaryConnectionContext().getOutboundQueueProvider();
 
-                final SettableFuture<RpcResult<Void>> settableFuture = SettableFuture.create();
+                final SettableFuture<RpcResult<List<MultipartReply>>> settableFuture = SettableFuture.create();
                 final MultiMsgCollector multiMsgCollector = getDeviceContext().getMultiMsgCollector();
                 multiMsgCollector.registerMultipartRequestContext(requestContext);
 
@@ -112,12 +112,12 @@ public class SalTableServiceImpl extends CommonService implements SalTableServic
                             }
                         }
                         getMessageSpy().spyMessage(multipartRequestInput.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
-                        settableFuture.set(RpcResultBuilder.<Void>success().build());
+                        settableFuture.set(RpcResultBuilder.<List<MultipartReply>>success().build());
                     }
 
                     @Override
                     public void onFailure(final Throwable throwable) {
-                        RpcResultBuilder<Void> rpcResultBuilder = RpcResultBuilder.<Void>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
+                        RpcResultBuilder<List<MultipartReply>> rpcResultBuilder = RpcResultBuilder.<List<MultipartReply>>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
                         RequestContextUtil.closeRequstContext(requestContext);
                         multiMsgCollector.registerMultipartRequestContext(requestContext);
                         getMessageSpy().spyMessage(multipartRequestInput.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
@@ -128,7 +128,7 @@ public class SalTableServiceImpl extends CommonService implements SalTableServic
             }
         }
 
-        final ListenableFuture<RpcResult<List<MultipartReply>>> multipartFuture = handleServiceCall(new FunctionImpl());
+        final ListenableFuture<RpcResult<List<MultipartReply>>> multipartFuture = handleServiceCallNew(new FunctionImpl());
         final SettableFuture<RpcResult<UpdateTableOutput>> finalFuture = SettableFuture.create();
 
         class CallBackImpl implements FutureCallback<RpcResult<List<MultipartReply>>> {

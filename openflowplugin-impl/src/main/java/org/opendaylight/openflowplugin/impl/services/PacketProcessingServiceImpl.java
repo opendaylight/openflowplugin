@@ -37,7 +37,7 @@ public class PacketProcessingServiceImpl extends CommonService implements Packet
     public Future<RpcResult<Void>> transmitPacket(final TransmitPacketInput input) {
         getMessageSpy().spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_ENTERED);
 
-        return handleServiceCall(new Function<RequestContext<Void>, ListenableFuture<RpcResult<Void>>>() {
+        return handleServiceCallNew(new Function<RequestContext<Void>, ListenableFuture<RpcResult<Void>>>() {
             @Override
             public ListenableFuture<RpcResult<Void>> apply(final RequestContext<Void> requestContext) {
                 final Xid xid = requestContext.getXid();
