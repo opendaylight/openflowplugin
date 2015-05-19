@@ -16,6 +16,8 @@ import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Dscp;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6FlowLabel;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.ArpMatch;
@@ -593,7 +595,7 @@ public class MatchConvertorImplV13Test {
         entriesBuilder.setHasMask(true);
         Ipv4SrcCaseBuilder ipv4SrcCaseBuilder = new Ipv4SrcCaseBuilder();
         Ipv4SrcBuilder ipv4SrcBuilder = new Ipv4SrcBuilder();
-        ipv4SrcBuilder.setIpv4Address(new Ipv4Address("10.0.0.1"));
+        ipv4SrcBuilder.setIpv4Address(new Ipv4Address("10.0.0.0"));
         ipv4SrcBuilder.setMask(new byte[]{(byte) 255, (byte) 255, (byte) 255, 0});
         ipv4SrcCaseBuilder.setIpv4Src(ipv4SrcBuilder.build());
         entriesBuilder.setMatchEntryValue(ipv4SrcCaseBuilder.build());
@@ -605,7 +607,7 @@ public class MatchConvertorImplV13Test {
         entriesBuilder.setHasMask(true);
         Ipv4DstCaseBuilder ipv4DstCaseBuilder = new Ipv4DstCaseBuilder();
         Ipv4DstBuilder ipv4AddressBuilder = new Ipv4DstBuilder();
-        ipv4AddressBuilder.setIpv4Address(new Ipv4Address("10.0.0.2"));
+        ipv4AddressBuilder.setIpv4Address(new Ipv4Address("10.0.0.0"));
         ipv4AddressBuilder.setMask(new byte[]{(byte) 255, (byte) 255, (byte) 240, 0});
         ipv4DstCaseBuilder.setIpv4Dst(ipv4AddressBuilder.build());
         entriesBuilder.setMatchEntryValue(ipv4DstCaseBuilder.build());
@@ -652,8 +654,8 @@ public class MatchConvertorImplV13Test {
         Assert.assertEquals("Wrong vlan id", 4, builtMatch.getVlanMatch().getVlanId().getVlanId().getValue().intValue());
         Assert.assertEquals("Wrong vlan id entries", true, builtMatch.getVlanMatch().getVlanId().isVlanIdPresent());
         Ipv4Match ipv4Match = (Ipv4Match) builtMatch.getLayer3Match();
-        Assert.assertEquals("Wrong ipv4 src address", "10.0.0.1/24", ipv4Match.getIpv4Source().getValue());
-        Assert.assertEquals("Wrong ipv4 dst address", "10.0.0.2/20", ipv4Match.getIpv4Destination().getValue());
+        Assert.assertEquals("Wrong ipv4 src address", "10.0.0.0/24", ipv4Match.getIpv4Source().getValue());
+        Assert.assertEquals("Wrong ipv4 dst address", "10.0.0.0/20", ipv4Match.getIpv4Destination().getValue());
         Assert.assertEquals("Wrong pbb isid", 23, builtMatch.getProtocolMatchFields().getPbb().getPbbIsid().intValue());
         Assert.assertEquals("Wrong tunnel id", new BigInteger(1, new byte[]{1, 2, 3, 4, 5, 6, 7, 8}),
                 builtMatch.getTunnel().getTunnelId());
@@ -759,7 +761,7 @@ public class MatchConvertorImplV13Test {
         entriesBuilder.setHasMask(false);
         Ipv6SrcCaseBuilder ipv6SrcCaseBuilder = new Ipv6SrcCaseBuilder();
         Ipv6SrcBuilder ipv6AddressBuilder = new Ipv6SrcBuilder();
-        ipv6AddressBuilder.setIpv6Address(new Ipv6Address("0000:0001:0002:0003:0004:0005:0006:0007"));
+        ipv6AddressBuilder.setIpv6Address(new Ipv6Address(":1:2:3:4:5:6:7"));
         ipv6SrcCaseBuilder.setIpv6Src(ipv6AddressBuilder.build());
         entriesBuilder.setMatchEntryValue(ipv6SrcCaseBuilder.build());
         entries.add(entriesBuilder.build());
@@ -770,7 +772,7 @@ public class MatchConvertorImplV13Test {
         entriesBuilder.setHasMask(false);
         Ipv6DstCaseBuilder ipv6DstCaseBuilder = new Ipv6DstCaseBuilder();
         Ipv6DstBuilder ipv6DstBuilder = new Ipv6DstBuilder();
-        ipv6DstBuilder.setIpv6Address(new Ipv6Address("0001:0002:0003:0004:0005:0006:0007:0008"));
+        ipv6DstBuilder.setIpv6Address(new Ipv6Address("1:2:3:4:5:6:7:8"));
         ipv6DstCaseBuilder.setIpv6Dst(ipv6DstBuilder.build());
         entriesBuilder.setMatchEntryValue(ipv6DstCaseBuilder.build());
         entries.add(entriesBuilder.build());
@@ -792,7 +794,7 @@ public class MatchConvertorImplV13Test {
         entriesBuilder.setHasMask(false);
         Ipv6NdTargetCaseBuilder ipv6NdTargetCaseBuilder = new Ipv6NdTargetCaseBuilder();
         Ipv6NdTargetBuilder ipv6NdTargetBuilder = new Ipv6NdTargetBuilder();
-        ipv6NdTargetBuilder.setIpv6Address(new Ipv6Address("0002:0003:0004:0005:0006:0007:0008:0009"));
+        ipv6NdTargetBuilder.setIpv6Address(new Ipv6Address("2:3:4:5:6:7:8:9"));
         ipv6NdTargetCaseBuilder.setIpv6NdTarget(ipv6NdTargetBuilder.build());
         entriesBuilder.setMatchEntryValue(ipv6NdTargetCaseBuilder.build());
         entries.add(entriesBuilder.build());
@@ -836,11 +838,11 @@ public class MatchConvertorImplV13Test {
         org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match builtMatch = salMatchBuilder.build();
 
         Ipv6Match ipv6Match = (Ipv6Match) builtMatch.getLayer3Match();
-        Assert.assertEquals("Wrong ipv6 src address", "0000:0001:0002:0003:0004:0005:0006:0007",
+        Assert.assertEquals("Wrong ipv6 src address", ":1:2:3:4:5:6:7/128",
                 ipv6Match.getIpv6Source().getValue());
-        Assert.assertEquals("Wrong ipv6 dst address", "0001:0002:0003:0004:0005:0006:0007:0008",
+        Assert.assertEquals("Wrong ipv6 dst address", "1:2:3:4:5:6:7:8/128",
                 ipv6Match.getIpv6Destination().getValue());
-        Assert.assertEquals("Wrong ipv6 nd target", "0002:0003:0004:0005:0006:0007:0008:0009",
+        Assert.assertEquals("Wrong ipv6 nd target", "2:3:4:5:6:7:8:9",
                 ipv6Match.getIpv6NdTarget().getValue());
         Assert.assertEquals("Wrong ipv6 flabel", 18, ipv6Match.getIpv6Label().getIpv6Flabel().getValue().intValue());
         Assert.assertEquals("Wrong ipv6 nd sll", new MacAddress("00:00:00:00:00:05"), ipv6Match.getIpv6NdSll());
@@ -980,7 +982,7 @@ public class MatchConvertorImplV13Test {
         entriesBuilder.setHasMask(true);
         ArpTpaCaseBuilder arpTpaCaseBuilder = new ArpTpaCaseBuilder();
         ArpTpaBuilder arpTpaBuilder = new ArpTpaBuilder();
-        arpTpaBuilder.setIpv4Address(new Ipv4Address("10.0.0.4"));
+        arpTpaBuilder.setIpv4Address(new Ipv4Address("10.0.0.0"));
         arpTpaBuilder.setMask(new byte[]{(byte) 255, (byte) 128, 0, 0});
         arpTpaCaseBuilder.setArpTpa(arpTpaBuilder.build());
         entriesBuilder.setMatchEntryValue(arpTpaCaseBuilder.build());
@@ -1018,7 +1020,7 @@ public class MatchConvertorImplV13Test {
 
         ArpMatch arpMatch = (ArpMatch) builtMatch.getLayer3Match();
         Assert.assertEquals("Wrong arp spa", "10.0.0.3/24", arpMatch.getArpSourceTransportAddress().getValue());
-        Assert.assertEquals("Wrong arp tpa", "10.0.0.4/9", arpMatch.getArpTargetTransportAddress().getValue());
+        Assert.assertEquals("Wrong arp tpa", "10.0.0.0/9", arpMatch.getArpTargetTransportAddress().getValue());
         Assert.assertEquals("Wrong arp sha", "00:00:00:00:00:03", arpMatch.getArpSourceHardwareAddress().getAddress().getValue());
         Assert.assertEquals("Wrong arp sha mask", "00:00:01:00:04:00", arpMatch.getArpSourceHardwareAddress().getMask().getValue());
         Assert.assertEquals("Wrong arp tha", "00:00:00:00:00:04", arpMatch.getArpTargetHardwareAddress().getAddress().getValue());
