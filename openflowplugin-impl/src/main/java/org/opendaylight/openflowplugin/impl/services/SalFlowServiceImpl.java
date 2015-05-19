@@ -74,10 +74,12 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
             flowId = FlowUtil.createAlienFlowId(input.getTableId());
         }
 
+        final DeviceContext deviceContext = getDeviceContext();
+        final FlowHash flowHash = FlowHashFactory.create(input, deviceContext.getPrimaryConnectionContext().getFeatures().getVersion());
+        final FlowDescriptor flowDescriptor = FlowDescriptorFactory.create(input.getTableId(), flowId);
+        getDeviceContext().getDeviceFlowRegistry().store(flowHash, flowDescriptor);
         Futures.addCallback(future, new FutureCallback<RpcResult<AddFlowOutput>>() {
 
-            final DeviceContext deviceContext = getDeviceContext();
-            final FlowHash flowHash = FlowHashFactory.create(input, deviceContext.getPrimaryConnectionContext().getFeatures().getVersion());
 
             @Override
             public void onSuccess(final RpcResult<AddFlowOutput> rpcResult) {
