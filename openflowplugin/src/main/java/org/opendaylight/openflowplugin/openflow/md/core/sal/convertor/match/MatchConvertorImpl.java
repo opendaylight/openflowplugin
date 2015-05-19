@@ -1251,9 +1251,9 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
             } else if (ofMatch.getOxmMatchField().equals(ArpSpa.class)) {
                 org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.arp.spa._case.ArpSpa arpSpa = ((ArpSpaCase) ofMatch.getMatchEntryValue()).getArpSpa();
                 if (arpSpa != null) {
-                    String mask ="";
+                    int mask = 32;
                     if (null != arpSpa.getMask()){
-                        mask = MatchConvertorUtil.getIpv4Mask(arpSpa.getMask());
+                        mask = IpConversionUtil.countBits(arpSpa.getMask());
                     }
                     Ipv4Prefix ipv4Prefix = IpConversionUtil.createPrefix(arpSpa.getIpv4Address(), mask);
                     arpMatchBuilder.setArpSourceTransportAddress(ipv4Prefix);
@@ -1262,9 +1262,9 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
             } else if (ofMatch.getOxmMatchField().equals(ArpTpa.class)) {
                 org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.arp.tpa._case.ArpTpa arpTpa = ((ArpTpaCase) ofMatch.getMatchEntryValue()).getArpTpa();
                 if (arpTpa != null) {
-                    String mask ="";
+                    int mask = 32;
                     if (null != arpTpa.getMask()){
-                        mask = MatchConvertorUtil.getIpv4Mask(arpTpa.getMask());
+                        mask = IpConversionUtil.countBits(arpTpa.getMask());
                     }
                     Ipv4Prefix ipv4Prefix = IpConversionUtil.createPrefix(arpTpa.getIpv4Address(), mask);
 
@@ -1415,35 +1415,38 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
     }
 
     private static void setIpv6MatchBuilderFields(final Ipv6MatchBuilder ipv6MatchBuilder, final MatchEntry ofMatch, String ipv6PrefixStr, final byte[] mask) {
+        Ipv6Prefix ipv6Prefix;
+
         if (mask != null) {
-            ipv6PrefixStr += IpConversionUtil.PREFIX_SEPARATOR
-                    + MatchConvertorUtil.ipv6NetmaskArrayToCIDRValue(mask);
+            ipv6Prefix = IpConversionUtil.createPrefix(new Ipv6Address(ipv6PrefixStr), mask);
+        } else {
+            ipv6Prefix = IpConversionUtil.createPrefix(new Ipv6Address(ipv6PrefixStr));
         }
 
         if (ofMatch.getOxmMatchField().equals(Ipv6Src.class)) {
-            ipv6MatchBuilder.setIpv6Source(new Ipv6Prefix(ipv6PrefixStr));
+            ipv6MatchBuilder.setIpv6Source(ipv6Prefix);
         }
         if (ofMatch.getOxmMatchField().equals(Ipv6Dst.class)) {
-            ipv6MatchBuilder.setIpv6Destination(new Ipv6Prefix(ipv6PrefixStr));
+            ipv6MatchBuilder.setIpv6Destination(ipv6Prefix);
         }
     }
 
     private static void setIpv4MatchBuilderFields(final Ipv4MatchBuilder ipv4MatchBuilder, final MatchEntry ofMatch, final byte[] mask, String ipv4PrefixStr) {
+        Ipv4Prefix ipv4Prefix;
         if (mask != null) {
-            ipv4PrefixStr += MatchConvertorUtil.getIpv4Mask(mask);
+            ipv4Prefix = IpConversionUtil.createPrefix(new Ipv4Address(ipv4PrefixStr), mask);
         } else {
             //Openflow Spec : 1.3.2
             //An all-one-bits oxm_mask is equivalent to specifying 0 for oxm_hasmask and omitting oxm_mask.
             // So when user specify 32 as a mast, switch omit that mast and we get null as a mask in flow
             // statistics response.
-
-            ipv4PrefixStr += IpConversionUtil.PREFIX_SEPARATOR + "32";
+            ipv4Prefix = IpConversionUtil.createPrefix(new Ipv4Address(ipv4PrefixStr));
         }
         if (ofMatch.getOxmMatchField().equals(Ipv4Src.class)) {
-            ipv4MatchBuilder.setIpv4Source(new Ipv4Prefix(ipv4PrefixStr));
+            ipv4MatchBuilder.setIpv4Source(ipv4Prefix);
         }
         if (ofMatch.getOxmMatchField().equals(Ipv4Dst.class)) {
-            ipv4MatchBuilder.setIpv4Destination(new Ipv4Prefix(ipv4PrefixStr));
+            ipv4MatchBuilder.setIpv4Destination(ipv4Prefix);
         }
     }
 

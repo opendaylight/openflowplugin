@@ -377,7 +377,8 @@ public class ActionConvertorV13Test {
         SetNwSrcActionCaseBuilder nwSrcCaseBuilder = new SetNwSrcActionCaseBuilder();
         SetNwSrcActionBuilder nwSrcBuilder = new SetNwSrcActionBuilder();
         Ipv4Builder ipv4Builder = new Ipv4Builder();
-        ipv4Builder.setIpv4Address(new Ipv4Prefix("10.0.0.1/24"));
+        /* Correct canonical form for v4 prefix!!! */
+        ipv4Builder.setIpv4Address(new Ipv4Prefix("10.0.0.0/24"));
         nwSrcBuilder.setAddress(ipv4Builder.build());
         nwSrcCaseBuilder.setSetNwSrcAction(nwSrcBuilder.build());
         actionBuilder.setAction(nwSrcCaseBuilder.build());
@@ -443,7 +444,8 @@ public class ActionConvertorV13Test {
         nwSrcCaseBuilder = new SetNwSrcActionCaseBuilder();
         nwSrcBuilder = new SetNwSrcActionBuilder();
         Ipv6Builder ipv6Builder = new Ipv6Builder();
-        ipv6Builder.setIpv6Address(new Ipv6Prefix("0000:0000:0000:0000:0000:0000:0000:0005/128"));
+        /* Use canonical form, 00:00:0000 is not a valid v6 notation */
+        ipv6Builder.setIpv6Address(new Ipv6Prefix("::5/128"));
         nwSrcBuilder.setAddress(ipv6Builder.build());
         nwSrcCaseBuilder.setSetNwSrcAction(nwSrcBuilder.build());
         actionBuilder.setAction(nwSrcCaseBuilder.build());
@@ -455,7 +457,8 @@ public class ActionConvertorV13Test {
         nwDstCaseBuilder = new SetNwDstActionCaseBuilder();
         nwDstBuilder = new SetNwDstActionBuilder();
         ipv6Builder = new Ipv6Builder();
-        ipv6Builder.setIpv6Address(new Ipv6Prefix("0000:0000:0000:0000:0000:0000:0000:0008/64"));
+        /* Use canonical form, 00:00:0006/64 is not a valid v6 notation - this equates to ::/64 */
+        ipv6Builder.setIpv6Address(new Ipv6Prefix("::/64"));
         nwDstBuilder.setAddress(ipv6Builder.build());
         nwDstCaseBuilder.setSetNwDstAction(nwDstBuilder.build());
         actionBuilder.setAction(nwDstCaseBuilder.build());
@@ -517,7 +520,7 @@ public class ActionConvertorV13Test {
                 + ".action.rev150203.action.grouping.action.choice.SetFieldCase", action.getActionChoice().getImplementedInterface().getName());
         entry = setFieldCase.getSetFieldAction().getMatchEntry().get(0);
         checkEntryHeader(entry, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Ipv4Src.class, false);
-        Assert.assertEquals("Wrong ipv4 src", "10.0.0.1", ((Ipv4SrcCase) entry.getMatchEntryValue()).getIpv4Src()
+        Assert.assertEquals("Wrong ipv4 src", "10.0.0.0", ((Ipv4SrcCase) entry.getMatchEntryValue()).getIpv4Src()
                 .getIpv4Address().getValue());
 
         action = actions.get(5);
@@ -579,7 +582,7 @@ public class ActionConvertorV13Test {
                 + ".action.rev150203.action.grouping.action.choice.SetFieldCase", action.getActionChoice().getImplementedInterface().getName());
         entry = setFieldCase.getSetFieldAction().getMatchEntry().get(0);
         checkEntryHeader(entry, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Ipv6Src.class, false);
-        Assert.assertEquals("Wrong ipv4 src", "0000:0000:0000:0000:0000:0000:0000:0005",
+        Assert.assertEquals("Wrong ipv6 src", "::5",
                 ((Ipv6SrcCase) entry.getMatchEntryValue()).getIpv6Src().getIpv6Address().getValue());
 
         action = actions.get(11);
@@ -589,7 +592,7 @@ public class ActionConvertorV13Test {
                 + ".action.rev150203.action.grouping.action.choice.SetFieldCase", action.getActionChoice().getImplementedInterface().getName());
         entry = setFieldCase.getSetFieldAction().getMatchEntry().get(0);
         checkEntryHeader(entry, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Ipv6Dst.class, false);
-        Assert.assertEquals("Wrong ipv4 dst", "0000:0000:0000:0000:0000:0000:0000:0008",
+        Assert.assertEquals("Wrong ipv6 dst", "::",
                 ((Ipv6DstCase) entry.getMatchEntryValue()).getIpv6Dst().getIpv6Address().getValue());
     }
 

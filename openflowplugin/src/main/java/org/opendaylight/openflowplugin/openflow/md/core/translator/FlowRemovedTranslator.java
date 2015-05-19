@@ -156,6 +156,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Tunne
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.IpConversionUtil;
 
 public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, List<DataObject>> {
 
@@ -371,29 +372,27 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
                 }
                 if (field.equals(Ipv4Src.class)) {
                     Ipv4SrcCase ipv4SrcCase = ((Ipv4SrcCase) entry.getMatchEntryValue());
-                    Ipv4Address ipv4Address = ipv4SrcCase.getIpv4Src().getIpv4Address();
-                    String ipAddressString = ipv4Address.getValue();
-                    String prefix = "";
+                    int prefix;
                     if (entry.isHasMask()) {
-                        byte[] mask = ipv4SrcCase.getIpv4Src().getMask();
-                        prefix = prefix + PREFIX_SEPARATOR + countBits(mask);
+                        prefix = IpConversionUtil.countBits(ipv4SrcCase.getIpv4Src().getMask());
                     } else {
-                        prefix += PREFIX_SEPARATOR + "32";
+                        prefix = 32;
                     }
-                    ipv4Match.setIpv4Source(createIpv4Prefix(ipAddressString, prefix));
+                    ipv4Match.setIpv4Source(
+                        IpConversionUtil.createPrefix(ipv4SrcCase.getIpv4Src().getIpv4Address(), prefix)
+                    );
 
                 } else if (field.equals(Ipv4Dst.class)) {
                     Ipv4DstCase ipv4DstCase = ((Ipv4DstCase) entry.getMatchEntryValue());
-                    Ipv4Address ipv4Address = ipv4DstCase.getIpv4Dst().getIpv4Address();
-                    String ipAddressString = ipv4Address.getValue();
-                    String prefix = "";
+                    int prefix;
                     if (entry.isHasMask()) {
-                        byte[] mask = ipv4DstCase.getIpv4Dst().getMask();
-                        prefix = prefix + PREFIX_SEPARATOR + countBits(mask);
+                        prefix = IpConversionUtil.countBits(ipv4DstCase.getIpv4Dst().getMask());
                     } else {
-                        prefix += PREFIX_SEPARATOR + "32";
+                        prefix = 32;
                     }
-                    ipv4Match.setIpv4Destination(createIpv4Prefix(ipAddressString, prefix));
+                    ipv4Match.setIpv4Destination(
+                        IpConversionUtil.createPrefix(ipv4DstCase.getIpv4Dst().getIpv4Address(), prefix)
+                    );
                 }
             } else if (field.equals(ArpOp.class) || field.equals(ArpSpa.class) || field.equals(ArpTpa.class)
                     || field.equals(ArpSha.class) || field.equals(ArpTha.class)) {
@@ -406,30 +405,27 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
                 } else if (field.equals(ArpSpa.class)) {
 
                     ArpSpaCase arpSpaCase = ((ArpSpaCase) entry.getMatchEntryValue());
-                    Ipv4Address ipv4Address = arpSpaCase.getArpSpa().getIpv4Address();
-                    String ipAddressString = ipv4Address.getValue();
-                    String prefix = "";
+                    int prefix;
                     if (entry.isHasMask()) {
-                        byte[] mask = arpSpaCase.getArpSpa().getMask();
-                        prefix = prefix + PREFIX_SEPARATOR + countBits(mask);
+                        prefix = IpConversionUtil.countBits(arpSpaCase.getArpSpa().getMask());
                     } else {
-                        prefix += PREFIX_SEPARATOR + "32";
+                        prefix = 32;
                     }
-
-                    arpMatch.setArpSourceTransportAddress(createIpv4Prefix(ipAddressString, prefix));
+                    arpMatch.setArpSourceTransportAddress(
+                        IpConversionUtil.createPrefix(arpSpaCase.getArpSpa().getIpv4Address(), prefix)
+                    );
                 } else if (field.equals(ArpTpa.class)) {
                     ArpTpaCase arpTpaCase = ((ArpTpaCase) entry.getMatchEntryValue());
-                    Ipv4Address ipv4Address = arpTpaCase.getArpTpa().getIpv4Address();
-                    String ipAddressString = ipv4Address.getValue();
-                    String prefix = "";
+                    int prefix;
                     if (entry.isHasMask()) {
-                        byte[] mask = arpTpaCase.getArpTpa().getMask();
-                        prefix = prefix + PREFIX_SEPARATOR + countBits(mask);
+                        prefix = IpConversionUtil.countBits(arpTpaCase.getArpTpa().getMask());
                     } else {
-                        prefix += PREFIX_SEPARATOR + "32";
+                        prefix = 32;
                     }
 
-                    arpMatch.setArpTargetTransportAddress(createIpv4Prefix(ipAddressString, prefix));
+                    arpMatch.setArpTargetTransportAddress(
+                        IpConversionUtil.createPrefix(arpTpaCase.getArpTpa().getIpv4Address(), prefix)
+                    );
                 } else if (field.equals(ArpSha.class)) {
                     ArpSourceHardwareAddressBuilder arpSha = new ArpSourceHardwareAddressBuilder();
                     ArpShaCase arpShaCase = ((ArpShaCase) entry.getMatchEntryValue());
@@ -453,32 +449,28 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
                 }
                 if (field.equals(TunnelIpv4Src.class)) {
                     Ipv4SrcCase ipv4SrcCase = ((Ipv4SrcCase) entry.getMatchEntryValue());
-                    Ipv4Address ipv4Address = ipv4SrcCase.getIpv4Src().getIpv4Address();
-                    String ipAddressString = ipv4Address.getValue();
-
-                    String prefix = "";
+                    int prefix;
                     if (entry.isHasMask()) {
-                        byte[] mask = ipv4SrcCase.getIpv4Src().getMask();
-                        prefix = prefix + PREFIX_SEPARATOR + countBits(mask);
+                        prefix = IpConversionUtil.countBits(ipv4SrcCase.getIpv4Src().getMask());
                     } else {
-                        prefix += PREFIX_SEPARATOR + "32";
+                        prefix = 32;
                     }
-
-                    ipv4Match.setIpv4Source(createIpv4Prefix(ipAddressString, prefix));
+                    
+                    ipv4Match.setIpv4Source(
+                        IpConversionUtil.createPrefix(ipv4SrcCase.getIpv4Src().getIpv4Address(), prefix)
+                    );
                 } else if (field.equals(TunnelIpv4Dst.class)) {
                     Ipv4DstCase ipv4DstCase = ((Ipv4DstCase) entry.getMatchEntryValue());
-                    Ipv4Address ipv4Address = ipv4DstCase.getIpv4Dst().getIpv4Address();
-                    String ipAddressString = ipv4Address.getValue();
-                    String prefix = "";
+                    int prefix;
                     if (entry.isHasMask()) {
-                        byte[] mask = ipv4DstCase.getIpv4Dst().getMask();
-                        prefix = prefix + PREFIX_SEPARATOR + countBits(mask);
+                        prefix = IpConversionUtil.countBits(ipv4DstCase.getIpv4Dst().getMask());
                     } else {
-                        prefix += PREFIX_SEPARATOR + "32";
+                        prefix = 32;
                     }
-
-                    ipv4Match.setIpv4Destination(createIpv4Prefix(ipAddressString, prefix));
-                }
+                    
+                    ipv4Match.setIpv4Destination(
+                        IpConversionUtil.createPrefix(ipv4DstCase.getIpv4Dst().getIpv4Address(), prefix)
+                    );               }
             } else if (field.equals(Ipv6Src.class) || field.equals(Ipv6Dst.class) || field.equals(Ipv6Flabel.class)
                     || field.equals(Ipv6NdTarget.class) || field.equals(Ipv6NdSll.class)
                     || field.equals(Ipv6NdTll.class) || field.equals(Ipv6Exthdr.class)) {
@@ -487,26 +479,26 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
                 }
                 if (field.equals(Ipv6Src.class)) {
                     Ipv6SrcCase ipv6SrcCase = ((Ipv6SrcCase) entry.getMatchEntryValue());
-                    Ipv6Address ipv6Address = ipv6SrcCase.getIpv6Src().getIpv6Address();
-                    String ipv6string = ipv6Address.getValue();
-                    String prefix = "";
+                    int prefix ;
                     if (entry.isHasMask()) {
-                        byte[] mask = ipv6SrcCase.getIpv6Src().getMask();
-                        prefix = prefix + PREFIX_SEPARATOR + countBits(mask);
+                        prefix = IpConversionUtil.countBits(ipv6SrcCase.getIpv6Src().getMask());
+                    } else {
+                        prefix = 128;
                     }
-
-                    ipv6Match.setIpv6Source(createIpv6Prefix(ipv6string, prefix));
+                    ipv6Match.setIpv6Source(
+                        IpConversionUtil.createPrefix(ipv6SrcCase.getIpv6Src().getIpv6Address(), prefix)
+                    );
                 } else if (field.equals(Ipv6Dst.class)) {
                     Ipv6DstCase ipv6DstCase = ((Ipv6DstCase) entry.getMatchEntryValue());
-                    Ipv6Address ipv6Address = ipv6DstCase.getIpv6Dst().getIpv6Address();
-                    String ipv6string = ipv6Address.getValue();
-                    String prefix = "";
+                    int prefix;
                     if (entry.isHasMask()) {
-                        byte[] mask = ipv6DstCase.getIpv6Dst().getMask();
-                        prefix = prefix + PREFIX_SEPARATOR + countBits(mask);
+                        prefix = IpConversionUtil.countBits(ipv6DstCase.getIpv6Dst().getMask());
+                    } else {
+                        prefix = 128;
                     }
-
-                    ipv6Match.setIpv6Destination(createIpv6Prefix(ipv6string, prefix));
+                    ipv6Match.setIpv6Destination(
+                        IpConversionUtil.createPrefix(ipv6DstCase.getIpv6Dst().getIpv6Address(), prefix)
+                    );
                 } else if (field.equals(Ipv6Flabel.class)) {
                     Ipv6LabelBuilder ipv6Label = new Ipv6LabelBuilder();
                     Ipv6FlabelCase ipv6FlabelCase = ((Ipv6FlabelCase) entry.getMatchEntryValue());
@@ -627,23 +619,4 @@ public class FlowRemovedTranslator implements IMDMessageTranslator<OfHeader, Lis
         return matchBuilder.build();
     }
 
-    private Ipv6Prefix createIpv6Prefix(final String ipv6string, final String prefix) {
-        return new Ipv6Prefix(ipv6string + prefix);
-    }
-
-    private Ipv4Prefix createIpv4Prefix(final String ipAddressString, final String prefix) {
-        return new Ipv4Prefix(ipAddressString + prefix);
-    }
-
-    private int toInt(byte b) {
-        return b < 0 ? b + 256 : b;
-    }
-
-    private int countBits(byte[] mask) {
-        int netmask = 0;
-        for (byte b : mask) {
-            netmask += Integer.bitCount(toInt(b));
-        }
-        return netmask;
-    }
 }
