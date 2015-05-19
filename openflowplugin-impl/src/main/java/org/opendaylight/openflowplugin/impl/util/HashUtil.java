@@ -10,7 +10,9 @@ package org.opendaylight.openflowplugin.impl.util;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.CharMatcher;
+import com.google.common.base.Splitter;
 import java.math.BigInteger;
+import java.util.Iterator;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
@@ -60,6 +62,7 @@ public final class HashUtil {
     private static final Logger LOG = LoggerFactory.getLogger(HashUtil.class);
     private static final CharMatcher SLASH_MATCHER = CharMatcher.is('/');
     private static final Pattern DOUBLE_COLON = Pattern.compile("::");
+    private static final Splitter SLASH_SPLITTER = Splitter.on('/');
     private static final int BASE_16 = 16;
     private static final int BASE_10 = 10;
     private static final long IPV6_TOKENS_COUNT = 8;
@@ -416,14 +419,16 @@ public final class HashUtil {
         return (int) Math.ceil(bitCount);
     }
 
-    private static long extractMask(final Ipv6Prefix ipv6Prefix) {
-        StringTokenizer maskTokenizer = new StringTokenizer(ipv6Prefix.getValue(), "/");
-        long mask = 0;
-        if (maskTokenizer.countTokens() > 1) {
-            maskTokenizer.nextToken();
-            mask = Integer.parseInt(maskTokenizer.nextToken());
+    private static int extractMask(final Ipv6Prefix ipv6Prefix) {
+        final Iterator<String> tokens = SLASH_SPLITTER.split(ipv6Prefix.getValue()).iterator();
+        if (!tokens.hasNext()) {
+            return 0;
         }
-        return mask;
+        tokens.next();
+        if (!tokens.hasNext()) {
+            return 0;
+        }
+        return Integer.parseInt(tokens.next());
     }
 
     private static long parseTokens(final StringTokenizer stringTokenizer, final int base, final int bitShift) {
@@ -505,18 +510,25 @@ public final class HashUtil {
     }
 
     public static long calculateIpv4PrefixHash(final Ipv4Prefix ipv4Prefix) {
-        long hash = 0;
-        StringTokenizer prefixAsArray = new StringTokenizer(ipv4Prefix.getValue(), "/");
-        if (prefixAsArray.countTokens() == 2) {
-            String address = prefixAsArray.nextToken();
-            Long mask = Long.parseLong(prefixAsArray.nextToken());
-            long numberOfAddressPartsToUse = (int) Math.ceil(mask.doubleValue() / 8);
-            hash += calculateIpAdressHash(address, numberOfAddressPartsToUse, BASE_10);
-            hash += mask.shortValue();
+        final Iterator<String> tokens = SLASH_SPLITTER.split(ipv4Prefix.getValue()).iterator();
+        if (!tokens.hasNext()) {
+            return 0;
         }
-        return hash;
-    }
 
+        final String address = tokens.next();
+        if (!tokens.hasNext()) {
+            return 0;
+        }
+
+        final Long mask = Long.parseLong(tokens.next());
+        if (tokens.hasNext()) {
+            return 0;
+        }
+
+        long numberOfAddressPartsToUse = (int) Math.ceil(mask.doubleValue() / 8);
+        long hash = calculateIpAdressHash(address, numberOfAddressPartsToUse, BASE_10);
+        return hash + mask.shortValue();
+    }
 
     private static long calculateIpAdressHash(final String address, final long numberOfParts, final int base) {
         StringTokenizer stringTokenizer = new StringTokenizer(address, ".");
