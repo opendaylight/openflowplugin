@@ -16,6 +16,7 @@ import com.google.common.util.concurrent.Futures;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.BindingTransactionChain;
@@ -73,16 +74,17 @@ class TransactionChainManager implements TransactionChainListener {
     }
 
 
-    public void commitOperationsGatheredInOneTransaction(){
+    public void commitOperationsGatheredInOneTransaction() {
         enableSubmit();
         submitTransaction();
     }
-    public void startGatheringOperationsToOneTransaction(){
+
+    public void startGatheringOperationsToOneTransaction() {
         submitIsEnabled = false;
     }
 
     <T extends DataObject> void writeToTransaction(final LogicalDatastoreType store,
-                                                                final InstanceIdentifier<T> path, final T data) {
+                                                   final InstanceIdentifier<T> path, final T data) {
         try {
             WriteTransaction writeTx = getTransactionSafely();
             writeTx.put(store, path, data);
@@ -101,7 +103,7 @@ class TransactionChainManager implements TransactionChainListener {
     }
 
     <T extends DataObject> void addDeleteOperationTotTxChain(final LogicalDatastoreType store,
-                                                                          final InstanceIdentifier<T> path) {
+                                                             final InstanceIdentifier<T> path) {
         try {
             WriteTransaction writeTx = getTransactionSafely();
             writeTx.delete(store, path);
@@ -137,6 +139,11 @@ class TransactionChainManager implements TransactionChainListener {
             if (wTx != null && nrOfActualTx > 0) {
                 LOG.trace("submitting transaction, counter: {}", nrOfActualTx);
                 CheckedFuture<Void, TransactionCommitFailedException> submitResult = wTx.submit();
+                try {
+                    submitResult.get();
+                } catch (ExecutionException | InterruptedException e) {
+                    recreateTxChain();
+                }
                 hookTimeExpenseCounter(submitResult, String.valueOf(wTx.getIdentifier()) + "::" + nrOfActualTx);
                 wTx = null;
                 nrOfActualTx = 0L;
@@ -158,12 +165,12 @@ class TransactionChainManager implements TransactionChainListener {
     }
 
     private static void hookTimeExpenseCounter(final CheckedFuture<Void, TransactionCommitFailedException> submitResult, final String name) {
-        final long submitFiredTime = System.currentTimeMillis();
+        final long submitFiredTime = System.nanoTime();
         LOG.debug("submit of {} fired", name);
         Futures.addCallback(submitResult, new FutureCallback<Void>() {
             @Override
             public void onSuccess(final Void result) {
-                LOG.debug("submit of {} finished in {} ms", name, System.currentTimeMillis() - submitFiredTime);
+                LOG.debug("submit of {} finished in {} ms", name, System.nanoTime() - submitFiredTime);
             }
 
             @Override
@@ -181,6 +188,10 @@ class TransactionChainManager implements TransactionChainListener {
     public void onTransactionChainFailed(final TransactionChain<?, ?> chain,
                                          final AsyncTransaction<?, ?> transaction, final Throwable cause) {
         LOG.warn("txChain failed -> recreating", cause);
+        recreateTxChain();
+    }
+
+    private void recreateTxChain() {
         txChainFactory.close();
         txChainFactory = dataBroker.createTransactionChain(TransactionChainManager.this);
     }
