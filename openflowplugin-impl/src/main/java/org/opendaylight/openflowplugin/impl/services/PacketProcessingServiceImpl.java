@@ -51,6 +51,7 @@ public class PacketProcessingServiceImpl extends CommonService implements Packet
                 outboundQueue.commitEntry(xid.getValue(), message, new FutureCallback<OfHeader>() {
                     @Override
                     public void onSuccess(final OfHeader ofHeader) {
+                        RequestContextUtil.closeRequstContext(requestContext);
                         getMessageSpy().spyMessage(message.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
                         final RpcResultBuilder<Void> rpcResultBuilder = RpcResultBuilder.<Void>success();
                         settableFuture.set(rpcResultBuilder.build());
@@ -58,6 +59,7 @@ public class PacketProcessingServiceImpl extends CommonService implements Packet
 
                     @Override
                     public void onFailure(final Throwable throwable) {
+                        RequestContextUtil.closeRequstContext(requestContext);
                         getMessageSpy().spyMessage(message.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
                         final RpcResultBuilder<Void> rpcResultBuilder = RpcResultBuilder.<Void>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
                         settableFuture.set(rpcResultBuilder.build());
