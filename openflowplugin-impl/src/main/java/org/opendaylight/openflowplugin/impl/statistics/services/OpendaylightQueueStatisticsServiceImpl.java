@@ -46,11 +46,12 @@ public class OpendaylightQueueStatisticsServiceImpl extends CommonService implem
     @Override
     public Future<RpcResult<GetAllQueuesStatisticsFromAllPortsOutput>> getAllQueuesStatisticsFromAllPorts(
             final GetAllQueuesStatisticsFromAllPortsInput input) {
-        return this.<GetAllQueuesStatisticsFromAllPortsOutput, Void>handleServiceCall(
-                new Function<RequestContext<GetAllQueuesStatisticsFromAllPortsOutput>, ListenableFuture<RpcResult<Void>>>() {
+        return handleServiceCallNew(
+                new Function<RequestContext<GetAllQueuesStatisticsFromAllPortsOutput>,
+                ListenableFuture<RpcResult<GetAllQueuesStatisticsFromAllPortsOutput>>>() {
 
                     @Override
-                    public ListenableFuture<RpcResult<Void>> apply(final RequestContext<GetAllQueuesStatisticsFromAllPortsOutput> requestContext) {
+                    public ListenableFuture<RpcResult<GetAllQueuesStatisticsFromAllPortsOutput>> apply(final RequestContext<GetAllQueuesStatisticsFromAllPortsOutput> requestContext) {
 
 
                         MultipartRequestQueueCaseBuilder caseBuilder = new MultipartRequestQueueCaseBuilder();
@@ -78,11 +79,11 @@ public class OpendaylightQueueStatisticsServiceImpl extends CommonService implem
     @Override
     public Future<RpcResult<GetAllQueuesStatisticsFromGivenPortOutput>> getAllQueuesStatisticsFromGivenPort(
             final GetAllQueuesStatisticsFromGivenPortInput input) {
-        return this.<GetAllQueuesStatisticsFromGivenPortOutput, Void>handleServiceCall(
-                new Function<RequestContext<GetAllQueuesStatisticsFromGivenPortOutput>, ListenableFuture<RpcResult<Void>>>() {
+        return handleServiceCallNew(
+                new Function<RequestContext<GetAllQueuesStatisticsFromGivenPortOutput>, ListenableFuture<RpcResult<GetAllQueuesStatisticsFromGivenPortOutput>>>() {
 
                     @Override
-                    public ListenableFuture<RpcResult<Void>> apply(final RequestContext<GetAllQueuesStatisticsFromGivenPortOutput> requestContext) {
+                    public ListenableFuture<RpcResult<GetAllQueuesStatisticsFromGivenPortOutput>> apply(final RequestContext<GetAllQueuesStatisticsFromGivenPortOutput> requestContext) {
 
                         MultipartRequestQueueCaseBuilder caseBuilder = new MultipartRequestQueueCaseBuilder();
                         MultipartRequestQueueBuilder mprQueueBuilder = new MultipartRequestQueueBuilder();
@@ -109,11 +110,11 @@ public class OpendaylightQueueStatisticsServiceImpl extends CommonService implem
     @Override
     public Future<RpcResult<GetQueueStatisticsFromGivenPortOutput>> getQueueStatisticsFromGivenPort(
             final GetQueueStatisticsFromGivenPortInput input) {
-        return this.<GetQueueStatisticsFromGivenPortOutput, Void>handleServiceCall(
-                new Function<RequestContext<GetQueueStatisticsFromGivenPortOutput>, ListenableFuture<RpcResult<Void>>>() {
+        return handleServiceCallNew(
+                new Function<RequestContext<GetQueueStatisticsFromGivenPortOutput>, ListenableFuture<RpcResult<GetQueueStatisticsFromGivenPortOutput>>>() {
 
                     @Override
-                    public ListenableFuture<RpcResult<Void>> apply(final RequestContext<GetQueueStatisticsFromGivenPortOutput> requestContext) {
+                    public ListenableFuture<RpcResult<GetQueueStatisticsFromGivenPortOutput>> apply(final RequestContext<GetQueueStatisticsFromGivenPortOutput> requestContext) {
 
                         MultipartRequestQueueCaseBuilder caseBuilder = new MultipartRequestQueueCaseBuilder();
                         MultipartRequestQueueBuilder mprQueueBuilder = new MultipartRequestQueueBuilder();

@@ -44,12 +44,12 @@ public class OpendaylightPortStatisticsServiceImpl extends CommonService impleme
     @Override
     public Future<RpcResult<GetAllNodeConnectorsStatisticsOutput>> getAllNodeConnectorsStatistics(
             final GetAllNodeConnectorsStatisticsInput input) {
-        return this
-                .<GetAllNodeConnectorsStatisticsOutput, Void>handleServiceCall(
-                        new Function<RequestContext<GetAllNodeConnectorsStatisticsOutput>, ListenableFuture<RpcResult<Void>>>() {
+        return handleServiceCallNew(
+                        new Function<RequestContext<GetAllNodeConnectorsStatisticsOutput>,
+                        ListenableFuture<RpcResult<GetAllNodeConnectorsStatisticsOutput>>>() {
 
                             @Override
-                            public ListenableFuture<RpcResult<Void>> apply(final RequestContext<GetAllNodeConnectorsStatisticsOutput> requestContext) {
+                            public ListenableFuture<RpcResult<GetAllNodeConnectorsStatisticsOutput>> apply(final RequestContext<GetAllNodeConnectorsStatisticsOutput> requestContext) {
 
                                 MultipartRequestPortStatsCaseBuilder caseBuilder =
                                         new MultipartRequestPortStatsCaseBuilder();
@@ -72,12 +72,12 @@ public class OpendaylightPortStatisticsServiceImpl extends CommonService impleme
     @Override
     public Future<RpcResult<GetNodeConnectorStatisticsOutput>> getNodeConnectorStatistics(
             final GetNodeConnectorStatisticsInput input) {
-        return this
-                .<GetNodeConnectorStatisticsOutput, Void>handleServiceCall(
-                        new Function<RequestContext<GetNodeConnectorStatisticsOutput>, ListenableFuture<RpcResult<Void>>>() {
+        return handleServiceCallNew(
+                        new Function<RequestContext<GetNodeConnectorStatisticsOutput>,
+                        ListenableFuture<RpcResult<GetNodeConnectorStatisticsOutput>>>() {
 
                             @Override
-                            public ListenableFuture<RpcResult<Void>> apply(final RequestContext<GetNodeConnectorStatisticsOutput> requestContext) {
+                            public ListenableFuture<RpcResult<GetNodeConnectorStatisticsOutput>> apply(final RequestContext<GetNodeConnectorStatisticsOutput> requestContext) {
 
                                 MultipartRequestPortStatsCaseBuilder caseBuilder =
                                         new MultipartRequestPortStatsCaseBuilder();

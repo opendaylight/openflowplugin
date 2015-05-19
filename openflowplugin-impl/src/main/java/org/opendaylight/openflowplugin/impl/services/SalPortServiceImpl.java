@@ -40,9 +40,9 @@ public class SalPortServiceImpl extends CommonService implements SalPortService 
 
     @Override
     public Future<RpcResult<UpdatePortOutput>> updatePort(final UpdatePortInput input) {
-        return this.<UpdatePortOutput, Void>handleServiceCall(new Function<RequestContext<UpdatePortOutput>, ListenableFuture<RpcResult<Void>>>() {
+        return handleServiceCallNew(new Function<RequestContext<UpdatePortOutput>, ListenableFuture<RpcResult<UpdatePortOutput>>>() {
             @Override
-            public ListenableFuture<RpcResult<Void>> apply(final RequestContext<UpdatePortOutput> requestContext) {
+            public ListenableFuture<RpcResult<UpdatePortOutput>> apply(final RequestContext<UpdatePortOutput> requestContext) {
                 getMessageSpy().spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
 
                 final Port inputPort = input.getUpdatedPort().getPort().getPort().get(0);
@@ -52,7 +52,7 @@ public class SalPortServiceImpl extends CommonService implements SalPortService 
                 final OutboundQueue outboundQueue = getDeviceContext().getPrimaryConnectionContext().getOutboundQueueProvider();
 
                 mdInput.setXid(xid.getValue());
-                final SettableFuture<RpcResult<Void>> settableFuture = SettableFuture.create();
+                final SettableFuture<RpcResult<UpdatePortOutput>> settableFuture = SettableFuture.create();
                 final PortModInput portModInput = mdInput.build();
                 outboundQueue.commitEntry(xid.getValue(), portModInput, new FutureCallback<OfHeader>() {
                     @Override
@@ -60,12 +60,12 @@ public class SalPortServiceImpl extends CommonService implements SalPortService 
                         RequestContextUtil.closeRequstContext(requestContext);
                         getMessageSpy().spyMessage(portModInput.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
 
-                        settableFuture.set(RpcResultBuilder.<Void>success().build());
+                        settableFuture.set(RpcResultBuilder.<UpdatePortOutput>success().build());
                     }
 
                     @Override
                     public void onFailure(final Throwable throwable) {
-                        RpcResultBuilder<Void> rpcResultBuilder = RpcResultBuilder.<Void>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
+                        RpcResultBuilder<UpdatePortOutput> rpcResultBuilder = RpcResultBuilder.<UpdatePortOutput>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
                         RequestContextUtil.closeRequstContext(requestContext);
                         getMessageSpy().spyMessage(portModInput.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
                         settableFuture.set(rpcResultBuilder.build());

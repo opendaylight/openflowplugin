@@ -41,10 +41,11 @@ public class OpendaylightFlowTableStatisticsServiceImpl extends CommonService im
             final GetFlowTablesStatisticsInput input) {
 
 
-        return this.<GetFlowTablesStatisticsOutput, Void>handleServiceCall(new Function<RequestContext<GetFlowTablesStatisticsOutput>, ListenableFuture<RpcResult<Void>>>() {
+        return handleServiceCallNew(new Function<RequestContext<GetFlowTablesStatisticsOutput>,
+                ListenableFuture<RpcResult<GetFlowTablesStatisticsOutput>>>() {
 
             @Override
-            public ListenableFuture<RpcResult<Void>> apply(final RequestContext<GetFlowTablesStatisticsOutput> requestContext) {
+            public ListenableFuture<RpcResult<GetFlowTablesStatisticsOutput>> apply(final RequestContext<GetFlowTablesStatisticsOutput> requestContext) {
 
                 // Create multipart request body for fetch all the group stats
                 final MultipartRequestTableCaseBuilder multipartRequestTableCaseBuilder = new MultipartRequestTableCaseBuilder();
