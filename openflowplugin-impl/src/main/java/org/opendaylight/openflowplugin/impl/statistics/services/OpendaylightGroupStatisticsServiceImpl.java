@@ -51,10 +51,11 @@ public class OpendaylightGroupStatisticsServiceImpl extends CommonService implem
     public Future<RpcResult<GetAllGroupStatisticsOutput>> getAllGroupStatistics(final GetAllGroupStatisticsInput input) {
 
 
-        return this.<GetAllGroupStatisticsOutput, Void>handleServiceCall(new Function<RequestContext<GetAllGroupStatisticsOutput>, ListenableFuture<RpcResult<Void>>>() {
+        return handleServiceCall(new Function<RequestContext<GetAllGroupStatisticsOutput>,
+                ListenableFuture<RpcResult<GetAllGroupStatisticsOutput>>>() {
 
             @Override
-            public ListenableFuture<RpcResult<Void>> apply(final RequestContext<GetAllGroupStatisticsOutput> requestContext) {
+            public ListenableFuture<RpcResult<GetAllGroupStatisticsOutput>> apply(final RequestContext<GetAllGroupStatisticsOutput> requestContext) {
 
                 final MultipartRequestGroupCaseBuilder caseBuilder = new MultipartRequestGroupCaseBuilder();
                 final MultipartRequestGroupBuilder mprGroupBuild = new MultipartRequestGroupBuilder();
@@ -85,11 +86,12 @@ public class OpendaylightGroupStatisticsServiceImpl extends CommonService implem
 
     @Override
     public Future<RpcResult<GetGroupDescriptionOutput>> getGroupDescription(final GetGroupDescriptionInput input) {
-        return this.<GetGroupDescriptionOutput, Void>handleServiceCall(
-                new Function<RequestContext<GetGroupDescriptionOutput>, ListenableFuture<RpcResult<Void>>>() {
+        return handleServiceCall(
+                new Function<RequestContext<GetGroupDescriptionOutput>,
+                ListenableFuture<RpcResult<GetGroupDescriptionOutput>>>() {
 
                     @Override
-                    public ListenableFuture<RpcResult<Void>> apply(final RequestContext<GetGroupDescriptionOutput> requestContext) {
+                    public ListenableFuture<RpcResult<GetGroupDescriptionOutput>> apply(final RequestContext<GetGroupDescriptionOutput> requestContext) {
                         final MultipartRequestGroupDescCaseBuilder mprGroupDescCaseBuild = new MultipartRequestGroupDescCaseBuilder();
 
                         final Xid xid = requestContext.getXid();
@@ -105,11 +107,12 @@ public class OpendaylightGroupStatisticsServiceImpl extends CommonService implem
 
     @Override
     public Future<RpcResult<GetGroupFeaturesOutput>> getGroupFeatures(final GetGroupFeaturesInput input) {
-        return this.<GetGroupFeaturesOutput, Void>handleServiceCall(
-                new Function<RequestContext<GetGroupFeaturesOutput>, ListenableFuture<RpcResult<Void>>>() {
+        return handleServiceCall(
+                new Function<RequestContext<GetGroupFeaturesOutput>,
+                ListenableFuture<RpcResult<GetGroupFeaturesOutput>>>() {
 
                     @Override
-                    public ListenableFuture<RpcResult<Void>> apply(final RequestContext<GetGroupFeaturesOutput> requestContext) {
+                    public ListenableFuture<RpcResult<GetGroupFeaturesOutput>> apply(final RequestContext<GetGroupFeaturesOutput> requestContext) {
                         final MultipartRequestGroupFeaturesCaseBuilder mprGroupFeaturesBuild = new MultipartRequestGroupFeaturesCaseBuilder();
 
                         final Xid xid = requestContext.getXid();
@@ -125,11 +128,11 @@ public class OpendaylightGroupStatisticsServiceImpl extends CommonService implem
 
     @Override
     public Future<RpcResult<GetGroupStatisticsOutput>> getGroupStatistics(final GetGroupStatisticsInput input) {
-        return this.<GetGroupStatisticsOutput, Void>handleServiceCall(
-                new Function<RequestContext<GetGroupStatisticsOutput>, ListenableFuture<RpcResult<Void>>>() {
+        return handleServiceCall(
+                new Function<RequestContext<GetGroupStatisticsOutput>, ListenableFuture<RpcResult<GetGroupStatisticsOutput>>>() {
 
                     @Override
-                    public ListenableFuture<RpcResult<Void>> apply(final RequestContext<GetGroupStatisticsOutput> requestContext) {
+                    public ListenableFuture<RpcResult<GetGroupStatisticsOutput>> apply(final RequestContext<GetGroupStatisticsOutput> requestContext) {
 
                         final MultipartRequestGroupCaseBuilder caseBuilder = new MultipartRequestGroupCaseBuilder();
                         final MultipartRequestGroupBuilder mprGroupBuild = new MultipartRequestGroupBuilder();
