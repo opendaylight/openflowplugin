@@ -24,7 +24,6 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 
 public abstract class CommonService {
-    protected static final RpcResult<Void> SUCCESSFUL_RPCRESULT = RpcResultBuilder.<Void>success().build();
     private static final Logger LOG = org.slf4j.LoggerFactory.getLogger(CommonService.class);
     private static final long WAIT_TIME = 2000;
     private static final BigInteger PRIMARY_CONNECTION = BigInteger.ZERO;
@@ -97,15 +96,8 @@ public abstract class CommonService {
         return primaryConnectionAdapter;
     }
 
-
-    /**
-     * @param <T>
-     * @param <F>
-     * @param function
-     * @return
-     */
-    public final <T, F> ListenableFuture<RpcResult<T>> handleServiceCall(final Function<RequestContext<T>, ListenableFuture<RpcResult<F>>> function) {
-
+    public final <T> ListenableFuture<RpcResult<T>> handleServiceCallNew(final Function<RequestContext<T>, ListenableFuture<RpcResult<T>>> function) {
+        
         LOG.trace("Handling general service call");
         final RequestContext<T> requestContext = createRequestContext();
         if (requestContext == null) {
@@ -118,13 +110,9 @@ public abstract class CommonService {
             deviceContext.getMessageSpy().spyMessage(requestContext.getClass(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_RESERVATION_REJECTED);
             return RequestContextUtil.closeRequestContextWithRpcError(requestContext, "Outbound queue wasn't able to reserve XID.");
         }
-        final ListenableFuture<RpcResult<F>> resultFromOFLib;
 
         messageSpy.spyMessage(requestContext.getClass(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_READY_FOR_SUBMIT);
-        function.apply(requestContext);
-
-        return requestContext.getFuture();
-
+        return function.apply(requestContext);
     }
 
     protected final <T> RequestContext<T> createRequestContext() {
