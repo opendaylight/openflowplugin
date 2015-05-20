@@ -28,6 +28,7 @@ import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
+import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandlerRegistration;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
@@ -108,6 +109,7 @@ public class DeviceContextImpl implements DeviceContext {
     private volatile boolean filteringPacketIn = false;
     private Object throttlingLock = new Object();
     private int filteringHighWaterMark = 0;
+    private OutboundQueueHandlerRegistration outboundQueueHandlerRegistration;
 
     @Override
     public MultiMsgCollector getMultiMsgCollector() {
@@ -354,6 +356,8 @@ public class DeviceContextImpl implements DeviceContext {
     public void close() {
         deviceState.setValid(false);
 
+        outboundQueueHandlerRegistration.close();
+
         LOG.trace("Removing node {} from operational DS.", getDeviceState().getNodeId());
         addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, getDeviceState().getNodeInstanceIdentifier());
 
@@ -443,5 +447,10 @@ public class DeviceContextImpl implements DeviceContext {
         for (ConnectionContext switchAuxConnectionContext : auxiliaryConnectionContexts.values()) {
             switchAuxConnectionContext.getConnectionAdapter().setPacketInFiltering(false);
         }
+    }
+
+    @Override
+    public void registerOutboundQueueHandler(final OutboundQueueHandlerRegistration outboundQueueHandlerRegistration) {
+        this.outboundQueueHandlerRegistration = outboundQueueHandlerRegistration;
     }
 }
