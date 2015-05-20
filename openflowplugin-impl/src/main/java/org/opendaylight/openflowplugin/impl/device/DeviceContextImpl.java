@@ -73,7 +73,6 @@ import org.opendaylight.yangtools.yang.binding.ChildOf;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
-import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -106,7 +105,7 @@ public class DeviceContextImpl implements DeviceContext {
 
     private volatile int outstandingNotificationsAmount = 0;
     private volatile boolean filteringPacketIn = false;
-    private Object throttlingLock = new Object();
+    private final Object throttlingLock = new Object();
     private int filteringHighWaterMark = 0;
 
     @Override
@@ -151,7 +150,6 @@ public class DeviceContextImpl implements DeviceContext {
     @Override
     public <M extends ChildOf<DataObject>> void onMessage(final M message, final RequestContext<?> requestContext) {
         // TODO Auto-generated method stub
-
     }
 
     @Override
@@ -200,7 +198,6 @@ public class DeviceContextImpl implements DeviceContext {
         return auxiliaryConnectionContexts.get(new SwitchConnectionCookieOFImpl(cookie.longValue()));
     }
 
-
     @Override
     public DeviceFlowRegistry getDeviceFlowRegistry() {
         return deviceFlowRegistry;
@@ -218,13 +215,11 @@ public class DeviceContextImpl implements DeviceContext {
 
     @Override
     public void processReply(final OfHeader ofHeader) {
-        RpcResult<OfHeader> rpcResult;
         if (ofHeader instanceof Error) {
             messageSpy.spyMessage(ofHeader.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_FAILURE);
         } else {
             messageSpy.spyMessage(ofHeader.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS);
         }
-
     }
 
     @Override
@@ -279,12 +274,11 @@ public class DeviceContextImpl implements DeviceContext {
         final MessageTranslator<PacketInMessage, PacketReceived> messageTranslator = translatorLibrary.lookupTranslator(translatorKey);
         final PacketReceived packetReceived = messageTranslator.translate(packetInMessage, this, null);
 
-        if (packetReceived != null) {
-            messageSpy.spyMessage(packetReceived.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_TRANSLATE_OUT_SUCCESS);
-        } else {
-            messageSpy.spyMessage(packetReceived.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_TRANSLATE_SRC_FAILURE);
+        if (packetReceived == null) {
+            LOG.debug("Received a null packet from switch");
             return;
         }
+        messageSpy.spyMessage(packetReceived.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_TRANSLATE_SRC_FAILURE);
 
         ListenableFuture<? extends Object> offerNotification = notificationPublishService.offerNotification(packetReceived);
         synchronized (throttlingLock) {
@@ -306,13 +300,13 @@ public class DeviceContextImpl implements DeviceContext {
         Futures.addCallback(offerNotification,
                 new FutureCallback<Object>() {
                     @Override
-                    public void onSuccess(Object result) {
+                    public void onSuccess(final Object result) {
                         countdownFiltering();
                         messageSpy.spyMessage(packetReceived.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS);
                     }
 
                     @Override
-                    public void onFailure(Throwable t) {
+                    public void onFailure(final Throwable t) {
                         countdownFiltering();
                         messageSpy.spyMessage(packetReceived.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_NOTIFICATION_REJECTED);
                         LOG.debug("notification offer failed: {}, outstanding: {}", t.getMessage(), outstandingNotificationsAmount);
