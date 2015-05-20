@@ -192,13 +192,14 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
             // create empty tables after device description is processed
             chainTableTrunkWriteOF10(deviceContext, deviceFeaturesFuture);
 
+            final short ofVersion = deviceContext.getDeviceState().getVersion();
+            final TranslatorKey translatorKey = new TranslatorKey(ofVersion, PortGrouping.class.getName());
+            final MessageTranslator<PortGrouping, FlowCapableNodeConnector> translator = deviceContext.oook().lookupTranslator(translatorKey);
+            final BigInteger dataPathId = deviceContext.getPrimaryConnectionContext().getFeatures().getDatapathId();
+
             for (final PortGrouping port : connectionContext.getFeatures().getPhyPort()) {
-                final short ofVersion = deviceContext.getDeviceState().getVersion();
-                final TranslatorKey translatorKey = new TranslatorKey(ofVersion, PortGrouping.class.getName());
-                final MessageTranslator<PortGrouping, FlowCapableNodeConnector> translator = deviceContext.oook().lookupTranslator(translatorKey);
                 final FlowCapableNodeConnector fcNodeConnector = translator.translate(port, deviceContext, null);
 
-                final BigInteger dataPathId = deviceContext.getPrimaryConnectionContext().getFeatures().getDatapathId();
                 final NodeConnectorId nodeConnectorId = NodeStaticReplyTranslatorUtil.nodeConnectorId(dataPathId.toString(), port.getPortNo(), ofVersion);
                 final NodeConnectorBuilder ncBuilder = new NodeConnectorBuilder().setId(nodeConnectorId);
                 ncBuilder.addAugmentation(FlowCapableNodeConnector.class, fcNodeConnector);
