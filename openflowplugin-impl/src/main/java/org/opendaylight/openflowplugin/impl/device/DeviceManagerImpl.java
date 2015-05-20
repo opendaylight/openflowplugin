@@ -32,6 +32,7 @@ import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
+import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandlerRegistration;
 import org.opendaylight.openflowplugin.api.ConnectionException;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
@@ -167,14 +168,13 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         final Short version = connectionContext.getFeatures().getVersion();
         OutboundQueueProvider outboundQueueProvider = new OutboundQueueProviderImpl(version);
 
-        // FIXME: we are losing registration, we should be registering in the connection context
-        connectionAdapter.registerOutboundQueueHandler(outboundQueueProvider, maxQueueDepth, barrierNanos);
+        final OutboundQueueHandlerRegistration outboundQueueHandlerRegistration = connectionAdapter.registerOutboundQueueHandler(outboundQueueProvider, maxQueueDepth, barrierNanos);
         connectionContext.setOutboundQueueProvider(outboundQueueProvider);
 
         final DeviceState deviceState = new DeviceStateImpl(connectionContext.getFeatures(), connectionContext.getNodeId());
 
         final DeviceContext deviceContext = new DeviceContextImpl(connectionContext, deviceState, dataBroker, hashedWheelTimer, messageIntelligenceAgency);
-
+        deviceContext.registerOutboundQueueHandler(outboundQueueHandlerRegistration);
         deviceContext.setNotificationService(notificationService);
         deviceContext.setNotificationPublishService(notificationPublishService);
         NodeBuilder nodeBuilder = new NodeBuilder().setId(deviceState.getNodeId()).setNodeConnector(Collections.<NodeConnector>emptyList());
@@ -264,7 +264,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
 
 
     private static ListenableFuture<List<RpcResult<List<MultipartReply>>>> createDeviceFeaturesForOF10(final DeviceContext deviceContext,
-                                                                                                final DeviceState deviceState) {
+                                                                                                       final DeviceState deviceState) {
         final ListenableFuture<RpcResult<List<MultipartReply>>> replyDesc = getNodeStaticInfo(MultipartType.OFPMPDESC,
                 deviceContext,
                 deviceState.getNodeInstanceIdentifier(),
@@ -274,7 +274,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
     }
 
     private static ListenableFuture<List<RpcResult<List<MultipartReply>>>> createDeviceFeaturesForOF13(final DeviceContext deviceContext,
-                                                                                                final DeviceState deviceState) {
+                                                                                                       final DeviceState deviceState) {
 
         final ListenableFuture<RpcResult<List<MultipartReply>>> replyDesc = getNodeStaticInfo(MultipartType.OFPMPDESC,
                 deviceContext,

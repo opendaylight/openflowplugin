@@ -14,6 +14,7 @@ import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandlerRegistration;
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginTimer;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceContextClosedHandler;
@@ -171,6 +172,13 @@ public interface DeviceContext extends AutoCloseable,
      * indicates that device context is fully published (e.g.: packetIn messages should be passed)
      */
     void onPublished();
+
+
+    /**
+     * Method registers outbound queue handler that should be invalidated when device context is closed.s
+     * @param outboundQueueHandlerRegistration
+     */
+    void registerOutboundQueueHandler(OutboundQueueHandlerRegistration outboundQueueHandlerRegistration);
 
 }
 
