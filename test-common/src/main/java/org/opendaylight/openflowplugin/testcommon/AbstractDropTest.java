@@ -64,14 +64,23 @@ abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseab
     private static final AtomicIntegerFieldUpdater<AbstractDropTest> EXCS_UPDATER = AtomicIntegerFieldUpdater.newUpdater(AbstractDropTest.class, "excs");
     private volatile int excs;
 
+    protected static final AtomicIntegerFieldUpdater<AbstractDropTest> RPC_FUTURE_SUCCESS_UPDATER = AtomicIntegerFieldUpdater.newUpdater(AbstractDropTest.class, "ftrSuccess");
+    protected volatile int ftrSuccess;
+
+    protected static final AtomicIntegerFieldUpdater<AbstractDropTest> RPC_FUTURE_FAIL_UPDATER = AtomicIntegerFieldUpdater.newUpdater(AbstractDropTest.class, "ftrFailed");
+    protected volatile int ftrFailed;
+
     public final DropTestStats getStats() {
-        return new DropTestStats(this.sent, this.rcvd, this.excs);
+        return new DropTestStats(this.sent, this.rcvd, this.excs, this.ftrFailed, this.ftrSuccess);
     }
 
     public final void clearStats() {
         this.sent = 0;
         this.rcvd = 0;
         this.excs = 0;
+        this.ftrSuccess = 0;
+        this.ftrFailed = 0;
+
     }
 
     @Override
@@ -155,5 +164,12 @@ abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseab
     @Override
     public void close() {
         executorService.shutdown();
+    }
+
+    public void countFutureSuccess(){
+        RPC_FUTURE_SUCCESS_UPDATER.incrementAndGet(this);
+    }
+    public void countFutureError(){
+        RPC_FUTURE_FAIL_UPDATER.incrementAndGet(this);
     }
 }

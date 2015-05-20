@@ -4,6 +4,8 @@ public class DropTestStats {
     private final int rcvd;
     private final int sent;
     private final int excs;
+    private volatile int ftrSuccess;
+    protected volatile int ftrFailed;
     private final String message;
 
     public DropTestStats(int sent, int rcvd) {
@@ -17,6 +19,14 @@ public class DropTestStats {
         this.sent = sent;
         this.rcvd = rcvd;
         this.excs = excs;
+        this.message = null;
+    }
+    public DropTestStats(int sent, int rcvd, int excs, int ftrFailed, int ftrSuccess) {
+        this.sent = sent;
+        this.rcvd = rcvd;
+        this.excs = excs;
+        this.ftrFailed = ftrFailed;
+        this.ftrSuccess = ftrSuccess;
         this.message = null;
     }
 
@@ -41,6 +51,12 @@ public class DropTestStats {
             result.append(this.sent);
             result.append("; Exceptions: ");
             result.append(this.excs);
+
+            result.append("future success :");
+            result.append(this.ftrSuccess);
+            result.append("future failed :");
+            result.append(this.ftrFailed);
+
         } else {
             result.append(this.message);
         }
