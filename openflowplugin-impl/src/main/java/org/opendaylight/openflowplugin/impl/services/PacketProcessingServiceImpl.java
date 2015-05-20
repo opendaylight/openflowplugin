@@ -50,20 +50,18 @@ public class PacketProcessingServiceImpl extends CommonService implements Packet
                     RpcResultBuilder<Void> rpcResultBuilder;
                     @Override
                     public void onSuccess(final OfHeader ofHeader) {
-                        rpcResultBuilder = RpcResultBuilder.<Void>success();
+                        getMessageSpy().spyMessage(message.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
+                        final RpcResultBuilder<Void> rpcResultBuilder = RpcResultBuilder.<Void>success();
                         requestContext.setResult(rpcResultBuilder.build());
                         RequestContextUtil.closeRequstContext(requestContext);
-
-                        getMessageSpy().spyMessage(message.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
                     }
 
                     @Override
                     public void onFailure(final Throwable throwable) {
-                        rpcResultBuilder = RpcResultBuilder.<Void>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
+                        getMessageSpy().spyMessage(message.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
+                        final RpcResultBuilder<Void> rpcResultBuilder = RpcResultBuilder.<Void>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
                         requestContext.setResult(rpcResultBuilder.build());
                         RequestContextUtil.closeRequstContext(requestContext);
-
-                        getMessageSpy().spyMessage(message.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
                     }
                 });
                 return requestContext.getFuture();
