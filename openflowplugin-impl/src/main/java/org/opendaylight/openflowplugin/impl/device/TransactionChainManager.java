@@ -86,10 +86,10 @@ class TransactionChainManager implements TransactionChainListener {
     <T extends DataObject> void writeToTransaction(final LogicalDatastoreType store,
                                                    final InstanceIdentifier<T> path, final T data) {
         try {
-            WriteTransaction writeTx = getTransactionSafely();
+            final WriteTransaction writeTx = getTransactionSafely();
             writeTx.put(store, path, data);
             countTxInAndCommit();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LOG.warn("failed to put into writeOnlyTransaction: {}", e.getMessage());
             LOG.trace("failed to put into writeOnlyTransaction.. ", e);
         }
@@ -105,10 +105,10 @@ class TransactionChainManager implements TransactionChainListener {
     <T extends DataObject> void addDeleteOperationTotTxChain(final LogicalDatastoreType store,
                                                              final InstanceIdentifier<T> path) {
         try {
-            WriteTransaction writeTx = getTransactionSafely();
+            final WriteTransaction writeTx = getTransactionSafely();
             writeTx.delete(store, path);
             countTxInAndCommit();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LOG.warn("failed to put into writeOnlyTransaction : {}", e.getMessage());
             LOG.trace("failed to put into writeOnlyTransaction.. ", e);
         }
@@ -128,7 +128,9 @@ class TransactionChainManager implements TransactionChainListener {
         }
 
         if (submitIsEnabled) {
-            submitTransaction();
+            if (nrOfActualTx > 0L) {
+                submitTransaction();
+            }
         } else {
             LOG.info("transaction submit task will not be scheduled - submit block issued.");
         }
@@ -138,7 +140,7 @@ class TransactionChainManager implements TransactionChainListener {
         if (submitIsEnabled) {
             if (wTx != null && nrOfActualTx > 0) {
                 LOG.trace("submitting transaction, counter: {}", nrOfActualTx);
-                CheckedFuture<Void, TransactionCommitFailedException> submitResult = wTx.submit();
+                final CheckedFuture<Void, TransactionCommitFailedException> submitResult = wTx.submit();
                 try {
                     submitResult.get();
                 } catch (ExecutionException | InterruptedException e) {
