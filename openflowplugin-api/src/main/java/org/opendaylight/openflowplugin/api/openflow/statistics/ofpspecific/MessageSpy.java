@@ -81,7 +81,16 @@ public interface MessageSpy extends Runnable {
         /**
          * TEMPORARY STATISTIC VALUE
          */
-        REQUEST_STACK_FREED
+        REQUEST_STACK_FREED,
+        /**
+         * stop receiving data from device - turned on
+         */
+        OFJ_BACKPRESSURE_ON,
+        /**
+         * stop receiving data from device - turned off
+         */
+        OFJ_BACKPRESSURE_OFF
+
 
     }
 
@@ -90,4 +99,5 @@ public interface MessageSpy extends Runnable {
      * @param statGroup
      */
     void spyMessage(Class<?> message, STATISTIC_GROUP statGroup);
+    
 }

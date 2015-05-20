@@ -295,6 +295,7 @@ public class DeviceContextImpl implements DeviceContext {
             synchronized (throttlingLock) {
                 if (outstandingNotificationsAmount > 1 && !filteringPacketIn) {
                     connectionAdapter.setPacketInFiltering(true);
+                    messageSpy.spyMessage(DeviceContext.class, MessageSpy.STATISTIC_GROUP.OFJ_BACKPRESSURE_ON);
                     filteringPacketIn = true;
                     filteringHighWaterMark = outstandingNotificationsAmount;
                     LOG.debug("PacketIn filtering on: {}, watermark: {}", connectionAdapter.getRemoteAddress(), outstandingNotificationsAmount);
@@ -323,6 +324,8 @@ public class DeviceContextImpl implements DeviceContext {
                             outstandingNotificationsAmount -= 1;
                             if (outstandingNotificationsAmount == 0 && filteringPacketIn) {
                                 connectionAdapter.setPacketInFiltering(false);
+                                messageSpy.spyMessage(DeviceContext.class, MessageSpy.STATISTIC_GROUP.OFJ_BACKPRESSURE_OFF);
+
                                 filteringPacketIn = false;
                                 LOG.debug("PacketIn filtering off: {}, outstanding: {}", connectionAdapter.getRemoteAddress(), outstandingNotificationsAmount);
                             }
