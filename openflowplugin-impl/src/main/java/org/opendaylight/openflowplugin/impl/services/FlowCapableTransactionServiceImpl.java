@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.impl.services;
 
 import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.SettableFuture;
 import java.util.concurrent.Future;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -43,7 +42,6 @@ public class FlowCapableTransactionServiceImpl extends CommonService implements 
             return failedFuture();
         }
 
-        final DeviceContext deviceContext = getDeviceContext();
 
         final BarrierInputBuilder barrierInputOFJavaBuilder = new BarrierInputBuilder();
         final Xid xid = requestContext.getXid();
@@ -53,25 +51,29 @@ public class FlowCapableTransactionServiceImpl extends CommonService implements 
         LOG.trace("Hooking xid {} to device context - precaution.", requestContext.getXid().getValue());
 
         final OutboundQueue outboundQueue = getDeviceContext().getPrimaryConnectionContext().getOutboundQueueProvider();
-        final SettableFuture<RpcResult<Void>> settableFuture = SettableFuture.create();
         final BarrierInput barrierInput = barrierInputOFJavaBuilder.build();
         outboundQueue.commitEntry(xid.getValue(), barrierInput, new FutureCallback<OfHeader>() {
+
+            RpcResultBuilder<Void> rpcResultBuilder;
             @Override
             public void onSuccess(final OfHeader ofHeader) {
+                rpcResultBuilder = RpcResultBuilder.<Void>success();
+                requestContext.setResult(rpcResultBuilder.build());
                 RequestContextUtil.closeRequstContext(requestContext);
+
                 getMessageSpy().spyMessage(barrierInput.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
 
-                settableFuture.set(RpcResultBuilder.<Void>success().build());
             }
 
             @Override
             public void onFailure(final Throwable throwable) {
-                RpcResultBuilder<Void> rpcResultBuilder = RpcResultBuilder.<Void>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
+                rpcResultBuilder = RpcResultBuilder.<Void>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
+                requestContext.setResult(rpcResultBuilder.build());
                 RequestContextUtil.closeRequstContext(requestContext);
+
                 getMessageSpy().spyMessage(barrierInput.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
-                settableFuture.set(rpcResultBuilder.build());
             }
         });
-        return settableFuture;
+        return requestContext.getFuture();
     }
 }
