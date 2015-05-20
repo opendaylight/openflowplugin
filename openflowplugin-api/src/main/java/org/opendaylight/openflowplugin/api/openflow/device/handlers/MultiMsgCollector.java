@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.api.openflow.device.handlers;
 
+import java.util.List;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
@@ -38,7 +39,7 @@ public interface MultiMsgCollector {
      *
      * @param requestContext
      */
-    void registerMultipartRequestContext(RequestContext requestContext);
+    void registerMultipartRequestContext(RequestContext<List<MultipartReply>> requestContext);
 
     /**
      * Method adds a reply multipart message to the collection and if the message has marker
@@ -51,5 +52,5 @@ public interface MultiMsgCollector {
 
     void setDeviceReplyProcessor(DeviceReplyProcessor deviceReplyProcessor);
 
-    void invalidateRequestContext(RequestContext requestContext);
+    void invalidateRequestContext(RequestContext<List<MultipartReply>> requestContext);
 }

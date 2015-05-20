@@ -24,7 +24,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceReplyP
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -83,7 +82,7 @@ public class MultiMsgCollectorImpl implements MultiMsgCollector {
     }
 
     @Override
-    public void registerMultipartRequestContext(final RequestContext requestContext) {
+    public void registerMultipartRequestContext(final RequestContext<List<MultipartReply>> requestContext) {
         cache.put(requestContext.getXid().getValue(), new MultiCollectorObject(requestContext));
     }
 
@@ -120,7 +119,7 @@ public class MultiMsgCollectorImpl implements MultiMsgCollector {
     }
 
     @Override
-    public void invalidateRequestContext(final RequestContext requestContext) {
+    public void invalidateRequestContext(final RequestContext<List<MultipartReply>> requestContext) {
         MultiCollectorObject  multiCollectorObject = cache.getIfPresent(requestContext);
         if (null != multiCollectorObject){
             multiCollectorObject.invalidateFutureByTimeout(requestContext.getXid().getValue());
@@ -128,13 +127,12 @@ public class MultiMsgCollectorImpl implements MultiMsgCollector {
     }
 
     private class MultiCollectorObject {
-        private final List<MultipartReply> replyCollection;
+        private final List<MultipartReply> replyCollection = new ArrayList<>();
+        private final RequestContext<List<MultipartReply>> requestContext;
         private MultipartType msgType;
-        private final RequestContext requestContext;
 
-        MultiCollectorObject(final RequestContext requestContext) {
-            replyCollection = new ArrayList<>();
-            this.requestContext = requestContext;
+        MultiCollectorObject(final RequestContext<List<MultipartReply>> requestContext) {
+            this.requestContext = Preconditions.checkNotNull(requestContext);
         }
 
         void add(final MultipartReply reply) throws DeviceDataException {
@@ -161,8 +159,8 @@ public class MultiMsgCollectorImpl implements MultiMsgCollector {
         void invalidateFutureByTimeout(final long key) {
             final String msg = "MultiMsgCollector can not wait for last multipart any more";
             DeviceDataException deviceDataException = new DeviceDataException(msg);
-            final RpcResult<List<OfHeader>> rpcResult = RpcResultBuilder
-                    .<List<OfHeader>>failed()
+            final RpcResult<List<MultipartReply>> rpcResult = RpcResultBuilder
+                    .<List<MultipartReply>>failed()
                     .withError(RpcError.ErrorType.APPLICATION, String.format("Message processing failed : %s", deviceDataException.getError()), deviceDataException)
                     .build();
             requestContext.setResult(rpcResult);
