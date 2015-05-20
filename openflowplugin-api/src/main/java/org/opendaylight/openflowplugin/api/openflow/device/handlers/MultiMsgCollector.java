@@ -8,9 +8,7 @@
 
 package org.opendaylight.openflowplugin.api.openflow.device.handlers;
 
-import java.util.List;
 import javax.annotation.Nonnull;
-import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 
 /**
@@ -26,21 +24,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  *         Created: Mar 23, 2015
  */
 public interface MultiMsgCollector {
-
-    /**
-     * Property used to know a max life time of Multipart collection in internal Cache
-     */
-    final int DEFAULT_TIME_OUT = 10;
-
-    /**
-     * Method registers a requst context to the Multipart messages collector
-     * and returns Settable future with all MultipartReply. Method has to be called before
-     * send a request to the device, otherwise there is a small possibility to miss a first msg.
-     *
-     * @param requestContext
-     */
-    void registerMultipartRequestContext(RequestContext<List<MultipartReply>> requestContext);
-
     /**
      * Method adds a reply multipart message to the collection and if the message has marker
      * "I'M A LAST" method set whole Collection to Future object and remove from cache.
@@ -48,9 +31,4 @@ public interface MultiMsgCollector {
      * @param reply
      */
     void addMultipartMsg(@Nonnull MultipartReply reply);
-
-
-    void setDeviceReplyProcessor(DeviceReplyProcessor deviceReplyProcessor);
-
-    void invalidateRequestContext(RequestContext<List<MultipartReply>> requestContext);
 }
