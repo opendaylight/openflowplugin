@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.impl.services;
 import com.google.common.base.Function;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.SettableFuture;
 import java.util.concurrent.Future;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -46,26 +45,24 @@ public class PacketProcessingServiceImpl extends CommonService implements Packet
 
                 final OutboundQueue outboundQueue = getDeviceContext().getPrimaryConnectionContext().getOutboundQueueProvider();
 
-                final SettableFuture<RpcResult<Void>> settableFuture = SettableFuture.create();
-
                 outboundQueue.commitEntry(xid.getValue(), message, new FutureCallback<OfHeader>() {
                     @Override
                     public void onSuccess(final OfHeader ofHeader) {
-                        RequestContextUtil.closeRequstContext(requestContext);
                         getMessageSpy().spyMessage(message.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
                         final RpcResultBuilder<Void> rpcResultBuilder = RpcResultBuilder.<Void>success();
-                        settableFuture.set(rpcResultBuilder.build());
+                        requestContext.setResult(rpcResultBuilder.build());
+                        RequestContextUtil.closeRequstContext(requestContext);
                     }
 
                     @Override
                     public void onFailure(final Throwable throwable) {
-                        RequestContextUtil.closeRequstContext(requestContext);
                         getMessageSpy().spyMessage(message.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
                         final RpcResultBuilder<Void> rpcResultBuilder = RpcResultBuilder.<Void>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
-                        settableFuture.set(rpcResultBuilder.build());
+                        requestContext.setResult(rpcResultBuilder.build());
+                        RequestContextUtil.closeRequstContext(requestContext);
                     }
                 });
-                return settableFuture;
+                return requestContext.getFuture();
             }
         });
 
