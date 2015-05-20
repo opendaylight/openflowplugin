@@ -363,34 +363,29 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
 
         LOG.trace("Hooking xid {} to device context - precaution.", reserved);
 
-        final MultiMsgCollector multiMsgCollector = deviceContext.getMultiMsgCollector();
-        multiMsgCollector.registerMultipartRequestContext(requestContext);
+        final MultiMsgCollector multiMsgCollector = deviceContext.getMultiMsgCollector(requestContext);
         queue.commitEntry(xid.getValue(), MultipartRequestInputFactory.makeMultipartRequestInput(xid.getValue(), version, type), new FutureCallback<OfHeader>() {
             @Override
             public void onSuccess(final OfHeader ofHeader) {
                 if (ofHeader instanceof MultipartReply) {
                     MultipartReply multipartReply = (MultipartReply) ofHeader;
                     multiMsgCollector.addMultipartMsg(multipartReply);
+                } else if (null != ofHeader) {
+                    LOG.info("Unexpected response type received {}.", ofHeader.getClass());
                 } else {
-                    if (null != ofHeader) {
-                        LOG.info("Unexpected response type received {}.", ofHeader.getClass());
-                    } else {
-                        LOG.info("Response received is null.");
-                    }
+                    LOG.info("Response received is null.");
                 }
-
             }
 
             @Override
             public void onFailure(final Throwable t) {
                 LOG.info("Fail response from OutboundQueue for multipart type {}.", type, t);
-                multiMsgCollector.invalidateRequestContext(requestContext);
+                requestContext.close();
                 if (MultipartType.OFPMPTABLEFEATURES.equals(type)) {
                     makeEmptyTables(deviceContext, nodeII, deviceContext.getPrimaryConnectionContext().getFeatures().getTables());
                 }
             }
         });
-
 
         return requestContext.getFuture();
     }
