@@ -102,18 +102,12 @@ public class DeviceContextImpl implements DeviceContext {
     private final Collection<DeviceContextClosedHandler> closeHandlers = new HashSet<>();
     private NotificationPublishService notificationPublishService;
     private final OutboundQueue outboundQueueProvider;
-    private final MultiMsgCollector multiMsgCollector = new MultiMsgCollectorImpl();
 
     private volatile int outstandingNotificationsAmount = 0;
     private volatile boolean filteringPacketIn = false;
     private final Object throttlingLock = new Object();
     private int filteringHighWaterMark = 0;
     private OutboundQueueHandlerRegistration outboundQueueHandlerRegistration;
-
-    @Override
-    public MultiMsgCollector getMultiMsgCollector() {
-        return multiMsgCollector;
-    }
 
     @Override
     public Long getReservedXid() {
@@ -136,7 +130,6 @@ public class DeviceContextImpl implements DeviceContext {
         deviceGroupRegistry = new DeviceGroupRegistryImpl();
         deviceMeterRegistry = new DeviceMeterRegistryImpl();
         messageSpy = _messageSpy;
-        multiMsgCollector.setDeviceReplyProcessor(this);
         outboundQueueProvider = Preconditions.checkNotNull(primaryConnectionContext.getOutboundQueueProvider());
     }
 
@@ -446,5 +439,10 @@ public class DeviceContextImpl implements DeviceContext {
     @Override
     public void registerOutboundQueueHandler(final OutboundQueueHandlerRegistration outboundQueueHandlerRegistration) {
         this.outboundQueueHandlerRegistration = outboundQueueHandlerRegistration;
+    }
+
+    @Override
+    public MultiMsgCollector getMultiMsgCollector(final RequestContext<List<MultipartReply>> requestContext) {
+        return new MultiMsgCollectorImpl(this, requestContext);
     }
 }
