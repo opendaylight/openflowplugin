@@ -63,6 +63,7 @@ public class OpenflowProtocolListenerFullImplTest {
     public void setUp() {
         // place for mocking method's general behavior for HandshakeContext and ConnectionContext
         ofProtocolListener = new OpenflowProtocolListenerFullImpl(connectionAdapter, deviceReplyProcessor);
+        connectionAdapter.setMessageListener(ofProtocolListener);
         Mockito.verify(connectionAdapter).setMessageListener(Matchers.any(OpenflowProtocolListener.class));
     }
 

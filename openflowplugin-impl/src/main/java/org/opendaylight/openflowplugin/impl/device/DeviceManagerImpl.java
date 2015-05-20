@@ -30,6 +30,7 @@ import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.ConnectionException;
 import org.opendaylight.openflowplugin.api.OFConstants;
@@ -157,11 +158,17 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
     public void deviceConnected(@CheckForNull final ConnectionContext connectionContext) {
         Preconditions.checkArgument(connectionContext != null);
 
+        // Cache this for clarity
+        final ConnectionAdapter connectionAdapter = connectionContext.getConnectionAdapter();
+
         //FIXME: as soon as auxiliary connection are fully supported then this is needed only before device context published
-        connectionContext.getConnectionAdapter().setPacketInFiltering(true);
+        connectionAdapter.setPacketInFiltering(true);
+
         final Short version = connectionContext.getFeatures().getVersion();
         OutboundQueueProvider outboundQueueProvider = new OutboundQueueProviderImpl(version);
-        connectionContext.getConnectionAdapter().registerOutboundQueueHandler(outboundQueueProvider, maxQueueDepth, barrierNanos);
+
+        // FIXME: we are losing registration, we should be registering in the connection context
+        connectionAdapter.registerOutboundQueueHandler(outboundQueueProvider, maxQueueDepth, barrierNanos);
         connectionContext.setOutboundQueueProvider(outboundQueueProvider);
 
         final DeviceState deviceState = new DeviceStateImpl(connectionContext.getFeatures(), connectionContext.getNodeId());
@@ -178,11 +185,10 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         deviceContext.addDeviceContextClosedHandler(this);
 
         final OpenflowProtocolListenerFullImpl messageListener = new OpenflowProtocolListenerFullImpl(
-                connectionContext.getConnectionAdapter(), deviceContext);
+                connectionAdapter, deviceContext);
+        connectionAdapter.setMessageListener(messageListener);
 
         final ListenableFuture<List<RpcResult<List<MultipartReply>>>> deviceFeaturesFuture;
-
-
         if (OFConstants.OFP_VERSION_1_0 == version) {
             final CapabilitiesV10 capabilitiesV10 = connectionContext.getFeatures().getCapabilitiesV10();
 
