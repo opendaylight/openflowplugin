@@ -30,7 +30,7 @@ public class OpenflowProtocolListenerFullImpl implements OpenflowMessageListener
     private static final Logger LOG = LoggerFactory.getLogger(OpenflowProtocolListenerFullImpl.class);
 
     private final ConnectionAdapter connectionAdapter;
-    private DeviceReplyProcessor deviceReplyProcessor;
+    private final DeviceReplyProcessor deviceReplyProcessor;
 
     /**
      * @param connectionAdapter
@@ -38,7 +38,6 @@ public class OpenflowProtocolListenerFullImpl implements OpenflowMessageListener
      */
     public OpenflowProtocolListenerFullImpl(final ConnectionAdapter connectionAdapter, final DeviceReplyProcessor deviceReplyProcessor) {
         this.connectionAdapter = connectionAdapter;
-        this.connectionAdapter.setMessageListener(this);
         this.deviceReplyProcessor = deviceReplyProcessor;
     }
 
