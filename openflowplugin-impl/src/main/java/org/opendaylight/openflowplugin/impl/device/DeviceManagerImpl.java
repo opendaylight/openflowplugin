@@ -357,8 +357,6 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
 
         LOG.trace("Hooking xid {} to device context - precaution.", reserved);
 
-        final ListenableFuture<RpcResult<List<MultipartReply>>> requestContextFuture = requestContext.getFuture();
-
         final MultiMsgCollector multiMsgCollector = deviceContext.getMultiMsgCollector();
         multiMsgCollector.registerMultipartRequestContext(requestContext);
         queue.commitEntry(xid.getValue(), MultipartRequestInputFactory.makeMultipartRequestInput(xid.getValue(), version, type), new FutureCallback<OfHeader>() {
