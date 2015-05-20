@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.impl.services;
 import com.google.common.base.Function;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.SettableFuture;
 import java.util.concurrent.Future;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -52,26 +51,28 @@ public class SalPortServiceImpl extends CommonService implements SalPortService 
                 final OutboundQueue outboundQueue = getDeviceContext().getPrimaryConnectionContext().getOutboundQueueProvider();
 
                 mdInput.setXid(xid.getValue());
-                final SettableFuture<RpcResult<UpdatePortOutput>> settableFuture = SettableFuture.create();
                 final PortModInput portModInput = mdInput.build();
                 outboundQueue.commitEntry(xid.getValue(), portModInput, new FutureCallback<OfHeader>() {
+                    RpcResultBuilder<UpdatePortOutput> rpcResultBuilder;
                     @Override
                     public void onSuccess(final OfHeader ofHeader) {
+                        rpcResultBuilder = RpcResultBuilder.<UpdatePortOutput>success();
+                        requestContext.setResult(rpcResultBuilder.build());
                         RequestContextUtil.closeRequstContext(requestContext);
-                        getMessageSpy().spyMessage(portModInput.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
 
-                        settableFuture.set(RpcResultBuilder.<UpdatePortOutput>success().build());
+                        getMessageSpy().spyMessage(portModInput.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
                     }
 
                     @Override
                     public void onFailure(final Throwable throwable) {
-                        RpcResultBuilder<UpdatePortOutput> rpcResultBuilder = RpcResultBuilder.<UpdatePortOutput>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
+                        rpcResultBuilder = RpcResultBuilder.<UpdatePortOutput>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
+                        requestContext.setResult(rpcResultBuilder.build());
                         RequestContextUtil.closeRequstContext(requestContext);
+
                         getMessageSpy().spyMessage(portModInput.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
-                        settableFuture.set(rpcResultBuilder.build());
                     }
                 });
-                return settableFuture;
+                return requestContext.getFuture();
             }
         });
     }
