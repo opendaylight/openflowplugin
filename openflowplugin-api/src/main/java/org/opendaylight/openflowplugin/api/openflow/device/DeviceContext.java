@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.api.openflow.device;
 
 import io.netty.util.Timeout;
 import java.math.BigInteger;
+import java.util.List;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
@@ -26,6 +27,7 @@ import org.opendaylight.openflowplugin.api.openflow.registry.group.DeviceGroupRe
 import org.opendaylight.openflowplugin.api.openflow.registry.meter.DeviceMeterRegistry;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.api.openflow.translator.TranslatorLibrarian;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
@@ -163,7 +165,7 @@ public interface DeviceContext extends AutoCloseable,
 
     void commitOperationsGatheredInOneTransaction();
 
-    MultiMsgCollector getMultiMsgCollector();
+    MultiMsgCollector getMultiMsgCollector(RequestContext<List<MultipartReply>> requestContext);
 
     Long getReservedXid();
 

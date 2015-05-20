@@ -94,8 +94,7 @@ public class SalTableServiceImpl extends CommonService implements SalTableServic
                 final OutboundQueue outboundQueue = getDeviceContext().getPrimaryConnectionContext().getOutboundQueueProvider();
 
                 final SettableFuture<RpcResult<Void>> settableFuture = SettableFuture.create();
-                final MultiMsgCollector multiMsgCollector = getDeviceContext().getMultiMsgCollector();
-                multiMsgCollector.registerMultipartRequestContext(requestContext);
+                final MultiMsgCollector multiMsgCollector = getDeviceContext().getMultiMsgCollector(requestContext);
 
                 final MultipartRequestInput multipartRequestInput = mprInput.build();
                 outboundQueue.commitEntry(xid.getValue(), multipartRequestInput, new FutureCallback<OfHeader>() {
@@ -118,8 +117,7 @@ public class SalTableServiceImpl extends CommonService implements SalTableServic
                     @Override
                     public void onFailure(final Throwable throwable) {
                         RpcResultBuilder<Void> rpcResultBuilder = RpcResultBuilder.<Void>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
-                        RequestContextUtil.closeRequstContext(requestContext);
-                        multiMsgCollector.registerMultipartRequestContext(requestContext);
+                        requestContext.close();
                         getMessageSpy().spyMessage(multipartRequestInput.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
                         settableFuture.set(rpcResultBuilder.build());
                     }
