@@ -53,23 +53,27 @@ public class NodeConfigServiceImpl extends CommonService implements NodeConfigSe
         final SettableFuture<RpcResult<SetConfigOutput>> settableFuture = SettableFuture.create();
         final org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetConfigInput setConfigInput = builder.build();
         outboundQueue.commitEntry(xid.getValue(), setConfigInput, new FutureCallback<OfHeader>() {
+
+            RpcResultBuilder<SetConfigOutput> rpcResultBuilder;
             @Override
             public void onSuccess(final OfHeader ofHeader) {
+                rpcResultBuilder =  RpcResultBuilder.<SetConfigOutput>success();
+                requestContext.setResult(rpcResultBuilder.build());
                 RequestContextUtil.closeRequstContext(requestContext);
-                getMessageSpy().spyMessage(setConfigInput.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
 
-                settableFuture.set(RpcResultBuilder.<SetConfigOutput>success().build());
+                getMessageSpy().spyMessage(setConfigInput.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
             }
 
             @Override
             public void onFailure(final Throwable throwable) {
-                RpcResultBuilder<SetConfigOutput> rpcResultBuilder = RpcResultBuilder.<SetConfigOutput>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
+                rpcResultBuilder = RpcResultBuilder.<SetConfigOutput>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
+                requestContext.setResult(rpcResultBuilder.build());
                 RequestContextUtil.closeRequstContext(requestContext);
+
                 getMessageSpy().spyMessage(setConfigInput.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
-                settableFuture.set(rpcResultBuilder.build());
             }
         });
-        return settableFuture;
+        return requestContext.getFuture();
 
     }
 }
