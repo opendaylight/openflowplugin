@@ -11,7 +11,6 @@ package org.opendaylight.openflowplugin.impl.statistics.services.dedicated;
 import com.google.common.base.Function;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.SettableFuture;
 import java.util.List;
 import java.util.concurrent.Future;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
@@ -47,9 +46,9 @@ public class StatisticsGatheringService extends CommonService {
 
 
     public Future<RpcResult<List<MultipartReply>>> getStatisticsOfType(final MultipartType type) {
-        return handleServiceCall(new Function<RequestContext<List<MultipartReply>>, ListenableFuture<RpcResult<Void>>>() {
+        return handleServiceCall(new Function<RequestContext<List<MultipartReply>>, ListenableFuture<RpcResult<List<MultipartReply>>>>() {
                                      @Override
-                                     public ListenableFuture<RpcResult<Void>> apply(final RequestContext<List<MultipartReply>> requestContext) {
+                                     public ListenableFuture<RpcResult<List<MultipartReply>>> apply(final RequestContext<List<MultipartReply>> requestContext) {
                                          final Xid xid = requestContext.getXid();
                                          final DeviceContext deviceContext = getDeviceContext();
                                          final MultiMsgCollector multiMsgCollector = deviceContext.getMultiMsgCollector();
@@ -60,13 +59,12 @@ public class StatisticsGatheringService extends CommonService {
                                                          getVersion(),
                                                          type);
                                          final OutboundQueue outboundQueue = deviceContext.getPrimaryConnectionContext().getOutboundQueueProvider();
-                                         final SettableFuture<RpcResult<Void>> settableFuture = SettableFuture.create();
                                          outboundQueue.commitEntry(xid.getValue(), multipartRequestInput, new FutureCallback<OfHeader>() {
                                              @Override
                                              public void onSuccess(final OfHeader ofHeader) {
                                                  if (ofHeader instanceof MultipartReply) {
                                                      final MultipartReply multipartReply = (MultipartReply) ofHeader;
-                                                     settableFuture.set(RpcResultBuilder.<Void>success().build());
+                                                     requestContext.setResult(RpcResultBuilder.<List<MultipartReply>>success().build());
                                                      multiMsgCollector.addMultipartMsg(multipartReply);
                                                  } else {
                                                      if (null != ofHeader) {
@@ -79,13 +77,13 @@ public class StatisticsGatheringService extends CommonService {
 
                                              @Override
                                              public void onFailure(final Throwable throwable) {
-                                                 RpcResultBuilder<Void> rpcResultBuilder = RpcResultBuilder.<Void>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage());
-                                                 RequestContextUtil.closeRequstContext(requestContext);
+                                                 RpcResultBuilder<List<MultipartReply>> rpcResultBuilder = RpcResultBuilder.<List<MultipartReply>>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage());
+                                                 requestContext.setResult(rpcResultBuilder.build());
 
-                                                 settableFuture.set(rpcResultBuilder.build());
+                                                 RequestContextUtil.closeRequstContext(requestContext);
                                              }
                                          });
-                                         return settableFuture;
+                                         return requestContext.getFuture();
                                      }
                                  }
 
