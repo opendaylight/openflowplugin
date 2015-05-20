@@ -83,7 +83,7 @@ public class MultiMsgCollectorImpl implements MultiMsgCollector {
     }
 
     @Override
-    public void registerMultipartRequestContext(final RequestContext requestContext) {
+    public void registerMultipartRequestContext(final RequestContext<?> requestContext) {
         cache.put(requestContext.getXid().getValue(), new MultiCollectorObject(requestContext));
     }
 
@@ -120,7 +120,7 @@ public class MultiMsgCollectorImpl implements MultiMsgCollector {
     }
 
     @Override
-    public void invalidateRequestContext(final RequestContext requestContext) {
+    public void invalidateRequestContext(final RequestContext<?> requestContext) {
         MultiCollectorObject  multiCollectorObject = cache.getIfPresent(requestContext);
         if (null != multiCollectorObject){
             multiCollectorObject.invalidateFutureByTimeout(requestContext.getXid().getValue());

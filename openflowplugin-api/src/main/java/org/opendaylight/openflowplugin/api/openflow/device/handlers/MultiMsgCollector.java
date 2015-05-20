@@ -38,7 +38,7 @@ public interface MultiMsgCollector {
      *
      * @param requestContext
      */
-    void registerMultipartRequestContext(RequestContext requestContext);
+    void registerMultipartRequestContext(RequestContext<?> requestContext);
 
     /**
      * Method adds a reply multipart message to the collection and if the message has marker
@@ -51,5 +51,5 @@ public interface MultiMsgCollector {
 
     void setDeviceReplyProcessor(DeviceReplyProcessor deviceReplyProcessor);
 
-    void invalidateRequestContext(RequestContext requestContext);
+    void invalidateRequestContext(RequestContext<?> requestContext);
 }
