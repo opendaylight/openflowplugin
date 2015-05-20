@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
+import org.opendaylight.yangtools.yang.common.OperationFailedException;
+
 import com.google.common.base.Function;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -198,14 +200,23 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
         final List<ListenableFuture<RpcResult<T>>> partialFutures = new ArrayList<>();
 
         for (final FlowModInputBuilder flowModInputBuilder : ofFlowModInputs) {
-            ListenableFuture<RpcResult<T>> partialFuture = handleServiceCall(
-                    new Function<RequestContext<T>, ListenableFuture<RpcResult<T>>>() {
-                        @Override
-                        public ListenableFuture<RpcResult<T>> apply(final RequestContext<T> requestContext) {
-                            return createResultForFlowMod(requestContext, flowModInputBuilder);
-                        }
-                    });
-            partialFutures.add(partialFuture);
+            
+            class FunctionImpl implements Function<RequestContext<T>, ListenableFuture<RpcResult<T>>> {
+                ListenableFuture<RpcResult<T>> resultOfFlowMod = 
+                        Futures.<RpcResult<T>>immediateFailedFuture(new OperationFailedException("Sending of flow failed."));
+                @Override
+                public ListenableFuture<RpcResult<T>> apply(final RequestContext<T> requestContext) {
+                    resultOfFlowMod = createResultForFlowMod(requestContext, flowModInputBuilder);
+                    return resultOfFlowMod;
+                }
+
+                ListenableFuture<RpcResult<T>> getResultOfFlowMod() {
+                    return resultOfFlowMod;
+                }
+            }
+            FunctionImpl function = new FunctionImpl();
+            handleServiceCall(function);
+            partialFutures.add(function.getResultOfFlowMod());
         }
 
         final ListenableFuture<List<RpcResult<T>>> allFutures = Futures.successfulAsList(partialFutures);
