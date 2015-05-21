@@ -1,7 +1,6 @@
 package org.opendaylight.openflowplugin.impl.device;
 
 import static org.mockito.Matchers.any;
-
 import com.google.common.util.concurrent.SettableFuture;
 import io.netty.util.HashedWheelTimer;
 import java.util.ArrayList;
@@ -85,7 +84,7 @@ public class DeviceContextImplTest {
     @Before
     public void setUp() {
         Mockito.when(dataBroker.createTransactionChain(Mockito.any(TransactionChainManager.class))).thenReturn(txChainFactory);
-        txChainManager = new TransactionChainManager(dataBroker, timer, 5L, 5L);
+        txChainManager = new TransactionChainManager(dataBroker, deviceState);
         final SettableFuture<RpcResult<GetAsyncReply>> settableFuture = SettableFuture.create();
         final SettableFuture<RpcResult<MultipartReply>> settableFutureMultiReply = SettableFuture.create();
         Mockito.when(requestContext.getFuture()).thenReturn(settableFuture);
@@ -117,22 +116,22 @@ public class DeviceContextImplTest {
     }
 
     @Test(expected = NullPointerException.class)
-    public void testDeviceContextImplConstructorNullConnectionContext() {
+    public void testDeviceContextImplConstructorNullConnectionContext() throws Exception {
         new DeviceContextImpl(null, deviceState, dataBroker, timer, messageIntelligenceAgency).close();
     }
 
     @Test(expected = NullPointerException.class)
-    public void testDeviceContextImplConstructorNullDataBroker() {
+    public void testDeviceContextImplConstructorNullDataBroker() throws Exception {
         new DeviceContextImpl(connectionContext, deviceState, null, timer, messageIntelligenceAgency).close();
     }
 
     @Test(expected = NullPointerException.class)
-    public void testDeviceContextImplConstructorNullDeviceState() {
+    public void testDeviceContextImplConstructorNullDeviceState() throws Exception {
         new DeviceContextImpl(connectionContext, null, dataBroker, timer, messageIntelligenceAgency).close();
     }
 
     @Test(expected = NullPointerException.class)
-    public void testDeviceContextImplConstructorNullTimer() {
+    public void testDeviceContextImplConstructorNullTimer() throws Exception {
         new DeviceContextImpl(null, deviceState, dataBroker, null, messageIntelligenceAgency).close();
     }
 
