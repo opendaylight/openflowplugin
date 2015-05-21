@@ -130,7 +130,7 @@ public class DeviceContextImpl implements DeviceContext {
         this.deviceState = Preconditions.checkNotNull(deviceState);
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
         this.hashedWheelTimer = Preconditions.checkNotNull(hashedWheelTimer);
-        txChainManager = new TransactionChainManager(dataBroker, hashedWheelTimer, 500L, 500L);
+        txChainManager = new TransactionChainManager(dataBroker, deviceState);
         auxiliaryConnectionContexts = new HashMap<>();
         deviceFlowRegistry = new DeviceFlowRegistryImpl();
         deviceGroupRegistry = new DeviceGroupRegistryImpl();
@@ -144,9 +144,8 @@ public class DeviceContextImpl implements DeviceContext {
      * This method is called from {@link DeviceManagerImpl} only. So we could say "posthandshake process finish"
      * and we are able to set a scheduler for an automatic transaction submitting by time (0,5sec).
      */
-    void submitTransaction() {
-        txChainManager.enableSubmit();
-        txChainManager.submitTransaction();
+    void initialSubmitTransaction() {
+        txChainManager.initialSubmitWriteTransaction();
     }
 
     @Override
@@ -188,6 +187,11 @@ public class DeviceContextImpl implements DeviceContext {
     @Override
     public <T extends DataObject> void addDeleteToTxChain(final LogicalDatastoreType store, final InstanceIdentifier<T> path) {
         txChainManager.addDeleteOperationTotTxChain(store, path);
+    }
+
+    @Override
+    public boolean submitTransaction() {
+        return txChainManager.submitWriteTransaction();
     }
 
     @Override
@@ -258,6 +262,7 @@ public class DeviceContextImpl implements DeviceContext {
         } else if (portStatus.getReason().equals(PortReason.OFPPRDELETE)) {
             addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector);
         }
+        submitTransaction();
     }
 
     private KeyedInstanceIdentifier<NodeConnector, NodeConnectorKey> provideIIToNodeConnector(final long portNo, final short version) {
@@ -282,7 +287,7 @@ public class DeviceContextImpl implements DeviceContext {
         }
         messageSpy.spyMessage(packetReceived.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_TRANSLATE_SRC_FAILURE);
 
-        ListenableFuture<? extends Object> offerNotification = notificationPublishService.offerNotification(packetReceived);
+        final ListenableFuture<? extends Object> offerNotification = notificationPublishService.offerNotification(packetReceived);
         synchronized (throttlingLock) {
             outstandingNotificationsAmount += 1;
         }
@@ -354,6 +359,7 @@ public class DeviceContextImpl implements DeviceContext {
 
         LOG.trace("Removing node {} from operational DS.", getDeviceState().getNodeId());
         addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, getDeviceState().getNodeInstanceIdentifier());
+        submitTransaction();
 
         deviceGroupRegistry.close();
         deviceFlowRegistry.close();
@@ -375,7 +381,7 @@ public class DeviceContextImpl implements DeviceContext {
 
     @Override
     public void onDeviceDisconnected(final ConnectionContext connectionContext) {
-        if (this.getPrimaryConnectionContext().equals(connectionContext)) {
+        if (getPrimaryConnectionContext().equals(connectionContext)) {
             try {
                 close();
             } catch (final Exception e) {
@@ -422,23 +428,13 @@ public class DeviceContextImpl implements DeviceContext {
 
     @Override
     public void addDeviceContextClosedHandler(final DeviceContextClosedHandler deviceContextClosedHandler) {
-        this.closeHandlers.add(deviceContextClosedHandler);
-    }
-
-    @Override
-    public void startGatheringOperationsToOneTransaction() {
-        txChainManager.startGatheringOperationsToOneTransaction();
-    }
-
-    @Override
-    public void commitOperationsGatheredInOneTransaction() {
-        txChainManager.commitOperationsGatheredInOneTransaction();
+        closeHandlers.add(deviceContextClosedHandler);
     }
 
     @Override
     public void onPublished() {
         primaryConnectionContext.getConnectionAdapter().setPacketInFiltering(false);
-        for (ConnectionContext switchAuxConnectionContext : auxiliaryConnectionContexts.values()) {
+        for (final ConnectionContext switchAuxConnectionContext : auxiliaryConnectionContexts.values()) {
             switchAuxConnectionContext.getConnectionAdapter().setPacketInFiltering(false);
         }
     }
