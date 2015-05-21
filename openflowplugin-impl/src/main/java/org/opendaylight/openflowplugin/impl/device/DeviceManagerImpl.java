@@ -168,13 +168,10 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         final Short version = connectionContext.getFeatures().getVersion();
         OutboundQueueProvider outboundQueueProvider = new OutboundQueueProviderImpl(version);
 
-        final OutboundQueueHandlerRegistration outboundQueueHandlerRegistration = connectionAdapter.registerOutboundQueueHandler(outboundQueueProvider, maxQueueDepth, barrierNanos);
-        connectionContext.setOutboundQueueProvider(outboundQueueProvider);
-
         final DeviceState deviceState = new DeviceStateImpl(connectionContext.getFeatures(), connectionContext.getNodeId());
 
         final DeviceContext deviceContext = new DeviceContextImpl(connectionContext, deviceState, dataBroker, hashedWheelTimer, messageIntelligenceAgency);
-        deviceContext.registerOutboundQueueHandler(outboundQueueHandlerRegistration);
+        deviceContext.registerOutboundQueueProvider(outboundQueueProvider, maxQueueDepth, barrierNanos);
         deviceContext.setNotificationService(notificationService);
         deviceContext.setNotificationPublishService(notificationPublishService);
         NodeBuilder nodeBuilder = new NodeBuilder().setId(deviceState.getNodeId()).setNodeConnector(Collections.<NodeConnector>emptyList());

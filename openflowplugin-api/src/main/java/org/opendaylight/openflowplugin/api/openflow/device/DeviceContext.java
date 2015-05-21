@@ -17,6 +17,7 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandlerRegistration;
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginTimer;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
+import org.opendaylight.openflowplugin.api.openflow.connection.OutboundQueueProvider;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceContextClosedHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceDisconnectedHandler;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceReplyProcessor;
@@ -175,10 +176,14 @@ public interface DeviceContext extends AutoCloseable,
 
 
     /**
-     * Method registers outbound queue handler that should be invalidated when device context is closed.s
-     * @param outboundQueueHandlerRegistration
+     * Method registers outbound queue provider into current device context's primary connection adapter.
+     *
+     * @param outboundQueueProvider
+     * @param maxQueueDepth
+     * @param barrierNanos
      */
-    void registerOutboundQueueHandler(OutboundQueueHandlerRegistration outboundQueueHandlerRegistration);
+    void registerOutboundQueueProvider(OutboundQueueProvider outboundQueueProvider, int maxQueueDepth, long barrierNanos);
+
 
 }
 

@@ -30,6 +30,7 @@ import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandlerRegistration;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
+import org.opendaylight.openflowplugin.api.openflow.connection.OutboundQueueProvider;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
@@ -101,7 +102,7 @@ public class DeviceContextImpl implements DeviceContext {
     private DeviceDisconnectedHandler deviceDisconnectedHandler;
     private final Collection<DeviceContextClosedHandler> closeHandlers = new HashSet<>();
     private NotificationPublishService notificationPublishService;
-    private final OutboundQueue outboundQueueProvider;
+    private OutboundQueue outboundQueueProvider;
     private final MultiMsgCollector multiMsgCollector = new MultiMsgCollectorImpl();
 
     private volatile int outstandingNotificationsAmount = 0;
@@ -116,7 +117,7 @@ public class DeviceContextImpl implements DeviceContext {
     }
 
     @Override
-    public Long getReservedXid() {
+        public Long getReservedXid() {
         return outboundQueueProvider.reserveEntry();
     }
 
@@ -137,7 +138,6 @@ public class DeviceContextImpl implements DeviceContext {
         deviceMeterRegistry = new DeviceMeterRegistryImpl();
         messageSpy = _messageSpy;
         multiMsgCollector.setDeviceReplyProcessor(this);
-        outboundQueueProvider = Preconditions.checkNotNull(primaryConnectionContext.getOutboundQueueProvider());
     }
 
     /**
@@ -444,7 +444,11 @@ public class DeviceContextImpl implements DeviceContext {
     }
 
     @Override
-    public void registerOutboundQueueHandler(final OutboundQueueHandlerRegistration outboundQueueHandlerRegistration) {
-        this.outboundQueueHandlerRegistration = outboundQueueHandlerRegistration;
+    public void registerOutboundQueueProvider(final OutboundQueueProvider outboundQueueProvider, final int maxQueueDepth, final long barrierNanos) {
+        final ConnectionAdapter primaryConnectionAdapter = primaryConnectionContext.getConnectionAdapter();
+        outboundQueueHandlerRegistration = primaryConnectionAdapter.registerOutboundQueueHandler(outboundQueueProvider, maxQueueDepth, barrierNanos);
+        this.outboundQueueProvider = outboundQueueProvider;
+        primaryConnectionContext.setOutboundQueueProvider(outboundQueueProvider);
     }
+
 }
