@@ -81,6 +81,15 @@ abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseab
         return new DropTestStats(this.sent, this.rcvd, this.excs, this.ftrFailed, this.ftrSuccess, this.runablesExecuted, this.runablesRejected);
     }
 
+    public AbstractDropTest() {
+        ThreadPoolExecutor threadPool = new ThreadPoolExecutor(POOL_THREAD_AMOUNT, POOL_THREAD_AMOUNT, 0,
+                TimeUnit.MILLISECONDS,
+                new ArrayBlockingQueue<Runnable>(PROCESSING_POOL_SIZE));
+        threadPool.setThreadFactory(new ThreadFactoryBuilder().setNameFormat("dropTest-%d").build());
+
+        executorService = threadPool;
+    }
+
     public final void clearStats() {
         this.sent = 0;
         this.rcvd = 0;
@@ -93,6 +102,7 @@ abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseab
     private final void incrementRunableExecuted() {
         RUNABLES_EXECUTED.incrementAndGet(this);
     }
+
     private final void incrementRunableRejected() {
         RUNABLES_REJECTED.incrementAndGet(this);
     }
@@ -111,7 +121,7 @@ abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseab
                     processPacket(notification);
                 }
             });
-        } catch (RejectedExecutionException e){
+        } catch (Exception e) {
             incrementRunableRejected();
         }
         LOG.debug("onPacketReceived - Leaving", notification);
