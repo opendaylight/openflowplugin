@@ -15,7 +15,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -95,12 +94,6 @@ abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseab
                 TimeUnit.MILLISECONDS,
                 new ArrayBlockingQueue<Runnable>(PROCESSING_POOL_SIZE));
         threadPool.setThreadFactory(new ThreadFactoryBuilder().setNameFormat("dropTest-%d").build());
-        threadPool.setRejectedExecutionHandler(new RejectedExecutionHandler() {
-            @Override
-            public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
-                RJCT_UPDATER.incrementAndGet(AbstractDropTest.this);
-            }
-        });
 
         executorService = threadPool;
     }
@@ -118,6 +111,7 @@ abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseab
     private final void incrementRunableExecuted() {
         RUNABLES_EXECUTED.incrementAndGet(this);
     }
+
     private final void incrementRunableRejected() {
         RUNABLES_REJECTED.incrementAndGet(this);
     }
@@ -136,7 +130,7 @@ abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseab
                     processPacket(notification);
                 }
             });
-        } catch (RejectedExecutionException e){
+        } catch (Exception e) {
             incrementRunableRejected();
         }
         LOG.debug("onPacketReceived - Leaving", notification);
