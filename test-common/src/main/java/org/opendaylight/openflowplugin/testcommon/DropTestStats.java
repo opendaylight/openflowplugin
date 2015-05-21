@@ -38,7 +38,6 @@ public class DropTestStats {
         this.message = null;
         this.runablesExecuted = runablesExecuted;
         this.runablesRejected = runablesRejected;
-        runablesRejected = 0;
     }
 
     public DropTestStats(String message) {
@@ -79,6 +78,8 @@ public class DropTestStats {
             result.append(this.ftrFailed);
             result.append("\n run() executions :");
             result.append(this.runablesExecuted);
+            result.append("\n run() rejected :");
+            result.append(this.runablesRejected);
 
         } else {
             result.append(this.message);
