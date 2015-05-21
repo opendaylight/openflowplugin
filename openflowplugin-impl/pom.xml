@@ -119,7 +119,11 @@
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>config-api</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>org.apache.karaf.shell</groupId>
+            <artifactId>org.apache.karaf.shell.console</artifactId>
+            <version>${karaf.version}</version>
+        </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
