@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DropActionCaseBuilder;
@@ -70,8 +71,14 @@ abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseab
     protected static final AtomicIntegerFieldUpdater<AbstractDropTest> RPC_FUTURE_FAIL_UPDATER = AtomicIntegerFieldUpdater.newUpdater(AbstractDropTest.class, "ftrFailed");
     protected volatile int ftrFailed;
 
+    protected static final AtomicIntegerFieldUpdater<AbstractDropTest> RUNABLES_EXECUTED = AtomicIntegerFieldUpdater.newUpdater(AbstractDropTest.class, "runablesExecuted");
+    protected volatile int runablesExecuted;
+
+    protected static final AtomicIntegerFieldUpdater<AbstractDropTest> RUNABLES_REJECTED = AtomicIntegerFieldUpdater.newUpdater(AbstractDropTest.class, "runablesRejected");
+    protected volatile int runablesRejected;
+
     public final DropTestStats getStats() {
-        return new DropTestStats(this.sent, this.rcvd, this.excs, this.ftrFailed, this.ftrSuccess);
+        return new DropTestStats(this.sent, this.rcvd, this.excs, this.ftrFailed, this.ftrSuccess, this.runablesExecuted, this.runablesRejected);
     }
 
     public final void clearStats() {
@@ -83,19 +90,30 @@ abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseab
 
     }
 
+    private final void incrementRunableExecuted() {
+        RUNABLES_EXECUTED.incrementAndGet(this);
+    }
+    private final void incrementRunableRejected() {
+        RUNABLES_REJECTED.incrementAndGet(this);
+    }
+
     @Override
     public final void onPacketReceived(final PacketReceived notification) {
         LOG.debug("onPacketReceived - Entering - {}", notification);
 
         RCVD_UPDATER.incrementAndGet(this);
 
-        executorService.submit(new Runnable() {
-
-            @Override
-            public void run() {
-                processPacket(notification);
-            }
-        });
+        try {
+            executorService.submit(new Runnable() {
+                @Override
+                public void run() {
+                    incrementRunableExecuted();
+                    processPacket(notification);
+                }
+            });
+        } catch (RejectedExecutionException e){
+            incrementRunableRejected();
+        }
         LOG.debug("onPacketReceived - Leaving", notification);
     }
 
@@ -166,10 +184,11 @@ abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseab
         executorService.shutdown();
     }
 
-    public void countFutureSuccess(){
+    public void countFutureSuccess() {
         RPC_FUTURE_SUCCESS_UPDATER.incrementAndGet(this);
     }
-    public void countFutureError(){
+
+    public void countFutureError() {
         RPC_FUTURE_FAIL_UPDATER.incrementAndGet(this);
     }
 }
