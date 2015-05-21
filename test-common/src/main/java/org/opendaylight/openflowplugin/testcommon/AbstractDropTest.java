@@ -9,12 +9,16 @@ package org.opendaylight.openflowplugin.testcommon;
 
 import static org.opendaylight.openflowjava.util.ByteBufUtils.macAddressToString;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DropActionCaseBuilder;
@@ -52,8 +56,10 @@ abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseab
 
     static final long STARTUP_LOOP_TICK = 500L;
     static final int STARTUP_LOOP_MAX_RETRIES = 8;
+    private static final int PROCESSING_POOL_SIZE = 10000;
 
-    private final ExecutorService executorService = Executors.newFixedThreadPool(8);
+    private final int POOL_THREAD_AMOUNT = 8;
+    private final ExecutorService executorService;
 
 
     private static final AtomicIntegerFieldUpdater<AbstractDropTest> SENT_UPDATER = AtomicIntegerFieldUpdater.newUpdater(AbstractDropTest.class, "sent");
@@ -81,6 +87,15 @@ abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseab
         return new DropTestStats(this.sent, this.rcvd, this.excs, this.ftrFailed, this.ftrSuccess, this.runablesExecuted, this.runablesRejected);
     }
 
+    public AbstractDropTest() {
+        ThreadPoolExecutor threadPool = new ThreadPoolExecutor(POOL_THREAD_AMOUNT, POOL_THREAD_AMOUNT, 0,
+                TimeUnit.MILLISECONDS,
+                new ArrayBlockingQueue<Runnable>(PROCESSING_POOL_SIZE));
+        threadPool.setThreadFactory(new ThreadFactoryBuilder().setNameFormat("dropTest-%d").build());
+
+        executorService = threadPool;
+    }
+
     public final void clearStats() {
         this.sent = 0;
         this.rcvd = 0;
@@ -93,6 +108,7 @@ abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseab
     private final void incrementRunableExecuted() {
         RUNABLES_EXECUTED.incrementAndGet(this);
     }
+
     private final void incrementRunableRejected() {
         RUNABLES_REJECTED.incrementAndGet(this);
     }
@@ -111,7 +127,7 @@ abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseab
                     processPacket(notification);
                 }
             });
-        } catch (RejectedExecutionException e){
+        } catch (Exception e) {
             incrementRunableRejected();
         }
         LOG.debug("onPacketReceived - Leaving", notification);
