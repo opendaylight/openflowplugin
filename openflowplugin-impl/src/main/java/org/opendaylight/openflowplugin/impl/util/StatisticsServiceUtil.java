@@ -27,10 +27,10 @@ public class StatisticsServiceUtil {
         throw new IllegalStateException("This class should not be instantiated");
     }
 
-    public static ListenableFuture<RpcResult<Void>> getRpcResultListenableFuture(final Xid xid,
+    public static <T> ListenableFuture<RpcResult<T>> getRpcResultListenableFuture(final Xid xid,
                                                                                  final MultipartRequestInput multipartRequestInput,
                                                                                  final DeviceContext deviceContext) {
-        final SettableFuture<RpcResult<Void>> settableFuture = SettableFuture.create();
+        final SettableFuture<RpcResult<T>> settableFuture = SettableFuture.create();
         final OutboundQueue outboundQueue = deviceContext.getPrimaryConnectionContext().getOutboundQueueProvider();
         outboundQueue.commitEntry(xid.getValue(), multipartRequestInput, new FutureCallback<OfHeader>() {
             @Override
