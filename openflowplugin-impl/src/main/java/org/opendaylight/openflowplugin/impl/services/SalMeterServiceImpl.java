@@ -46,7 +46,8 @@ public class SalMeterServiceImpl extends CommonService implements SalMeterServic
     @Override
     public Future<RpcResult<AddMeterOutput>> addMeter(final AddMeterInput input) {
         getDeviceContext().getDeviceMeterRegistry().store(input.getMeterId());
-        return handleServiceCall(new Function<RequestContext<AddMeterOutput>, ListenableFuture<RpcResult<AddMeterOutput>>>() {
+        return handleServiceCall(new Function<RequestContext<AddMeterOutput>,
+                ListenableFuture<RpcResult<AddMeterOutput>>>() {
             @Override
             public ListenableFuture<RpcResult<AddMeterOutput>> apply(final RequestContext<AddMeterOutput> requestContext) {
                 return convertAndSend(input, requestContext);
@@ -56,7 +57,8 @@ public class SalMeterServiceImpl extends CommonService implements SalMeterServic
 
     @Override
     public Future<RpcResult<UpdateMeterOutput>> updateMeter(final UpdateMeterInput input) {
-        return handleServiceCall(new Function<RequestContext<UpdateMeterOutput>, ListenableFuture<RpcResult<UpdateMeterOutput>>>() {
+        return handleServiceCall(new Function<RequestContext<UpdateMeterOutput>,
+                ListenableFuture<RpcResult<UpdateMeterOutput>>>() {
             @Override
             public ListenableFuture<RpcResult<UpdateMeterOutput>> apply(final RequestContext<UpdateMeterOutput> requestContext) {
                 return convertAndSend(input.getUpdatedMeter(), requestContext);
@@ -67,7 +69,8 @@ public class SalMeterServiceImpl extends CommonService implements SalMeterServic
     @Override
     public Future<RpcResult<RemoveMeterOutput>> removeMeter(final RemoveMeterInput input) {
         getDeviceContext().getDeviceMeterRegistry().markToBeremoved(input.getMeterId());
-        return handleServiceCall(new Function<RequestContext<RemoveMeterOutput>, ListenableFuture<RpcResult<RemoveMeterOutput>>>() {
+        return handleServiceCall(new Function<RequestContext<RemoveMeterOutput>,
+                ListenableFuture<RpcResult<RemoveMeterOutput>>>() {
             @Override
             public ListenableFuture<RpcResult<RemoveMeterOutput>> apply(final RequestContext<RemoveMeterOutput> requestContext) {
                 return convertAndSend(input, requestContext);
@@ -82,25 +85,29 @@ public class SalMeterServiceImpl extends CommonService implements SalMeterServic
         final MeterModInputBuilder ofMeterModInput = MeterConvertor.toMeterModInput(iputMeter, getVersion());
         final Xid xid = requestContext.getXid();
         ofMeterModInput.setXid(xid.getValue());
-        final SettableFuture<RpcResult<T>> settableFuture = SettableFuture.create();
+
         final MeterModInput meterModInput = ofMeterModInput.build();
         outboundQueue.commitEntry(xid.getValue(), meterModInput, new FutureCallback<OfHeader>() {
+
+            RpcResultBuilder<T> rpcResultBuilder;
             @Override
             public void onSuccess(final OfHeader ofHeader) {
+                rpcResultBuilder = RpcResultBuilder.<T>success();
+                requestContext.setResult(rpcResultBuilder.build());
                 RequestContextUtil.closeRequstContext(requestContext);
-                getMessageSpy().spyMessage(meterModInput.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
 
-                settableFuture.set(RpcResultBuilder.<T>success().build());
+                getMessageSpy().spyMessage(meterModInput.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
             }
 
             @Override
             public void onFailure(final Throwable throwable) {
-                RpcResultBuilder<T> rpcResultBuilder = RpcResultBuilder.<T>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
+                rpcResultBuilder = RpcResultBuilder.<T>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
+                requestContext.setResult(rpcResultBuilder.build());
                 RequestContextUtil.closeRequstContext(requestContext);
+
                 getMessageSpy().spyMessage(meterModInput.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
-                settableFuture.set(rpcResultBuilder.build());
             }
         });
-        return settableFuture;
+        return requestContext.getFuture();
     }
 }
