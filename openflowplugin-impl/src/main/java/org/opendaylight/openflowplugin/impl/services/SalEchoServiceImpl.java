@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.impl.services;
 
 import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.SettableFuture;
 import java.util.concurrent.Future;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -45,7 +44,6 @@ public class SalEchoServiceImpl extends CommonService implements SalEchoService 
         }
 
 
-        final DeviceContext deviceContext = getDeviceContext();
 
         LOG.trace("Hooking xid {} to device context - precaution.", requestContext.getXid().getValue());
         final Xid xid = requestContext.getXid();
@@ -58,24 +56,27 @@ public class SalEchoServiceImpl extends CommonService implements SalEchoService 
         LOG.debug("Echo with xid {} was sent from controller", xid);
 
         final OutboundQueue outboundQueue = getDeviceContext().getPrimaryConnectionContext().getOutboundQueueProvider();
-        final SettableFuture<RpcResult<SendEchoOutput>> settableFuture = SettableFuture.create();
         outboundQueue.commitEntry(xid.getValue(), echoInputOFJava, new FutureCallback<OfHeader>() {
+
+            RpcResultBuilder<SendEchoOutput> rpcResultBuilder;
             @Override
             public void onSuccess(final OfHeader ofHeader) {
+                rpcResultBuilder = RpcResultBuilder.<SendEchoOutput>success();
+                requestContext.setResult(rpcResultBuilder.build());
                 RequestContextUtil.closeRequstContext(requestContext);
-                getMessageSpy().spyMessage(echoInputOFJava.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
 
-                settableFuture.set(RpcResultBuilder.<SendEchoOutput>success().build());
+                getMessageSpy().spyMessage(echoInputOFJava.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
             }
 
             @Override
             public void onFailure(final Throwable throwable) {
-                RpcResultBuilder<SendEchoOutput> rpcResultBuilder = RpcResultBuilder.<SendEchoOutput>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
+                rpcResultBuilder = RpcResultBuilder.<SendEchoOutput>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
+                requestContext.setResult(rpcResultBuilder.build());
                 RequestContextUtil.closeRequstContext(requestContext);
+
                 getMessageSpy().spyMessage(echoInputOFJava.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
-                settableFuture.set(rpcResultBuilder.build());
             }
         });
-        return settableFuture;
+        return requestContext.getFuture();
     }
 }
