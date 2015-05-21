@@ -133,10 +133,6 @@ public final class StatisticsGatheringUtils {
                         allMultipartData = Iterables.concat(allMultipartData, multipartDataList);
                     }
 
-                    if (deviceContext.getDeviceState().isValid()) {
-                        deviceContext.startGatheringOperationsToOneTransaction();
-                    }
-
                     if (multipartData instanceof GroupStatisticsUpdated) {
                         processGroupStatistics((Iterable<GroupStatisticsUpdated>) allMultipartData, deviceContext);
                     } else if (multipartData instanceof MeterStatisticsUpdated) {
@@ -158,9 +154,6 @@ public final class StatisticsGatheringUtils {
                     }
                     //TODO : implement experimenter
 
-                    if (deviceContext.getDeviceState().isValid()) {
-                        deviceContext.commitOperationsGatheredInOneTransaction();
-                    }
                     return isMultipartProcessed;
                 }
                 return Boolean.FALSE;
@@ -170,9 +163,9 @@ public final class StatisticsGatheringUtils {
 
     private static void processMeterConfigStatsUpdated(final Iterable<MeterConfigStatsUpdated> data, final DeviceContext deviceContext) {
         for (final MeterConfigStatsUpdated meterConfigStatsUpdated : data) {
-            NodeId nodeId = meterConfigStatsUpdated.getId();
+            final NodeId nodeId = meterConfigStatsUpdated.getId();
             final InstanceIdentifier<FlowCapableNode> fNodeIdent = getFlowCapableNodeInstanceIdentifier(nodeId);
-            for (MeterConfigStats meterConfigStats : meterConfigStatsUpdated.getMeterConfigStats()) {
+            for (final MeterConfigStats meterConfigStats : meterConfigStatsUpdated.getMeterConfigStats()) {
                 final MeterId meterId = meterConfigStats.getMeterId();
                 final InstanceIdentifier<Meter> meterInstanceIdentifier = fNodeIdent.child(Meter.class, new MeterKey(meterId));
 
@@ -183,6 +176,7 @@ public final class StatisticsGatheringUtils {
                 deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, meterInstanceIdentifier, meterBuilder.build());
             }
         }
+        deviceContext.submitTransaction();
     }
 
     private static void processFlowStatistics(final Iterable<FlowsStatisticsUpdate> data, final DeviceContext deviceContext) {
@@ -193,7 +187,6 @@ public final class StatisticsGatheringUtils {
         for (final FlowsStatisticsUpdate flowsStatistics : data) {
             for (final FlowAndStatisticsMapList flowStat : flowsStatistics.getFlowAndStatisticsMapList()) {
                 final FlowBuilder flowBuilder = new FlowBuilder(flowStat);
-                short tableId = flowStat.getTableId();
 
                 final FlowRegistryKey flowRegistryKey = FlowRegistryKeyFactory.create(flowBuilder.build());
                 final FlowId flowId = deviceContext.getDeviceFlowRegistry().storeIfNecessary(flowRegistryKey, tableId);
@@ -206,26 +199,27 @@ public final class StatisticsGatheringUtils {
                 deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, flowIdent, flowBuilder.build());
             }
         }
+        deviceContext.submitTransaction();
     }
 
     private static void deleteAllKnownFlows(final DeviceContext deviceContext, final InstanceIdentifier<Node> nodeIdent) {
         if (deviceContext.getDeviceState().deviceSynchronized()) {
             final Short numOfTablesOnDevice = deviceContext.getDeviceState().getFeatures().getTables();
-            for (short i = 0; i < numOfTablesOnDevice; i++) {
-                KeyedInstanceIdentifier<Table, TableKey> iiToTable
-                        = nodeIdent.augmentation(FlowCapableNode.class).child(Table.class, new TableKey(i));
+            for (short i=0; i<numOfTablesOnDevice; i++) {
+                final KeyedInstanceIdentifier<Table, TableKey> iiToTable
+                    = nodeIdent.augmentation(FlowCapableNode.class).child( Table.class, new TableKey(i));
                 final ReadTransaction readTx = deviceContext.getReadTransaction();
-                CheckedFuture<Optional<Table>, ReadFailedException> tableDataFuture = readTx.read(LogicalDatastoreType.OPERATIONAL, iiToTable);
+                final CheckedFuture<Optional<Table>, ReadFailedException> tableDataFuture = readTx.read(LogicalDatastoreType.OPERATIONAL, iiToTable);
                 try {
-                    Optional<Table> tableDataOpt = tableDataFuture.get();
+                    final Optional<Table> tableDataOpt = tableDataFuture.get();
                     if (tableDataOpt.isPresent()) {
                         final Table tableData = tableDataOpt.get();
                         final Table table = new TableBuilder(tableData).setFlow(Collections.<Flow>emptyList()).build();
                         deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToTable, table);
                     }
-                } catch (InterruptedException e) {
+                } catch (final InterruptedException e) {
                     LOG.trace("Reading of table features for table wit ID {} was interrputed.", i);
-                } catch (ExecutionException e) {
+                } catch (final ExecutionException e) {
                     LOG.trace("Reading of table features for table wit ID {} encountered execution exception {}.", i, e);
                 }
             }
@@ -253,6 +247,7 @@ public final class StatisticsGatheringUtils {
                 }
             }
         }
+        deviceContext.submitTransaction();
     }
 
     private static void processFlowTableStatistics(final Iterable<FlowTableStatisticsUpdate> data, final DeviceContext deviceContext) {
@@ -266,6 +261,7 @@ public final class StatisticsGatheringUtils {
                 deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, tStatIdent, stats);
             }
         }
+        deviceContext.submitTransaction();
     }
 
     private static void processNodeConnectorStatistics(final Iterable<NodeConnectorStatisticsUpdate> data, final DeviceContext deviceContext) {
@@ -283,14 +279,15 @@ public final class StatisticsGatheringUtils {
                 deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, flowCapNodeConnStatIdent, stats);
             }
         }
+        deviceContext.submitTransaction();
     }
 
     private static void processMetersStatistics(final Iterable<MeterStatisticsUpdated> data,
                                                 final DeviceContext deviceContext) {
-        NodeId nodeId = deviceContext.getDeviceState().getNodeId();
+        final NodeId nodeId = deviceContext.getDeviceState().getNodeId();
         final InstanceIdentifier<FlowCapableNode> fNodeIdent = getFlowCapableNodeInstanceIdentifier(nodeId);
         deleteAllKnownMeters(deviceContext, fNodeIdent);
-        for (MeterStatisticsUpdated meterStatisticsUpdated : data) {
+        for (final MeterStatisticsUpdated meterStatisticsUpdated : data) {
             for (final MeterStats mStat : meterStatisticsUpdated.getMeterStats()) {
                 final MeterStatistics stats = new MeterStatisticsBuilder(mStat).build();
                 final MeterId meterId = mStat.getMeterId();
@@ -301,10 +298,11 @@ public final class StatisticsGatheringUtils {
                 deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, msIdent, stats);
             }
         }
+        deviceContext.submitTransaction();
     }
 
     private static void deleteAllKnownMeters(final DeviceContext deviceContext, final InstanceIdentifier<FlowCapableNode> fNodeIdent) {
-        for (MeterId meterId : deviceContext.getDeviceMeterRegistry().getAllMeterIds()) {
+        for (final MeterId meterId : deviceContext.getDeviceMeterRegistry().getAllMeterIds()) {
             final InstanceIdentifier<Meter> meterIdent = fNodeIdent.child(Meter.class, new MeterKey(meterId));
             deviceContext.addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, meterIdent);
         }
@@ -312,11 +310,11 @@ public final class StatisticsGatheringUtils {
     }
 
     private static void processGroupDescStats(final Iterable<GroupDescStatsUpdated> data, final DeviceContext deviceContext) {
-        for (GroupDescStatsUpdated groupDescStatsUpdated : data) {
-            NodeId nodeId = groupDescStatsUpdated.getId();
+        for (final GroupDescStatsUpdated groupDescStatsUpdated : data) {
+            final NodeId nodeId = groupDescStatsUpdated.getId();
             final InstanceIdentifier<FlowCapableNode> fNodeIdent = getFlowCapableNodeInstanceIdentifier(nodeId);
 
-            for (GroupDescStats groupDescStats : groupDescStatsUpdated.getGroupDescStats()) {
+            for (final GroupDescStats groupDescStats : groupDescStatsUpdated.getGroupDescStats()) {
                 final GroupId groupId = groupDescStats.getGroupId();
 
                 final GroupBuilder groupBuilder = new GroupBuilder(groupDescStats);
@@ -329,10 +327,11 @@ public final class StatisticsGatheringUtils {
                 deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, groupIdent, groupBuilder.build());
             }
         }
+        deviceContext.submitTransaction();
     }
 
     private static void deleteAllKnownGroups(final DeviceContext deviceContext, final InstanceIdentifier<FlowCapableNode> fNodeIdent) {
-        for (GroupId groupId : deviceContext.getDeviceGroupRegistry().getAllGroupIds()) {
+        for (final GroupId groupId : deviceContext.getDeviceGroupRegistry().getAllGroupIds()) {
             final InstanceIdentifier<Group> groupIdent = fNodeIdent.child(Group.class, new GroupKey(groupId));
             deviceContext.addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, groupIdent);
         }
@@ -340,10 +339,10 @@ public final class StatisticsGatheringUtils {
     }
 
     private static void processGroupStatistics(final Iterable<GroupStatisticsUpdated> data, final DeviceContext deviceContext) {
-        NodeId nodeId = deviceContext.getDeviceState().getNodeId();
+        final NodeId nodeId = deviceContext.getDeviceState().getNodeId();
         final InstanceIdentifier<FlowCapableNode> fNodeIdent = getFlowCapableNodeInstanceIdentifier(nodeId);
         deleteAllKnownGroups(deviceContext, fNodeIdent);
-        for (GroupStatisticsUpdated groupStatistics : data) {
+        for (final GroupStatisticsUpdated groupStatistics : data) {
             for (final GroupStats groupStats : groupStatistics.getGroupStats()) {
 
                 final InstanceIdentifier<Group> groupIdent = fNodeIdent.child(Group.class, new GroupKey(groupStats.getGroupId()));
@@ -355,6 +354,7 @@ public final class StatisticsGatheringUtils {
                 deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, gsIdent, stats);
             }
         }
+        deviceContext.submitTransaction();
     }
 
     private static InstanceIdentifier<FlowCapableNode> getFlowCapableNodeInstanceIdentifier(final NodeId nodeId) {

@@ -182,7 +182,7 @@ public class SalTableServiceImpl extends CommonService implements SalTableServic
                     deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, tableFeaturesII,
                             tableFeatureData);
                 }
-
+                deviceContext.submitTransaction();
             }
 
             private List<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures> convertToSalTableFeatures(
