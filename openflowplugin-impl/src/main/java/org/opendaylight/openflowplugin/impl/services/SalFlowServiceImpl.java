@@ -246,6 +246,7 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
 
             @Override
             public void onFailure(final Throwable throwable) {
+                getMessageSpy().spyMessage(FlowModInput.class, MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
                 RpcResultBuilder<T> rpcResultBuilder = RpcResultBuilder.<T>failed().withError(ErrorType.APPLICATION, throwable.getMessage(), throwable);
                 requestContext.setResult(rpcResultBuilder.build());
 

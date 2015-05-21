@@ -93,7 +93,6 @@ public class SalTableServiceImpl extends CommonService implements SalTableServic
                 mprInput.setMultipartRequestBody(caseBuilder.build());
                 final OutboundQueue outboundQueue = getDeviceContext().getPrimaryConnectionContext().getOutboundQueueProvider();
 
-                final SettableFuture<RpcResult<List<MultipartReply>>> settableFuture = SettableFuture.create();
                 final MultiMsgCollector multiMsgCollector = getDeviceContext().getMultiMsgCollector();
                 multiMsgCollector.registerMultipartRequestContext(requestContext);
 
@@ -112,7 +111,6 @@ public class SalTableServiceImpl extends CommonService implements SalTableServic
                             }
                         }
                         getMessageSpy().spyMessage(multipartRequestInput.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
-                        settableFuture.set(RpcResultBuilder.<List<MultipartReply>>success().build());
                     }
 
                     @Override
@@ -121,10 +119,9 @@ public class SalTableServiceImpl extends CommonService implements SalTableServic
                         RequestContextUtil.closeRequstContext(requestContext);
                         multiMsgCollector.registerMultipartRequestContext(requestContext);
                         getMessageSpy().spyMessage(multipartRequestInput.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_FAILURE);
-                        settableFuture.set(rpcResultBuilder.build());
                     }
                 });
-                return settableFuture;
+                return requestContext.getFuture();
             }
         }
 

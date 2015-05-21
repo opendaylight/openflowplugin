@@ -64,13 +64,16 @@ public class StatisticsGatheringService extends CommonService {
                                              public void onSuccess(final OfHeader ofHeader) {
                                                  if (ofHeader instanceof MultipartReply) {
                                                      final MultipartReply multipartReply = (MultipartReply) ofHeader;
-                                                     requestContext.setResult(RpcResultBuilder.<List<MultipartReply>>success().build());
                                                      multiMsgCollector.addMultipartMsg(multipartReply);
                                                  } else {
                                                      if (null != ofHeader) {
                                                          LOG.info("Unexpected response type received {}.", ofHeader.getClass());
+                                                         RpcResultBuilder<List<MultipartReply>> rpcResultBuilder = RpcResultBuilder.<List<MultipartReply>>failed().withError(RpcError.ErrorType.APPLICATION, String.format("Unexpected response type received %s.", ofHeader.getClass()));
+                                                         requestContext.setResult(rpcResultBuilder.build());
                                                      } else {
                                                          LOG.info("Ofheader was null.");
+                                                         RpcResultBuilder<List<MultipartReply>> rpcResultBuilder = RpcResultBuilder.<List<MultipartReply>>failed().withError(RpcError.ErrorType.APPLICATION, "OfHeader was null");
+                                                         requestContext.setResult(rpcResultBuilder.build());
                                                      }
                                                  }
                                              }
@@ -79,7 +82,6 @@ public class StatisticsGatheringService extends CommonService {
                                              public void onFailure(final Throwable throwable) {
                                                  RpcResultBuilder<List<MultipartReply>> rpcResultBuilder = RpcResultBuilder.<List<MultipartReply>>failed().withError(RpcError.ErrorType.APPLICATION, throwable.getMessage());
                                                  requestContext.setResult(rpcResultBuilder.build());
-
                                                  RequestContextUtil.closeRequstContext(requestContext);
                                              }
                                          });
