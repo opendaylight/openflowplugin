@@ -11,13 +11,6 @@ package org.opendaylight.openflowplugin.impl.device;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.CheckedFuture;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import io.netty.util.HashedWheelTimer;
-import io.netty.util.Timeout;
-import io.netty.util.TimerTask;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.BindingTransactionChain;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
@@ -50,140 +43,68 @@ class TransactionChainManager implements TransactionChainListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(TransactionChainManager.class);
 
-    private final HashedWheelTimer hashedWheelTimer;
+    private final Object TxLOCK = new Object();
+
     private final DataBroker dataBroker;
-    private final long maxTx;
-    private final long timerValue;
-    private BindingTransactionChain txChainFactory;
     private WriteTransaction wTx;
-    private Timeout submitTaskTime;
-    private long nrOfActualTx;
+    private BindingTransactionChain txChainFactory;
     private boolean submitIsEnabled;
 
-    TransactionChainManager(@Nonnull final DataBroker dataBroker,
-                            @Nonnull final HashedWheelTimer hashedWheelTimer,
-                            final long maxTx,
-                            final long timerValue) {
+    TransactionChainManager(@Nonnull final DataBroker dataBroker) {
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
-        this.hashedWheelTimer = Preconditions.checkNotNull(hashedWheelTimer);
-        this.maxTx = maxTx;
         txChainFactory = dataBroker.createTransactionChain(TransactionChainManager.this);
-        nrOfActualTx = 0L;
-        this.timerValue = timerValue;
-        LOG.debug("created txChainManager with operation limit {}", maxTx);
+        LOG.debug("created txChainManager");
     }
 
-
-    public void commitOperationsGatheredInOneTransaction() {
+    void initialSubmitWriteTransaction() {
         enableSubmit();
-        submitTransaction();
+        submitWriteTransaction();
     }
 
-    public void startGatheringOperationsToOneTransaction() {
-        submitIsEnabled = false;
-    }
-
-    <T extends DataObject> void writeToTransaction(final LogicalDatastoreType store,
-                                                   final InstanceIdentifier<T> path, final T data) {
-        try {
-            final WriteTransaction writeTx = getTransactionSafely();
-            writeTx.put(store, path, data);
-            countTxInAndCommit();
-        } catch (final Exception e) {
-            LOG.warn("failed to put into writeOnlyTransaction: {}", e.getMessage());
-            LOG.trace("failed to put into writeOnlyTransaction.. ", e);
+    boolean submitWriteTransaction() {
+        if ( ! submitIsEnabled) {
+            LOG.trace("transaction not committed - submit block issued");
+            return false;
         }
-    }
-
-    private WriteTransaction getTransactionSafely() {
         if (wTx == null) {
-            wTx = txChainFactory.newWriteOnlyTransaction();
+            LOG.trace("nothing to commit - submit returns true");
+            return true;
         }
-        return wTx;
+        CheckedFuture<Void, TransactionCommitFailedException> submitResult;
+        synchronized (TxLOCK) {
+            submitResult = wTx.submit();
+            wTx = null;
+        }
+        try {
+            submitResult.checkedGet();
+            return true;
+        }
+        catch (final TransactionCommitFailedException e) {
+            recreateTxChain();
+        }
+        return false;
     }
 
     <T extends DataObject> void addDeleteOperationTotTxChain(final LogicalDatastoreType store,
-                                                             final InstanceIdentifier<T> path) {
+            final InstanceIdentifier<T> path) {
         try {
             final WriteTransaction writeTx = getTransactionSafely();
             writeTx.delete(store, path);
-            countTxInAndCommit();
         } catch (final Exception e) {
             LOG.warn("failed to put into writeOnlyTransaction : {}", e.getMessage());
             LOG.trace("failed to put into writeOnlyTransaction.. ", e);
         }
     }
 
-    private void countTxInAndCommit() {
-        nrOfActualTx += 1L;
-        if (nrOfActualTx >= maxTx) {
-            submitTransaction();
+    <T extends DataObject> void writeToTransaction(final LogicalDatastoreType store,
+            final InstanceIdentifier<T> path, final T data) {
+        try {
+            final WriteTransaction writeTx = getTransactionSafely();
+            writeTx.put(store, path, data);
+        } catch (final Exception e) {
+            LOG.warn("failed to put into writeOnlyTransaction: {}", e.getMessage());
+            LOG.trace("failed to put into writeOnlyTransaction.. ", e);
         }
-    }
-
-    void submitScheduledTransaction(final Timeout timeout) {
-        if (timeout.isCancelled()) {
-            // zombie timer executed
-            return;
-        }
-
-        if (submitIsEnabled) {
-            if (nrOfActualTx > 0L) {
-                submitTransaction();
-            }
-        } else {
-            LOG.info("transaction submit task will not be scheduled - submit block issued.");
-        }
-    }
-
-    void submitTransaction() {
-        if (submitIsEnabled) {
-            if (wTx != null && nrOfActualTx > 0) {
-                LOG.trace("submitting transaction, counter: {}", nrOfActualTx);
-                final CheckedFuture<Void, TransactionCommitFailedException> submitResult = wTx.submit();
-                try {
-                    submitResult.get();
-                } catch (ExecutionException | InterruptedException e) {
-                    recreateTxChain();
-                }
-                hookTimeExpenseCounter(submitResult, String.valueOf(wTx.getIdentifier()) + "::" + nrOfActualTx);
-                wTx = null;
-                nrOfActualTx = 0L;
-            }
-            if (submitTaskTime != null) {
-                // if possible then cancel current timer (even if being executed via timer)
-                submitTaskTime.cancel();
-            }
-            submitTaskTime = hashedWheelTimer.newTimeout(new TimerTask() {
-                @Override
-                public void run(final Timeout timeout) throws Exception {
-                    submitScheduledTransaction(timeout);
-                }
-            }, timerValue, TimeUnit.MILLISECONDS);
-
-        } else {
-            LOG.trace("transaction not committed - submit block issued");
-        }
-    }
-
-    private static void hookTimeExpenseCounter(final CheckedFuture<Void, TransactionCommitFailedException> submitResult, final String name) {
-        final long submitFiredTime = System.nanoTime();
-        LOG.debug("submit of {} fired", name);
-        Futures.addCallback(submitResult, new FutureCallback<Void>() {
-            @Override
-            public void onSuccess(final Void result) {
-                LOG.debug("submit of {} finished in {} ms", name, System.nanoTime() - submitFiredTime);
-            }
-
-            @Override
-            public void onFailure(final Throwable t) {
-                LOG.warn("transaction submit failed: {}", t.getMessage());
-            }
-        });
-    }
-
-    void enableSubmit() {
-        submitIsEnabled = true;
     }
 
     @Override
@@ -193,14 +114,31 @@ class TransactionChainManager implements TransactionChainListener {
         recreateTxChain();
     }
 
-    private void recreateTxChain() {
-        txChainFactory.close();
-        txChainFactory = dataBroker.createTransactionChain(TransactionChainManager.this);
-    }
-
     @Override
     public void onTransactionChainSuccessful(final TransactionChain<?, ?> chain) {
         // NOOP - only yet, here is probably place for notification to get new WriteTransaction
     }
 
+    private void recreateTxChain() {
+        txChainFactory.close();
+        txChainFactory = dataBroker.createTransactionChain(TransactionChainManager.this);
+        synchronized (TxLOCK) {
+            wTx = null;
+        }
+    }
+
+    private WriteTransaction getTransactionSafely() {
+        if (wTx == null) {
+            synchronized (TxLOCK) {
+                if (wTx == null) {
+                    wTx = txChainFactory.newWriteOnlyTransaction();
+                }
+            }
+        }
+        return wTx;
+    }
+
+    private void enableSubmit() {
+        submitIsEnabled = true;
+    }
 }
