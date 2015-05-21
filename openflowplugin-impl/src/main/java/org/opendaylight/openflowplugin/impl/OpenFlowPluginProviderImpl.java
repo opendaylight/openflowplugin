@@ -71,6 +71,8 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
     private OfpRole role;
     private Collection<SwitchConnectionProvider> switchConnectionProviders;
     private final Long rpcRequestsQuota;
+    private static final MessageIntelligenceAgency messageIntelligenceAgency = new MessageIntelligenceAgencyImpl();
+
 
     public OpenFlowPluginProviderImpl(final Long rpcRequestsQuota) {
         this.rpcRequestsQuota = rpcRequestsQuota;
@@ -98,6 +100,10 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
                 LOG.warn("Some switchConnectionProviders failed to start.", t);
             }
         });
+    }
+
+    public static MessageIntelligenceAgency getMessageIntelligenceAgency() {
+        return OpenFlowPluginProviderImpl.messageIntelligenceAgency;
     }
 
     @Override
@@ -134,7 +140,6 @@ public class OpenFlowPluginProviderImpl implements OpenFlowPluginProvider, OpenF
         OFSessionUtil.getSessionManager().setExtensionConverterProvider(extensionConverterManager);
 
         connectionManager = new ConnectionManagerImpl();
-        MessageIntelligenceAgency messageIntelligenceAgency = new MessageIntelligenceAgencyImpl();
 
         registerMXBean(messageIntelligenceAgency);
 

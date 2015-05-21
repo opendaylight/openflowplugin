@@ -6,15 +6,10 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific;
-
-import java.util.List;
+package org.opendaylight.openflowplugin.impl.karaf;
 
 /**
- * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 20.4.2015.
+ * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 21.5.2015.
  */
-public interface MessageIntelligenceAgency extends MessageSpy {
-
-    List<String> provideIntelligence();
-    void resetStatistics();
+public class StatisticsCommandCompleter {
 }

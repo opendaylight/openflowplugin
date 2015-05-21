@@ -51,7 +51,7 @@ public class MessageIntelligenceAgencyImpl implements MessageIntelligenceAgency,
         }
     }
 
-    private final ConcurrentMap<STATISTIC_GROUP, ConcurrentMap<Class<?>, MessageCounters>> inputStats = new ConcurrentHashMap<>();
+    private ConcurrentMap<STATISTIC_GROUP, ConcurrentMap<Class<?>, MessageCounters>> inputStats = new ConcurrentHashMap<>();
 
     @Override
     public void spyMessage(@Nonnull final Class<?> message, final STATISTIC_GROUP statGroup) {
@@ -124,5 +124,10 @@ public class MessageIntelligenceAgencyImpl implements MessageIntelligenceAgency,
             }
         }
         return dump;
+    }
+
+    @Override
+    public void resetStatistics() {
+        inputStats = new ConcurrentHashMap<>();
     }
 }
