@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2013-2014 Ericsson. and others.  All rights reserved.
+ * Copyright (c) 2013-2015 Ericsson. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -273,6 +273,7 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
     private static final byte[] VLAN_VID_MASK = new byte[]{16, 0};
     private static final short PROTO_TCP = 6;
     private static final short PROTO_UDP = 17;
+    private static final short PROTO_ICMPV4 = 1;
     private static final String noIp = "0.0.0.0/0";
 
     @Override
@@ -962,41 +963,70 @@ public class MatchConvertorImpl implements MatchConvertor<List<MatchEntry>> {
             }
         }
         if (!swMatch.getWildcards().isNWPROTO().booleanValue() && swMatch.getNwProto() != null) {
-            ipMatchBuilder.setIpProtocol(swMatch.getNwProto());
+            Short nwProto = swMatch.getNwProto();
+            ipMatchBuilder.setIpProtocol(nwProto);
             matchBuilder.setIpMatch(ipMatchBuilder.build());
-        }
-        if (!swMatch.getWildcards().isNWPROTO().booleanValue() && swMatch.getNwProto() == PROTO_TCP) {
-            TcpMatchBuilder tcpMatchBuilder = new TcpMatchBuilder();
-            if (!swMatch.getWildcards().isTPSRC().booleanValue() && swMatch.getTpSrc() != null) {
-                tcpMatchBuilder
-                        .setTcpSourcePort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber(
-                                swMatch.getTpSrc()));
-            }
-            if (!swMatch.getWildcards().isTPDST().booleanValue() && swMatch.getTpDst() != null) {
-                tcpMatchBuilder
-                        .setTcpDestinationPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber(
-                                swMatch.getTpDst()));
-            }
 
-            if (!swMatch.getWildcards().isTPSRC().booleanValue() || !swMatch.getWildcards().isTPDST().booleanValue()) {
-                matchBuilder.setLayer4Match(tcpMatchBuilder.build());
-            }
-        }
-        if (!swMatch.getWildcards().isNWPROTO().booleanValue() && swMatch.getNwProto() == PROTO_UDP) {
-            UdpMatchBuilder udpMatchBuilder = new UdpMatchBuilder();
-            if (!swMatch.getWildcards().isTPSRC().booleanValue() && swMatch.getTpSrc() != null) {
-                udpMatchBuilder
-                        .setUdpSourcePort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber(
-                                swMatch.getTpSrc()));
-            }
-            if (!swMatch.getWildcards().isTPDST().booleanValue() && swMatch.getTpDst() != null) {
-                udpMatchBuilder
-                        .setUdpDestinationPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber(
-                                swMatch.getTpDst()));
-            }
+            int proto = nwProto.intValue();
+            if (proto == PROTO_TCP) {
+                TcpMatchBuilder tcpMatchBuilder = new TcpMatchBuilder();
+                boolean hasTcp = false;
+                if (!swMatch.getWildcards().isTPSRC().booleanValue() && swMatch.getTpSrc() != null) {
+                    tcpMatchBuilder
+                            .setTcpSourcePort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber(
+                                    swMatch.getTpSrc()));
+                    hasTcp = true;
+                }
+                if (!swMatch.getWildcards().isTPDST().booleanValue() && swMatch.getTpDst() != null) {
+                    tcpMatchBuilder
+                            .setTcpDestinationPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber(
+                                    swMatch.getTpDst()));
+                    hasTcp = true;
+                }
 
-            if (!swMatch.getWildcards().isTPSRC().booleanValue() || !swMatch.getWildcards().isTPDST().booleanValue()) {
-                matchBuilder.setLayer4Match(udpMatchBuilder.build());
+                if (hasTcp) {
+                    matchBuilder.setLayer4Match(tcpMatchBuilder.build());
+                }
+            } else if (proto == PROTO_UDP) {
+                UdpMatchBuilder udpMatchBuilder = new UdpMatchBuilder();
+                boolean hasUdp = false;
+                if (!swMatch.getWildcards().isTPSRC().booleanValue() && swMatch.getTpSrc() != null) {
+                    udpMatchBuilder
+                            .setUdpSourcePort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber(
+                                    swMatch.getTpSrc()));
+                    hasUdp = true;
+                }
+                if (!swMatch.getWildcards().isTPDST().booleanValue() && swMatch.getTpDst() != null) {
+                    udpMatchBuilder
+                            .setUdpDestinationPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.PortNumber(
+                                    swMatch.getTpDst()));
+                    hasUdp = true;
+                }
+
+                if (hasUdp) {
+                    matchBuilder.setLayer4Match(udpMatchBuilder.build());
+                }
+            } else if (proto == PROTO_ICMPV4) {
+                Icmpv4MatchBuilder icmpv4MatchBuilder = new Icmpv4MatchBuilder();
+                boolean hasIcmpv4 = false;
+                if (!swMatch.getWildcards().isTPSRC().booleanValue()) {
+                    Integer type = swMatch.getTpSrc();
+                    if (type != null) {
+                        icmpv4MatchBuilder.setIcmpv4Type(type.shortValue());
+                        hasIcmpv4 = true;
+                    }
+                }
+                if (!swMatch.getWildcards().isTPDST().booleanValue()) {
+                    Integer code = swMatch.getTpDst();
+                    if (code != null) {
+                        icmpv4MatchBuilder.setIcmpv4Code(code.shortValue());
+                        hasIcmpv4 = true;
+                    }
+                }
+
+                if (hasIcmpv4) {
+                    matchBuilder.setIcmpv4Match(icmpv4MatchBuilder.build());
+                }
             }
         }
         if (!swMatch.getWildcards().isNWTOS().booleanValue() && swMatch.getNwTos() != null) {

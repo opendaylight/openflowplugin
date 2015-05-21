@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2013 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2013-2015 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -20,6 +20,7 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatch;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Icmpv4Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.IpMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Layer3Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Layer4Match;
@@ -121,6 +122,20 @@ public class MatchConvertorV10Impl implements MatchConvertor<MatchV10> {
                     UdpMatch udpMatch = (UdpMatch) layer4Match;
                     _tPSRC = convertL4UdpSrcMatch(matchBuilder, udpMatch);
                     _tPDST = convertL4UdpDstMatch(matchBuilder, udpMatch);
+                }
+            } else {
+                Icmpv4Match icmpv4Match = match.getIcmpv4Match();
+                if (icmpv4Match != null) {
+                    Short type = icmpv4Match.getIcmpv4Type();
+                    if (type != null) {
+                        matchBuilder.setTpSrc(type.intValue());
+                        _tPSRC = false;
+                    }
+                    Short code = icmpv4Match.getIcmpv4Code();
+                    if (code != null) {
+                        matchBuilder.setTpDst(code.intValue());
+                        _tPDST = false;
+                    }
                 }
             }
         }
