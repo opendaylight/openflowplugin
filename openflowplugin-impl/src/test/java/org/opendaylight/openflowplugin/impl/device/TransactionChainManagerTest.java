@@ -12,6 +12,7 @@ import com.google.common.util.concurrent.Futures;
 import io.netty.util.HashedWheelTimer;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Matchers;
@@ -26,6 +27,7 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChain;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
@@ -41,6 +43,8 @@ public class TransactionChainManagerTest {
 
     @Mock
     private DataBroker dataBroker;
+    @Mock
+    private DeviceState deviceState;
     @Mock
     private BindingTransactionChain txChain;
     @Mock
@@ -58,7 +62,8 @@ public class TransactionChainManagerTest {
     public void setUp() throws Exception {
         Mockito.when(dataBroker.createTransactionChain(Matchers.any(TransactionChainListener.class)))
                 .thenReturn(txChain);
-        txChainManager = new TransactionChainManager(dataBroker, timer, 2, 2);
+        Mockito.when(deviceState.isValid()).thenReturn(Boolean.TRUE);
+        txChainManager = new TransactionChainManager(dataBroker, deviceState);
         Mockito.when(txChain.newWriteOnlyTransaction()).thenReturn(writeTx);
 
         nodeId = new NodeId("h2g2:42");
@@ -86,12 +91,11 @@ public class TransactionChainManagerTest {
         final Node data = new NodeBuilder().setId(nodeId).build();
         txChainManager.enableSubmit();
         txChainManager.writeToTransaction(LogicalDatastoreType.CONFIGURATION, path, data);
-        txChainManager.submitTransaction();
+        txChainManager.submitWriteTransaction();
 
         Mockito.verify(txChain).newWriteOnlyTransaction();
         Mockito.verify(writeTx).put(LogicalDatastoreType.CONFIGURATION, path, data);
         Mockito.verify(writeTx).submit();
-        Mockito.verify(writeTx).getIdentifier();
     }
 
     /**
@@ -113,6 +117,7 @@ public class TransactionChainManagerTest {
      * @throws Exception
      */
     @Test
+    @Ignore  // FIXME : think about test -> we don't use submit by time and nrOfOperations
     public void testEnableCounter2() throws Exception {
         txChainManager.enableSubmit();
 

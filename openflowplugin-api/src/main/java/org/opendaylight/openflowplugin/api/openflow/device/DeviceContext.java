@@ -88,6 +88,12 @@ public interface DeviceContext extends AutoCloseable,
     <T extends DataObject> void addDeleteToTxChain(final LogicalDatastoreType store, final InstanceIdentifier<T> path);
 
     /**
+     * Method submits Transaction to DataStore.
+     * @return transaction is submitted successfully
+     */
+    boolean submitTransaction();
+
+    /**
      * Method exposes transaction created for device
      * represented by this context. This read only transaction has a fresh dataStore snapshot.
      * There is a possibility to get different data set from  DataStore
@@ -159,10 +165,6 @@ public interface DeviceContext extends AutoCloseable,
      * Method sets reference to handler used for cleanup after device context about to be closed.
      */
     void addDeviceContextClosedHandler(DeviceContextClosedHandler deviceContextClosedHandler);
-
-    void startGatheringOperationsToOneTransaction();
-
-    void commitOperationsGatheredInOneTransaction();
 
     MultiMsgCollector getMultiMsgCollector();
 

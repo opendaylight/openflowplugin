@@ -150,7 +150,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
     public void onDeviceContextLevelUp(final DeviceContext deviceContext) {
         // final phase - we have to add new Device to MD-SAL DataStore
         Preconditions.checkNotNull(deviceContext);
-        ((DeviceContextImpl) deviceContext).submitTransaction();
+        ((DeviceContextImpl) deviceContext).initialSubmitTransaction();
 
         deviceContext.onPublished();
     }
@@ -177,7 +177,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         deviceContext.registerOutboundQueueHandler(outboundQueueHandlerRegistration);
         deviceContext.setNotificationService(notificationService);
         deviceContext.setNotificationPublishService(notificationPublishService);
-        NodeBuilder nodeBuilder = new NodeBuilder().setId(deviceState.getNodeId()).setNodeConnector(Collections.<NodeConnector>emptyList());
+        final NodeBuilder nodeBuilder = new NodeBuilder().setId(deviceState.getNodeId()).setNodeConnector(Collections.<NodeConnector>emptyList());
         deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, deviceState.getNodeInstanceIdentifier(), nodeBuilder.build());
 
         connectionContext.setDeviceDisconnectedHandler(deviceContext);
@@ -369,7 +369,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
             @Override
             public void onSuccess(final OfHeader ofHeader) {
                 if (ofHeader instanceof MultipartReply) {
-                    MultipartReply multipartReply = (MultipartReply) ofHeader;
+                    final MultipartReply multipartReply = (MultipartReply) ofHeader;
                     multiMsgCollector.addMultipartMsg(multipartReply);
                 } else {
                     if (null != ofHeader) {
@@ -517,7 +517,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
 
     @Override
     public void setNotificationPublishService(final NotificationPublishService notificationService) {
-        this.notificationPublishService = notificationService;
+        notificationPublishService = notificationService;
     }
 
     @Override

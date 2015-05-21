@@ -36,11 +36,7 @@ public class StatisticsManagerImpl implements StatisticsManager {
 
     private final ConcurrentHashMap<DeviceContext, StatisticsContext> contexts = new ConcurrentHashMap<>();
 
-    private final TimeCounter timeCounter = new TimeCounter();
-
     private static final long basicTimerDelay = 3000;
-    private static long currentTimerDelay = basicTimerDelay;
-    private static long maximumTimerDelay = 900000; //wait max 15 minutes for next statistics
 
     @Override
     public void setDeviceInitializationPhaseHandler(final DeviceInitializationPhaseHandler handler) {
@@ -51,9 +47,8 @@ public class StatisticsManagerImpl implements StatisticsManager {
     public void onDeviceContextLevelUp(final DeviceContext deviceContext) {
 
         if (null == hashedWheelTimer) {
-            LOG.trace("This is first device that delivered timer. Starting statistics polling immediately.");
+            LOG.trace("This is first device that deliverd timer.");
             hashedWheelTimer = deviceContext.getTimer();
-            pollStatistics();
         }
 
         final StatisticsContext statisticsContext = new StatisticsContextImpl(deviceContext);
@@ -65,6 +60,7 @@ public class StatisticsManagerImpl implements StatisticsManager {
                 if (statisticsGathered.booleanValue()) {
                     //there are some statistics on device worth gathering
                     contexts.put(deviceContext, statisticsContext);
+                    pollStatistics(statisticsContext);
                 }
                 LOG.trace("Device dynamic info collecting done. Going to announce raise to next level.");
                 deviceInitPhaseHandler.onDeviceContextLevelUp(deviceContext);
@@ -76,96 +72,55 @@ public class StatisticsManagerImpl implements StatisticsManager {
                 LOG.warn("Statistics manager was not able to collect dynamic info for device.", deviceContext.getDeviceState().getNodeId(), throwable);
                 try {
                     deviceContext.close();
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     LOG.warn("Error closing device context.", e);
                 }
             }
         });
     }
 
-    private void pollStatistics() {
-        try {
-            timeCounter.markStart();
-            for (final StatisticsContext statisticsContext : contexts.values()) {
-                ListenableFuture<Boolean> deviceStatisticsCollectionFuture = statisticsContext.gatherDynamicData();
-                Futures.addCallback(deviceStatisticsCollectionFuture, new FutureCallback<Boolean>() {
-                    @Override
-                    public void onSuccess(final Boolean o) {
-                        timeCounter.addTimeMark();
-                    }
+    private void pollStatistics(final StatisticsContext statisticsContext) {
+        final ListenableFuture<Boolean> deviceStatisticsCollectionFuture = statisticsContext.gatherDynamicData();
+        Futures.addCallback(deviceStatisticsCollectionFuture, new FutureCallback<Boolean>() {
+            @Override
+            public void onSuccess(final Boolean o) {
+                setStatisticsTimer(statisticsContext);
+            }
 
-                    @Override
-                    public void onFailure(final Throwable throwable) {
-                        timeCounter.addTimeMark();
-                        LOG.info("Statistics gathering for single node was not successful: {}", throwable.getMessage());
-                        LOG.debug("Statistics gathering for single node was not successful.. ", throwable);
-                    }
-                });
+            @Override
+            public void onFailure(final Throwable throwable) {
+                setStatisticsTimer(statisticsContext);
+                LOG.info("Statistics gathering for single node was not successful: {}", throwable.getMessage());
+                LOG.debug("Statistics gathering for single node was not successful.. ", throwable);
             }
-        } finally {
-            calculateTimerDelay();
-            if (null != hashedWheelTimer) {
-                hashedWheelTimer.newTimeout(new TimerTask() {
-                    @Override
-                    public void run(final Timeout timeout) throws Exception {
-                        pollStatistics();
-                    }
-                }, currentTimerDelay, TimeUnit.MILLISECONDS);
-            }
-        }
+        });
     }
 
-    private void calculateTimerDelay() {
-        long averageStatisticsGatheringTime = timeCounter.getAverageTimeBetweenMarks();
-        int numberOfDevices = contexts.size();
-        if ((averageStatisticsGatheringTime * numberOfDevices) > currentTimerDelay) {
-            currentTimerDelay *= 2;
-            if (currentTimerDelay > maximumTimerDelay) {
-                currentTimerDelay = maximumTimerDelay;
-            }
-        } else {
-            if (currentTimerDelay > basicTimerDelay) {
-                currentTimerDelay /= 2;
-            }
+    private void setStatisticsTimer(final StatisticsContext statisticsContext) {
+        if ( ! contexts.contains(statisticsContext)) {
+            LOG.debug("StatisticsContext {} is not active.", statisticsContext);
+            return;
+        }
+        if (null != hashedWheelTimer) {
+            hashedWheelTimer.newTimeout(new TimerTask() {
+                @Override
+                public void run(final Timeout timeout) throws Exception {
+                    pollStatistics(statisticsContext);
+                }
+            }, basicTimerDelay, TimeUnit.MILLISECONDS);
         }
     }
 
     @Override
     public void onDeviceContextClosed(final DeviceContext deviceContext) {
-        StatisticsContext statisticsContext = contexts.remove(deviceContext);
+        final StatisticsContext statisticsContext = contexts.remove(deviceContext);
         if (null != statisticsContext) {
             LOG.trace("Removing device context from stack. No more statistics gathering for node {}", deviceContext.getDeviceState().getNodeId());
             try {
                 statisticsContext.close();
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 LOG.debug("Error closing statistic context for node {}.", deviceContext.getDeviceState().getNodeId());
             }
         }
-    }
-
-    private final class TimeCounter {
-        private long beginningOfTime;
-        private long delta;
-        private int marksCount = 0;
-
-        public void markStart() {
-            beginningOfTime = System.nanoTime();
-            delta = 0;
-            marksCount = 0;
-        }
-
-        public void addTimeMark() {
-            delta += System.nanoTime() - beginningOfTime;
-            marksCount++;
-        }
-
-        public long getAverageTimeBetweenMarks() {
-            long average = 0;
-            if (marksCount > 0) {
-                average = delta / marksCount;
-            }
-            return TimeUnit.NANOSECONDS.toMillis(average);
-        }
-
     }
 }
