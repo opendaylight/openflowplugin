@@ -15,7 +15,6 @@ import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandlerRegistration;
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginTimer;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.OutboundQueueProvider;
@@ -91,6 +90,12 @@ public interface DeviceContext extends AutoCloseable,
     <T extends DataObject> void addDeleteToTxChain(final LogicalDatastoreType store, final InstanceIdentifier<T> path);
 
     /**
+     * Method submits Transaction to DataStore.
+     * @return transaction is submitted successfully
+     */
+    boolean submitTransaction();
+
+    /**
      * Method exposes transaction created for device
      * represented by this context. This read only transaction has a fresh dataStore snapshot.
      * There is a possibility to get different data set from  DataStore
@@ -163,11 +168,7 @@ public interface DeviceContext extends AutoCloseable,
      */
     void addDeviceContextClosedHandler(DeviceContextClosedHandler deviceContextClosedHandler);
 
-    void startGatheringOperationsToOneTransaction();
-
-    void commitOperationsGatheredInOneTransaction();
-
-    MultiMsgCollector getMultiMsgCollector(RequestContext<List<MultipartReply>> requestContext);
+    MultiMsgCollector getMultiMsgCollector(final RequestContext<List<MultipartReply>> requestContext);
 
     Long getReservedXid();
 
