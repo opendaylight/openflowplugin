@@ -49,6 +49,10 @@ module drop-test-provider {
                     }
                 }
             }
+            leaf mul {
+                type ofp-types:ofp-role;
+                default "NOCHANGE";
+            }
         }
     }
 }
