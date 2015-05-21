@@ -91,10 +91,21 @@ abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseab
     }
 
     public AbstractDropTest() {
+        final ArrayBlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<Runnable>(PROCESSING_POOL_SIZE);
         ThreadPoolExecutor threadPool = new ThreadPoolExecutor(POOL_THREAD_AMOUNT, POOL_THREAD_AMOUNT, 0,
                 TimeUnit.MILLISECONDS,
-                new ArrayBlockingQueue<Runnable>(PROCESSING_POOL_SIZE));
+                workQueue);
         threadPool.setThreadFactory(new ThreadFactoryBuilder().setNameFormat("dropTest-%d").build());
+        threadPool.setRejectedExecutionHandler(new RejectedExecutionHandler() {
+            @Override
+            public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
+                try {
+                    workQueue.put(r);
+                } catch (InterruptedException e) {
+                    throw new RejectedExecutionException("Interrupted while waiting on queue", e);
+                }
+            }
+        });
 
         executorService = threadPool;
     }
