@@ -27,7 +27,6 @@ import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegi
 import org.opendaylight.openflowplugin.api.openflow.registry.group.DeviceGroupRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.meter.DeviceMeterRegistry;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
-import org.opendaylight.openflowplugin.api.openflow.translator.TranslatorLibrarian;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
@@ -51,7 +50,6 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 public interface DeviceContext extends AutoCloseable,
         OpenFlowPluginTimer,
         MessageHandler,
-        TranslatorLibrarian,
         DeviceReplyProcessor,
         DeviceDisconnectedHandler {
 

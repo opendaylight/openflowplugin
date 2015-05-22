@@ -47,6 +47,7 @@ import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegi
 import org.opendaylight.openflowplugin.api.openflow.registry.group.DeviceGroupRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.meter.DeviceMeterRegistry;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
+import org.opendaylight.openflowplugin.api.openflow.translator.TranslatorLibrarian;
 import org.opendaylight.openflowplugin.impl.common.NodeStaticReplyTranslatorUtil;
 import org.opendaylight.openflowplugin.impl.device.listener.MultiMsgCollectorImpl;
 import org.opendaylight.openflowplugin.impl.registry.flow.DeviceFlowRegistryImpl;
@@ -92,7 +93,6 @@ public class DeviceContextImpl implements DeviceContext {
     private final HashedWheelTimer hashedWheelTimer;
     private final Map<SwitchConnectionDistinguisher, ConnectionContext> auxiliaryConnectionContexts;
     private final TransactionChainManager txChainManager;
-    private TranslatorLibrary translatorLibrary;
     private final DeviceFlowRegistry deviceFlowRegistry;
     private final DeviceGroupRegistry deviceGroupRegistry;
     private final DeviceMeterRegistry deviceMeterRegistry;
@@ -104,6 +104,8 @@ public class DeviceContextImpl implements DeviceContext {
     private NotificationPublishService notificationPublishService;
     private OutboundQueue outboundQueueProvider;
     private final MultiMsgCollector multiMsgCollector = new MultiMsgCollectorImpl();
+    private final MessageTranslator<PortGrouping, FlowCapableNodeConnector> portStatusTranslator;
+    private final MessageTranslator<PacketInMessage, PacketReceived> packetInTranslator;
 
     private volatile int outstandingNotificationsAmount = 0;
     private volatile boolean filteringPacketIn = false;
@@ -126,7 +128,8 @@ public class DeviceContextImpl implements DeviceContext {
                       @Nonnull final DeviceState deviceState,
                       @Nonnull final DataBroker dataBroker,
                       @Nonnull final HashedWheelTimer hashedWheelTimer,
-                      @Nonnull final MessageSpy _messageSpy) {
+                      @Nonnull final MessageSpy _messageSpy,
+                      @Nonnull final TranslatorLibrarian librarian) {
         this.primaryConnectionContext = Preconditions.checkNotNull(primaryConnectionContext);
         this.deviceState = Preconditions.checkNotNull(deviceState);
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
@@ -138,6 +141,12 @@ public class DeviceContextImpl implements DeviceContext {
         deviceMeterRegistry = new DeviceMeterRegistryImpl();
         messageSpy = _messageSpy;
         multiMsgCollector.setDeviceReplyProcessor(this);
+
+        final TranslatorLibrary translatorLibrary = librarian.oook();
+        portStatusTranslator = translatorLibrary.lookupTranslator(
+            new TranslatorKey(deviceState.getVersion(), PortGrouping.class.getName()));
+        packetInTranslator = translatorLibrary.lookupTranslator(
+            new TranslatorKey(deviceState.getVersion(), PacketIn.class.getName()));
     }
 
     /**
@@ -244,9 +253,7 @@ public class DeviceContextImpl implements DeviceContext {
     @Override
     public void processPortStatusMessage(final PortStatusMessage portStatus) {
         messageSpy.spyMessage(portStatus.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH_PUBLISHED_SUCCESS);
-        final TranslatorKey translatorKey = new TranslatorKey(portStatus.getVersion(), PortGrouping.class.getName());
-        final MessageTranslator<PortGrouping, FlowCapableNodeConnector> messageTranslator = translatorLibrary.lookupTranslator(translatorKey);
-        final FlowCapableNodeConnector flowCapableNodeConnector = messageTranslator.translate(portStatus, this, null);
+        final FlowCapableNodeConnector flowCapableNodeConnector = portStatusTranslator.translate(portStatus, this, null);
 
         final KeyedInstanceIdentifier<NodeConnector, NodeConnectorKey> iiToNodeConnector = provideIIToNodeConnector(portStatus.getPortNo(), portStatus.getVersion());
         if (portStatus.getReason().equals(PortReason.OFPPRADD) || portStatus.getReason().equals(PortReason.OFPPRMODIFY)) {
@@ -271,10 +278,7 @@ public class DeviceContextImpl implements DeviceContext {
     public void processPacketInMessage(final PacketInMessage packetInMessage) {
         messageSpy.spyMessage(packetInMessage.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.FROM_SWITCH);
         final ConnectionAdapter connectionAdapter = getPrimaryConnectionContext().getConnectionAdapter();
-
-        final TranslatorKey translatorKey = new TranslatorKey(packetInMessage.getVersion(), PacketIn.class.getName());
-        final MessageTranslator<PacketInMessage, PacketReceived> messageTranslator = translatorLibrary.lookupTranslator(translatorKey);
-        final PacketReceived packetReceived = messageTranslator.translate(packetInMessage, this, null);
+        final PacketReceived packetReceived = packetInTranslator.translate(packetInMessage, this, null);
 
         if (packetReceived == null) {
             LOG.debug("Received a null packet from switch");
@@ -329,16 +333,6 @@ public class DeviceContextImpl implements DeviceContext {
                     }
                 }
         );
-    }
-
-    @Override
-    public TranslatorLibrary oook() {
-        return translatorLibrary;
-    }
-
-    @Override
-    public void setTranslatorLibrary(final TranslatorLibrary translatorLibrary) {
-        this.translatorLibrary = translatorLibrary;
     }
 
     @Override
