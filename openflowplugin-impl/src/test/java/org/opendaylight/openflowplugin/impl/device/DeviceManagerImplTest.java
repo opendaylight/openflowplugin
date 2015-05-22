@@ -90,26 +90,6 @@ public class DeviceManagerImplTest {
         //Assert.assertTrue(mpInputCaptor.getAllValues().get(1).getMultipartRequestBody() instanceof MultipartRequestGroupDescCase);
     }
 
-    /**
-     * Test method for {@link org.opendaylight.openflowplugin.impl.device.DeviceManagerImpl#sendMessage(org.opendaylight.yangtools.yang.binding.DataObject, org.opendaylight.openflowplugin.api.openflow.device.RequestContext)}.
-     */
-    @Test
-    public void testSendMessage() {
-    }
-
-    /**
-     * Test method for {@link org.opendaylight.openflowplugin.impl.device.DeviceManagerImpl#sendRequest(org.opendaylight.yangtools.yang.binding.DataObject, org.opendaylight.openflowplugin.api.openflow.device.RequestContext)}.
-     */
-    @Test
-    public void testSendRequest() {
-    }
-
-    /**
-     * Test method for {@link org.opendaylight.openflowplugin.impl.device.DeviceManagerImpl#addRequestContextReadyHandler(org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceContextReadyHandler)}.
-     */
-    @Test
-    public void testAddRequestContextReadyHandler() {
-    }
 
     @Test
     public void testHookRequest() {

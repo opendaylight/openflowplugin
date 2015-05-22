@@ -30,7 +30,6 @@ import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 @RunWith(MockitoJUnitRunner.class)
 public class ConnectionContextImplTest {
 
-    private ConnectionContextImpl conContext;
 
     @Mock
     private ConnectionAdapter conAdapter;
@@ -38,7 +37,6 @@ public class ConnectionContextImplTest {
     @Before
     public void initialization() {
         // place for mocking method's general behavior for ConnectorAdapter
-        conContext = new ConnectionContextImpl(conAdapter);
     }
 
     /**

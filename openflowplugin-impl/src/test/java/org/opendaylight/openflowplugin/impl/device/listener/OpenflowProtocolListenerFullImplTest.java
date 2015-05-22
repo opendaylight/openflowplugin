@@ -56,7 +56,6 @@ public class OpenflowProtocolListenerFullImplTest {
     @Mock
     private ConnectionAdapter connectionAdapter;
 
-    private final String hwDescValue = "test-val";
     private final long xid = 42L;
 
     @Before

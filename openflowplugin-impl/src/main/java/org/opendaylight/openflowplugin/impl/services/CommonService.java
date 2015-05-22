@@ -46,10 +46,6 @@ public abstract class CommonService {
         this.messageSpy = deviceContext.getMessageSpy();
     }
 
-    public static BigInteger getPrimaryConnection() {
-        return PRIMARY_CONNECTION;
-    }
-
     public short getVersion() {
         return version;
     }
@@ -66,37 +62,12 @@ public abstract class CommonService {
         return deviceContext;
     }
 
-    public ConnectionAdapter getPrimaryConnectionAdapter() {
-        return primaryConnectionAdapter;
-    }
-
     public MessageSpy getMessageSpy() {
         return messageSpy;
     }
 
-    protected long provideWaitTime() {
-        return WAIT_TIME;
-    }
 
-
-    protected ConnectionAdapter provideConnectionAdapter(final BigInteger connectionID) {
-        if (connectionID == null) {
-            return primaryConnectionAdapter;
-        }
-        if (connectionID.equals(PRIMARY_CONNECTION)) {
-            return primaryConnectionAdapter;
-        }
-
-        final ConnectionContext auxiliaryConnectionContext =
-                deviceContext.getAuxiliaryConnectiobContexts(connectionID);
-        if (auxiliaryConnectionContext != null) {
-            return auxiliaryConnectionContext.getConnectionAdapter();
-        }
-
-        return primaryConnectionAdapter;
-    }
-
-    public final <T> ListenableFuture<RpcResult<T>> handleServiceCall(final Function<RequestContext<T>, ListenableFuture<RpcResult<T>>> function) {
+   public final <T> ListenableFuture<RpcResult<T>> handleServiceCall(final Function<RequestContext<T>, ListenableFuture<RpcResult<T>>> function) {
 
         LOG.trace("Handling general service call");
         final RequestContext<T> requestContext = createRequestContext();

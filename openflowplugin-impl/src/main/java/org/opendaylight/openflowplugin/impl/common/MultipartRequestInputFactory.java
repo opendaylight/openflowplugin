@@ -96,53 +96,7 @@ public final class MultipartRequestInputFactory {
         return maker(xid, type, ofVersion, false, makeDefaultEmptyRequestBody(type, ofVersion));
     }
 
-    /**
-     * Method validate input values and makes {@link MultipartRequestInput} from input values. Method set
-     * a moreRequest marker to false.
-     *
-     * @param xid
-     * @param type
-     * @param ofVersion
-     * @param body
-     * @return
-     */
-    public static MultipartRequestInput makeMultipartRequestInput(final long xid, final short ofVersion,
-                                                                  @Nonnull final MultipartType type, @Nonnull final MultipartRequestBody body) {
-        Preconditions.checkArgument(validationOfMultipartTypeAndRequestBody(type, body));
-        return maker(xid, type, ofVersion, false, body);
-    }
 
-    /**
-     * Method validates input and makes {@link MultipartRequestInput} from input values. Method creates
-     * default empty {@link MultipartRequestBody} by {@link MultipartType}
-     *
-     * @param xid
-     * @param type
-     * @param ofVersion
-     * @param moreRequests
-     * @return
-     */
-    public static MultipartRequestInput makeMultipartRequestInput(final long xid, final short ofVersion,
-                                                                  @Nonnull final MultipartType type, final boolean moreRequests) {
-        return maker(xid, type, ofVersion, moreRequests, makeDefaultEmptyRequestBody(type, ofVersion));
-    }
-
-    /**
-     * Method validates input values and makes {@link MultipartRequestInput} from input values.
-     *
-     * @param xid
-     * @param type
-     * @param ofVersion
-     * @param moreRequests
-     * @param body
-     * @return
-     */
-    public static MultipartRequestInput makeMultipartRequestInput(final long xid, final short ofVersion,
-                                                                  @Nonnull final MultipartType type, final boolean moreRequests,
-                                                                  @Nonnull final MultipartRequestBody body) {
-        Preconditions.checkArgument(validationOfMultipartTypeAndRequestBody(type, body));
-        return maker(xid, type, ofVersion, moreRequests, body);
-    }
 
     /**
      * Method build {@link MultipartRequestInput} from input values. It is private because we would like
