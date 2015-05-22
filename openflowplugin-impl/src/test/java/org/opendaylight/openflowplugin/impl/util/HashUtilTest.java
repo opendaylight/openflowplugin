@@ -40,10 +40,10 @@ public class HashUtilTest {
     };
 
     private static final Ipv6Prefix[] IPV_6_PREFIXES = {
-            new Ipv6Prefix("FFFF:0DB8:0000:0000:0000:0000:1428:57ab"),
-            new Ipv6Prefix("2001:0DB8:0000:0000:0000:0000:1428:57ab"),
-            new Ipv6Prefix("0DB8:2001:0000:0000:0000:0000:1428:57ab"),
-            new Ipv6Prefix("2001:0DB8:0000:0000:0000:0000:57ab:1428")
+            new Ipv6Prefix("FFFF:0DB8:0000:0000:0000:0000:1428:57ab/128"),
+            new Ipv6Prefix("2001:0DB8:0000:0000:0000:0000:1428:57ab/128"),
+            new Ipv6Prefix("0DB8:2001:0000:0000:0000:0000:1428:57ab/128"),
+            new Ipv6Prefix("2001:0DB8:0000:0000:0000:0000:57ab:1428/128")
     };
 
     private static final Ipv6Prefix shortIpv6 = new Ipv6Prefix("fe80::2acf:e9ff:fe21:6431/128");
@@ -59,11 +59,11 @@ public class HashUtilTest {
     @Test
     public void trivialLongTest() {
 
-        Long longA = new Long(42);
-        Long longB = new Long(42);
+        final Long longA = new Long(42);
+        final Long longB = new Long(42);
         Assert.assertNotSame(longA, longB);
-        Long longC = Long.valueOf(42);
-        Long longD = Long.valueOf(42);
+        final Long longC = Long.valueOf(42);
+        final Long longD = Long.valueOf(42);
         Assert.assertSame(longC, longD);
 
     }
@@ -71,16 +71,16 @@ public class HashUtilTest {
 
     @Test
     public void testCalculateMatchHash() throws Exception {
-        long hashShort = HashUtil.calculateIpv6PrefixHash(shortIpv6);
-        long hashLong = HashUtil.calculateIpv6PrefixHash(fullIpv6);
+        final long hashShort = HashUtil.calculateIpv6PrefixHash(shortIpv6);
+        final long hashLong = HashUtil.calculateIpv6PrefixHash(fullIpv6);
         Assert.assertEquals(hashShort, hashLong);
     }
 
     @Test
     public void testCalculateMacAddressHash() {
         for (int i = 0; i < MAC_ADDRESSES.length - 1; i++) {
-            long hash = HashUtil.calculateMacAddressHash(MAC_ADDRESSES[i]);
-            long otherHash = HashUtil.calculateMacAddressHash(MAC_ADDRESSES[i + 1]);
+            final long hash = HashUtil.calculateMacAddressHash(MAC_ADDRESSES[i]);
+            final long otherHash = HashUtil.calculateMacAddressHash(MAC_ADDRESSES[i + 1]);
             Assert.assertNotEquals(hash, otherHash);
         }
     }
@@ -88,10 +88,10 @@ public class HashUtilTest {
     @Test
     public void testCalculateIpv4PrefixHash() {
         for (int i = 0; i < IPV_4_PREFIXES.length - 1; i++) {
-            Ipv4Prefix prefixA = IPV_4_PREFIXES[i];
-            Ipv4Prefix prefixB = IPV_4_PREFIXES[i + 1];
-            long hash = HashUtil.calculateIpv4PrefixHash(prefixA);
-            long hash_n = HashUtil.calculateIpv4PrefixHash(prefixB);
+            final Ipv4Prefix prefixA = IPV_4_PREFIXES[i];
+            final Ipv4Prefix prefixB = IPV_4_PREFIXES[i + 1];
+            final long hash = HashUtil.calculateIpv4PrefixHash(prefixA);
+            final long hash_n = HashUtil.calculateIpv4PrefixHash(prefixB);
             LOG.info("Comparing {} vs. {} (hash {} vs. hash {})", prefixA, prefixB, hash, hash_n);
             Assert.assertNotEquals(hash, hash_n);
         }
@@ -101,8 +101,8 @@ public class HashUtilTest {
     @Test
     public void testCalculateIpv6PrefixHash() {
         for (int i = 0; i < IPV_6_PREFIXES.length - 1; i++) {
-            long hash_n = HashUtil.calculateIpv6PrefixHash(IPV_6_PREFIXES[i]);
-            long hash_n1 = HashUtil.calculateIpv6PrefixHash(IPV_6_PREFIXES[i + 1]);
+            final long hash_n = HashUtil.calculateIpv6PrefixHash(IPV_6_PREFIXES[i]);
+            final long hash_n1 = HashUtil.calculateIpv6PrefixHash(IPV_6_PREFIXES[i + 1]);
             Assert.assertNotNull(hash_n);
             Assert.assertNotNull(hash_n1);
             Assert.assertNotEquals(hash_n, hash_n1);
@@ -112,8 +112,8 @@ public class HashUtilTest {
     @Test
     public void testCalculateIpv6PrefixHashWithMask() {
         for (int i = 0; i < IPV_6_PREFIXES.length - 1; i++) {
-            long hash_n = HashUtil.calculateIpv6PrefixHash(IPV_6_PREFIXES_WITH_MASK[i]);
-            long hash_n1 = HashUtil.calculateIpv6PrefixHash(IPV_6_PREFIXES_WITH_MASK[i + 1]);
+            final long hash_n = HashUtil.calculateIpv6PrefixHash(IPV_6_PREFIXES_WITH_MASK[i]);
+            final long hash_n1 = HashUtil.calculateIpv6PrefixHash(IPV_6_PREFIXES_WITH_MASK[i + 1]);
             Assert.assertNotNull(hash_n);
             Assert.assertNotNull(hash_n1);
             Assert.assertNotEquals(hash_n, hash_n1);
@@ -122,7 +122,7 @@ public class HashUtilTest {
 
     @Test
     public void calculateIpMatchHash() {
-        IpMatchBuilder ipMatchBuilder = new IpMatchBuilder();
+        final IpMatchBuilder ipMatchBuilder = new IpMatchBuilder();
         ipMatchBuilder.setIpEcn((short) 42);
         HashUtil.calculateIpMatchHash(ipMatchBuilder.build());
     }

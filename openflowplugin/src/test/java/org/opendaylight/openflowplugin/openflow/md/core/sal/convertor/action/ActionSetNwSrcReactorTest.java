@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action;
 
+import java.math.BigInteger;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,7 +22,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.addr
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.address.address.Ipv4Builder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.address.address.Ipv6Builder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
-import java.math.BigInteger;
 
 /**
  * match conversion and injection test
@@ -38,7 +38,7 @@ public class ActionSetNwSrcReactorTest {
         addresses = new Address[]{
                 new Ipv4Builder().setIpv4Address(new Ipv4Prefix("10.0.10.1/32")).build(),
                 new Ipv4Builder().setIpv4Address(new Ipv4Prefix("10.0.10.1/16")).build(),
-                new Ipv6Builder().setIpv6Address(new Ipv6Prefix("1234:5678:9abc:def1:2345:6789:abcd:ef12")).build(),
+                new Ipv6Builder().setIpv6Address(new Ipv6Prefix("1234:5678:9abc:def1:2345:6789:abcd:ef12/128")).build(),
                 new Ipv6Builder().setIpv6Address(new Ipv6Prefix("1234:5678:9abc:def1:2345:6789:abcd:ef12/42")).build(),
         };
     }
@@ -49,9 +49,9 @@ public class ActionSetNwSrcReactorTest {
 
     @Test
     public void testMatchConvertorV13_flow() {
-        ActionBuilder target = new ActionBuilder();
-        for (Address address : addresses) {
-            SetNwSrcActionCase action = prepareSetNwSrcActionCase(address);
+        final ActionBuilder target = new ActionBuilder();
+        for (final Address address : addresses) {
+            final SetNwSrcActionCase action = prepareSetNwSrcActionCase(address);
             ActionSetNwSrcReactor.getInstance().convert(action,
                     OFConstants.OFP_VERSION_1_3, target, BigInteger.ONE);
 /*
@@ -74,7 +74,7 @@ public class ActionSetNwSrcReactorTest {
      * @param address
      * @return
      */
-    private static SetNwSrcActionCase prepareSetNwSrcActionCase(Address address) {
+    private static SetNwSrcActionCase prepareSetNwSrcActionCase(final Address address) {
         return new SetNwSrcActionCaseBuilder().setSetNwSrcAction(
                 new SetNwSrcActionBuilder().setAddress(address).build()).build();
     }
@@ -84,9 +84,9 @@ public class ActionSetNwSrcReactorTest {
      */
     @Test
     public void testMatchConvertorV10_flow() {
-        ActionBuilder target = new ActionBuilder();
-        for (Address address : addresses) {
-            SetNwSrcActionCase action = prepareSetNwSrcActionCase(address);
+        final ActionBuilder target = new ActionBuilder();
+        for (final Address address : addresses) {
+            final SetNwSrcActionCase action = prepareSetNwSrcActionCase(address);
 
             if (address instanceof Ipv4) {
                 ActionSetNwSrcReactor.getInstance().convert(action,
@@ -96,7 +96,7 @@ public class ActionSetNwSrcReactorTest {
                     ActionSetNwSrcReactor.getInstance().convert(action,
                             OFConstants.OFP_VERSION_1_0, target, BigInteger.ONE);
                     Assert.fail("address of this type must not pass the reactor: " + address.getClass().getName());
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     //expected
                     Assert.assertEquals(IllegalArgumentException.class, e.getClass());
                 }

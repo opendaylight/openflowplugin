@@ -15,6 +15,7 @@ import static org.opendaylight.openflowplugin.legacy.sal.compatibility.ProtocolC
 import static org.opendaylight.openflowplugin.legacy.sal.compatibility.ProtocolConstants.TCP;
 import static org.opendaylight.openflowplugin.legacy.sal.compatibility.ProtocolConstants.UDP;
 
+import com.google.common.net.InetAddresses;
 import java.math.BigInteger;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
@@ -22,7 +23,6 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import org.junit.Test;
 import org.opendaylight.controller.sal.action.Flood;
 import org.opendaylight.controller.sal.action.FloodAll;
@@ -146,8 +146,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.UdpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanIdBuilder;
 
-import com.google.common.net.InetAddresses;
-
 public class TestToSalConversionsUtils {
     // prefix:
     // od|Od = Open Daylight
@@ -160,7 +158,7 @@ public class TestToSalConversionsUtils {
         FlowAddedBuilder odNodeFlowBuilder = new FlowAddedBuilder();
         odNodeFlowBuilder = prepareOdFlowCommon();
 
-        Node node = new Node(NodeIDType.OPENFLOW,(long)1);
+        final Node node = new Node(NodeIDType.OPENFLOW,(long)1);
 
         Flow salFlow = ToSalConversionsUtils.toFlow(prepareOdFlow(odNodeFlowBuilder, MtchType.other), node);
         checkSalMatch(salFlow.getMatch(), MtchType.other);
@@ -195,35 +193,35 @@ public class TestToSalConversionsUtils {
      */
     @Test
     public void testFromNodeConnectorRef() throws ConstructionException {
-        Node node = new Node(NodeIDType.OPENFLOW, 42L);
-        NodeConnector nodeConnector = ToSalConversionsUtils.fromNodeConnectorRef(new Uri("1"), node);
+        final Node node = new Node(NodeIDType.OPENFLOW, 42L);
+        final NodeConnector nodeConnector = ToSalConversionsUtils.fromNodeConnectorRef(new Uri("1"), node);
         assertEquals("OF|1@OF|00:00:00:00:00:00:00:2a", nodeConnector.toString());
     }
 
     @Test
     public void testActionFrom() throws ConstructionException {
         // Bug 2021: Convert AD-SAL notation into MD-SAL notation before calling NodeConnector
-        Node node = new Node(NodeIDType.OPENFLOW, 42L);
-        List<Action> odActions = new ArrayList<>();
+        final Node node = new Node(NodeIDType.OPENFLOW, 42L);
+        final List<Action> odActions = new ArrayList<>();
 
-        OutputActionBuilder outputActionBuilder = new OutputActionBuilder();
+        final OutputActionBuilder outputActionBuilder = new OutputActionBuilder();
         outputActionBuilder.setOutputNodeConnector(new Uri("openflow:42:CONTROLLER"));
-        OutputActionCaseBuilder outputActionCaseBuilder = new OutputActionCaseBuilder();
+        final OutputActionCaseBuilder outputActionCaseBuilder = new OutputActionCaseBuilder();
         outputActionCaseBuilder.setOutputAction(outputActionBuilder.build());
         odActions.add(new ActionBuilder().setAction(outputActionCaseBuilder.build()).build());
 
-        List<org.opendaylight.controller.sal.action.Action> targetAction =
+        final List<org.opendaylight.controller.sal.action.Action> targetAction =
                 ToSalConversionsUtils.actionFrom(odActions, node);
         assertNotNull(targetAction);
         assertTrue( Output.class.isInstance(targetAction.get(0)) );
-        Output targetActionOutput = (Output) targetAction.get(0);
-        NodeConnector port = targetActionOutput.getPort();
+        final Output targetActionOutput = (Output) targetAction.get(0);
+        final NodeConnector port = targetActionOutput.getPort();
         assertNotNull(port);
         assertEquals(port.getType(), NodeConnectorIDType.CONTROLLER);
         assertEquals(port.getID(), org.opendaylight.controller.sal.core.NodeConnector.SPECIALNODECONNECTORID);
     }
 
-    private void checkSalMatch(org.opendaylight.controller.sal.match.Match match, MtchType mt) throws ConstructionException {
+    private void checkSalMatch(final org.opendaylight.controller.sal.match.Match match, final MtchType mt) throws ConstructionException {
         switch (mt) {
         case other:
             /*assertNotNull("DL_DST isn't equal.", "3C:A9:F4:00:E0:C8",
@@ -231,8 +229,8 @@ public class TestToSalConversionsUtils {
             assertEquals("DL_SRC isn't equal.", "24:77:03:7C:C5:F1",
                     new String((byte[]) match.getField(MatchType.DL_SRC).getValue()));
             */
-            Node node = new Node(NodeIDType.OPENFLOW, 12L);
-            NodeConnector port = new NodeConnector(NodeConnectorIDType.OPENFLOW, Short.valueOf((short)345), node);
+            final Node node = new Node(NodeIDType.OPENFLOW, 12L);
+            final NodeConnector port = new NodeConnector(NodeConnectorIDType.OPENFLOW, Short.valueOf((short)345), node);
             assertEquals("IN_PORT isn't equal.", port, match.getField(MatchType.IN_PORT).getValue());
             assertEquals("DL_TYPE isn't equal.", (short) 0xffff, (short) match.getField(MatchType.DL_TYPE).getValue());
             assertEquals("NW_TOS isn't equal.", (byte) 0x33, (byte) match.getField(MatchType.NW_TOS).getValue());
@@ -293,7 +291,7 @@ public class TestToSalConversionsUtils {
 
     }
 
-    private void checkSalFlow(Flow salFlow) {
+    private void checkSalFlow(final Flow salFlow) {
         assertTrue("Id value is incorrect.", salFlow.getId() == 9223372036854775807L);
         assertTrue("Hard timeout is incorrect.", salFlow.getHardTimeout() == 32767);
         assertTrue("Iddle timeout is incorrect.", salFlow.getIdleTimeout() == 32767);
@@ -302,7 +300,7 @@ public class TestToSalConversionsUtils {
         checkSalActions(salFlow.getActions());
     }
 
-    private void checkSalActions(List<org.opendaylight.controller.sal.action.Action> actions) {
+    private void checkSalActions(final List<org.opendaylight.controller.sal.action.Action> actions) {
         checkSalAction(actions, Flood.class, 1);
         checkSalAction(actions, FloodAll.class, 1);
         checkSalAction(actions, HwPath.class, 1);
@@ -325,15 +323,15 @@ public class TestToSalConversionsUtils {
         checkSalAction(actions, SwPath.class, 1);
     }
 
-    private void checkSalAction(List<org.opendaylight.controller.sal.action.Action> actions, Class<?> cls,
-            int numOfActions) {
+    private void checkSalAction(final List<org.opendaylight.controller.sal.action.Action> actions, final Class<?> cls,
+            final int numOfActions) {
         checkSalAction(actions, cls, numOfActions, false);
     }
 
-    private void checkSalAction(List<org.opendaylight.controller.sal.action.Action> actions, Class<?> cls,
-            int numOfActions, boolean additionalCheck) {
+    private void checkSalAction(final List<org.opendaylight.controller.sal.action.Action> actions, final Class<?> cls,
+            final int numOfActions, final boolean additionalCheck) {
         int numOfEqualClass = 0;
-        for (org.opendaylight.controller.sal.action.Action action : actions) {
+        for (final org.opendaylight.controller.sal.action.Action action : actions) {
             if (action.getClass().equals(cls)) {
                 if (additionalCheck) {
                     additionalActionCheck(action);
@@ -346,7 +344,7 @@ public class TestToSalConversionsUtils {
     }
 
     // implement special checks
-    private void additionalActionCheck(org.opendaylight.controller.sal.action.Action action) {
+    private void additionalActionCheck(final org.opendaylight.controller.sal.action.Action action) {
         if (action instanceof Output) {
             // ((Output)action).getPort() //TODO finish check when mapping will
             // be defined
@@ -361,13 +359,13 @@ public class TestToSalConversionsUtils {
         } else if (action instanceof SetDlType) {
             assertEquals("Wrong value for action SetDlType for.", 513L, ((SetDlType) action).getDlType());
         } else if (action instanceof SetNextHop) {
-            InetAddress inetAddress = ((SetNextHop) action).getAddress();
+            final InetAddress inetAddress = ((SetNextHop) action).getAddress();
             checkIpAddresses(inetAddress, "192.168.100.100", "2001:db8:85a3::8a2e:370:7334");
         } else if (action instanceof SetNwDst) {
-            InetAddress inetAddress = ((SetNwDst) action).getAddress();
+            final InetAddress inetAddress = ((SetNwDst) action).getAddress();
             checkIpAddresses(inetAddress, "192.168.100.101", "2001:db8:85a3::8a2e:370:7335");
         } else if (action instanceof SetNwSrc) {
-            InetAddress inetAddress = ((SetNwSrc) action).getAddress();
+            final InetAddress inetAddress = ((SetNwSrc) action).getAddress();
             checkIpAddresses(inetAddress, "192.168.100.102", "2001:db8:85a3::8a2e:370:7336");
         } else if (action instanceof SetNwTos) {
             assertEquals("Wrong value for action SetNwTos for tos.", 63, ((SetNwTos) action).getNwTos());
@@ -384,7 +382,7 @@ public class TestToSalConversionsUtils {
         }
     }
 
-    private void checkIpAddresses(InetAddress inetAddress, String ipv4, String ipv6) {
+    private void checkIpAddresses(final InetAddress inetAddress, final String ipv4, final String ipv6) {
         if (inetAddress instanceof Inet4Address) {
             assertEquals("Wrong value for IP address.", ipv4, InetAddresses.toAddrString(inetAddress));
         } else if (inetAddress instanceof Inet6Address) {
@@ -393,7 +391,7 @@ public class TestToSalConversionsUtils {
     }
 
     private FlowAddedBuilder prepareOdFlowCommon() {
-        FlowAddedBuilder odNodeFlowBuilder = new FlowAddedBuilder();
+        final FlowAddedBuilder odNodeFlowBuilder = new FlowAddedBuilder();
 
         odNodeFlowBuilder.setCookie(new FlowCookie(new BigInteger("9223372036854775807")));
         odNodeFlowBuilder.setHardTimeout(32767);
@@ -403,39 +401,39 @@ public class TestToSalConversionsUtils {
         return odNodeFlowBuilder;
     }
 
-    private NodeFlow prepareOdFlow(FlowAddedBuilder odNodeFlowBuilder, MtchType mt) {
+    private NodeFlow prepareOdFlow(final FlowAddedBuilder odNodeFlowBuilder, final MtchType mt) {
         odNodeFlowBuilder.setMatch(prepOdMatch(mt));
         return odNodeFlowBuilder.build();
     }
 
     private Instructions prepareOdActions() {
-        List<Action> odActions = new ArrayList<>();
+        final List<Action> odActions = new ArrayList<>();
 
-        ControllerActionCaseBuilder controllerActionBuilder = new ControllerActionCaseBuilder();
-        DropActionCaseBuilder dropActionBuilder = new DropActionCaseBuilder();
-        FloodActionCaseBuilder floodActionBuilder = new FloodActionCaseBuilder();
-        FloodAllActionCaseBuilder floodAllActionBuilder = new FloodAllActionCaseBuilder();
-        HwPathActionCaseBuilder hwPathActionBuilder = new HwPathActionCaseBuilder();
-        LoopbackActionCaseBuilder loopbackActionBuilder = new LoopbackActionCaseBuilder();
-        OutputActionCaseBuilder outputActionBuilder = new OutputActionCaseBuilder();
-        PopMplsActionCaseBuilder popMplsActionBuilder = new PopMplsActionCaseBuilder();
-        PopVlanActionCaseBuilder popVlanActionBuilder = new PopVlanActionCaseBuilder();
-        PushMplsActionCaseBuilder pushMplsActionBuilder = new PushMplsActionCaseBuilder();
-        PushPbbActionCaseBuilder pushPbbActionBuilder = new PushPbbActionCaseBuilder();
-        PushVlanActionCaseBuilder pushVlanActionBuilder = new PushVlanActionCaseBuilder();
-        SetDlDstActionCaseBuilder setDlDstActionBuilder = new SetDlDstActionCaseBuilder();
-        SetDlSrcActionCaseBuilder setDlSrcActionBuilder = new SetDlSrcActionCaseBuilder();
-        SetDlTypeActionCaseBuilder setDlTypeActionBuilder = new SetDlTypeActionCaseBuilder();
-        SetMplsTtlActionCaseBuilder setMplsTtlActionBuilder = new SetMplsTtlActionCaseBuilder();
-        SetNwTosActionCaseBuilder setNwTosActionBuilder = new SetNwTosActionCaseBuilder();
-        SetNwTtlActionCaseBuilder setNwTtlActionBuilder = new SetNwTtlActionCaseBuilder();
-        SetQueueActionCaseBuilder setQueueActionBuilder = new SetQueueActionCaseBuilder();
-        SetTpDstActionCaseBuilder setTpDstActionBuilder = new SetTpDstActionCaseBuilder();
-        SetTpSrcActionCaseBuilder setTpSrcActionBuilder = new SetTpSrcActionCaseBuilder();
-        SetVlanCfiActionCaseBuilder setVlanCfiActionBuilder = new SetVlanCfiActionCaseBuilder();
-        SetVlanIdActionCaseBuilder setVlanIdActionBuilder = new SetVlanIdActionCaseBuilder();
-        SetVlanPcpActionCaseBuilder setVlanPcpActionBuilder = new SetVlanPcpActionCaseBuilder();
-        SwPathActionCaseBuilder swPathActionBuilder = new SwPathActionCaseBuilder();
+        final ControllerActionCaseBuilder controllerActionBuilder = new ControllerActionCaseBuilder();
+        final DropActionCaseBuilder dropActionBuilder = new DropActionCaseBuilder();
+        final FloodActionCaseBuilder floodActionBuilder = new FloodActionCaseBuilder();
+        final FloodAllActionCaseBuilder floodAllActionBuilder = new FloodAllActionCaseBuilder();
+        final HwPathActionCaseBuilder hwPathActionBuilder = new HwPathActionCaseBuilder();
+        final LoopbackActionCaseBuilder loopbackActionBuilder = new LoopbackActionCaseBuilder();
+        final OutputActionCaseBuilder outputActionBuilder = new OutputActionCaseBuilder();
+        final PopMplsActionCaseBuilder popMplsActionBuilder = new PopMplsActionCaseBuilder();
+        final PopVlanActionCaseBuilder popVlanActionBuilder = new PopVlanActionCaseBuilder();
+        final PushMplsActionCaseBuilder pushMplsActionBuilder = new PushMplsActionCaseBuilder();
+        final PushPbbActionCaseBuilder pushPbbActionBuilder = new PushPbbActionCaseBuilder();
+        final PushVlanActionCaseBuilder pushVlanActionBuilder = new PushVlanActionCaseBuilder();
+        final SetDlDstActionCaseBuilder setDlDstActionBuilder = new SetDlDstActionCaseBuilder();
+        final SetDlSrcActionCaseBuilder setDlSrcActionBuilder = new SetDlSrcActionCaseBuilder();
+        final SetDlTypeActionCaseBuilder setDlTypeActionBuilder = new SetDlTypeActionCaseBuilder();
+        final SetMplsTtlActionCaseBuilder setMplsTtlActionBuilder = new SetMplsTtlActionCaseBuilder();
+        final SetNwTosActionCaseBuilder setNwTosActionBuilder = new SetNwTosActionCaseBuilder();
+        final SetNwTtlActionCaseBuilder setNwTtlActionBuilder = new SetNwTtlActionCaseBuilder();
+        final SetQueueActionCaseBuilder setQueueActionBuilder = new SetQueueActionCaseBuilder();
+        final SetTpDstActionCaseBuilder setTpDstActionBuilder = new SetTpDstActionCaseBuilder();
+        final SetTpSrcActionCaseBuilder setTpSrcActionBuilder = new SetTpSrcActionCaseBuilder();
+        final SetVlanCfiActionCaseBuilder setVlanCfiActionBuilder = new SetVlanCfiActionCaseBuilder();
+        final SetVlanIdActionCaseBuilder setVlanIdActionBuilder = new SetVlanIdActionCaseBuilder();
+        final SetVlanPcpActionCaseBuilder setVlanPcpActionBuilder = new SetVlanPcpActionCaseBuilder();
+        final SwPathActionCaseBuilder swPathActionBuilder = new SwPathActionCaseBuilder();
 
         prepareActionOutput(outputActionBuilder);
         prepareActionPushVlan(pushVlanActionBuilder);
@@ -479,133 +477,133 @@ public class TestToSalConversionsUtils {
         odActions.add(new ActionBuilder().setAction(swPathActionBuilder.build()).build());
 
 
-        ApplyActionsCase innerInst = new ApplyActionsCaseBuilder().setApplyActions(new ApplyActionsBuilder().setAction(odActions).build()).build();
-        Instruction applyActions = new InstructionBuilder().setInstruction(innerInst).build();
-        List<Instruction> instructions = Collections.singletonList(applyActions );
-        InstructionsBuilder instBuilder = new InstructionsBuilder();
+        final ApplyActionsCase innerInst = new ApplyActionsCaseBuilder().setApplyActions(new ApplyActionsBuilder().setAction(odActions).build()).build();
+        final Instruction applyActions = new InstructionBuilder().setInstruction(innerInst).build();
+        final List<Instruction> instructions = Collections.singletonList(applyActions );
+        final InstructionsBuilder instBuilder = new InstructionsBuilder();
 
         instBuilder.setInstruction(instructions);
 
         return instBuilder.build();
     }
 
-    private void prepareActionSetVlanPcp(SetVlanPcpActionCaseBuilder wrapper) {
-        SetVlanPcpActionBuilder setVlanPcpActionBuilder = new SetVlanPcpActionBuilder();
+    private void prepareActionSetVlanPcp(final SetVlanPcpActionCaseBuilder wrapper) {
+        final SetVlanPcpActionBuilder setVlanPcpActionBuilder = new SetVlanPcpActionBuilder();
         setVlanPcpActionBuilder.setVlanPcp(new VlanPcp((short) 7));
         wrapper.setSetVlanPcpAction(setVlanPcpActionBuilder.build());
     }
 
-    private void prepareActionSetVladId(SetVlanIdActionCaseBuilder wrapper) {
-        SetVlanIdActionBuilder setVlanIdActionBuilder = new SetVlanIdActionBuilder();
+    private void prepareActionSetVladId(final SetVlanIdActionCaseBuilder wrapper) {
+        final SetVlanIdActionBuilder setVlanIdActionBuilder = new SetVlanIdActionBuilder();
         setVlanIdActionBuilder.setVlanId(new VlanId(4095));
         wrapper.setSetVlanIdAction(setVlanIdActionBuilder.build());
     }
 
-    private void prepareActionSetVlanCfi(SetVlanCfiActionCaseBuilder wrapper) {
-        SetVlanCfiActionBuilder setVlanCfiActionBuilder = new SetVlanCfiActionBuilder();
+    private void prepareActionSetVlanCfi(final SetVlanCfiActionCaseBuilder wrapper) {
+        final SetVlanCfiActionBuilder setVlanCfiActionBuilder = new SetVlanCfiActionBuilder();
         setVlanCfiActionBuilder.setVlanCfi(new VlanCfi(1));
         wrapper.setSetVlanCfiAction(setVlanCfiActionBuilder.build());
     }
 
-    private void prepareActionSetTpDst(SetTpDstActionCaseBuilder wrapper) {
-        SetTpDstActionBuilder setTpDstActionBuilder = new SetTpDstActionBuilder();
+    private void prepareActionSetTpDst(final SetTpDstActionCaseBuilder wrapper) {
+        final SetTpDstActionBuilder setTpDstActionBuilder = new SetTpDstActionBuilder();
         setTpDstActionBuilder.setPort(new PortNumber(65535));
         wrapper.setSetTpDstAction(setTpDstActionBuilder.build());
     }
 
-    private void prepareActionSetTpSrc(SetTpSrcActionCaseBuilder wrapper) {
-        SetTpSrcActionBuilder setTpSrcActionBuilder = new SetTpSrcActionBuilder();
+    private void prepareActionSetTpSrc(final SetTpSrcActionCaseBuilder wrapper) {
+        final SetTpSrcActionBuilder setTpSrcActionBuilder = new SetTpSrcActionBuilder();
         setTpSrcActionBuilder.setPort(new PortNumber(65535));
         wrapper.setSetTpSrcAction(setTpSrcActionBuilder.build());
     }
 
-    private void prepareActionSetNwTos(SetNwTosActionCaseBuilder wrapper) {
-        SetNwTosActionBuilder setNwTosActionBuilder = new SetNwTosActionBuilder();
+    private void prepareActionSetNwTos(final SetNwTosActionCaseBuilder wrapper) {
+        final SetNwTosActionBuilder setNwTosActionBuilder = new SetNwTosActionBuilder();
         setNwTosActionBuilder.setTos(252);
         wrapper.setSetNwTosAction(setNwTosActionBuilder.build());
     }
 
-    private void prepareActionSetNwSrc(List<Action> odActions) {
+    private void prepareActionSetNwSrc(final List<Action> odActions) {
         // test case for IPv4
-        SetNwSrcActionBuilder setNwSrcActionBuilderIpv4 = new SetNwSrcActionBuilder();
+        final SetNwSrcActionBuilder setNwSrcActionBuilderIpv4 = new SetNwSrcActionBuilder();
         setNwSrcActionBuilderIpv4.setAddress(prapareIpv4Address("192.168.100.102"));
         odActions.add(new ActionBuilder().setAction(new SetNwSrcActionCaseBuilder().setSetNwSrcAction(setNwSrcActionBuilderIpv4.build()).build()).build());
 
         // test case for IPv6
-        SetNwSrcActionBuilder setNwSrcActionBuilderIpv6 = new SetNwSrcActionBuilder();
-        setNwSrcActionBuilderIpv6.setAddress(prapareIpv6Address("2001:0db8:85a3:0000:0000:8a2e:0370:7336"));
+        final SetNwSrcActionBuilder setNwSrcActionBuilderIpv6 = new SetNwSrcActionBuilder();
+        setNwSrcActionBuilderIpv6.setAddress(prapareIpv6Prefix("2001:0db8:85a3:0000:0000:8a2e:0370:7336/128"));
         odActions.add(new ActionBuilder().setAction(new SetNwSrcActionCaseBuilder().setSetNwSrcAction(setNwSrcActionBuilderIpv6.build()).build()).build());
     }
 
-    private void prepareActionSetNwDst(List<Action> odActions) {
+    private void prepareActionSetNwDst(final List<Action> odActions) {
         // test case for IPv4
 
-        SetNwDstActionBuilder setNwDstActionBuilderIpv4 = new SetNwDstActionBuilder();
+        final SetNwDstActionBuilder setNwDstActionBuilderIpv4 = new SetNwDstActionBuilder();
         setNwDstActionBuilderIpv4.setAddress(prapareIpv4Address("192.168.100.101"));
         odActions.add(new ActionBuilder().setAction(new SetNwDstActionCaseBuilder().setSetNwDstAction(setNwDstActionBuilderIpv4.build()).build()).build());
 
         // test case for IPv6
-        SetNwDstActionBuilder setNwDstActionBuilderIpv6 = new SetNwDstActionBuilder();
-        setNwDstActionBuilderIpv6.setAddress(prapareIpv6Address("2001:0db8:85a3:0000:0000:8a2e:0370:7335"));
+        final SetNwDstActionBuilder setNwDstActionBuilderIpv6 = new SetNwDstActionBuilder();
+        setNwDstActionBuilderIpv6.setAddress(prapareIpv6Prefix("2001:0db8:85a3:0000:0000:8a2e:0370:7335/128"));
         odActions.add(new ActionBuilder().setAction(new SetNwDstActionCaseBuilder().setSetNwDstAction(setNwDstActionBuilderIpv6.build()).build()).build());
     }
 
-    private void prepareActionNextHop(List<Action> odActions) {
+    private void prepareActionNextHop(final List<Action> odActions) {
         // test case for IPv4
-        SetNextHopActionBuilder setNextHopActionBuilderIpv4 = new SetNextHopActionBuilder();
+        final SetNextHopActionBuilder setNextHopActionBuilderIpv4 = new SetNextHopActionBuilder();
         setNextHopActionBuilderIpv4.setAddress(prapareIpv4Address("192.168.100.100"));
         odActions.add(new ActionBuilder().setAction(new SetNextHopActionCaseBuilder().setSetNextHopAction(setNextHopActionBuilderIpv4.build()).build()).build());
 
         // test case for IPv6
-        SetNextHopActionBuilder setNextHopActionBuilderIpv6 = new SetNextHopActionBuilder();
-        setNextHopActionBuilderIpv6.setAddress(prapareIpv6Address("2001:0db8:85a3:0000:0000:8a2e:0370:7334"));
+        final SetNextHopActionBuilder setNextHopActionBuilderIpv6 = new SetNextHopActionBuilder();
+        setNextHopActionBuilderIpv6.setAddress(prapareIpv6Prefix("2001:0db8:85a3:0000:0000:8a2e:0370:7334/128"));
         odActions.add(new ActionBuilder().setAction(new SetNextHopActionCaseBuilder().setSetNextHopAction(setNextHopActionBuilderIpv6.build()).build()).build());
     }
 
-    private Address prapareIpv4Address(String ipv4Address) {
-        Ipv4Builder ipv4Builder = new Ipv4Builder();
+    private Address prapareIpv4Address(final String ipv4Address) {
+        final Ipv4Builder ipv4Builder = new Ipv4Builder();
         ipv4Builder.setIpv4Address(new Ipv4Prefix(ipv4Address + "/32"));
         return ipv4Builder.build();
     }
 
-    private Address prapareIpv6Address(String ipv6Address) {
-        Ipv6Builder ipv6Builder = new Ipv6Builder();
+    private Address prapareIpv6Prefix(final String ipv6Address) {
+        final Ipv6Builder ipv6Builder = new Ipv6Builder();
         ipv6Builder.setIpv6Address(new Ipv6Prefix(ipv6Address));
         return ipv6Builder.build();
     }
 
-    private void prepareActionSetDlType(SetDlTypeActionCaseBuilder wrapper) {
-        SetDlTypeActionBuilder setDlTypeActionBuilder = new SetDlTypeActionBuilder();
+    private void prepareActionSetDlType(final SetDlTypeActionCaseBuilder wrapper) {
+        final SetDlTypeActionBuilder setDlTypeActionBuilder = new SetDlTypeActionBuilder();
         setDlTypeActionBuilder.setDlType(new EtherType(513L));
         wrapper.setSetDlTypeAction(setDlTypeActionBuilder.build());
     }
 
-    private void prepareActionSetDlSrc(SetDlSrcActionCaseBuilder wrapper) {
-        SetDlSrcActionBuilder setDlSrcActionBuilder = new SetDlSrcActionBuilder();
+    private void prepareActionSetDlSrc(final SetDlSrcActionCaseBuilder wrapper) {
+        final SetDlSrcActionBuilder setDlSrcActionBuilder = new SetDlSrcActionBuilder();
         setDlSrcActionBuilder.setAddress(new MacAddress("24:77:03:7C:C5:F1"));
         wrapper.setSetDlSrcAction(setDlSrcActionBuilder.build());
     }
 
-    private void prepareActionSetDlDst(SetDlDstActionCaseBuilder wrapper) {
-        SetDlDstActionBuilder setDlDstActionBuilder = new SetDlDstActionBuilder();
+    private void prepareActionSetDlDst(final SetDlDstActionCaseBuilder wrapper) {
+        final SetDlDstActionBuilder setDlDstActionBuilder = new SetDlDstActionBuilder();
         setDlDstActionBuilder.setAddress(new MacAddress("3C:A9:F4:00:E0:C8"));
         wrapper.setSetDlDstAction(setDlDstActionBuilder.build());
     }
 
-    private void prepareActionPushVlan(PushVlanActionCaseBuilder wrapper) {
-        PushVlanActionBuilder pushVlanActionBuilder = new PushVlanActionBuilder();
+    private void prepareActionPushVlan(final PushVlanActionCaseBuilder wrapper) {
+        final PushVlanActionBuilder pushVlanActionBuilder = new PushVlanActionBuilder();
         pushVlanActionBuilder.setTag(0x8100); // 12 bit
         wrapper.setPushVlanAction(pushVlanActionBuilder.build());
     }
 
-    private void prepareActionOutput(OutputActionCaseBuilder wrapper) {
-        OutputActionBuilder outputActionBuilder = new OutputActionBuilder();
+    private void prepareActionOutput(final OutputActionCaseBuilder wrapper) {
+        final OutputActionBuilder outputActionBuilder = new OutputActionBuilder();
         outputActionBuilder.setOutputNodeConnector(new Uri("openflow:1:1"));
         wrapper.setOutputAction(outputActionBuilder.build());
     }
 
-    private Match prepOdMatch(MtchType mt) {
-        MatchBuilder odMatchBuilder = new MatchBuilder();
+    private Match prepOdMatch(final MtchType mt) {
+        final MatchBuilder odMatchBuilder = new MatchBuilder();
         switch (mt) {
         case other:
             odMatchBuilder.setInPort(new NodeConnectorId("openflow:12:345"));
@@ -641,7 +639,7 @@ public class TestToSalConversionsUtils {
     }
 
     private Layer4Match prepLayer4MatchUdp() {
-        UdpMatchBuilder udpMatchBuilder = new UdpMatchBuilder();
+        final UdpMatchBuilder udpMatchBuilder = new UdpMatchBuilder();
 
         udpMatchBuilder.setUdpSourcePort(new PortNumber(11));
         udpMatchBuilder.setUdpDestinationPort(new PortNumber(12));
@@ -650,7 +648,7 @@ public class TestToSalConversionsUtils {
     }
 
     private Layer4Match prepLayer4MatchTcp() {
-        TcpMatchBuilder tcpMatchBuilder = new TcpMatchBuilder();
+        final TcpMatchBuilder tcpMatchBuilder = new TcpMatchBuilder();
 
         tcpMatchBuilder.setTcpSourcePort(new PortNumber(21));
         tcpMatchBuilder.setTcpDestinationPort(new PortNumber(22));
@@ -659,7 +657,7 @@ public class TestToSalConversionsUtils {
     }
 
     private Layer4Match prepLayer4MatchSctp() {
-        SctpMatchBuilder sctpMatchBuilder = new SctpMatchBuilder();
+        final SctpMatchBuilder sctpMatchBuilder = new SctpMatchBuilder();
 
         sctpMatchBuilder.setSctpSourcePort(new PortNumber(31));
         sctpMatchBuilder.setSctpDestinationPort(new PortNumber(32));
@@ -668,38 +666,38 @@ public class TestToSalConversionsUtils {
     }
 
     private Layer3Match prepLayer3MatchIpv4() {
-        Ipv4MatchBuilder ipv4MatchBuilder = new Ipv4MatchBuilder();
+        final Ipv4MatchBuilder ipv4MatchBuilder = new Ipv4MatchBuilder();
         ipv4MatchBuilder.setIpv4Source(new Ipv4Prefix("192.168.1.104/32"));
         ipv4MatchBuilder.setIpv4Destination(new Ipv4Prefix("192.168.1.105/32"));
         return ipv4MatchBuilder.build();
     }
 
     private Layer3Match prepLayer3MatchIpv6() {
-        Ipv6MatchBuilder ipv6MatchBuilder = new Ipv6MatchBuilder();
-        ipv6MatchBuilder.setIpv6Source(new Ipv6Prefix("3001:0db8:85a3:0000:0000:8a2e:0370:7334"));
-        ipv6MatchBuilder.setIpv6Destination(new Ipv6Prefix("3001:0db8:85a3:0000:0000:8a2e:0370:7335"));
+        final Ipv6MatchBuilder ipv6MatchBuilder = new Ipv6MatchBuilder();
+        ipv6MatchBuilder.setIpv6Source(new Ipv6Prefix("3001:0db8:85a3:0000:0000:8a2e:0370:7334/128"));
+        ipv6MatchBuilder.setIpv6Destination(new Ipv6Prefix("3001:0db8:85a3:0000:0000:8a2e:0370:7335/128"));
         return ipv6MatchBuilder.build();
     }
 
     private Layer3Match prepLayer3MatchArp() {
-        ArpMatchBuilder arpMatchBuilder = new ArpMatchBuilder();
+        final ArpMatchBuilder arpMatchBuilder = new ArpMatchBuilder();
         arpMatchBuilder.setArpSourceTransportAddress(new Ipv4Prefix("192.168.1.101/32"));
         arpMatchBuilder.setArpTargetTransportAddress(new Ipv4Prefix("192.168.1.102/32"));
 
-        ArpSourceHardwareAddressBuilder arpSourAddressBuild = new ArpSourceHardwareAddressBuilder();
+        final ArpSourceHardwareAddressBuilder arpSourAddressBuild = new ArpSourceHardwareAddressBuilder();
         arpSourAddressBuild.setAddress(new MacAddress("22:44:66:88:AA:CC"));
         arpMatchBuilder.setArpSourceHardwareAddress(arpSourAddressBuild.build());
 
-        ArpTargetHardwareAddressBuilder arpTarAddressBuild = new ArpTargetHardwareAddressBuilder();
+        final ArpTargetHardwareAddressBuilder arpTarAddressBuild = new ArpTargetHardwareAddressBuilder();
         arpTarAddressBuild.setAddress(new MacAddress("11:33:55:77:BB:DD"));
         arpMatchBuilder.setArpTargetHardwareAddress(arpTarAddressBuild.build());
         return arpMatchBuilder.build();
     }
 
     private VlanMatch prepVlanMatch() {
-        VlanMatchBuilder vlanMatchBuilder = new VlanMatchBuilder();
+        final VlanMatchBuilder vlanMatchBuilder = new VlanMatchBuilder();
 
-        VlanIdBuilder vlanIdBuilder = new VlanIdBuilder().setVlanId(new VlanId(0xfff));
+        final VlanIdBuilder vlanIdBuilder = new VlanIdBuilder().setVlanId(new VlanId(0xfff));
         vlanMatchBuilder.setVlanId(vlanIdBuilder.setVlanIdPresent(true).build());
         vlanMatchBuilder.setVlanPcp(new VlanPcp((short) 0x7));
 
@@ -707,9 +705,9 @@ public class TestToSalConversionsUtils {
     }
 
     private VlanMatch prepVlanNoneMatch() {
-        VlanMatchBuilder vlanMatchBuilder = new VlanMatchBuilder();
+        final VlanMatchBuilder vlanMatchBuilder = new VlanMatchBuilder();
 
-        VlanIdBuilder vlanIdBuilder = new VlanIdBuilder().
+        final VlanIdBuilder vlanIdBuilder = new VlanIdBuilder().
             setVlanIdPresent(false);
         vlanMatchBuilder.setVlanId(vlanIdBuilder.build());
 
@@ -717,14 +715,14 @@ public class TestToSalConversionsUtils {
     }
 
     private IpMatch prepIpMatch() {
-        IpMatchBuilder ipMatchBuilder = new IpMatchBuilder();
+        final IpMatchBuilder ipMatchBuilder = new IpMatchBuilder();
         ipMatchBuilder.setIpDscp(new Dscp((short) 0x33));
         ipMatchBuilder.setIpProtocol((short) 0x3f);
         return ipMatchBuilder.build();
     }
 
     private EthernetMatch prepEthernetMatch() {
-        EthernetMatchBuilder odEthernetMatchBuilder = new EthernetMatchBuilder();
+        final EthernetMatchBuilder odEthernetMatchBuilder = new EthernetMatchBuilder();
         odEthernetMatchBuilder.setEthernetDestination(prepEthDest());
         odEthernetMatchBuilder.setEthernetSource(prepEthSour());
         odEthernetMatchBuilder.setEthernetType(prepEthType());
@@ -732,19 +730,19 @@ public class TestToSalConversionsUtils {
     }
 
     private EthernetType prepEthType() {
-        EthernetTypeBuilder ethTypeBuild = new EthernetTypeBuilder();
+        final EthernetTypeBuilder ethTypeBuild = new EthernetTypeBuilder();
         ethTypeBuild.setType(new EtherType(0xffffL));
         return ethTypeBuild.build();
     }
 
     private EthernetSource prepEthSour() {
-        EthernetSourceBuilder ethSourBuild = new EthernetSourceBuilder();
+        final EthernetSourceBuilder ethSourBuild = new EthernetSourceBuilder();
         ethSourBuild.setAddress(new MacAddress("24:77:03:7C:C5:F1"));
         return ethSourBuild.build();
     }
 
     private EthernetDestination prepEthDest() {
-        EthernetDestinationBuilder ethDestBuild = new EthernetDestinationBuilder();
+        final EthernetDestinationBuilder ethDestBuild = new EthernetDestinationBuilder();
         ethDestBuild.setAddress(new MacAddress("3C:A9:F4:00:E0:C8"));
         return ethDestBuild.build();
     }
