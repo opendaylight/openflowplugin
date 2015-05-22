@@ -32,7 +32,6 @@ import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
-import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandlerRegistration;
 import org.opendaylight.openflowplugin.api.ConnectionException;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
@@ -166,7 +165,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         connectionAdapter.setPacketInFiltering(true);
 
         final Short version = connectionContext.getFeatures().getVersion();
-        OutboundQueueProvider outboundQueueProvider = new OutboundQueueProviderImpl(version);
+        final OutboundQueueProvider outboundQueueProvider = new OutboundQueueProviderImpl(version);
 
         final DeviceState deviceState = new DeviceStateImpl(connectionContext.getFeatures(), connectionContext.getNodeId());
 
@@ -174,7 +173,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
         deviceContext.registerOutboundQueueProvider(outboundQueueProvider, maxQueueDepth, barrierNanos);
         deviceContext.setNotificationService(notificationService);
         deviceContext.setNotificationPublishService(notificationPublishService);
-        NodeBuilder nodeBuilder = new NodeBuilder().setId(deviceState.getNodeId()).setNodeConnector(Collections.<NodeConnector>emptyList());
+        final NodeBuilder nodeBuilder = new NodeBuilder().setId(deviceState.getNodeId()).setNodeConnector(Collections.<NodeConnector>emptyList());
         deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, deviceState.getNodeInstanceIdentifier(), nodeBuilder.build());
 
         connectionContext.setDeviceDisconnectedHandler(deviceContext);
@@ -360,34 +359,30 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
 
         LOG.trace("Hooking xid {} to device context - precaution.", reserved);
 
-        final MultiMsgCollector multiMsgCollector = deviceContext.getMultiMsgCollector();
-        multiMsgCollector.registerMultipartRequestContext(requestContext);
+        final MultiMsgCollector multiMsgCollector = deviceContext.getMultiMsgCollector(requestContext);
         queue.commitEntry(xid.getValue(), MultipartRequestInputFactory.makeMultipartRequestInput(xid.getValue(), version, type), new FutureCallback<OfHeader>() {
             @Override
             public void onSuccess(final OfHeader ofHeader) {
                 if (ofHeader instanceof MultipartReply) {
-                    MultipartReply multipartReply = (MultipartReply) ofHeader;
+                    final MultipartReply multipartReply = (MultipartReply) ofHeader;
                     multiMsgCollector.addMultipartMsg(multipartReply);
+                } else if (null != ofHeader) {
+                    LOG.info("Unexpected response type received {}.", ofHeader.getClass());
                 } else {
-                    if (null != ofHeader) {
-                        LOG.info("Unexpected response type received {}.", ofHeader.getClass());
-                    } else {
-                        LOG.info("Response received is null.");
-                    }
+                    multiMsgCollector.endCollecting();
+                    LOG.info("Response received is null.");
                 }
-
             }
 
             @Override
             public void onFailure(final Throwable t) {
                 LOG.info("Fail response from OutboundQueue for multipart type {}.", type, t);
-                multiMsgCollector.invalidateRequestContext(requestContext);
+                requestContext.close();
                 if (MultipartType.OFPMPTABLEFEATURES.equals(type)) {
                     makeEmptyTables(deviceContext, nodeII, deviceContext.getPrimaryConnectionContext().getFeatures().getTables());
                 }
             }
         });
-
 
         return requestContext.getFuture();
     }
@@ -514,7 +509,7 @@ public class DeviceManagerImpl implements DeviceManager, AutoCloseable {
 
     @Override
     public void setNotificationPublishService(final NotificationPublishService notificationService) {
-        this.notificationPublishService = notificationService;
+        notificationPublishService = notificationService;
     }
 
     @Override
