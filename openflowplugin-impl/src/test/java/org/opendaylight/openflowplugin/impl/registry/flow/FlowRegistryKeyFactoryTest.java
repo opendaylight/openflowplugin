@@ -24,7 +24,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
-import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowHash;
+import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
@@ -41,9 +41,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 @RunWith(MockitoJUnitRunner.class)
-public class FlowHashFactoryTest {
+public class FlowRegistryKeyFactoryTest {
 
-    private static final Logger LOG = LoggerFactory.getLogger(FlowHashFactoryTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(FlowRegistryKeyFactoryTest.class);
 
 
     private static final FlowsStatisticsUpdateBuilder FLOWS_STATISTICS_UPDATE_BUILDER = new FlowsStatisticsUpdateBuilder();
@@ -89,12 +89,12 @@ public class FlowHashFactoryTest {
     public void testEquals() throws Exception {
         FlowsStatisticsUpdate flowStats = FLOWS_STATISTICS_UPDATE_BUILDER.build();
 
-        HashSet<FlowHash> flowHashs = new HashSet<>();
+        HashSet<FlowRegistryKey> flowRegistryKeys = new HashSet<>();
         for (FlowAndStatisticsMapList item : flowStats.getFlowAndStatisticsMapList()) {
-            flowHashs.add(FlowHashFactory.create(item, OFConstants.OFP_VERSION_1_3));
-            flowHashs.add(FlowHashFactory.create(item, OFConstants.OFP_VERSION_1_3));
+            flowRegistryKeys.add(FlowHashFactory.create(item, OFConstants.OFP_VERSION_1_3));
+            flowRegistryKeys.add(FlowHashFactory.create(item, OFConstants.OFP_VERSION_1_3));
         }
-        assertEquals(3, flowHashs.size());
+        assertEquals(3, flowRegistryKeys.size());
     }
 
     @Test
@@ -107,7 +107,7 @@ public class FlowHashFactoryTest {
                 .setPriority(2)
                 .setTableId((short) 0);
 
-        FlowHash flow1Hash = FlowHashFactory.create(flow1Builder.build(), OFConstants.OFP_VERSION_1_3);
+        FlowRegistryKey flow1Hash = FlowHashFactory.create(flow1Builder.build(), OFConstants.OFP_VERSION_1_3);
         LOG.info("flowHash1: {}", flow1Hash.hashCode());
 
 
@@ -117,7 +117,7 @@ public class FlowHashFactoryTest {
                 .setCookie(new FlowCookie(BigInteger.valueOf(148)))
                 .setMatch(match2Builder.build());
 
-        FlowHash flow2Hash = FlowHashFactory.create(flow2Builder.build(), OFConstants.OFP_VERSION_1_3);
+        FlowRegistryKey flow2Hash = FlowHashFactory.create(flow2Builder.build(), OFConstants.OFP_VERSION_1_3);
         LOG.info("flowHash2: {}", flow2Hash.hashCode());
 
         Assert.assertNotSame(flow1Hash, flow2Hash);
@@ -155,9 +155,9 @@ public class FlowHashFactoryTest {
 
         FlowBuilder fb3 = new FlowBuilder(flow1Builder.build());
         fb3.setCookie(null);
-        FlowHash flowHash = FlowHashFactory.create(fb3.build(), OFConstants.OFP_VERSION_1_3);
-        Assert.assertNotNull(flowHash.getCookie());
-        Assert.assertEquals(OFConstants.DEFAULT_COOKIE, flowHash.getCookie());
+        FlowRegistryKey flowRegistryKey = FlowHashFactory.create(fb3.build(), OFConstants.OFP_VERSION_1_3);
+        Assert.assertNotNull(flowRegistryKey.getCookie());
+        Assert.assertEquals(OFConstants.DEFAULT_COOKIE, flowRegistryKey.getCookie());
     }
 
     @Test
@@ -165,12 +165,12 @@ public class FlowHashFactoryTest {
         FlowsStatisticsUpdate flowStats = FLOWS_STATISTICS_UPDATE_BUILDER.build();
 
         for (FlowAndStatisticsMapList item : flowStats.getFlowAndStatisticsMapList()) {
-            FlowHash flowHash = FlowHashFactory.create(item, OFConstants.OFP_VERSION_1_3);
-            FlowHash lastHash = null;
+            FlowRegistryKey flowRegistryKey = FlowHashFactory.create(item, OFConstants.OFP_VERSION_1_3);
+            FlowRegistryKey lastHash = null;
             if (null != lastHash) {
-                assertNotEquals(lastHash, flowHash);
+                assertNotEquals(lastHash, flowRegistryKey);
             } else {
-                lastHash = flowHash;
+                lastHash = flowRegistryKey;
             }
         }
     }

@@ -17,17 +17,17 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.Fl
  */
 public interface DeviceFlowRegistry extends AutoCloseable {
 
-    FlowDescriptor retrieveIdForFlow(FlowHash flowHash);
+    FlowDescriptor retrieveIdForFlow(FlowRegistryKey flowRegistryKey);
 
-    void store(FlowHash flowHash, FlowDescriptor flowDescriptor);
+    void store(FlowRegistryKey flowRegistryKey, FlowDescriptor flowDescriptor);
 
-    FlowId storeIfNecessary(FlowHash flowHash, short tableId);
+    FlowId storeIfNecessary(FlowRegistryKey flowRegistryKey, short tableId);
 
-    void markToBeremoved(FlowHash flowHash);
+    void markToBeremoved(FlowRegistryKey flowRegistryKey);
 
     void removeMarked();
 
-    Map<FlowHash, FlowDescriptor> getAllFlowDescriptors();
+    Map<FlowRegistryKey, FlowDescriptor> getAllFlowDescriptors();
 
     @Override
     void close();

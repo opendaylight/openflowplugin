@@ -23,7 +23,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
-import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowHash;
+import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowDescriptorFactory;
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowHashFactory;
@@ -75,9 +75,9 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
         }
 
         final DeviceContext deviceContext = getDeviceContext();
-        final FlowHash flowHash = FlowHashFactory.create(input, deviceContext.getPrimaryConnectionContext().getFeatures().getVersion());
+        final FlowRegistryKey flowRegistryKey = FlowHashFactory.create(input, deviceContext.getPrimaryConnectionContext().getFeatures().getVersion());
         final FlowDescriptor flowDescriptor = FlowDescriptorFactory.create(input.getTableId(), flowId);
-        deviceContext.getDeviceFlowRegistry().store(flowHash, flowDescriptor);
+        deviceContext.getDeviceFlowRegistry().store(flowRegistryKey, flowDescriptor);
         Futures.addCallback(future, new FutureCallback<RpcResult<AddFlowOutput>>() {
 
 
@@ -92,7 +92,7 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
 
             @Override
             public void onFailure(final Throwable throwable) {
-                deviceContext.getDeviceFlowRegistry().markToBeremoved(flowHash);
+                deviceContext.getDeviceFlowRegistry().markToBeremoved(flowRegistryKey);
                 LOG.trace("Service call for adding flows failed, id={}.", flowId.getValue(), throwable);
             }
         });
@@ -114,8 +114,8 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
                     public void onSuccess(final RpcResult<RemoveFlowOutput> o) {
                         final DeviceContext deviceContext = getDeviceContext();
                         getMessageSpy().spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
-                        FlowHash flowHash = FlowHashFactory.create(input, deviceContext.getPrimaryConnectionContext().getFeatures().getVersion());
-                        deviceContext.getDeviceFlowRegistry().markToBeremoved(flowHash);
+                        FlowRegistryKey flowRegistryKey = FlowHashFactory.create(input, deviceContext.getPrimaryConnectionContext().getFeatures().getVersion());
+                        deviceContext.getDeviceFlowRegistry().markToBeremoved(flowRegistryKey);
                     }
 
                     @Override
@@ -175,14 +175,14 @@ public class SalFlowServiceImpl extends CommonService implements SalFlowService 
                 final DeviceContext deviceContext = getDeviceContext();
                 getMessageSpy().spyMessage(input.getImplementedInterface(), MessageSpy.STATISTIC_GROUP.TO_SWITCH_SUBMIT_SUCCESS);
                 final short version = deviceContext.getPrimaryConnectionContext().getFeatures().getVersion();
-                FlowHash flowHash = FlowHashFactory.create(original, version);
+                FlowRegistryKey flowRegistryKey = FlowHashFactory.create(original, version);
 
-                FlowHash updatedflowHash = FlowHashFactory.create(updated, version);
+                FlowRegistryKey updatedflowRegistryKey = FlowHashFactory.create(updated, version);
                 FlowId flowId = input.getFlowRef().getValue().firstKeyOf(Flow.class, FlowKey.class).getId();
                 FlowDescriptor flowDescriptor = FlowDescriptorFactory.create(updated.getTableId(), flowId);
                 final DeviceFlowRegistry deviceFlowRegistry = deviceContext.getDeviceFlowRegistry();
-                deviceFlowRegistry.markToBeremoved(flowHash);
-                deviceFlowRegistry.store(updatedflowHash, flowDescriptor);
+                deviceFlowRegistry.markToBeremoved(flowRegistryKey);
+                deviceFlowRegistry.store(updatedflowRegistryKey, flowDescriptor);
             }
 
             @Override

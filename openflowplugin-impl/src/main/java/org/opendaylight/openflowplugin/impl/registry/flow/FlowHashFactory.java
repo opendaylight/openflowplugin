@@ -14,7 +14,7 @@ import com.google.common.primitives.Longs;
 import java.math.BigInteger;
 import java.util.Objects;
 import org.opendaylight.openflowplugin.api.OFConstants;
-import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowHash;
+import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
 import org.opendaylight.openflowplugin.impl.util.HashUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow;
 
@@ -27,9 +27,9 @@ public class FlowHashFactory {
     public FlowHashFactory() {
     }
 
-    public static FlowHash create(Flow flow, short version) {
+    public static FlowRegistryKey create(Flow flow, short version) {
         long hash = calculateHash(flow, version);
-        return new FlowHashDto(hash, flow);
+        return new FlowRegistryKeyDto(hash, flow);
     }
 
     private static long calculateHash(Flow flow, short version) {
@@ -37,7 +37,7 @@ public class FlowHashFactory {
     }
 
 
-    private static final class FlowHashDto implements FlowHash {
+    private static final class FlowRegistryKeyDto implements FlowRegistryKey {
 
         private final long flowHash;
         private final int intHashCode;
@@ -46,7 +46,7 @@ public class FlowHashFactory {
         private final int priority;
         private final BigInteger cookie;
 
-        public FlowHashDto(final long flowHash, final Flow flow) {
+        public FlowRegistryKeyDto(final long flowHash, final Flow flow) {
             this.flowHash = flowHash;
             this.intHashCode = Longs.hashCode(flowHash);
             tableId = Preconditions.checkNotNull(flow.getTableId(), "flow tableId must not be null");
@@ -65,10 +65,10 @@ public class FlowHashFactory {
             if (null == obj) {
                 return false;
             }
-            if (!(obj instanceof FlowHash)) {
+            if (!(obj instanceof FlowRegistryKey)) {
                 return false;
             }
-            FlowHash that = (FlowHash) obj;
+            FlowRegistryKey that = (FlowRegistryKey) obj;
             if (this.flowHash == that.getFlowHash()
                     && this.tableId == that.getTableId()
                     && this.priority == that.getPriority()
